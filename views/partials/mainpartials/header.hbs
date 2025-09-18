@@ -1,0 +1,162 @@
+<header class="header">
+
+
+ <!-- Start of Header -->
+      <header>
+        <div id="navigation-wrapper">
+        <div class="primary-logo">
+        <a href="/">
+          <img src="https://www.twennie.com/images/headerlogo_2.png" alt="Home">
+         </a>
+        </div>
+          
+          <!-- Start of Navigation Menu - The close and open ionicons are hidden until the viewport is 1024px in width, it will display a hamburger menu and close icon when toggled. -->
+          <nav id="toggle-menu">           
+            <ion-icon name="close-outline" id="close-menu"></ion-icon>
+            <ul class="desktop-links">
+{{#if user}}
+  <li style="display: flex; align-items: center; gap: 10px;">
+    <a href="{{dashboardLink}}">Hi, {{user.username}}</a>
+    <img 
+      src="{{userProfileImage}}" 
+      alt="Profile" 
+      style="width: 90px; height: 90px; border-radius: 50%; object-fit: cover; display: inline-block; overflow: hidden;"
+    >
+  </li>
+{{/if}}
+
+
+            </ul>
+            <ul class="mobile-links">
+                  {{#if user}}
+                    <li>
+                      <a href="{{dashboardLink}}">Hi, {{user.username}}</a>
+                    </li>                    
+                    <li>
+                      <a href="{{dashboardLink}}">Dashboard</a>
+                    </li>
+                    <li>
+                      <a href="/auth/logout">Logout</a>
+                    </li>
+                    {{else}}
+                    <li>
+                      <a href="/auth/login">Login</a>
+                    </li>      
+                  {{/if}}
+                  <li>
+                      <a href="/topics">Topics</a>
+                  </li>
+
+                  <li>
+                      <a href="/latest">Latest</a>
+                  </li>    
+
+                  <li>
+                    <a href="/member/choose">Join</a>
+                  </li>     
+                  <li>
+                    <a href="/what_is_twennie">What is Twennie?</a>
+                  </li>
+                  <li>
+                    <a href="/about_twennie" title="Email">About</a>
+                  </li>
+
+                  <li>
+                    <a href="/about_twennie" title="Phone">Contact</a>
+                  </li>
+
+                  <li>
+                    <a href="#" title="Tech Support">Tech Support</a>
+                  </li>
+
+                  <li>
+                    <a href="/privacypolicy" title="Privacy">Privacy Policy</a>
+                  </li>
+
+                  <li>
+                    <a href="/facilitation" title="Facilitation">Facilitation</a>
+                  </li>
+
+                  <li>
+                    <a href="/custom_services" title="Custom Learning Design">Services</a>
+                  </li>
+
+                  <li>
+                    <a href="https://www.youtube.com/@Twennie-learn" title="Youtube">Youtube</a>
+                  </li>
+
+                  <li>
+                    <a href="/termsconditions" title="Terms & Conditions">Terms &amp; Conditions</a>
+                  </li>
+            </ul>
+          </nav>
+          <!-- End of Navigation Menu -->
+          <ion-icon name="menu-outline" id="open-menu"></ion-icon>
+        </div>        
+      </header>
+      <div class="wave-divider">
+        <svg viewBox="0 0 1440 50" xmlns="http://www.w3.org/2000/svg">
+          <path fill="#4e50a2" d="M0,32L80,26.7C160,21,320,11,480,11C640,11,800,21,960,24C1120,27,1280,21,1360,18.7L1440,16V0H0Z"></path>
+        </svg>
+      </div>
+
+      <!-- End of Header -->
+
+<div class="sidebar-nav">
+
+  {{#if user}}
+    <!-- Dashboard for logged-in user -->
+    <a href="{{dashboardLink}}" class="nav-square" style="width: 90px; height: 90px;">
+      <img src="https://www.twennie.com/icons/dashboardicon.svg" alt="Dashboard" style="width: 50px; margin-top: 15px;">
+      <span class="nav-text" style="font-size: 0.8rem;">learning dashboard</span>
+    </a>
+
+    <!-- Shared links -->
+    <a href="/topics" class="nav-square">
+      <img src="https://www.twennie.com/icons/topicsicon.svg" alt="Topics">
+      <span class="nav-text">topics</span>
+    </a>
+    <a href="/latest" class="nav-square">
+      <img src="https://www.twennie.com/icons/latesticon.svg" alt="Latest">
+      <span class="nav-text">latest</span>
+    </a>
+
+    <!-- Log out for user -->
+    <a href="/auth/logout" class="nav-square logout">
+      <img src="https://www.twennie.com/icons/logouticon.svg" alt="Logout">
+      <span class="nav-text">log out</span>
+    </a>
+
+  {{else}}
+    <!-- Login moved to top -->
+<a href="/auth/login" class="nav-square" style="width: 90px; height: 90px;">
+  <img src="https://www.twennie.com/icons/loginicon.svg" alt="Login" style="width: 50px; margin-top: 15px;">
+  <span class="nav-text" style="font-size: 0.9rem;">login</span>
+</a>
+
+    <!-- Shared links for logged-out users -->
+    <a href="/topics" class="nav-square">
+      <img src="https://www.twennie.com/icons/topicsicon.svg" alt="Topics">
+      <span class="nav-text">topics</span>
+    </a>
+    <a href="/latest" class="nav-square">
+      <img src="https://www.twennie.com/icons/latesticon.svg" alt="Latest">
+      <span class="nav-text">latest</span>
+    </a>
+
+    <!-- Unique links for logged-out users -->
+
+    <a href="/what_is_twennie" class="nav-square">
+      <img src="https://www.twennie.com/icons/whatistwennieicon.svg" alt="What is Twennie?">
+      <span class="nav-text"></span>
+    </a>
+        <a href="/teach_me" class="nav-square">
+      <img src="https://www.twennie.com/icons/teachmeicon.svg" alt="Teach Me">
+      <span class="nav-text">how to use twennie</span>
+    </a>
+  {{/if}}
+
+</div>
+
+
+        </div>

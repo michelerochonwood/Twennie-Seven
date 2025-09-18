@@ -1,0 +1,33 @@
+{{#*inline "title"}}Too Many Registrations | Twennie{{/inline}}
+<div class="promptset-register-error-container">
+    <h1 class="promptset-register-error-title">You have reached your limit for prompt set registrations.</h1>
+    <h2 class="promptset-register-error-subtitle">A maximum of 3 prompt set registrations can be ongoing for a member at one time.</h2>
+
+    <p class="promptset-register-error-message">
+        You are currently registered for the following prompt sets:
+    </p>
+
+<ul class="promptset-register-error-list">
+    {{#each registeredPromptSets}}
+    <li class="promptset-register-error-item">
+        <strong>{{this.promptSetTitle}}</strong>
+        <p class="toomany-frequency">{{this.frequency}}</p>  
+        <p class="toomany-target">(Target Completion: {{this.targetCompletionDate}})</p>
+        {{#if this._id}} 
+        <a href="/unitviews/promptsets/view/{{this._id}}" class="promptset-view-btn">View This Prompt Set</a>
+        {{else}}
+        <p class="error-text">ID not available</p>
+        {{/if}}
+    </li>
+    {{/each}}
+</ul>
+
+    <p class="promptset-register-error-note">
+        As soon as one of these prompt sets is complete, you can register for a new one.
+        New prompt sets are being launched every week, so stay tuned!
+    </p>
+
+    <a href="{{dashboard}}" class="promptset-register-error-btn">return to my dashboard</a>
+</div>
+
+

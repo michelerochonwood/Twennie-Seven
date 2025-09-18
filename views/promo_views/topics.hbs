@@ -1,0 +1,74 @@
+{{#*inline "title"}}All Topics | Twennie{{/inline}}
+<div class="topics-main">
+  <h1 class="topics-title">Twennie topics</h1>
+
+
+  <!-- Tabs for Topic Categories -->
+  <div class="topics-tabs-container">
+    <button class="topics-tab active" data-tab="technicalconsulting">
+      <span class="tab-title">technical consulting</span>
+      <div class="tab-arrow"></div>
+    </button>
+    <button class="topics-tab" data-tab="businessdevelopment">
+      <span class="tab-title">business development and marketing</span>
+      <div class="tab-arrow"></div>
+    </button>
+    <button class="topics-tab" data-tab="b2bsales">
+      <span class="tab-title">proposals</span>
+      <div class="tab-arrow"></div>
+    </button>
+    <button class="topics-tab" data-tab="peoplemanagement">
+      <span class="tab-title">people management</span>
+      <div class="tab-arrow"></div>
+    </button>
+    <button class="topics-tab" data-tab="technology">
+      <span class="tab-title">technology</span>
+      <div class="tab-arrow"></div>
+    </button>
+    <button class="topics-tab" data-tab="workplaceculture">
+      <span class="tab-title">workplace culture</span>
+      <div class="tab-arrow"></div>
+    </button>
+    <button class="topics-tab" data-tab="ai">
+      <span class="tab-title">ai</span>
+      <div class="tab-arrow"></div>
+    </button>
+    <button class="topics-tab" data-tab="newtopic">
+      <span class="tab-title">new topic</span>
+      <div class="tab-arrow"></div>
+    </button>
+  </div>
+
+  <!-- Tab Content for Each Category -->
+  <div class="topics-tab-content active" id="technicalconsulting">
+    {{> topicpartials/topics_technicalconsulting }}
+  </div>
+
+  <div class="topics-tab-content" id="businessdevelopment">
+    {{> topicpartials/topics_businessdevelopment }}
+  </div>
+
+  <div class="topics-tab-content" id="b2bsales">
+    {{> topicpartials/topics_proposals }}
+  </div>
+
+  <div class="topics-tab-content" id="peoplemanagement">
+    {{> topicpartials/topics_peoplemanagement }}
+  </div>
+
+  <div class="topics-tab-content" id="technology">
+    {{> topicpartials/topics_technology }}
+  </div>
+
+  <div class="topics-tab-content" id="workplaceculture">
+    {{> topicpartials/topics_workplaceculture }}
+  </div>
+
+  <div class="topics-tab-content" id="ai">
+    {{> topicpartials/topics_ai }}
+  </div>
+
+  <div class="topics-tab-content" id="newtopic">
+    {{> topicpartials/topics_newtopic }}
+  </div>
+</div>

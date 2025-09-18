@@ -1,0 +1,63 @@
+{{#*inline "title" }}Change My Membership | Twennie{{/inline}}
+
+<div class="membership-form-container">
+  <h1 class="form-title">change my membership</h1>
+
+  <section class="current-membership">
+    <h2>your current membership</h2>
+    <p><strong>membership type:</strong> {{user.membershipType}}</p>
+    {{#if user.accessLevel}}
+      <p><strong>access level:</strong> {{user.accessLevel}}</p>
+    {{/if}}
+    <p>Below are the membership options available to you. Choose an option to continue.</p>
+  </section>
+
+  <section class="membership-buttons">    
+    <button class="membership-button" onclick="showForm('free')">free membership</button>
+    <button class="membership-button" onclick="showForm('individual')">individual member</button>
+    <button class="membership-button" onclick="showForm('leader')">leader</button>
+    <button class="membership-button" onclick="showForm('group')">group member</button>
+    <button class="membership-button" onclick="showForm('cancel')">cancel membership</button>
+  </section>
+
+  <section id="individual-form-section" class="hidden">
+    {{> memberformpartials/form_individuals }}
+  </section>
+
+  <section id="group-form-section" class="hidden">
+    <div class="group-member-instructions">
+      <h3>group membership instructions</h3>
+      <p>Group memberships must be created by a group leader. If your leader has already registered your group, they will send you a link or registration code. You cannot join a group on your own from this page.</p>
+      <p>If you’d like to become a group leader, select the Leader option above.</p>
+    </div>
+  </section>
+
+  <section id="leader-form-section" class="hidden">
+    {{> memberformpartials/form_leader }}
+  </section>
+
+  <section id="free-form-section" class="hidden">
+    {{> memberformpartials/free_individuals }}
+  </section>
+
+  <section id="cancel-form-section" class="hidden">
+    <form action="/change_membership/cancel" method="POST" class="cancel-membership-form">
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+      <h3 style="margin-top: 40px">We're sorry to see you go.</h3>
+      <p>Please let us know why you're cancelling (optional):</p>
+      <textarea name="reason" rows="4" placeholder="Your feedback helps us improve." style="width:75%; border-radius:8px; padding:10px;"></textarea>
+      <br>
+      <button type="submit" class="make-member-button" style="background-color:#aa2e2e">confirm cancellation</button>
+    </form>
+  </section>
+</div>
+
+<script>
+  function showForm(type) {
+    const sections = ['individual', 'group', 'leader', 'free', 'cancel'];
+    sections.forEach(sec => {
+      document.getElementById(`${sec}-form-section`).classList.add('hidden');
+    });
+    document.getElementById(`${type}-form-section`).classList.remove('hidden');
+  }
+</script>

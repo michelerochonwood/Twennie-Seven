@@ -1,0 +1,25 @@
+<section class="profile-earned-badges-section">
+  <h2 class="profile-earned-badges-title">my earned badges</h2>
+
+  {{#if leaderBadges.length}}
+    <div class="profile-badges-grid">
+      {{#each leaderBadges}}
+        <div class="profile-badge-card">
+          <!-- Badge Image -->
+          <div class="profile-badge-icon">
+            <img src="{{earnedBadge.image}}" alt="{{earnedBadge.name}} badge">
+          </div>
+          <div class="profile-badge-info">
+            <h3 class="profile-badge-title">{{earnedBadge.name}}</h3>
+            <p class="profile-badge-promptset">{{promptSetTitle}}</p>
+            <p class="profile-badge-topic">{{mainTopic}}</p>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+  {{else}}
+    <div class="profile-no-badges-container">
+      <p class="profile-no-badges">You haven't earned any badges yet.</p>
+    </div>
+  {{/if}}
+</section>

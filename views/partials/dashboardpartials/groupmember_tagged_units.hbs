@@ -1,0 +1,89 @@
+<meta name="csrf-token" content="{{csrfToken}}">
+
+<section class="group-member-tagged-units-section">
+  <h2 class="tagged-units-title">tagged library units</h2>
+
+  <!-- 🔖 Section 1: Units I Tagged Myself -->
+  <div class="group-member-tagged-subsection">
+    <h3 class="group-member-tagged-subtitle">my tagged units</h3>
+    <div class="tagged-units-grid">
+      {{#each groupMemberTaggedUnits}}
+        <div class="tagged-unit-card">
+          <div class="tagged-unit-icon">
+            <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
+          </div>
+          <div class="tagged-unit-info">
+            <h3 class="tagged-unit-title">{{title}}</h3>
+            <p class="tagged-unit-topic">{{mainTopic}}</p>
+            {{#if (eq unitType "upcoming")}}
+              <p class="tagged-unit-status">🚧 coming soon</p>
+            {{/if}}
+          </div>
+          <a href="/unitviews/{{capitalize unitType}}s/view/{{_id}}" class="tagged-unit-link">
+            view unit
+          </a>
+        </div>
+      {{else}}
+        <p class="tagged-no-units">You have not tagged any units.</p>
+      {{/each}}
+    </div>
+  </div>
+
+  <!-- 👥 Section 2: Units Tagged by My Leader -->
+  <div class="group-member-tagged-subsection">
+    <h3 class="group-member-tagged-subtitle">units tagged by my leader</h3>
+    <div class="tagged-units-grid">
+      {{#each leaderAssignedTags}}
+        <div class="tagged-unit-card">
+          <div class="tagged-unit-icon">
+            <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
+          </div>
+          <div class="tagged-unit-info">
+            <h3 class="tagged-unit-title">{{title}}</h3>
+            <p class="tagged-unit-topic">{{mainTopic}}</p>
+            {{#if instructions}}
+              <p class="tagged-unit-instructions"><em>Instructions:</em> {{instructions}}</p>
+            {{/if}}
+            <p class="tagged-unit-status">
+              {{#if (eq unitType "upcoming")}}🚧 coming soon{{else}}⏳ pending{{/if}}
+            </p>
+          </div>
+          <a href="/unitviews/{{capitalize unitType}}s/view/{{_id}}" class="tagged-unit-link">
+            view unit
+          </a>
+        </div>
+      {{else}}
+        <p class="tagged-no-units">You have no units assigned by your leader.</p>
+      {{/each}}
+    </div>
+  </div>
+
+  <!-- ✅ Completed Units Section -->
+  <div class="group-member-tagged-subsection">
+    <h3 class="group-member-tagged-subtitle">completed leader-assigned units</h3>
+    <div class="tagged-units-grid">
+      {{#each completedLeaderAssignedTags}}
+        <div class="tagged-unit-card">
+          <div class="tagged-unit-icon">
+            <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
+          </div>
+          <div class="tagged-unit-info">
+            <h3 class="tagged-unit-title">{{title}}</h3>
+            <p class="tagged-unit-topic">{{mainTopic}}</p>
+            <p class="tagged-unit-completed"><strong>Completed:</strong> {{formatDate completedAt}}</p>
+          </div>
+          <a href="/unitviews/{{capitalize unitType}}s/view/{{_id}}" class="tagged-unit-link">
+            review unit
+          </a>
+        </div>
+      {{else}}
+        <p class="tagged-no-units">No completed units yet.</p>
+      {{/each}}
+    </div>
+  </div>
+</section>
+
+
+
+
+

@@ -1,0 +1,53 @@
+<h2 class="form-header">suggest a new topic</h2>
+<div class="suggest-topic-form">
+  <form action="/topics/suggest" method="POST">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+
+    <div class="form-field">
+      <label for="name">your name</label>
+      <input type="text" id="name" name="name" value="{{user.name}}" required>
+    </div>
+
+    <div class="form-field">
+      <label for="email">your email</label>
+      <input type="email" id="email" name="email" value="{{user.email}}" required>
+    </div>
+
+    {{#if user.groupName}}
+    <div class="form-field">
+      <label for="groupName">group name</label>
+      <input type="text" id="groupName" name="groupName" value="{{user.groupName}}">
+    </div>
+    {{/if}}
+
+    <div class="form-field">
+      <label for="topicTitle">new topic title</label>
+      <input type="text" id="topicTitle" name="topicTitle" required>
+    </div>
+
+<div class="form-field">
+  <label for="paragraph1">paragraph 1</label>
+  <textarea id="paragraph1" name="paragraph1" required></textarea>
+  <p>Tell us about the history of your topic. How has it evolved? Why is it especially important now?</p> 
+  <p class="form-helper-text">Suggested: 75–150 words</p>
+</div>
+
+<div class="form-field">
+  <label for="paragraph2">paragraph 2</label>
+  <textarea id="paragraph2" name="paragraph2" required></textarea>
+  <p>Tell us about how your topic fits in the world of technical services. Who is affected and why?</p>
+  <p class="form-helper-text">Suggested: 75–150 words</p>
+</div>
+
+<div class="form-field">
+  <label for="paragraph3">paragraph 3</label>
+  <textarea id="paragraph3" name="paragraph3" required></textarea>
+  <p>Tell us about the future of your topic. How will it develop over time? How will it affect working technical professionals?</p>
+  <p class="form-helper-text">Suggested: 75–150 words</p>
+</div>
+
+  <p>Once you submit your topic suggestion, it will appear in your dashboard. You can check under the <em>my favorite topics</em> tab for the status of your topic.</p>
+    <button type="submit" class="submit-topic-btn">submit topic suggestion</button>
+  </form>
+</div>
+

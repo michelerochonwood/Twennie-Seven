@@ -1,0 +1,45 @@
+<div class="interactive-section">
+  <div class="interactive-grid animate-on-scroll">
+    <div class="centered-image-container">
+      <div class="interactive-video-wrapper">
+        <video controls poster="https://www.twennie.com/images/whatistwennievideo.png">
+          <source src="https://res.cloudinary.com/dgeszflt3/video/upload/v1744393461/Promotional2_apzrri.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+        <h3 style="color: white; text-align: center">Welcome to Twennie!</h3>
+      </div>
+    </div>
+    <div class="button-grid">
+      <a href="/teach_me" class="interactive-button" style="text-decoration: none;" >how does Twennie work?</a>
+      <a href="/contribute" class="interactive-button" style="text-decoration: none;">what is a Twennie unit?</a>
+      <a href="/topics" class="interactive-button" style="text-decoration: none;">the Twennie library</a>
+      <a href="/sample_article" class="interactive-button" style="text-decoration: none;" >read an article</a>
+      <a href="/sample_video" class="interactive-button" style="text-decoration: none;" >watch a video</a>
+      <a href="/sample_exercise" class="interactive-button" style="text-decoration: none;" >try an exercise</a>
+      <a href="/sample_template" class="interactive-button" style="text-decoration: none;" >view a template</a>
+      <a href="/promptset_promo" class="interactive-button" style="text-decoration: none;">what is a prompt?</a>
+      <a href="/sample_promptset" class="interactive-button" style="text-decoration: none;" >sample prompt set</a>
+      <a href="/latest" class="interactive-button" style="text-decoration: none;">latest content</a>
+      <a href="/custom_services" class="interactive-button" style="text-decoration: none;" >add your training content</a>
+      <a href="/group_memberships" class="interactive-button" style="text-decoration: none;" >group memberships</a>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const elements = document.querySelectorAll('.animate-on-scroll');
+  
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target); // Stop observing once visible
+      }
+    });
+  }, { threshold: 0.5 }); // Element is visible when 20% in viewport
+
+  elements.forEach(el => observer.observe(el));
+});
+
+</script>

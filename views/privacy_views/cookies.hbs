@@ -1,0 +1,30 @@
+<form method="POST" action="/dashboard/member/preferences">
+  {{#if csrfToken}}<input type="hidden" name="_csrf" value="{{csrfToken}}">{{/if}}
+
+  <label>Theme:
+    <select name="theme">
+      <option value="system">System</option>
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+    </select>
+  </label>
+
+  <label>Default tab:
+    <select name="defaultDashboardTab">
+      <option value="membership">Membership</option>
+      <option value="library">My Library</option>
+      <option value="topics">Topics</option>
+    </select>
+  </label>
+
+  <label><input type="checkbox" name="reducedMotion"> Reduced motion</label>
+
+  <label>Density:
+    <select name="contentDensity">
+      <option value="comfortable">Comfortable</option>
+      <option value="compact">Compact</option>
+    </select>
+  </label>
+
+  <button>Save preferences</button>
+</form>

@@ -1,0 +1,89 @@
+{{#*inline "title"}}Member Dashboard | Twennie{{/inline}}
+
+<div class="dashboard-grid">
+  <!-- Sidebar (Left) -->
+  <div class="dashboard-sidebar">
+    {{> dashboardpartials/member_sidebar }}
+  </div>
+
+  <!-- Main Content (Right) -->
+  <div class="dashboard-main">
+    
+    <!-- Tab Navigation -->
+    <div class="dashboard-tabs-container">
+      <button class="dashboard-tab active" data-tab="membership">
+        <span class="tab-title">membership overview</span>
+        <div class="tab-arrow"></div>
+      </button>
+      <button class="dashboard-tab" data-tab="topics">
+        <span class="tab-title">my favorite topics</span>
+        <div class="tab-arrow"></div>
+      </button>
+      <button class="dashboard-tab" data-tab="prompts">
+        <span class="tab-title">registered prompt sets</span>
+        <div class="tab-arrow"></div>
+      </button>
+      <button class="dashboard-tab" data-tab="progress">
+        <span class="tab-title">prompt set progress</span>
+        <div class="tab-arrow"></div>
+      </button>
+      <button class="dashboard-tab" data-tab="contribute">
+        <span class="tab-title">contribute to the library</span>
+        <div class="tab-arrow"></div>
+      </button>
+      <button class="dashboard-tab" data-tab="library">
+        <span class="tab-title">my library units</span>
+        <div class="tab-arrow"></div>
+      </button>
+      <button class="dashboard-tab" data-tab="tagged">
+        <span class="tab-title">my tagged units</span>
+        <div class="tab-arrow"></div>
+      </button>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="dashboard-tab-content active" id="membership">
+      {{> dashboardpartials/member_membership }}
+    </div>
+
+    <div class="dashboard-tab-content" id="topics">
+      {{> dashboardpartials/member_topics }}
+    </div>
+
+<div class="dashboard-tab-content" id="prompts">
+  {{#if registeredPromptSets.length}}
+    {{#each registeredPromptSets}}
+      <section class="member-prompt-section">
+        {{> dashboardpartials/member_prompt promptSet=this }}
+      </section>
+    {{/each}}
+  {{else}}
+    {{#ifEquals @root.member.accessLevel "free_individual"}}
+      <div style="text-align: center; margin-top: 2rem; font-style: italic; color: #4e50a2;">
+        To register for prompts, you must upgrade your membership.
+      </div>
+    {{/ifEquals}}
+  {{/if}}
+</div>
+
+    <div class="dashboard-tab-content" id="progress">
+      {{> dashboardpartials/member_progress }}
+    </div>
+
+    <div class="dashboard-tab-content" id="contribute">
+      {{> dashboardpartials/member_contribution }}
+    </div>
+
+    <div class="dashboard-tab-content" id="library">
+      {{> dashboardpartials/member_mylibraryunits }}
+    </div>
+
+    <div class="dashboard-tab-content" id="tagged">
+      {{> dashboardpartials/member_tagged_units }}
+    </div>
+
+  </div>
+</div>
+
+
+

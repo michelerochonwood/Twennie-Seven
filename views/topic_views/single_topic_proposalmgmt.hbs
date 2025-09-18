@@ -1,0 +1,42 @@
+{{#*inline "title"}}Proposal Management | Twennie{{/inline}}
+<div class="topic-page-wrapper">
+  <div class="topic-main-area">
+    <div class="topic-header">
+      <div>
+        <h1 class="topic-title">Proposal Management</h1>
+      </div>
+
+      <!-- Mobile Sidebar Toggle Button -->
+      <div class="more-topics">
+        <p>more topics</p>
+        <ion-icon name="newspaper-outline" id="mobile-sidebar-btn"></ion-icon>
+      </div>
+    </div>
+
+    <!-- Subtopics Partial -->
+    {{> topicpartials/proposalmgmt_topic }}
+
+    <!-- Bluey + CTA -->
+    <div class="topic-resource-cta-wrapper">
+      <img src="/images/blueydown.png" alt="Bluey pointing down" class="bluey-cta-img" style="margin-bottom: 5px;">
+      <a href="/bytopic/Proposal Management" class="single-topic-resource-btn">
+        <button class="topic-resource-btn" style="margin-bottom: 200px">
+          let me show you Twennie's units on this topic
+        </button>
+      </a>
+    </div>
+
+  </div>
+
+  {{> topicpartials/topics_column_partial}}
+</div>
+
+<script>
+  function toggleCard(element) {
+    let card = element.closest('.bytopic-library-unit-card');
+    card.classList.toggle('active');
+    let arrow = element.querySelector('.bytopic-arrow-icon');
+    arrow.classList.toggle('open');
+  }
+</script>
+

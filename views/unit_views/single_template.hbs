@@ -1,0 +1,211 @@
+<div class="single_template-container">
+  <!-- Main Section -->
+  <div class="single_template-main">
+    <h1 class="single_template-main-title">{{template_title}}</h1>
+    <p class="single_template-short-summary" style="color:#4e50a2;"><strong>{{short_summary}}</strong></p>
+    <p class="single_template-long-summary" style="margin-bottom: 20px;">{{full_summary}}</p>
+
+    {{#if isAuthorizedToViewFullContent}}
+      <!-- Download Block -->
+      <div class="single_template-download">
+        <div class="single_template-download-icon">
+          <!-- SVG icon -->
+          <svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 164.27 150.53">
+            <defs>
+              <style>
+                .cls-1{fill:#4e50a2}.cls-2{fill:#fff}.cls-3{fill:#d1d3d4}.cls-4{fill:#bcbec0}
+              </style>
+            </defs>
+            <g id="Layer_1-2" data-name="Layer 1">
+              <polygon class="cls-3" points="0 24.15 0 150.53 103.78 150.53 103.78 48.29 79.12 24.15 0 24.15"/>
+              <rect class="cls-4" x="12.95" y="83.64" width="76.44" height="5.2" rx="1.95" ry="1.95"/>
+              <rect class="cls-4" x="12.95" y="100.34" width="76.44" height="5.2" rx="1.95" ry="1.95"/>
+              <rect class="cls-4" x="12.95" y="117.03" width="76.44" height="5.2" rx="1.95" ry="1.95"/>
+              <rect class="cls-4" x="12.95" y="133.73" width="76.44" height="5.2" rx="1.95" ry="1.95"/>
+              <polygon class="cls-2" points="28.88 0 28.88 126.38 132.65 126.38 132.65 24.15 107.99 0 28.88 0"/>
+              <rect class="cls-1" x="42.17" y="27.21" width="24.66" height="24.66"/>
+              <path class="cls-2" d="M51.99,38.45s-2.63-3.21-5.14-.83c-2.22,2.11.51,4.69.51,4.69l3.66,3.47s2.12,1.54,3.28,0,8.48-8.69,8.48-8.69c0,0,.96-3.06-.96-4.02-1.93-.96-3.47,0-3.47,0l-6.36,5.39Z"/>
+              <rect class="cls-4" x="75.88" y="27.21" width="42.38" height="5.2" rx="1.95" ry="1.95"/>
+              <rect class="cls-4" x="75.88" y="41.26" width="42.38" height="5.2" rx="1.95" ry="1.95"/>
+              <rect class="cls-4" x="41.82" y="59.49" width="76.44" height="5.2" rx="1.95" ry="1.95"/>
+              <rect class="cls-4" x="41.82" y="76.19" width="44.62" height="5.2" rx="1.95" ry="1.95"/>
+              <rect class="cls-4" x="41.82" y="92.89" width="44.62" height="5.2" rx="1.95" ry="1.95"/>
+              <rect class="cls-4" x="41.82" y="109.58" width="44.62" height="5.2" rx="1.95" ry="1.95"/>
+              <polyline class="cls-4" points="107.99 0 107.99 24.15 132.65 24.15"/>
+              <g>
+                <polygon class="cls-1" points="159.36 100.99 159.36 112.29 99.81 112.29 99.81 100.99 94.91 100.99 94.91 117.44 99.81 117.44 159.36 117.44 161.91 117.44 164.27 117.44 164.27 100.99 159.36 100.99"/>
+                <polygon class="cls-1" points="129.36 107.32 144.67 93.22 131.75 93.22 131.75 60.24 126.97 60.24 126.97 93.22 114.58 93.22 129.36 107.32"/>
+              </g>
+            </g>
+          </svg>
+        </div>
+
+        {{#if documentUploads}}
+          <div class="single_template-documents">
+            {{#each documentUploads}}
+              <a href="{{this.url}}" target="_blank" rel="noopener" class="single_template-download-btn" download>
+                Download {{filename}}
+              </a>
+            {{/each}}
+          </div>
+        {{/if}}
+      </div>
+    {{else}}
+      <div class="single_template-download">
+        <p class="template-access-denied-message" style="text-align:center; font-weight:bold; color:#4e50a2;">
+          You don’t have access to view this template. Upgrade your membership or ask your group leader for access.
+        </p>
+      </div>
+    {{/if}}
+
+    <!-- Leader Assignment Form -->
+    {{#if isLeader}}
+      <div class="assign-tag-form white-container">
+        <h4 class="assign-tag-title">Assign this template to yourself or your group</h4>
+
+        <form action="/tags/create" method="POST">
+          <input type="hidden" name="_csrf" value="{{csrfToken}}">
+          <input type="hidden" name="itemId" value="{{_id}}">
+          <input type="hidden" name="itemType" value="template">
+
+          <div class="form-field">
+            <label for="tagName">Give the tag a name</label>
+            <input type="text" id="tagName" name="tagName" required>
+          </div>
+
+          <fieldset class="assign-tag-members">
+            <legend class="assign-tag-legend">Select recipients and enter instructions:</legend>
+
+            <!-- Leader self-assignment -->
+            <div class="assign-tag-member-block">
+              <label class="assign-tag-member-label">
+                <input
+                  type="checkbox"
+                  name="assignedTo[{{leaderId}}][member]"
+                  value="{{leaderId}}"
+                  onchange="toggleInstructionField(this)">
+                {{leaderName}} (you)
+              </label>
+              <textarea
+                class="assign-tag-instructions"
+                name="assignedTo[{{leaderId}}][instructions]"
+                placeholder="Instructions for yourself"
+                style="display:none;"></textarea>
+            </div>
+
+            <hr class="assign-tag-divider">
+
+            <!-- Group members -->
+            {{#each groupMembers}}
+              <div class="assign-tag-member-block">
+                <label class="assign-tag-member-label">
+                  <input
+                    type="checkbox"
+                    name="assignedTo[{{_id}}][member]"
+                    value="{{_id}}"
+                    onchange="toggleInstructionField(this)">
+                  {{name}}
+                </label>
+                <textarea
+                  class="assign-tag-instructions"
+                  name="assignedTo[{{_id}}][instructions]"
+                  placeholder="Instructions for {{name}}"
+                  style="display:none;"></textarea>
+              </div>
+            {{/each}}
+          </fieldset>
+
+          <button type="submit" class="form-button submit-button">assign template</button>
+        </form>
+      </div>
+    {{/if}}
+
+    <!-- Quick Tag (Member/Group Member) -->
+    {{#if isGroupMemberOrMember}}
+      <div class="single_unit-tag-container">
+        <form action="/tags/create" method="POST" class="inline" id="templateTagForm-{{_id}}">
+          <input type="hidden" name="_csrf" value="{{csrfToken}}">
+          <input type="hidden" name="itemId" value="{{_id}}">
+          <input type="hidden" name="itemType" value="template">
+          <input type="hidden" name="tagName" value="Read Later">
+          <button type="button"
+                  class="tag-this-unit-link"
+                  onclick="promptAndSubmitTag('templateTagForm-{{_id}}')"
+                  style="background:none;border:none;padding:0;cursor:pointer;">
+            tag this unit
+            <svg class="tag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 39.48 36.66">
+              <path class="cls-1" d="M38.77,21.12L16.05.56C15.65.19,15.13,0,14.59,0L2.12.16c-1.18.01-2.12.97-2.12,2.15v11.2c0,.63.28,1.24.77,1.64l24.95,21c.9.76,2.24.65,3.01-.24l10.23-11.8c.77-.88.69-2.22-.18-3ZM6.28,8.87c-1.57,0-2.84-1.27-2.84-2.84s1.27-2.84,2.84-2.84,2.84,1.27,2.84,2.84-1.27,2.84-2.84,2.84Z"/>
+            </svg>
+          </button>
+        </form>
+      </div>
+    {{/if}}
+
+    <!-- Notes Form -->
+    {{#if isGroupMemberOrLeader}}
+      <div class="single_template-notes-container">
+        <h3 class="single_template-notes-title">record notes</h3>
+        <p class="single_template-notes-instructions">
+          Record notes on this template. Consider how it relates to your work and how it might change your approach. These notes will be part of your Twennie learning record.
+        </p>
+
+        <form action="/notes/submit" method="POST" class="single_template-notes-form">
+          <input type="hidden" name="_csrf" value="{{csrfToken}}">
+          <input type="hidden" name="unitId" value="{{_id}}">
+          <input type="hidden" name="unitType" value="template">
+          <input type="hidden" name="main_topic" value="{{main_topic}}">
+          <input type="hidden" name="secondary_topic" value="{{sub_topic}}">
+
+          <textarea name="note_content" class="single_template-notes-textarea" rows="5" maxlength="1000"
+                    placeholder="Write your notes here..."></textarea>
+
+          <button type="submit" class="single_template-notes-submit">submit notes</button>
+        </form>
+      </div>
+    {{/if}}
+  </div> <!-- Closing .single_template-main -->
+
+  <!-- Sidebar -->
+  <aside class="single_template-sidebar">
+    <p class="single_template-title-sidebar">{{template_title}}</p>
+
+    <div class="single_template-author">
+      <img src="{{author.image}}" alt="Author Image" class="single_template-author-image">
+      <p class="single_template-author-name">Author: {{author.name}}</p>
+    </div>
+
+    <div class="single_template-details">
+      <p class="single_template-unit-type">Template</p>
+      <p class="single_template-main-topic">Main Topic: {{main_topic}}</p>
+
+      {{#if isOwner}}
+        <a href="/unitform/edit_template/{{_id}}" class="single_template-edit-btn">edit this unit</a>
+      {{/if}}
+    </div>
+  </aside>
+</div> <!-- Closing .single_template-container -->
+
+<script>
+  function toggleInstructionField(checkbox) {
+    const memberId = checkbox.value;
+    const textarea = document.querySelector(`textarea[name="assignedTo[${memberId}][instructions]"]`);
+    if (textarea) textarea.style.display = checkbox.checked ? 'block' : 'none';
+  }
+
+  // Prompt for tag name and submit the form as a normal POST
+  function promptAndSubmitTag(formId) {
+    const form = document.getElementById(formId);
+    if (!form) return;
+    const input = form.querySelector('input[name="tagName"]');
+    const suggested = (input?.value || 'Read Later').trim();
+    const entered = window.prompt('Name this tag', suggested);
+    if (!entered) return;
+    input.value = entered.trim();
+    if (!input.value) return;
+    const btn = form.querySelector('.tag-this-unit-link');
+    if (btn) btn.disabled = true;
+    form.submit(); // controller redirects back with ?tag=ok
+  }
+</script>
+
+

@@ -1,0 +1,161 @@
+{{> mainpartials/microstudyinstructions_partial}}
+
+<div class="form-microstudy-background">
+  <div class="form-microstudy-container">
+    <!-- Form Content -->
+    <form id="microstudy-form" class="microstudy-form" action="/unitform/submit_microstudy" method="POST">
+
+      <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+
+      <!-- Status Dropdown -->
+      <div class="form-field">
+        <label for="status">Status</label>
+        <select id="status" name="status" required>
+          <option value="in progress">In Progress</option>
+          <option value="submitted for approval">Submitted for Approval</option>
+          <option value="approved">Approved</option>
+        </select>
+      </div>
+
+      <!-- Micro-Study Title -->
+      <div class="form-field">
+        <label for="microstudy-title">Micro-Study Title</label>
+        <input type="text" id="microstudy-title" name="microstudy_title" required>
+      </div>
+
+      <!-- Main Topic -->
+      <div class="form-field">
+        <label for="main-topic">Main Topic</label>
+        <select id="main-topic" name="main_topic" required>
+          <option value="">Please select a main topic</option>
+          <option value="Career Development in Technical Services">Career Development in Technical Services</option>
+          <option value="Soft Skills in Technical Environments">Soft Skills in Technical Environments</option>
+          <option value="Project Management">Project Management</option>
+          <option value="Business Development in Technical Services">Business Development in Technical Services</option>
+          <option value="Proposal Management">Proposal Management</option>
+          <option value="Proposal Strategy">Proposal Strategy</option>
+          <option value="Storytelling in Technical Marketing">Storytelling in Technical Marketing</option>
+          <option value="Client Experience">Client Experience</option>
+          <option value="Social Media, Advertising, and Other Mysteries">Social Media, Advertising, and Other Mysteries</option>
+          <option value="Emotional Intelligence">Emotional Intelligence</option>
+          <option value="The Pareto Principle or 80/20">The Pareto Principle or 80/20</option>
+          <option value="Diversity and Inclusion in Consulting">Diversity and Inclusion in Consulting</option>
+          <option value="People Before Profit">People Before Profit</option>
+          <option value="Non-Technical Roles in Technical Environments">Non-Technical Roles in Technical Environments</option>
+          <option value="Leadership in Technical Services">Leadership in Technical Services</option>
+          <option value="The Advantage of Failure">The Advantage of Failure</option>
+          <option value="Social Entrepreneurship">Social Entrepreneurship</option>
+          <option value="Employee Experience">Employee Experience</option>
+          <option value="Project Management Software">Project Management Software</option>
+          <option value="CRM Platforms">CRM Platforms</option>
+          <option value="Client Feedback Software">Client Feedback Software</option>
+          <option value="Workplace Culture">Workplace Culture</option>
+          <option value="Mental Health in Consulting Environments">Mental Health in Consulting Environments</option>
+          <option value="Remote and Hybrid Work">Remote and Hybrid Work</option>
+          <option value="Four Day Work Week">Four Day Work Week</option>
+          <option value="The Power of Play in the Workplace">The Power of Play in the Workplace</option>
+          <option value="Team Building in Consulting">Team Building in Consulting</option>
+          <option value="AI in Consulting">AI in Consulting</option>
+          <option value="AI in Project Management">AI in Project Management</option>
+          <option value="AI in Learning">AI in Learning</option>
+        </select>
+      </div>
+
+      <!-- Secondary Topics -->
+      <div class="form-field">
+        <label for="secondary-topics">Secondary Topics (Optional)</label>
+        <select id="secondary-topics" name="secondary_topics" multiple>
+          <option value="Career Development in Technical Services">Career Development in Technical Services</option>
+          <option value="Soft Skills in Technical Environments">Soft Skills in Technical Environments</option>
+          <option value="Project Management">Project Management</option>
+          <option value="Business Development in Technical Services">Business Development in Technical Services</option>
+          <option value="Proposal Management">Proposal Management</option>
+          <option value="Proposal Strategy">Proposal Strategy</option>
+          <option value="Storytelling in Technical Marketing">Storytelling in Technical Marketing</option>
+          <option value="Client Experience">Client Experience</option>
+          <option value="Social Media, Advertising, and Other Mysteries">Social Media, Advertising, and Other Mysteries</option>
+          <option value="Emotional Intelligence">Emotional Intelligence</option>
+          <option value="The Pareto Principle or 80/20">The Pareto Principle or 80/20</option>
+          <option value="Diversity and Inclusion in Consulting">Diversity and Inclusion in Consulting</option>
+          <option value="People Before Profit">People Before Profit</option>
+          <option value="Non-Technical Roles in Technical Environments">Non-Technical Roles in Technical Environments</option>
+          <option value="Leadership in Technical Services">Leadership in Technical Services</option>
+          <option value="The Advantage of Failure">The Advantage of Failure</option>
+          <option value="Social Entrepreneurship">Social Entrepreneurship</option>
+          <option value="Employee Experience">Employee Experience</option>
+          <option value="Project Management Software">Project Management Software</option>
+          <option value="CRM Platforms">CRM Platforms</option>
+          <option value="Client Feedback Software">Client Feedback Software</option>
+          <option value="Workplace Culture">Workplace Culture</option>
+          <option value="Mental Health in Consulting Environments">Mental Health in Consulting Environments</option>
+          <option value="Remote and Hybrid Work">Remote and Hybrid Work</option>
+          <option value="Four Day Work Week">Four Day Work Week</option>
+          <option value="The Power of Play in the Workplace">The Power of Play in the Workplace</option>
+          <option value="Team Building in Consulting">Team Building in Consulting</option>
+          <option value="AI in Consulting">AI in Consulting</option>
+          <option value="AI in Project Management">AI in Project Management</option>
+          <option value="AI in Learning">AI in Learning</option>
+        </select>
+        <small>Select multiple topics by holding down Ctrl (Windows) or Command (Mac).</small>
+      </div>
+
+      <!-- Sub Topic -->
+      <div class="form-field">
+        <label for="sub-topic">Sub Topic (Optional)</label>
+        <input type="text" id="sub-topic" name="sub_topic">
+      </div>
+
+      <!-- Micro-Study Content -->
+      <div class="form-field">
+        <label for="microstudy-content">Micro-studies should contain a hypothesis, methods, data, and conclusions.</label>
+        <textarea id="microstudy-content" name="microstudy_content" rows="25" placeholder="Upload your micro-study content here." required></textarea>
+      </div>
+
+      <!-- Toggles -->
+      <div class="form-field">
+        <div class="white-container">
+          <div class="toggle-group">
+            <label>
+              <input type="checkbox" name="clarify_topic">
+              Does your micro-study further clarify the topic?
+            </label>
+            <label>
+              <input type="checkbox" name="hypothesis">
+              Does your micro-study include a hypothesis, methods, data, and conclusions?
+            </label>
+            <label>
+              <input type="checkbox" name="new_ideas">
+              Does your micro-study challenge traditional understanding of a subject?
+            </label>
+            <label>
+              <input type="checkbox" name="transformative">
+              Are the micro-study findings insightful and transformative?
+            </label>
+            <label>
+              <input type="checkbox" name="permission" required>
+              Do you provide consent for this library unit to be used for Twennie promotional purposes?
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Short Summary -->
+      <div class="form-field">
+        <label for="short-summary">Short Summary (50 words)</label>
+        <textarea id="short-summary" name="short_summary" maxlength="300" required></textarea>
+      </div>
+
+      <!-- Full Summary -->
+      <div class="form-field">
+        <label for="full-summary">Full Summary (150 words)</label>
+        <textarea id="full-summary" name="full_summary" maxlength="600" required></textarea>
+      </div>
+
+      <!-- Buttons -->
+      <div class="form-buttons">
+        <button type="button" class="form-button save-button">Save Micro-Study</button>
+        <button type="submit" class="form-button submit-button">Submit for Approval</button>
+      </div>
+    </form>
+  </div>
+</div>

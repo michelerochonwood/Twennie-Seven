@@ -1,0 +1,213 @@
+<div class="single_exercise-container">
+  <!-- Main Section -->
+  <div class="single_exercise-main">
+    <h1 class="single_exercise-main-title">{{exercise_title}}</h1>
+    <p class="single_exercise-short-summary" style="color:#4e50a2;"><strong>{{short_summary}}</strong></p>
+    <p class="single_exercise-long-summary" style="margin-bottom: 20px;">{{full_summary}}</p>
+
+    <!-- Estimated Time Display -->
+    {{#if time_required}}
+      <div class="single_exercise-time-display">
+        <p class="single_exercise-short-summary">
+          <strong>Estimated Time:</strong> {{time_required}}
+        </p>
+      </div>
+    {{/if}}
+
+    <!-- Download Section (gated) -->
+    {{#if isAuthorizedToViewFullContent}}
+      <div class="single_exercise-download">
+        <div class="single_exercise-download-icon">
+          <!-- SVG icon omitted for brevity -->
+        </div>
+
+        {{#if document_uploads}}
+          <div class="single_exercise-documents">
+            {{#each document_uploads}}
+              {{#with (split this "/") as |parts|}}
+                <a href="{{../this}}" target="_blank" rel="noopener" class="single_exercise-download-btn" download>
+                  Download {{decode (last parts)}}
+                </a>
+              {{/with}}
+            {{/each}}
+          </div>
+        {{/if}}
+      </div>
+    {{/if}}
+
+    <!-- Leader Assignment Form -->
+    {{#if isLeader}}
+      <div class="assign-tag-form white-container">
+        <h4 class="assign-tag-title">Assign this exercise to yourself or your group</h4>
+
+        <form action="/tags/create" method="POST">
+          <input type="hidden" name="_csrf" value="{{csrfToken}}">
+          <input type="hidden" name="itemId" value="{{_id}}">
+          <input type="hidden" name="itemType" value="exercise">
+
+          <div class="form-field">
+            <label for="tagName">Give the tag a name</label>
+            <input type="text" id="tagName" name="tagName" required>
+          </div>
+
+          <fieldset class="assign-tag-members">
+            <legend class="assign-tag-legend">Select recipients and enter instructions:</legend>
+
+            <!-- Leader self-assignment -->
+            <div class="assign-tag-member-block">
+              <label class="assign-tag-member-label">
+                <input
+                  type="checkbox"
+                  name="assignedTo[{{leaderId}}][member]"
+                  value="{{leaderId}}"
+                  onchange="toggleInstructionField(this)">
+                {{leaderName}} (you)
+              </label>
+              <textarea
+                class="assign-tag-instructions"
+                name="assignedTo[{{leaderId}}][instructions]"
+                placeholder="Instructions for yourself"
+                style="display:none;"></textarea>
+            </div>
+
+            <hr class="assign-tag-divider">
+
+            <!-- Group members -->
+            {{#each groupMembers}}
+              <div class="assign-tag-member-block">
+                <label class="assign-tag-member-label">
+                  <input
+                    type="checkbox"
+                    name="assignedTo[{{_id}}][member]"
+                    value="{{_id}}"
+                    onchange="toggleInstructionField(this)">
+                  {{name}}
+                </label>
+                <textarea
+                  class="assign-tag-instructions"
+                  name="assignedTo[{{_id}}][instructions]"
+                  placeholder="Instructions for {{name}}"
+                  style="display:none;"></textarea>
+              </div>
+            {{/each}}
+          </fieldset>
+
+          <button type="submit" class="form-button submit-button">assign exercise</button>
+        </form>
+      </div>
+    {{/if}}
+
+    <!-- Quick Tag (Member/Group Member) -->
+{{#if isGroupMemberOrMember}}
+  <div class="single_unit-tag-container" style="margin-top:12px;">
+    <form action="/tags/create" method="POST" class="inline" id="exerciseTagForm-{{_id}}">
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+      <input type="hidden" name="itemId" value="{{_id}}">
+      <input type="hidden" name="itemType" value="exercise">
+      <input type="hidden" name="tagName" value="Read Later">  {{!-- default, prompt will overwrite --}}
+      <button type="button"
+              class="tag-this-unit-link"
+              onclick="promptAndSubmitTag('exerciseTagForm-{{_id}}')"
+              style="background:none;border:none;padding:0;cursor:pointer;">
+        tag this unit
+        <svg class="tag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 39.48 36.66">
+          <path class="cls-1" d="M38.77,21.12L16.05.56C15.65.19,15.13,0,14.59,0L2.12.16c-1.18.01-2.12.97-2.12,2.15v11.2c0,.63.28,1.24.77,1.64l24.95,21c.9.76,2.24.65,3.01-.24l10.23-11.8c.77-.88.69-2.22-.18-3ZM6.28,8.87c-1.57,0-2.84-1.27-2.84-2.84s1.27-2.84,2.84-2.84,2.84,1.27,2.84,2.84-1.27,2.84-2.84,2.84Z"/>
+        </svg>
+      </button>
+    </form>
+  </div>
+{{/if}}
+
+    <!-- Notes Section -->
+    {{#if isGroupMemberOrLeader}}
+      <div class="single_exercise-notes-container">
+        <h3 class="single_exercise-notes-title">record notes</h3>
+        <p class="single_exercise-notes-instructions">
+          Record notes on this exercise. Consider how it relates to your work and how it might change your approach. These notes will be part of your Twennie learning record.
+        </p>
+
+        <form action="/notes/submit" method="POST" class="single_exercise-notes-form">
+          <input type="hidden" name="_csrf" value="{{csrfToken}}">
+          <input type="hidden" name="unitId" value="{{_id}}">
+          <input type="hidden" name="unitType" value="exercise">
+          <input type="hidden" name="main_topic" value="{{main_topic}}">
+          <input type="hidden" name="secondary_topic" value="{{sub_topic}}">
+
+          <textarea name="note_content" class="single_exercise-notes-textarea" rows="5" maxlength="1000" placeholder="Write your notes here..."></textarea>
+
+          <button type="submit" class="single_exercise-notes-submit">submit notes</button>
+        </form>
+      </div>
+    {{/if}}
+
+    <!-- Access notice (when gated) -->
+    {{#unless isAuthorizedToViewFullContent}}
+      <div class="exercise-access-denied-message">
+        <p style="text-align:center; color:#4e50a2; font-weight:600;">
+          You do not have access to the full content of this exercise.
+        </p>
+        <p style="text-align:center;">
+          Please upgrade your membership or join a Twennie group to view it.
+        </p>
+      </div>
+    {{/unless}}
+  </div> <!-- Closing .single_exercise-main -->
+
+  <!-- Sidebar -->
+  <aside class="single_exercise-sidebar">
+    <div class="single_exercise-duration-image-container" style="text-align:center; margin-bottom:10px; width:100px; height:auto; display:inline-block">
+      <img src="https://www.twennie.com/images/30mins.svg" alt="Estimated Time: 30 Minutes" class="single_exercise-duration-image">
+    </div>
+
+    <p class="single_exercise-title-sidebar">{{exercise_title}}</p>
+
+    <div class="single_exercise-author">
+      <img src="{{creator.image}}" alt="Creator Image" class="single_exercise-author-image">
+      <p class="single_exercise-author-name">Created by: {{creator.name}}</p>
+    </div>
+
+    <div class="single_exercise-details">
+      <p class="single_exercise-unit-type">Exercise</p>
+      <p class="single_exercise-main-topic">Main Topic: {{main_topic}}</p>
+      <p class="single_exercise-subtitle">Sub Topic(s): {{sub_topic}}</p>
+      <p class="single_exercise-secondary-topics">
+        {{#each secondary_topics}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}
+      </p>
+
+      {{#if isOwner}}
+        <a href="/unitform/edit_exercise/{{_id}}" class="single_exercise-edit-btn">edit this unit</a>
+      {{/if}}
+    </div>
+  </aside>
+</div>
+
+<script>
+
+  function toggleInstructionField(checkbox) {
+    const memberId = checkbox.value;
+    const textarea = document.querySelector(`textarea[name="assignedTo[${memberId}][instructions]"]`);
+    if (textarea) {
+      textarea.style.display = checkbox.checked ? 'block' : 'none';
+    }
+  }
+
+  // Prompt for tag name and submit the form as a normal POST
+  function promptAndSubmitTag(formId) {
+    const form = document.getElementById(formId);
+    if (!form) return;
+    const input = form.querySelector('input[name="tagName"]');
+    const suggested = (input?.value || 'Read Later').trim();
+    const entered = window.prompt('Name this tag', suggested);
+    if (!entered) return;
+    input.value = entered.trim();
+    if (!input.value) return;
+    // optional: prevent double-clicks
+    const btn = form.querySelector('.tag-this-unit-link');
+    if (btn) btn.disabled = true;
+    form.submit(); // controller will redirect back with ?tag=ok
+  }
+
+
+</script>
+
+

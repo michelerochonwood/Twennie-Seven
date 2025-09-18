@@ -1,0 +1,159 @@
+{{#*inline "title"}}Leader Membership Form | Twennie{{/inline}}
+
+<form id="leader-form" action="/leader/form" method="POST" class="membership-form">
+  {{#if csrfToken}}
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+  {{/if}}
+      <!-- Centered Image -->
+    <div style="text-align: center; margin-bottom: 1.5rem;">
+      <img src="/images/bluey_3.png" alt="Leader Membership" style="max-height: 200px;">
+    </div>
+
+  <div class="leader-form-container">
+    <h1 class="form-title">group leader membership form</h1>
+
+    <!-- Group Information -->
+    <div class="form-field">
+      <label for="group-name">Group Name</label>
+      <input type="text" id="group-name" name="groupName" placeholder="Hint: you'll want a fun name, like the Marshmallow Spartans or the Zen Mechanics." required>
+    </div>
+
+    <div class="form-field">
+      <label for="group-leader-name">Group Leader Name</label>
+      <input type="text" id="group-leader-name" name="groupLeaderName" placeholder="Your full name, or the name by which your team knows you, first and last." required>
+    </div>
+
+    <div class="form-field">
+      <label for="professionalTitle">Professional Title</label>
+      <input type="text" id="professional-title" name="professionalTitle" placeholder="This should be the title by which your organization knows you." required>
+    </div>
+
+    <div class="form-field">
+      <label for="organization">Organization</label>
+      <input type="text" id="organization" name="organization" placeholder="If you prefer not to name your organization, write 'anonymous'.">
+    </div>
+
+    <!-- Industry field -->
+    <div class="form-field">
+      <label for="industry">Industry</label>
+      <select id="industry" name="industry" required>
+        <option value="">Please select your industry</option>
+        <option value="Engineering">Engineering</option>
+        <option value="Architecture">Architecture</option>
+        <option value="Project Management">Project Management</option>
+        <option value="Information Technology(IT)">Information Technology(IT)</option>
+        <option value="Web Design">Web Design</option>
+        <option value="Construction">Construction</option>
+        <option value="Technology">Technology</option>
+        <option value="AI and Robotics">AI and Robotics</option>
+        <option value="Social Media/Digital Advertising">Social Media/Digital Advertising</option>
+        <option value="Community Planning/Landscape Architecture">Community Planning/Landscape Architecture</option>
+        <option value="Land Development">Land Development</option>
+        <option value="Telecommunications">Telecommunications</option>
+        <option value="E-Commerce">E-Commerce</option>
+        <option value="Cybersecurity">Cybersecurity</option>
+        <option value="Edtech">Edtech</option>
+        <option value="Energy and Utilities">Energy and Utilities</option>
+        <option value="Manufacturing">Manufacturing</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" placeholder="Choose a username for login" required>
+    </div>
+
+    <div class="form-field">
+      <label for="group-leader-email">Group Leader Email Address</label>
+      <input type="text" id="group-leader-email" name="groupLeaderEmail" required>
+    </div>
+
+<div class="form-field password-toggle-container">
+  <label for="password">Password</label>
+  <div class="password-wrapper">
+    <input type="password" id="password" name="password" required>
+    <span class="toggle-password" onclick="togglePasswordVisibility()">
+      <ion-icon id="toggleIcon" name="eye-outline"></ion-icon>
+    </span>
+  </div>
+</div>
+<p style="width: 50%; text-align: center;">Group leaders must start memberships for all members of their group. Select the number of members and enter their names and email addresses. Each of your group members will then log in and complete their registration using the unique registration code you've given them.</p>
+    <div class="leader-form-field">
+      <label for="group-size">Number of Members</label>
+      <select id="group-size" name="groupSize" required>
+        <option value="">Select group size</option>
+        <option value="2">2 members</option>
+        <option value="3">3 members</option>
+        <option value="4">4 members</option>
+        <option value="5">5 members</option>
+        <option value="6">6 members</option>
+        <option value="7">7 members</option>
+        <option value="8">8 members</option>
+        <option value="9">9 members</option>
+        <option value="10">10 members</option>
+      </select>
+    </div>
+
+    <!-- Individual Member Details -->
+    <div class="individual-members-container">
+      <h3>Individual Group Members</h3>
+      <div id="members-grid" class="members-grid">
+        <!-- Member fields will be dynamically added by JS -->
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label for="registration-code">Create a Registration Code</label>
+      <input type="text" id="registration-code" name="registration_code" placeholder="Create a unique code for your team" required>
+      <small class="form-instructions">
+        <strong>How to Create a Registration Code:</strong><br>
+        - Must be <strong>at least 8 characters</strong> long.<br>
+        - Use <strong>letters (A-Z, a-z) and numbers (0-9)</strong> only.<br>
+        - <strong>No special characters</strong> (e.g., @, $, %, !).<br>
+        - Your team will use this code to register.<br>
+        - <strong>Keep it secure</strong>—only share it with trusted team members.<br><br>
+        <strong>Examples:</strong> "TechTeam2024", "ZenGrowth45", "BuildStronger87".
+      </small>
+    </div>
+
+    <!-- Group Agreement -->
+    <div class="form-toggle">
+      <label for="group-agreement-toggle" class="form-toggle-label">
+        <input type="checkbox" id="group-agreement-toggle" name="group_agreement" value="true" required>
+        I agree to fulfill the responsibilities of a group leader according to the Twennie guidelines and our group agreement.
+      </label>
+    </div>
+
+    <!-- Payment Note -->
+    <div class="form-field" id="group-payment-placeholder">
+      <p><strong>Payment Reminder:</strong> Once you submit this form, you’ll be redirected to a placeholder page for payment. Your payment will cover <strong>all registered group members</strong>.</p>
+      <p>If your organization prefers to be invoiced, please <a href="mailto:info@twennie.com">contact Twennie</a> before registering to arrange billing.</p>
+    </div>
+
+    <!-- Hidden Submission Info -->
+    <input type="hidden" name="accessLevel" value="paid_leader">
+    <input type="hidden" name="redirectTarget" value="payment">
+
+    <!-- Submit Button -->
+    <button type="submit" class="make-member-button">
+      make me a Twennie group leader
+    </button>
+
+    <script src="https://www.twennie.com/javascript/leaderform/leaderform.js"></script>
+  </div>
+</form>
+
+<script>
+  function togglePasswordVisibility() {
+    const input = document.getElementById("password");
+    const icon = document.getElementById("toggleIcon");
+    if (input.type === "password") {
+      input.type = "text";
+      icon.name = "eye-off-outline";
+    } else {
+      input.type = "password";
+      icon.name = "eye-outline";
+    }
+  }
+</script>

@@ -1,0 +1,24 @@
+<h1>Site Preferences</h1>
+<form method="POST" action="/ui/preferences">
+  {{#if csrfToken}}<input type="hidden" name="_csrf" value="{{csrfToken}}">{{/if}}
+
+  <label>Default tab:
+    <select name="defaultDashboardTab">
+      <option value="membership" {{#if (eq uiPrefsFromCookie.tab "membership")}}selected{{/if}}>Membership</option>
+      <option value="library"    {{#if (eq uiPrefsFromCookie.tab "library")}}selected{{/if}}>My Library</option>
+      <option value="topics"     {{#if (eq uiPrefsFromCookie.tab "topics")}}selected{{/if}}>Topics</option>
+    </select>
+  </label><br>
+
+  <label><input type="checkbox" name="reducedMotion" {{#if uiPrefsFromCookie.reducedMotion}}checked{{/if}}> Reduced motion</label><br>
+
+  <label>Density:
+    <select name="contentDensity">
+      <option value="comfortable" {{#if (eq uiPrefsFromCookie.density "comfortable")}}selected{{/if}}>Comfortable</option>
+      <option value="compact"     {{#if (eq uiPrefsFromCookie.density "compact")}}selected{{/if}}>Compact</option>
+    </select>
+  </label><br>
+
+  <button>Save preferences</button>
+</form>
+

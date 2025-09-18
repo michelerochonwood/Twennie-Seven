@@ -1,0 +1,30 @@
+<section class="group-earned-badges-section">
+  <h2 class="group-earned-badges-title">group earned badges</h2>
+
+  {{#if groupBadges.length}}
+    <div class="group-earned-badges-grid">
+      {{#each groupBadges}}
+        <div class="group-earned-badge-card">
+          <!-- Badge Image -->
+          <div class="group-earned-badge-icon">
+            <img src="{{earnedBadge.image}}" alt="{{earnedBadge.name}} badge">
+          </div>
+          <div class="group-earned-badge-info">
+            <h3 class="group-earned-badge-title">{{earnedBadge.name}}</h3>
+            <p class="group-earned-badge-promptset">{{promptSetTitle}}</p>
+            <p class="group-earned-badge-member">{{earnedBy}}</p>
+            <p class="group-earned-badge-topic">{{mainTopic}}</p>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+  {{else}}
+    <div class="group-earned-badge-empty-container">
+      <p class="group-earned-badge-no-badges">No badges earned yet.</p>
+    </div>
+  {{/if}}
+</section>
+
+
+
+

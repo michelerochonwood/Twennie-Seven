@@ -1,0 +1,71 @@
+{{#*inline "title"}}Success! | Twennie{{/inline}}
+
+<div class="promptset-complete-success-container">
+        <img src="https://www.twennie.com/images/bluey1.png" alt="Bluey welcoming" class="bluey-home-cta" style="width: 250px; margin: 0 auto;">
+  <h1 class="promptset-complete-success-title">Congratulations! You've completed this prompt set!</h1>
+  <h2 class="promptset-complete-success-subtitle">{{title}}</h2>
+  
+  <p class="promptset-complete-success-message">
+    <strong>Purpose:</strong> {{purpose}}
+  </p>
+  
+  <div class="promptset-complete-success-badge-container">
+    <img src="{{badge}}" alt="{{badgeName}}" class="promptset-complete-badge-img">
+    <p class="promptset-complete-badge-label">You've earned the <strong>{{badgeName}}</strong> badge!</p>
+  </div><br>
+  
+  <a href="{{dashboard}}" class="promptset-complete-success-btn" style="margin-bottom: 200px">return to my dashboard</a>
+</div>
+
+<script>
+  // Minimal confetti burst using canvas
+  const confettiCanvas = document.createElement('canvas');
+  confettiCanvas.id = 'confetti-canvas';
+  document.body.appendChild(confettiCanvas);
+
+  const ctx = confettiCanvas.getContext('2d');
+  confettiCanvas.width = window.innerWidth;
+  confettiCanvas.height = window.innerHeight;
+
+  const colors = ['#4e50a2', '#dc176a', '#8dc63f', '#fbb040', '#00a4e4'];
+  const confetti = [];
+
+  for (let i = 0; i < 150; i++) {
+    confetti.push({
+      x: Math.random() * confettiCanvas.width,
+      y: Math.random() * confettiCanvas.height - confettiCanvas.height,
+      r: Math.random() * 6 + 4,
+      d: Math.random() * 150 + 50,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      tilt: Math.random() * 10 - 10
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+    confetti.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.color;
+      ctx.fill();
+    });
+
+    update();
+    requestAnimationFrame(draw);
+  }
+
+  function update() {
+    confetti.forEach(p => {
+      p.y += Math.cos(p.d / 15) + 2;
+      p.x += Math.sin(p.d / 15);
+      if (p.y > confettiCanvas.height) {
+        p.y = -10;
+        p.x = Math.random() * confettiCanvas.width;
+      }
+    });
+  }
+
+  draw();
+</script>
+
+

@@ -1,0 +1,180 @@
+{{#*inline "title"}}Membership Form | Twennie{{/inline}}
+
+<form id="member-form" action="/member/form" method="POST" class="membership-form">
+  <input type="hidden" name="_csrf" value="{{csrfToken}}">
+  <input type="hidden" name="redirectTarget" id="redirectTarget" value="form">
+  <input type="hidden" name="accessLevel" value="paid_individual">
+<div class="individual-form-container">
+
+  <!-- Centered Bluey1 Image -->
+  <div style="text-align: center; margin-bottom: 1.5rem;">
+    <img src="/images/bluey1.png" alt="Individual Membership" style="max-height: 200px;">
+  </div>
+
+  <h1 class="form-title">individual membership form</h1>
+
+    <!-- Access Level Selection -->
+
+
+
+    <!-- Contributor Agreement -->
+    <div id="contributor-terms" class="form-field hidden">
+      <p><strong>Contributor Agreement</strong></p>
+      <ul>
+        <li>To maintain a contributor membership, members must submit one library unit per month. All submitted units are subject to the approval of Twennie administrators.</li>
+        <li>Instructions for submitting units are available in each submission form.</li>
+        <li>If you need further information about submitting library units or the contributor membership option, contact Twennie at <a href="mailto:info@twennie.com">info@twennie.com</a>.</li>
+      </ul>
+<div class="checkbox-wrapper">
+  <input type="checkbox" id="contributorAgreement" name="contributorAgreement" required>
+  <label for="contributorAgreement">I have read and understand these conditions.</label>
+</div>
+    </div>
+
+    <!-- Hidden redirect notice for paid members -->
+    <div id="paid-redirect-note" class="form-field hidden">
+      <p>You will be redirected to the payment page to complete your membership.</p>
+    </div>
+
+    <!-- EXISTING FIELDS -->
+    <div class="form-field">
+      <label for="name">Full Name</label>
+      <input type="text" id="name" name="name" required>
+    </div>
+
+    <div class="form-field">
+      <label for="professionalTitle">Professional Title</label>
+      <input type="text" id="professionalTitle" name="professionalTitle" required>
+    </div>
+
+    <div class="form-field">
+      <label for="organization">Organization (optional)</label>
+      <input type="text" id="organization" name="organization">
+    </div>
+
+    <div class="form-field-industry">
+      <label for="industry">Industry</label>
+      <select id="industry" name="industry" required>
+        <option value="">Please select an industry</option>
+        <option value="Engineering">Engineering</option>
+        <option value="Architecture">Architecture</option>
+        <option value="Project Management">Project Management</option>
+        <option value="Information Technology(IT)">Information Technology(IT)</option>
+        <option value="Web Design">Web Design</option>
+        <option value="Construction">Construction</option>
+        <option value="Social Media/Digital Advertising">Social Media/Digital Advertising</option>
+        <option value="Community Planning/Landscape Architecture">Community Planning/Landscape Architecture</option>
+        <option value="Land Development">Land Development</option>
+        <option value="E-Commerce">E-Commerce</option>
+        <option value="Cybersecurity">Cybersecurity</option>
+        <option value="Fintech">Financial Tech</option>
+        <option value="Edtech">Education Tech</option>
+        <option value="Energy and Utilities">Energy and Utilities</option>
+        <option value="Manufacturing">Manufacturing</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="username">Username (how you prefer to be addressed on twennie.com)</label>
+<input type="text" name="username" id="username" required>
+<span id="username-message"></span>
+    </div>
+
+    <div class="form-field">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required>
+    </div>
+
+<div class="form-field password-toggle-container">
+  <label for="password">Password</label>
+  <div class="password-wrapper">
+    <input type="password" id="password" name="password" required>
+    <span class="toggle-password" onclick="togglePasswordVisibility()">
+      <ion-icon id="toggleIcon" name="eye-outline"></ion-icon>
+    </span>
+  </div>
+</div>
+
+
+
+    <!-- Submit -->
+    <button type="submit" id="make-member-button" class="make-member-button">
+      make me a member
+    </button>
+  </div>
+</form>
+
+<script>
+  function handleAccessLevelChange(value) {
+    const contributorTerms = document.getElementById('contributor-terms');
+    const contributorAgreement = document.getElementById('contributorAgreement');
+    const paidNote = document.getElementById('paid-redirect-note');
+    const redirectTarget = document.getElementById('redirectTarget');
+
+    // Reset visibility
+    contributorTerms.classList.add('hidden');
+    paidNote.classList.add('hidden');
+    contributorAgreement.required = false;
+    redirectTarget.value = 'form'; // default
+
+    if (value === 'contributor_individual') {
+      contributorTerms.classList.remove('hidden');
+      contributorAgreement.required = true;
+      redirectTarget.value = 'form'; // stays on form
+    } else if (value === 'paid_individual') {
+      paidNote.classList.remove('hidden');
+      redirectTarget.value = 'payment'; // request redirect on server
+    }
+  }
+
+function togglePasswordVisibility() {
+  const input = document.getElementById("password");
+  const icon = document.getElementById("toggleIcon");
+  if (input.type === "password") {
+    input.type = "text";
+    icon.name = "eye-off-outline";
+  } else {
+    input.type = "password";
+    icon.name = "eye-outline";
+  }
+}
+
+document.querySelector('#username').addEventListener('blur', async function () {
+  const username = this.value;
+  const res = await fetch(`/check-username?username=${encodeURIComponent(username)}`);
+  const data = await res.json();
+  const msg = document.querySelector('#username-message');
+  if (!data.available) {
+    msg.textContent = 'That username is already taken. Try something unique like Brian-Warrior1.';
+    msg.style.color = 'red';
+  } else {
+    msg.textContent = 'Username is available!';
+    msg.style.color = 'green';
+  }
+
+  try {
+  const newMember = new Member(req.body);
+  await newMember.save();
+  res.redirect('/success');
+} catch (err) {
+  if (err.code === 11000 && err.keyPattern && err.keyPattern.username) {
+    return res.status(400).render('register', {
+      errorMessage: 'Username already in use. Please choose another one like Brian-Warrior1.'
+    });
+  }
+  console.error(err);
+  res.status(500).render('register', {
+    errorMessage: 'An unexpected error occurred. Please try again.'
+  });
+}
+});
+
+</script>
+
+
+<style>
+  .hidden {
+    display: none;
+  }
+</style>

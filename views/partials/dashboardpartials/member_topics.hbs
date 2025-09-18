@@ -1,0 +1,130 @@
+<div class="member-topics-container">
+  <h3 class="member-dashboard-subtitles">my topics</h3>
+  <p>
+    These are your three topics of interest. This makes it so you can get to those topics without having to navigate the whole topic tree. The links help you access relevant content quickly and determine which email alerts you receive. To change them or opt out of emails, go to your membership overview tab and choose from three different levels of email preferences. 
+  </p>
+
+  <div class="member-topics-grid">
+    {{#if member.selectedTopics.topic1.title}}
+      <div class="member-topic-card">
+        <div class="member-topic-inner">
+          <div class="member-topic-title-area">
+            <div class="member-topic-title">{{member.selectedTopics.topic1.title}}</div>
+          </div>
+          <div class="member-topic-subtopics-area">
+            <ul class="member-topic-subtopics">
+              {{#each member.selectedTopics.topic1.subtopics}}
+                <li>{{this}}</li>
+              {{else}}
+                <li>No subtopics available</li>
+              {{/each}}
+            </ul>
+          </div>
+          <div class="member-topic-button-area">
+            <a href="/topics/{{member.selectedTopics.topic1.viewName}}" class="member-topic-review">review this topic</a>
+          </div>
+        </div>
+      </div>
+    {{/if}}
+
+    {{#if member.selectedTopics.topic2.title}}
+      <div class="member-topic-card">
+        <div class="member-topic-inner">
+          <div class="member-topic-title-area">
+            <div class="member-topic-title">{{member.selectedTopics.topic2.title}}</div>
+          </div>
+          <div class="member-topic-subtopics-area">
+            <ul class="member-topic-subtopics">
+              {{#each member.selectedTopics.topic2.subtopics}}
+                <li>{{this}}</li>
+              {{else}}
+                <li>No subtopics available</li>
+              {{/each}}
+            </ul>
+          </div>
+          <div class="member-topic-button-area">
+            <a href="/topics/{{member.selectedTopics.topic2.viewName}}" class="member-topic-review">review this topic</a>
+          </div>
+        </div>
+      </div>
+    {{/if}}
+
+    {{#if member.selectedTopics.topic3.title}}
+      <div class="member-topic-card">
+        <div class="member-topic-inner">
+          <div class="member-topic-title-area">
+            <div class="member-topic-title">{{member.selectedTopics.topic3.title}}</div>
+          </div>
+          <div class="member-topic-subtopics-area">
+            <ul class="member-topic-subtopics">
+              {{#each member.selectedTopics.topic3.subtopics}}
+                <li>{{this}}</li>
+              {{else}}
+                <li>No subtopics available</li>
+              {{/each}}
+            </ul>
+          </div>
+          <div class="member-topic-button-area">
+            <a href="/topics/{{member.selectedTopics.topic3.viewName}}" class="member-topic-review">review this topic</a>
+          </div>
+        </div>
+      </div>
+    {{/if}}
+  </div>
+</div>
+
+<!-- ✅ Topic Suggestion Section -->
+<!-- ✅ Topic Suggestion Section -->
+<div class="leader-topic-suggestion-card">
+  {{#if topicSuggestions.length}}
+    {{#each topicSuggestions}}
+      <h4 class="leader-topic-suggestion-title">suggested new topic: {{this.topicTitle}}</h4>
+      <p class="leader-topic-suggestion-meta">
+        Submitted on {{formatDate this.submittedAt}} |
+        {{#if this.approved}}
+          <span class="approved">✅ Approved</span><br>
+          Estimated library release: {{formatDate this.expectedLibraryDate}}
+        {{else}}
+          <span class="pending">🕓 Approval pending</span>
+        {{/if}}
+      </p>
+      <div class="leader-topic-suggestion-grid">
+        <div class="leader-topic-suggestion-col">
+          <h5>1. How has this topic evolved? Why is it especially important now?</h5>
+          <p>{{this.paragraph1}}</p>
+        </div>
+        <div class="leader-topic-suggestion-col">
+          <h5>2. How does this topic fit in the world of technical services?</h5>
+          <p>{{this.paragraph2}}</p>
+        </div>
+        <div class="leader-topic-suggestion-col">
+          <h5>3. What is the future of this topic?</h5>
+          <p>{{this.paragraph3}}</p>
+        </div>
+      </div>
+    {{/each}}
+  {{else}}
+    <h4 class="leader-topic-suggestion-title">No Suggestions Yet</h4>
+    <p class="leader-topic-suggestion-meta">You have not suggested any new topics for Twennie’s library.</p>
+  {{/if}}
+
+  <!-- ✅ Always show suggest-a-topic call-to-action -->
+  <div class="topic-grid-center" style="margin-top: 30px;">
+    <div class="topic-item">
+      <h3>suggest a new topic</h3>
+      <p>Have an idea that would benefit Twennie members? We’d love to hear it. Use the form to propose a new topic for future learning content.</p>
+      <a href="/topics/suggest" class="suggest-topic-button">submit a topic</a>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+

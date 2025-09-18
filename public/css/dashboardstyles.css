@@ -1,0 +1,4101 @@
+/* Import Figtree Font */
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;800&display=swap');
+
+html, body {
+
+  margin: 0;
+  padding: 0;
+  font-family: "Figtree";
+}
+
+
+/* Header Styling */
+/* .header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100vw;
+  height: 100px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  background: none;
+} */
+
+/* Full-width SVG */
+/* .header svg {
+  width: 100vw;
+  height: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.home-link {
+  width: 100px;
+  display: block;
+  position: relative;
+  z-index: 999;
+  margin-bottom: 10px;
+}
+
+.sidebar-nav {
+  position: fixed;
+  top: 100px;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100px;
+  margin-top: 100px;
+}
+
+.user-greeting {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color:#5a5552;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+  left: 300%;
+  top: -130px;
+  width: 150px;
+} */
+
+/* Navigation Squares */
+/* .nav-square {
+  width: 60px;
+  height: 60px;
+  background: #5a5552;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  position: relative;
+  text-decoration: none;
+  padding: 5px;
+}
+
+.nav-square:hover {
+  background-color:#dc176a;
+}
+
+.nav-square img {
+  width: 30px;
+  height: 30px;
+  align-self: center;
+  margin-top: 8px;
+}
+
+.nav-text {
+  font-size: 0.5rem;
+  font-weight: 100;
+  color: white;
+  text-align: right;
+  width: 100%;
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+}
+
+.nav-square::after {
+  content: "";
+  position: absolute;
+  right: -10px;
+  top: 80%;
+  transform: translateY(-50%);
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-left: 10px solid #5a5552;
+}
+
+.nav-square:hover::after {
+  border-left-color: #dc176a;
+} */
+
+
+/* LOGIN PAGE */
+/* Container for the entire login page */
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 500px;
+  margin: 200px auto 0;
+}
+
+/* Title styling */
+.login-title {
+  font-family: "Figtree";
+  font-size: 1.8rem;
+  color: #262262;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Alert messages */
+.login-alert {
+  width: 100%;
+  text-align: center;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.login-alert-error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.login-alert-success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+/* Form container */
+.login-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+/* Form field container */
+.login-field {
+  width: 80%;
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+/* Label styling */
+.login-label {
+  font-family: "Figtree";
+  font-weight: 800;
+  color: #4a4ab2;
+  display: block;
+  margin-bottom: 5px;
+}
+
+/* Input field styling */
+.login-input {
+  width: 100%;
+  height: 40px;
+  border-radius: 99px;
+  font-family: "Figtree";
+  border: 1px solid grey;
+  padding: 0 15px;
+  box-shadow: none;
+  outline: none;
+}
+
+/* Button styling */
+.login-button {
+  width: 80%;
+  padding: 10px 20px;
+  border-radius: 99px;
+  background-color: #262262;
+  color: white;
+  font-family: "Figtree";
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+}
+
+.login-button:hover {
+  background-color: #4a4ab2;
+}
+
+/* Links container */
+.login-links {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  width: 80%;
+}
+
+/* Link styling */
+.login-link {
+  color: #4e50a2;
+  text-decoration: none;
+  font-size: 0.9em;
+}
+
+.login-link:hover {
+  text-decoration: underline;
+}
+
+/*------------------------------------------------------------------------------*/
+
+/*GLOBAL DASHBOARD STYLES*/
+
+/*------------------------------------------------------------------------------*/
+
+.dashboard-sidebar {
+  /* width: 100%; */
+  /* padding: 20px; */
+  /* position: sticky; */
+  /* height: fit-content; */
+  font-family: "Figtree";
+  text-align: center;
+  background: none;
+  /* margin-top: 70px; */
+  margin-bottom: 50px;
+}
+
+.profile-information-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 30% 70%;
+  /* gap: 5%; */
+  /* padding: 20px; */
+  padding: 0 8rem;
+  margin: 7rem auto 5rem auto;
+}
+
+.membership-section {
+  text-align: center;
+}
+
+.dashboard-main {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center; /* Ensures alignment */
+  /* margin-top: 180px; */
+}
+
+.dashboard-tabs-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 20px;
+}
+
+.dashboard-tab-content {
+  display: none;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.dashboard-tab-content.active {
+  display: block;
+}
+
+.dashboard-tab {
+  width: 100px; 
+  height: 100px; 
+  font-family: "Figtree";
+  font-weight: 600; 
+  background-color: #5a5552; /* Default background */
+  color: white;
+  border: none;
+  display: flex;
+  flex-direction: column; /* ✅ Stack text inside the square */
+  align-items: center; 
+  justify-content: flex-end; /* ✅ Moves text to the bottom */
+  padding: 10px;
+  font-size: 0.7rem;
+  position: relative;
+  cursor: pointer;
+  text-align: center; /* ✅ Ensures text is centered */
+  transition: background-color 0.3s ease; /* ✅ Smooth transition for active state */
+  border-radius: 3px;
+}
+
+/* ✅ Active Tab State - Changes Background to #d65c6b */
+.dashboard-tab.active {
+  background-color: #dc176a; /* ✅ New active tab color */
+}
+
+.dashboard-tab .tab-arrow {
+  position: absolute;
+  bottom: -6px;
+  left: 10px;
+  width: 0; 
+  height: 0; 
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid #5a5552;
+  display: none;
+}
+
+/* ✅ Ensure the arrow matches the active tab color */
+.dashboard-tab.active .tab-arrow {
+  display: block;
+  border-top-color: #dc176a; /* ✅ Match new active tab color */
+}
+
+.dashboard-tab .tab-title {
+  text-align: right;
+}
+
+.dashboard-tab-content {
+  display: none;
+}
+
+.dashboard-tab-content.active {
+  display: block;
+  text-align: right;
+}
+
+
+
+/* Container for the prompt card */
+.promptspartial-card-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+}
+
+/* Prompt card styling */
+.promptspartial-card {
+  background-color: rgb(188, 188, 188);
+  border-radius: 15px;
+  color: black;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow: hidden;
+  width: 80%;
+  max-width: 500px;
+}
+
+/* SVG icon styling */
+.promptspartial-card-icon {
+  width: 100%;
+  height: auto;
+  margin: 0;
+  object-fit: cover;
+}
+
+/* Text inside the prompt card */
+.promptspartial-card-text {
+  font-size: 0.8rem;
+  padding: 15px 20px;
+  color: #333;
+  line-height: 1.6;
+}
+
+.prompt-notes {
+  width: 70%;
+  max-width: 600px;
+  font-size: 0.8rem; 
+  line-height: 1.4; 
+  resize: vertical; 
+  margin-top: 15px; 
+  min-height: 100px;
+  padding: 10px;
+  border: 1px solid #333;
+  border-radius: 10px;
+  font-family: "Figtree";
+}
+
+/* Prompt Card */
+
+.prompts-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.prompt-card {
+  padding: 20px;
+  border-radius: 8px;
+  margin: 15px 0;
+  width: 80%; /* Control width of prompt card */
+  padding: 20px;
+  border-radius: 8px;
+  margin: 15px 0;
+}
+
+.prompt-text {
+  margin: 0 auto;
+  max-width: 600px; /* Control max-width of prompt text */
+}
+
+.submit-prompt-btn {
+  display: block;
+  margin: 15px auto 0;
+  background-color: #262262;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 99px;
+  cursor: pointer;
+  font-family: "Figtree";
+  font-weight: 800;
+}
+
+.submit-prompt-btn:hover {
+  background-color: #4a4ab2;
+}
+
+
+/*SUCCESS PAGE FOR PROMPTS*/
+
+.success-container {
+  text-align: center;
+  margin: 50px auto;
+  padding: 20px;
+  max-width: 500px;
+}
+
+.success-title {
+  margin-top: 200px;
+  color: #262262;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.success-message {
+  font-size: 18px;
+  margin: 10px 0;
+  font-family: "Figtree";
+}
+
+.success-button {
+  display: block;
+  font-size: 11pt;
+  margin: 10px auto;
+  padding: 10px 20px;
+  border-radius: 99px;
+  background-color: #262262;
+  color: white;
+  font-family: "Figtree";
+  font-weight: 800;
+  border: none;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  width: 50%;
+}
+
+.success-button:hover {
+  background-color: #4a4ab2;
+}
+
+
+/*TOO MANY REGISTRATIONS PAGE*/
+
+/* ERROR PAGE FOR TOO MANY PROMPT REGISTRATIONS */
+
+.promptset-register-error-container {
+  text-align: center;
+  margin: 50px auto;
+  padding: 20px;
+  max-width: 600px;
+}
+
+.promptset-register-error-title {
+  margin-top: 200px;
+  color: #262262;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.promptset-register-error-subtitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.promptset-register-error-message {
+  font-size: 18px;
+  margin: 10px 0;
+  font-family: "Figtree";
+}
+
+.promptset-register-error-list {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+.promptset-register-error-item {
+  font-size: 16px;
+  padding: 10px;
+  background: rgb(230, 230, 230);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  margin: 5px 0;
+  border-radius: 5px;
+  color:#262262;
+  margin-top: 20px;
+}
+
+.toomany-frequency {
+  font-family: "Figtree";
+  color:#333;
+  font-weight: 800;
+  text-align: center;
+}
+
+.toomany-target {
+  text-align: center;
+  font-family: "Figtree";
+  color:#333;
+  font-weight: 100;
+}
+
+.promptset-register-error-note {
+  font-size: 16px;
+  font-family: "Figtree";
+  margin-top: 20px;
+}
+
+.promptset-register-error-btn {
+  display: block;
+  font-size: 11pt;
+  margin: 10px auto;
+  padding: 10px 20px;
+  border-radius: 99px;
+  background-color: #262262;
+  color: white;
+  font-family: "Figtree";
+  font-weight: 800;
+  border: none;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  width: 40%;
+}
+
+.promptset-register-error-btn:hover {
+  background-color: #4a4ab2;
+}
+
+.promptset-view-btn {
+  display: inline-block;
+  padding: 15px;
+  margin-top: 10px;
+  background-color: #262262;
+  color: white;
+  text-decoration: none;
+  font-family: "Figtree";
+  font-weight: 600;
+  border-radius: 40px;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.promptset-view-btn:hover {
+  background-color: #4a4ab2;
+}
+
+
+/* SweetAlert2 Popup */
+.swal2-popup {
+  border-radius: 15px !important;
+  padding: 25px !important;
+  font-family: "Figtree", sans-serif !important;
+  background-color: #f8f9fa !important; /* Light background */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3) !important;
+  border: 2px solid #262262 !important;
+}
+
+/* SweetAlert2 Title */
+.swal2-title {
+  font-size: 22px !important;
+  font-weight: bold !important;
+  color: #262262 !important;
+  text-transform: uppercase !important;
+}
+
+/* SweetAlert2 Content */
+.swal2-html-container {
+  font-size: 18px !important;
+  color: #333 !important;
+  font-weight: 600 !important;
+  text-align: center !important;
+}
+
+/* SweetAlert2 Buttons */
+.swal2-confirm,
+.swal2-cancel {
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  font-family: "Figtree", sans-serif !important;
+  padding: 10px 20px !important;
+  border-radius: 40px !important;
+  transition: background-color 0.3s ease-in-out !important;
+  text-transform: uppercase !important;
+}
+
+/* Confirm Button (Primary Action) */
+.swal2-confirm {
+  background-color: #262262 !important;
+  color: white !important;
+  border: none !important;
+}
+
+.swal2-confirm:hover {
+  background-color: #4a4ab2 !important;
+}
+
+/* Cancel Button */
+.swal2-cancel {
+  background-color: #e0e0e0 !important;
+  color: #262262 !important;
+  border: none !important;
+}
+
+.swal2-cancel:hover {
+  background-color: #bdbdbd !important;
+}
+
+/* SweetAlert2 Warning Popups */
+.swal2-icon.swal2-warning {
+  border-color: #ffcc00 !important;
+  color: #ffcc00 !important;
+}
+
+/* SweetAlert2 Success Popups */
+.swal2-icon.swal2-success {
+  border-color: #28a745 !important;
+  color: #28a745 !important;
+}
+
+/* SweetAlert2 Error Popups */
+.swal2-icon.swal2-error {
+  border-color: #ff4d4d !important;
+  color: #ff4d4d !important;
+}
+
+/* SweetAlert2 Background Overlay */
+.swal2-backdrop {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+}
+
+.contribution-section {
+  margin-top: 75px; /* Reduced from 100px */
+}
+
+.contribution-container {
+  text-align: center;
+}
+
+.contribute-btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem; /* Reduced from 1rem 2rem */
+  background-color: #262262;
+  color: white;
+  text-decoration: none;
+  border-radius: 99px;
+  font-weight: 800;
+  transition: background-color 0.2s;
+  font-size: 0.75rem; /* Adjusted for readability */
+}
+
+.contribute-btn:hover {
+  background-color: #4a4ab2;
+}
+
+.contributor-benefits {
+  font-family: "Figtree";
+  text-align: center;
+  width: 30%; /* Reduced from 40% */
+  margin-left: 35%; /* Adjusted from 30% */
+  font-size: 0.75rem; /* Reduced for consistency */
+}
+
+.contribution-section .contribute-btn,
+.contribution-section #toggleContribute {
+  font-family: "Figtree";
+  width: 30%; /* Reduced from 40% */
+  padding: 0.75rem 1.5rem; /* Reduced from 1rem 2rem */
+  background-color: #262262;
+  color: white;
+  border: none;
+  border-radius: 99px;
+  cursor: pointer;
+  font-size: 0.75rem; /* Adjusted for readability */
+  z-index: 99;
+}
+
+/* For hover state */
+.contribution-section .contribute-btn:hover,
+.contribution-section #toggleContribute:hover {
+  background-color: #4a4ab2;
+}
+
+.contribute-btn:hover {
+  background-color: #4a4ab2;
+}
+
+.contribution-grid {
+  margin-top: 1.125rem; /* Reduced from 1.5rem */
+  display: grid;
+  grid-template-columns: repeat(3, minmax(75px, 112.5px)); /* Reduced from 100px, 150px */
+  gap: 0.75rem; /* Reduced from 1rem */
+  justify-content: center;
+  width: 60%; /* Reduced from 80% */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.unit-card {
+  aspect-ratio: 1;
+  background-color: rgb(230, 230, 230);
+  border-radius: 0.375rem; /* Reduced from 0.5rem */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 1.5px 3px rgba(0, 0, 0, 0.2); /* Reduced shadow */
+}
+
+.unit-card:hover {
+  background-color: #c6c6ef;
+}
+
+.svg-container {
+  width: 48px; /* Reduced from 64px */
+  height: auto;
+  margin-bottom: 0.75rem; /* Reduced from 1rem */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.unit-title {
+  font-weight: 800;
+  text-align: center;
+  color: white;
+  font-family: "Figtree";
+  font-size: 0.75rem; /* Reduced for readability */
+}
+
+.dashboard-titles {
+    color:#262262;
+    font-family: "Figtree";
+    margin-top: 20px;
+}
+
+.dashboard-titles-contribute {
+  margin-top: 20px; /* Set a reasonable margin above */
+  margin-bottom: 20px; /* Optional: Add space below the title as well */
+  text-align: center; /* Center align the text */
+  font-family: "Figtree";
+  color: #262262;
+}
+
+.dashboard-subtitles {
+    color:#4a4ab2; 
+    text-align: center;
+}
+
+.upgrade-btn {
+    background-color: #262262;
+    font-family: "Figtree";
+    border-radius: 99px;
+    padding: 10px 20px;
+    font-weight: 800;
+    color: white;
+    text-decoration: none;
+    border: none;
+    box-shadow: none;
+}
+
+.upgrade-btn:hover {
+    background-color: #4a4ab2;
+}
+
+
+/* Progress Grid */
+.progress-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.progress-number {
+    font-size: 2rem;
+    color: black;
+    font-family: "Figtree";
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .dashboard-container {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .dashboard-sidebar {
+        position: static;
+    }
+}
+
+
+
+
+/* Group Section Styles (20% Smaller) */
+.groupsection {
+  padding: 16px; /* Reduced from 20px */
+  border-radius: 6px; /* Slightly reduced */
+  margin-bottom: 16px; /* Reduced from 20px */
+  width: 80%;
+  background-color: none;
+  margin: 0 auto;
+}
+
+.groupsection-title {
+  font-size: 1rem; /* Reduced from 24px */
+  font-weight: bold;
+  margin-bottom: 3px; /* Reduced from 10px */
+  color: #262262;
+  text-align: center;
+}
+
+.groupsection-title2 {
+  font-size: 0.8rem; /* Reduced from 18px */
+  font-weight: 800;
+  margin-bottom: 3px;
+  color: #636363;
+  text-align: center;
+}
+
+.groupsection-stats {
+  margin-bottom: 16px; /* Reduced from 20px */
+  font-size: 13px; /* Reduced from 16px */
+  color: #555;
+  text-align: center;
+}
+
+.groupsection-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px; /* Reduced from 15px */
+}
+
+.groupsection-card {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px; /* Slightly reduced */
+  text-align: center;
+  padding: 8px; /* Reduced from 10px */
+  box-shadow: 0 1.6px 3.2px rgba(0, 0, 0, 0.1); /* Reduced shadow */
+  position: relative;
+  overflow: hidden;
+}
+
+.groupsection-card-image img {
+  width: 64px; /* Reduced from 80px */
+  height: 64px; /* Reduced from 80px */
+  border-radius: 50%;
+  border: 1px solid #262262;
+  object-fit: cover;
+  margin-bottom: 8px; /* Reduced from 10px */
+}
+
+.groupsection-card-info {
+  font-size: 11px; /* Reduced from 14px */
+  color: #555;
+}
+
+.groupsection-card-name {
+  font-size: 0.8rem; /* Reduced from 16px */
+  font-weight: 800;
+  color: #333;
+}
+
+.groupsection-card-title {
+  font-size: 0.8rem; /* Reduced from 14px */
+  color: #777;
+}
+
+
+
+.groupsection-button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40px; /* Reduced from 100px */
+}
+
+.groupsection-card-button {
+  display: inline-block;
+  font-family: "Figtree";
+  padding: 6px 10px; /* Reduced from 8px 12px */
+  font-size: 10px; /* Reduced from 12px */
+  font-weight: bold;
+  color: #fff;
+  background-color: #262262;
+  border: none;
+  border-radius: 99px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  margin: 16px; /* Reduced from 20px */
+}
+
+.groupsection-card-button:hover {
+  background-color: #4a4ab2;
+}
+
+.groupsection-card-status {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-top: 5px;
+}
+
+.groupsection-registered {
+  color: #28a745;
+}
+
+.groupsection-pending {
+  color: #ff7f4d;
+}
+
+.groupsection-addmember-button {
+  display: inline-block;
+  font-family: "Figtree";
+  padding: 10px 20px;
+  font-size: 0.8rem; /* Reduced from 12px */
+  font-weight: bold;
+  color: #fff;
+  background-color: #262262;
+  border: none;
+  border-radius: 99px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  margin-top: 200px; /* Reduced from 20px */
+  width: 200px;
+  margin-bottom: 100px;
+}
+
+.groupsection-addmember-button:hover {
+  background-color:#4a4ab2;
+}
+
+
+
+/* Leader Tagged & Assigned Units Section */
+.tagged-units-section,
+.leader-assigned-units-section {
+  padding: 15px;
+  background-color: rgb(230, 230, 230);
+  box-shadow: 0 1.5px 3px rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  margin-bottom: 15px;
+  margin: 0 auto;
+}
+
+.tagged-units-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #262262;
+  text-align: center;
+}
+
+.tagged-units-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 11.25px;
+  justify-content: center;
+  align-items: stretch;
+}
+
+/* Common Card Styles */
+.tagged-unit-card,
+.leader-assigned-unit-card {
+  background-color: #cfcece;
+  border-radius: 6px;
+  padding: 11.25px;
+  text-align: center;
+  transition: transform 0.2s ease-in-out;
+}
+
+.tagged-unit-card:hover,
+.leader-assigned-unit-card:hover {
+  transform: scale(1.05);
+}
+
+/* Icons */
+.tagged-unit-icon img {
+  width: 37.5px;
+  height: 37.5px;
+  margin-bottom: 7.5px;
+}
+
+/* Text Info */
+.tagged-unit-info {
+  font-size: 10.5px;
+  color: #555;
+}
+
+.tagged-unit-title {
+  font-size: 12px;
+  font-weight: bold;
+  color: #4a4ab2;
+  margin-bottom: 3.75px;
+}
+
+.tagged-unit-topic {
+  font-size: 10.5px;
+  color: #777;
+  margin-bottom: 7.5px;
+}
+
+.leader-assigned-to {
+  font-size: 10px;
+  color: #444;
+  margin-bottom: 5px;
+}
+
+.leader-assigned-status {
+  font-size: 10px;
+  font-weight: 700;
+  color: #262262;
+  margin-bottom: 5px;
+}
+
+/* Buttons */
+.tagged-unit-link,
+.tag-remove-btn {
+  display: inline-block;
+  font-family: "Figtree";
+  padding: 6px 9px;
+  font-size: 9px;
+  font-weight: bold;
+  color: #fff;
+  background-color: #262262;
+  border: none;
+  border-radius: 99px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  margin-top: 7.5px;
+}
+
+.tagged-unit-link:hover,
+.tag-remove-btn:hover {
+  background-color: #4a4ab2;
+}
+
+/* No Units Message */
+.tagged-no-units {
+  text-align: center;
+  font-size: 12px;
+  color: #777;
+  margin-top: 15px;
+}
+
+.group-member-tagged-subsection {
+  margin-bottom: 25px;
+}
+
+.group-member-tagged-subtitle {
+  font-size: 14px;
+  font-weight: 800;
+  color: #4e50a2;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.tagged-unit-instructions {
+  font-size: 10px;
+  color: #444;
+  font-style: italic;
+  margin-top: 4px;
+}
+
+.tagged-unit-completed {
+  font-size: 10px;
+  color: #262262;
+  font-weight: 600;
+  margin-top: 5px;
+}
+
+
+
+
+/*------------------------------------------------------------------------------*/
+
+/*GROUP MEMBER DASHBOARD STYLES*/
+
+/*------------------------------------------------------------------------------*/
+
+
+/* === Group Membership Tab Styles === */
+
+.group-membership-tab {
+  font-family: "Figtree";
+  background-color: rgb(240, 240, 240);
+  border-radius: 15px;
+  padding: 2rem;
+  max-width: 900px;
+  margin: 0 auto 3rem auto;
+  text-align: center;
+  color: #262262;
+}
+
+.group-preference-list {
+  margin: .25rem 0 1rem 2rem;
+  padding-left: 1rem;
+  list-style: disc;
+}
+.group-preference-list li {
+  margin: .125rem 0;
+  line-height: 1.35;
+}
+
+.group-membership-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #262262;
+}
+
+.group-membership-welcome {
+  font-weight: 800;
+  font-size: 1rem;
+  color: #4a4ab2;
+}
+
+.group-membership-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  text-align: left;
+  margin-bottom: 2rem;
+}
+
+.group-membership-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.group-membership-line {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #262262;
+}
+
+.group-membership-access-title {
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+
+.group-membership-access-list {
+  list-style-type: disc;
+  padding-left: 1.25rem;
+  color: #262262;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+
+.group-membership-button-container {
+  display: flex;
+  justify-content: center;
+}
+
+.group-membership-btn {
+  font-family: "Figtree";
+  background-color: #262262;
+  color: white;
+  font-weight: 700;
+  font-size: 0.85rem;
+  border: none;
+  border-radius: 99px;
+  padding: 10px 24px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.group-membership-btn:hover {
+  background-color: #4a4ab2;
+}
+
+.group-membership-label {
+  color: #dc176a;
+  font-weight: bold;
+}
+
+@media screen and (max-width: 700px) {
+  .group-membership-grid {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .group-membership-column {
+    align-items: center;
+  }
+
+  .group-membership-access-list {
+    text-align: left;
+    padding-left: 2rem;
+  }
+}
+
+
+.groupmember-report-link {
+  margin: 0 auto;
+  width: 100px;
+}
+
+.groupmember-report-text {
+  color:#4a4ab2;
+  font-weight: 800;
+  text-align: center;
+  text-decoration: none;
+}
+/*The styles for the report center link in the dashboard are not applying from here. Had to do inline. See the partial, groupmember_sidebar.
+
+
+/* ✅ Main Container */
+.groupmember-topics-container {
+  padding: 20px;
+  text-align: center;
+}
+
+/* ✅ Grid Layout for Topics */
+.groupmember-topics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+/* ✅ Individual Topic Card */
+.groupmember-topic-card {
+  background: rgb(245, 245, 245); /* Light background */
+  padding: 20px;
+  text-align: center;
+  position: relative;
+  border-radius: 10px;
+  box-shadow: 3px 6px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ✅ Topic Title */
+.groupmember-topic-title {
+  color: #262262;
+  font-size: 1rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+/* ✅ Subtopics List */
+.groupmember-topic-subtopics {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 80%;
+  font-size: 0.7rem;
+  text-align: center;
+  max-width: 90%;
+}
+
+/* ✅ Subtopic List Items */
+.groupmember-topic-subtopics li {
+  padding: 8px 0;
+  font-size: 0.7rem;
+  position: relative;
+  text-align: center;
+  color: #333;
+}
+
+/* ✅ Horizontal Line Between Subtopics */
+.groupmember-topic-subtopics li:not(:last-child) {
+  border-bottom: 1px solid #ccc; /* Thin gray line */
+  width: 90%;
+  margin: 0 auto;
+}
+
+/* ✅ Review Button */
+.groupmember-topic-review {
+  display: inline-block;
+  margin-top: 15px;
+  color: #fff;
+  background: #262262;
+  padding: 10px 15px;
+  border-radius: 30px;
+  text-transform: lowercase;
+  text-decoration: none;
+  font-size: 0.7rem;
+  font-weight: 800;
+  transition: background 0.3s ease-in-out;
+}
+
+/* ✅ Hover Effect */
+.groupmember-topic-review:hover {
+  background: #4a4ab2;
+}
+
+/* ✅ Responsive Design */
+@media (max-width: 900px) {
+  .groupmember-topics-grid {
+    grid-template-columns: 1fr; /* ✅ Stack cards on smaller screens */
+  }
+}
+
+
+
+
+
+
+
+/* Group Member Sidebar Styles */
+
+
+.groupmember-sidebar .groupmember-profile-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin-left: 30%;
+}
+
+.groupmember-sidebar .groupmember-profile-image-container {
+  width: 150px;
+  height: 150px;
+  border: 2px solid #262262;
+  border-radius: 99px;
+
+}
+
+.groupmember-sidebar .groupmember-profile-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.groupmember-sidebar .groupmember-profile-info {
+  text-align: center;
+}
+
+.groupmember-sidebar .groupmember-profile-name {
+  font-size: 1.5rem;
+  margin: 10px 0;
+}
+
+.groupmember-sidebar .groupmember-profile-title {
+  color: #666;
+  font-family: "Figtree";
+  font-weight: 800;
+  margin-bottom: 15px;
+}
+
+.groupmember-sidebar .groupmember-profile-btn {
+  display: block;
+  font-size: 11pt;
+  margin: 10px auto;
+  padding: 10px 20px;
+  border-radius: 99px;
+  background-color: #262262;
+  color: white;
+  font-family: "Figtree";
+  font-weight: 800;
+  border: none;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.groupmember-sidebar .groupmember-profile-btn:hover {
+  background-color: #4a4ab2;
+}
+
+.groupmember-sidebar .groupmember-group-info {
+  text-align: center;
+}
+
+.groupmember-sidebar .groupmember-dashboard-subtitles {
+  color: #4a4ab2;
+  font-family: "Figtree";
+  font-weight: 800;
+  margin-bottom: 15px;
+}
+
+.groupmember-sidebar .groupmember-group-leader,
+.groupmember-sidebar .groupmember-group-name {
+  color: #444;
+  font-family: "Figtree";
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
+.groupmember-prompt-container {
+  width: 100%;
+  margin-bottom: 15px; /* Reduced from 20px */
+  padding: 15px; /* Reduced from 20px */
+  background: rgb(246, 245, 245);
+  border-radius: 6px; /* Reduced from 8px */
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2); /* Reduced shadow */
+  text-align: center;
+  margin-bottom: 100px;
+}
+
+.groupmember-prompt-title {
+  font-size: 1.125rem; /* Reduced from 1.5rem */
+  font-weight: 800;
+  color: #262262;
+  margin-bottom: 7.5px; /* Reduced from 10px */
+}
+
+.groupmember-prompt-set-title {
+  all: unset; /* ✅ Resets ALL inherited properties */
+  display: block; /* ✅ Ensures it behaves normally */
+  font-size: 1.2rem; /* ✅ Custom font size */
+  font-weight: 700;
+  color: #4a4ab2;
+  margin-bottom: 15px;
+  text-align: center;
+
+}
+
+
+.groupmember-prompt-card {
+  background-color: rgb(188, 188, 188);
+  border-radius: 0 0 11px 11px; /* Reduced from 15px */
+  color: black;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow: hidden;
+  position: relative;
+  width: 50%;
+  margin: 0 auto;
+}
+
+.groupmember-prompt-purpose,
+.groupmember-prompt-schedule {
+  width: 70%;
+  margin: 0 auto;
+  padding: 7.5px; /* Reduced from 10px */
+}
+
+.groupmember-prompt-schedule-date {
+  background-color: rgb(188, 188, 188);
+  border-radius: 30px; /* Reduced from 40px */
+  color:#4a4ab2;
+  font-weight: 800;
+  width: 30%; /* Reduced from 40% */
+  margin: 0 auto;
+  margin-bottom: 11px; /* Reduced from 15px */
+  margin-top: 11px;
+  padding: 7.5px; /* Reduced from 10px */
+  text-align: center;
+}
+
+.groupmember-leader-notes-title {
+  color:#dc176a;
+  margin-bottom: -3px;
+}
+
+.groupmember-leader-notes-text {
+  font-style:italic;
+  width: 50%;
+  margin: 0 auto;
+  margin-bottom: 20px;
+}
+
+/* Ensures the SVG border is flush with the top */
+.groupmember-prompt-border {
+  width: 100%;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.groupmember-prompt-border svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Headline Formatting */
+.groupmember-prompt-headline {
+  font-size: 0.75rem; /* Reduced from 1rem */
+  font-weight: 800;
+  color: #4a4ab2;
+  text-align: left;
+  padding: 7.5px 11px; /* Reduced from 10px 15px */
+  margin-top: 60px; /* Reduced from 100px */
+}
+
+/* Prompt Text Formatting */
+.groupmember-prompt-text {
+  font-size: 0.6375rem; /* Reduced from 0.85rem */
+  padding: 7.5px 11px; /* Reduced from 10px 15px */
+  color: #333;
+  line-height: 1.4;
+  margin-top: -7.5px; /* Reduced from -10px */
+}
+
+/* Title Above the Card */
+.groupmember-prompt-set-title {
+  font-size: 0.75rem; /* Reduced from 1rem */
+  font-weight: 700;
+  color: #4a4ab2;
+  margin-bottom: 15px; /* Reduced from 20px */
+}
+
+.groupmember-prompt-form {
+  display: flex;
+  flex-direction: column;
+  gap: 7.5px; /* Reduced from 10px */
+  margin-top: 11px; /* Reduced from 15px */
+}
+
+.groupmember-prompt-notes-label {
+  font-size: 0.75rem; /* Reduced from 1rem */
+  font-weight: 700;
+  color: #4a4ab2;
+}
+
+.groupmember-prompt-notes {
+  width: 70%;
+  height: 75px; /* Reduced from 100px */
+  padding: 7.5px; /* Reduced from 10px */
+  font-size: 0.675rem; /* Reduced from 0.9rem */
+  border: 1px solid #ccc;
+  border-radius: 4px; /* Reduced from 5px */
+  resize: vertical;
+  margin: 0 auto;
+}
+
+.groupmember-prompt-submit {
+  width: 100%;
+  background-color: #262262;
+  font-family: "Figtree";
+  color: white;
+  font-size: 0.75rem; /* Reduced from 1rem */
+  font-weight: 700;
+  padding: 7.5px; /* Reduced from 10px */
+  border: none;
+  border-radius: 30px; /* Reduced from 40px */
+  margin-top: 11px; /* Reduced from 15px */
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 30%; /* Reduced from 40% */
+  margin: 0 auto;
+}
+
+.groupmember-prompt-submit:hover {
+  background-color: #4a4ab2;
+}
+
+
+.groupmember-unregister-btn {
+  padding: 10px;
+  width: 30%;
+  margin-top: 10px;
+  background-color: #262262;
+  color: white;
+  text-decoration: none;
+  font-family: "Figtree";
+  font-size: 0.7rem;
+  font-weight: 600;
+  border-radius: 40px;
+  transition: background-color 0.3s ease-in-out;
+  box-shadow: none !important;
+
+}
+
+.groupmember-unregister-btn:hover {
+  background-color: #4a4ab2;
+}
+
+
+/* Progress Prompt Sets */
+.groupmember-progress-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2.25rem; /* Reduced from 30px */
+  padding: 1.5rem; /* Reduced from 20px */
+}
+
+.groupmember-profile-btn {
+  display: inline-block;
+  font-family: "Figtree";
+  padding: 10px 20px;
+  font-size: 0.8rem; /* Reduced from 12px */
+  font-weight: bold;
+  color: #fff;
+  background-color: #262262;
+  border: none;
+  border-radius: 99px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  margin-top: 16px; /* Reduced from 20px */
+  width: 200px;
+  margin: 0 auto;
+}
+
+.group-member-profile-btn:hover {
+  background-color: #4a4ab2;
+}
+
+/* Section Title */
+.groupmember-progress-current-title {
+  font-size: 1.125rem; /* Reduced from 20px */
+  font-weight: bold;
+  color: #262262;
+  text-align: center;
+  margin-bottom: 1rem; /* Reduced from 15px */
+}
+
+/* Current Prompt Sets Grid */
+.groupmember-progress-current {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem; /* Reduced from 20px */
+  justify-content: center;
+  align-items: start;
+}
+
+/* Individual Progress Grid Item */
+.groupmember-progress-grid {
+  background: rgb(245, 245, 245);
+  padding: 5px; /* Reduced from 15px */
+  border-radius: 0.75rem; /* Reduced from 10px */
+  text-align: center;
+  box-shadow: 0 1.5px 3.75px rgba(0, 0, 0, 0.2); /* Adjusted shadow */
+  margin-top: -25px;
+}
+
+/* Progress Title and Frequency */
+.groupmember-progress-title {
+  font-size: 0.9rem; /* Reduced from 18px */
+  font-weight: bold;
+  color: #262262;
+  width: 80%;
+  margin: 0 auto;
+  padding-top: 8px;
+}
+
+.groupmember-progress-frequency {
+  font-size: 0.875rem; /* Reduced from 14px */
+  font-weight: 600;
+  color: #444;
+}
+
+/* Target Date */
+.groupmember-progress-target {
+  font-size: 0.875rem; /* Reduced from 14px */
+  font-weight: 500;
+  color: #666;
+  width: 60%;
+  text-align: center;
+  margin: 0 auto;
+  padding-bottom: 5px;
+}
+
+
+
+/* Completed Prompt Sets Title */
+.groupmember-progress-completed-title {
+  font-size: 1rem; /* Reduced from 20px */
+  font-weight: bold;
+  color: #262262;
+  text-align: center;
+}
+
+/* Completed Prompt Sets Grid */
+.groupmember-progress-completed-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.125rem; /* Reduced from 15px */
+  padding-top: 0.75rem; /* Reduced from 10px */
+}
+
+/* Completed Prompt Set Card */
+.groupmember-progress-completed-card {
+  background: rgb(245, 245, 245);
+  padding: 1.125rem; /* Reduced from 15px */
+  border-radius: 0.75rem; /* Reduced from 10px */
+  text-align: center;
+  box-shadow: 0 1.5px 3px rgba(0, 0, 0, 0.2); /* Adjusted shadow */
+
+}
+
+/* Completed Prompt Set Details */
+.groupmember-progress-completed-frequency,
+.groupmember-progress-completed-main-topic {
+  font-size: 0.875rem; /* Reduced from 14px */
+  font-weight: 500;
+  color: #444;
+}
+
+.groupmember-progress-badge {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.groupmember-progress-badge-img {
+  width: 50px;
+  height: 50px;
+  display: block;
+  margin: 0 auto 5px;
+}
+
+.groupmember-progress-badge-name {
+  font-size: 0.8rem;
+  color: #262262;
+}
+
+
+
+/* Animation for Progress SVG */
+@keyframes spinInPlace {
+  0%   { transform: rotateZ(0deg); }
+  25%  { transform: rotateZ(360deg); }
+  50%  { transform: rotateZ(720deg); }
+  75%  { transform: rotateZ(1080deg); }
+  100% { transform: rotateZ(0deg); }
+}
+
+/* Apply animation to the progress SVGs */
+.groupmember-progress-svg {
+  width: 90px;
+  height: 90px;
+  display: block;
+  margin: 10px auto;
+  animation: spinInPlace 1.5s ease-out;
+}
+
+/* Badge Placeholder */
+.groupmember-progress-badge {
+  width: 50px;
+  height: 50px;
+  background: #ccc;
+  border-radius: 50%;
+  margin: 10px auto;
+}
+
+
+/* Badge Placeholder */
+.groupmember-progress-badge {
+  width: 50px;
+  height: 50px;
+  background: #ccc;
+  border-radius: 50%;
+  margin: 10px auto;
+}
+
+/* Ensure badge image fits cleanly inside its card container */
+.groupmember-progress-badge-img {
+  object-fit: contain;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/* Optional: avoid shrinking text too much under tight constraints */
+.groupmember-progress-completed-title {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #262262;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+/* Completed Prompt Set Date */
+.groupmember-progress-completed-date {
+  font-size: 0.75rem;
+  color: #666;
+  margin-bottom: 0.25rem;
+}
+
+
+
+
+/* Group Topics Section */
+.groupmember-group-topics {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.groupmember-dashboard-subtitles {
+  font-family: "Figtree", sans-serif;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #262262; /* Matches the dashboard's primary color */
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+/* Topics List */
+.groupmember-topics-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+}
+
+.groupmember-topic-item {
+  font-family: "Figtree", sans-serif;
+  font-size: 1rem;
+  color: #333;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #ddd;
+  transition: color 0.3s ease;
+}
+
+.groupmember-topic-item:last-child {
+  border-bottom: none; /* Remove border for last item */
+}
+
+.groupmember-topic-item:hover {
+  color: #4e50a2; /* Add hover effect to topics */
+  cursor: pointer;
+}
+
+/* Topics Button */
+.groupmember-topics-button {
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  font-family: "Figtree", sans-serif;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  background-color: #262262;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.groupmember-topics-button:hover {
+  background-color: #4e50a2; /* Slightly lighter blue on hover */
+}
+
+
+
+
+/*------------------------------------------------------------------------------*/
+
+/*LEADER DASHBOARD STYLES*/
+
+/*------------------------------------------------------------------------------*/
+
+
+/* .leader-sidebar {
+  margin-left: 20%;
+} */
+
+.dashboard-tab { position: relative; }
+.tab-dot {
+  position: absolute;
+  top: -10px; right: -10px;
+  width: 20px; height: 20px;
+  border-radius: 9999px;
+  background: #22c55e; /* green-500 */
+}
+
+
+.leader-sidebar .leader-profile-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  left: 10%;
+}
+
+.leader-sidebar .leader-profile-image-container {
+  width: 150px;
+  height: 150px;
+  border: 2px solid #262262;
+  border-radius: 99px;
+}
+
+.leader-sidebar .leader-profile-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.leader-sidebar .leader-profile-info {
+  text-align: center;
+}
+
+.leader-sidebar .leader-profile-name {
+  font-size: 1.5rem;
+  margin: 10px 0;
+}
+
+.leader-sidebar .leader-profile-title {
+  color: #666;
+  font-family: "Figtree";
+  font-weight: 800;
+  margin-bottom: 15px;
+}
+
+.leader-sidebar .leader-profile-btn {
+  display: block;
+  font-size: 0.8rem;
+  margin: 10px auto;
+  padding: 10px 20px;
+  border-radius: 99px;
+  background-color: #262262;
+  color: white;
+  font-family: "Figtree";
+  font-weight: 800;
+  border: none;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  /* width: 160px; */
+}
+
+.leader-sidebar .leader-profile-btn:hover {
+  background-color: #4a4ab2;
+}
+
+.leader-sidebar .leader-topics-list {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+}
+
+.leader-sidebar .leader-topic-item {
+  padding: 5px 0;
+  color: #444;
+}
+
+.sidebar-divider {
+  background-color:#bbbbbb;
+  width: 200px;
+
+
+}
+
+.leader-membership-tab {
+  text-align: center;
+  font-family: "Figtree";
+  margin-bottom: 3rem;
+  background-color: rgb(240, 240, 240);
+  padding: 10px;
+  border-radius: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.leader-preference-list {
+  margin: .25rem 0 1rem 2rem;
+  padding-left: 1rem;
+  list-style: disc;
+}
+.leader-preference-list li {
+  margin: .125rem 0;
+  line-height: 1.35;
+}
+
+.leader-membership-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #262262;
+  margin-bottom: 1rem;
+}
+
+.leader-membership-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: left;
+  padding: 30px;
+}
+
+.leader-membership-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.leader-membership-line {
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.leader-membership-label {
+  color: #dc176a;
+  font-weight: bold;
+  margin-right: 0.25rem;
+}
+
+.leader-membership-access-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #262262;
+  margin-bottom: 0.5rem;
+}
+
+.leader-membership-access-list {
+  list-style: disc;
+  padding-left: 1.5rem;
+  font-size: 0.9rem;
+  color: #444;
+}
+
+.leader-membership-btn-container {
+  margin-top: 2rem;
+}
+
+.leader-membership-btn {
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: white;
+  background-color: #262262;
+  border: none;
+  border-radius: 99px;
+  cursor: pointer;
+  font-family: "Figtree";
+  margin-bottom: 30px;
+}
+
+.leader-membership-btn:hover {
+  background-color: #4a4ab2;
+}
+
+
+/* Report Grid in Leader Dashboard Sidebar */
+.leader-report-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+  padding: 20px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.report-link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100px;
+  height: 100px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  transition: transform 0.2s ease-in-out;
+}
+
+.report-link:hover {
+  transform: scale(1.1);
+}
+
+.report-link img {
+  width: 100px;
+  height: auto;
+}
+
+.leader-prompt-container {
+  width: 100%;
+  max-width: 450px; /* Reduced from 600px */
+  margin: 15px auto; /* Reduced from 20px */
+  padding: 15px; /* Reduced from 20px */
+  background-color: rgb(230, 230, 230);
+  border-radius: 6px; /* Reduced from 8px */
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1); /* Adjusted shadow */
+  text-align: center;
+}
+
+.leader-prompt-title {
+  font-size: 1.125rem; /* Reduced from 1.5rem */
+  font-weight: 800;
+  color: #262262;
+  margin-bottom: 7.5px; /* Reduced from 10px */
+}
+
+.leader-prompt-set-title {
+  font-size: 0.75rem; /* Reduced from 1rem */
+  font-weight: 700;
+  color: #4a4ab2;
+  margin-bottom: 15px; /* Reduced from 20px */
+}
+
+.leader-prompt-card {
+  background-color: rgb(188, 188, 188);
+  border-radius: 0 0 11.25px 11.25px; /* Reduced from 15px */
+  color: black;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Ensures the SVG border is flush with the top */
+.leader-prompt-border {
+  width: 100%;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.leader-prompt-border svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Headline Formatting */
+.leader-prompt-headline {
+  font-size: 0.75rem; /* Reduced from 1rem */
+  font-weight: 800;
+  color: #4a4ab2;
+  text-align: left;
+  padding: 7.5px 11.25px; /* Reduced from 10px 15px */
+  margin-top: 75px; /* Reduced from 100px */
+}
+
+/* Prompt Text Formatting */
+.leader-prompt-text {
+  font-size: 0.6375rem; /* Reduced from 0.85rem */
+  padding: 7.5px 11.25px; /* Reduced from 10px 15px */
+  color: #333;
+  line-height: 1.4;
+  margin-top: -7.5px; /* Reduced from -10px */
+}
+
+/* Title Above the Card */
+.leader-prompt-set-title {
+  font-size: 0.75rem; /* Reduced from 1rem */
+  font-weight: 700;
+  color: #4a4ab2;
+  margin-bottom: 15px; /* Reduced from 20px */
+}
+
+.leader-prompt-form {
+  display: flex;
+  flex-direction: column;
+  gap: 7.5px; /* Reduced from 10px */
+  margin-top: 11.25px; /* Reduced from 15px */
+}
+
+.leader-prompt-notes-label {
+  font-size: 0.75rem; /* Reduced from 1rem */
+  font-weight: 700;
+  color: #4a4ab2;
+}
+
+.leader-prompt-notes {
+  /* width: 100%; */
+  height: 75px; /* Reduced from 100px */
+  padding: 7.5px; /* Reduced from 10px */
+  font-size: 0.675rem; /* Reduced from 0.9rem */
+  border: 1px solid #ccc;
+  border-radius: 3.75px; /* Reduced from 5px */
+  resize: vertical;
+}
+
+.leader-prompt-notes-label,
+.leader-prompt-notes {
+  display: block;
+  width: 100%;
+}
+
+.leader-prompt-notes-label {
+  margin-bottom: 0.3rem;
+}
+
+.leader-prompt-notes {
+  margin-top: 0;
+}
+
+.leader-prompt-submit {
+  /* width: 100%; */
+  background-color: #262262;
+  font-family: "Figtree";
+  color: white;
+  font-size: 0.75rem; /* Reduced from 1rem */
+  font-weight: 700;
+  /* padding: 7.5px; */
+  border: none;
+  border-radius: 30px; /* Reduced from 40px */
+  margin-top: 11.25px; /* Reduced from 15px */
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  /* width: 30%; */
+  margin: 2rem auto 0 auto;
+}
+
+.leader-prompt-submit:hover {
+  background-color: #4a4ab2;
+}
+
+.leader-unregister-btn {
+  padding: 7.5px; /* Reduced from 10px */
+  font-size: 0.7rem;
+  width: 30%; /* Reduced from 40% */
+  margin-top: 7.5px; /* Reduced from 10px */
+  background-color: #262262;
+  color: white;
+  text-decoration: none;
+  font-family: "Figtree";
+  font-weight: 600;
+  border-radius: 30px; /* Reduced from 40px */
+  transition: background-color 0.3s ease-in-out;
+  box-shadow: none !important;
+  margin-bottom: 40px;
+  margin-top: 1rem;
+  border: none;
+}
+
+.leader-prompt-submit,
+.leader-unregister-btn {
+  width: 65%;
+  padding: 0.65rem 0;
+}
+
+.leader-unregister-btn:hover {
+  background-color: #4a4ab2;
+}
+
+/* Progress Prompt Sets */
+.leader-progress-container {
+  display: flex;
+  flex-direction: column;
+  gap: 22.5px; /* Reduced from 30px */
+  padding: 15px; /* Reduced from 20px */
+}
+
+/* Section Title */
+.leader-progress-current-title {
+  font-size: 15px; /* Reduced from 20px */
+  font-weight: bold;
+  color: #262262;
+  text-align: center;
+  margin-bottom: 11.25px; /* Reduced from 15px */
+}
+
+/* Current Prompt Sets Grid */
+.leader-progress-current {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px; /* Reduced from 20px */
+  justify-content: center;
+  align-items: start;
+}
+
+/* Individual Progress Grid Item */
+.leader-progress-grid {
+  background: rgb(230, 230, 230);
+  padding: 11.25px; /* Reduced from 15px */
+  border-radius: 7.5px; /* Reduced from 10px */
+  text-align: center;
+  box-shadow: 0 1.5px 3.75px rgba(0, 0, 0, 0.2); /* Adjusted shadow */
+}
+
+/* Progress Title and Frequency */
+.leader-progress-title {
+  font-size: 13.5px; /* Reduced from 18px */
+  font-weight: bold;
+  color: #262262;
+}
+
+
+/* Target Date */
+.leader-progress-target {
+  font-size: 10.5px; /* Reduced from 14px */
+  font-weight: 500;
+  color: #666;
+  width: 45%; /* Reduced from 60% */
+  margin: 0 auto;
+}
+
+/* Completed Prompt Sets Section */
+.leader-progress-completed {
+  margin-top: 15px; /* Reduced from 20px */
+}
+
+/* Completed Prompt Sets Title */
+.leader-progress-completed-title {
+  font-size: 15px; /* Reduced from 20px */
+  font-weight: bold;
+  color: #262262;
+  text-align: center;
+}
+
+/* Completed Prompt Sets Grid */
+.leader-progress-completed-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 11.25px; /* Reduced from 15px */
+  padding-top: 7.5px; /* Reduced from 10px */
+}
+
+/* Completed Prompt Set Card */
+.leader-progress-completed-card {
+  background-color: rgb(247, 246, 246);
+  padding: 11.25px; /* Reduced from 15px */
+  border-radius: 7.5px; /* Reduced from 10px */
+  text-align: center;
+  box-shadow: 0 1.5px 3px rgba(0, 0, 0, 0.2); /* Adjusted shadow */
+}
+
+/* Completed Prompt Set Details */
+.leader-progress-completed-frequency,
+.leader-progress-completed-main-topic {
+  font-size: 10.5px; /* Reduced from 14px */
+  font-weight: 500;
+  color: #444;
+}
+
+/* Animation for Progress SVG */
+@keyframes spinInPlace {
+  0%   { transform: rotateZ(0deg); }
+  25%  { transform: rotateZ(360deg); }
+  50%  { transform: rotateZ(720deg); }
+  75%  { transform: rotateZ(1080deg); }
+  100% { transform: rotateZ(0deg); }
+}
+
+/* Apply animation to the progress SVGs */
+.leader-progress-svg {
+  width: 90px;
+  height: 90px;
+  display: block;
+  margin: 10px auto;
+  animation: spinInPlace 1.5s ease-out;
+}
+
+/* Badge Container */
+.leader-progress-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #ccc;
+}
+
+/* Badge Image */
+.leader-progress-badge-img {
+  width: 100px;
+  height: auto;
+  object-fit: contain;
+  margin-bottom: 5px;
+}
+
+/* Badge Label */
+.leader-progress-badge-name {
+  font-size: 10px;
+  font-weight: bold;
+  color: #4a4ab2;
+  text-align: center;
+}
+
+
+.leader-dashboard-subtitles {
+  color:#262262;
+  font-size: 1rem;
+}
+
+/* ✅ Main Container */
+.leader-topics-container {
+  padding: 20px;
+  text-align: center;
+}
+
+/* ✅ Grid Layout for Topics */
+.leader-topics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+/* ✅ Individual Topic Card */
+.leader-topic-card {
+  background: rgb(245, 245, 245);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 3px 6px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 350px; /* Ensure all cards are equal height */
+  text-align: center;
+}
+
+/* ✅ Topic Title */
+.leader-topic-title {
+  color: #262262;
+  font-size: 1rem;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+
+/* ✅ Subtopics List */
+.leader-topic-subtopics {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;
+  font-size: 0.7rem;
+  width: 100%;
+  flex-grow: 1; /* Takes vertical space to push button to bottom */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* ✅ Subtopic List Items */
+.leader-topic-subtopics li {
+  padding: 8px 0;
+  color: #333;
+  font-size: 0.7rem;
+}
+
+/* ✅ Horizontal Line Between Subtopics */
+.leader-topic-subtopics li:not(:last-child) {
+  border-bottom: 1px solid #ccc;
+  width: 90%;
+  margin: 0 auto;
+}
+
+/* ✅ Review Button */
+.leader-topic-review {
+  margin-top: 15px;
+  color: #fff;
+  background: #262262;
+  padding: 10px 15px;
+  text-transform: lowercase;
+  border-radius: 30px;
+  text-decoration: none;
+  font-size: 0.7rem;
+  font-weight: 800;
+  transition: background 0.3s ease-in-out;
+}
+
+/* ✅ Hover Effect */
+.leader-topic-review:hover {
+  background: #4a4ab2;
+}
+
+
+/* ✅ Full-width Suggested Topic Card */
+.leader-topic-suggestion-card {
+  background: rgb(245, 245, 245);
+  box-shadow: 3px 6px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+  padding: 25px;
+  margin-top: 30px;
+}
+
+/* ✅ Title and Meta */
+.leader-topic-suggestion-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #262262;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.leader-topic-suggestion-meta {
+  font-size: 0.75rem;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #555;
+}
+
+/* ✅ Grid for 3 Paragraphs */
+.leader-topic-suggestion-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.leader-topic-suggestion-col {
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: #333;
+  text-align: left;
+}
+
+/* ✅ Wrapper container (if needed for layout) */
+.topic-grid-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+/* ✅ Inner card */
+.topic-item {
+  background: #f5f5f5;
+  padding: 25px 30px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+}
+
+/* ✅ Title */
+.topic-item h3 {
+  font-size: 1.2rem;
+  color: #262262;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+/* ✅ Supporting paragraph */
+.topic-item p {
+  font-size: 0.85rem;
+  color: #444;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+/* ✅ Submit Topic Button */
+.suggest-topic-button {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #262262;
+  color: #fff;
+  border-radius: 30px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: lowercase;
+  text-decoration: none;
+  transition: background 0.3s ease-in-out;
+}
+
+.suggest-topic-button:hover {
+  background-color: #4a4ab2;
+}
+
+.leader-topic-suggestion-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  align-items: start; /* Ensures alignment at the top across columns */
+}
+
+/* Ensure uniform padding */
+.leader-topic-suggestion-col {
+  padding-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Style all h5 headers the same way */
+.leader-topic-suggestion-col h5 {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #262262;
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 0.25rem;
+  min-height: 2.25rem; /* Force consistent height for header rows */
+}
+
+
+
+
+
+
+
+
+
+/*------------------------------------------------------------------------------*/
+
+/*MEMBER DASHBOARD STYLES*/
+
+/*------------------------------------------------------------------------------*/
+
+/* Member Sidebar Styles */
+.member-sidebar .member-profile-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px; /* Reduced from 20px */
+}
+
+.member-sidebar .member-profile-image-container {
+  width: 112.5px; /* Reduced from 150px */
+  height: 112.5px;
+  border: 1.5px solid #262262; /* Reduced border */
+  border-radius: 99px;
+}
+
+.member-sidebar .member-profile-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.member-sidebar .member-profile-info {
+  text-align: center;
+}
+
+.member-sidebar .member-profile-name {
+  font-size: 1.125rem; /* Reduced from 1.5rem */
+  margin: 7.5px 0; /* Reduced from 10px */
+}
+
+.member-sidebar .member-profile-title {
+  color: #666;
+  font-family: "Figtree";
+  font-weight: 800;
+  margin-bottom: 11.25px; /* Reduced from 15px */
+}
+
+.member-sidebar .member-profile-btn {
+  display: block;
+  margin: 7.5px auto; /* Reduced from 10px */
+  padding: 7.5px 15px; /* Reduced from 10px 20px */
+  border-radius: 99px;
+  background-color: #262262;
+  color: white;
+  font-family: "Figtree";
+  font-weight: 800;
+  font-size: 0.825rem; /* Reduced from 11pt */
+  border: none;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.member-sidebar .member-profile-btn:hover {
+  background-color: #4a4ab2;
+}
+
+.member-sidebar .member-topics-list {
+  list-style: none;
+  padding: 0;
+  margin: 7.5px 0; /* Reduced from 10px */
+}
+
+.member-sidebar .member-topic-item {
+  padding: 3.75px 0; /* Reduced from 5px */
+  color: #444;
+}
+
+.individual-membership-tab {
+  font-family: "Figtree";
+  margin: 2rem 0;
+  padding: 2rem;
+  background-color: #f7f7f7;
+  border-radius: 10px;
+}
+
+.individual-preference-list {
+  margin: .25rem 0 1rem 2rem;
+  padding-left: 1rem;
+  list-style: disc;
+}
+.individual-preference-list li {
+  margin: .125rem 0;
+  line-height: 1.35;
+}
+
+
+.individual-membership-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #262262;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.individual-membership-grid {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+    gap: 2rem; /* ✅ space between the two columns */
+}
+
+.individual-membership-column {
+  width: 80%;
+  max-width: 800px;
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  text-align: left;
+}
+
+.individual-membership-access {
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.highlight-access {
+  color: #dc176a;
+  text-transform: capitalize;
+}
+
+.individual-membership-section-title {
+  font-weight: 700;
+  margin: 1rem 0 0.5rem;
+  font-size: 1rem;
+}
+
+.individual-membership-access-list {
+  list-style: disc;
+  padding-left: 1.5rem;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: #333;
+}
+
+.individual-membership-contributor-note {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #4e50a2;
+}
+
+.individual-membership-contributor-note a {
+  color: #dc176a;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.individual-membership-button-wrapper {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.individual-membership-btn {
+  padding: 10px 18px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: white;
+  background-color: #262262;
+  border: none;
+  border-radius: 99px;
+  cursor: pointer;
+  text-align: center;
+  font-family: "Figtree";
+}
+
+.individual-membership-btn:hover {
+  background-color: #4a4ab2;
+}
+
+
+.member-unregister-btn {
+padding: 10px;
+width: 40%;
+margin-top: 10px;
+background-color: #262262;
+color: white;
+text-decoration: none;
+font-family: "Figtree";
+font-weight: 600;
+border-radius: 40px;
+transition: background-color 0.3s ease-in-out;
+box-shadow: none !important;
+}
+
+.member-unregister-btn:hover {
+  background-color: #4a4ab2;
+}
+
+.member-dashboard-subtitles {
+  font-size: 1rem;
+  color:#262262;
+}
+
+/* Member Progress Container */
+.member-progress-container {
+  display: flex;
+  flex-direction: column;
+  gap: 22.5px;
+  padding: 15px;
+}
+
+/* Section Title */
+.member-progress-current-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #262262;
+  text-align: center;
+  margin-bottom: 11.25px;
+}
+
+/* Current Prompt Sets Grid */
+.member-progress-current {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  justify-content: center;
+  align-items: start;
+}
+
+/* Individual Progress Grid Item */
+.member-progress-grid {
+  background: rgb(230, 230, 230);
+  padding: 11.25px;
+  border-radius: 7.5px;
+  text-align: center;
+  box-shadow: 0 1.5px 3.75px rgba(0, 0, 0, 0.2);
+}
+
+/* Progress Title */
+.member-progress-title {
+  font-size: 13.5px;
+  font-weight: bold;
+  color: #262262;
+}
+
+/* Target Sentence */
+.member-progress-target {
+  font-size: 10.5px;
+  font-weight: 500;
+  color: #666;
+  width: 45%;
+  margin: 0 auto;
+}
+
+@keyframes spinInPlace {
+  0%   { transform: rotateZ(0deg); }
+  25%  { transform: rotateZ(360deg); }
+  50%  { transform: rotateZ(720deg); }
+  75%  { transform: rotateZ(1080deg); }
+  100% { transform: rotateZ(0deg); }
+}
+
+/* Progress SVG */
+.member-progress-svg {
+  width: 90px;
+  height: 90px;
+  display: block;
+  margin: 10px auto;
+  animation: spinInPlace 1.5s ease-out;
+}
+
+/* Completed Prompt Sets Section */
+/* Completed Prompt Sets Section */
+.member-progress-completed {
+  margin-top: 15px;
+}
+
+.member-progress-completed-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #262262;
+  text-align: center;
+}
+
+.member-progress-completed-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 11.25px;
+  padding-top: 7.5px;
+}
+
+/* ⬇️ Reduced card height and simplified layout */
+.member-progress-completed-card {
+  background-color: rgb(230, 230, 230);
+  padding: 11.25px;
+  border-radius: 7.5px;
+  text-align: center;
+  box-shadow: 0 1.5px 3px rgba(0, 0, 0, 0.2);
+  height: 300px; /* ⬅️ Reduced from 600px to ~half */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.member-progress-completed-main-topic,
+.member-progress-completed-date {
+  font-size: 10.5px;
+  font-weight: 500;
+  color: #444;
+}
+
+/* ⬇️ Removed circular background and centered the image */
+.member-progress-badge {
+  margin: 0 auto;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background: none;        /* ⬅️ Remove gray circle */
+  border-radius: 0;        /* ⬅️ Remove circular shape */
+  width: auto;
+  height: auto;
+}
+
+.member-progress-badge-img {
+  width: 80px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.member-progress-badge-name {
+  font-size: 10px;
+  font-weight: bold;
+  color: #4e50a2;
+  text-align: center;
+  margin-top: 5px;
+}
+
+
+/* Animation for SVG */
+@keyframes spinProgress {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(1350deg); }
+}
+
+
+
+
+/* Target Date */
+.member-progress-target {
+  font-size: 10.5px; /* Reduced from 14px */
+  font-weight: 500;
+  color: #666;
+  width: 45%; /* Reduced from 60% */
+  margin: 0 auto;
+}
+
+
+.member-prompt-container {
+  width: 100%;
+  max-width: 450px; /* Reduced from 600px */
+  margin: 15px auto; /* Reduced from 20px */
+  padding: 15px; /* Reduced from 20px */
+  background: rgb(230, 230, 230);
+  border-radius: 6px; /* Reduced from 8px */
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2); /* Adjusted shadow */
+  text-align: center;
+}
+
+.member-prompt-title {
+  font-size: 1rem; /* Reduced from 1.5rem */
+  font-weight: 800;
+  color: #262262;
+  margin-bottom: 7.5px; /* Reduced from 10px */
+}
+
+.member-prompt-set-title {
+  font-size: 1rem; /* Reduced from 1rem */
+  font-weight: 700;
+  color: #4a4ab2;
+  margin-bottom: 15px; /* Reduced from 20px */
+}
+
+.member-prompt-purpose {
+  font-size: 1rem;
+}
+
+/* Prompt Card */
+.member-prompt-card {
+  background-color: rgb(188, 188, 188);
+  border-radius: 0 0 11.25px 11.25px; /* Reduced from 15px */
+  color: black;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Headline Formatting */
+.member-prompt-headline {
+  font-size: 0.75rem; /* Reduced from 1rem */
+  font-weight: 800;
+  color: #4a4ab2;
+  text-align: left;
+  padding: 7.5px 11.25px; /* Reduced from 10px 15px */
+  margin-top: 25px; /* Reduced from 100px */
+}
+
+/* Prompt Text Formatting */
+.member-prompt-text {
+  font-size: 0.6375rem; /* Reduced from 0.85rem */
+  padding: 7.5px 11.25px; /* Reduced from 10px 15px */
+  color: #333;
+  line-height: 1.4;
+  margin-top: -7.5px; /* Reduced from -10px */
+}
+
+
+/* Title Above the Card */
+
+
+.member-prompt-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.member-prompt-notes-label {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #4a4ab2;
+}
+
+.member-prompt-notes {
+  width: 90%;
+  height: 100px;
+  padding: 10px;
+  font-size: 0.9rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  resize: vertical;
+  margin: 0 auto;
+}
+
+.member-prompt-submit {
+  width: 100%;
+  background-color: #262262;
+  font-family: "Figtree";
+  color: white;
+  font-size: 0.75rem; /* Reduced from 1rem */
+  font-weight: 700;
+  padding: 7.5px; /* Reduced from 10px */
+  border: none;
+  border-radius: 30px; /* Reduced from 40px */
+  margin-top: 11.25px; /* Reduced from 15px */
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 30%; /* Reduced from 40% */
+  margin: 0 auto;
+}
+
+.member-prompt-submit:hover {
+  background-color: #4a4ab2;
+}
+
+.member-unregister-btn {
+  padding: 7.5px; /* Reduced from 10px */
+  font-size: 0.7rem;
+  width: 30%; /* Reduced from 40% */
+  margin-top: 7.5px; /* Reduced from 10px */
+  background-color: #262262;
+  color: white;
+  text-decoration: none;
+  font-family: "Figtree";
+  font-weight: 600;
+  border-radius: 30px; /* Reduced from 40px */
+  transition: background-color 0.3s ease-in-out;
+  box-shadow: none !important;
+}
+
+.member-unregister-btn:hover {
+  background-color: #4a4ab2;
+}
+
+
+
+/* ✅ Main Container */
+.member-topics-container {
+  padding: 20px;
+  text-align: center;
+}
+
+/* ✅ Grid Layout for Topics */
+.member-topics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+/* ✅ Individual Topic Card */
+.member-topic-card {
+  background: rgb(245, 245, 245); /* Light background */
+  padding: 20px;
+  text-align: center;
+  position: relative;
+  border-radius: 10px;
+  box-shadow: 3px 6px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ✅ Topic Title */
+.member-topic-title {
+  color: #262262;
+  font-size: 1rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+/* ✅ Subtopics List */
+.member-topic-subtopics {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;
+  width: 80%;
+  max-width: 90%;
+  font-size: 0.7rem;
+  text-align: center; /* ✅ center the list text */
+}
+
+/* ✅ Subtopic List Items */
+.member-topic-subtopics li {
+  padding: 8px 0;
+  font-size: 0.7rem;
+  color: #333;
+  text-align: center;       /* ✅ center each list item */
+  margin: 0 auto;
+}
+
+/* ✅ Horizontal Line Between Subtopics */
+.member-topic-subtopics li:not(:last-child) {
+  border-bottom: 1px solid #ccc;
+  width: 90%;
+  margin: 0 auto;
+}
+
+/* ✅ Review Button */
+.member-topic-review {
+  display: inline-block;
+  margin-top: 15px;
+  color: #fff;
+  background: #262262;
+  padding: 10px 15px;
+  text-transform: lowercase;
+  border-radius: 30px;
+  text-decoration: none;
+  font-size: 0.7rem;
+  font-weight: 800;
+  transition: background 0.3s ease-in-out;
+}
+
+/* ✅ Hover Effect */
+.member-topic-review:hover {
+  background: #4a4ab2;
+}
+
+/* ✅ Responsive Design */
+@media (max-width: 900px) {
+  .member-topics-grid {
+    grid-template-columns: 1fr; /* Stack cards on smaller screens */
+  }
+}
+
+/* Ensure each topic card has structured layout */
+.member-topic-inner {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "title"
+    "subtopics"
+    "button";
+  height: 100%;
+  width: 100%;
+  justify-items: center;
+}
+
+/* Assign grid areas */
+.member-topic-title-area {
+  grid-area: title;
+}
+
+.member-topic-subtopics-area {
+  grid-area: subtopics;
+  width: 100%;
+}
+
+.member-topic-button-area {
+  grid-area: button;
+  margin-top: 10px;
+}
+
+
+
+
+/* REPORT STYLES */
+
+/* Table Container */
+/* Table Container */
+.table-container {
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  max-width: 80%; /* Increase width from 80% to 90% */
+  margin: 0 auto;
+  overflow-x: auto; /* Allow horizontal scrolling if needed */
+}
+
+
+/* Section & Titles */
+.dashboard-section-title {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  font-family: "Figtree";
+  font-weight: 800;
+  color: #262262;
+  text-align: center;
+  margin-top: 190px;
+}
+
+/* Table Styles */
+.dashboard-library-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 3.75px 0;
+  font-family: "Figtree";
+  margin: 0 auto;
+  margin-bottom: 50px;
+}
+
+/* Sticky Table Headers */
+.dashboard-library-table thead {
+  position: relative;
+  top: 0;
+  background-color: #4a4ab2;
+  z-index: 2;
+}
+
+/* Table Header Styling */
+.dashboard-library-header {
+  background: #4a4ab2;
+  color: white;
+  font-size: 0.6rem;
+  font-weight: 800;
+  padding: 7.5px;
+  text-align: center;
+  border-radius: 75px;
+}
+
+.dashboard-library-header:not(:last-child) {
+  margin-right: 3.75px;
+}
+
+/* Table Rows */
+.dashboard-library-row:nth-child(even) {
+  background-color: rgb(194, 193, 193);
+}
+
+/* Table Cells */
+.dashboard-library-cell {
+  padding: 7.5px 9px;
+  text-align: left;
+  color: #333;
+  font-size: 0.6rem;
+  border-bottom: 0.75px solid #333;
+}
+
+/* Links Inside Table Cells */
+.dashboard-library-cell a.dashboard-view-link {
+  color: #262262;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.6rem;
+}
+
+.dashboard-library-cell a.dashboard-view-link:hover {
+  text-decoration: underline;
+  color: #4a4ab2;
+}
+
+/* No Data Placeholder */
+.dashboard-no-units,
+.no-data {
+  text-align: center;
+  padding: 15px;
+  font-size: 0.6rem;
+  color: #777;
+  font-style: italic;
+}
+
+/*STYLES FOR DASHBOARD TABLES - NOT REPORT TABLES*/
+
+/* OLD Table Styles */
+.old-dashboard-library-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 3.75px 0;
+  font-family: "Figtree";
+  margin: 0 auto;
+}
+
+/* Sticky Table Headers */
+.old-dashboard-library-table thead {
+  position: sticky;
+  top: 0;
+  background-color: #4a4ab2;
+  z-index: 2;
+}
+
+/* Table Header Styling */
+.old-dashboard-library-header {
+  background: #4a4ab2;
+  color: white;
+  font-size: 0.6rem;
+  font-weight: 800;
+  padding: 7.5px;
+  text-align: center;
+  border-radius: 75px;
+}
+
+.old-dashboard-library-header:not(:last-child) {
+  margin-right: 3.75px;
+}
+
+/* Table Rows */
+.old-dashboard-library-row:nth-child(even) {
+  background-color: rgb(194, 193, 193);
+}
+
+/* Table Cells */
+.old-dashboard-library-cell {
+  padding: 7.5px 9px;
+  text-align: left;
+  color: #333;
+  font-size: 0.6rem;
+  border-bottom: 0.75px solid #333;
+}
+
+/* Links Inside Table Cells */
+.old-dashboard-library-cell a.old-dashboard-view-link {
+  color: #262262;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.6rem;
+}
+
+.old-dashboard-library-cell a.old-dashboard-view-link:hover {
+
+  color: #4a4ab2;
+}
+
+/* No Data Placeholder */
+.old-dashboard-no-units {
+  text-align: center;
+  padding: 15px;
+  font-size: 0.6rem;
+  color: #777;
+  font-style: italic;
+}
+
+/* Table Title */
+.old-dashboard-section-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #262262;
+  margin-bottom: 10px;
+  margin-top: 20px;
+
+}
+
+
+/* Badge Icon Styling */
+.badge-icon {
+  width: 30px;
+  height: auto;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+/* Multi-Record Item Styling */
+.multi-record-item {
+  padding: 5px 0; /* Adds space between items */
+  border-bottom: 0.5px solid #9d9d9d; /* Adds horizontal divider */
+}
+
+/* Remove border from the last item */
+.multi-record-item:last-child {
+  border-bottom: none;
+}
+
+/* Bold Member Names */
+.dashboard-library-cell:first-child {
+  font-weight: 800;
+}
+
+.wide-table-container {
+  max-width: 80%; /* Ensures table fills viewport */
+  overflow-x: auto; /* Enables horizontal scrolling */
+  margin-left: 10%;
+
+}
+
+.wide-table {
+  min-width: 3500px; /* Ensures enough space for all prompt columns */
+
+}
+
+.notes-top-align {
+  vertical-align: top !important;
+}
+
+/* Report Navigation Container */
+.report-links-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px; /* Space between links */
+  margin-top: 30px;
+  padding: 20px 0;
+  margin-bottom: 200px;
+}
+
+/* Report Links */
+.report-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  transition: 0.3s ease-in-out;
+}
+
+.return-to-dashboard {
+  background-color: #262262;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 99px;
+  cursor: pointer;
+  font-family: "Figtree";
+  font-weight: 800;
+  margin: 0 auto;
+  margin-left: 30%;
+}
+
+.return-to-dashboard:hover {
+  background-color: #4a4ab2;
+}
+
+
+/* Report Icons */
+.report-link img {
+  width: 100px;
+  height: auto;
+}
+
+/*REPORT FOR INDIVIDUALS*/
+
+.member-progress-report-button-container {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.member-progress-report-button {
+  width: 80%;
+  padding: 10px 20px;
+  border-radius: 99px;
+  background-color: #262262;
+  color: white;
+  font-family: "Figtree";
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none; /* ensures it behaves like a button */
+  display: inline-block;
+}
+
+.member-progress-report-button:hover {
+  background-color: #4a4ab2;
+}
+
+
+/* Return to Dashboard Link */
+.dashboard-link {
+  background: #262262;
+  padding: 8px 10px;
+}
+
+.dashboard-link:hover {
+  background: #4a4ab2;
+}
+
+/* Footer Styling */
+/* .custom-footer {
+  width: 100%;
+  height: 100px;
+  background-color: transparent;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.footer-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+.footer-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.footer-tabs {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 0;
+  margin: 0;
+  margin-right: 50px;
+  gap: 5px;
+}
+
+.footer-tab {
+  width: 50px;
+  height: 50px;
+  background-color: #5a5552;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: background-color 0.3s ease;
+  text-decoration: none;
+}
+
+.footer-tab:first-child {
+  border-left: none;
+}
+
+.footer-tab:hover {
+  background-color: #dc176a;
+}
+
+.footer-tab img {
+  width: 24px;
+  height: 24px;
+}
+
+.footer-tab::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: 20%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid #5a5552;
+  transition: border-bottom-color 0.3s ease;
+}
+
+.footer-tab:hover::before {
+  border-bottom-color: #dc176a;
+}
+
+.footer-tab {
+  font-family: "Figtree", sans-serif;
+  font-size: 0.5rem;
+  font-weight: 100;
+  color: white;
+  text-align: center;
+} */
+
+
+/* Dashboard Responsive Styles */
+
+@media screen and (max-width: 1366px) {
+
+  .dashboard-grid {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .profile-information-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .leader-sidebar .leader-profile-section {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+
+  .dashboard-sidebar,
+  .leader-sidebar {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .leader-sidebar .leader-profile-btn {
+    width: fit-content;
+  }
+
+  .leader-report-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  @media screen and (max-width: 1200px) {
+    .dashboard-grid {
+      padding: 0 5rem;
+    }
+    .profile-information-container {
+      flex-direction: row;
+      align-items: center;
+      gap: 3rem;
+    }
+    .leader-sidebar .leader-profile-image-container {
+      width: 200px;
+      height: 200px;
+    }
+    .leader-report-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    @media screen and (max-width: 1030px) {
+      .profile-information-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 0;
+      }
+      .leader-sidebar .leader-profile-image-container {
+        width: 150px;
+        height: 150px;
+      }
+      .dashboard-tabs-container {
+        position: relative;
+        width: 100%;
+        display: flex;
+        align-items: flex-start;
+        overflow-x: auto;
+        justify-content: flex-start;
+        gap: 10px;
+        margin-bottom: 20px;
+        min-height: 120px;
+      }   
+      .dashboard-tab {
+        flex: 0 0 18%;
+      }
+      .dashboard-tab-content {
+        max-width: 100%;
+      }
+      .groupsection,
+      .leader-topics-container,
+      .leader-progress-container {
+        width: 100%;
+        padding: 0;
+      }
+      .contribution-container .contributor-benefits {
+        margin: 1.55rem auto 1.35rem auto;
+        width: 60%;
+      }
+      .contribution-section #toggleContribute {
+        width:fit-content;
+      }
+      @media screen and (max-width: 840px) {
+        .groupsection-grid {
+          grid-template-columns: repeat(4, 1fr);
+        }
+        @media screen and (max-width: 768px) {
+          .leader-sidebar .leader-profile-section {
+            flex-direction: column;
+          }
+          .leader-report-grid {
+            grid-template-columns: repeat(4, 1fr);
+            margin-top: 2rem;
+            gap: 1.5rem;   
+          }
+          .report-link {
+            padding: 10px 0;
+          }
+          .dashboard-tab {
+            flex: 0 0 28%;
+          }
+          .groupsection-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+          .leader-topics-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+          .leader-progress-current,
+          .leader-progress-completed-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+          .contribution-container .contributor-benefits {
+            width: 75%;
+          }
+          .contribution-grid {
+            margin-top: 2rem;
+            grid-template-columns: repeat(3, 1fr);
+            width: 80%;
+          }
+          @media screen and (max-width: 600px) {
+            .dashboard-grid {
+              padding: 0 3rem;
+            }
+            .dashboard-tabs-container {
+              min-height: 100px;
+            }
+            .dashboard-tab {
+              flex: 0 0 38%;
+              height: 60px;
+            }
+            .leader-topics-grid {
+              grid-template-columns: 1fr;
+            }
+            .leader-prompt-container {
+              padding: 15px 0;
+            }
+            .leader-prompt-card,
+            .leader-prompt-container .leader-prompt-purpose,
+            .leader-prompt-notes {
+              margin: 0 20px;
+            }
+            .leader-prompt-container .leader-prompt-purpose {
+              margin-bottom: 15px;
+            }
+            .leader-prompt-set-title {
+              margin: 15px 20px;
+            }      
+            .leader-prompt-submit, .leader-unregister-btn {
+              margin-top: 1rem;
+              border: none;
+              padding: 0.65rem 0;
+            }
+            .leader-prompt-submit {
+              margin-top: 1.5rem;
+            }
+            .leader-prompt-submit,
+            .leader-unregister-btn {
+              width: 70%;
+            }
+            .contribution-grid {
+              width: 100%;
+            }
+            @media screen and (max-width: 540px) {
+              .leader-report-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;     
+              }
+              .leader-progress-current,
+              .leader-progress-completed-grid {
+                grid-template-columns: 1fr;
+              }
+              .leader-prompt-card,
+              .leader-prompt-container .leader-prompt-purpose,
+              .leader-prompt-notes {
+                margin: 0 10px;
+              }
+              .leader-prompt-container .leader-prompt-purpose {
+                margin: 10px 10px;
+              }  
+              .leader-prompt-set-title {
+                margin: 15px 10px;
+              }
+              .profile-information-container .leader-profile-btn:nth-of-type(2) {
+                width: 220px;
+              }
+              .contribution-container .contributor-benefits {
+                width: 100%;
+              }
+              @media screen and (max-width: 340px) {
+                .dashboard-grid {
+                  padding: 0 1.5rem;
+                }
+              }
+            }
+          }        
+        }
+      }
+    }
+  }
+}
+
+
+.error-message {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #fff3cd;
+  border: 1px solid #ffeeba;
+  border-radius: 4px;
+}
+
+/* ERROR PAGE FOR UNIT FORMS */
+.error-container {
+  text-align: center;
+  margin: 50px auto;
+  padding: 20px;
+  max-width: 500px;
+}
+
+.error-title {
+  margin-top: 200px;
+  color: #262262;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.error-message-forms {
+  font-size: 1rem;
+  margin: 10px 0;
+  font-family: "Figtree";
+}
+
+.error-button {
+  display: block;
+  font-size: 11pt;
+  margin: 10px auto;
+  padding: 10px 20px;
+  border-radius: 99px;
+  background-color: #262262;
+  color: white;
+  font-family: "Figtree";
+  font-weight: 800;
+  border: none;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  width: 50%;
+  margin-bottom: 100px;
+}
+
+.error-button:hover {
+  background-color: #4a4ab2;
+}
+
+.promptset-started-success-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 20px;
+  max-width: 800px;
+  margin: 7rem auto;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.promptset-started-success-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #262262;
+  margin-bottom: 20px;
+}
+
+.promptset-started-success-message {
+  font-size: 1rem;
+  color: #444;
+  max-width: 600px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.promptset-started-success-message strong {
+  color: #4a4ab2;
+}
+
+.promptset-started-success-list {
+  list-style-type: disc;
+  margin: 1rem auto 2rem auto;
+  padding-left: 1.5rem;
+  max-width: 500px;
+  text-align: left;
+  color: #444;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.promptset-started-success-badge {
+  margin: 1.5rem 0;
+}
+
+.promptset-started-success-button {
+  display: inline-block;
+  background-color: #262262;
+  color: white;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 40px;
+  text-decoration: none;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.promptset-started-success-button:hover {
+  background-color: #4a4ab2;
+}
+
+/* Confetti Canvas */
+  #confetti-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw !important;
+    height: 100vh !important;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+/* Bluey Video */
+.promptset-complete-video-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+
+.promptset-complete-video {
+  width: 200px;
+  max-width: 90%;
+  height: auto;
+  border-radius: 12px;
+
+}
+
+
+
+/* ===== MFA inline card for dashboards ===== */
+.mfa-inline {
+  background: #fff;
+  border: 1px solid #e6e8ef;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 20px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+}
+
+.mfa-inline-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mfa-inline-title {
+  margin: 0;
+  color: #262262;
+  font-size: 18px;
+  font-weight: 800;
+  text-transform: lowercase;
+  letter-spacing: 0.2px;
+}
+
+.mfa-chip {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  font-family: "Figtree";
+  line-height: 1;
+  color: #fff;
+}
+.mfa-chip--on { background: #2e7d32; }    /* green */
+.mfa-chip--off { background: #b00020; }   /* red */
+
+.mfa-inline-desc {
+  margin: 8px 0 12px;
+  font-size: 14px;
+  color: #333;
+  font-family: "Figtree";
+}
+
+.mfa-inline-meta {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+  margin: 0 0 12px 0;
+}
+
+.mfa-inline-row {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 10px;
+  align-items: baseline;
+}
+.mfa-inline-row dt {
+  text-transform: lowercase;
+  color: #5a5f66;
+  font-weight: 700;
+  font-size: 12px;
+  font-family: "Figtree";
+  margin: 0;
+}
+.mfa-inline-row dd {
+  margin: 0;
+  font-size: 14px;
+  color: #111;
+  font-family: "Figtree";
+}
+
+.mfa-inline-actions {
+  margin-top: 8px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.mfa-inline .mfa-button {
+  display: inline-block;
+  font-size: 11pt;
+  padding: 10px 20px;
+  border-radius: 99px;
+  background-color: #262262;
+  color: #fff;
+  font-family: "Figtree";
+  font-weight: 800;
+  border: none;
+  text-decoration: none;
+  cursor: pointer;
+}
+.mfa-inline .mfa-button:hover { background: #4a4ab2; }
+
+@media (max-width: 520px) {
+  .mfa-inline-row { grid-template-columns: 1fr; }
+}
+
+

@@ -1,0 +1,142 @@
+{{#*inline "title"}}Group Profile Form | Twennie{{/inline}}
+<div class="profile-form-container">
+  
+  <h2 class="profile-form-title">edit group profile</h2>
+
+  <form 
+    action="/profile/group/{{profile.leaderId}}/update" 
+    method="POST" 
+    class="profile-form" 
+    enctype="multipart/form-data"
+  >
+
+    <!-- CSRF Token -->
+    {{#if csrfToken}}
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    {{/if}}
+
+    <!-- Current Group Image -->
+    {{#if profile.profileImage}}
+      <div class="form-field">
+        <label>Current Group Image</label>
+        <img 
+          src="{{profile.profileImage}}" 
+          alt="Group Image" 
+          style="width: 120px; height: auto; border-radius: 8px; margin-top: 8px;"
+        >
+      </div>
+    {{/if}}
+
+    <!-- Upload New Group Image (Cloudinary Upload) -->
+    <div class="form-field">
+      <label for="profileImage">Upload New Group Image</label>
+      <input 
+        type="file" 
+        id="profileImage" 
+        name="profileImage" 
+        accept="image/*"
+      >
+      <p class="form-hint">Your new image will be uploaded to Cloudinary when you save.</p>
+    </div>
+
+    <!-- Group Name -->
+    <div class="form-field">
+      <label for="groupName">Group Name</label>
+      <input 
+        type="text" 
+        id="groupName" 
+        name="groupName" 
+        value="{{profile.groupName}}" 
+        required
+      >
+    </div>
+
+    <!-- Organization -->
+    <div class="form-field">
+      <label for="organization">Organization</label>
+      <input 
+        type="text" 
+        id="organization" 
+        name="organization" 
+        value="{{profile.organization}}" 
+        required
+      >
+    </div>
+
+    <!-- Group Biography -->
+    <div class="form-field">
+      <label for="biography">Group Biography</label>
+      <textarea 
+        id="biography" 
+        name="biography"
+      >{{profile.biography}}</textarea>
+    </div>
+
+    <!-- Group Goals -->
+    <div class="form-field">
+      <label for="goals">Group Goals</label>
+      <textarea 
+        id="goals" 
+        name="goals"
+      >{{profile.goals}}</textarea>
+    </div>
+
+    <!-- Topic Selection -->
+    <p class="group-topic-instructions">
+      Select the three topics that best represent your group.
+    </p>
+
+    <div class="form-field">
+      <label for="topic1">Topic 1</label>
+      <select id="topic1" name="topics[topic1]" required>
+        {{#each allTopics}}
+          <option 
+            value="{{this}}" 
+            {{#if (eq this ../profile.topics.topic1)}}selected{{/if}}
+          >
+            {{this}}
+          </option>
+        {{/each}}
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="topic2">Topic 2</label>
+      <select id="topic2" name="topics[topic2]" required>
+        {{#each allTopics}}
+          <option 
+            value="{{this}}" 
+            {{#if (eq this ../profile.topics.topic2)}}selected{{/if}}
+          >
+            {{this}}
+          </option>
+        {{/each}}
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="topic3">Topic 3</label>
+      <select id="topic3" name="topics[topic3]" required>
+        {{#each allTopics}}
+          <option 
+            value="{{this}}" 
+            {{#if (eq this ../profile.topics.topic3)}}selected{{/if}}
+          >
+            {{this}}
+          </option>
+        {{/each}}
+      </select>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="form-buttons">
+      <button type="submit" class="form-button submit-button">save changes</button>
+    </div>
+
+  </form>
+
+</div>
+
+
+
+

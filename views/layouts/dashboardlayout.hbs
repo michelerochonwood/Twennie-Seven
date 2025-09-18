@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  {{!-- Dynamic Page Title --}}
+  <title>{{#if title}}{{title}} - Twennie Dashboard{{else}}Twennie Dashboard{{/if}}</title>
+
+  {{!-- views/shared/consent_analytics.hbs --}}
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+
+  gtag('consent', 'default', {
+    security_storage: 'granted',
+    functionality_storage: {{#if consent.functional}}"granted"{{else}}"denied"{{/if}},
+    analytics_storage:    {{#if consent.analytics}}"granted"{{else}}"denied"{{/if}},
+    ad_storage:           "denied",
+    ad_user_data:         "denied",
+    ad_personalization:   "denied"
+  });
+</script>
+
+{{#if consent.analytics}}
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{GA_ID}}"></script>
+  <script>
+    gtag('js', new Date());
+    gtag('config', '{{GA_ID}}');
+  </script>
+{{/if}}
+
+
+  {{!-- Navigation Styles --}}
+  <link rel="stylesheet" href="https://www.twennie.com/css/navigation.css?v={{timestamp}}">
+
+  <!-- Dashboard Styles -->
+  <link rel="stylesheet" href="https://www.twennie.com/css/dashboardstyles.css?v={{timestamp}}">
+
+  {{!-- Mobile Navigation Script --}}
+  <script src="/javascript/mobile-nav.js?v={{timestamp}}" defer></script>
+
+  <!-- Ionicons Library -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+</head>
+
+<body class="dashboard-body">
+  {{> mainpartials/header}}
+
+  <main class="main-content">
+    
+    {{#if error}}
+      <div class="dashboard-alert error">{{error}}</div>
+    {{/if}}
+
+    {{#if message}}
+      <div class="dashboard-alert success">{{message}}</div>
+    {{/if}}
+
+    {{{body}}}
+  </main>
+
+  <!-- Dashboard Scripts with Cache-Busting -->
+  <script src="/javascript/animation/progresspies.js?v={{timestamp}}"></script>
+  <script src="/javascript/dashboard_cont.js?v={{timestamp}}"></script>
+  <script src="/javascript/prompts/unregister.js?v={{timestamp}}"></script>
+  <script src="/javascript/dashboard/dashboard_tabs.js?v={{timestamp}}"></script>
+  <script src="/javascript/dashboard/topicdashboard.js?v={{timestamp}}"></script>
+
+  <!-- External library (no cache busting needed) -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  {{> mainpartials/footer}}
+</body>
+</html>

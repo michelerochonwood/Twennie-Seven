@@ -1,0 +1,149 @@
+{{#*inline "title"}}Member Profile Form | Twennie{{/inline}}
+<div class="profile-form-container">
+  
+  <h2 class="profile-form-title">edit member profile</h2>
+
+  <form 
+    action="/profile/member/{{profile.memberId}}/update" 
+    method="POST" 
+    class="profile-form" 
+    enctype="multipart/form-data"
+  >
+
+    <!-- CSRF Token -->
+    {{#if csrfToken}}
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    {{/if}}
+
+    <!-- Current Profile Image -->
+    {{#if profile.profileImage}}
+      <div class="form-field">
+        <label>Current Profile Image</label>
+        <img 
+          src="{{profile.profileImage}}" 
+          alt="Profile Image" 
+          style="width: 120px; height: auto; border-radius: 8px; margin-top: 8px;"
+        >
+      </div>
+    {{/if}}
+
+    <!-- Upload New Profile Image (Cloudinary Upload) -->
+    <div class="form-field">
+      <label for="profileImage">Upload New Profile Image</label>
+      <input 
+        type="file" 
+        id="profileImage" 
+        name="profileImage" 
+        accept="image/*"
+      >
+      <p class="form-hint">Your new image will be uploaded when saved. Please choose a file no larger than 2MB.</p>
+    </div>
+
+    <!-- Name -->
+    <div class="form-field">
+      <label for="name">Name</label>
+      <input 
+        type="text" 
+        id="name" 
+        name="name" 
+        value="{{profile.name}}" 
+        required
+      >
+    </div>
+
+    <!-- Professional Title -->
+    <div class="form-field">
+      <label for="professionalTitle">Professional Title</label>
+      <input 
+        type="text" 
+        id="professionalTitle" 
+        name="professionalTitle" 
+        value="{{profile.professionalTitle}}" 
+        required
+      >
+    </div>
+
+    <!-- Organization -->
+    <div class="form-field">
+      <label for="organization">Organization (if you would prefer to remain anonymous, write "anonymous")</label>
+      <input 
+        type="text" 
+        id="organization" 
+        name="organization" 
+        value="{{profile.organization}}" 
+      >
+    </div>
+
+    <!-- Biography -->
+    <div class="form-field">
+      <label for="biography">Biography</label>
+      <textarea 
+        id="biography" 
+        name="biography"
+      >{{profile.biography}}</textarea>
+    </div>
+
+    <!-- Learning Goals -->
+    <div class="form-field">
+      <label for="goals">Learning Goals</label>
+      <textarea 
+        id="goals" 
+        name="goals"
+      >{{profile.goals}}</textarea>
+    </div>
+
+    <!-- Topics (Dropdowns) -->
+    <div class="form-field">
+      <p>Having a top three topics helps you navigate to your favorite subjects more quickly.</p>
+      <label for="topic1">Topic 1</label>
+      <select id="topic1" name="topics[topic1]">
+        {{#each allTopics}}
+          <option 
+            value="{{this}}" 
+            {{#if (eq this ../profile.topics.topic1)}}selected{{/if}}
+          >
+            {{this}}
+          </option>
+        {{/each}}
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="topic2">Topic 2</label>
+      <select id="topic2" name="topics[topic2]">
+        {{#each allTopics}}
+          <option 
+            value="{{this}}" 
+            {{#if (eq this ../profile.topics.topic2)}}selected{{/if}}
+          >
+            {{this}}
+          </option>
+        {{/each}}
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="topic3">Topic 3</label>
+      <select id="topic3" name="topics[topic3]">
+        {{#each allTopics}}
+          <option 
+            value="{{this}}" 
+            {{#if (eq this ../profile.topics.topic3)}}selected{{/if}}
+          >
+            {{this}}
+          </option>
+        {{/each}}
+      </select>
+    </div>
+
+    <!-- Submit and Cancel Buttons -->
+    <div class="form-buttons">
+      <button type="submit" class="form-button submit-button">save changes</button>
+      <a href="/profile/member/{{profile.memberId}}" class="form-button save-button">cancel</a>
+    </div>
+
+  </form>
+</div>
+
+
+

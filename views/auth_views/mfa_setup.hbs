@@ -1,0 +1,41 @@
+{{#*inline "title"}}Set up MFA | Twennie{{/inline}}
+
+<div class="mfa-container">
+  <h1 class="mfa-title">set up mfa (totp)</h1>
+
+  {{#if error}}
+    <div class="mfa-alert" role="alert">{{error}}</div>
+  {{/if}}
+
+  <img class="mfa-qrcode" src="{{qrDataUrl}}" alt="Scan this QR code">
+
+  <p class="mfa-helper">
+    Can’t scan? Use this key:
+    <code class="mfa-key">{{manualKey}}</code>
+  </p>
+
+  <form action="{{baseUrl}}/verify-setup" method="POST" class="mfa-form" novalidate>
+    {{#if csrfToken}}<input type="hidden" name="_csrf" value="{{csrfToken}}">{{/if}}
+
+    <div class="mfa-field">
+      <label class="mfa-label" for="token">Enter the 6-digit code</label>
+      <input
+        id="token"
+        name="token"
+        class="mfa-input mfa-input--code"
+        required
+        inputmode="numeric"
+        autocomplete="one-time-code"
+        pattern="[0-9]{6}"
+        aria-describedby="mfa-code-hint"
+      />
+      <small id="mfa-code-hint" class="mfa-hint">Open your authenticator app and enter the current 6-digit code.</small>
+    </div>
+
+    <div class="mfa-actions">
+      <button class="mfa-button" type="submit">verify &amp; enable</button>
+    </div>
+  </form>
+</div>
+
+

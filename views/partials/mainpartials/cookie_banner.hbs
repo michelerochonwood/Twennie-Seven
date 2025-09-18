@@ -1,0 +1,98 @@
+<div id="cookie-banner" class="cookie-banner" style="display:none">
+  <p>We use cookies to improve your experience. Choose your preferences.</p>
+  <div class="cookie-actions">
+    <button id="accept-all">Accept all</button>
+    <button id="reject-nonessential">Reject non-essential</button>
+    <button id="open-settings">Settings</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  const hasConsent = document.cookie.includes('twennieConsent=');
+  if (!hasConsent) document.getElementById('cookie-banner').style.display = 'block';
+
+  function setConsent(prefs) {
+    const v = {
+      version: 1, necessary: true,
+      functional: !!prefs.functional,
+      analytics: !!prefs.analytics,
+      marketing: !!prefs.marketing,
+      updatedAt: new Date().toISOString()
+    };
+    const maxAge = 60*60*24*180; // 180 days
+    document.cookie =
+      "twennieConsent="+encodeURIComponent(JSON.stringify(v))+
+      "; Max-Age="+maxAge+"; Path=/; SameSite=Lax"+(location.protocol==='https:'?"; Secure":"");
+    location.reload();
+  }
+
+  document.getElementById('accept-all').onclick = () => setConsent({functional:true, analytics:true, marketing:true});
+  document.getElementById('reject-nonessential').onclick = () => setConsent({functional:false, analytics:false, marketing:false});
+  document.getElementById('open-settings').onclick = () => window.location='/privacy/cookies';
+})();
+
+
+(function () {
+  const banner = document.getElementById('cookie-banner');
+  const acceptBtn = document.getElementById('accept-all');
+  const rejectBtn = document.getElementById('reject-nonessential');
+  const settingsBtn = document.getElementById('open-settings');
+
+  const hasConsent = document.cookie.split('; ').some(c => c.startsWith('twennieConsent='));
+
+  // Show banner with slide-up animation
+  if (!hasConsent && banner) {
+    banner.style.display = 'block';                      // un-hide for layout
+    requestAnimationFrame(() => banner.classList.add('is-active')); // then animate
+  }
+
+  function writeConsentAndHide(prefs) {
+    const v = {
+      version: 1, necessary: true,
+      functional: !!prefs.functional,
+      analytics:  !!prefs.analytics,
+      marketing:  !!prefs.marketing,
+      updatedAt: new Date().toISOString()
+    };
+
+    const maxAge = 60 * 60 * 24 * 180; // 180 days
+    const secure = location.protocol === 'https:' ? '; Secure' : '';
+    const domain = location.hostname.endsWith('.twennie.com') ? '; Domain=.twennie.com' : '';
+
+    document.cookie =
+      'twennieConsent=' + encodeURIComponent(JSON.stringify(v)) +
+      '; Max-Age=' + maxAge + '; Path=/; SameSite=Lax' + secure + domain;
+
+    // Slide-out then reload
+    if (banner) {
+      banner.classList.remove('is-active');
+      const finish = () => location.reload();
+      // If user prefers reduced motion, skip transition wait
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        finish();
+      } else {
+        banner.addEventListener('transitionend', finish, { once: true });
+        // Fallback in case transitionend doesn't fire
+        setTimeout(finish, 500);
+      }
+    } else {
+      location.reload();
+    }
+  }
+
+  acceptBtn?.addEventListener('click', () =>
+    writeConsentAndHide({ functional: true, analytics: true, marketing: true })
+  );
+
+  rejectBtn?.addEventListener('click', () =>
+    writeConsentAndHide({ functional: false, analytics: false, marketing: false })
+  );
+
+  settingsBtn?.addEventListener('click', () => {
+    window.location = '/privacy/cookies';
+  });
+})();
+
+
+</script>

@@ -1,0 +1,451 @@
+/* These styles are for the Deaktop & Mobile Header and Footer Elements */
+
+/* Import Figtree Font */
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;800&display=swap');
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: "Figtree";
+  /* Ensures any form fields that are required display the tool tip by default, setting the behaviour to "smooth" for example overwrites the display unless you custom code an error tool-tip. */
+  scroll-behavior: auto!important;
+}
+
+/* Start of Navigation Bar Styles */
+
+.sidebar-nav {
+    position: fixed;
+    top: 100px;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100px;
+    margin-top: 100px;
+    z-index: 99;
+  }
+  
+  .user-greeting {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: white;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+    left: 200%;
+    top: -130px;
+    width: 150px;
+    font-weight: 800;
+  } 
+  
+  /* Set the navigation parent to display flex to allow all children to become flex items. */
+  #navigation-wrapper {
+    display: flex;
+    align-items: center;
+    height: 160px;
+    padding: 0; /* no padding at all */
+    background-color: #4e50a2;
+  }
+
+  .primary-logo img {
+    height: 160px;
+    width: auto;
+    display: block;
+  }
+  
+  /* Align the logo inside the parent container. */
+  .primary-logo {
+    display: flex;
+    align-items: center;
+    height: 160px;
+    margin-left: 0;
+    padding-left: 0;
+  }
+  
+  .primary-logo a {
+    font-size: 32px;
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  /* Set the navigation unordered list to flex to allow individual control over the elements. */
+  nav ul {
+    display: flex;
+    align-items: center;
+    list-style: none;
+  }
+  
+  nav ul li {
+    /* Add some spacing between each list-item with left and right margins. */
+    margin: 0 8px;
+    /* Add whitespace on each list item with padding */
+    padding: 0.6rem 1.25rem;
+  }
+  
+  /* Nav anchor styles, font family, size, weight, and some letter spacing. */
+  nav ul li a {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 500;
+    letter-spacing: 0.05rem;  
+    text-decoration: none;
+    font-family: "Figtree";
+  }
+  
+  nav ul li a,
+  nav ul li a::before {
+    /* Set up a transition to be used when hovered later on. */
+    transition: 0.3s;
+  }
+  
+  /* Set the links to the primary orange color when hovered over. */
+  nav ul li a:hover {
+    color: #d8d8d8;
+  }
+  
+  /* Create an hidden block element before the anchor element, when hovered the width will expand to 100% forming a line above it. */
+  nav ul li a::before {
+    display: block;
+    content: "";
+    height: 0.1rem;
+    width: 0;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* When the anchor links are hovered, the above before selector width will be set to 100% with a background color to fill in the line. */
+  nav ul li a:hover::before {
+    width: 100%;
+    background-color: #262262;
+  }
+  
+  /* Nav Toggle menu styles */
+  
+  /* Hide the mobile navigation hamburger and close icons by default, I'll display these at smaller device widths. */
+  #open-menu,
+  #close-menu {
+    display: none;
+  }
+  
+  .mobile-links {
+    display: none;
+  }
+  
+  /* Mobile Navigation Media Query (1200px) Device Width */
+  @media screen and (max-width: 1200px) {
+
+    .primary-logo {
+      display: none;
+    }
+  
+    #navigation-wrapper {
+      padding: 1.75rem 5rem 0.85rem 5rem;
+    }
+
+    .desktop-links {
+      display: none;
+    }
+  
+    /* Space the logo and mobile icons within the header. */
+    header {
+      justify-content: space-between;
+    }
+  
+    /* The logo needs to be slightly smaller on mobile to prevent potential overflow.  */
+    .primary-logo img {
+      width: 120px;
+    }
+  
+    /* Set the color and size of the mobile navigation icons. */
+    #open-menu,
+    #close-menu {
+      font-size: 42px;
+    }
+  
+    #open-menu {
+      color: white;
+    }
+  
+    #close-menu {
+      color: white;
+    }
+  
+    /* The open hamburger will stay inline with other elements in the parent container. */
+    #open-menu {
+      display: inline;
+    }
+  
+    /* Position the close menu absolutely, this will ensure it's in the top right corner when the menu is toggled. */
+    #close-menu {
+      display: block;
+      position: absolute;
+      right: 24px;
+    }
+  
+    /* At smaller screens, the header navigation menu will appear off screen by using fixed positioning. */
+    header nav {
+      position: fixed;
+      top: 0;
+      /* Hide the contents of the nav to the right completely. */
+      left: -100%;
+      /* Set a background color, width and height properties to ensure the menu covers the screen when toggled. */
+      background-color: #262262;
+      width: 100%;
+      height: 100vh;
+      padding: 24px 0;
+      /* Place the nav on the very top of the stack content with z-index. */
+      z-index: 100;
+      /* To allow the menu to float in nicely from the right on click, I added a transition. */
+      transition: 0.6s;
+      overflow-y: auto;
+    }
+  
+    /* Set the unordered list parent to flex direction column as it's now a mobile devive, and to prevent overflow. Allows all the children to stack on top of one another. */
+    nav ul {
+      display: flex;
+      flex-direction: column;
+      margin-top: 2rem;
+    }
+  
+    /* Add some top and bottom margins to each nav item for whitespace. */
+    nav ul li {
+      margin: 0.25rem 0 1rem 0;
+    }
+  
+    /* Remove the transition effects that are on desktop when on a mobile device. */
+    nav ul li:hover {
+      transform: none;
+    }
+  
+    nav ul li a {
+      color: white;
+    }
+  
+    nav ul li a,
+    nav ul li a::before {
+      transition: none;
+    }
+  
+    /* The .show__nav class is important here as it will display or hide the nav element on click, I used JavaScript to toggle this class using add and remove. */
+    .show__nav {
+      left: 0;
+    }
+  
+    .mobile-links {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      padding: 0 2rem;
+      justify-content: center;
+      align-content: center;
+      text-align: center;
+      margin-top: 4.5rem;
+      margin-bottom: 4rem;
+    }
+  
+  }
+  
+  @media screen and (max-width: 680px) {
+    .mobile-links {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    nav ul li a {
+      line-height: 1.4;
+    }
+  }
+  
+  @media screen and (max-width: 600px) {
+    #navigation-wrapper {
+      justify-content: space-between;
+      padding: 1rem 3rem;    
+    }
+  }
+  
+  @media screen and (max-width: 380px) {
+    #navigation-wrapper {
+      padding: 1rem 1.5rem;    
+    }
+    .mobile-links {
+      grid-template-columns: repeat(2, 1fr);
+      padding: 0;
+    }
+    .mobile-links a {
+      font-size: 1rem;
+    }
+  }
+  
+  .nav-square {
+    width: 60px;
+    height: 60px;
+    background: #5a5552;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    position: relative;
+    text-decoration: none;
+    padding: 5px;
+    border-radius: 3px;
+  }
+  
+  .nav-square:hover {
+    background-color:#dc176a;
+  }
+  
+  .nav-square img {
+    width: 30px;
+    height: 30px;
+    align-self: center;
+    margin-top: 8px;
+  }
+  
+  .nav-text {
+    font-size: 0.5rem;
+    font-weight: 100;
+    color: white;
+    text-align: right;
+    width: 100%;
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+  }
+  
+  /* Arrow effect */
+  .nav-square::after {
+    content: "";
+    position: absolute;
+    right: -10px;
+    top: 80%;
+    transform: translateY(-50%);
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 10px solid #5a5552;
+  }
+  
+  .nav-square:hover::after {
+    border-left-color: #dc176a;
+  }
+
+  /* Global Footer Styles. */
+  .custom-footer {
+      width: 100%;
+      height: 100px; /* Adjust as needed */
+      background-color: transparent;
+      position: fixed; /* Stays at the bottom of the document */
+      bottom: 0;
+      left: 0;
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-end;
+      z-index: 1000;
+      overflow: hidden;
+  }
+  
+  /* Background SVG */
+  /* .footer-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+  }
+  
+  .footer-svg {
+    width: 100%;
+    height: 100%;
+  } */
+  
+  /* Footer Tabs Container (Aligns tabs to the right) */
+  .footer-tabs {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: flex-end;
+    padding: 0;
+    margin: 0;
+    margin-right: 50px;
+    gap: 5px;
+  }
+  
+  /* Individual Tabs */
+  .footer-tab {
+    width: 50px;
+    height: 50px;
+    background-color: #5a5552;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: background-color 0.3s ease;
+    text-decoration: none;  
+    border-radius: 2px;
+  }
+  
+  /* Ensures the first tab doesn't have a left border */
+  .footer-tab:first-child {
+    border-left: none;
+  }
+  
+  /* Hover Effect */
+  .footer-tab:hover {
+    background-color: #dc176a;
+  }
+  
+  /* Tab Icons */
+  .footer-tab img {
+    width: 24px;
+    height: 24px;
+  }
+  
+  /* Arrow Effect (Smaller Size, Positioned Above the Tab) */
+  .footer-tab::before {
+    content: "";
+    position: absolute;
+    top: -5px; /* Slightly smaller arrow */
+    left: 20%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid #5a5552; /* Matches tab color */
+    transition: border-bottom-color 0.3s ease;
+  }
+  
+  /* Change Arrow Color on Hover */
+  .footer-tab:hover::before {
+    border-bottom-color: #dc176a;
+  }
+  
+  /* Font Styling */
+  .footer-tab {
+    font-family: "Figtree", sans-serif;
+    font-size: 0.5rem;
+    font-weight: 100;
+    color: white;
+    text-align: center;
+  }
+  
+  @media screen and (max-width: 1200px) {
+    .sidebar-nav, 
+    .custom-footer {
+      display: none;
+    }
+  }
+  
+  /* Wave for header */
+  .wave-divider {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+  }
+  
+  .wave-divider svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    fill: #262262
+  }
+
+  /* End of Navigation Styles */

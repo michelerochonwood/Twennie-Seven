@@ -1,0 +1,25 @@
+<section class="leader-library-units-section">
+  <h2 class="leader-library-units-title">my library units</h2>
+
+  {{#if leaderUnits.length}}
+    <div class="leader-library-units-grid">
+      {{#each leaderUnits}}
+        <div class="leader-library-unit-card">
+          <div class="leader-library-unit-icon">
+            <img src="/icons/{{toLowerCase this.unitType}}.svg" alt="{{unitType}} icon">
+          </div>
+          <div class="leader-library-unit-info">
+            <h3 class="leader-library-unit-title">{{title}}</h3>
+            <p class="leader-library-unit-topic">{{mainTopic}}</p>
+            <p class="leader-library-unit-status">Status: {{status}}</p>
+          </div>
+          <a href="/unitviews/{{toLowerCase this.unitType}}s/view/{{this._id}}" class="leader-library-unit-link">view or edit</a>
+        </div>
+      {{/each}}
+    </div>
+  {{else}}
+    <div class="leader-no-library-units-container">
+      <p class="leader-no-library-units">No units submitted yet.</p>
+    </div>
+  {{/if}}
+</section>

@@ -1,0 +1,162 @@
+{{#*inline "title"}}Create Upcoming Unit | Twennie{{/inline}}
+{{!-- Optionally: {{> mainpartials/upcominginstructions_partial}} --}}
+
+<div class="contribute-wave-divider">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 160">
+    <path fill="#939598" fill-opacity="1"
+      d="M0,64L80,58.7C160,53,320,43,480,58.7C640,75,800,117,960,122.7C1120,128,1280,96,1360,80L1440,64L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z">
+    </path>
+  </svg>
+</div>
+
+<div class="form-article-background">
+  <div class="form-article-container">
+    <form
+      id="upcoming-form"
+      class="article-form"
+      action="/unitform/submit_upcoming"
+      method="POST"
+      enctype="multipart/form-data"
+    >
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+      <input type="hidden" name="_id" value="{{data._id}}">
+
+      <!-- Current Image -->
+      <div class="form-field">
+        <label>Upcoming Unit Image</label>
+        <img
+          src="{{#if data.image.url}}{{data.image.url}}{{else}}/images/default-upcoming.png{{/if}}"
+          alt="Upcoming Unit Image"
+          style="width: 240px; height: auto; border-radius: 8px; margin-top: 8px;"
+        >
+      </div>
+
+      <!-- Upload New Image -->
+      <div class="form-field">
+        <label for="image">Upload Image (optional)</label>
+        <input type="file" id="image" name="image" accept="image/*">
+        <p class="form-hint">
+          If no image is uploaded, a default will be used. If your image is larger than 5MB, the unit will not post and you will be rerouted back to this form.
+        </p>
+      </div>
+
+      <!-- Title -->
+      <div class="form-field">
+        <label for="title">Upcoming Unit Title</label>
+        <input type="text" id="title" name="title" value="{{data.title}}" required>
+      </div>
+
+      <!-- Unit Type -->
+      <div class="form-field">
+        <label for="unit-type">Unit Type</label>
+        <select id="unit-type" name="unit_type" class="form-select" required>
+          <option value="">Select a type</option>
+          {{#each unitTypes}}
+            <option value="{{this}}" {{#ifEquals this ../data.unit_type}}selected{{/ifEquals}}>{{this}}</option>
+          {{/each}}
+        </select>
+      </div>
+
+      <!-- Main Topic -->
+      <div class="form-field">
+        <label for="main-topic">Main Topic</label>
+        <select id="main-topic" name="main_topic" class="form-select" required>
+          <option value="">Please select a main topic</option>
+          {{#each mainTopics}}
+            <option value="{{this}}" {{#ifEquals this ../data.main_topic}}selected{{/ifEquals}}>{{this}}</option>
+          {{/each}}
+        </select>
+      </div>
+
+
+
+      <!-- Teasers -->
+      <div class="form-field">
+        <label for="teaser">Short Teaser (max 300 chars)</label>
+        <textarea id="teaser" name="teaser" maxlength="300">{{data.teaser}}</textarea>
+      </div>
+
+      <div class="form-field">
+        <label for="long-teaser">Long Teaser (max 1000 chars)</label>
+        <textarea id="long-teaser" name="long_teaser" maxlength="1000">{{data.long_teaser}}</textarea>
+      </div>
+
+      <!-- Projected Release Date -->
+      <div class="form-field">
+        <label for="projected-release">Projected Release Date</label>
+        <input
+          type="date"
+          id="projected-release"
+          name="projected_release_at"
+          value="{{formatDate data.projected_release_at 'YYYY-MM-DD'}}"
+          required
+        >
+      </div>
+
+      <!-- Status (keep simple: in production / cancelled; allow 'released' when editing) -->
+{{#if canPublish}}
+  <a id="publishNowLink"
+     class="single_article-edit-btn"
+     href="/unitform/prefill_from_upcoming/{{unit_type}}/{{_id}}">
+    publish now
+  </a>
+{{/if}}
+
+      <!-- Visibility (same radios as Article) -->
+      <div class="form-field">
+        <label>Who can see this upcoming unit?</label>
+        <div class="visibility-toggle-row">
+          <label class="visibility-option">
+            <input type="radio" name="visibility" value="team_only" {{#ifEquals data.visibility "team_only"}}checked{{/ifEquals}} required>
+            share with my team only
+          </label>
+          <label class="visibility-option">
+            <input type="radio" name="visibility" value="organization_only" {{#ifEquals data.visibility "organization_only"}}checked{{/ifEquals}} required>
+            share with my organization only
+          </label>
+          <label class="visibility-option">
+            <input type="radio" name="visibility" value="all_members" {{#ifEquals data.visibility "all_members"}}checked{{/ifEquals}} required>
+            share with all Twennie members
+          </label>
+        </div>
+      </div>
+
+
+
+      <div class="form-buttons">
+        {{#if data._id}}
+          <button type="submit" name="submit" value="edit" class="form-button submit-button">save upcoming unit</button>
+        {{else}}
+          <button type="submit" name="submit" value="submit" class="form-button submit-button">create upcoming unit</button>
+        {{/if}}
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Prevent picking a past projected date (client-side nicety)
+  (function enforceMinDate(){
+    try {
+      const input = document.getElementById('projected-release');
+      if (!input) return;
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth()+1).padStart(2,'0');
+      const dd = String(today.getDate()).padStart(2,'0');
+      const min = `${yyyy}-${mm}-${dd}`;
+      if (!input.value) input.value = min;
+      input.min = min;
+    } catch(e) { /* no-op */ }
+  })();
+
+
+    document.getElementById('publishNowLink')?.addEventListener('click', (e) => {
+    if (!confirm('Open the {{unit_type}} form prefilled and publish now? This will delete the upcoming card after publishing.')) {
+      e.preventDefault();
+    }
+  });
+</script>
+
+{{> mainpartials/footer}}

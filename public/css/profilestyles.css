@@ -1,0 +1,2378 @@
+/* Import Figtree Font */
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;800&display=swap');
+
+html, body {
+
+  margin: 0;
+  padding: 0;
+  font-family: "Figtree";
+}
+
+/* Sidebar Navigation */
+/* .sidebar-nav {
+  position: fixed;
+  top: 100px;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100px;
+  margin-top: 100px;
+}
+
+.user-greeting {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color:#5a5552;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+  left: 300%;
+  top: -130px;
+  width: 150px;
+} */
+
+
+/* ✅ Main Profile Container */
+.profile-main {
+  display: flex;
+  flex-direction: column;
+  /* width: 100%; */
+  align-items: center;
+  /* margin-top: 130px; */
+  padding: 0 8rem;
+  min-height: 100vh;
+  margin: 7rem auto 5rem auto;
+}
+
+.profile-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ✅ Updated Profile Grid Layout (Sidebar + Main Content) */
+
+
+/* ✅ Sidebar Styles */
+.profile-sidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 10px; /* Space between sidebar and tabs */
+  margin: 0 auto;
+}
+
+.profile-title {
+  margin-top: -20px;
+}
+
+/* ✅ Profile Image */
+.profile-image {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #262262;
+  margin-bottom: 15px;
+}
+
+.profile-name {
+  color:#262262;
+}
+
+
+/* ✅ Profile Tabs */
+.profile-tabs-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 2rem auto 0.5rem auto;
+}
+
+/* ✅ Individual Tab */
+.profile-tab {
+  width: 100px;
+  height: 100px;
+  font-family: "Figtree";
+  font-weight: 600;
+  background-color: #5a5552;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: right;
+  justify-content: flex-end;
+  padding: 10px;
+  font-size: 0.8rem;
+  position: relative;
+  cursor: pointer;
+  text-align: right;
+  transition: background-color 0.3s ease;
+}
+
+.tab-title {
+  font-size: 0.7rem;
+}
+
+/* ✅ Active Tab */
+.profile-tab.active {
+  background-color: #dc176a;
+}
+
+/* ✅ Tab Arrow */
+.profile-tab .tab-arrow {
+  position: absolute;
+  bottom: -10px;
+  left: 15%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid #5a5552;
+  display: none;
+}
+
+/* ✅ Ensure the arrow matches the active tab color */
+.profile-tab.active .tab-arrow {
+  display: block;
+  border-top-color: #dc176a;
+}
+
+/* ✅ Tab Content */
+.profile-tab-content {
+  display: none;
+  width: 100%;
+  max-width: 900px;
+
+}
+
+/* ✅ Show active tab */
+.profile-tab-content.active {
+  display: block;
+}
+
+/* ✅ Text inside profile sections */
+.profile-section-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #262262;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.profile-section-content {
+  font-size: 1rem;
+  color: #333;
+  line-height: 1.5;
+  text-align: left;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* ✅ Badges Container (Grid Layout) */
+.profile-badges-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 columns */
+  gap: 20px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+/* ✅ Individual Badge Card */
+.profile-badge-card {
+  background-color: #f5f5f5;
+  border-radius: 10px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+
+
+/* ✅ Title */
+.profile-earned-badges-title {
+  text-align: center;
+  color:#262262;
+  font-weight: 800;
+  font-size: 1rem;
+  margin-top: 30px;
+}
+
+.profile-badge-title {
+  color:#262262;
+}
+
+/* ✅ Badge Icon */
+.profile-badge-icon img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+}
+
+/* ✅ Badge Prompt Set */
+.profile-badge-promptset {
+  font-weight: 600;
+  color:#4a4ab2;
+  font-size: 0.8rem;
+  margin-top: 5px;
+}
+
+/* ✅ Badge Topic */
+.profile-badge-topic {
+  font-size: 0.7rem;
+  color: #555;
+}
+
+/* ✅ No ITEMS YET Messages for all profiles */
+/* Shared layout container */
+.profile-no-badges-container,
+.leader-no-library-units-container,
+.group-earned-badge-empty-container,
+.group-completed-prompts-empty-container,
+.member-no-library-units-container,
+.member-no-completed-prompts-container,
+.groupmember-library-empty-container,
+.groupmember-completed-prompts-empty-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 150px;
+  text-align: center;
+}
+
+/* Shared message text */
+.profile-no-badges,
+.leader-no-library-units,
+.group-earned-badge-no-badges,
+.group-library-no-units,
+.group-no-completed-prompts,
+.member-no-library-units,
+.member-no-completed-prompts,
+.groupmember-library-no-units,
+.groupmember-no-completed-prompts {
+  font-size: 1rem;
+  font-style: italic;
+  color: #555;
+}
+
+
+
+
+
+/* ✅ Responsive Adjustments */
+@media (max-width: 1200px) {
+  .profile-badges-grid {
+    grid-template-columns: repeat(3, 1fr); /* 3 per row */
+  }
+}
+
+@media (max-width: 900px) {
+  .profile-badges-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 per row */
+  }
+}
+
+@media (max-width: 600px) {
+  .profile-badges-grid {
+    grid-template-columns: repeat(1, 1fr); /* 1 per row */
+  }
+}
+
+
+/* ✅ Library Units Grid */
+.profile-library-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+/* ✅ Library Unit Card */
+.profile-library-card {
+  background: rgb(242, 242, 242);
+  padding: 15px;
+  text-align: center;
+  position: relative;
+  border-radius: 8px;
+  box-shadow: 2px 8px 14px rgba(0, 0, 0, 0.2);
+}
+
+/* ✅ Library Unit Title */
+.profile-library-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #4a4ab2;
+  margin-bottom: 10px;
+}
+
+/* ✅ Goals Section */
+.profile-goals {
+  font-size: 0.9rem;
+  color: #333;
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+
+/* ✅ Responsive Design */
+@media (max-width: 900px) {
+  .profile-grid {
+    grid-template-columns: 1fr; /* Stack sidebar and content */
+    gap: 20px;
+    margin: 0 auto;
+  }
+
+  /* .profile-tabs-container {
+    flex-wrap: wrap;
+  } */
+
+  /* .profile-tab {
+    width: 100px;
+    height: 80px;
+    font-size: 0.7rem;
+  } */
+}
+
+
+.profile-edit-btn {
+  display: inline-block;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  padding: 8px 15px;
+  background-color: #262262;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 56px;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.profile-edit-btn:hover {
+  background-color: #4a4ab2;
+}
+
+#leadership_goals.profile-tab-content {
+  /* background-color: rgba(74, 74, 178, 0.1);
+  padding: 20px; */
+  border-radius: 8px;
+}
+
+/* ✅ Profile Form Container */
+.profile-form-container {
+  background-color: white;
+  border-radius: 15px;
+  padding: 40px;
+  max-width: 600px;
+  margin: 7rem auto 5rem auto;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* ✅ Form Title */
+.profile-form-title {
+  font-family: "Figtree", sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #262262;
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+/* ✅ Form Styling */
+.profile-form {
+  font-family: "Figtree", sans-serif;
+  color: #4a4ab2;
+}
+
+/* ✅ Form Field Styling */
+.form-field {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ✅ Form Labels */
+.form-field label {
+  font-weight: 600;
+  color: #4a4ab2;
+  padding-bottom: 8px;
+}
+
+/* ✅ Input and Textarea Styling */
+.form-field input:not([type="checkbox"]):not([type="radio"]),
+.form-field textarea {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 99px;
+  padding: 10px 15px;
+  font-family: "Figtree";
+  font-size: 0.8rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ✅ Textarea Specific Styling */
+.form-field textarea {
+  border-radius: 15px;
+  min-height: 100px;
+  resize: both;
+  overflow: auto;
+}
+
+/* ✅ Dropdown Field */
+.form-field select {
+  background-color: #fff;
+  border: 2px solid #ccc; /* Matches existing form styles */
+  border-radius: 30px; /* Rounded border */
+  padding: 10px 15px;
+  font-family: "Figtree", sans-serif;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  color: #262262; /* Matches your text color */
+  appearance: none; /* Removes default browser styling */
+  transition: border-color 0.3s ease-in-out, background-color 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+/* ✅ Hover and Focus Effects */
+.form-field select:hover,
+.form-field select:focus {
+  border-color: #4a4ab2;
+  background-color: rgb(245, 245, 245);
+  outline: none;
+}
+
+.groupmember-topic-instructions {
+  text-align: center;
+  font-family: "Figtree";
+  width: 50%;
+  color:#333;
+  margin: 0 auto;
+  font-size: 0.8rem;
+}
+
+/* ✅ Dropdown Arrow Customization */
+.form-field {
+  position: relative;
+}
+
+.form-field select {
+  padding-right: 40px; /* Space for the arrow */
+}
+
+.form-field::after {
+
+  font-size: 14px;
+  color: #262262;
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* ✅ Responsive Design */
+@media (max-width: 900px) {
+  .form-field select {
+    font-size: 0.9rem;
+  }
+}
+
+
+/* ✅ Form Buttons */
+.form-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+/* ✅ Button Styling */
+.form-button {
+  font-family: "Figtree";
+  /* padding: 5px 10px; */
+  padding: 1rem 1.5rem;
+  font-weight: 800;
+  border: none;
+  border-radius: 99px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+  font-size: 0.8rem;
+}
+
+/* ✅ Save and Submit Button Styles */
+.submit-button {
+  background-color: #262262;
+  color: white;
+}
+
+.save-button {
+  background-color: #ccc;
+  color: #4a4ab2;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  line-height: 38px;
+  padding: 5px 10px;
+  font-size: 0.8rem;
+}
+
+/* ✅ Hover States */
+.form-button:hover {
+  background-color: #4e50a2;
+  color: #fff;
+}
+
+.save-button:hover {
+  background-color: #a1a1a1;
+}
+
+.submit-button,
+.save-button {
+  min-width: 150px;
+}
+
+/* ✅ Responsive Design */
+@media (max-width: 768px) {
+  .profile-form-container {
+    padding: 30px;
+    max-width: 90%;
+  }
+
+  .form-buttons {
+    flex-direction: column;
+    margin: 0 auto;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .submit-button {
+    margin-top: 1rem;
+  }
+
+  .submit-button,
+  .save-button {
+    min-width: 200px;
+    line-height: 0;
+    padding: 1.5rem 2rem;
+  }
+
+}
+
+
+/* ✅ Biography Section */
+
+
+.member-bio-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 50%;
+  margin: 0 auto;
+  padding-top: 15px;
+}
+
+/* ✅ Title */
+.member-profile-subtitle {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #262262;
+  margin-bottom: 10px;
+}
+
+/* ✅ Biography Text */
+.member-bio-text {
+  font-size: 0.8rem;
+  line-height: 1.2;
+  color: #333;
+}
+
+
+/* ✅ Goals Section */
+.member-goals-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 50%;
+  margin: 0 auto;
+  padding-top: 15px;
+}
+
+.member-goals-text {
+  font-size: 0.8rem;
+}
+
+/* ✅ Title */
+/* ✅ Profile Topics Section */
+.member-profile-topics-container {
+  padding: 20px;
+  text-align: center;
+}
+
+/* ✅ Title */
+.member-profile-topics-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #262262;
+  margin-bottom: 20px;
+}
+
+/* ✅ Grid Layout (Three Cards Per Row) */
+.member-profile-topics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* ✅ Ensures three topics in a row */
+  gap: 20px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+/* ✅ Individual Topic Card */
+.member-profile-topic-card {
+  background: rgb(245, 245, 245);
+  padding: 20px;
+  text-align: center;
+  border-radius: 10px;
+  box-shadow: 3px 6px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 220px; /* ✅ Ensures consistent height */
+}
+
+/* ✅ Topic Title */
+.member-profile-topic-title {
+  color: #262262;
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+/* ✅ Subtopics List */
+.member-profile-topic-subtopics {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  font-size: 0.7rem;
+  text-align: center;
+  max-width: 90%;
+}
+
+/* ✅ Subtopic Items (Ensures Centering & Divider Lines) */
+.member-profile-topic-subtopics li {
+  padding: 8px 0;
+  font-size: 0.7rem;
+  position: relative;
+  text-align: center;
+}
+
+/* ✅ Horizontal Divider Between Subtopics */
+.member-profile-topic-subtopics li:not(:last-child) {
+  border-bottom: 1px solid #ccc; /* ✅ Adds gray divider */
+  width: 80%;
+  margin: 0 auto;
+}
+
+/* ✅ Review Topic Button */
+.member-profile-topic-review {
+  display: inline-block;
+  margin-top: 15px;
+  color: #fff;
+  background: #262262;
+  padding: 10px 15px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-size: 0.7rem;
+  font-weight: 800;
+  transition: background 0.3s ease-in-out;
+}
+
+/* ✅ Hover Effect */
+.member-profile-topic-review:hover {
+  background: #4a4ab2;
+}
+
+/* ✅ Responsive Design */
+@media (max-width: 900px) {
+  .member-profile-topics-grid {
+    grid-template-columns: 1fr; /* ✅ Stack cards on smaller screens */
+  }
+}
+
+
+/* ✅ Library Units Section */
+.member-library-units-section {
+  text-align: center;
+  padding: 20px;
+}
+
+/* ✅ Title */
+.member-library-units-title {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #262262;
+  margin-bottom: 20px;
+}
+
+/* ✅ Grid Layout */
+.member-library-units-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+/* ✅ Individual Library Unit Card */
+.member-library-unit-card {
+  background: rgb(245, 245, 245);
+  padding: 15px;
+  text-align: center;
+  position: relative;
+  border-radius: 10px;
+  box-shadow: 3px 6px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ✅ Unit Type Icon */
+.member-library-unit-icon img {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 10px;
+}
+
+/* ✅ Unit Title */
+.member-library-unit-title {
+  color: #262262;
+  font-size: 1.1rem;
+  font-weight: 800;
+  margin-bottom: 5px;
+}
+
+/* ✅ Unit Topic */
+.member-library-unit-topic {
+  font-size: 0.9rem;
+  color: #4a4ab2;
+  margin-bottom: 5px;
+}
+
+/* ✅ Status */
+.member-library-unit-status {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+/* ✅ View/Edit Link */
+.member-library-unit-link {
+  display: inline-block;
+  margin-top: 10px;
+  color: #fff;
+  background: #262262;
+  padding: 10px 15px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 800;
+  transition: background 0.3s ease-in-out;
+}
+
+/* ✅ Hover Effect */
+.member-library-unit-link:hover {
+  background: #4a4ab2;
+}
+
+/* ✅ No Units Message */
+.member-no-library-units {
+  font-size: 1rem;
+  color: #777;
+  text-align: center;
+  margin: 0 auto;
+}
+
+/* ✅ Responsive Design */
+@media (max-width: 900px) {
+  .member-library-units-grid {
+    grid-template-columns: 1fr; /* Stack cards on smaller screens */
+  }
+}
+
+
+/* ✅ Completed Prompt Sets Section */
+.member-progress-completed {
+  margin-top: 15px; /* Matches leader dashboard */
+}
+
+/* ✅ Title */
+.member-progress-completed-title {
+  font-size: 15px; /* Matches leader dashboard */
+  font-weight: bold;
+  color: #262262;
+  text-align: center;
+}
+
+/* ✅ Grid Layout */
+.member-progress-completed-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 11.25px; /* Matches leader dashboard */
+  padding-top: 7.5px; /* Matches leader dashboard */
+}
+
+/* ✅ Individual Completed Prompt Set Card */
+.member-progress-completed-card {
+  background-color: rgb(230, 230, 230); /* Matches leader dashboard */
+  padding: 11.25px; /* Matches leader dashboard */
+  border-radius: 7.5px; /* Matches leader dashboard */
+  text-align: center;
+  box-shadow: 0 1.5px 3px rgba(0, 0, 0, 0.2); /* Matches leader dashboard */
+}
+
+/* ✅ Completed Prompt Set Details */
+.member-progress-completed-frequency,
+.member-progress-completed-main-topic {
+  font-size: 10.5px; /* Matches leader dashboard */
+  font-weight: 500;
+  color: #444;
+}
+
+/* ✅ Placeholder for Badge */
+.member-progress-completed-badge {
+  width: 50px;
+  height: 50px;
+  background-color: #ccc;
+  border-radius: 50%;
+  margin-top: 10px;
+}
+
+/* ✅ No Completed Prompts Message */
+.member-no-completed-prompts {
+  font-size: 12px;
+  color: #777;
+  text-align: center;
+}
+
+/* ✅ Responsive Design */
+@media (max-width: 900px) {
+  .member-progress-completed-grid {
+    grid-template-columns: 1fr; /* Stack cards on smaller screens */
+  }
+}
+/* ✅ Earned Badges Section */
+.member-badges-section {
+  margin-top: 15px;
+  text-align: center;
+}
+
+/* ✅ Title */
+.member-badges-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #262262;
+  text-align: center;
+}
+
+/* ✅ Grid Layout (Six Cards Per Row) */
+.member-badges-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 11.25px;
+  padding-top: 7.5px;
+}
+
+/* ✅ Individual Badge Card */
+.member-badges-card {
+  background-color: rgb(230, 230, 230);
+  padding: 11.25px;
+  border-radius: 7.5px;
+  text-align: center;
+  box-shadow: 0 1.5px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* ✅ Badge Title */
+.member-badges-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #262262;
+  margin-bottom: 5px;
+}
+
+/* ✅ Earned For */
+.member-badges-earned-for {
+  font-size: 10.5px;
+  font-weight: 500;
+  color: #444;
+  margin-bottom: 3px;
+}
+
+/* ✅ Date */
+.member-badges-date {
+  font-size: 10.5px;
+  font-weight: 500;
+  color: #444;
+  margin-bottom: 10px;
+}
+
+/* ✅ Badge Image Placeholder */
+.member-badges-image {
+  width: 50px;
+  height: 50px;
+  background-color: #ccc;
+  border-radius: 50%;
+  margin: 0 auto;
+}
+
+/* ✅ No Badges Message */
+.member-no-badges {
+  font-size: 12px;
+  color: #777;
+  text-align: center;
+  margin: 0 auto;
+}
+
+/* ✅ Responsive Design */
+@media (max-width: 1200px) {
+  .member-badges-grid {
+    grid-template-columns: repeat(3, 1fr); /* Switch to 3 per row on medium screens */
+  }
+}
+
+@media (max-width: 768px) {
+  .member-badges-grid {
+    grid-template-columns: repeat(2, 1fr); /* Switch to 2 per row on smaller screens */
+  }
+}
+
+@media (max-width: 500px) {
+  .member-badges-grid {
+    grid-template-columns: 1fr; /* Stack cards on very small screens */
+  }
+}
+
+.groupsection {
+  padding: 12px 0;
+  border-radius: 6px;
+  /* width: 85%; */
+  width: 100%;
+  margin: 0 auto;
+}
+
+.groupsection-title {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: #262262;
+  text-align: center;
+}
+
+.groupsection-title2 {
+  font-size: 0.85rem;
+  font-weight: 800;
+  margin-bottom: 2px;
+  color: #636363;
+  text-align: center;
+}
+
+.groupsection-stats {
+  margin-bottom: 12px;
+  font-size: 12px;
+  color: #555;
+  text-align: center;
+}
+
+.groupsection-grid {
+  display: grid;
+  /* grid-template-columns: repeat(10, 1fr); */
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+}
+
+/* .groupsection-card {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  text-align: center;
+  padding: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  max-width: 100px;
+} */
+
+.groupsection-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  text-align: center;
+  padding: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+  /* width: 120px; */
+  min-height: 150px;
+  max-width: 100%;
+}
+
+.groupsection-card-image img {
+  width: 50px; /* Adjusted size */
+  height: 50px;
+  border-radius: 50%;
+  border: 1px solid #262262;
+  object-fit: cover;
+  margin-bottom: 4px;
+}
+
+.groupsection-card-info {
+  font-size: 10px;
+  color: #555;
+}
+
+.groupsection-card-name {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #333;
+}
+
+.groupsection-card-title {
+  font-size: 0.75rem;
+  color: #777;
+}
+
+.groupsection-button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 32px;
+}
+
+.groupsection-card-button {
+  display: inline-block;
+  font-family: "Figtree";
+  padding: 3px 6px;
+  font-size: 9px;
+  font-weight: bold;
+  color: #fff;
+  background-color: #262262;
+  border: none;
+  border-radius: 99px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  margin: 6px;
+}
+
+.groupsection-card-button:hover {
+  background-color: #4a4ab2;
+}
+
+/* Empty slots styling */
+.groupsection-empty {
+  opacity: 0.5;
+}
+
+
+
+
+.leader-bio-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 50%;
+  margin: 0 auto;
+  padding-top: 15px;
+}
+
+/* ✅ Title */
+.leader-profile-subtitle {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #262262;
+  margin-bottom: 10px;
+}
+
+/* ✅ Biography Text */
+.leader-bio-text {
+  font-size: 0.8rem;
+  line-height: 1.2;
+  color: #333;
+}
+
+
+/* ✅ Goals Section */
+.leader-goals-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 50%;
+  margin: 0 auto;
+  padding-top: 15px;
+}
+
+.leader-goals-text {
+  font-size: 0.8rem;
+}
+
+.leader-leadershipgoals-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 50%;
+  margin: 0 auto;
+  padding-top: 15px;
+}
+
+.leader-leadershipgoals-text {
+  font-size: 0.8rem;
+}
+
+/* ✅ Main Container */
+.leader-profile-topics-container {
+  padding: 20px 0;
+  text-align: center;
+}
+
+/* ✅ Grid Layout for Topics */
+.leader-profile-topics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+
+/* ✅ Individual Topic Card */
+.leader-profile-topic-card {
+  background: rgb(245, 245, 245); /* Light background */
+  padding: 20px;
+  text-align: center;
+  position: relative;
+  border-radius: 10px;
+  box-shadow: 3px 6px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ✅ Topic Title */
+.leader-profile-topic-title {
+  color: #262262;
+  font-size: 1rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+/* ✅ Subtopics List */
+.leader-profile-topic-subtopics {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 80%;
+  font-size: 0.7rem;
+  text-align: center;
+  max-width: 90%;
+  margin-bottom: 1rem;
+}
+
+/* ✅ Subtopic List Items */
+.leader-profile-topic-subtopics li {
+  padding: 8px 0;
+  font-size: 0.7rem;
+  position: relative;
+  text-align: center;
+  color: #333;
+}
+
+/* ✅ Horizontal Line Between Subtopics */
+.leader-profile-topic-subtopics li:not(:last-child) {
+  border-bottom: 1px solid #ccc; /* Thin gray line */
+  width: 90%;
+  margin: 0 auto;
+}
+
+/* ✅ Review Button */
+.leader-profile-topic-review {
+  display: inline-block;
+  /* margin-top: 15px; */
+  margin-top: auto;
+  color: #fff;
+  background: #262262;
+  padding: 10px 15px;
+  text-transform: lowercase;
+  border-radius: 30px;
+  text-decoration: none;
+  font-size: 0.7rem;
+  font-weight: 800;
+  transition: background 0.3s ease-in-out;
+}
+
+/* ✅ Hover Effect */
+.leader-profile-topic-review:hover {
+  background: #4a4ab2;
+}
+
+/* ✅ Biography Section */
+.groupmember-bio-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 50%;
+  margin: 0 auto;
+  padding-top: 15px;
+}
+
+/* ✅ Title */
+.groupmember-profile-subtitle {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #262262;
+  margin-bottom: 10px;
+}
+
+/* ✅ Biography Text */
+.groupmember-bio-text {
+  font-size: 0.8rem;
+  line-height: 1.2;
+  color: #333;
+}
+
+/* ✅ Goals Section */
+.groupmember-goals-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 50%;
+  margin: 0 auto;
+  padding-top: 15px;
+}
+
+.groupmember-goals-text {
+  font-size: 0.8rem;
+}
+
+
+
+/* ✅ Main Container */
+/* ✅ Profile Topics Section */
+.groupmember-profile-topics-container {
+  padding: 20px;
+  text-align: center;
+}
+
+/* ✅ Title */
+.groupmember-profile-topics-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #262262;
+  margin-bottom: 20px;
+}
+
+/* ✅ Grid Layout (Three Cards Per Row) */
+.groupmember-profile-topics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* ✅ Ensures three topics in a row */
+  gap: 20px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+/* ✅ Individual Topic Card */
+.groupmember-profile-topic-card {
+  background: rgb(245, 245, 245);
+  padding: 20px;
+  text-align: center;
+  border-radius: 10px;
+  box-shadow: 3px 6px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 220px; /* ✅ Ensures consistent height */
+}
+
+/* ✅ Topic Title */
+.groupmember-profile-topic-title {
+  color: #262262;
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+/* ✅ Subtopics List */
+.groupmember-profile-topic-subtopics {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  font-size: 0.7rem;
+  text-align: center;
+  max-width: 90%;
+}
+
+/* ✅ Subtopic Items (Ensures Centering & Divider Lines) */
+.groupmember-profile-topic-subtopics li {
+  padding: 8px 0;
+  font-size: 0.7rem;
+  position: relative;
+  text-align: center;
+}
+
+/* ✅ Horizontal Divider Between Subtopics */
+.groupmember-profile-topic-subtopics li:not(:last-child) {
+  border-bottom: 1px solid #ccc; /* ✅ Adds gray divider */
+  width: 80%;
+  margin: 0 auto;
+}
+
+/* ✅ Review Topic Button */
+.groupmember-profile-topic-review {
+  display: inline-block;
+  margin-top: 15px;
+  color: #fff;
+  background: #262262;
+  padding: 10px 15px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-size: 0.7rem;
+  font-weight: 800;
+  transition: background 0.3s ease-in-out;
+}
+
+/* ✅ Hover Effect */
+.groupmember-profile-topic-review:hover {
+  background: #4a4ab2;
+}
+
+/* ✅ Responsive Design */
+@media (max-width: 900px) {
+  .groupmember-profile-topics-grid {
+    grid-template-columns: 1fr; /* ✅ Stack cards on smaller screens */
+  }
+}
+
+
+
+
+/* ✅ Main Container */
+/* .group-leader-container {
+  display: flex;
+  align-items: center;
+  background: rgb(245, 245, 245);
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.1);
+  gap: 15px;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+} */
+
+/* ✅ Leader Image */
+.group-leader-image img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 2px solid #262262;
+  object-fit: cover;
+}
+
+/* ✅ Leader Info */
+.group-leader-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: left;
+}
+
+/* ✅ Name */
+.group-leader-name {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #262262;
+  margin-bottom: 5px;
+}
+
+/* ✅ Title */
+.group-leader-title {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+/* ✅ Edit Button */
+.group-leader-edit-btn {
+  display: inline-block;
+  background: #262262;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: background 0.3s ease-in-out;
+}
+
+.group-leader-edit-btn:hover {
+  background: #4a4ab2;
+}
+
+/* ✅ Section Title */
+.group-library-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #262262;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+/* ✅ Grid Layout */
+.group-library-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  justify-content: center;
+  padding: 15px;
+}
+
+/* ✅ Individual Library Unit Card */
+.group-library-card {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 3px 6px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.3s ease-in-out;
+}
+
+.group-library-card:hover {
+  transform: translateY(-5px);
+}
+
+/* ✅ Icon */
+.group-library-icon img {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 10px;
+}
+
+/* ✅ Info */
+.group-library-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ✅ Title */
+.group-library-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #262262;
+  margin-bottom: 5px;
+}
+
+/* ✅ Author */
+.group-library-author {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+/* ✅ Topic */
+.group-library-topic {
+  font-size: 0.85rem;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+/* ✅ Status */
+.group-library-status {
+  font-size: 0.8rem;
+  color: #777;
+  margin-bottom: 10px;
+}
+
+/* ✅ View Unit Link */
+.group-library-link {
+  display: inline-block;
+  background: #262262;
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: background 0.3s ease-in-out;
+}
+
+.group-library-link:hover {
+  background: #4a4ab2;
+}
+
+/* ✅ No Units Message */
+.group-library-no-units {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #777;
+  padding: 15px;
+  margin: 0 auto;
+}
+
+/*GROUP MEMBER LIBRARY UNITS PARTIAL*/
+
+/* ✅ Section Title */
+.groupmember-library-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #262262;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+/* ✅ Grid Layout */
+.groupmember-library-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  justify-content: center;
+  padding: 15px;
+}
+
+/* ✅ Individual Library Unit Card */
+.groupmember-library-card {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 3px 6px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.3s ease-in-out;
+}
+
+.groupmember-library-card:hover {
+  transform: translateY(-5px);
+}
+
+/* ✅ Icon */
+.groupmember-library-icon img {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 10px;
+}
+
+/* ✅ Info */
+.groupmember-library-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ✅ Title */
+.groupmember-library-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #262262;
+  margin-bottom: 5px;
+}
+
+/* ✅ Topic */
+.groupmember-library-topic {
+  font-size: 0.85rem;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+/* ✅ View Unit Link */
+.groupmember-library-link {
+  display: inline-block;
+  background: #262262;
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: background 0.3s ease-in-out;
+}
+
+.groupmember-library-link:hover {
+  background: #4a4ab2;
+}
+
+/* ✅ No Units Message */
+.groupmember-library-no-units {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #777;
+  padding: 15px;
+  margin: 0 auto;
+}
+
+
+/* ✅ Section Styling */
+.group-completed-prompts-section {
+  padding: 20px;
+  text-align: center;
+}
+
+/* ✅ Title */
+.group-completed-prompts-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #262262;
+  margin-bottom: 15px;
+}
+
+/* ✅ Grid Layout */
+.group-completed-prompts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  justify-content: center;
+  padding: 15px;
+}
+
+/* ✅ Individual Prompt Set Card */
+.group-completed-prompts-card {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 3px 6px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.3s ease-in-out;
+}
+
+.group-completed-prompts-card:hover {
+  transform: translateY(-5px);
+}
+
+/* ✅ Main Topic */
+.group-completed-prompts-main-topic {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+/* ✅ Badge Placeholder */
+.group-completed-prompts-badge {
+  width: 50px;
+  height: 50px;
+  background: #e0e0e0;
+  border-radius: 50%;
+  margin-top: 10px;
+}
+
+/* ✅ No Prompt Sets Message */
+.group-no-completed-prompts {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #777;
+  padding: 15px;
+  margin: 0 auto;
+}
+
+
+.groupmember-bio-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 50%;
+  margin: 0 auto;
+  padding-top: 15px;
+}
+
+/* ✅ Title */
+.groupmember-profile-subtitle {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #262262;
+  margin-bottom: 10px;
+}
+
+/* ✅ Biography Text */
+.groupmember-bio-text {
+  font-size: 0.8rem;
+  line-height: 1.2;
+  color: #333;
+}
+
+
+
+.leader-library-units-section {
+  padding: 40px 0;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.leader-library-units-title {
+  font-size: 24px;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #262262;
+}
+
+/* ✅ Grid Layout - 6 Cards Per Row */
+.leader-library-units-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 6 columns */
+  gap: 20px;
+  justify-content: center;
+}
+
+/* ✅ Card Styles */
+.leader-library-unit-card {
+  background: white;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2)
+}
+
+
+
+/* ✅ Icon at the Top */
+.leader-library-unit-icon img {
+  width: 50px; /* Adjust as needed */
+  height: 50px;
+  margin-bottom: 15px;
+}
+
+/* ✅ Title & Topic */
+.leader-library-unit-title {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #262262;
+  margin-bottom: 5px;
+}
+
+.leader-library-unit-topic {
+  font-size: 0.8rem;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+/* ✅ Status */
+.leader-library-unit-status {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 15px;
+}
+
+/* ✅ View/Edit Button */
+.leader-library-unit-link {
+  display: inline-block;
+  background: #262262;
+  color: white;
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 55px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  transition: background 0.3s ease-in-out;
+  margin-top: auto; /* Pushes to bottom */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.leader-library-unit-link:hover {
+  background: #4a4ab2;
+}
+
+/* ✅ No Units Message */
+.leader-no-library-units {
+  text-align: center;
+  font-size: 16px;
+  color: #888;
+  margin-top: 20px;
+  margin: 0 auto;
+}
+
+.group-library-section {
+  padding: 40px 0;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.group-library-title {
+  font-size: 24px;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #262262;
+}
+
+/* ✅ Grid Layout - 6 Cards Per Row */
+.group-library-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  justify-content: center;
+}
+
+/* ✅ Card Styles */
+.group-library-card {
+  background: white;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.group-library-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* ✅ Icon at the Top */
+.group-library-icon img {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 15px;
+}
+
+/* ✅ Title & Topic */
+.group-library-title {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #262262;
+  margin-bottom: 5px;
+}
+
+.group-library-author {
+  font-size: 0.8rem;
+  font-style: italic;
+  color: #444;
+  margin-bottom: 5px;
+}
+
+.group-library-topic {
+  font-size: 0.8rem;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+/* ✅ Status */
+.group-library-status {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 15px;
+}
+
+/* ✅ View Button */
+.group-library-link {
+  display: inline-block;
+  background: #262262;
+  color: white;
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 55px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  transition: background 0.3s ease-in-out;
+}
+
+.group-library-link:hover {
+  background: #4a4ab2;
+}
+
+
+/*GROUP BADGES*/
+
+.group-earned-badges-section {
+  padding: 40px 0;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.group-earned-badges-title {
+  font-size: 1rem;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #262262;
+}
+
+.group-earned-badge-promptset {
+  font-size: 0.8rem;
+  color:#4a4ab2;
+  font-weight: 800;
+}
+
+.group-earned-badge-member {
+  font-size: 0.7rem;
+  color:#333;
+  font-weight: 600;
+}
+
+/* ✅ Grid Layout - 4 Cards Per Row */
+.group-earned-badges-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  justify-content: center;
+}
+
+/* ✅ Card Styles */
+.group-earned-badge-card {
+  background: white;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+
+
+/* ✅ Badge Image at the Top */
+.group-earned-badge-icon img {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 15px;
+  border-radius: 50%;
+  object-fit: contain;
+}
+
+/* ✅ Title & Topic */
+.group-earned-badge-title {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #262262;
+  margin-bottom: 5px;
+}
+
+.group-earned-badge-topic {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+
+/* ✅ No Badges Message */
+.group-earned-badge-no-badges {
+  text-align: center;
+  font-size: 16px;
+  color: #888;
+  margin-top: 20px;
+  margin: 0 auto;
+}
+
+/* ✅ Responsive Adjustments */
+@media (max-width: 1200px) {
+  .group-earned-badges-grid {
+    grid-template-columns: repeat(3, 1fr); /* 3 per row */
+  }
+}
+
+@media (max-width: 900px) {
+  .group-earned-badges-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 per row */
+  }
+}
+
+@media (max-width: 600px) {
+  .group-earned-badges-grid {
+    grid-template-columns: repeat(1, 1fr); /* 1 per row */
+  }
+}
+
+
+/*GROUP TOPICS STYLES*/
+
+/* ✅ Profile Topics Section */
+.group-profile-topics-container {
+  padding: 20px;
+  text-align: center;
+}
+
+/* ✅ Title */
+.group-profile-topics-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #262262;
+  margin-bottom: 20px;
+}
+
+/* ✅ Grid Layout (Three Cards Per Row) */
+.group-profile-topics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* ✅ Ensures three topics in a row */
+  gap: 20px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+/* ✅ Individual Topic Card */
+.group-profile-topic-card {
+  background: rgb(245, 245, 245);
+  padding: 20px;
+  text-align: center;
+  border-radius: 10px;
+  box-shadow: 3px 6px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 220px; /* ✅ Ensures consistent height */
+}
+
+/* ✅ Topic Title */
+.group-profile-topic-title {
+  color: #262262;
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+/* ✅ Subtopics List */
+.group-profile-topic-subtopics {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  font-size: 0.7rem;
+  text-align: center;
+  max-width: 90%;
+}
+
+/* ✅ Subtopic Items (Ensures Centering & Divider Lines) */
+.group-profile-topic-subtopics li {
+  padding: 8px 0;
+  font-size: 0.7rem;
+  position: relative;
+  text-align: center;
+}
+
+/* ✅ Horizontal Divider Between Subtopics */
+.group-profile-topic-subtopics li:not(:last-child) {
+  border-bottom: 1px solid #ccc; /* ✅ Adds gray divider */
+  width: 80%;
+  margin: 0 auto;
+}
+
+/* ✅ Review Topic Button */
+.group-profile-topic-review {
+  display: inline-block;
+  margin-top: 15px;
+  color: #fff;
+  background: #262262;
+  padding: 10px 15px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-size: 0.7rem;
+  font-weight: 800;
+  transition: background 0.3s ease-in-out;
+}
+
+/* ✅ Hover Effect */
+.group-profile-topic-review:hover {
+  background: #4a4ab2;
+}
+
+.group-goals-container,
+.group-bio-container {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.group-profile-subtitle {
+  font-size: 1rem;
+  color:#262262;
+}
+
+.group-bio-text {
+  font-size: 0.8rem;
+  /* width: 50%; */
+}
+
+.group-goals-text {
+  font-size: 0.8rem;
+  /* width: 50%; */
+}
+
+
+
+/*LEADER IN THE GROUP PROFILE VIEW*/
+.group-leader-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: white;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  width: fit-content;
+  padding: 2rem 5rem;
+  margin: 2rem auto 1rem auto;
+}
+
+/* ✅ Leader Image */
+.group-leader-image img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #262262;
+}
+
+/* ✅ Leader Info */
+.group-leader-info {
+  /* margin-left: 15px; */
+  /* text-align: left; */
+  text-align: center;
+}
+
+.group-leader-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #262262;
+  margin-bottom: 5px;
+}
+
+.group-leader-container .group-leader-title {
+  font-size: 1rem;
+  color: #555;
+  margin: 0 auto 1rem auto;
+}
+
+/* ✅ View Profile Button */
+.group-leader-profile-btn {
+  display: inline-block;
+  background: #262262;
+  color: white;
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 55px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  transition: background 0.3s ease-in-out;
+  width: 150px;
+  text-align: center;
+
+}
+
+.group-leader-profile-btn:hover {
+  background: #4a4ab2;
+}
+
+/* ✅ Responsive Adjustments */
+@media (max-width: 600px) {
+  .group-leader-container {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .group-leader-info {
+    margin-left: 0;
+    margin-top: 10px;
+  }
+
+  .group-leader-profile-btn {
+    /* width: 100%; */
+    text-align: center;
+  }
+}
+
+
+
+@media screen and (max-width: 1200px) {
+  .profile-main {
+    padding: 0 5rem;
+  }
+  .profile-tabs-container {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    overflow-x: auto;
+    justify-content: flex-start;
+    gap: 10px;
+    margin-bottom: 20px;
+    min-height: 120px;
+  }
+  .profile-tab {
+    flex: 0 0 18%;
+  }
+  @media screen and (max-width: 1100px) {
+    /* .group-leader-container {
+      width: 80%;
+    } */
+  }
+  @media screen and (max-width: 768px) {
+    .profile-tab {
+      flex: 0 0 28%;
+    }
+    @media screen and (max-width: 600px) {
+      .profile-main {
+        padding: 0 3rem;
+      }
+      .profile-tabs-container {
+        min-height: 80px;
+      }
+      .profile-tab {
+          flex: 0 0 38%;
+          height: 60px;
+      }
+      @media screen and (max-width: 380px) {
+        .profile-main {
+          padding: 0 1.5rem;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 1100px) {
+  .groupsection-grid {    
+    grid-template-columns: repeat(4, 1fr);    
+  }
+  .leader-profile-topics-grid,
+  .group-profile-topics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media screen and (max-width: 1000px) {
+    .leader-library-units-grid,
+    .group-library-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    @media screen and (max-width: 800px) {
+      .leader-library-units-grid,
+      .group-library-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      @media screen and (max-width: 768px) {
+        .groupsection-grid {    
+          grid-template-columns: repeat(2, 1fr);
+        }
+        @media screen and (max-width: 640px) {
+          .leader-profile-topics-grid,
+          .group-profile-topics-grid {
+            grid-template-columns: 1fr;
+          }
+          @media screen and (max-width: 500px) {
+            .leader-library-units-grid,
+            .group-library-grid {
+              grid-template-columns: 1fr;
+            }
+            @media screen and (max-width: 440px) {
+              .group-leader-container {                
+                padding: 1rem 1.5rem;                
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+
+
+.error-message {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #fff3cd;
+  border: 1px solid #ffeeba;
+  border-radius: 4px;
+}
+
+/* ERROR PAGE FOR UNIT FORMS */
+.error-container {
+  text-align: center;
+  margin: 50px auto;
+  padding: 20px;
+  max-width: 500px;
+}
+
+.error-title {
+  margin-top: 200px;
+  color: #262262;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.error-message-forms {
+  font-size: 1rem;
+  margin: 10px 0;
+  font-family: "Figtree";
+}
+
+.error-button {
+  display: block;
+  font-size: 11pt;
+  margin: 10px auto;
+  padding: 10px 20px;
+  border-radius: 99px;
+  background-color: #262262;
+  color: white;
+  font-family: "Figtree";
+  font-weight: 800;
+  border: none;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  width: 50%;
+  margin-bottom: 100px;
+}
+
+.error-button:hover {
+  background-color: #4a4ab2;
+}

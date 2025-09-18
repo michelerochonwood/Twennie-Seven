@@ -1,0 +1,75 @@
+{{#if promptSet}}
+<div class="leader-prompt-container">
+  <h2 class="leader-prompt-title">{{promptSet.frequency}} prompt</h2>
+  <p class="leader-prompt-set-title">
+    <strong>{{promptSet.promptSetTitle}}</strong> - {{promptSet.mainTopic}}
+  </p>
+  <p class="leader-prompt-purpose">
+    <strong>Purpose of this prompt set:</strong> {{promptSet.purpose}}
+  </p>
+
+  {{#if promptSchedule}}
+    <p class="leader-prompt-schedule">
+      To stay on schedule with this prompt set, Twennie recommends you complete this prompt by:
+    </p>
+    <p class="leader-prompt-schedule-date">{{promptSchedule.recommendedCompletionDate}}</p>
+  {{/if}}
+
+  <div class="leader-prompt-card">
+    <div class="leader-prompt-border">
+      <svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1224.99 153.32">
+        <defs>
+          <style>.cls-777 { fill: #4e50a2; }</style>
+        </defs>
+        <g id="Layer_1-2" data-name="Layer 1">
+          <g>
+            <path class="cls-777" d="M149.91,136.71c-.06,0-.11,0-.17,0,.06,0,.11,0,.17,0Z"/>
+            <path class="cls-777" d="M109.06,90.03h-49.65c28.73-7.2,48.89-24.04,48.89-43.65C108.29,20.2,72.54.92,28.27.92,21,.92,14.68.28,7.69.28L.3,0h-.3l.64,149.68c31-6.8,68.57-11.39,108.41-14.03v-45.62Z"/>
+            <path class="cls-777" d="M1224.99,0L215,4.7c-68.86-.52-105.94,30.88-105.94,62.55,0,28.27,50.59,67.87,183.53,72.77h0c83.12,1.86,260.56-21.97,326.9-30.26,300.52-37.57,604.74,43.55,604.74,43.55l.76-153.32Z"/>
+          </g>
+        </g>
+      </svg>
+    </div>
+
+    <p class="leader-prompt-headline">{{promptSet.promptHeadline}}</p>
+    <p class="leader-prompt-text">{{promptSet.promptText}}</p>
+  </div>
+
+  {{#if promptSet.promptIndex}}
+    <form action="/promptsetnotes/submit-prompt-notes" method="POST" enctype="application/x-www-form-urlencoded">
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+      <input type="hidden" name="promptSetId" value="{{promptSet.promptSetId}}">
+
+      <label for="notes" class="leader-prompt-notes-label">Record your notes here:</label>
+      <textarea name="notes" id="notes" class="leader-prompt-notes" placeholder="Write your notes here..." required></textarea>
+
+      {{#if (equal promptSet.promptIndex 20)}}
+        <p class="final-prompt-message">
+          <strong>Final Prompt!</strong>
+          This is the last prompt in the set. Make sure to complete the prompt and add your final thoughts about what you learned and discovered!
+        </p>
+      {{/if}}
+
+      <button type="submit" class="leader-prompt-submit">submit this prompt</button>
+    </form>
+  {{else}}
+    <form action="/promptsetstart/start" method="POST">
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+      <input type="hidden" name="promptSetId" value="{{promptSet.promptSetId}}">
+      <button type="submit" class="leader-prompt-submit">get started completing prompts</button>
+    </form>
+  {{/if}}
+
+  <!-- ✅ Unregister Button with correct reference -->
+<button type="button" class="leader-unregister-btn" data-id="{{promptSet.registrationId}}">
+  unregister for this prompt set
+</button>
+</div>
+{{/if}}
+
+
+
+
+
+
+

@@ -1,0 +1,116 @@
+{{#*inline "title"}}Group Memberships | Twennie{{/inline}}
+<div class="promo-container">
+  <!-- Hero Section with Grid -->
+  <section class="group-hero-section">
+    <div class="group-hero-grid">
+      <div class="group-hero-text">
+        <h2 class="promo-heading">group memberships: learn together, grow together</h2>
+        <p class="promo-text">
+          Twennie makes it easy for organizations to engage in collaborative, high-impact learning. This could mean coordinating friendly competitions between groups within your organization, or collaborative exercises with teams in other industries. With group memberships, teams can track progress, encourage accountability, and build a culture of professional growth — and all on an affordable online learning platform.
+        </p>
+        <ul class="promo-text">
+          <li>1–30 members: $17/user</li>
+          <li>31–50 members: $15/user</li>
+          <li>51–100 members: $12/user</li>
+          <li>100+ members: <strong><a href="/contact" style="color:#4e50a2">contact Twennie</a></strong></li>
+        </ul>
+      </div>
+      <div class="group-hero-image">
+        <video class="group-video" controls preload="metadata" poster="/images/competition_thumbnail.jpg">
+          <source src="https://res.cloudinary.com/dgeszflt3/video/upload/v1746973268/Group_Memberships_cmluwa.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    </div>
+  </section>
+</div>
+
+
+<!-- Divider -->
+<div class="promo-wave-divider">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 150">
+    <path fill="#4e50a2" fill-opacity="1" d="M0,64L80,58.7C160,53,320,43,480,58.7C640,75,800,117,960,122.7C1120,128,1280,96,1360,80L1440,64L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z"></path>
+  </svg>
+</div>
+
+<!-- Section: Reporting Benefits -->
+<section class="blue-wave-bg">
+  <div class="reporting-grid">
+    <div class="reporting-grid-item">
+      <h3>engagement tracking</h3>
+      <p>See prompt sets completed, badges earned, and contributions to the Twennie library across your team — all broken down by topic.</p>
+    </div>
+    <div class="reporting-grid-item">
+      <h3>prompt set analysis</h3>
+      <p>Review responses and notes from individual prompts to assess depth of understanding and engagement at the individual level.</p>
+    </div>
+    <div class="reporting-grid-item">
+      <h3>unit completions</h3>
+      <p>Track article, video, interview, and exercise usage — and see which members are engaging most with the library.</p>
+    </div>
+    <div class="reporting-grid-item">
+      <h3>micro-course readiness</h3>
+      <p>Our report center includes a preview of micro-course tracking. This feature is coming in the next phase of Twennie’s development.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Divider -->
+<div class="promo-wave-divider">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 150">
+    <path fill="#4e50a2" fill-opacity="1" d="M0,120L80,107C160,94,320,70,480,75C640,80,800,120,960,133.3C1120,147,1280,120,1360,112L1440,105L1440,0L1360,0C1280,0,1120,0,960,0C800,0,640,0,480,0C320,0,160,0,80,0L0,0Z"></path>
+  </svg>
+</div>
+
+<!-- Section: Culture and Signup CTA -->
+<section class="membership-info-grid">
+  <div class="culture-card">
+    <h3>build a culture of learning</h3>
+    <p>Use Twennie’s short, action-based units to create habits that align with your organizational values. Learning doesn't need to interrupt work — it can integrate with it.</p>
+  </div>
+  <div class="culture-card">
+    <h3>peer coaching</h3>
+    <p>Promote empathy, shared experience, and growth with Twennie’s upcoming peer coaching feature — a collaborative, reciprocal learning experience between peers.</p>
+  </div>
+  <div class="culture-card">
+    <h3>collaborative learning</h3>
+    <p>Twennie was built to solve a real problem: technical professionals often learn alone but must work together. Our platform enables learning to happen in context — with your team.</p>
+  </div>
+</section>
+
+<section class="membership-cta-grid">
+  <div class="membership-cta-content">
+    <h2 class="form-title">become a member</h2>
+    <video controls poster="/images/membership.png" class="membership-video">
+      <source src="https://res.cloudinary.com/dgeszflt3/video/upload/v1744390708/Membership_h7z75p.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+    <div class="membership-buttons">
+      <a href="/member/form" class="membership-button">individual</a>
+      <a href="/member/group/verify" class="membership-button">member of a group</a>
+      <a href="/leader/form" class="membership-button">group leader</a>
+    </div>
+  </div>
+</section>
+
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const animatedElements = document.querySelectorAll(".animate");
+
+    const observer = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("in-view");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+
+    animatedElements.forEach(element => observer.observe(element));
+  });
+</script>

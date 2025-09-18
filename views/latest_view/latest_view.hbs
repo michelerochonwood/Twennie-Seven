@@ -1,0 +1,241 @@
+{{#*inline "title"}}Latest Additions | Twennie{{/inline}}
+
+
+
+<div class="latest-container">
+  <div class="latest-content">
+
+    <!-- Section: Upcoming Units -->
+<div class="latest-section">
+  <h2 class="latest-section-title">upcoming units</h2>
+  <div class="latest-library-units-grid">
+    {{#each upcomingItems}}
+      <div class="latest-library-unit-card">
+        <!-- Header SVG (orange) -->
+<div class="latest-card-svg-header">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 198.89 17.83">
+    <path fill="#f7941d" d="M0,9.74s30.57,13.88,92.83,1.88c0,0,68.2-13.17,106.06,6.21V0H0v9.74Z"/>
+  </svg>
+</div>
+
+        <!-- Card Content -->
+        <div class="latest-card-content">
+          <img src="{{getUnitTypeIcon unit_type}}" alt="Unit Type Icon" class="latest-unit-type-icon">
+          <h2 class="latest-unit-title">{{title}}</h2>
+
+          <!-- Expand Toggle -->
+          <div class="latest-expand-toggle" onclick="toggleLatestCard(this)">
+            <svg class="latest-arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99">
+              <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
+              <polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/>
+            </svg>
+          </div>
+
+          <!-- Expandable Content -->
+          <div class="latest-hidden-content">
+            <div class="latest-author-label">PROJECTED</div>
+            <img src="{{image.url}}" alt="{{#if image.alt}}{{image.alt}}{{else}}Upcoming image{{/if}}" class="latest-author-image">
+
+            <div class="latest-author-name">
+              {{#if projected_release_at}}{{formatDate projected_release_at}}{{else}}TBD{{/if}}
+            </div>
+
+            <p class="latest-unit-long-summary">{{long_teaser}}</p>
+
+            <div class="latest-unit-review-btn-container">
+              <a href="/unitviews/upcoming/view/{{_id}}" class="latest-unit-review-btn">view upcoming</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    {{else}}
+      <p>No upcoming units yet.</p>
+    {{/each}}
+  </div>
+</div>
+
+    <hr class="latest-divider">
+
+    <h1 class="latest-title">latest additions to the Twennie library</h1>
+
+    <!-- Section: This Month -->
+    <div class="latest-section">
+      <h2 class="latest-section-title">this month</h2>
+      <div class="latest-library-units-grid">
+        {{#each thisMonthItems}}
+          <div class="latest-library-unit-card">
+            <!-- Header SVG -->
+            <div class="latest-card-svg-header">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 198.89 17.83">
+                <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
+                <path class="cls-1" d="M0,9.74s30.57,13.88,92.83,1.88c0,0,68.2-13.17,106.06,6.21V0H0v9.74Z"/>
+              </svg>
+            </div>
+
+            <!-- Card Content -->
+            <div class="latest-card-content">
+              <img src="{{getUnitTypeIcon this.type}}" alt="Unit Type Icon" class="latest-unit-type-icon">
+              <h2 class="latest-unit-title">{{this.title}}</h2>
+
+              <!-- Expand Toggle -->
+              <div class="latest-expand-toggle" onclick="toggleLatestCard(this)">
+                <svg class="latest-arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99">
+                  <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
+                  <polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/>
+                </svg>
+              </div>
+
+              <!-- Expandable Content -->
+              <div class="latest-hidden-content">
+                <div class="latest-author-label">AUTHOR</div>
+                <img src="{{authorImage}}" alt="Author Image" class="latest-author-image">
+                <div class="latest-author-name">{{this.authorName}}</div>
+
+                <p class="latest-unit-long-summary">{{this.full_summary}}</p>
+
+                {{#if (eq this.type "promptset")}}
+                  <div class="latest-detail-value-purpose">
+                    <strong>Purpose:</strong><br>
+                    {{this.purpose}}
+                  </div>
+                {{/if}}
+
+<div class="latest-unit-review-btn-container">
+  {{#if isAuthenticated}}
+    {{#if isLeaderOrGroupMember}}
+      <a href="/unitviews/{{capitalize this.type}}s/view/{{this._id}}" class="latest-unit-review-btn">review this unit</a>
+    {{else if isPaid}}
+      <a href="/unitviews/{{capitalize this.type}}s/view/{{this._id}}" class="latest-unit-review-btn">review this unit</a>
+    {{else}}
+      {{#if isFree}}
+        {{#if isVideoOrArticle}}
+          <a href="/unitviews/{{capitalize this.type}}s/view/{{this._id}}" class="latest-unit-review-btn">review this unit</a>
+        {{else}}
+          <div class="latest-unit-review-btn disabled">membership upgrade required</div>
+        {{/if}}
+      {{else}}
+        <div class="latest-unit-review-btn disabled">membership upgrade required</div>
+      {{/if}}
+    {{/if}}
+  {{else}}
+    <a href="/auth/login" class="latest-unit-review-btn">log in to view</a>
+  {{/if}}
+</div>
+
+              </div>
+            </div>
+          </div>
+        {{else}}
+          <p>No new items this week.</p>
+        {{/each}}
+      </div>
+    </div>
+
+    <hr class="latest-divider">
+
+    <!-- Section: Last Month -->
+    <div class="latest-section">
+      <h2 class="latest-section-title">last month</h2>
+      <div class="latest-library-units-grid">
+        {{#each lastMonthItems}}
+          <div class="latest-library-unit-card">
+            <!-- Header SVG -->
+            <div class="latest-card-svg-header">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 198.89 17.83">
+                <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
+                <path class="cls-1" d="M0,9.74s30.57,13.88,92.83,1.88c0,0,68.2-13.17,106.06,6.21V0H0v9.74Z"/>
+              </svg>
+            </div>
+
+            <!-- Card Content -->
+            <div class="latest-card-content">
+              <img src="{{getUnitTypeIcon this.type}}" alt="Unit Type Icon" class="latest-unit-type-icon">
+              <h2 class="latest-unit-title">{{this.title}}</h2>
+
+              <!-- Expand Toggle -->
+              <div class="latest-expand-toggle" onclick="toggleLatestCard(this)">
+                <svg class="latest-arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99">
+                  <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
+                  <polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/>
+                </svg>
+              </div>
+
+              <!-- Expandable Content -->
+              <div class="latest-hidden-content">
+                <div class="latest-author-label">AUTHOR</div>
+                <img src="{{authorImage}}" alt="Author Image" class="latest-author-image">
+                <div class="latest-author-name">{{this.authorName}}</div>
+
+                <p class="latest-unit-long-summary">{{this.full_summary}}</p>
+
+                {{#if (eq this.type "promptset")}}
+                  <div class="latest-detail-value-purpose">
+                    <strong>Purpose:</strong><br>
+                    {{this.purpose}}
+                  </div>
+                {{/if}}
+
+<div class="latest-unit-review-btn-container">
+  {{#if isAuthenticated}}
+    {{#if isLeaderOrGroupMember}}
+      <a href="/unitviews/{{capitalize this.type}}s/view/{{this._id}}" class="latest-unit-review-btn">review this unit</a>
+    {{else if isPaid}}
+      <a href="/unitviews/{{capitalize this.type}}s/view/{{this._id}}" class="latest-unit-review-btn">review this unit</a>
+    {{else}}
+      {{#if isFree}}
+        {{#if isVideoOrArticle}}
+          <a href="/unitviews/{{capitalize this.type}}s/view/{{this._id}}" class="latest-unit-review-btn">review this unit</a>
+        {{else}}
+          <div class="latest-unit-review-btn disabled">membership upgrade required</div>
+        {{/if}}
+      {{else}}
+        <div class="latest-unit-review-btn disabled">membership upgrade required</div>
+      {{/if}}
+    {{/if}}
+  {{else}}
+    <a href="/auth/login" class="latest-unit-review-btn">log in to view</a>
+  {{/if}}
+</div>
+              </div>
+            </div>
+          </div>
+        {{else}}
+          <p>No new items last month.</p>
+        {{/each}}
+      </div>
+    </div>
+
+    <!-- Topics Page Footer -->
+    <div class="latest-topics-footer" style="text-align: center; margin-top: 3rem;">
+      <h2 style="font-size: 1.1rem; color: #4e50a2; margin-bottom: 1rem;">
+        For older units, see the topics page.
+      </h2>
+      <a href="/topics" class="latest-unit-review-btn" style="display: inline-block; text-decoration: none; margin-bottom: 200px">
+        explore topics
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Expand Toggle Script -->
+<script>
+  function toggleLatestCard(element) {
+    const card = element.closest('.latest-library-unit-card');
+    const content = card.querySelector('.latest-hidden-content');
+
+    const isActive = card.classList.contains('active');
+
+    if (isActive) {
+      card.classList.remove('active');
+      content.style.display = 'none';
+    } else {
+      card.classList.add('active');
+      content.style.display = 'flex';
+    }
+  }
+</script>
+
+
+
+
+

@@ -1,0 +1,42 @@
+<section class="groupsection">
+    <h2 class="groupsection-title">group overview</h2>
+    <p class="groupsection-title2">{{group.groupName}}</p>
+    <div class="groupsection-stats">
+        <p>Total Members: {{groupMembers.length}} of possible 10</p>
+    </div>
+    <div class="groupsection-grid">
+        {{#each groupMembers}}
+            <div class="groupsection-card">
+                <div class="groupsection-card-image">
+                    {{#if profileImage}}
+                        <img src="{{profileImage}}" alt="{{name}}'s profile">
+                    {{else}}
+                        <img src="/images/default-avatar.png" alt="Default profile">
+                    {{/if}}
+                </div>
+                <div class="groupsection-card-info">
+                    <h3 class="groupsection-card-name">{{name}}</h3>
+                    <p class="groupsection-card-title">{{professionalTitle}}</p>
+                </div>
+                <button type="button" class="groupsection-card-button" onclick="window.location.href='/profile/group_member/{{_id}}'">
+                    view profile
+                </button>
+            </div>
+        {{/each}}
+        {{#if (lt leader.members.length leader.maxGroupSize)}}
+            {{#each (range leader.members.length leader.maxGroupSize)}}
+                <div class="groupsection-card groupsection-empty">
+                    <div class="groupsection-card-image">
+                        <img src="/images/default-avatar.png" alt="Empty slot">
+                    </div>
+                    <div class="groupsection-card-info">
+                        <h3 class="groupsection-card-name">Available Slot</h3>
+                        <p class="groupsection-card-title">Available</p>
+                    </div>
+                </div>
+            {{/each}}
+        {{/if}}
+    </div>
+</section>
+
+

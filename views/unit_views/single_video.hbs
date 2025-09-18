@@ -1,0 +1,229 @@
+<div class="single_video-container">
+  <!-- Main Section -->
+  <div class="single_video-main">
+    <h1 class="single_video-main-title">{{video_title}}</h1>
+    <p class="single_video-short-summary"><strong>{{short_summary}}</strong></p>
+    <p class="single_video-long-summary" style="margin-bottom: 20px;">{{full_summary}}</p>
+
+    <!-- Toggle + Video -->
+    <div class="single_video-toggle" onclick="toggleVideoContent(this)" data-authorized="{{isAuthorizedToViewFullContent}}">
+      <svg class="single_video-arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99">
+        <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
+        <g><polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/></g>
+      </svg>
+    </div>
+
+    <!-- Video Content Section -->
+    <div class="single_video-content hidden">
+      {{#if isAuthorizedToViewFullContent}}
+        <div class="single_video-window">
+          {{#if embedLink}}
+            <div class="single_video-video-wrapper" style="text-align: center;">
+              <iframe
+                width="100%"
+                height="450"
+                src="{{embedLink}}"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+                class="single_video-frame">
+              </iframe>
+              <p style="text-align: center; margin-top: 0.5rem;">
+                Having trouble viewing? <a href="{{embedLink}}" target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
+              </p>
+            </div>
+          {{else}}
+            <p style="text-align: center;">This is where the video will appear once the link is provided in the video form.</p>
+          {{/if}}
+        </div>
+      {{else}}
+        <div class="unauthorized-message">
+          <p>You don’t have access to view this video. Please check with your group leader or organization.</p>
+          <a href="/auth/login" class="login-link">Log in to access</a>
+        </div>
+      {{/if}}
+
+      <!-- Quick Tag (Member/Group Member) -->
+{{#if isGroupMemberOrMember}}
+  <div class="single_unit-tag-container">
+    <form action="/tags/create" method="POST" class="inline" id="videoTagForm-{{_id}}">
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+      <input type="hidden" name="itemId" value="{{_id}}">
+      <input type="hidden" name="itemType" value="video">
+      <input type="hidden" name="tagName" value="Read Later">  {{!-- default; prompt overwrites --}}
+      <button type="button"
+              class="tag-this-unit-link"
+              onclick="promptAndSubmitTag('videoTagForm-{{_id}}')"
+              style="background:none;border:none;padding:0;cursor:pointer;">
+        tag this unit
+        <svg class="tag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 39.48 36.66">
+          <path class="cls-1" d="M38.77,21.12L16.05.56C15.65.19,15.13,0,14.59,0L2.12.16c-1.18.01-2.12.97-2.12,2.15v11.2c0,.63.28,1.24.77,1.64l24.95,21c.9.76,2.24.65,3.01-.24l10.23-11.8c.77-.88.69-2.22-.18-3ZM6.28,8.87c-1.57,0-2.84-1.27-2.84-2.84s1.27-2.84,2.84-2.84,2.84,1.27,2.84,2.84-1.27,2.84-2.84,2.84Z"/>
+        </svg>
+      </button>
+    </form>
+  </div>
+{{/if}}
+
+      <!-- Assign Form (Leader Only) -->
+      {{#if isLeader}}
+        <div class="assign-tag-form white-container">
+          <h4 class="assign-tag-title">Assign this video to yourself or your group</h4>
+          <form action="/tags/create" method="POST">
+            <input type="hidden" name="_csrf" value="{{csrfToken}}">
+            <input type="hidden" name="itemId" value="{{_id}}">
+            <input type="hidden" name="itemType" value="video">
+
+            <div class="form-field">
+              <label for="tagName">Give the tag a name</label>
+              <input type="text" id="tagName" name="tagName" required>
+            </div>
+
+            <fieldset class="assign-tag-members">
+              <legend class="assign-tag-legend">Select recipients and enter instructions:</legend>
+
+              <!-- Leader block -->
+              <div class="assign-tag-member-block">
+                <label class="assign-tag-member-label">
+                  <input
+                    type="checkbox"
+                    name="assignedTo[{{leaderId}}][member]"
+                    value="{{leaderId}}"
+                    onchange="toggleInstructionField(this)">
+                  {{leaderName}} (you)
+                </label>
+                <textarea
+                  class="assign-tag-instructions"
+                  name="assignedTo[{{leaderId}}][instructions]"
+                  placeholder="Instructions for yourself"
+                  style="display:none;"></textarea>
+              </div>
+
+              <hr class="assign-tag-divider">
+
+              <!-- Group members -->
+              {{#each groupMembers}}
+                <div class="assign-tag-member-block">
+                  <label class="assign-tag-member-label">
+                    <input
+                      type="checkbox"
+                      name="assignedTo[{{_id}}][member]"
+                      value="{{_id}}"
+                      onchange="toggleInstructionField(this)">
+                    {{name}}
+                  </label>
+                  <textarea
+                    class="assign-tag-instructions"
+                    name="assignedTo[{{_id}}][instructions]"
+                    placeholder="Instructions for {{name}}"
+                    style="display:none;"></textarea>
+                </div>
+              {{/each}}
+            </fieldset>
+
+            <button type="submit" class="form-button submit-button">assign video</button>
+          </form>
+        </div>
+      {{/if}}
+
+      <!-- Notes Form (Leader and Group Member) -->
+      {{#if isGroupMemberOrLeader}}
+        <div class="single_video-notes-container">
+          <h3 class="single_video-notes-title">record notes</h3>
+          <p class="single_video-notes-instructions">
+            Record notes on this video. Consider how it relates to your work and how it might change your approach. These notes will be part of your Twennie learning record.
+          </p>
+          <form action="/notes/submit" method="POST" class="single_video-notes-form">
+            <input type="hidden" name="_csrf" value="{{csrfToken}}">
+            <input type="hidden" name="unitId" value="{{_id}}">
+            <input type="hidden" name="unitType" value="video">
+            <input type="hidden" name="main_topic" value="{{main_topic}}">
+            <input type="hidden" name="secondary_topic" value="{{sub_topic}}">
+            <textarea name="note_content" class="single_video-notes-textarea" rows="5" maxlength="1000" placeholder="Write your notes here..."></textarea>
+            <button type="submit" class="single_video-notes-submit">submit notes</button>
+          </form>
+        </div>
+      {{/if}}
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <aside class="single_video-sidebar">
+    <div class="single_video-duration-image-container">
+      <img
+        src="https://www.twennie.com/images/10mins.svg"
+        alt="Estimated Time: 10 Minutes"
+        class="single_video-duration-image">
+    </div>
+
+    <div class="single_video-sidebar-toggle" onclick="toggleSidebarContent(this)">
+      <svg class="single_video-sidebar-arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99">
+        <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
+        <g><polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/></g>
+      </svg>
+    </div>
+
+    <div class="single_video-sidebar-content hidden">
+      <p class="single_video-title-sidebar">{{video_title}}</p>
+      <div class="single_video-author">
+        <img src="{{author.image}}" alt="Author Image" class="single_video-author-image">
+        <p class="single_video-author-name">Videographer: {{author.name}}</p>
+      </div>
+      <div class="single_video-details">
+        <p class="single_video-unit-type">Video</p>
+        <p class="single_video-main-topic">Main Topic: {{main_topic}}</p>
+        {{#if isOwner}}
+          <a href="/unitform/edit_video/{{_id}}" class="single_video-edit-btn">edit this unit</a>
+        {{/if}}
+      </div>
+    </div>
+  </aside>
+</div>
+
+<script>
+function toggleVideoContent(element) {
+  const isAuthorized = element.dataset.authorized === "true";
+  const content = element.nextElementSibling;
+  if (isAuthorized) {
+    content.classList.toggle('hidden');
+    element.classList.toggle('open');
+  } else {
+    alert("You don't have access to view this video.");
+  }
+}
+
+function toggleSidebarContent(element) {
+  const sidebarContent = element.nextElementSibling;
+  if (sidebarContent) {
+    sidebarContent.classList.toggle('hidden');
+    element.classList.toggle('open');
+  }
+}
+
+function toggleInstructionField(checkbox) {
+  const memberId = checkbox.value;
+  const textarea = document.querySelector(`textarea[name="assignedTo[${memberId}][instructions]"]`);
+  if (textarea) {
+    textarea.style.display = checkbox.checked ? 'block' : 'none';
+  }
+}
+
+  function promptAndSubmitTag(formId) {
+    const form = document.getElementById(formId);
+    if (!form) return;
+    const input = form.querySelector('input[name="tagName"]');
+    const suggested = (input?.value || 'Read Later').trim();
+    const entered = window.prompt('Name this tag', suggested);
+    if (!entered) return;
+    input.value = entered.trim();
+    if (!input.value) return;
+    const btn = form.querySelector('.tag-this-unit-link');
+    if (btn) btn.disabled = true; // optional double-click guard
+    form.submit(); // controller redirects back with ?tag=ok
+  }
+</script>
+
+
+
+
+
+

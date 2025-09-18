@@ -1,0 +1,74 @@
+<div class="leader-progress-container" style="overflow: hidden; padding-bottom: 2rem;">
+
+  {{#if currentPromptSets.length}}
+    <h2 class="leader-progress-current-title">current prompt sets</h2>
+    <div class="leader-progress-current">
+      {{#each currentPromptSets}}
+        <div class="leader-progress-grid">
+          <h2 class="leader-progress-title">{{this.promptSetTitle}}</h2>
+          <img 
+            src="/promptprogress/promptprogress{{increment @index}}-{{this.promptIndex}}.svg"
+            alt="Progress Pie Chart" 
+            class="leader-progress-svg"
+            data-progress="{{this.promptIndex}}"
+          >
+          <p class="leader-progress-target">
+            you have completed {{this.promptIndex}} prompts in this set
+          </p>
+        </div>
+      {{/each}}
+    </div>
+  {{/if}}
+
+  <div class="leader-progress-completed">
+    <h2 class="leader-progress-completed-title">completed prompt sets</h2>
+
+    {{#if completedPromptSets.length}}
+      <div class="leader-progress-completed-grid" style="overflow: hidden;">
+        {{#each completedPromptSets}}
+          <div class="leader-progress-completed-card">
+            <h3 class="leader-progress-completed-title">{{this.promptSetTitle}}</h3>
+            <p class="leader-progress-completed-main-topic">{{this.mainTopic}}</p>
+            <p class="leader-progress-completed-date">
+              completed: {{this.completedAt}}
+            </p>
+            <div class="leader-progress-badge">
+              {{#if this.badge}}
+                <img src="{{this.badge.image}}" alt="{{this.badge.name}}" class="leader-progress-badge-img">
+                <p class="leader-progress-badge-name">{{this.badge.name}}</p>
+              {{else}}
+                <p class="leader-progress-badge-name">No badge earned</p>
+              {{/if}}
+            </div>
+          </div>
+        {{/each}}
+      </div>
+    {{else}}
+      <p class="no-data" style="text-align: center; margin-top: 1rem;">
+        You haven’t completed any prompt sets yet.
+      </p>
+    {{/if}}
+
+    <!-- Explanation and report center link -->
+    <div class="leader-progress-report-access" style="text-align: center; margin-top: 2rem;">
+      <p style="margin-bottom: 0.75rem;">
+        All prompt sets you and the members of your group have completed can be reviewed in the report center.
+      </p>
+      <a href="/reports/promptsetscompleted" class="report-link" style="display: inline-block;">
+        <img 
+          src="https://www.twennie.com/icons/promptsets.svg" 
+          alt="Prompt Sets Report"
+          style="width: 60px; height: auto;"
+        >
+      </a>
+    </div>
+
+  </div>
+
+  <!-- Layout reset to prevent overflow on next tabs -->
+  <div style="height: 1px; clear: both;"></div>
+
+</div>
+
+
+

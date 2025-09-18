@@ -1,0 +1,102 @@
+<!-- CSRF token for AJAX deletes -->
+<meta name="csrf-token" content="{{csrfToken}}">
+
+<section class="tagged-units-section">
+  <h2 class="tagged-units-title">tagged library units</h2>
+  <div class="tagged-units-grid">
+    {{#each leaderTaggedUnits}}
+      <div class="tagged-unit-card">
+        <div class="tagged-unit-icon">
+          <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
+        </div>
+
+        <div class="tagged-unit-info">
+          <h3 class="tagged-unit-title">{{title}}</h3>
+          <p class="tagged-unit-topic">{{mainTopic}}</p>
+          {{#if (eq unitType "upcoming")}}
+            <p class="tagged-unit-status">🚧 coming soon</p>
+          {{/if}}
+        </div>
+
+        <a href="/unitviews/{{capitalize unitType}}s/view/{{_id}}" class="tagged-unit-link">view unit</a><br>
+
+        <button
+          class="tag-remove-btn"
+          onclick="removeTag('{{tagId}}', '{{_id}}', '{{unitType}}')">
+          remove tag
+        </button>
+      </div>
+    {{else}}
+      <p class="tagged-no-units">You have no tagged units.</p>
+    {{/each}}
+  </div>
+</section>
+
+<section class="leader-assigned-units-section" style="margin-top:20px">
+  <h2 class="tagged-units-title">assigned units</h2>
+  <div class="tagged-units-grid">
+    {{#each leaderAssignedUnits}}
+      <div class="leader-assigned-unit-card">
+        <div class="tagged-unit-icon">
+          <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
+        </div>
+
+        <div class="tagged-unit-info">
+          <h3 class="tagged-unit-title">{{title}}</h3>
+          <p class="tagged-unit-topic">{{mainTopic}}</p>
+
+          <p class="leader-assigned-to">assigned to: {{assignedTo.name}}</p>
+
+          {{!-- 3-state status --}}
+          {{#if (eq unitType "upcoming")}}
+            <p class="leader-assigned-status">🚧 coming soon</p>
+          {{else if assignedTo.completedAt}}
+            <p class="leader-assigned-status">✅ completed <span class="muted">({{formatDate assignedTo.completedAt}})</span></p>
+          {{else}}
+            <p class="leader-assigned-status">⏳ pending</p>
+          {{/if}}
+
+          {{#if assignedTo.instructions}}
+            <p class="leader-assigned-instructions"><em>{{assignedTo.instructions}}</em></p>
+          {{/if}}
+        </div>
+
+        <a href="/unitviews/{{capitalize unitType}}s/view/{{_id}}" class="tagged-unit-link">view unit</a>
+      </div>
+    {{else}}
+      <p class="tagged-no-units">You have no assigned units.</p>
+    {{/each}}
+  </div>
+</section>
+
+<script>
+  function getCsrfToken() {
+    return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+  }
+
+  async function removeTag(tagId, unitId, unitType) {
+    if (!confirm("Are you sure you want to remove this tag?")) return;
+
+    try {
+      const response = await fetch(`/tags/remove/${tagId}/${unitId}/${unitType}`, {
+        method: 'DELETE',
+        headers: { 'x-csrf-token': getCsrfToken() }
+      });
+
+      const result = await response.json().catch(() => ({}));
+      if (response.ok) {
+        location.reload();
+      } else {
+        alert(result.message || 'Failed to remove tag.');
+      }
+    } catch (err) {
+      console.error('❌ Tag removal failed:', err);
+      alert('An error occurred while removing the tag.');
+    }
+  }
+</script>
+
+
+
+
+

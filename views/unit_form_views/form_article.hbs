@@ -1,0 +1,200 @@
+{{#*inline "title"}}Write an Article | Twennie{{/inline}}
+{{> mainpartials/articleinstructions_partial}}
+
+<!-- near the top of every form_* file -->
+<input type="hidden" name="fromUpcomingId" value="{{fromUpcomingId}}">
+<div class="contribute-wave-divider">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 160">
+    <path fill="#939598" fill-opacity="1"
+      d="M0,64L80,58.7C160,53,320,43,480,58.7C640,75,800,117,960,122.7C1120,128,1280,96,1360,80L1440,64L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z">
+    </path>
+  </svg>
+</div>
+
+<div class="form-article-background">
+  <div class="form-article-container">
+<form 
+  id="article-form" 
+  class="article-form" 
+  action="/unitform/submit_article" 
+  method="POST" 
+  enctype="multipart/form-data"
+>
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+      <input type="hidden" name="_id" value="{{data._id}}">
+
+      <!-- Current Article Image -->
+<!-- Display Current or Default Header Image -->
+<div class="form-field">
+  <label>Article Image</label>
+  <img 
+    src="{{#if data.image.url}}{{data.image.url}}{{else}}/images/default-article.png{{/if}}" 
+    alt="Article Header Image" 
+    style="width: 240px; height: auto; border-radius: 8px; margin-top: 8px;"
+  >
+</div>
+
+<!-- Upload New Header Image -->
+<div class="form-field">
+  <label for="image">Upload Article Image (optional)</label>
+  <input 
+    type="file" 
+    id="image" 
+    name="image" 
+    accept="image/*"
+  >
+  <p class="form-hint">If no image is uploaded, a default will be used. If your image is larger than 5MB, the article will not post and you will be rerouted back to this form.</p>
+</div>
+
+
+      <div class="form-field">
+        <label for="article-title">Article Title</label>
+        <input type="text" id="article-title" name="article_title" value="{{data.article_title}}" required>
+      </div>
+
+<!-- Main Topic -->
+<!-- Main Topic -->
+<div class="form-field">
+  <label for="main-topic">Main Topic</label>
+  <select id="main-topic" name="main_topic" class="form-select" required>
+    <option value="">Please select a main topic</option>
+    {{#each mainTopics}}
+      <option value="{{this}}" {{#ifEquals this ../data.main_topic}}selected{{/ifEquals}}>{{this}}</option>
+    {{/each}}
+  </select>
+</div>
+
+<!-- Secondary Topic -->
+<div class="form-field">
+  <label for="secondary-topics">Secondary Topic (Optional)</label>
+  <select id="secondary-topics" name="secondary_topics" class="form-select">
+    <option value="">None</option>
+    {{#each mainTopics}}
+      <option value="{{this}}" {{#ifIncludes ../data.secondary_topics this}}selected{{/ifIncludes}}>{{this}}</option>
+    {{/each}}
+  </select>
+</div>
+
+
+
+
+      <!-- Rich Text Editor -->
+<!-- Rich Text Editor -->
+<div class="form-field">
+  <label for="articleBody">Articles should be a maximum of 1200 words, minimum 800. If your word count does not meet the minimum or exceeds the maximum, your article will not post, and you will be redirected back to this form.</label>
+
+  {{#if word_count}}
+    <p style="font-size: 0.9rem; color: #777; margin-top: 0.25rem;">
+      Current saved word count: <strong>{{word_count}}</strong>
+    </p>
+  {{/if}}
+
+  <div id="quill-editor" style="height: 300px; background-color: white;"></div>
+
+  <div id="word-count" style="margin-top: 0.5rem; font-size: 0.9rem; color: #555;">
+    Word count: <span id="wordCount">0</span>
+  </div>
+
+  <input type="hidden" name="articleBody" id="articleBody">
+</div>
+
+      <div class="form-toggle">
+        <label><input type="checkbox" name="clarify_topic" {{#if data.clarify_topic}}checked{{/if}}> Does your article further clarify the topic?</label>
+      </div>
+
+      <div class="form-toggle">
+        <label><input type="checkbox" name="produce_deliverables" {{#if data.produce_deliverables}}checked{{/if}}> Does it suggest tasks that produce deliverables?</label>
+      </div>
+
+      <div class="form-toggle">
+        <label><input type="checkbox" name="new_ideas" {{#if data.new_ideas}}checked{{/if}}> Does it include some new ideas and creative suggestions?</label>
+      </div>
+
+      <div class="form-toggle">
+        <label><input type="checkbox" name="include_results" {{#if data.include_results}}checked{{/if}}> Does it include results and/or testimonials?</label>
+      </div>
+
+      <div class="form-toggle">
+        <label><input type="checkbox" name="permission" {{#if data.permission}}checked{{/if}} required> Do you provide consent for this library unit to be used for Twennie promotional purposes?</label>
+      </div>
+
+      <div class="form-field">
+        <label for="short-summary">Short Summary (50 words)</label>
+        <textarea id="short-summary" name="short_summary" maxlength="300" required>{{data.short_summary}}</textarea>
+      </div>
+
+<!-- Full Summary -->
+<div class="form-field">
+  <label for="full-summary">
+    Full Summary <span style="font-weight: normal; font-size: 0.85em;">(Optional, 150 words)</span>
+  </label>
+  <p class="form-help-text" style="font-size: 0.85rem; color: #555; margin-top: 4px;">
+    The full summary helps other members further understand the context and purpose of your article. Including both summaries is recommended, but not required.
+  </p>
+  <textarea id="full-summary" name="full_summary" maxlength="600">{{data.full_summary}}</textarea>
+</div>
+
+
+      <!-- NEW: Visibility Toggles -->
+      <div class="form-field">
+        <label>Who can access this article?</label>
+        <div class="visibility-toggle-row">
+          <label class="visibility-option">
+            <input type="radio" name="visibility" value="team_only" {{#ifEquals data.visibility "team_only"}}checked{{/ifEquals}} required>
+            share with my team only
+          </label>
+          <label class="visibility-option">
+            <input type="radio" name="visibility" value="organization_only" {{#ifEquals data.visibility "organization_only"}}checked{{/ifEquals}} required>
+            share with my organization only
+          </label>
+          <label class="visibility-option">
+            <input type="radio" name="visibility" value="all_members" {{#ifEquals data.visibility "all_members"}}checked{{/ifEquals}} required>
+            share with all Twennie members
+          </label>
+        </div>
+      </div>
+
+      <div class="form-buttons">
+        {{#if data._id}}
+          <button type="submit" name="submit" value="edit" class="form-button submit-button">save edited article</button>
+        {{else}}
+          <button type="submit" name="submit" value="submit" class="form-button submit-button">submit for approval</button>
+        {{/if}}
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const quill = new Quill('#quill-editor', {
+      theme: 'snow'
+    });
+
+    const wordCountDisplay = document.getElementById('wordCount');
+
+    function updateWordCount() {
+      const text = quill.getText().trim();
+      const words = text === "" ? 0 : text.split(/\s+/).length;
+      wordCountDisplay.textContent = words;
+    }
+
+    quill.on('text-change', updateWordCount);
+    updateWordCount(); // initialize on page load
+
+    // If editing existing content
+    const existingContent = `{{{data.article_body}}}`;
+    if (existingContent) {
+      quill.root.innerHTML = existingContent;
+      updateWordCount();
+    }
+
+    document.querySelector('#article-form').addEventListener('submit', function () {
+      document.getElementById('articleBody').value = quill.root.innerHTML;
+    });
+  });
+</script>
+
+
+
+{{> mainpartials/footer}}

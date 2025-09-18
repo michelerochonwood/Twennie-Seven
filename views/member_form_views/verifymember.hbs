@@ -1,0 +1,66 @@
+<h1 class="form-title">find your group</h1>
+
+<div class="verify-form-container">
+  <div class="groups-list">
+    {{#each groups}}
+    <div class="group-card">
+      <div class="group-header">
+        <h3>{{this.groupName}}</h3>
+        <button class="dropdown-btn" data-group="{{this._id}}">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99" class="dropdown-arrow">
+            <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
+            <g><polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/></g>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Registration Code Form (standard POST) -->
+      <form action="/member/group/verify-registration-code" method="POST" class="registration-form" data-group="{{this._id}}">
+
+        <input type="hidden" name="groupId" value="{{this._id}}">
+        <label for="registration-code-{{this._id}}">enter your group's registration code</label>
+        <input type="text" id="registration-code-{{this._id}}" name="registration_code" required>
+        <button type="submit" class="submit-registration">verify</button>
+      </form>
+
+      <!-- Messages -->
+      {{#if this.verified}}
+        <p class="success-message" style="color: green; font-weight: bold;">Registration Code Verified!</p>
+        <button class="expand-members-btn" data-group="{{this._id}}">
+          <span>find my name</span>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99" class="dropdown-arrow">
+            <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
+            <g><polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/></g>
+          </svg>
+        </button>
+      {{else if this.error}}
+        <p class="error-message" style="color: red;">Invalid registration code. Try again.</p>
+      {{/if}}
+
+      <!-- Group Member List -->
+      {{#if this.verified}}
+      <div class="group-details" id="group-details-{{this._id}}">
+        <p>Leader: {{this.groupLeaderName}}</p>
+        <p>Members:</p>
+        <ul class="members-list">
+          {{#if this.members.length}}
+            {{#each this.members}}
+              <li>
+                {{this.name}}
+                <a href="/member/group/complete-registration?memberName={{this.name}}&memberEmail={{this.email}}&groupId={{../_id}}&groupName={{../groupName}}" class="select-member-btn">this is me</a>
+              </li>
+            {{/each}}
+          {{else}}
+            <li>No members found for this group.</li>
+          {{/if}}
+        </ul>
+      </div>
+      {{/if}}
+    </div>
+    {{/each}}
+  </div>
+</div>
+
+
+
+

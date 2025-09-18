@@ -1,0 +1,70 @@
+<aside class="dashboard-sidebar member-sidebar">
+  <div class="member-profile-section">
+
+    <!-- Profile Image -->
+    <div class="member-profile-image-container">
+      <img 
+        src="{{#if member.profileImage}}{{member.profileImage}}{{else}}/images/default-avatar.png{{/if}}" 
+        alt="{{member.name}}'s Profile Photo" 
+        class="member-profile-image"
+      >
+    </div>
+
+    <!-- Profile Info -->
+    <div class="member-profile-info">
+      <h2 class="member-profile-name">{{member.name}}</h2>
+      <p class="member-profile-title">
+        {{#if member.professionalTitle}}
+          {{member.professionalTitle}}
+        {{else}}
+          No title available
+        {{/if}}
+      </p>
+      
+      <p style="width: 50%; margin: 0 auto; text-align: center">
+        If you haven't done so, tell us about yourself in your profile:
+      </p>
+
+      <!-- Profile Button -->
+      <a 
+        href="/profile/member/{{member._id}}" 
+        class="member-profile-btn"
+      >
+        my profile
+      </a>
+
+      <!-- Teach Me Button -->
+      <a 
+        href="/teach_me" 
+        class="member-profile-btn"
+        style="margin-top: 0.75rem;"
+      >
+        teach me how to use Twennie
+      </a>
+    </div>
+
+    <!-- Orientation Video -->
+    <div class="member-orientation-video" style="margin-top: 2rem; padding: 0 1rem;">
+      <h3 style="font-size: 1rem; margin-bottom: 0.5rem; text-align: center; color: #4e50a2;">
+        new member orientation
+      </h3>
+      <video 
+        controls 
+        width="100%" 
+        style="border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"
+        poster="https://www.twennie.com/images/memberorientationposter.png"
+      >
+        <source src="https://res.cloudinary.com/dgeszflt3/video/upload/v1748371173/Member_Orientation_rytsvc.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+
+  </div>
+</aside>
+
+
+
+
+
+
+

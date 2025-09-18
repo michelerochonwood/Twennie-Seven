@@ -1,0 +1,234 @@
+{{#*inline "title"}}Create a Prompt Set | Twennie{{/inline}}
+{{> mainpartials/promptsetinstructions_partial}}
+
+<!-- near the top of every form_* file -->
+<input type="hidden" name="fromUpcomingId" value="{{fromUpcomingId}}">
+<div class="contribute-wave-divider">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 160">
+      <path fill="#939598" fill-opacity="1" d="M0,64L80,58.7C160,53,320,43,480,58.7C640,75,800,117,960,122.7C1120,128,1280,96,1360,80L1440,64L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z"></path>
+    </svg>
+</div>
+
+<div class="form-promptset-background">
+  <div class="form-promptset-container">
+    <form id="promptset-form" class="prompt-form" action="/unitform/submit_promptset" method="POST">
+      <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+      <input type="hidden" name="_id" value="{{data._id}}">
+
+      <!-- Existing fields up to sub-topic remain the same -->
+
+<!-- Badge Section -->
+<div class="form-field">
+  <label style="text-align: center">Choose a Badge</label>
+  <p class="prompt-intro-text">
+    Any member that completes your prompt set will earn this badge. You can tailor your badge to the subject of the prompt set. We have a variety of traditional, professional, and fun badges to choose from. Give your badge a name that indicates the significance of the achievement, such as "Skills in Communication" or "Responsible Leadership."
+  </p>
+  <div id="selected-badge-container">
+    {{#if data.badge}}
+      <img src="{{data.badge.image}}" alt="{{data.badge.name}}" id="selected-badge-image" style="width: 200px; height: auto">
+      <span class="badge-name-label">Badge name: {{data.badge.name}}</span>
+    {{else}}
+      <img src="/badges/communication/communicationbronze.png" alt="Default Badge" id="selected-badge-image">
+      <span class="badge-name-label">Badge name: (default)</span>
+    {{/if}}
+  </div>
+  <!-- This button takes the user to the badges view -->
+  <button type="button" id="choose-badge-btn">choose a badge</button>
+</div>
+
+<!-- Hidden inputs to capture the chosen badge info (using dot notation) -->
+<input type="hidden" name="badge.image" id="badge_image" value="{{#if data.badge}}{{data.badge.image}}{{/if}}">
+<input type="hidden" name="badge.name" id="badge_name" value="{{#if data.badge}}{{data.badge.name}}{{/if}}">
+
+
+      <!-- Prompt-Set Title -->
+      <div class="form-field">
+        <label for="promptset-title">Prompt-Set Title</label>
+        <input type="text" id="promptset-title" name="promptset_title" value="{{data.promptset_title}}">
+      </div>
+
+      <!-- Topic Dropdown -->
+<!-- Main Topic -->
+<div class="form-field">
+  <label for="main_topic">Main Topic</label>
+  <select id="main_topic" name="main_topic" required style="border-radius: 55px;">
+    <option value="">Please select a main topic</option>
+    {{#each mainTopics}}
+      <option value="{{this}}" {{#ifEquals this ../data.main_topic}}selected{{/ifEquals}}>{{this}}</option>
+    {{/each}}
+  </select>
+</div>
+
+
+<!-- Secondary Topic (Optional) -->
+<div class="form-field">
+  <label for="secondary_topic">Secondary Topic (Optional)</label>
+  <select id="secondary_topic" name="secondary_topic" style="border-radius: 55px;">
+    <option value="">None</option>
+    {{#each secondaryTopics}}
+      <option value="{{this}}" {{#ifEquals this ../data.secondary_topic}}selected{{/ifEquals}}>{{this}}</option>
+    {{/each}}
+  </select>
+</div>
+
+
+
+<!-- Target Audience Section -->
+<div class="form-field">
+    <label>Target Audience:</label>
+    <div class="white-container target-audience">
+        <div class="target-audience-container">
+            <label>
+                <input type="radio" name="target_audience" value="individual" {{#ifEquals data.target_audience 'individual'}}checked{{/ifEquals}}> Individuals
+            </label>
+            <label>
+                <input type="radio" name="target_audience" value="group" {{#ifEquals data.target_audience 'group'}}checked{{/ifEquals}}> Groups
+            </label>
+            <label>
+                <input type="radio" name="target_audience" value="mixed" {{#ifEquals data.target_audience 'mixed'}}checked{{/ifEquals}}> A mix of groups and individuals
+            </label>
+        </div>
+    </div>
+</div>
+
+
+      <!-- Characteristics Section -->
+<div class="form-field">
+    <label>Check the adjectives below that best describe this prompt-set:</label>
+    <div class="white-container">
+        <div class="characteristics-grid">
+            <div class="characteristics-row">
+                {{#each characteristics}}
+                <label>
+                    <input type="checkbox" name="characteristics[]" value="{{this}}" {{#ifIncludes ../data.characteristics this}}checked{{/ifIncludes}}>
+                    {{this}}
+                </label>
+                {{/each}}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+      <!-- Purpose Section -->
+<div class="form-field">
+    <label for="purpose">Purpose of this prompt-set</label>
+    <textarea id="purpose" name="purpose" rows="12" style="min-height: 210px;">
+{{#if data.purpose}}{{data.purpose}}{{else}}Example: to learn best practices in project management as we go
+Example: to bring our team closer together through small, weekly acts of kindness
+Example: to improve our understanding of client experience a little at a time
+Example: to practice marketing storytelling one prompt at a time
+Example: to improve our communication skills
+{{/if}}
+    </textarea>
+</div>
+
+
+      <!-- Frequency Section -->
+      <div class="form-field">
+        <label for="suggested_frequency">Suggested Frequency:</label>
+        <select id="suggested_frequency" name="suggested_frequency" style="border-radius: 55px">
+          <option value="">Select Frequency</option>
+          {{#each frequencies}}
+          <option value="{{this}}" {{#ifEquals ../data.suggested_frequency this}}selected{{/ifEquals}}>{{this}}</option>
+          {{/each}}
+        </select>
+      </div>
+
+
+
+
+
+
+
+            <!-- Instruction for Prompt 0 -->
+      <div class="form-field prompt0-instruction">
+        <strong>Starting Message</strong>
+        <p>
+          This is the introduction to your prompt set. Use this to tell fellow members why they should register for the set. What makes your prompt set an effective learning, stress relief, or morale boosting tool? 
+        </p>
+      </div>
+
+      <!-- Prompt 0 Fields -->
+      <div class="form-field">
+        <label for="prompt_headline0">Starting Message Headline</label>
+        <input type="text" id="prompt_headline0" name="prompt_headline0" value="{{data.prompt_headline0}}">
+      </div>
+
+      <div class="form-field">
+        <label for="Prompt0">Starting Message</label>
+        <textarea id="Prompt0" name="Prompt0">{{data.Prompt0}}</textarea>
+      </div>
+
+      <!-- Prompt Inputs -->
+{{#each (range 1 21)}}
+  <div class="form-field">
+    <label for="prompt_headline{{this}}">Prompt Headline {{this}}</label>
+    <input type="text" id="prompt_headline{{this}}" name="prompt_headline{{this}}" value="{{lookup ../data (concat 'prompt_headline' this)}}">
+  </div>
+
+  <div class="form-field">
+    <label for="Prompt{{this}}">Prompt {{this}}</label>
+    <textarea id="Prompt{{this}}" name="Prompt{{this}}">{{lookup ../data (concat 'Prompt' this)}}</textarea>
+  </div>
+{{/each}}
+
+      <div class="form-field">
+        <label>Who can access this prompt set?</label>
+        <div class="visibility-toggle-row">
+          <label class="visibility-option">
+            <input type="radio" name="visibility" value="team_only" {{#ifEquals data.visibility "team_only"}}checked{{/ifEquals}} required>
+            share with my team only
+          </label>
+          <label class="visibility-option">
+            <input type="radio" name="visibility" value="organization_only" {{#ifEquals data.visibility "organization_only"}}checked{{/ifEquals}} required>
+            share with my organization only
+          </label>
+          <label class="visibility-option">
+            <input type="radio" name="visibility" value="all_members" {{#ifEquals data.visibility "all_members"}}checked{{/ifEquals}} required>
+            share with all Twennie members
+          </label>
+        </div>
+      </div>
+
+
+      <!-- Short Summary -->
+      <div class="form-field">
+        <label for="short-summary">Short Summary (50 words)</label>
+        <textarea id="short-summary" name="short_summary">{{data.short_summary}}</textarea>
+      </div>
+
+      <!-- Full Summary -->
+<!-- Full Summary -->
+<div class="form-field">
+  <label for="full-summary">
+    Full Summary <span style="font-weight: normal; font-size: 0.85em;">(Optional, 150 words)</span>
+  </label>
+  <p class="form-help-text" style="font-size: 0.85rem; color: #555; margin-top: 4px;">
+    The full summary offers further context about your prompt set. This helps members decide if it aligns with their goals. Including both summaries is encouraged.
+  </p>
+  <textarea id="full-summary" name="full_summary" maxlength="1000">{{data.full_summary}}</textarea>
+</div>
+
+
+      <!-- Submit Buttons -->
+      <div class="form-buttons">
+        <button type="submit" class="form-button submit-button">submit for approval</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{{!-- Adding Partial Nav to "How To" Pages. --}}
+{{> mainpartials/footer}}
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+  const badgeButton = document.getElementById('choose-badge-btn');
+  badgeButton.addEventListener('click', function() {
+    window.location.href = '/badges'; // Adjust the URL if needed.
+  });
+});
+</script>
+
+

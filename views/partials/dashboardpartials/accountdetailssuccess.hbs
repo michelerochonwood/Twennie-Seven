@@ -1,0 +1,24 @@
+{{#*inline "title"}}Success! | Twennie{{/inline}}
+<div class="success-container">
+  <h1 class="success-title">Your account information has been updated!</h1>
+
+  {{#if changedCount}}
+    <p class="success-message">
+      {{changedCount}} field{{#unless (eq changedCount 1)}}s{{/unless}} updated:
+    </p>
+  {{/if}}
+
+  {{#if name}}
+    <p class="success-message">Name: <strong>{{name}}</strong></p>
+  {{/if}}
+
+  {{#if email}}
+    <p class="success-message">Email: <strong>{{email}}</strong></p>
+  {{/if}}
+
+  {{#if username}}
+    <p class="success-message">Username: <strong>{{username}}</strong></p>
+  {{/if}}
+
+  <a href="{{dashboard}}" class="success-button">return to my dashboard</a>
+</div>

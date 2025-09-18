@@ -1,0 +1,133 @@
+{{#*inline "title"}}The Power of Prompt Sets | Twennie{{/inline}}
+<div class="promo-wave-divider wave-divider">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 150">
+    <path fill="#4e50a2" fill-opacity="1"
+      d="M0,64L80,58.7C160,53,320,43,480,58.7C640,75,800,117,960,122.7C1120,128,1280,96,1360,80L1440,64L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z" />
+  </svg>
+</div>
+
+<section class="blue-wave-bg">
+  <div class="promptset-hero-container">
+    <h1 class="promptset-heading">prompt sets: smart, fast, and measurable learning</h1>
+    <p class="promptset-intro">Prompt sets are a type of unit in the Twennie library. They include learning activities designed to create real behavioral change in less time, strengthen teams, and support critical thinking and reflection — all without taking up billable hours.</p>
+    <div class="promptset-video-wrapper">
+      <video controls poster="https://www.twennie.com/images/whatistwennievideo.png">
+        <source src="https://res.cloudinary.com/dgeszflt3/video/upload/v1744390909/PromptSets_ehxy0n.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="promptset-benefits-section">
+  <div class="promptset-features-grid">
+    <div class="grid-item animate">
+      <h3>customizable and scalable</h3>
+      <p>Use Twennie-designed prompt sets or create your own. Prompts can be team-specific, client-facing, or shared across the Twennie community for broader feedback and collaboration.</p>
+    </div>
+    <div class="grid-item animate">
+      <h3>action-based learning</h3>
+      <p>Prompts don't just teach concepts — they require real action. That means higher engagement and better skill retention without leaving your desk.</p>
+    </div>
+    <div class="grid-item animate">
+      <h3>trackable and reportable</h3>
+      <p>Prompt completions, notes, and participation data are stored in Twennie. Leaders can view reports and analyze team engagement over time.</p>
+    </div>
+    <div class="grid-item animate">
+      <h3>low time commitment</h3>
+      <p>Each prompt takes less than 20 minutes to complete. They can be done independently or collaboratively in short meetings, with maximum value and minimal disruption.</p>
+    </div>
+        <div class="grid-item animate">
+      <h3>initiate, refresh, reinforce</h3>
+      <p>A prompt set frames learning in real-life situations, providing context and experience.</p>
+    </div>
+    <div class="grid-item animate">
+      <h3>shared experience</h3>
+      <p>Prompts give working teams a chance to share the experience of learning, making it stick. They hold each other accountable for new, strategic team collaboration.</p>
+    </div>
+  </div>
+</section>
+
+<section class="promptset-example-section">
+  <h2 class="section-title">prompt examples</h2>
+  <div class="prompt-image-grid">
+    <div class="prompt-image-item">
+      <img src="/images/conflict_prompt.png" alt="Conflict Prompt">
+      <p>Role-playing conflict resolution to overcome client communication challenges.</p>
+    </div>
+    <div class="prompt-image-item">
+      <img src="/images/cross_sell.png" alt="Cross Sell Prompt">
+      <p>Collaborate across departments to identify cross-selling opportunities.</p>
+    </div>
+    <div class="prompt-image-item">
+      <img src="/images/motivation.png" alt="Motivation Juice Prompt">
+      <p>A fun morale-building prompt: create a Friday challenge that energizes the team.</p>
+    </div>
+  </div>
+</section>
+
+<section class="promptset-howto-section">
+  <h2 class="section-title">how to create a great prompt</h2>
+  <p>Want to design your own prompt set? Follow this 5-sentence framework:</p>
+  <ol class="prompt-guidelines">
+    <li>Identify a problem relevant to your team, topic, or industry.</li>
+    <li>Explain why the problem matters.</li>
+    <li>Suggest an activity that takes 20 minutes or less.</li>
+    <li>Describe clear, concrete steps to complete the activity.</li>
+    <li>Explain why the activity is useful — what it builds or tests.</li>
+  </ol>
+  <p>Need help? Twennie’s coaches have written hundreds of prompts and are happy to assist.</p>
+</section>
+
+
+
+<!-- FOOTER SECTION with content -->
+<section class="promptset-footer-wave">
+  <div class="promptset-footer-grid">
+    <div class="footer-grid-item">
+      <img src="/images/newprompt.png" alt="Prompt Notes">
+      <p>Track notes for each prompt completed.</p>
+    </div>
+    <div class="footer-grid-item">
+      <img src="/images/summaries.png" alt="Prompt Summaries">
+      <p>Review summaries to vet prompt sets before assigning.</p>
+    </div>
+    <div class="footer-grid-item">
+      <img src="/images/topic.png" alt="Topic Management">
+      <p>Organize and assign prompt sets by topic.</p>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- CTA Section -->
+<section class="promptset-cta-buttons">
+  <h2 class="section-title">ready to explore?</h2>
+  <div class="cta-button-group">
+    <a href="/member/choose" class="cta-button">join twennie</a>
+    <a href="/sample_promptset" class="cta-button">see a sample prompt set</a>
+    <a href="/topics" class="cta-button">explore the library</a>
+  </div>
+</section>
+
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const animatedElements = document.querySelectorAll('.animate');
+
+    const observer = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.2 });
+
+    animatedElements.forEach(el => observer.observe(el));
+  });
+</script>

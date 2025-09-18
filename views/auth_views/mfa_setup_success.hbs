@@ -1,0 +1,23 @@
+{{#*inline "title"}}MFA Enabled | Twennie{{/inline}}
+
+<div class="mfa-container">
+  <h1 class="mfa-title">Multi-factor authentication is enabled!</h1>
+
+  <p class="mfa-message">
+    Save these <strong>recovery codes</strong> in a safe place. Each can be used once if you lose access to your authenticator app.
+  </p>
+
+  <ul class="mfa-codes">
+    {{#each recoveryCodes}}
+      <li class="mfa-code-item">
+        <code class="mfa-code">{{this}}</code>
+      </li>
+    {{/each}}
+  </ul>
+
+  <div class="mfa-actions">
+    <a href="{{dashboard}}" class="mfa-button">return to my dashboard</a>
+    <a href="{{baseUrl}}" class="mfa-button mfa-button--secondary">manage mfa settings</a>
+  </div>
+</div>
+

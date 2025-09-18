@@ -1,0 +1,216 @@
+{{#*inline "title"}}Upcoming Unit | Twennie{{/inline}}
+
+<div class="single_article-container">
+  <!-- Main Section -->
+  <div class="single_article-main">
+    <h1 class="single_article-main-title">{{title}}</h1>
+
+    <!-- Teasers -->
+    {{#if teaser}}
+      <p class="single_article-short-summary"><strong>{{teaser}}</strong></p>
+    {{/if}}
+    {{#if long_teaser}}
+      <p class="single_article-long-summary">{{long_teaser}}</p>
+    {{/if}}
+
+    <!-- Meta: status + projected date -->
+    <p class="single_article-wordcount">
+      <em>Status: {{status}}</em>
+      {{#if projected_release_at}}
+        &nbsp;|&nbsp;
+        <em>Projected release: {{formatDate projected_release_at}}</em>
+      {{/if}}
+    </p>
+
+    <!-- Toggle (visual consistency) -->
+    <div class="single_article-toggle" onclick="toggleArticleContent(this)" data-authorized="true">
+      <svg class="single_article-arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99">
+        <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
+        <g><polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/></g>
+      </svg>
+    </div>
+
+    <div class="single_article-content hidden">
+      <!-- Upcoming-specific details -->
+      <div class="white-container" style="margin-bottom: 1rem;">
+        <h3 class="assign-tag-title">about this upcoming unit</h3>
+        <ul class="single_article-details">
+          <li><strong>Unit type:</strong> {{unit_type}}</li>
+          <li><strong>Main topic:</strong> {{main_topic}}</li>
+          {{#if secondary_topics.length}}
+            <li><strong>Secondary topics:</strong>
+              {{#each secondary_topics}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}
+            </li>
+          {{/if}}
+          {{#if sub_topic}}
+            <li><strong>Sub-topic:</strong> {{sub_topic}}</li>
+          {{/if}}
+        </ul>
+        <p class="single_article-notes-instructions">
+          Tag or assign this now to surface it on dashboards. Once published, your tag will automatically point to the released unit and become actionable.
+        </p>
+      </div>
+
+      {{!-- Leader assign block --}}
+      {{#if isLeader}}
+        <div class="assign-tag-form white-container">
+          <h4 class="assign-tag-title">Assign this unit to yourself or your group</h4>
+
+          <form action="/tags/create" method="POST">
+            <input type="hidden" name="_csrf" value="{{csrfToken}}">
+            <input type="hidden" name="itemId" value="{{_id}}">
+            <input type="hidden" name="itemType" value="upcoming">
+
+            <div class="form-field">
+              <label for="tagName">Give the tag a name</label>
+              <input type="text" id="tagName" name="tagName" required>
+            </div>
+
+            <fieldset class="assign-tag-members">
+              <legend class="assign-tag-legend">Select recipients and enter instructions:</legend>
+
+              <!-- Leader self-assignment -->
+              <div class="assign-tag-member-block">
+                <label class="assign-tag-member-label">
+                  <input
+                    type="checkbox"
+                    name="assignedTo[{{leaderId}}][member]"
+                    value="{{leaderId}}"
+                    onchange="toggleInstructionField(this)">
+                  {{leaderName}} (you)
+                </label>
+                <textarea
+                  class="assign-tag-instructions"
+                  name="assignedTo[{{leaderId}}][instructions]"
+                  placeholder="Instructions for yourself"
+                  style="display:none;"></textarea>
+              </div>
+
+              <hr class="assign-tag-divider">
+
+              <!-- Group members (if any) -->
+              {{#if groupMembers.length}}
+                {{#each groupMembers}}
+                  <div class="assign-tag-member-block">
+                    <label class="assign-tag-member-label">
+                      <input
+                        type="checkbox"
+                        name="assignedTo[{{_id}}][member]"
+                        value="{{_id}}"
+                        onchange="toggleInstructionField(this)">
+                      {{name}}
+                    </label>
+                    <textarea
+                      class="assign-tag-instructions"
+                      name="assignedTo[{{_id}}][instructions]"
+                      placeholder="Instructions for {{name}}"
+                      style="display:none;"></textarea>
+                  </div>
+                {{/each}}
+              {{else}}
+                <p style="color:#666;margin-top:.5rem;">No group members found yet. You can still assign this to yourself.</p>
+              {{/if}}
+            </fieldset>
+
+            <button type="submit" class="form-button submit-button">assign upcoming unit</button>
+          </form>
+        </div>
+      {{/if}}
+
+      <!-- Quick Tag (group members & individual members) -->
+      {{#if isGroupMemberOrMember}}
+        <div class="single_unit-tag-container" style="margin-bottom: 200px;">
+          <form action="/tags/create" method="POST" class="inline" id="tagForm">
+            <input type="hidden" name="_csrf" value="{{csrfToken}}">
+            <input type="hidden" name="itemId" value="{{_id}}">
+            <input type="hidden" name="itemType" value="upcoming">
+            <input type="hidden" name="tagName" value="Read Later">
+            <button type="submit" class="tag-this-unit-link" style="background:none;border:none;padding:0;cursor:pointer;">
+              tag this unit
+              <svg class="tag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 39.48 36.66">
+                <path class="cls-1" d="M38.77,21.12L16.05.56C15.65.19,15.13,0,14.59,0L2.12.16c-1.18.01-2.12.97-2.12,2.15v11.2c0,.63.28,1.24.77,1.64l24.95,21c.9.76,2.24.65,3.01-.24l10.23-11.8c.77-.88.69-2.22-.18-3ZM6.28,8.87c-1.57,0-2.84-1.27-2.84-2.84s1.27-2.84,2.84-2.84,2.84,1.27,2.84,2.84-1.27,2.84-2.84,2.84Z"/>
+              </svg>
+            </button>
+          </form>
+        </div>
+      {{/if}}
+
+      {{!-- No notes composer for upcoming items --}}
+    </div>
+  </div> <!-- /single_article-main -->
+
+  <!-- Sidebar -->
+  <aside class="single_article-sidebar">
+    <div class="single_article-image-container">
+      <img
+        src="{{image.url}}"
+        alt="{{#if image.alt}}{{image.alt}}{{else}}Upcoming unit image{{/if}}"
+        class="single_article-image"
+        style="max-width:100%; border-radius:12px;">
+    </div>
+    <p class="single_article-title-sidebar">{{title}}</p>
+
+    <div class="single_article-sidebar-toggle" onclick="toggleSidebarContent(this)">
+      <svg class="single_article-sidebar-arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99">
+        <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
+        <g><polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/></g>
+      </svg>
+    </div>
+
+    <div class="single_article-sidebar-content hidden">
+      <div class="single_article-details">
+        <p class="single_article-unit-type">{{unit_type}}</p>
+        <p class="single_article-main-topic">Main Topic: {{main_topic}}</p>
+        {{#if secondary_topics.length}}
+          <p class="single_article-secondary-topics">
+            {{#each secondary_topics}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}
+          </p>
+        {{/if}}
+
+        {{!-- PUBLISH NOW (leaders only) --}}
+        {{#if canPublish}}
+          <a id="publishNowLink"
+             class="single_article-edit-btn"
+             href="/unitform/prefill_from_upcoming/{{unit_type}}/{{_id}}">
+            publish now
+          </a>
+        {{/if}}
+      </div>
+    </div>
+  </aside>
+</div>
+
+<script>
+  function toggleArticleContent(element) {
+    const content = element.nextElementSibling;
+    if (content) {
+      content.classList.toggle('hidden');
+      element.classList.toggle('open');
+    }
+  }
+
+  function toggleSidebarContent(element) {
+    const sidebarContent = element.nextElementSibling;
+    if (sidebarContent) {
+      sidebarContent.classList.toggle('hidden');
+      element.classList.toggle('open');
+    }
+  }
+
+  // Leader assign textarea show/hide
+  function toggleInstructionField(checkbox) {
+    const memberId = checkbox.value;
+    const selector = `textarea[name="assignedTo[${memberId}][instructions]"]`;
+    const textarea = document.querySelector(selector);
+    if (textarea) textarea.style.display = checkbox.checked ? 'block' : 'none';
+  }
+
+  // Confirm before publish
+  document.getElementById('publishNowLink')?.addEventListener('click', (e) => {
+    if (!confirm('Open the prefilled form to publish now? After you submit, this upcoming card will be removed.')) {
+      e.preventDefault();
+    }
+  });
+</script>
+
+

@@ -1,0 +1,89 @@
+{{#*inline "title"}}Login | Twennie{{/inline}}
+
+<div class="login-container">
+
+  <!-- Bluey Image Row -->
+  <div class="login-bluey-row">
+    <div class="bluey-item">
+      <img src="/images/freebluey.png" alt="Free" class="bluey-image">
+      <p class="bluey-label">free</p>
+    </div>
+    <div class="bluey-item">
+      <img src="/images/bluey1.png" alt="Individual" class="bluey-image" style="height: 170px; margin-top: 20px; margin-bottom: 10px">
+      <p class="bluey-label">individual</p>
+    </div>
+    <div class="bluey-item">
+      <img src="/images/bluey_3.png" alt="Leader" class="bluey-image">
+      <p class="bluey-label">leader</p>
+    </div>
+    <div class="bluey-item">
+      <img src="/images/bluey2.png" alt="Group Member" class="bluey-image">
+      <p class="bluey-label">group member</p>
+    </div>
+  </div>
+
+  <h1 class="login-title">login</h1>
+  
+  {{#if error}}
+    <div class="login-alert login-alert-error">{{error}}</div>
+  {{/if}}
+  
+  {{#if message}}
+    <div class="login-alert login-alert-success">{{message}}</div>
+  {{/if}}
+
+  <form id="login-form" class="login-form" action="/auth/login" method="POST">
+    {{#if csrfToken}}
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    {{/if}}
+
+    <div class="login-field">
+      <label for="email" class="login-label">Email</label>
+      <input type="email" id="email" name="email" class="login-input" required>
+    </div>
+
+    <div class="login-field password-toggle-container">
+      <label for="password" class="login-label">Password</label>
+      <div class="password-wrapper" style="position: relative;">
+        <input type="password" id="password" name="password" class="login-input" required>
+        <span class="toggle-password" onclick="togglePasswordVisibility()" style="position: absolute; top: 50%; right: 15px; transform: translateY(-50%); cursor: pointer;">
+          <ion-icon id="toggleIcon" name="eye-outline"></ion-icon>
+        </span>
+      </div>
+    </div>
+
+    <button type="submit" class="login-button">login</button>
+
+    <div class="login-links">
+      <a href="https://www.twennie.com/membership_form" class="login-link">Not a member? Become one!</a>
+      <a href="https://www.twennie.com/forgot-password" class="login-link">Forgot password?</a>
+    </div>
+  </form>
+
+  <!-- Google Authentication Button -->
+  <div class="google-login-container" style="margin-bottom: 200px;">
+    <a href="https://www.twennie.com/auth/google" class="google-login-button">
+      <img src="https://www.twennie.com/images/google.svg" alt="Google Logo" class="google-logo">
+      <span class="google-login-text">sign in with Google</span>
+    </a>
+  </div>
+</div>
+
+<script>
+  function togglePasswordVisibility() {
+    const input = document.getElementById("password");
+    const icon = document.getElementById("toggleIcon");
+    if (input.type === "password") {
+      input.type = "text";
+      icon.name = "eye-off-outline";
+    } else {
+      input.type = "password";
+      icon.name = "eye-outline";
+    }
+  }
+</script>
+
+
+
+
+

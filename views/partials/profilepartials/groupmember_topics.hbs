@@ -1,0 +1,48 @@
+<!--PROFILE TOPICS VERSION-->
+<div class="groupmember-profile-topics-container">
+    <h3 class="groupmember-profile-topics-title">my topics</h3>
+
+    <div class="groupmember-profile-topics-grid">
+        {{#if selectedTopics.topic1}}
+            <div class="groupmember-profile-topic-card" data-topic-id="{{selectedTopics.topic1.slug}}">
+                <div class="groupmember-profile-topic-title">{{selectedTopics.topic1.title}}</div>
+                <ul class="groupmember-profile-topic-subtopics">
+                    {{#each selectedTopics.topic1.subtopics}}
+                        <li>{{this}}</li>
+                    {{else}}
+                        <li>No subtopics available</li>
+                    {{/each}}
+                </ul>
+                <a href="/single_topic_{{selectedTopics.topic1.slug}}" class="groupmember-profile-topic-review">review this topic</a>
+            </div>
+        {{/if}}
+
+        {{#if selectedTopics.topic2}}
+            <div class="groupmember-profile-topic-card" data-topic-id="{{selectedTopics.topic2.slug}}">
+                <div class="groupmember-profile-topic-title">{{selectedTopics.topic2.title}}</div>
+                <ul class="groupmember-profile-topic-subtopics">
+                    {{#each selectedTopics.topic2.subtopics}}
+                        <li>{{this}}</li>
+                    {{else}}
+                        <li>No subtopics available</li>
+                    {{/each}}
+                </ul>
+                <a href="/single_topic_{{selectedTopics.topic2.slug}}" class="groupmember-profile-topic-review">review this topic</a>
+            </div>
+        {{/if}}
+
+        {{#if selectedTopics.topic3}}
+            <div class="groupmember-profile-topic-card" data-topic-id="{{selectedTopics.topic3.slug}}">
+                <div class="groupmember-profile-topic-title">{{selectedTopics.topic3.title}}</div>
+                <ul class="groupmember-profile-topic-subtopics">
+                    {{#each selectedTopics.topic3.subtopics}}
+                        <li>{{this}}</li>
+                    {{else}}
+                        <li>No subtopics available</li>
+                    {{/each}}
+                </ul>
+                <a href="/single_topic_{{selectedTopics.topic3.slug}}" class="groupmember-profile-topic-review">review this topic</a>
+            </div>
+        {{/if}}
+    </div>
+</div>

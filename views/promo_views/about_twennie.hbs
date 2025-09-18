@@ -1,0 +1,59 @@
+{{#*inline "title"}}About Twennie | Twennie{{/inline}}
+<div class="about-container">
+
+  <!-- About Twennie Section: Left Text, Right Image -->
+  <section class="about-section animate">
+    <div class="about-grid-container">
+      
+      <!-- Left: Text Content -->
+      <div class="about-text-content animate" style="margin-left: 50px;">
+        <h2 class="about-heading">about twennie</h2>
+        <p class="about-text">
+          Twennie was founded in 2025 by <strong>Michele Rochon-Wood</strong>, a 20-year proposal and marketing specialist in the engineering and architecture industry. Rochon-Wood worked for four global firms before striking out on her own. The aim was to bring valuable learning content to the world of technical consulting.
+        </p>
+        <p class="about-text">
+          To get the Twennie platform up and running, industry and personal sources contributed articles, videos, interviews, prompt sets, exercises, and templates. The objective was then to refine the content to meet the criteria of 20-minute increments, and Twennie was born. 
+        </p>
+        <p class="about-text">
+          Now technical professionals and their internal leadership and support teams have access to learning in project management, business development, and engaging clients and employees to succeed in their fields of expertise. That learning is built to consume fewer billable hours while bringing essential clarity to the most challenging concepts in the business.
+        </p>
+
+        <!-- Contact Info -->
+        <h3 class="about-contact-heading">contact twennie</h3>
+        <p class="about-contact">
+          <strong>phone:</strong> 613.716.6393<br>
+          <strong>email:</strong> <a href="mailto:info@twennie.com">info@twennie.com</a><br>
+          <strong>location:</strong> twennie is based in Wasaga Beach, Ontario.<br>
+          <strong>business address:</strong> 103-40 Mulligan Lane, Wasaga Beach, Ontario L9Z 0C5
+        </p>
+      </div>
+
+      <!-- Right: Image -->
+      <div class="about-image-wrapper animate">
+        <img src="https://www.twennie.com/images/snow2.jpeg" alt="Snow Scene" class="about-image">
+      </div>
+
+    </div>
+  </section>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+  const animatedElements = document.querySelectorAll(".animate");
+
+  const observer = new IntersectionObserver(
+    (entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("in-view");
+          observer.unobserve(entry.target); // Stop observing after animation
+        }
+      });
+    },
+    { threshold: 0.2 } // Element is animated when 20% is visible
+  );
+
+  animatedElements.forEach(element => observer.observe(element));
+});
+</script>

@@ -1,0 +1,63 @@
+{{#if promptSet}}
+  {{#ifEquals @root.member.accessLevel "free_individual"}}
+    <div style="text-align: center; margin-top: 2rem; font-style: italic; color: #4e50a2;">
+      To register for prompts, you must upgrade your membership.
+    </div>
+  {{else}}
+    <div class="member-prompt-container">
+      <h2 class="member-prompt-title">{{promptSet.frequency}} prompt</h2>
+      <p class="member-prompt-set-title"><strong>{{promptSet.promptSetTitle}}</strong> - {{promptSet.mainTopic}}</p>
+      <p class="member-prompt-purpose"><strong>Purpose of this prompt set:</strong> {{promptSet.purpose}}</p>
+
+      {{#if memberPromptSchedule}}
+        <p class="member-prompt-schedule">
+          To stay on schedule with this prompt set, Twennie recommends you complete this prompt by:
+        </p>
+        <p class="member-prompt-schedule-date">{{memberPromptSchedule.recommendedCompletionDate}}</p>
+      {{/if}}
+
+      <div class="member-prompt-card">
+        <div class="member-prompt-border">
+          <!-- SVG remains unchanged -->
+        </div>
+        <p class="member-prompt-headline">{{promptSet.promptHeadline}}</p>
+        <p class="member-prompt-text">{{promptSet.promptText}}</p>
+      </div>
+
+      {{#if promptSet.promptIndex}}
+        <form action="/promptsetnotes/submit-prompt-notes" method="POST" class="member-prompt-form">
+          <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
+          <input type="hidden" name="promptSetId" value="{{promptSet.promptSetId}}">
+
+          <label for="notes" class="member-prompt-notes-label">Record your notes here:</label>
+          <textarea name="notes" id="notes" class="member-prompt-notes" placeholder="Write your notes here..." required></textarea>
+
+          {{#ifEquals promptSet.promptIndex 20}}
+            <p class="final-prompt-message">
+              <strong>Final Prompt!</strong>
+              This is the last prompt in the set. Make sure to complete the prompt and add your final thoughts about what you learned and discovered!
+            </p>
+          {{/ifEquals}}
+
+          <button type="submit" class="member-prompt-submit">submit this prompt</button>
+        </form>
+      {{else}}
+        <form action="/promptsetstart/start" method="POST">
+          <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
+          <input type="hidden" name="promptSetId" value="{{promptSet.promptSetId}}">
+          <button type="submit" class="member-prompt-submit">get started completing prompts</button>
+        </form>
+      {{/if}}
+
+      <button class="member-unregister-btn" data-id="{{promptSet.registrationId}}">
+        unregister for this prompt set
+      </button>
+    </div>
+  {{/ifEquals}}
+{{/if}}
+
+
+
+
+
+

@@ -1,0 +1,257 @@
+<div class="badges-container">
+  <h1>Badge Selection</h1>
+  <!-- Left Sidebar: Tab Column -->
+  <div class="tabs-column">
+    <div class="tab-wrapper">
+      <div class="tab active" data-target="basic">
+        <span class="tab-label">basic</span>
+      </div>
+    </div>
+    <div class="tab-wrapper">
+      <div class="tab" data-target="business_development">
+        <span class="tab-label">business development</span>
+      </div>
+    </div>
+    <div class="tab-wrapper">
+      <div class="tab" data-target="communication">
+        <span class="tab-label">communication</span>
+      </div>
+    </div>
+    <div class="tab-wrapper">
+      <div class="tab" data-target="creativity">
+        <span class="tab-label">creativity</span>
+      </div>
+    </div>
+    <div class="tab-wrapper">
+      <div class="tab" data-target="creepy">
+        <span class="tab-label">creepy</span>
+      </div>
+    </div>
+    <div class="tab-wrapper">
+      <div class="tab" data-target="fun_and_play">
+        <span class="tab-label">fun and play</span>
+      </div>
+    </div>
+    <div class="tab-wrapper">
+      <div class="tab" data-target="information_management">
+        <span class="tab-label">information management</span>
+      </div>
+    </div>
+    <div class="tab-wrapper">
+      <div class="tab" data-target="leadership">
+        <span class="tab-label">leadership</span>
+      </div>
+    </div>
+    <div class="tab-wrapper">
+      <div class="tab" data-target="people_management">
+        <span class="tab-label">people management</span>
+      </div>
+    </div>
+    <div class="tab-wrapper">
+      <div class="tab" data-target="project_management">
+        <span class="tab-label">project management</span>
+      </div>
+    </div>
+    <div class="tab-wrapper">
+      <div class="tab" data-target="proposal_management">
+        <span class="tab-label">proposal management</span>
+      </div>
+    </div>
+    <div class="tab-wrapper">
+      <div class="tab" data-target="proposal_strat">
+        <span class="tab-label">proposal strategy</span>
+      </div>
+    </div>
+    <div class="tab-wrapper">
+      <div class="tab" data-target="strategy">
+        <span class="tab-label">strategy</span>
+      </div>
+    </div>
+    <div class="tab-wrapper">
+      <div class="tab" data-target="teambuilding">
+        <span class="tab-label">team building</span>
+      </div>
+    </div>
+    <div class="tab-wrapper">
+      <div class="tab" data-target="vacay">
+        <span class="tab-label">vacay</span>
+      </div>
+    </div>
+    <div class="tab-wrapper">
+      <div class="tab" data-target="wildambitions">
+        <span class="tab-label">wild ambitions</span>
+      </div>
+    </div>
+    <div class="tab-wrapper">
+      <div class="tab" data-target="yummy">
+        <span class="tab-label">yummy</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Main Content: Badge Grid Area -->
+  <div class="badge-content">
+    <div class="badges-tab-content" id="basic">
+      {{> badgepartials/basic }}
+    </div>
+    <div class="badges-tab-content" id="business_development">
+      {{> badgepartials/business_development }}
+    </div>
+    <div class="badges-tab-content" id="communication">
+      {{> badgepartials/communication }}
+    </div>
+    <div class="badges-tab-content" id="creativity">
+      {{> badgepartials/creativity }}
+    </div>
+    <div class="badges-tab-content" id="creepy">
+      {{> badgepartials/creepy }}
+    </div>
+    <div class="badges-tab-content" id="fun_and_play">
+      {{> badgepartials/fun_and_play }}
+    </div>
+    <div class="badges-tab-content" id="information_management">
+      {{> badgepartials/information_management }}
+    </div>
+    <div class="badges-tab-content" id="leadership">
+      {{> badgepartials/leadership }}
+    </div>
+    <div class="badges-tab-content" id="people_management">
+      {{> badgepartials/people_management }}
+    </div>
+    <div class="badges-tab-content" id="project_management">
+      {{> badgepartials/project_management }}
+    </div>
+    <div class="badges-tab-content" id="proposal_management">
+      {{> badgepartials/proposal_management }}
+    </div>
+    <div class="badges-tab-content" id="proposal_strat">
+      {{> badgepartials/proposal_strategy }}
+    </div>
+    <div class="badges-tab-content" id="strategy">
+      {{> badgepartials/strategy }}
+    </div>
+    <div class="badges-tab-content" id="teambuilding">
+      {{> badgepartials/teambuilding }}
+    </div>
+    <div class="badges-tab-content" id="vacay">
+      {{> badgepartials/vacay }}
+    </div>
+    <div class="badges-tab-content" id="wildambitions">
+      {{> badgepartials/wildambitions }}
+    </div>
+    <div class="badges-tab-content" id="yummy">
+      {{> badgepartials/yummy }}
+    </div>
+  </div>
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const badgeButtons = document.querySelectorAll('.badge-pick-btn');
+
+    badgeButtons.forEach(button => {
+      button.addEventListener('click', async function() {
+        const badgeCard = this.closest('.badge-card');
+        const badgeImg = badgeCard.querySelector('img');
+        const badgePath = badgeImg.getAttribute('src');
+
+        const { value: badgeName } = await Swal.fire({
+          title: 'Name Your Badge',
+          input: 'text',
+          inputLabel: 'Example: "Communication Hero" or "Leadership Pro"',
+          inputPlaceholder: 'Type your badge name here...',
+          customClass: {
+            popup: 'swal2-badge-popup',
+            icon: 'swal2-badge'
+          },
+          confirmButtonText: 'Save Badge Name',
+          cancelButtonText: 'Cancel',
+          showCancelButton: true
+        });
+
+        if (!badgeName || badgeName.trim() === '') {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Badge name is required!',
+            text: 'Please enter a badge name.',
+            customClass: {
+              icon: 'swal2-warning'
+            }
+          });
+          return;
+        }
+
+        try {
+          const response = await fetch('/badges/pick', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ badgePath, badgeName: badgeName.trim() })
+          });
+
+          const result = await response.json();
+          if (result.success) {
+            window.location.href = '/unitform/form_promptset';
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: result.error || 'Error picking badge.'
+            });
+          }
+        } catch (error) {
+          console.error('Error picking badge:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Error picking badge.'
+          });
+        }
+      });
+    });
+  });
+</script>
+
+
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const wrappers = document.querySelectorAll(".tabs-column .tab-wrapper");
+    const tabs = document.querySelectorAll(".tabs-column .tab");
+    const contents = document.querySelectorAll(".badges-tab-content");
+    const badgeContentContainer = document.querySelector(".badge-content");
+
+    tabs.forEach(tab => {
+      tab.addEventListener("click", function () {
+        const target = this.getAttribute("data-target");
+
+        tabs.forEach(t => t.classList.remove("active"));
+        contents.forEach(c => c.classList.remove("active"));
+
+        this.classList.add("active");
+        const content = document.getElementById(target);
+        if (content) {
+          content.classList.add("active");
+        }
+        const offset = this.parentNode.offsetTop;
+        badgeContentContainer.style.marginTop = offset + "px";
+      });
+    });
+
+    if (tabs.length > 0 && contents.length > 0) {
+      tabs[0].classList.add("active");
+      const firstTarget = tabs[0].getAttribute("data-target");
+      const firstContent = document.getElementById(firstTarget);
+      if (firstContent) {
+        firstContent.classList.add("active");
+      }
+      badgeContentContainer.style.marginTop = tabs[0].parentNode.offsetTop + "px";
+    }
+  });
+</script>

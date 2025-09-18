@@ -1,0 +1,42 @@
+{{#*inline "title"}}MFA Settings | Twennie{{/inline}}
+
+<div class="mfa-container">
+  <h1 class="mfa-title">multi-factor authentication</h1>
+
+  {{#if error}}
+    <div class="mfa-alert" role="alert">{{error}}</div>
+  {{/if}}
+
+  {{#if mfaEnabled}}
+    <p class="mfa-message">
+      MFA is <strong>enabled</strong> on your account.
+    </p>
+
+    <form action="{{baseUrl}}/disable" method="POST" class="mfa-form" novalidate>
+      {{#if csrfToken}}<input type="hidden" name="_csrf" value="{{csrfToken}}">{{/if}}
+
+      <div class="mfa-field">
+        <label class="mfa-label" for="disable_token">Authenticator code to confirm</label>
+        <input id="disable_token" name="token" type="text" required class="mfa-input" autocomplete="one-time-code" inputmode="numeric" />
+      </div>
+
+      <div class="mfa-actions">
+        <button class="mfa-button mfa-button--danger" type="submit">disable mfa</button>
+      </div>
+    </form>
+
+  {{else}}
+    <p class="mfa-message">
+      MFA is <strong>not enabled</strong>.
+    </p>
+
+    <form action="{{baseUrl}}/setup" method="POST" class="mfa-form">
+      {{#if csrfToken}}<input type="hidden" name="_csrf" value="{{csrfToken}}">{{/if}}
+      <div class="mfa-actions">
+        <button class="mfa-button" type="submit">enable mfa</button>
+      </div>
+    </form>
+  {{/if}}
+</div>
+
+

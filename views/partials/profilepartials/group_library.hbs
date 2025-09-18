@@ -1,0 +1,28 @@
+<section class="group-library-section">
+  <h2 class="group-library-title">group library contributions</h2>
+
+  {{#if groupLibraryUnits.length}}
+    <div class="group-library-grid">
+      {{#each groupLibraryUnits}}
+        <div class="group-library-card">
+          <div class="group-library-icon">
+            <img src="/icons/{{toLowerCase this.unitType}}.svg" alt="{{unitType}} icon">
+          </div>
+          <div class="group-library-info">
+            <h3 class="group-library-title">{{title}}</h3>
+            <p class="group-library-author">by {{author}}</p>
+            <p class="group-library-topic">{{mainTopic}}</p>
+            <p class="group-library-status">status: {{status}}</p>
+          </div>
+          <a href="/unitviews/{{toLowerCase this.unitType}}s/view/{{this._id}}" class="group-library-link">view unit</a>
+        </div>
+      {{/each}}
+    </div>
+  {{else}}
+    <div class="group-library-empty-container">
+      <p class="group-library-no-units">No group contributions submitted yet.</p>
+    </div>
+  {{/if}}
+</section>
+
+

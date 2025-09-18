@@ -1,0 +1,98 @@
+{{#*inline "title"}}Units Completed Report | Twennie{{/inline}}
+<section class="dashboard-section">
+    <h1 class="dashboard-section-title">{{leaderGroupName}}; Units Completed</h1>
+
+    <div class="table-container">
+        <table class="dashboard-library-table">
+            <thead>
+                <tr>
+                    <th class="dashboard-library-header">Unit Title</th>
+                    <th class="dashboard-library-header">Unit Type</th>
+                    <th class="dashboard-library-header">Topics</th>
+                    <th class="dashboard-library-header">Authored By</th>
+                    <th class="dashboard-library-header">Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each unitsCompletedReports}}
+                <tr class="dashboard-library-row">
+                    <!-- Unit Title -->
+                    <td class="dashboard-library-cell">{{this.unitTitle}}</td>
+
+                    <!-- Unit Type -->
+                    <td class="dashboard-library-cell">{{this.unitType}}</td>
+
+                    <!-- Topics -->
+                    <td class="dashboard-library-cell">
+                        <div class="multi-record-item">{{this.main_topic}}</div>
+                        {{#each this.secondary_topics}}
+                            <div class="multi-record-item">{{this}}</div>
+                        {{else}}
+                            <span class="no-data">No secondary topics</span>
+                        {{/each}}
+                    </td>
+
+                    <!-- Completed By -->
+                    <td class="dashboard-library-cell">
+                        {{#each this.completedBy}}
+                            <div class="multi-record-item">{{this.memberName}} ({{formatDate this.dateCompleted}})</div>
+                        {{else}}
+                            <span class="no-data">No completions</span>
+                        {{/each}}
+                    </td>
+
+                    <!-- Notes -->
+                    <td class="dashboard-library-cell notes-top-align">
+                        {{#each this.memberNotes}}
+                            {{#each this.notes}}
+                                <div class="multi-record-item">{{this.content}} ({{formatDate this.dateSubmitted}})</div>
+                            {{else}}
+                                <span class="no-data">No notes</span>
+                            {{/each}}
+                        {{else}}
+                            <span class="no-data">No notes</span>
+                        {{/each}}
+                    </td>
+                </tr>
+                {{else}}
+                <tr>
+                    <td colspan="5" class="no-data">No unit completion data available.</td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Report Navigation Links -->
+<div class="report-links-container">
+
+
+    {{#unless isMemberEngagement}}
+    <a href="/reports/memberengagement" class="report-link">
+        <img src="https://www.twennie.com/icons/memberengagement.svg" alt="Member Engagement Report">
+    </a>
+    {{/unless}}
+
+    {{#unless isTeamEngagement}}
+    <a href="/reports/teamengagement" class="report-link">
+        <img src="https://www.twennie.com/icons/teamengagement.svg" alt="Team Engagement Report">
+    </a>
+    {{/unless}}
+
+    {{#unless isPromptSetsCompleted}}
+    <a href="/reports/promptsetscompleted" class="report-link">
+        <img src="https://www.twennie.com/icons/promptsets.svg" alt="Prompt Sets Report">
+    </a>
+    {{/unless}}
+
+    {{#unless isUnitsCompleted}}
+    <a href="/reports/unitscompleted" class="report-link">
+        <img src="https://www.twennie.com/icons/libraryunits.svg" alt="Library Units Report">
+    </a>
+    {{/unless}}
+</div>
+
+
+</section>
+
+

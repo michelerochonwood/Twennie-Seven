@@ -1,0 +1,37 @@
+{{#*inline "title"}}Add Group Member | Twennie{{/inline}}
+<div class="add-group-member-container">
+    <form id="add-group-member-form" action="/leader/{{leader._id}}/add_group_member" method="POST" class="addgroupmember-form">
+        {{#if csrfToken}}
+            <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        {{/if}}
+    
+        <div class="addgroupmember-container">
+            <h1 class="addgroupmember-title">Add Group Members</h1>
+            <p class="addgroupmember-description">Add unregistered group members by entering their names and email addresses below. Group members will be asked to verify their information before completing registration.</p>
+    
+            <div class="addgroupmember-leader-info">
+                <p><strong>Group Name:</strong> {{leader.groupName}}</p>
+                <p><strong>Leader:</strong> {{leader.groupLeaderName}}</p>
+                <p><strong>Professional Title:</strong> {{leader.professionalTitle}}</p>
+            </div>
+    
+            <div class="addgroupmember-fields">
+                <div class="addgroupmember-field">
+                    <label for="member-name">Group Member Name</label>
+                    <input type="text" id="member-name" name="name" placeholder="Enter the member's full name" required>
+                </div>
+    
+                <div class="addgroupmember-field">
+                    <label for="member-email">Group Member Email</label>
+                    <input type="email" id="member-email" name="email" placeholder="Enter the member's email address" required>
+                </div>
+            </div>
+    
+            <div class="addgroupmember-note">
+                <p>Once the members are added, they will need to complete their registration through the verification form.</p>
+            </div>
+    
+            <button type="submit" class="addgroupmember-button">add members</button>
+        </div>
+    </form>
+</div>

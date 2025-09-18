@@ -1,0 +1,20 @@
+{{#*inline "title"}}Success! | Twennie{{/inline}}
+<div class="success-container">
+    <h1 class="success-title">Your email preferences have been updated!</h1>
+    <p class="success-message">
+        You have selected <strong>Level {{emailPreferenceLevel}}</strong> notifications.
+    </p>
+    <p class="success-message">
+        {{#if (eq emailPreferenceLevel 1)}}
+          You will only receive emails for changes to your account and password resets.
+        {{/if}}
+        {{#if (eq emailPreferenceLevel 2)}}
+          You will receive emails for account changes, password resets, new units in your favorite topics, and changes to the Twennie platform.
+        {{/if}}
+        {{#if (eq emailPreferenceLevel 3)}}
+          You will receive all of the above plus notifications for upcoming learning events and promotional offers from Twennie.
+        {{/if}}
+    </p>
+
+    <a href="{{dashboard}}" class="success-button">return to my dashboard</a>
+</div>

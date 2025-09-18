@@ -1,0 +1,112 @@
+<aside class="dashboard-sidebar leader-sidebar">
+  <div class="leader-profile-section">
+
+    <!-- Profile Info -->
+    <div class="profile-information-container">
+      
+      <!-- Profile Image -->
+      <div class="leader-profile-image-container">
+        <img 
+          src="{{#if leader.profileImage}}{{leader.profileImage}}{{else}}/images/default-avatar.png{{/if}}" 
+          alt="Profile photo" 
+          class="leader-profile-image"
+        >
+      </div>
+
+      <!-- Name and Buttons -->
+      <div class="leader-profile-info">
+        <h2 class="leader-profile-name">{{leader.groupLeaderName}}</h2>
+        <p class="leader-profile-title">Group Leader</p>
+
+        <a 
+          href="/profile/leader/{{leader._id}}" 
+          class="leader-profile-btn"
+        >
+          my leader profile
+        </a>
+
+        <button 
+          type="button" 
+          class="leader-profile-btn" 
+          onclick="window.location.href='/profile/group/{{leader._id}}'"
+        >
+          {{leader.groupName}} profile
+        </button>
+
+        <!-- Teach Me Button -->
+        <a 
+          href="/teach_me" 
+          class="leader-profile-btn"
+          style="margin-top: 0.75rem;"
+        >
+          leader orientation
+        </a>
+      </div>
+    </div>
+
+    <!-- Report Grid -->
+    <div class="report-grid-container">
+      <h2 class="leader-profile-title" style="font-size: 1rem; margin-bottom: -20px;">
+        {{leader.groupName}} Report Center
+      </h2>
+      <div class="leader-report-grid">
+        <a href="/reports/memberengagement" class="report-link">
+          <img 
+            src="https://www.twennie.com/icons/memberengagement.svg" 
+            alt="Member Engagement Report"
+          >
+        </a>
+        <a href="/reports/teamengagement" class="report-link">
+          <img 
+            src="https://www.twennie.com/icons/teamengagement.svg" 
+            alt="Team Engagement Report"
+          >
+        </a>
+        <a href="/reports/promptsetscompleted" class="report-link">
+          <img 
+            src="https://www.twennie.com/icons/promptsets.svg" 
+            alt="Prompt Sets Report"
+          >
+        </a>
+        <a href="/reports/unitscompleted" class="report-link">
+          <img 
+            src="https://www.twennie.com/icons/libraryunits.svg" 
+            alt="Library Units Report"
+          >
+        </a>
+      </div>
+    </div>
+
+    <!-- Report Center Instructional Video -->
+    <div class="report-video-instruction" style="margin-top: 2rem; padding: 0 1rem;">
+      <h3 style="font-size: 1rem; margin-bottom: 0.5rem; text-align: center; color: #4e50a2;">
+        how to use the Report Center
+      </h3>
+      <video 
+        controls 
+        width="100%" 
+        style="border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"
+        poster="https://www.twennie.com/images/reportcenterposter.png"
+      >
+        <source src="https://res.cloudinary.com/dgeszflt3/video/upload/v1752606639/Using_the_Report_Center_wy8liy.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+
+  </div>
+</aside>
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+

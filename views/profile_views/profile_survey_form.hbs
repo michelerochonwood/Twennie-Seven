@@ -1,0 +1,107 @@
+{{#*inline "title"}}Profile Survey Form | Twennie{{/inline}}
+<div class="profile-form-container">
+  <h2 class="profile-form-title">Twennie profile survey</h2>
+
+  <form action="/profile/survey/submit" method="POST">
+    {{#if csrfToken}}
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    {{/if}}
+
+    <!-- Name (pre-filled) -->
+    <div class="form-field">
+      <label for="name">Your Name</label>
+      <input type="text" id="name" name="name" value="{{member.name}}" required readonly>
+    </div>
+
+    <!-- Email (pre-filled) -->
+    <div class="form-field">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" value="{{member.email}}" required readonly>
+    </div>
+
+    <!-- Role -->
+<div class="form-field">
+  <label>I am a:</label>
+  <label><input type="radio" name="membership" value="freemember" required> Free Member</label>
+  <label><input type="radio" name="membership" value="contmember"> Contributing Member</label>
+  <label><input type="radio" name="membership" value="member"> Individual Member</label>
+  <label><input type="radio" name="membership" value="leader"> Group Leader</label>
+  <label><input type="radio" name="membership" value="group_member"> Group Member</label>
+</div>
+
+    <!-- Profile interest -->
+    <div class="form-field">
+      <label>Do you want to have a visible profile on Twennie?</label>
+      <label><input type="radio" name="wantsProfile" value="yes"> Yes</label>
+      <label><input type="radio" name="wantsProfile" value="no"> No</label>
+      <p>If you have chosen "no", please select the "not applicable" option in the remaining fields of the survey.</p>
+    </div>
+
+    <!-- Profile types valued -->
+    <div class="form-field">
+      <label>I see value in:</label>
+      <label><input type="checkbox" name="profileTypes" value="individual"> Individual Profiles</label>
+      <p>An individual profile will give you something you can share with coworkers and other people in your professional network. Articles you've written or videos you've filmed could appear in that profile, giving your network access to a portfolio.</p>
+      <label><input type="checkbox" name="profileTypes" value="group">Group Profiles</label>
+      <p>A group profile allows you to announce learning initiatives and studies you have underway. This can be valuable to leaders and their groups when they want to stand out in their organization as growth-oriented.</p>
+      <label><input type="checkbox" name="profileTypes" value="organization"> Organizational Profiles</label>
+      <p>An organizational profile would allow your team to compete in learning challenges with other teams from other organizations. Twennie has some exciting cross-organizational competitions in the works for next year. If you're interested, check the box above.</p>
+      <label><input type="checkbox" name="profileTypes" value="not applicable"> Not Applicable</label>
+    </div>
+
+    <!-- Preferred Profile Components -->
+    <div class="form-field">
+      <label>What should a profile include?</label>
+      <label><input type="checkbox" name="profileComponents" value="bio"> Biography</label>
+      <p>A biography would resemble other professional biographies you maintain online, but this could focus more on your learning history and goals for the future.</p>
+      <label><input type="checkbox" name="profileComponents" value="image"> Profile Image</label>
+      <p>A profile image allows viewers of your profile (other Twennie members, your network) to put a face to your name. If you're contributing content to the library, this could be an excellent way to create a brand as an instructional author.</p>
+      <label><input type="checkbox" name="profileComponents" value="organization"> Employer Organization</label>
+      <p>A profile for your employer could be useful if you are competing as a team or organization in Twennie's upcoming learning competitions.</p>
+      <label><input type="checkbox" name="profileComponents" value="title"> Position / Title</label>
+      <p>Your title gives other members and people in your network a sense of you as a professional in a learning environment.</p>
+      <label><input type="checkbox" name="profileComponents" value="group_name"> Twennie Group Name</label>
+      <p>A Twennie Group Name is a fun way to engage people in learning. It strengthens the feeling of playing for a real team. If team-building is important to your organization, a team name can make a tangible difference. You might even consider having a mascot and logo! Your leader can spearhead the process.</p>
+      <label><input type="checkbox" name="profileComponents" value="interests"> Topics of Interest</label>
+      <p>In the coming years, Twennie will have added social media features, including the opportunity to connect with other members. Your topics of interest give other members an idea of how you fit with the community.</p>
+      <label><input type="checkbox" name="profileComponents" value="library">Contributions to the Library</label>
+      <p>Your profile would not be complete without a chance to showcase your contributions to the Twennie library and community.</p>
+      <label><input type="checkbox" name="profileComponents" value="badges"> Badges Earned</label>
+      <p>Members earn badges when they complete prompt sets and next year, microcourses. Your profile will show all the learning you've done!</p>
+      <label><input type="checkbox" name="profileComponents" value="events"> Group Events</label>
+      <p>In the coming years, Twennie plans to organize learning events. These will bring teams together for exciting team learning challenges!</p>
+      <label><input type="checkbox" name="profileComponents" value="not applicable"> Not Applicable</label>
+    </div>
+
+    <!-- Profile Visibility -->
+    <div class="form-field">
+      <label for="visibility">Who should be able to view your profile?</label>
+      <select name="visibility" id="visibility">
+        <option value="twennie">All Twennie Members</option>
+        <option value="organization">Only My Organization</option>
+        <option value="group">Only My Group</option>
+        <option value="not applicable">Not Applicable</option>
+      </select>
+    </div>
+
+    <!-- New Suggested Question -->
+    <div class="form-field">
+      <label>Would you like to connect directly with other members by commenting on learning units?</label>
+      <label><input type="radio" name="connect" value="yes"> Yes, I’d like the option to connect with other members on Twennie</label>
+      <label><input type="radio" name="connect" value="maybe"> Maybe, case by case</label>
+      <label><input type="radio" name="connect" value="no"> No, I prefer privacy</label>
+      <label><input type="radio" name="connect" value="no"> Not Applicable</label>
+    </div>
+
+    <!-- Additional Suggestions -->
+    <div class="form-field">
+      <label for="notes">Any additional suggestions?</label>
+      <textarea id="notes" name="notes"></textarea>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="form-buttons">
+      <button type="submit" class="form-button submit-button">submit survey</button>
+    </div>
+  </form>
+</div>

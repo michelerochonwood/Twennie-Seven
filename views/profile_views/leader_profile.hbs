@@ -1,0 +1,116 @@
+{{#*inline "title"}}Leader Profile | Twennie{{/inline}}
+<div class="profile-main">
+  
+  <!-- Profile Sidebar (Centered at the Top) -->
+  <aside class="profile-sidebar">
+    <img 
+      src="{{#if leader.profileImage}}{{leader.profileImage}}{{else}}/images/defaultgroupavatar.jpg{{/if}}" 
+      alt="{{leader.name}}'s Profile Picture" 
+      class="profile-image"
+    >
+    <h2 class="profile-name">{{leader.name}}</h2>
+    <p class="profile-title">{{leader.professionalTitle}}</p>
+    <a href="/profile/leader/{{leader.leaderId}}/edit" class="profile-edit-btn">edit profile</a>
+    <div class="profile-survey-notice" style="background-color: #f4f5f9; border-left: 6px solid #4e50a2; padding: 16px; margin-top: 20px; border-radius: 8px;">
+  <p style="font-size: 0.85rem; color: #333; line-height: 1.5; margin-bottom: 0.6rem;">
+    Want to help shape Twennie profiles? Right now they’re in beta. We are working with our members to develop a way to use profiles that is flexible. Please complete the survey and tell us what you think.
+  </p>
+  <a href="/profile/survey" class="form-button submit-button" style="font-size: 0.75rem; padding: 0.5rem 1rem;">complete survey</a>
+</div>
+  </aside>
+
+  <!-- Profile Tabs (Now Centered Below Sidebar) -->
+  <div class="profile-tabs-container">
+    <button class="profile-tab active" data-tab="twennie_group">
+      <span class="tab-title">my Twennie group</span>
+      <div class="tab-arrow"></div>
+    </button>
+    <button class="profile-tab" data-tab="biography">
+      <span class="tab-title">my biography</span>
+      <div class="tab-arrow"></div>
+    </button>
+    <button class="profile-tab" data-tab="goals">
+      <span class="tab-title">my goals</span>
+      <div class="tab-arrow"></div>
+    </button>
+    <button class="profile-tab" data-tab="leadership_goals">
+      <span class="tab-title">my leadership goals</span>
+      <div class="tab-arrow"></div>
+    </button>
+    <button class="profile-tab" data-tab="topics">
+      <span class="tab-title">my topics + interests</span>
+      <div class="tab-arrow"></div>
+    </button>
+    <button class="profile-tab" data-tab="library_units">
+      <span class="tab-title">my library units</span>
+      <div class="tab-arrow"></div>
+    </button>
+    <button class="profile-tab" data-tab="prompt_sets">
+      <span class="tab-title">completed prompt sets</span>
+      <div class="tab-arrow"></div>
+    </button>
+    <button class="profile-tab" data-tab="badges">
+      <span class="tab-title">earned badges</span>
+      <div class="tab-arrow"></div>
+    </button>
+  </div>
+
+  <!-- Profile Content -->
+  <div class="profile-content">
+    <div class="profile-tab-content active" id="twennie_group">
+      {{> profilepartials/leader_twennie_group profile=leader}} 
+    </div>
+
+    <div class="profile-tab-content" id="biography">
+      {{> profilepartials/leader_biography profile=leader}}
+    </div>
+
+    <div class="profile-tab-content" id="goals">
+      {{> profilepartials/leader_goals profile=leader}}
+    </div>
+
+    <div class="profile-tab-content" id="leadership_goals">
+      {{> profilepartials/leader_leadership_goals profile=leader}}
+    </div>
+
+    <div class="profile-tab-content" id="topics">
+      {{> profilepartials/leader_topics profile=leader}}
+    </div>
+
+    <div class="profile-tab-content" id="library_units">
+      {{> profilepartials/leader_library_units profile=leader}}
+    </div>
+
+    <div class="profile-tab-content" id="prompt_sets">
+      {{> profilepartials/leader_prompt_sets profile=leader}}
+    </div>
+
+    <div class="profile-tab-content" id="badges">
+      {{> profilepartials/leader_badges profile=leader}}
+    </div>
+  </div>
+
+</div>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const tabButtons = document.querySelectorAll(".profile-tab");
+    const tabContents = document.querySelectorAll(".profile-tab-content");
+
+    tabButtons.forEach(button => {
+      button.addEventListener("click", function () {
+        const target = this.getAttribute("data-tab");
+
+        // Deactivate all tabs and contents
+        tabButtons.forEach(btn => btn.classList.remove("active"));
+        tabContents.forEach(content => content.classList.remove("active"));
+
+        // Activate current tab and content
+        this.classList.add("active");
+        const activeContent = document.getElementById(target);
+        if (activeContent) activeContent.classList.add("active");
+      });
+    });
+  });
+</script>

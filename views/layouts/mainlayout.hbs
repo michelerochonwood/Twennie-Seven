@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>{{title}}</title>
+
+  {{!-- Google Consent Mode defaults (before any analytics) --}}
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+
+    gtag('consent', 'default', {
+      security_storage: 'granted',                // for essential cookies
+      functionality_storage: {{#if consent.functional}}"granted"{{else}}"denied"{{/if}},
+      analytics_storage:    {{#if consent.analytics}}"granted"{{else}}"denied"{{/if}},
+      ad_storage:           "denied",             // set "granted" only if you add marketing consent
+      ad_user_data:         "denied",
+      ad_personalization:   "denied"
+    });
+  </script>
+
+  {{!-- Load GA4 only when analytics consent is granted --}}
+  {{#if consent.analytics}}
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"></script>
+    <script>
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXX', {
+        // GA4 anonymizes IP by default; add other config here if needed.
+        // 'allow_google_signals': false // keep false unless you have marketing consent
+      });
+    </script>
+  {{/if}}
+
+  <!-- Global Navigation Styles -->
+  <link rel="stylesheet" href="https://www.twennie.com/css/navigation.css?v={{timestamp}}">
+  <!-- Main Styles -->
+  <link rel="stylesheet" href="https://www.twennie.com/css/mainstyles.css?v={{timestamp}}">
+
+  <!-- Mobile Navigation Scripts -->
+  <script src="https://www.twennie.com/javascript/mobile-nav.js?v={{timestamp}}" defer></script>
+  <script src="https://www.twennie.com/javascript/mobile-single-topic-nav.js?v={{timestamp}}" defer></script>
+
+  <!-- Ionicons -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+</head>
+<body class="main-body">
+  {{> mainpartials/header}}
+
+  <main class="main-content">
+    {{{body}}}
+  </main>
+
+  <!-- Home Page Animation Scripts -->
+  <script src="https://www.twennie.com/javascript/animation/who-uses-twennie.js?v={{timestamp}}"></script>
+  <script src="https://www.twennie.com/javascript/animation/wheel-animation.js?v={{timestamp}}"></script>
+  <script src="https://www.twennie.com/javascript/animation/home-page-latest.js?v={{timestamp}}"></script>
+  <script src="https://www.twennie.com/javascript/animation/whatistwennie.js?v={{timestamp}}"></script>
+  <script src="https://www.twennie.com/javascript/animation/learning1.js?v={{timestamp}}"></script>
+  <script src="https://www.twennie.com/javascript/animation/learning2.js?v={{timestamp}}"></script>
+  <script src="https://www.twennie.com/javascript/animation/learning3.js?v={{timestamp}}"></script>
+  <script src="https://www.twennie.com/javascript/tagging/tagging.js?v={{timestamp}}"></script>
+  <script src="https://www.twennie.com/javascript/animation/homepagewave.js?v={{timestamp}}"></script>
+  <script src="https://www.twennie.com/javascript/topics/topic_tabs.js?v={{timestamp}}"></script>
+
+  <!-- External Library -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <footer>
+    {{> mainpartials/footer}}
+  </footer>
+
+    {{!-- Cookie banner (shows only until twennieConsent exists) --}}
+  {{> mainpartials/cookie_banner}}
+</body>
+</html>
+

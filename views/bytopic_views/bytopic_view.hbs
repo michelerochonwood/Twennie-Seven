@@ -1,0 +1,166 @@
+{{#*inline "title"}}Search by Topic | Twennie{{/inline}}
+
+<div class="bytopic-container">
+  <div class="bytopic-content">
+    <h1 class="bytopic-title">{{title}}</h1>
+    <p class="bytopic-short-summary">{{shortSummary}}</p>
+    <p class="bytopic-long-summary">{{longSummary}}</p>
+
+    {{#each sectionedUnits}}
+      <h2 class="bytopic-section-title">{{this.sectionTitle}}</h2>
+      <hr class="bytopic-section-divider">
+
+      {{#if this.units.length}}
+        <div class="bytopic-library-units-grid">
+          {{#each this.units}}
+            <div class="bytopic-library-unit-card">
+
+              <!-- SVG Header -->
+              <div class="bytopic-card-svg-header">
+                {{#if (eq this.type "upcoming")}}
+                  <!-- Orange wave for upcoming (match Latest) -->
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 198.89 17.83">
+                    <path fill="#f7941d" d="M0,9.74s30.57,13.88,92.83,1.88c0,0,68.2-13.17,106.06,6.21V0H0v9.74Z"/>
+                  </svg>
+                {{else}}
+                  <!-- Default purple wave -->
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 198.89 17.83">
+                    <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
+                    <path class="cls-1" d="M0,9.74s30.57,13.88,92.83,1.88c0,0,68.2-13.17,106.06,6.21V0H0v9.74Z"/>
+                  </svg>
+                {{/if}}
+              </div>
+
+              <!-- Card Content -->
+              <div class="bytopic-card-content">
+                <!-- Always-visible content -->
+                <div class="bytopic-visible-content">
+                  <div class="bytopic-unit-type-icon-container">
+                    {{#if (eq this.type "upcoming")}}
+                      <img src="{{getUnitTypeIcon this.unit_type}}" alt="Unit Type Icon" class="bytopic-unit-type-icon">
+                    {{else}}
+                      <img src="{{getUnitTypeIcon this.type}}" alt="Unit Type Icon" class="bytopic-unit-type-icon">
+                    {{/if}}
+                  </div>
+                  <div class="bytopic-unit-title-container">
+                    <h2 class="bytopic-unit-title">{{this.title}}</h2>
+                  </div>
+                </div>
+
+                <!-- Expand Toggle -->
+                <div class="bytopic-expand-toggle" onclick="toggleCard(this)">
+                  <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99">
+                    <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
+                    <polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/>
+                  </svg>
+                </div>
+
+                <!-- Expandable content -->
+                <div class="bytopic-hidden-content">
+                  <div class="bytopic-author-label">
+                    {{#if (eq this.type "upcoming")}}PROJECTED{{else}}AUTHOR{{/if}}
+                  </div>
+
+                  <div class="bytopic-author-image-container">
+                    {{#if (eq this.type "upcoming")}}
+                      <img src="{{image.url}}" alt="{{#if image.alt}}{{image.alt}}{{else}}Upcoming image{{/if}}" class="bytopic-author-image">
+                    {{else}}
+                      <img src="{{authorImage}}" alt="Author Image" class="bytopic-author-image">
+                    {{/if}}
+                  </div>
+
+                  <div class="bytopic-author-name-container">
+                    <span class="bytopic-author-name">
+                      {{#if (eq this.type "upcoming")}}
+                        {{#if projected_release_at}}{{formatDate projected_release_at}}{{else}}TBD{{/if}}
+                      {{else}}
+                        {{this.authorName}}
+                      {{/if}}
+                    </span>
+                  </div>
+
+                  <div class="bytopic-unit-summary-container">
+                    <p class="bytopic-unit-long-summary">
+                      {{#if (eq this.type "upcoming")}}
+                        {{long_teaser}}
+                      {{else}}
+                        {{this.full_summary}}
+                      {{/if}}
+                    </p>
+                  </div>
+
+                  {{#if (eq this.type "promptset")}}
+                    <div class="bytopic-detail-value-purpose">
+                      <strong>Purpose:</strong><br>
+                      {{this.purpose}}
+                    </div>
+                  {{/if}}
+
+                  <!-- ACCESS CONTROL / CTA -->
+                  <div class="bytopic-unit-review-container">
+                    {{#if (eq this.type "upcoming")}}
+                      <a href="/unitviews/upcoming/view/{{_id}}" class="bytopic-unit-review-btn">view upcoming</a>
+                    {{else}}
+                      {{#if loggedIn}}
+                        {{#if isLeaderOrGroupMember}}
+                          <a href="/unitviews/{{capitalize type}}s/view/{{_id}}" class="bytopic-unit-review-btn">review this unit</a>
+                        {{else if isPaid}}
+                          <a href="/unitviews/{{capitalize type}}s/view/{{_id}}" class="bytopic-unit-review-btn">review this unit</a>
+                        {{else}}
+                          {{#if isFree}}
+                            {{#if isVideoOrArticle}}
+                              <a href="/unitviews/{{capitalize type}}s/view/{{_id}}" class="bytopic-unit-review-btn">review this unit</a>
+                            {{else}}
+                              <div class="bytopic-unit-review-btn" style="color: gray; cursor: default;">membership upgrade required</div>
+                            {{/if}}
+                          {{else}}
+                            <div class="bytopic-unit-review-btn" style="color: gray; cursor: default;">membership upgrade required</div>
+                          {{/if}}
+                        {{/if}}
+                      {{else}}
+                        <div class="bytopic-unit-review-btn" style="color: gray; cursor: default;">login required</div>
+                      {{/if}}
+                    {{/if}}
+                  </div>
+                </div>
+              </div>
+            </div>
+          {{/each}}
+        </div>
+      {{else}}
+        <div class="bytopic-empty-section-message">
+          {{#if this.emptyMessage}}<p>{{this.emptyMessage}}</p>{{/if}}
+        </div>
+      {{/if}}
+    {{/each}}
+  </div>
+</div>
+
+<!-- Expand Toggle Script -->
+<script>
+  function toggleCard(element) {
+    const card = element.closest('.bytopic-library-unit-card');
+    const content = card.querySelector('.bytopic-hidden-content');
+
+    const isActive = card.classList.contains("active");
+
+    if (isActive) {
+      card.classList.remove("active");
+      content.style.display = "none";
+    } else {
+      card.classList.add("active");
+      content.style.display = "flex"; // ensure this matches your layout
+    }
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+

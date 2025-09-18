@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  {{!-- Dynamic Page Title --}}
+  <title>{{title}}</title>
+
+  {{!-- views/shared/consent_analytics.hbs --}}
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+
+  gtag('consent', 'default', {
+    security_storage: 'granted',
+    functionality_storage: {{#if consent.functional}}"granted"{{else}}"denied"{{/if}},
+    analytics_storage:    {{#if consent.analytics}}"granted"{{else}}"denied"{{/if}},
+    ad_storage:           "denied",
+    ad_user_data:         "denied",
+    ad_personalization:   "denied"
+  });
+</script>
+
+{{#if consent.analytics}}
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{GA_ID}}"></script>
+  <script>
+    gtag('js', new Date());
+    gtag('config', '{{GA_ID}}');
+  </script>
+{{/if}}
+
+
+  {{!-- Bootstrap CDN (no cache-busting needed) --}}
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+  {{!-- Navigation Styles --}}
+  <link rel="stylesheet" href="https://www.twennie.com/css/navigation.css?v={{timestamp}}">
+
+  <!-- Member Form Styles -->
+  <link rel="stylesheet" href="https://www.twennie.com/css/memberformstyles.css?v={{timestamp}}">
+
+  {{!-- Mobile Navigation Script --}}
+  <script src="https://www.twennie.com/javascript/mobile-nav.js?v={{timestamp}}" defer></script>
+
+  <!-- Ionicons CDN -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+  <meta name="csrf-token" content="{{csrfToken}}">
+</head>
+
+<body class="main-body">
+
+  {{> mainpartials/header}}
+
+  <main class="main-content">
+    {{{body}}}
+  </main>
+
+  <footer>
+    {{> mainpartials/footer}}
+  </footer>
+
+</body>
+</html>

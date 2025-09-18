@@ -1,0 +1,79 @@
+<div class="latest-library-unit-card">
+  <!-- SVG Header Container -->
+  <div class="latest-card-svg-header">
+          <svg
+            id="Layer_2"
+            data-name="Layer 2"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 198.89 17.83"
+          >
+            <defs>
+              <style>
+                .cls-1 {
+                  fill: #4e50a2;
+                }
+              </style>
+            </defs>
+            <g id="Layer_1-2" data-name="Layer 1">
+              <path
+                class="cls-1"
+                d="M0,9.74s30.57,13.88,92.83,1.88c0,0,68.2-13.17,106.06,6.21V0H0v9.74Z"
+              />
+            </g>
+          </svg>
+  </div>
+
+  <!-- Card Content Container -->
+  <div class="latest-card-content">
+    <!-- Unit Type Icon -->
+    <div class="latest-unit-type-icon-container">
+      <img src="{{unitTypeIcon}}" alt="Unit Type Icon" class="latest-unit-type-icon">
+    </div>
+
+    <!-- Unit Title -->
+    <div class="latest-unit-title-container">
+      <h2 class="latest-unit-title">{{this.title}}</h2>
+    </div>
+
+    <!-- Down Arrow for Expand/Collapse -->
+    <div class="latest-expand-toggle" onclick="toggleLatestCard(this)">
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99" style="width: 50px">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #4e50a2;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/>
+  </g>
+</svg>
+    </div>
+
+    <!-- Hidden Content (Initially Collapsed) -->
+    <div class="latest-hidden-content">
+      <div class="latest-author-label">AUTHOR</div>
+      <div class="latest-author-image-container">
+        <img src="{{authorImage}}" alt="Author Image" class="latest-author-image">
+      </div>
+      <div class="latest-author-name-container">
+        <span class="latest-author-name">{{this.authorName}}</span>
+      </div>
+
+      <!-- Full Summary -->
+      <div class="latest-unit-summary-container">
+        <p class="latest-unit-long-summary">{{this.full_summary}}</p>
+      </div>
+
+      <!-- Purpose -->
+      <div class="latest-detail-value-purpose">{{this.purpose}}</div>
+
+      <!-- Review This Unit Button -->
+      <div class="latest-unit-review-container">
+        <a href="/unitviews/{{capitalize type}}s/view/{{_id}}" class="latest-unit-review-btn">review this unit</a>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,51 @@
+<section class="dashboard-library-units">
+  <h2 class="dashboard-section-title" style="margin-top: -5px;">my library units</h2>
+  <table class="dashboard-library-table">
+    <thead>
+      <tr>
+        <th class="dashboard-library-header">unit type</th>
+        <th class="dashboard-library-header">title</th>
+        <th class="dashboard-library-header">status</th>
+        <th class="dashboard-library-header">main topic</th>
+        <th class="dashboard-library-header">view unit</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each memberUnits}}
+        <tr class="dashboard-library-row">
+          <td class="dashboard-library-cell">
+            {{#if (eq this.unitType "upcoming")}}
+              upcoming ({{this.plannedType}})
+            {{else}}
+              {{this.unitType}}
+            {{/if}}
+          </td>
+
+          <td class="dashboard-library-cell">{{this.title}}</td>
+
+          <td class="dashboard-library-cell">
+            {{this.status}}
+            {{#if this.projectedRelease}}
+              <span class="muted">({{formatDate this.projectedRelease}})</span>
+            {{/if}}
+          </td>
+
+          <td class="dashboard-library-cell">{{this.mainTopic}}</td>
+
+          <td class="dashboard-library-cell">
+            {{#if (eq this.unitType "upcoming")}}
+              <a href="/unitviews/upcoming/view/{{this._id}}" class="dashboard-view-link">view upcoming</a>
+            {{else}}
+              <a href="/unitviews/{{toLowerCase this.unitType}}s/view/{{this._id}}" class="dashboard-view-link">view and/or edit</a>
+            {{/if}}
+          </td>
+        </tr>
+      {{else}}
+        <tr>
+          <td colspan="5" class="dashboard-no-units">No units submitted yet.</td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</section>
+

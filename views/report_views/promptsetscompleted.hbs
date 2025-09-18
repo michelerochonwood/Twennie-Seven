@@ -1,0 +1,158 @@
+{{#*inline "title"}}Prompt Sets Completed | Twennie{{/inline}}
+<section class="dashboard-section">
+    <h1 class="dashboard-section-title">{{leaderGroupName}}; Prompt Sets Completed</h1>
+
+    <!-- Table 1: Prompt Set Overview -->
+    <div class="table-container" style="margin-bottom: -100px;">
+        <table class="dashboard-library-table">
+            <thead>
+                <tr>
+                    <th class="dashboard-library-header">Prompt Set Title</th>
+                    <th class="dashboard-library-header">Topics</th>
+                    <th class="dashboard-library-header">Purpose</th>
+                    <th class="dashboard-library-header">Characteristics</th>
+                    <th class="dashboard-library-header">Target Audience</th>
+                    <th class="dashboard-library-header">Completed By (Member)</th>
+                    <th class="dashboard-library-header">Completion Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each promptSetsCompletedReports}}
+                <tr class="dashboard-library-row">
+                    <td class="dashboard-library-cell">{{this.promptSetTitle}}</td>
+                    
+                    <!-- Topics -->
+                    <td class="dashboard-library-cell">
+                        <div class="multi-record-item">{{this.main_topic}}</div>
+                        {{#each this.secondary_topics}}
+                            <div class="multi-record-item">{{this}}</div>
+                        {{else}}
+                            <span class="no-data">No secondary topics</span>
+                        {{/each}}
+                    </td>
+                    
+                    <!-- Purpose -->
+                    <td class="dashboard-library-cell">{{this.purpose}}</td>
+
+                    <!-- Characteristics -->
+                    <td class="dashboard-library-cell">
+                        {{#each this.characteristics}}
+                            <div class="multi-record-item">{{this}}</div>
+                        {{else}}
+                            <span class="no-data">No characteristics provided</span>
+                        {{/each}}
+                    </td>
+
+                    <!-- Target Audience -->
+                    <td class="dashboard-library-cell">{{this.targetAudience}}</td>
+
+                    <!-- Completed By (Member Name) -->
+                    <td class="dashboard-library-cell">
+                        {{#each this.completedBy}}
+                            <div class="multi-record-item">{{this.memberName}}</div>
+                        {{else}}
+                            <span class="no-data">No completions</span>
+                        {{/each}}
+                    </td>
+
+                    <!-- Completion Date -->
+                    <td class="dashboard-library-cell">
+                        {{#each this.completedBy}}
+                            <div class="multi-record-item">{{formatDate this.dateCompleted}}</div>
+                        {{else}}
+                            <span class="no-data">No completions</span>
+                        {{/each}}
+                    </td>
+                </tr>
+                {{else}}
+                <tr>
+                    <td colspan="7" class="no-data">No prompt set completion data available.</td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+
+<!-- Table 2: Prompt Notes -->
+<h2 class="dashboard-section-title">Prompt Notes</h2>
+<div class="table-container wide-table-container">
+    <table class="dashboard-library-table wide-table">
+        <thead>
+            <tr>
+                <th class="dashboard-library-header">Prompt Set Title & Member</th>
+                {{#each (range 1 21)}}
+                    <th class="dashboard-library-header">Prompt {{this}}</th>
+                {{/each}}
+            </tr>
+        </thead>
+        <tbody>
+            {{#each promptSetsCompletedReports}}
+            <!-- Row 1: Prompt Texts -->
+            <tr class="dashboard-library-row">
+                <td class="dashboard-library-cell">
+                    <strong>{{this.promptSetTitle}}</strong><br>
+                    <span class="multi-record-item">{{this.completedBy.[0].memberName}}</span>
+                </td>
+                {{#each this.prompts}}
+                    <td class="dashboard-library-cell" style="vertical-align: top;">
+                        <div class="multi-record-item"><strong>{{this.promptHeadline}}:</strong> {{this.promptText}}</div>
+                    </td>
+                {{/each}}
+            </tr>
+
+            <!-- Row 2: Notes -->
+            <tr class="dashboard-library-row">
+                <td class="dashboard-library-cell"><strong>Notes for {{this.promptSetTitle}}</strong></td>
+                {{#each this.promptNotes}}
+                    <td class="dashboard-library-cell" style="vertical-align: top;">
+                        {{#each this.notes}}
+                            <div class="multi-record-item">{{this.content}}</div>
+                        {{else}}
+                            <span class="no-data">No notes</span>
+                        {{/each}}
+                    </td>
+                {{/each}}
+            </tr>
+            {{else}}
+            <tr>
+                <td colspan="21" class="no-data">No prompt notes available.</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+
+<!-- Report Navigation Links -->
+<div class="report-links-container">
+
+
+    {{#unless isMemberEngagement}}
+    <a href="/reports/memberengagement" class="report-link">
+        <img src="https://www.twennie.com/icons/memberengagement.svg" alt="Member Engagement Report">
+    </a>
+    {{/unless}}
+
+    {{#unless isTeamEngagement}}
+    <a href="/reports/teamengagement" class="report-link">
+        <img src="https://www.twennie.com/icons/teamengagement.svg" alt="Team Engagement Report">
+    </a>
+    {{/unless}}
+
+    {{#unless isPromptSetsCompleted}}
+    <a href="/reports/promptsetscompleted" class="report-link">
+        <img src="https://www.twennie.com/icons/promptsets.svg" alt="Prompt Sets Report">
+    </a>
+    {{/unless}}
+
+    {{#unless isUnitsCompleted}}
+    <a href="/reports/unitscompleted" class="report-link">
+        <img src="https://www.twennie.com/icons/libraryunits.svg" alt="Library Units Report">
+    </a>
+    {{/unless}}
+</div>
+
+
+
+</section>
+
+

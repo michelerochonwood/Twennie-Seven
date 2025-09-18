@@ -1,0 +1,574 @@
+/* Import Figtree Font */
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;800&display=swap');
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: "Figtree";
+}
+
+/* Header Styling */
+/* .header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100vw;
+  height: 100px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  background: none;
+}
+
+.header svg {
+  width: 100vw;
+  height: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.home-link {
+  width: 100px;
+  display: block;
+  position: relative;
+  z-index: 999;
+  margin-bottom: 10px;
+}
+
+.sidebar-nav {
+  position: fixed;
+  top: 100px;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100px;
+  margin-top: 100px;
+}
+
+.user-greeting {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color:#5a5552;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+  left: 300%;
+  top: -130px;
+  width: 150px;
+} */
+
+/* Navigation Squares */
+/* .nav-square {
+  width: 60px;
+  height: 60px;
+  background: #5a5552;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  position: relative;
+  text-decoration: none;
+  padding: 5px;
+}
+
+.nav-square:hover {
+  background-color:#dc176a;
+}
+
+.nav-square img {
+  width: 30px;
+  height: 30px;
+  align-self: center;
+  margin-top: 8px;
+}
+
+.nav-text {
+  font-size: 0.5rem;
+  font-weight: 100;
+  color: white;
+  text-align: right;
+  width: 100%;
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+}
+
+.nav-square::after {
+  content: "";
+  position: absolute;
+  right: -10px;
+  top: 80%;
+  transform: translateY(-50%);
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-left: 10px solid #5a5552;
+}
+
+.nav-square:hover::after {
+  border-left-color: #dc176a;
+} */
+
+/* Main container: 80% of viewport width, centered */
+.badges-container {
+  min-height: 100vh;
+  width: 80vw;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  margin: 7rem auto 5rem auto;
+  position: relative;
+}
+
+.badges-container h1 {
+  font-size: clamp(1.5rem, 5vw, 2.3rem);
+  color: #262262;
+  margin: 0 0 2rem 0;
+}
+
+/* Sidebar (tabs column) styling */
+.tabs-column {
+  width: 100%;
+  display: flex;
+  overflow-x: auto;
+  align-items: center;
+  gap: 2rem;
+  /* padding: 10px; */
+}
+
+/* Wrapper to reserve extra vertical space */
+.tab-wrapper {
+  /* height: 150px; */
+  display: flex;
+  align-items: flex-start; /* tab stays at the top */
+  justify-content: center;
+  margin-bottom: 3rem;
+}
+
+/* Each tab remains a perfect square */
+.tab {
+  width: 100px;
+  height: 100px;
+  background: #5a5552;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+/* Change background on hover/active */
+.tab:hover,
+.tab.active {
+  background: #dc176a;
+}
+
+/* Adjust arrow color on hover/active */
+.tab:hover::after,
+.tab.active::after {
+  border-left-color: #dc176a;
+}
+
+/* Label: positioned in bottom right, white text */
+.tab-label {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  color: #fff;
+  font-size: 0.7rem;
+  text-align: right;
+  font-weight: 800;
+}
+
+/* Arrow pseudo-element in the bottom right corner */
+/* .tab::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: -15px;
+  border-top: 20px solid transparent;
+  border-bottom: 20px solid transparent;
+  border-left: 20px solid #5a5552;
+} */
+.tab::after { 
+  content: "";
+  position: absolute;
+  transform: rotate(90deg);
+  bottom: -30px;
+  right: 61.5px;
+  border-top: 20px solid transparent;
+  border-bottom: 20px solid transparent;
+  border-left: 20px solid #5a5552;
+}
+
+/* Adjust arrow color on hover/active */
+.tab:hover::after,
+.tab.active::after {
+  border-left-color: #dc176a;
+}
+
+/* Badge content area styling */
+/* Remains always visible */
+.badge-content {
+  flex: 1;
+  /* padding: 20px 0; */
+  display: block;
+  margin: 3rem 0 6rem 0!important;
+}
+
+/* Each badges tab content is hidden by default */
+.badges-tab-content {
+  display: none;
+}
+
+/* Show the active badge tab content */
+.badges-tab-content.active {
+  display: block;
+}
+
+/* Container for the horizontal scrollable row */
+/* .badge-row {
+  display: flex;
+  overflow-x: auto;
+  padding: 10px;
+  gap: 10px;
+} */
+
+.badge-row {
+  display: grid;
+  overflow-x: auto;
+  /* padding: 10px; */
+  gap: 10px;
+  grid-auto-columns: auto;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/* Styling for each badge card */
+.badge-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+  background-color: #fff;
+  min-width: 120px;
+}
+
+/* Image styling: fixed size of 100px x 100px */
+.badge-card img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+/* Button styling */
+.badge-pick-btn {
+  font-family: "Figtree";
+  padding: 5px 10px;
+  border: none;
+  background-color: #262262;
+  color: white;
+  border-radius: 99px;
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 800;
+  transition: background-color 0.3s ease;
+}
+
+.badge-pick-btn:hover {
+  background-color: #4a4ab2;
+}
+
+
+
+
+@media screen and (max-width: 1200px) {
+  .tab-wrapper {
+    justify-content: left;
+  }
+  @media screen and (max-width: 1000px) {
+    .badge-row {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .tab-wrapper {
+      margin-bottom: 2.25rem;
+    }
+    @media screen and (max-width: 640px) {
+      .badge-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media screen and (max-width: 640px) {
+      .tabs-column {
+        gap: 1.25rem;
+      }
+      .badge-card {
+        padding: 10px 0;
+        min-width: 0;
+      }
+      .badge-row .badge-card img {
+        height: 60px;
+        width: 60px;  
+      }
+    }
+  }
+}
+
+/* --- SweetAlert2 Shared Styles (Tagging + Badges) --- */
+
+/* SweetAlert2 Popup */
+.swal2-popup {
+  border-radius: 15px !important;
+  padding: 25px !important;
+  font-family: "Figtree", sans-serif !important;
+  background-color: #f8f9fa !important; /* Light background */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid #262262 !important;
+}
+
+/* SweetAlert2 Title */
+.swal2-title {
+  font-family: "Figtree";
+  font-size: 1.2rem !important;
+  font-weight: bold !important;
+  color: #262262 !important;
+  text-transform: uppercase !important;
+}
+
+/* SweetAlert2 Content */
+.swal2-html-container {
+  font-size: 1rem !important;
+  color: #333 !important;
+  font-weight: 600 !important;
+  text-align: center !important;
+}
+
+/* SweetAlert2 Buttons */
+.swal2-confirm,
+.swal2-cancel {
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  font-family: "Figtree" !important;
+  padding: 10px 20px !important;
+  border-radius: 40px !important;
+  transition: background-color 0.3s ease-in-out !important;
+  text-transform: uppercase !important;
+}
+
+/* Confirm Button (Primary Action) */
+.swal2-confirm {
+  background-color: #262262 !important;
+  color: white !important;
+  border: none !important;
+}
+
+.swal2-confirm:hover {
+  background-color: #4a4ab2 !important;
+}
+
+/* Cancel Button */
+.swal2-cancel {
+  background-color: #e0e0e0 !important;
+  color: #262262 !important;
+  border: none !important;
+}
+
+.swal2-cancel:hover {
+  background-color: #bdbdbd !important;
+}
+
+/* SweetAlert2 Warning Popups */
+.swal2-icon.swal2-warning {
+  border-color: #ffcc00 !important;
+  color: #ffcc00 !important;
+}
+
+/* SweetAlert2 Success Popups */
+.swal2-icon.swal2-success {
+  border-color: #28a745 !important;
+  color: #28a745 !important;
+}
+
+/* SweetAlert2 Error Popups */
+.swal2-icon.swal2-error {
+  border-color: #ff4d4d !important;
+  color: #ff4d4d !important;
+}
+
+/* SweetAlert2 Background Overlay */
+.swal2-backdrop {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+}
+
+/* --- Custom SweetAlert2 Icons --- */
+
+/* For Tagging */
+.swal2-icon.swal2-tagging {
+  border-color: #ff9800 !important; /* Orange */
+  color: #ff9800 !important;
+}
+
+/* For Badge Naming */
+.swal2-icon.swal2-badge {
+  border-color: #4e50a2 !important; /* Twennie Purple */
+  color: #4e50a2 !important;
+}
+
+/* Optional: Badge Popup Specific */
+.swal2-popup.swal2-badge-popup {
+  background-color: #fefefe !important;
+  border: 2px solid #4e50a2 !important;
+}
+
+
+
+/* Footer Styling */
+/* .custom-footer {
+  width: 100%;
+  height: 100px;
+  background-color: transparent;
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.footer-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+.footer-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.footer-tabs {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 0;
+  margin: 0;
+  margin-right: 50px;
+  gap: 5px;
+}
+
+.footer-tab {
+  width: 50px;
+  height: 50px;
+  background-color: #5a5552;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: background-color 0.3s ease;
+  text-decoration: none;
+
+}
+
+.footer-tab:first-child {
+  border-left: none;
+}
+
+.footer-tab:hover {
+  background-color: #dc176a;
+}
+
+.footer-tab img {
+  width: 24px;
+  height: 24px;
+}
+
+.footer-tab::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: 20%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid #5a5552;
+  transition: border-bottom-color 0.3s ease;
+}
+
+.footer-tab:hover::before {
+  border-bottom-color: #dc176a;
+}
+
+.footer-tab {
+  font-family: "Figtree", sans-serif;
+  font-size: 0.5rem;
+  font-weight: 100;
+  color: white;
+  text-align: center;
+}
+  
+*/
+
+
+
+.error-message {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #fff3cd;
+  border: 1px solid #ffeeba;
+  border-radius: 4px;
+}
+
+/* ERROR PAGE FOR UNIT FORMS */
+.error-container {
+  text-align: center;
+  margin: 50px auto;
+  padding: 20px;
+  max-width: 500px;
+}
+
+.error-title {
+  margin-top: 200px;
+  color: #262262;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.error-message-forms {
+  font-size: 1rem;
+  margin: 10px 0;
+  font-family: "Figtree";
+}
+
+.error-button {
+  display: block;
+  font-size: 11pt;
+  margin: 10px auto;
+  padding: 10px 20px;
+  border-radius: 99px;
+  background-color: #262262;
+  color: white;
+  font-family: "Figtree";
+  font-weight: 800;
+  border: none;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  width: 50%;
+  margin-bottom: 100px;
+}
+
+.error-button:hover {
+  background-color: #4a4ab2;
+}

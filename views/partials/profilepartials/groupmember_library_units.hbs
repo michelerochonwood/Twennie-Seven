@@ -1,0 +1,26 @@
+<section class="groupmember-library-section">
+  <h2 class="groupmember-library-title">my library units</h2>
+
+  {{#if memberLibraryUnits.length}}
+    <div class="groupmember-library-grid">
+      {{#each memberLibraryUnits}}
+        <div class="groupmember-library-card">
+          <div class="groupmember-library-icon">
+            <img src="/icons/{{toLowerCase this.unitType}}.svg" alt="{{unitType}} icon">
+          </div>
+          <div class="groupmember-library-info">
+            <h3 class="groupmember-library-title">{{title}}</h3>
+            <p class="groupmember-library-topic">{{mainTopic}}</p>
+            <p class="groupmember-library-status">status: {{status}}</p>
+          </div>
+          <a href="/unitviews/{{toLowerCase this.unitType}}s/view/{{this._id}}" class="groupmember-library-link">view unit</a>
+        </div>
+      {{/each}}
+    </div>
+  {{else}}
+    <div class="groupmember-library-empty-container">
+      <p class="groupmember-library-no-units">You haven't submitted any units yet.</p>
+    </div>
+  {{/if}}
+</section>
+

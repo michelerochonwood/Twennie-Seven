@@ -1,0 +1,175 @@
+<div class="what-is-twennie-container">
+
+  <!-- Top tagline with Bluey next to the button -->
+  <div class="twennie-tagline-animated">
+    <h1>where 20 minutes can make a world of difference</h1>
+    <p>learning that drives success in services consulting</p>
+
+    <div class="twennie-cta-row">
+      <a href="/avail_memberships" class="what-is-twennie-button-link">
+        <button class="what-is-twennie-button">become a member</button>
+      </a>
+    </div>
+  </div>
+
+  <!-- Grid section: left text / right testimonial -->
+  <div class="what-is-twennie-grid">
+
+    <!-- Left Grid Area -->
+    <div class="what-is-twennie-left">
+      <h2>
+        <a href="/what_is_twennie" class="what-is-twennie-title">what is Twennie?</a>
+      </h2>
+
+      <h4 class="who-uses-twennie-animation">
+        It's where <span class="dynamic-text-container">
+          <span class="dynamic-words">technical professionals</span>
+        </span> learn.
+      </h4>
+
+      <p class="what-is-twennie-subtext">
+        a platform for technical professionals and support teams to grow, contribute, and collaborate
+      </p>
+    </div>
+
+    <!-- Right Grid Area -->
+    <div class="what-is-twennie-right">
+      <div class="testimonial-overlay" id="testimonial-text">
+        Twennie.com allows a team to build a culture of learning. Learn in smaller increments, continually developing new skills and knowledge as you work.
+      </div>
+      <img src="https://www.twennie.com/images/bluelady2.png" alt="Illustration of a woman" class="what-is-twennie-image" id="testimonial-image">
+    </div>
+
+  </div>
+</div>
+
+<!-- Replacing animated wave background with new content -->
+<!-- Wave Divider Top -->
+<div class="promo-wave-divider top-wave">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 150">
+    <path fill="#4e50a2" fill-opacity="1"
+      d="M0,64L80,58.7C160,53,320,43,480,58.7C640,75,800,117,960,122.7C1120,128,1280,96,1360,80L1440,64L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z">
+    </path>
+  </svg>
+</div>
+
+<section class="blue-wave-bg">
+  <div class="home-features-container">
+    <div class="home-feature-grid">
+      
+      <!-- Row 1: Images -->
+      <div class="home-feature-image"><img src="/images/pareto3d2.png" alt="Feature 1" style="width: 300px"></div>
+      <div class="home-feature-image"><img src="/images/noquizzeswhite.png" alt="Feature 2" style="width: 250px"></div>
+      <div class="home-feature-image"><img src="/images/5mins.svg" alt="Feature 3" class="feature-icon"></div>
+      <div class="home-feature-image"><img src="/images/units.png" alt="Feature 4" style="width: 200px"></div>
+
+      <!-- Row 2: Headings -->
+      <div class="home-feature-heading"><h3>making 20% amount to more</h3></div>
+      <div class="home-feature-heading"><h3>no courses, quizzes, or tests</h3></div>
+      <div class="home-feature-heading"><h3>compressed and accelerated learning</h3></div>
+      <div class="home-feature-heading"><h3>the option to customize</h3></div>
+
+      <!-- Row 3: Text -->
+      <div class="home-feature-text">
+        <p>Twennie is named after the Pareto Principle, which states that 20 percent of our effort produces 80 percent of our results. Twennie's mission is to help our members make the 20 percent produce more...</p>
+      </div>
+<div class="home-feature-text">
+  <p>
+    Our <a href="/topics" style="color: #dc176a; font-weight: 800; text-decoration: none;">library</a> discusses topics that don't have right or wrong answers – only ideas, angles, and advantages. Instead of testing your knowledge through courses, quizzes, and tests, we establish knowledge through action in small bursts over time.
+  </p>
+</div>
+<div class="home-feature-text">
+  <p>
+    Twennie provides content in 
+    <a href="/contribute" style="color: #dc176a; font-weight: 800; text-decoration: none;">units</a> 
+    that compress and accelerate learning. Each unit tells you how much time you'll need to review it, ranging from five to 30 minutes.
+  </p>
+</div>
+      <div class="home-feature-text">
+        <p>Twennie gives you the chance to write your own learning content, or combine parts of other units into new ones for your team. No need to sift through irrelevant material.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+
+<div class="promo-wave-divider bottom-wave">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 150">
+    <path fill="#4e50a2" fill-opacity="1"
+      d="M0,120L80,107C160,94,320,70,480,75C640,80,800,120,960,133.3C1120,147,1280,120,1360,112L1440,105L1440,0L1360,0C1280,0,1120,0,960,0C800,0,640,0,480,0C320,0,160,0,80,0L0,0Z">
+    </path>
+  </svg>
+</div>
+
+<!-- JS: Testimonial Rotation -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const images = [
+    {
+      src: "https://www.twennie.com/images/bluelady2.png",
+      quote: "Twennie.com allows a team to build a culture of learning. Learn in smaller increments, continually developing new skills and knowledge as you work."
+    },
+    {
+      src: "https://www.twennie.com/images/blueman3.png",
+      quote: "Make a noticeable change in your group. Teach them to work together more effectively and support one another - get them learning on Twennie.com."
+    },
+    {
+      src: "https://www.twennie.com/images/bluelady3.png",
+      quote: "With Twennie.com, your team can learn right where they are, a little at a time. The platform adapts to its users."
+    }
+  ];
+
+  let currentIndex = 0;
+  const testimonialImage = document.getElementById("testimonial-image");
+  const testimonialText = document.getElementById("testimonial-text");
+
+  function changeTestimonial() {
+    testimonialImage.classList.add("fade-out");
+    testimonialText.classList.add("fade-out");
+
+    setTimeout(() => {
+      currentIndex = (currentIndex + 1) % images.length;
+      testimonialImage.src = images[currentIndex].src;
+      testimonialText.textContent = images[currentIndex].quote;
+
+      setTimeout(() => {
+        testimonialImage.classList.remove("fade-out");
+        testimonialText.classList.remove("fade-out");
+      }, 100);
+    }, 1000);
+  }
+
+  setInterval(changeTestimonial, 8000);
+});
+</script>
+
+<!-- JS: Animate .home-feature elements on scroll -->
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+  const animatedElements = document.querySelectorAll(".home-feature.home-feature-animate");
+
+  const observer = new IntersectionObserver(
+    (entries, observerSelf) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("home-feature-fade-in");
+          observerSelf.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.5 } // Lowered threshold for better triggering
+  );
+
+  animatedElements.forEach(el => observer.observe(el));
+});
+</script>
+
+
+
+
+
+
+

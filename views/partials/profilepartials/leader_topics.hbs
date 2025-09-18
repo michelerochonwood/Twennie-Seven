@@ -1,0 +1,55 @@
+{{!-- PROFILE VERSION: Topics shown in the leader profile --}}
+<div class="leader-profile-topics-container">
+    <h3 class="leader-profile-topics-title">my topics</h3>
+
+    <div class="leader-profile-topics-grid">
+        {{#if leader.selectedTopics.topic1.title}}
+            <div class="leader-profile-topic-card" data-topic-id="{{leader.selectedTopics.topic1.slug}}">
+                <div class="leader-profile-topic-title">{{leader.selectedTopics.topic1.title}}</div>
+                <ul class="leader-profile-topic-subtopics">
+                    {{#each leader.selectedTopics.topic1.subtopics}}
+                        <li>{{this}}</li>
+                    {{else}}
+                        <li>No subtopics available</li>
+                    {{/each}}
+                </ul>
+                <a href="/membertopics/{{selectedTopics.topic1.viewName}}" class="leader-profile-topic-review">review this topic</a>
+
+
+
+            </div>
+        {{/if}}
+
+        {{#if leader.selectedTopics.topic2.title}}
+            <div class="leader-profile-topic-card" data-topic-id="{{leader.selectedTopics.topic2.slug}}">
+                <div class="leader-profile-topic-title">{{leader.selectedTopics.topic2.title}}</div>
+                <ul class="leader-profile-topic-subtopics">
+                    {{#each leader.selectedTopics.topic2.subtopics}}
+                        <li>{{this}}</li>
+                    {{else}}
+                        <li>No subtopics available</li>
+                    {{/each}}
+                </ul>
+                <a href="/membertopics/{{selectedTopics.topic2.viewName}}" class="leader-profile-topic-review">review this topic</a>
+
+
+            </div>
+        {{/if}}
+
+        {{#if leader.selectedTopics.topic3.title}}
+            <div class="leader-profile-topic-card" data-topic-id="{{leader.selectedTopics.topic3.slug}}">
+                <div class="leader-profile-topic-title">{{leader.selectedTopics.topic3.title}}</div>
+                <ul class="leader-profile-topic-subtopics">
+                    {{#each leader.selectedTopics.topic3.subtopics}}
+                        <li>{{this}}</li>
+                    {{else}}
+                        <li>No subtopics available</li>
+                    {{/each}}
+                </ul>
+                <a href="/membertopics/{{selectedTopics.topic3.viewName}}" class="leader-profile-topic-review">review this topic</a>
+
+
+            </div>
+        {{/if}}
+    </div>
+</div>

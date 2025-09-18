@@ -1,0 +1,59 @@
+{{#*inline "title"}}Success! | Twennie{{/inline}}
+<div class="unit-success-container" style="margin-top: -10px">
+    <h1 class="submission-success-title">Your {{unitType}} has been submitted!</h1>
+
+    <div class="submission-details">
+        <h2 class="success-subtitle">{{unitType}} details:</h2>
+        {{#if unit}}
+            <p class="success-text"><strong>Title:</strong>
+                {{unit.title}}
+                {{unit.video_title}}
+                {{unit.article_title}}
+                {{unit.promptset_title}}
+                {{unit.exercise_title}}
+                {{unit.template_title}}
+                {{unit.interview_title}}
+            </p>
+            <p class="success-text"><strong>Status:</strong> {{unit.status}}</p>
+            <p class="success-text"><strong>Topic:</strong> {{unit.main_topic}}</p>
+            <p class="success-text"><strong>Creation Date:</strong> {{unit.created_at}}</p>
+        {{/if}}
+
+        {{#if error}}
+            <div class="error-message">
+                <p>Error: {{error}}</p>
+            </div>
+        {{/if}}
+    </div>
+
+    <div class="success-unit-navigation-buttons">
+        <a href="{{dashboardLink}}" class="btn-primary">return to dashboard</a>
+
+        {{#if unit}}
+            {{#if unit.video_title}}
+                <a href="/unitviews/videos/view/{{unit._id}}" class="btn-secondary">see my video</a>
+                <a href="/unitform/form_video" class="btn-secondary">submit another video</a>
+            {{else if unit.article_title}}
+                <a href="/unitviews/articles/view/{{unit._id}}" class="btn-secondary">see my article</a>
+                <a href="/unitform/form_article" class="btn-secondary">submit another article</a>
+            {{else if unit.promptset_title}}
+                <a href="/unitviews/promptsets/view/{{unit._id}}" class="btn-secondary">see my prompt set</a>
+                <a href="/unitform/form_promptset" class="btn-secondary">submit another prompt set</a>
+            {{else if unit.exercise_title}}
+                <a href="/unitviews/exercises/view/{{unit._id}}" class="btn-secondary">see my exercise</a>
+                <a href="/unitform/form_exercise" class="btn-secondary">submit another exercise</a>
+            {{else if unit.template_title}}
+                <a href="/unitviews/templates/view/{{unit._id}}" class="btn-secondary">see my template</a>
+                <a href="/unitform/form_template" class="btn-secondary">submit another template</a>
+            {{else if unit.interview_title}}
+                <a href="/unitviews/interviews/view/{{unit._id}}" class="btn-secondary">see my interview</a>
+                <a href="/unitform/form_interview" class="btn-secondary">submit another interview</a>
+            {{else if unit.title}}
+                {{!-- Upcoming --}}
+                <a href="/unitviews/upcomings/view/{{unit._id}}" class="btn-secondary">see my upcoming unit</a>
+                <a href="/unitform/form_upcoming" class="btn-secondary">submit another upcoming</a>
+            {{/if}}
+        {{/if}}
+    </div>
+</div>
+

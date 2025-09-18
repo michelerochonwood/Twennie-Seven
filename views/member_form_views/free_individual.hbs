@@ -1,0 +1,127 @@
+{{#*inline "title"}}Free Membership Form | Twennie{{/inline}}
+
+<form id="member-form" action="/member/form" method="POST" class="membership-form">
+  <input type="hidden" name="_csrf" value="{{csrfToken}}">
+  <input type="hidden" name="accessLevel" value="free_individual">
+  <input type="hidden" name="redirectTarget" value="form">
+
+  <div class="individual-form-container">
+
+    <!-- Centered Image -->
+    <div style="text-align: center; margin-bottom: 1.5rem;">
+      <img src="/images/freebluey.png" alt="Free Membership" style="max-height: 200px;">
+    </div>
+
+    <h1 class="form-title">free membership form</h1>
+
+    <div class="form-field-access-level">
+  <label for="accessLevel">Choose your membership type</label>
+  <select id="accessLevel" name="accessLevel" required onchange="handleAccessLevelChange(this.value)">
+    <option value="">Please select an access level</option>
+    <option value="free_individual">Free Member</option>
+    <option value="contributor_individual">Contributor Member</option>
+  </select>
+</div>
+
+    <!-- EXISTING FIELDS -->
+    <div class="form-field">
+      <label for="name">Full Name</label>
+      <input type="text" id="name" name="name" required>
+    </div>
+
+    <div class="form-field">
+      <label for="professionalTitle">Professional Title</label>
+      <input type="text" id="professionalTitle" name="professionalTitle" required>
+    </div>
+
+    <div class="form-field">
+      <label for="organization">Organization (optional)</label>
+      <input type="text" id="organization" name="organization">
+    </div>
+
+    <div class="form-field-industry">
+      <label for="industry">Industry</label>
+      <select id="industry" name="industry" required>
+        <option value="">Please select an industry</option>
+        <option value="Engineering">Engineering</option>
+        <option value="Architecture">Architecture</option>
+        <option value="Project Management">Project Management</option>
+        <option value="Information Technology(IT)">Information Technology(IT)</option>
+        <option value="Web Design">Web Design</option>
+        <option value="Construction">Construction</option>
+        <option value="Social Media/Digital Advertising">Social Media/Digital Advertising</option>
+        <option value="Community Planning/Landscape Architecture">Community Planning/Landscape Architecture</option>
+        <option value="Land Development">Land Development</option>
+        <option value="E-Commerce">E-Commerce</option>
+        <option value="Cybersecurity">Cybersecurity</option>
+        <option value="Fintech">Financial Tech</option>
+        <option value="Edtech">Education Tech</option>
+        <option value="Energy and Utilities">Energy and Utilities</option>
+        <option value="Manufacturing">Manufacturing</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="username">Username (your first name, how you prefer to be addressed on twennie.com)</label>
+      <input type="text" name="username" id="username" required>
+      <span id="username-message"></span>
+    </div>
+
+    <div class="form-field">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required>
+    </div>
+
+    <div class="form-field password-toggle-container">
+      <label for="password">Password</label>
+      <div class="password-wrapper">
+        <input type="password" id="password" name="password" required>
+        <span class="toggle-password" onclick="togglePasswordVisibility()">
+          <ion-icon id="toggleIcon" name="eye-outline"></ion-icon>
+        </span>
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <button type="submit" id="make-member-button" class="make-member-button">
+      make me a free member
+    </button>
+  </div>
+</form>
+
+<script>
+  function togglePasswordVisibility() {
+    const input = document.getElementById("password");
+    const icon = document.getElementById("toggleIcon");
+    if (input.type === "password") {
+      input.type = "text";
+      icon.name = "eye-off-outline";
+    } else {
+      input.type = "password";
+      icon.name = "eye-outline";
+    }
+  }
+
+  document.querySelector('#username').addEventListener('blur', async function () {
+    const username = this.value;
+    const res = await fetch(`/check-username?username=${encodeURIComponent(username)}`);
+    const data = await res.json();
+    const msg = document.querySelector('#username-message');
+    if (!data.available) {
+      msg.textContent = 'That username is already taken. Try something unique like Brian-Warrior1.';
+      msg.style.color = 'red';
+    } else {
+      msg.textContent = 'Username is available!';
+      msg.style.color = 'green';
+    }
+  });
+</script>
+
+<style>
+  .hidden {
+    display: none;
+  }
+</style>
+
+

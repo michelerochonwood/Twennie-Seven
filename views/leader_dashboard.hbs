@@ -1,0 +1,134 @@
+{{#*inline "title"}}Leader Dashboard | Twennie{{/inline}}
+
+<div class="dashboard-grid">
+  <!-- Sidebar (Left) -->
+  <div class="dashboard-sidebar">
+    {{> dashboardpartials/leader_sidebar }}
+  </div>
+
+  <!-- Main Content (Right) -->
+  <div class="dashboard-main">
+
+    <!-- Tab Navigation -->
+<!-- Tab Navigation -->
+<div class="dashboard-tabs-container">
+  <button class="dashboard-tab active" data-tab="membership">
+    <span class="tab-title">membership overview</span>
+    <div class="tab-arrow"></div>
+  </button>
+
+  <button class="dashboard-tab" data-tab="group" data-count="{{leaderCounts.group}}">
+    <span class="tab-title">my group members</span>
+    {{#if leaderBadges.group}}<span class="tab-dot"></span>{{/if}}
+    <div class="tab-arrow"></div>
+  </button>
+
+  <button class="dashboard-tab" data-tab="topics" data-count="{{leaderCounts.topics}}">
+    <span class="tab-title">my favorite topics</span>
+    {{#if leaderBadges.topics}}<span class="tab-dot"></span>{{/if}}
+    <div class="tab-arrow"></div>
+  </button>
+
+  <button class="dashboard-tab" data-tab="prompts" data-count="{{leaderCounts.prompts}}">
+    <span class="tab-title">registered prompt sets</span>
+    {{#if leaderBadges.prompts}}<span class="tab-dot"></span>{{/if}}
+    <div class="tab-arrow"></div>
+  </button>
+
+  <button class="dashboard-tab" data-tab="progress" data-count="{{leaderCounts.progress}}">
+    <span class="tab-title">prompt set progress</span>
+    {{#if leaderBadges.progress}}<span class="tab-dot"></span>{{/if}}
+    <div class="tab-arrow"></div>
+  </button>
+
+  <button class="dashboard-tab" data-tab="contribute">
+    <span class="tab-title">contribute to the library</span>
+    <div class="tab-arrow"></div>
+  </button>
+
+  <button class="dashboard-tab" data-tab="library" data-count="{{leaderCounts.library}}">
+    <span class="tab-title">my library units</span>
+    {{#if leaderBadges.library}}<span class="tab-dot"></span>{{/if}}
+    <div class="tab-arrow"></div>
+  </button>
+
+  <button class="dashboard-tab" data-tab="tagged" data-count="{{leaderCounts.tagged}}">
+    <span class="tab-title">my tagged units</span>
+    {{#if leaderBadges.tagged}}<span class="tab-dot"></span>{{/if}}
+    <div class="tab-arrow"></div>
+  </button>
+</div>
+
+
+    <!-- Tab Content -->
+    <div class="dashboard-tab-content active" id="membership">
+      {{> dashboardpartials/leader_membership }}
+    </div>
+
+    <div class="dashboard-tab-content" id="group">
+      {{> dashboardpartials/leader_group }}
+    </div>
+
+    <div class="dashboard-tab-content" id="topics">
+      {{> dashboardpartials/leader_topics }}
+    </div>
+
+    <div class="dashboard-tab-content" id="prompts">
+      {{#each registeredPromptSets}}
+        <section class="leader-prompt-section">
+          {{> dashboardpartials/leader_prompt promptSet=this csrfToken=../csrfToken }}
+        </section>
+      {{/each}}
+    </div>
+
+    <div class="dashboard-tab-content" id="progress">
+      {{> dashboardpartials/leader_progress }}
+    </div>
+
+    <div class="dashboard-tab-content" id="contribute">
+      {{> dashboardpartials/leader_contribution }}
+    </div>
+
+    <div class="dashboard-tab-content" id="library">
+      {{> dashboardpartials/leader_mylibraryunits }}
+    </div>
+
+    <div class="dashboard-tab-content" id="tagged">
+      {{> dashboardpartials/leader_tagged_units }}
+    </div>
+
+  </div>
+</div>
+
+<script>
+  async function markSeenLeader(tab, count) {
+    try {
+      await fetch('/dashboard/leader/mark-seen', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-csrf-token': '{{csrfToken}}'
+        },
+        body: JSON.stringify({ tab, count: Number(count || 0) })
+      });
+    } catch (e) { /* no-op */ }
+  }
+
+  // When a tab is clicked (or activated), update seen
+  document.querySelectorAll('.dashboard-tab[data-tab]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tab = btn.dataset.tab;
+      const count = btn.dataset.count || 0;
+      // Only track tabs that can have "new"
+      if (['group','topics','prompts','progress','library','tagged'].includes(tab)) {
+        markSeenLeader(tab, count);
+        // Optimistic UI: hide the dot immediately
+        const dot = btn.querySelector('.tab-dot');
+        if (dot) dot.style.display = 'none';
+      }
+    });
+  });
+</script>
+
+
+

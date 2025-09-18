@@ -1,0 +1,33 @@
+<aside class="dashboard-sidebar groupmember-sidebar">
+
+  <div class="groupmember-profile-section">
+
+    <!-- Profile Image -->
+    <div class="groupmember-profile-image-container">
+<img 
+  src="{{groupMember.profileImage}}" 
+  alt="{{groupMember.name}}'s Profile Photo" 
+  class="groupmember-profile-image"
+>
+    </div>
+
+    <!-- Profile Info -->
+    <div class="groupmember-profile-info">
+      <h2 class="groupmember-profile-name">{{groupMember.name}}</h2>
+      <p class="groupmember-profile-title">Group Member</p>
+      <a 
+        href="/profile/groupmember/{{groupMember._id}}" 
+        class="groupmember-profile-btn"
+      >
+        my profile
+      </a>
+    </div>
+
+  </div>
+
+</aside>
+
+
+
+
+

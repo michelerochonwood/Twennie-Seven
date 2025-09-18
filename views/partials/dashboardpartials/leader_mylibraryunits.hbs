@@ -1,0 +1,113 @@
+<section class="old-dashboard-library-units">
+  <!-- My Library Contributions -->
+  <h2 class="old-dashboard-section-title">my library contributions</h2>
+  <table class="old-dashboard-library-table">
+    <thead>
+      <tr>
+        <th class="old-dashboard-library-header">unit type</th>
+        <th class="old-dashboard-library-header">title</th>
+        <th class="old-dashboard-library-header">status</th>
+        <th class="old-dashboard-library-header">main topic</th>
+        <th class="old-dashboard-library-header">view unit</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each leaderUnits}}
+        <tr class="old-dashboard-library-row">
+          <td class="old-dashboard-library-cell">
+            {{#if (eq this.unitType "upcoming")}}
+              upcoming ({{this.plannedType}})
+            {{else}}
+              {{this.unitType}}
+            {{/if}}
+          </td>
+
+          <td class="old-dashboard-library-cell">{{this.title}}</td>
+
+          <td class="old-dashboard-library-cell">
+            {{this.status}}
+            {{#if this.projectedRelease}}
+              <span class="muted">({{formatDate this.projectedRelease}})</span>
+            {{/if}}
+          </td>
+
+          <td class="old-dashboard-library-cell">{{this.mainTopic}}</td>
+
+          <td class="old-dashboard-library-cell">
+            {{#if (eq this.unitType "upcoming")}}
+              <a href="/unitviews/upcoming/view/{{this._id}}" class="old-dashboard-view-link">view upcoming</a>
+              {{#if this.plannedType}}
+                &nbsp;|&nbsp;
+                <a href="/unitform/prefill_from_upcoming/{{this.plannedType}}/{{this._id}}" class="old-dashboard-view-link">publish now</a>
+              {{/if}}
+            {{else}}
+              <a href="/unitviews/{{this.unitType}}s/view/{{this._id}}" class="old-dashboard-view-link">view and/or edit</a>
+            {{/if}}
+          </td>
+        </tr>
+      {{else}}
+        <tr>
+          <td colspan="5" class="old-dashboard-no-units">No contributions submitted yet.</td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+  <!-- Group Members' Library Contributions -->
+  <h2 class="old-dashboard-section-title">group members' library contributions</h2>
+  <table class="old-dashboard-library-table">
+    <thead>
+      <tr>
+        <th class="old-dashboard-library-header">author</th>
+        <th class="old-dashboard-library-header">unit type</th>
+        <th class="old-dashboard-library-header">title</th>
+        <th class="old-dashboard-library-header">status</th>
+        <th class="old-dashboard-library-header">main topic</th>
+        <th class="old-dashboard-library-header">view unit</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each groupMemberUnits}}
+        <tr class="old-dashboard-library-row">
+          <td class="old-dashboard-library-cell">{{this.author}}</td>
+          <td class="old-dashboard-library-cell">
+            {{#if (eq this.unitType "upcoming")}}
+              upcoming ({{this.plannedType}})
+            {{else}}
+              {{this.unitType}}
+            {{/if}}
+          </td>
+
+          <td class="old-dashboard-library-cell">{{this.title}}</td>
+
+          <td class="old-dashboard-library-cell">
+            {{this.status}}
+            {{#if this.projectedRelease}}
+              <span class="muted">({{formatDate this.projectedRelease}})</span>
+            {{/if}}
+          </td>
+
+          <td class="old-dashboard-library-cell">{{this.mainTopic}}</td>
+
+          <td class="old-dashboard-library-cell">
+            {{#if (eq this.unitType "upcoming")}}
+              <a href="/unitviews/upcoming/view/{{this._id}}" class="old-dashboard-view-link">view upcoming</a>
+              {{#if this.plannedType}}
+                &nbsp;|&nbsp;
+                <a href="/unitform/prefill_from_upcoming/{{this.plannedType}}/{{this._id}}" class="old-dashboard-view-link">publish now</a>
+              {{/if}}
+            {{else}}
+              <a href="/unitviews/{{this.unitType}}s/view/{{this._id}}" class="old-dashboard-view-link">view only</a>
+            {{/if}}
+          </td>
+        </tr>
+      {{else}}
+        <tr>
+          <td colspan="6" class="old-dashboard-no-units">No group contributions submitted yet.</td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</section>
+
+

@@ -1,0 +1,837 @@
+/* Import Figtree Font */
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;800&display=swap');
+
+html, body {
+
+  margin: 0;
+  padding: 0;
+  font-family: "Figtree";
+}
+
+/* Sidebar Navigation */
+/* .sidebar-nav {
+  position: fixed;
+  top: 100px;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100px;
+  margin-top: 100px;
+}
+
+.user-greeting {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color:#5a5552;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+  left: 300%;
+  top: -130px;
+  width: 150px;
+} */
+
+/* RECENT ARTICLES Carousel Styling */
+.recent-contributions-carousel {
+    text-align: center;
+    padding: 30px 5%;
+    font-family: "Figtree";
+  }
+  
+  .carousel-title {
+    font-size: 1.8em;
+    font-weight: 800;
+    color: #262262;
+    margin-bottom: 20px;
+  }
+  
+  .carousel-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+    margin: auto;
+    overflow: hidden; /* Hide any overflow */
+  }
+  
+  .carousel-items-wrapper {
+    overflow: hidden;
+    width: 100%;
+  }
+  
+  .carousel-items {
+    display: flex;
+    transition: transform 0.3s ease;
+    gap: 10px; /* Reduce gap slightly to fit items comfortably */
+    width: 80%;
+    margin-left: 5%;
+  }
+  
+  .carousel-item {
+    flex: 0 0 calc(33.33% - 10px); /* Account for gap to fit three items */
+    background-color: #7e7e7e;
+    padding: 20px;
+    border-radius: 20px;
+    color: white;
+    text-align: center;
+  }
+  
+  .carousel-item h3 {
+    font-size: 1.2em;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  
+  .carousel-button {
+    display: inline-block;
+    font-family: "Figtree";
+    padding: 15px 20px;
+    background-color: #262262;
+    color: white;
+    font-weight: 800;
+    font-size: 1em;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  .carousel-button:hover {
+    background-color: #4e50a2;
+  }
+  
+  .carousel-item h4 {
+    font-size: 1em;
+    color: #4e50a2;
+    font-weight: 700;
+    margin-top: 15px;
+  }
+  
+  .topics-list {
+    list-style: none;
+    padding: 0;
+    color: #ccc;
+  }
+  
+  .topics-list li {
+    font-size: 0.9em;
+    margin: 5px 0;
+  }
+
+.howtoarticle-image,
+.howtovideo-image,
+.howtointerview-image,
+.howtoprompt-image,
+.howtotemplate-image,
+.howtoexercise-image,
+.whatisvideo-image,
+.whatisinterview-image,
+.whatistemplate-image,
+.whatispromptset-image,
+.whatisexercise-image,
+.whatismicrostudy-image,
+.whatismicrocourse-image {
+  margin: 7rem auto 4rem auto;
+  display: flex;
+  justify-content: center;
+}
+
+.howtoarticle-image > img,
+.howtovideo-image > img,
+.howtointerview-image > img,
+.howtotemplate-image > img,
+.howtoexercise-image > img,
+.howtoprompt-image > img,
+.howtomicrostudy-image > img,
+.howtomicrocourse-image > img {
+    /* text-align: center; */
+    /* margin-top: 190px; */
+    max-width: 400px;
+    height: auto;
+}
+
+.howtoarticle-video, .howtovideo-video, .howtointerview-video, .howtoprompt-video, .howtoexercise-video, .howtotemplate-video {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 2rem 0;
+}
+
+/* Background Wrapper */
+.form-article-background,
+.form-video-background,
+.form-interview-background,
+.form-template-background,
+.form-exercise-background,
+.form-microstudy-background,
+.form-microcourse-background,
+.form-promptset-background {
+  /* position: absolute;
+  top: 0;
+  left: 0; */
+  /* width: 100vw; */
+  /* height: auto; */
+  /* background: url("data:image/svg+xml,%3Csvg id='Layer_2' data-name='Layer 2' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 798.22 584.66'%3E%3Cdefs%3E%3Cstyle%3E.cls-1%7Bfill:%23fff%7D.cls-2%7Bfill:%23939598%7D%3C/style%3E%3C/defs%3E%3Cg id='Layer_1-2' data-name='Layer 1'%3E%3Crect class='cls-1' width='798.22' height='584.66'/%3E%3Cpath class='cls-2' d='M380.84,25.31c221.11-45.48,416.94-6.11,416.94-6.11v23.03s.43,0,.43,0v542.44H0V77.07s0-34.86,0-34.86v-16.91s156.45,46.15,380.84,0Z'/%3E%3C/g%3E%3C/svg%3E") no-repeat center center; */
+  background-color: #939598;
+  width: 100%;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: -1;
+  /* margin-top: 300px; */
+}
+
+/* Background Wrapper */
+
+/* .form-promptset-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: auto;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 798.22 1999.23'%3E%3Cpath fill='%23939598' d='M380.84,17.36C612.55-8.43,797.78,2.15,797.78,2.15v57.29s.43,0,.43,0v1939.8H0V59.43S0,17.36,0,17.36c0,0,152.43,25.42,380.84,0Z'/%3E%3C/svg%3E") no-repeat center center;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: -1;
+  margin-top: 300px;
+} */
+
+  /* Container Styling */
+  .form-article-container,
+  .form-video-container,
+  .form-interview-container, 
+  .form-template-container, 
+  .form-exercise-container, 
+  .form-promptset-container, 
+  .form-microstudy-container, 
+  .form-microcourse-container {
+    padding: 2rem 5rem;
+    /* max-width: 600px; */
+    width: 50%;
+    margin: 1rem 0 5rem 0;
+    /* z-index: 999; */
+  }
+  
+  /* Form Styling */
+  .article-form, .video-form, .interview-form, .template-form, .exercise-form, .prompt-form, .microstudy-form, .microcourse-form {
+    font-family: "Figtree", sans-serif;
+    color: #4a4ab2;
+  }
+  
+  .form-field {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    z-index: 999;
+  }
+  
+  .form-field label {
+    font-weight: 600;
+    color: #4a4ab2;
+    padding-bottom: 8px;
+  }
+
+  .white-container {
+    background-color: white;
+    border-radius: 15px;
+    padding: 20px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+
+}
+
+.radio-group {
+  display: flex;
+  gap: 30px;
+  padding: 10px 0;
+}
+
+.radio-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: normal;
+  color: black;
+}
+
+input[type="radio"],
+input[type="checkbox"] {
+    appearance: none;
+    max-width: 14px;
+    max-height: 14px;
+    border: 2px solid black;
+    margin: 0;
+    cursor: pointer;
+    position: relative;
+    top: 0;
+    
+}
+
+input[type="radio"]:checked,
+input[type="checkbox"]:checked {
+    background-color: #4a4ab2;
+}
+
+/* Target Audience Section */
+.target-audience-container {
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+  gap: 15px; /* Add space between options */
+}
+
+.target-audience-container label {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Space between radio button and text */
+  font-size: 12pt; /* Adjust text size if needed */
+  color: black;
+}
+
+/* Characteristics grid */
+.characteristics-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+
+}
+
+/* Each row within the grid */
+.characteristics-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* 5 items per row */
+  gap: 10px;
+  align-items: center;
+}
+
+/* Styling for each label */
+.characteristics-row label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: normal;
+  color: black;
+  font-size: 10pt;
+}
+
+
+
+/* General Form Styling */
+.form-field {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-field label {
+  font-weight: 600;
+  color: #4a4ab2;
+  padding-bottom: 10px;
+}
+
+.visibility-toggle-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+
+.visibility-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #f0f0f0;
+  padding: 0.75rem 1rem;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.visibility-option input[type="radio"] {
+  accent-color: #262262;
+  margin: 0;
+}
+
+/* Input, Select, and Textarea Base Styles */
+.form-field input:not([type="checkbox"]):not([type="radio"]),
+.form-field select {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 99px;
+  padding: 10px 15px;
+  font-family: "Figtree";
+  font-size: 1em;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Textarea Specific Styles */
+.form-field textarea {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 15px;
+  padding: 15px;
+  font-family: "Figtree";
+  font-size: 1em;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 100px;
+  resize: both;
+  overflow: auto;
+}
+
+/* Checkbox and Radio Common Styles */
+input[type="checkbox"],
+input[type="radio"] {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border: 1px solid black;
+  cursor: pointer;
+  margin: 0;
+}
+
+input[type="checkbox"]:checked,
+input[type="radio"]:checked {
+  background-color: #4a4ab2;
+}
+
+/* Styling for Select Fields */
+.form-field select {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 10px; /* Reduced border radius */
+  padding: 10px 15px;
+  font-family: "Figtree", sans-serif;
+  font-size: 1em;
+  width: 100%;
+  box-sizing: border-box;
+  height: auto; /* Allows for expansion with multiple selections */
+  color: #4a4ab2; /* Matches form styling */
+  appearance: none; /* Removes default styling for a cleaner look */
+}
+
+/* Style for the dropdown arrow (on modern browsers) */
+.form-field select[multiple] {
+  background-image: none; /* Removes dropdown arrow for multiple select */
+  margin-bottom: 0.5rem;
+}
+
+/* Hover State */
+.form-field select:hover {
+  border-color: #4a4ab2;
+}
+
+/* Focus State */
+.form-field select:focus {
+  outline: none;
+  border-color: #262262;
+  box-shadow: 0 0 5px rgba(38, 34, 98, 0.5);
+}
+
+
+
+/* Toggle Group Styles */
+.toggle-group {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.prompttoggle-label {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  align-items: center;
+  gap: 15px;
+  cursor: pointer;
+  font-weight: 100;
+  color: black;
+}
+
+.prompttoggle-label span, .exercisetoggle-label span, .templatetoggle-label span, .microcoursetoggle-label span {
+  line-height: 1.4;
+  font-weight: 100;
+  color: black;
+}
+
+/* White Container */
+.white-container {
+  background-color: white;
+  border-radius: 15px;
+  padding: 25px 20px;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 20px;
+}
+
+/* Button Styles */
+.form-buttons {
+  display: flex;
+  gap: 15px;
+}
+
+.characteristics-row label {
+  color: black;
+  font-weight: 100;
+}
+
+.radio-group label {
+  color: black;
+  font-weight: 100;
+}
+
+.form-button {
+  font-family: "Figtree";
+  padding: 10px 20px;
+  font-weight: 800;
+  font-size: 1em;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.save-button {
+  background-color: #ccc;
+  color: #4a4ab2;
+}
+
+.submit-button {
+  background-color: #262262;
+  color: white;
+}
+
+.form-button:hover {
+  background-color: #4e50a2;
+  color: #fff;
+}
+
+label[for=short-summary] {
+  margin-top: 1rem;
+}
+
+  /* Arrow Styling */
+  .carousel-arrow {
+    background: none;
+    border: none;
+    font-size: 2em;
+    color: #262262;
+    cursor: pointer;
+    position: absolute; /* Change to absolute for precise positioning */
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  
+  .left-arrow {
+    left: 10px; /* Move right slightly to make fully visible */
+  }
+  
+  .right-arrow {
+    right: 10px; /* Move left slightly to make fully visible */
+  }
+
+  #dummy-upload {
+    width: 100%;
+    padding: 8px;
+    border: 1px dotted #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    color: #999;
+    cursor: not-allowed;
+}
+
+/* Badge display container with a subtle background and centered content */
+#selected-badge-container {
+  text-align: center;
+  padding: 20px;
+  border: 1px solid #ccc;
+  margin: 20px auto;
+  max-width: 300px;
+  border-radius: 5px;
+  background: #f9f9f9;
+}
+
+/* Center the badge image and maintain its 100x100 size */
+#selected-badge-image {
+  display: block;
+  margin: 0 auto;
+  width: 100px;
+  height: 100px;
+  border-radius: 4px;
+}
+
+/* Badge name label styling (distinct from the rest of the form) */
+.badge-name-label {
+  display: block;
+  margin-top: 10px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #262262;
+}
+
+/* Center the 'choose a badge' button and style it */
+#choose-badge-btn {
+  display: block;
+  margin: 20px auto;
+  font-family: "Figtree", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 800;
+  padding: 12px;
+  background-color: #262262;
+  color: #fff;
+  border: none;
+  border-radius: 55px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#choose-badge-btn:hover {
+  background-color: #4a4ab2;
+}
+
+/*UNIT SUCCESS PAGE*/
+
+  
+.article-success-container, .unit-success-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-top: 200px;
+}
+
+.submission-success-title, .unit-success-title {
+  font-family: "Figtree";
+  color: #262262;
+  font-weight: 800;
+  text-align: center;
+  font-size: 2rem;
+}
+
+.success-subtitle {
+  font-family: "Figtree";
+  color: #4e50a2;
+  font-weight: 800;
+  text-align: left;
+  font-size: 2rem;
+}
+
+.success-text {
+  font-family: "Figtree";
+  font-size: 1rem;
+  color:#333;
+}
+
+.submission-details {
+  margin: 2rem 0;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+}
+
+.navigation-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.btn-primary, .btn-secondary {
+  padding: 0.75rem 1.5rem;
+  border-radius: 99px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.btn-primary {
+  background-color: #262262;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #4a4ab2;
+}
+
+.btn-secondary {
+  background-color: #bdbdbd;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #4a4ab2;
+}
+
+.error-message {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #fff3cd;
+  border: 1px solid #ffeeba;
+  border-radius: 4px;
+}
+
+/* ERROR PAGE FOR UNIT FORMS */
+.error-container {
+  text-align: center;
+  margin: 50px auto;
+  padding: 20px;
+  max-width: 500px;
+}
+
+.error-title {
+  margin-top: 200px;
+  color: #262262;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.error-message-forms {
+  font-size: 1rem;
+  margin: 10px 0;
+  font-family: "Figtree";
+}
+
+.error-button {
+  display: block;
+  font-size: 11pt;
+  margin: 10px auto;
+  padding: 10px 20px;
+  border-radius: 99px;
+  background-color: #262262;
+  color: white;
+  font-family: "Figtree";
+  font-weight: 800;
+  border: none;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  width: 50%;
+  margin-bottom: 100px;
+}
+
+.error-button:hover {
+  background-color: #4a4ab2;
+}
+
+.prompt-intro-text {
+  text-align: center;
+  font-size: 0.7rem;
+  width: 80%;
+  margin: 0 auto;
+}
+
+.target-audience {
+  width: 450px;
+}
+
+/* Ensure the wave dividers span the full width */
+.contribute-wave-divider {
+  overflow: hidden;
+  line-height: 0;
+}
+
+/* Adjust the height of the SVG */
+.contribute-wave-divider svg {
+  width: 100%;  
+}
+
+@media screen and (max-width: 1366px) {
+  .file-upload-group {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .form-article-container,
+  .form-video-container,
+  .form-interview-container, 
+  .form-template-container, 
+  .form-exercise-container, 
+  .form-promptset-container, 
+  .form-microstudy-container, 
+  .form-microcourse-container {
+    padding: 2rem 5rem;
+    width: 60%;
+  }
+  .prompt-intro-text {
+    width: 100%;
+  }
+  .characteristics-row {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  @media screen and (max-width: 800px) {
+    .form-article-container,
+    .form-video-container,
+    .form-interview-container, 
+    .form-template-container, 
+    .form-exercise-container, 
+    .form-promptset-container, 
+    .form-microstudy-container, 
+    .form-microcourse-container {
+      padding: 2rem 5rem;
+      width: 80%;
+    }
+    @media screen and (max-width: 600px) {
+      .form-article-container,
+      .form-video-container,
+      .form-interview-container, 
+      .form-template-container, 
+      .form-exercise-container, 
+      .form-promptset-container, 
+      .form-microstudy-container, 
+      .form-microcourse-container {
+        padding: 2rem 3rem;
+        width: 90%;
+      }
+      .target-audience {
+        width: 100%;
+      }
+      .characteristics-row {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      @media screen and (max-width: 460px) {
+        .howtoarticle-image > img,
+        .howtovideo-image > img,
+        .howtointerview-image > img,
+        .howtotemplate-image > img,
+        .howtoexercise-image > img,
+        .howtoprompt-image > img,
+        .howtomicrostudy-image > img,
+        .howtomicrocourse-image > img {
+            max-width: 300px;
+        }
+        .form-article-container,
+        .form-video-container,
+        .form-interview-container, 
+        .form-template-container, 
+        .form-exercise-container, 
+        .form-promptset-container, 
+        .form-microstudy-container, 
+        .form-microcourse-container {
+          padding: 2rem 1.5rem;
+          width: 90%;
+        }
+        @media screen and (max-width: 340px) {
+          .howtoarticle-image > img,
+          .howtovideo-image > img,
+          .howtointerview-image > img,
+          .howtotemplate-image > img,
+          .howtoexercise-image > img,
+          .howtoprompt-image > img,
+          .howtomicrostudy-image > img,
+          .howtomicrocourse-image > img {
+              max-width: 270px;
+          }
+        }
+      }
+    }
+  }
+}

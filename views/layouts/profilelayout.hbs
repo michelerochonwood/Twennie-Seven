@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Page title -->
+  <title>{{title}}</title>
+  {{!-- views/shared/consent_analytics.hbs --}}
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+
+  gtag('consent', 'default', {
+    security_storage: 'granted',
+    functionality_storage: {{#if consent.functional}}"granted"{{else}}"denied"{{/if}},
+    analytics_storage:    {{#if consent.analytics}}"granted"{{else}}"denied"{{/if}},
+    ad_storage:           "denied",
+    ad_user_data:         "denied",
+    ad_personalization:   "denied"
+  });
+</script>
+
+{{#if consent.analytics}}
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{GA_ID}}"></script>
+  <script>
+    gtag('js', new Date());
+    gtag('config', '{{GA_ID}}');
+  </script>
+{{/if}}
+
+
+  <!-- Navigation Styles -->
+  <link rel="stylesheet" href="https://www.twennie.com/css/navigation.css?v={{timestamp}}">
+
+  <!-- Profile Styles -->
+  <link rel="stylesheet" href="https://www.twennie.com/css/profilestyles.css?v={{timestamp}}">
+
+  <!-- Mobile Navigation Script -->
+  <script src="https://www.twennie.com/javascript/mobile-nav.js?v={{timestamp}}" defer></script>
+
+  <!-- Ionicons CDN -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+</head>
+
+<body class="main-body">
+
+  {{> mainpartials/header}}
+
+  <main class="main-content">
+    {{{body}}}
+  </main>
+
+  <!-- Dashboard Tabs Script -->
+  <script src="/javascript/dashboard/dashboard_tabs.js?v={{timestamp}}"></script>
+
+  <footer>
+    {{> mainpartials/footer}}
+  </footer>
+</body>
+</html>

@@ -1,0 +1,115 @@
+{{#*inline "title"}}Group Profile | Twennie{{/inline}}
+<div class="profile-main">
+
+  <!-- Sidebar: Group Image, Name, Organization, Edit Button -->
+  <aside class="profile-sidebar">
+    <img 
+      src="{{#if group.groupImage}}{{group.groupImage}}{{else}}/images/defaultgroupavatar.jpg{{/if}}" 
+      alt="{{group.groupName}}'s Profile Picture" 
+      class="profile-image"
+    >
+
+    <h2 class="profile-name">{{group.groupName}}</h2>
+    <p class="profile-title">{{group.organization}}</p>
+
+    {{#if isGroupLeader}}
+      <a 
+        href="/profile/group/{{group.leaderId}}/edit" 
+        class="profile-edit-btn"
+      >
+        edit group profile
+      </a>
+    {{/if}}
+  </aside>
+
+  <!-- Profile Content -->
+  <div class="profile-content">
+
+    <!-- Tabs -->
+    <div class="profile-tabs-container">
+      <button class="profile-tab active" data-tab="members">
+        <span class="tab-title">members of {{group.groupName}}</span>
+        <div class="tab-arrow"></div>
+      </button>
+      <button class="profile-tab" data-tab="group_leader">
+        <span class="tab-title">group leader</span>
+        <div class="tab-arrow"></div>
+      </button>
+      <button class="profile-tab" data-tab="group_biography">
+        <span class="tab-title">group biography</span>
+        <div class="tab-arrow"></div>
+      </button>
+      <button class="profile-tab" data-tab="group_goals">
+        <span class="tab-title">group goals</span>
+        <div class="tab-arrow"></div>
+      </button>
+      <button class="profile-tab" data-tab="group_topics">
+        <span class="tab-title">group topics</span>
+        <div class="tab-arrow"></div>
+      </button>
+      <button class="profile-tab" data-tab="group_library">
+        <span class="tab-title">group library</span>
+        <div class="tab-arrow"></div>
+      </button>
+      <button class="profile-tab" data-tab="group_badges">
+        <span class="tab-title">group badges</span>
+        <div class="tab-arrow"></div>
+      </button>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="profile-tab-content active" id="members">
+      {{> profilepartials/group_members }}
+    </div>
+
+    <div class="profile-tab-content" id="group_leader">
+      {{> profilepartials/group_leader }}
+    </div>
+
+    <div class="profile-tab-content" id="group_biography">
+      {{> profilepartials/group_biography }}
+    </div>
+
+    <div class="profile-tab-content" id="group_goals">
+      {{> profilepartials/group_goals }}
+    </div>
+
+    <div class="profile-tab-content" id="group_topics">
+      {{> profilepartials/group_topics }}
+    </div>
+
+    <div class="profile-tab-content" id="group_library">
+      {{> profilepartials/group_library }}
+    </div>
+
+    <div class="profile-tab-content" id="group_badges">
+      {{> profilepartials/group_badges }}
+    </div>
+
+  </div> <!-- End Profile Content -->
+
+</div> <!-- End Profile Main -->
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const tabButtons = document.querySelectorAll(".profile-tab");
+    const tabContents = document.querySelectorAll(".profile-tab-content");
+
+    tabButtons.forEach(button => {
+      button.addEventListener("click", function () {
+        const target = this.getAttribute("data-tab");
+
+        // Deactivate all tabs and contents
+        tabButtons.forEach(btn => btn.classList.remove("active"));
+        tabContents.forEach(content => content.classList.remove("active"));
+
+        // Activate the clicked tab and its corresponding content
+        this.classList.add("active");
+        const activeContent = document.getElementById(target);
+        if (activeContent) activeContent.classList.add("active");
+      });
+    });
+  });
+</script>
+
+

@@ -1,0 +1,451 @@
+{
+    "topics": [
+      {
+        "id": 100,
+        "title": "Project Management",
+        "shortSummary": "Project management is a broad topic. Here at Twennie we plan to focus on the newest thinking on the subject.",
+        "longSummary": "When you think about it, you'll realize that project management is a bit of a misnomer. You're not actually managing a project, but rather the people completing it. This might be why project management is such a challenging discipline to learn. People are not technology. People have habits that need breaking and attitudes that need adjusting, but if you look at it that way, you will surely make them less inclined to engage with the work in a constructive way. Managing people is always best done as a pull rather than push strategy, because people don’t like being pushed. Pushing just makes them slam on the mental brakes. They want to think that everything they do is in some way their idea, which is when they do their best work, by the way. That is the biggest challenge for the project manager – to engage people in ways that help them experience satisfaction and inspiration in their work. The work they produce under these conditions will speak for itself.",
+        "subtopics": [
+          "people management",
+          "planning",
+          "communication",
+          "analytics",
+          "lean",
+          "portfolio management"
+        ]
+      },
+      {
+        "id": 101,
+        "title": "Career Development in Technical Services",
+        "shortSummary": "This topic is devoted to professionals who work in technical services, addressing their unique career challenges.",
+        "longSummary": "Technical services comes with its own unique set of rewards and challenges, and the landscape for those working in these fields is constantly changing, particularly in technology. Navigating the changes requires access to trusted sources of knowledge, including good learning content, peer mentoring and access to seasoned professionals with the wisdom to guide emerging specialists.",
+        "subtopics": [
+          "pressure to earn",
+          "competition",
+          "soft skills",
+          "professional learning and development",
+          "directions and decisions",
+          "managing mental health"
+        ]
+      },
+      {
+        "id": 102,
+        "title": "Soft Skills in Technical Environments",
+        "shortSummary": "The demand for soft skills in technical professionals can sometimes blindside and overwhelm new graduates and those new to the workforce. Twennie aims to focus on how soft skills relate to technical work.",
+        "longSummary": "You can't learn to play the piano by reading a book about playing piano. Some skills require you to build muscle memory over time by doing. Anything that involves managing working relationships, negotiation, or communication fall under this definition. These are considered “soft” skills and aren’t learned in a traditional classroom. Colleges and universities are aware of this challenge. They incorporate soft skills material into instruction and exercises, but formal learning institutions are also under pressure to deliver as much technical learning as possible within a short window, so soft skills inevitably play second fiddle. Twennie aims to fill this gap with effective content, exercises, and peer mentoring.",
+        "subtopics": [
+          "the rude awakening of soft skills for technical professionals",
+          "soft skills are taught and learned differently",
+          "why soft skills learning requires team work",
+          "how introverts learn soft skills",
+          "what are soft skills",
+          "the spectre of failure"
+        ]
+      },
+      {
+        "id": 103,
+        "title": "Business Development in Technical Services",
+        "shortSummary": "Almost all technical professionals come to a point in their career when they must learn the skill of developing business. Twennie aims to provide needed learning and guidance.",
+        "longSummary": "When a B2B client hires you to complete a project, you become an arm of that client’s organization for the time it takes to complete the work, which makes you different from virtually any other service provider. Your ability to craft a satisfactory daily experience for that client determines your future business with that client, and perhaps with many others in their close-knit business community. That means: more than any other professionals in the marketplace, you have to be switched on at all times. More than any web site, advertising, sales strategy, or marketing approach, this is what separates you from your competition. Strategies for remaining “switched-on” are the main goal of Twennie’s approach to the topic of business development in technical services.",
+        "subtopics": [
+          "the challenge of staying switched on",
+          "the project lifecycle according to the client",
+          "clearing the underbrush of distractions",
+          "the importance of saying no",
+          "defining value for the client instead of you",
+          "bespoke solutions"
+        ]
+      },
+      {
+        "id": 104,
+        "title": "Proposal Management",
+        "shortSummary": "Managing proposals in a technical environment is a discipline all its own. Twennie aims to provide needed resources where too little is available.",
+        "longSummary": "Not all services organizations have dedicated proposal management personnel, but they can all adopt at least a few best practices. A proposal is a project in itself, which is why it needs a “project manager.” To distinguish the role in a technical services organization, however, we must call this person the “proposal manager.” A shortage of training opportunities for proposal managers in technical services makes this topic an essential element of Twennie’s library. We aim to fill that gap.",
+        "subtopics": [
+          "making a technical proposal sound less like a report and more like an excellent reason to hire you",
+          "proposal management as its own discipline",
+          "the non-technical professional in technical settings",
+          "managing a portolio of proposals",
+          "defining value for the client instead of you",
+          "the tailored proposal"
+        ]
+      },
+      {
+        "id": 105,
+        "title": "Proposal Strategy",
+        "shortSummary": "Writing a winning proposal is the art of defining success on the client's terms and making your firm essential to that success. Twennie aims to elucidate this complex subject.",
+        "longSummary": "Your firm will not be credible with a client unless you’re able to show them that you were paying attention when they explained the project. That sounds simple, but you’d be surprised how many clients get proposals with pages and pages of vaguely relevant projects that never mention the project in question, or even the client hiring them to do it. Proposals must present specific solutions to a client’s problems and persuade the evaluators that these solutions are only available by working with you.",
+        "subtopics": [
+          "win themes and win strategies",
+          "showing that you were paying attention",
+          "defining success on the client's terms",
+          "going above and beyond the RFP",
+          "evidence of experience, interest, and care",
+          "analyzing competitors and figuring out how to do it better"
+        ]
+      },
+      {
+        "id": 106,
+        "title": "Storytelling in Technical Marketing",
+        "shortSummary": "Storytelling helps clients visualize your firm completing their project. That's because a story is the basic structure of information in the human mind, no matter what the story is about. Twennie aims to teach members how to turn technical information into stories.",
+        "longSummary": "Storytelling charts a logical course inside a client's mind and gives form to their vision for successful project completion. Business storytelling builds a deeper connection based on emotional drivers of decisions and helps evaluators relate more intimately to the experience. Storytelling makes information easier to remember, and proposal evaluators recognize the elements of a story. This enables them to more easily process the message.",
+        "subtopics": [
+          "stimulating the client's imagination",
+          "a story's moving parts",
+          "every technical proposal contains dry writing but doesn't have to",
+          "learning to embrace moods and tones",
+          "writing persuasively and economically",
+          "what makes a good business story, even a technical one"
+        ]
+      },
+      {
+        "id": 107,
+        "title": "Client Experience",
+        "shortSummary": "A million versions of experience exist in our world, including different definitions of what makes a good one. That's why it is such a challenge for service providers to craft one that makes clients come back for more.",
+        "longSummary": "How do you build a program that creates alignment, audits current investments, and measurably transforms operations? Despite all the possible variations and opinions – these are ultimately all human experiences (“HX”) and can be designed with intentionality. In business, it is individual people making decisions about where they work, what they purchase, and who they partner with; therefore, there are evident and common components to building synchronous programs across your organization.",
+        "subtopics": [
+          "shaping the client's experience",
+          "client experience programs",
+          "the six elements of professional relationships",
+          "gathering and using feedback strategically"
+        ]
+      },
+      {
+        "id": 108,
+        "title": "Social Media, Advertising, and Other Mysteries",
+        "shortSummary": "With B2B, you have to target clients carefully. You've got to go where they are, but where are they? Posts to LinkedIn and X can be effective, but only to the point that your presence is known on the platform. Differentiating your brand in that post is the challenge. ",
+        "longSummary": "Social media posts and ads can so easily blend into the noise, especially if they’re too generic. The challenge is to enlist your marketing team to get working on more specific ad content that builds your brand. Get them more actively involved in promoting projects and innovations, including writing articles and creating ad topics that target clients working under specific technical challenges.",
+        "subtopics": [
+          "using social media in technical services",
+          "advertising technical services",
+          "the six elements of professional relationships",
+          "making it a priority"
+        ]
+      },
+      {
+        "id": 109,
+        "title": "Emotional Intelligence",
+        "shortSummary": "Emotional intelligence is the ability of a person to recognize how their emotions shape behavior, how to manage those emotions, and how to recognize and empathize with the emotions of others.",
+        "longSummary": "Personality profiling tells you what you will probably do based on past choices and habits. In reality, the very belief that your personality decides everything you do enslaves you to it. It becomes the perfect excuse not to do the work of evolving. No person has to live with ineffective behaviors because of some arbitrary assessment, whether it involves letters, numbers, colors or humors. Everyone has the power to choose new behaviors. Harnessing this power is the definition of emotional intelligence, and Twennie aims to explore the possibilities further. ",
+        "subtopics": [
+          "learning and developing emotional intelligence",
+          "personality versus choices",
+          "defining emotional intelligence"
+        ]
+      },
+      {
+        "id": 110,
+        "title": "The Pareto Principle or 80/20",
+        "shortSummary": "In business applications, the Pareto Principle manifests in numerous ways. For instance, companies often find that 80% of their profits come from 20% of their customers, or that 80% of their sales are generated by 20% of their products. This insight helps organizations prioritize their resources and efforts.",
+        "longSummary": "The Pareto principle's relevance extends beyond business into personal life and task management. Working people often discover that 20% of their activities produce 80% of their satisfaction or success, while 80% of their stress might come from 20% of their problems. This understanding can help individuals make better decisions about how to allocate their time and energy, focusing on high-impact activities and relationships while minimizing involvement in less productive areas. However, it's important to note that these percentages are approximate and illustrative rather than exact mathematical relationships.",
+        "subtopics": [
+          "80/20 and the individual",
+          "the power to prioritize and focus",
+          "inspiring and cautionary tales of 80/20 in the business world"
+        ]
+      },
+      {
+        "id": 111,
+        "title": "Diversity and Inclusion in Consulting",
+        "shortSummary": "Diversity and inclusion in business have evolved from being merely social initiatives to becoming critical drivers of organizational success and innovation.",
+        "longSummary": "Research consistently shows that companies with diverse workforces and inclusive cultures outperform their competitors, benefiting from a broader range of perspectives, experiences, and approaches to problem-solving. Diverse teams are better equipped to understand and serve diverse customer bases, develop innovative solutions, and adapt to changing market conditions. This extends beyond visible diversity characteristics to include diversity of thought, background, education, and experience.",
+        "subtopics": [
+          "diversity and inclusion programs",
+          "diversity and inclusion in culture and practices",
+          "addressing bias for meaningful and sustainable change"
+        ]
+      },
+      {
+        "id": 112,
+        "title": "People Before Profit",
+        "shortSummary": "One of the key challenges in building truly inclusive organizations is addressing unconscious bias and creating sustainable change. This involves ongoing education and training, regular assessment of policies and procedures, and measuring progress through both quantitative and qualitative metrics.",
+        "longSummary": "Implementing a people-before-profit philosophy requires careful balance and long-term thinking. While it may sometimes mean sacrificing short-term gains for long-term value, successful companies find ways to align people-centric practices with business sustainability. This might include investing in employee wellness programs that reduce healthcare costs and improve productivity or developing strong relationships with suppliers and communities that lead to more stable business operations. The key is understanding that treating people well isn't just an ethical choice - it's a strategic advantage that creates resilient, adaptable, and ultimately more profitable organizations.",
+        "subtopics": [
+          "stories of people before profit in business",
+          "balancing profitability and worker wellness",
+          "how to grow a culture of people before profit"
+        ]
+      },
+      {
+        "id": 113,
+        "title": "Non-Technical Roles in Technical Environments",
+        "shortSummary": "The non-technical professional in a technical environment represents a minority in any technical organization. Career paths for the technical workforce are clear and identifiable, while the smaller community of non-technical internal service providers don’t have as obvious a path placed before them. ",
+        "longSummary": "Technical managers may struggle to understand the unique value proposition of marketing, business development, or human resources professionals, leading to underutilization of their skills and missed opportunities for organizational growth. This disconnect can result in non-technical professionals feeling undervalued and isolated, particularly when their contributions are measured against technical metrics that don't appropriately capture their impact. Organizations need to develop specific frameworks for evaluating and advancing non-technical professionals that align with their roles while still integrating them into the broader company culture.",
+        "subtopics": [
+          "addressing career ambiguity in technical organizations",
+          "how to tap into the underrated and underused resource of non-technical professionals",
+          "learning and development for non-technical professionals in technical environments"
+        ]
+      },
+      {
+        "id": 114,
+        "title": "Leadership in Technical Services",
+        "shortSummary": "Leadership in technical services consulting organizations presents unique challenges due to the complex interplay between technical expertise and business management demands. Leaders must balance maintaining their technical credibility while developing the broader business and people management skills necessary to guide their organizations.",
+        "longSummary": "The fast-paced and continuously evolving nature of technical services adds another layer of complexity to leadership. Leaders must stay current with technological advancements while simultaneously managing client expectations, market pressures, and team dynamics. They need to make quick decisions about resource allocation, project priorities, and strategic investments in new technologies or skills development, all while ensuring their teams remain motivated and engaged. This requires a delicate balance between short-term delivery demands and long-term capability building, often with limited resources and tight margins. ",
+        "subtopics": [
+          "business development in leadership in technical consulting",
+          "team dynamics and engagement",
+          "diverse teams with diverse needs",
+          "making tough leadership decisions and following through"
+        ]
+      },
+      {
+        "id": 115,
+        "title": "The Advantage of Failure",
+        "shortSummary": "When approached with the right mindset, failure can be one of the most powerful catalysts for growth and innovation in professional settings.",
+        "longSummary": "Rather than viewing failures as career-ending catastrophes or sources of shame, forward-thinking organizations recognize them as valuable learning opportunities and essential steps toward success. This perspective shift transforms failure from a dreaded outcome into a strategic tool for improvement, allowing teams to experiment more boldly, learn more deeply, and ultimately achieve better results through the insights gained from their setbacks.",
+        "subtopics": [
+          "how to change how people think about failure",
+          "the data analytics of failure",
+          "failing with intention is not intentionally failing"
+        ]
+      },
+      {
+        "id": 116,
+        "title": "Social Entrepreneurship",
+        "shortSummary": "Social entrepreneurship represents a powerful fusion of business acumen and social impact, where entrepreneurs create ventures that prioritize solving societal problems while maintaining financial sustainability. ",
+        "longSummary": "Unlike traditional businesses that measure success primarily through profit margins, social enterprises evaluate their performance through a double or triple bottom line approach, considering social and environmental impact alongside financial returns. These organizations tackle challenges ranging from poverty and unemployment to environmental sustainability and healthcare access, using innovative business models to create lasting positive change.",
+        "subtopics": [
+          "learning to measure business success more holistically",
+          "maintaining financial viability while making a difference",
+          "cultural growth and sustainability in social entrepreneurship"
+        ]
+      },
+      {
+        "id": 117,
+        "title": "Employee Experience",
+        "shortSummary": "Employee experience encompasses the entire journey of an individual within an organization, from recruitment through departure, including every interaction, emotion, and perception along the way.",
+        "longSummary": "A holistic approach goes beyond traditional employee engagement metrics to consider the complete ecosystem that shapes how employees feel about their work, their colleagues, and their organization. It includes physical workspace design, technological tools and support, organizational culture, professional development opportunities, work-life balance, and the quality of daily interactions with colleagues and leadership. Modern organizations recognize that creating a positive employee experience is crucial for attracting and retaining top talent, driving innovation, and maintaining competitive advantage.",
+        "subtopics": [
+          "employee experience and why it's not the same as engagement",
+          "more intimate looks at worker satisfaction",
+          "intentional design and continuous adaptation"
+        ]
+      },
+      {
+        "id": 118,
+        "title": "Project Management Software",
+        "shortSummary": "Project management software takes the guesswork out of planning. With built-in tools for creating timelines, assigning tasks, and setting deadlines, the software acts like a virtual flight plan, ensuring the team stays on course.",
+        "longSummary": "Effective communication is at the heart of any successful project, and project management software ensures that no message gets lost in the shuffle. From in-app messaging to shared dashboards and automated notifications, these tools keep teams connected and informed. Team members can easily share updates, flag issues, and collaborate in real time, eliminating the silos that often derail projects. With clear and consistent communication, projects move forward with fewer delays and misunderstandings.",
+        "subtopics": [
+          "how to use project management software advantageously",
+          "not letting the tail wag the dog in project management",
+          "choices, flexibility, and scalability"
+        ]
+      },
+      {
+        "id": 119,
+        "title": "CRM Software",
+        "shortSummary": "CRM (Customer Relationship Management) software plays a crucial role in managing relationships with technical clients, where complex service offerings, long sales cycles, and detailed technical requirements demand sophisticated tracking and relationship management.",
+        "longSummary": "The effectiveness of CRM software in technical environments depends heavily on its ability to integrate with other business-critical systems and provide meaningful insights about client relationships. Modern CRM platforms often connect with project management tools, document management systems, and proposal management software to create a unified view of client engagement. This integration allows technical service providers to track not only sales activities but also project delivery metrics, technical resource allocation, and client satisfaction indicators. The ability to analyze this data helps organizations identify patterns in client needs, anticipate future requirements, and proactively address potential issues before they impact client relationships.",
+        "subtopics": [
+          "how to use project management software advantageously",
+          "not letting the tail wag the dog in project management",
+          "choices, flexibility and scalability"
+        ]
+      },
+      {
+        "id": 120,
+        "title": "Mental Health in Consulting Environments",
+        "shortSummary": "Mental health in technical consulting environments presents unique challenges due to the high-pressure nature of the work, demanding client expectations, and the constant need to maintain technical excellence while meeting billable targets. ",
+        "longSummary": "The culture within technical consulting organizations can sometimes exacerbate mental health challenges. The emphasis on billable hours, utilization rates, and project deadlines can create an environment where consultants feel unable to take necessary breaks or seek support when struggling. Additionally, the often solitary nature of technical work, combined with the competitive atmosphere common in consulting firms, can lead to feelings of isolation and imposter syndrome. Technical professionals may feel particularly vulnerable when dealing with mental health challenges, as there can be an unspoken expectation to maintain an image of unwavering competence and reliability. ",
+        "subtopics": [
+          "strategies for management one's own mental health",
+          "helping a team manage their mental health",
+          "how corporate culture can help or harm mental health"
+        ]
+      },
+      {
+        "id": 121,
+        "title": "Remote and Hybrid Work",
+        "shortSummary": "Remote and hybrid work models have fundamentally transformed traditional workplace dynamics, evolving from an emergency response during the pandemic into strategic approaches that offer both opportunities and challenges for organizations.",
+        "longSummary": "The hybrid workplace model, combining remote and in-office work, presents unique challenges in creating equitable experiences and opportunities for all employees. Organizations must carefully design policies and practices that prevent the emergence of a two-tier workforce where in-office employees might have advantages over their remote colleagues in terms of visibility, advancement opportunities, or access to leadership. This includes developing inclusive meeting practices that ensure remote participants can contribute effectively, creating fair performance evaluation systems that focus on outcomes rather than presence, and establishing clear guidelines for when in-person attendance is necessary or beneficial.",
+        "subtopics": [
+          "the perks and pitfalls of remote and hybrid work",
+          "strategies for adapting to a hybrid workplace in a hybrid world",
+          "remote and hybrid team management strategies",
+          "using technology to support a hybrid team"
+        ]
+      },
+
+      {
+        "id": 123,
+        "title": "The Power of Play in the Workplace",
+        "shortSummary": "The power of play in the workplace extends far beyond simple team-building activities or casual Friday events, representing a fundamental approach to fostering creativity, innovation, and problem-solving.",
+        "longSummary": "When organizations integrate playful elements into their work culture, they create environments where employees feel more comfortable taking calculated risks, sharing unconventional ideas, and approaching challenges with fresh perspectives. This playful mindset can lead to breakthrough solutions that might never emerge in more rigid, traditional work environments. Research shows that play activates neural pathways associated with creativity and learning, making it a valuable tool for professional development and innovation.",
+        "subtopics": [
+          "using play strategically for greater productivity and innovation",
+          "how a playful culture supports better employee experience and worker mental health",
+          "using play in adult learning and development"
+        ]
+      },
+      {
+        "id": 124,
+        "title": "Team Building in Technical Consulting",
+        "shortSummary": "Team building in consulting firms requires a unique approach due to the dynamic nature of project-based work, where teams often form and dissolve rapidly as projects begin and end.",
+        "longSummary": "Traditional team building methods must evolve to account for distributed workforces, varying client commitments, and the complex mix of technical and interpersonal skills required for successful consulting engagements. Effective team building in this environment goes beyond occasional social events to include structured opportunities for knowledge sharing, cross-training, and collaborative problem-solving that strengthen both professional relationships and organizational capabilities.",
+        "subtopics": [
+          "how team building has changed with the changing workforce",
+          "how to design team building with strategic intent",
+          "integrating team building with community involvement"
+        ]
+      },
+      {
+        "id": 125,
+        "title": "AI in Consulting",
+        "shortSummary": "Artificial Intelligence is rapidly transforming the consulting industry, not only as a service offering to clients but as a tool that enhances consultants' capabilities and efficiency.",
+        "longSummary": "AI technologies are being integrated into various aspects of consulting work, from data analysis and market research to project management and client communications. These tools can process vast amounts of data more quickly than human analysts, identify patterns and insights that might be missed through traditional analysis, and automate routine tasks, allowing consultants to focus on higher-value strategic work and creative problem-solving.",
+        "subtopics": [
+          "using AI in day-to-day tasks",
+          "serving clients with AI",
+          "the rapid evolution of data analytics"
+        ]
+      },
+      {
+        "id": 126,
+        "title": "AI in Project Management",
+        "shortSummary": "One of the key challenges in building truly inclusive organizations is addressing unconscious bias and creating sustainable change.",
+        "longSummary": "AI technologies are being integrated into various aspects of consulting work, from data analysis and market research to project management and client communications. These tools can process vast amounts of data more quickly than human analysts, identify patterns and insights that might be missed through traditional analysis, and automate routine tasks, allowing consultants to focus on higher-value strategic work and creative problem-solving.",
+        "subtopics": [
+          "using AI in day-to-day tasks",
+          "serving clients with AI",
+          "the rapid evolution of data analytics in project management"
+        ]
+      },
+      {
+        "id": 127,
+        "title": "AI in Adult Learning",
+        "shortSummary": "AI is transforming adult learning by providing personalized, adaptive learning experiences that cater to individual learning styles, pace, and preferences.",
+        "longSummary": "AI-powered learning platforms can analyze learner behavior, performance patterns, and engagement levels to create customized learning paths that optimize knowledge retention and skill development. These systems can identify knowledge gaps, adjust content difficulty in real-time, and provide targeted recommendations for additional resources or practice opportunities, making learning more efficient and effective for busy professionals.",
+        "subtopics": [
+          "personalizing and adapting learning through AI",
+          "integrating AI with more traditional methods",
+          "what AI does and doesn't do for learning adults"
+        ]
+      },
+      {
+        "id": 128,
+        "title": "Workplace Culture",
+        "shortSummary": "Far more than just office perks or stated company values, culture manifests in daily interactions, leadership styles, communication patterns, decision-making processes, and how organizations handle both success and failure.",
+        "longSummary": "The impact of workplace culture on organizational success cannot be overstated. Nurturing and people-focused cultures typically lead to higher employee engagement, reduced turnover, increased innovation, and better business outcomes. They create environments where employees feel psychologically safe to share ideas, take calculated risks, and raise concerns without fear of retribution. Conversely, toxic cultures characterized by poor communication, lack of trust, or misaligned incentives can undermine even the most well-planned business strategies, leading to decreased productivity, increased turnover, and damage to the organization's reputation.",
+        "subtopics": [
+          "shaping workplace culture with purpose",
+          "when workplace culture hurts",
+          "influencing culture through play"
+        ]
+      },
+      {
+  "id": 129,
+  "title": "Finding Projects Before they Become RFPs",
+  "shortSummary": "To win more work, you need to show up before the RFP drops. This topic explores how to identify upcoming projects early, build relationships during pre-RFP planning, and develop a lead-generation engine your team can rely on.",
+  "longSummary": "Clients begin shaping their projects long before the RFP is posted—sometimes months or even years in advance. By the time the proposal is invited, they’ve gone through months of internal planning, refinement, and emotional investment. This topic challenges reactive habits and introduces a proactive model built around lead awareness, cultural shifts, and the creation of a lead-generating engine. It helps technical professionals shift their pursuit efforts earlier in the client’s timeline—where influence is possible—and shows how to build consistent, measurable processes for identifying and tracking pre-RFP opportunities across an organization.",
+  "subtopics": [
+    "why waiting for the RFP is too late",
+    "building a lead-generating engine",
+    "exposing the cultural barriers to early BD"
+  ]
+},
+{
+  "id": 130,
+  "title": "Client Feedback Software",
+  "shortSummary": "Client feedback software helps you gather, analyze, and act on feedback throughout the project lifecycle. This topic explores tools like Client Savvy, AskNicely, and Simplesat, and shows how to use them to improve service delivery and client retention.",
+  "longSummary": "Capturing feedback at key moments—after kickoff, mid-project, and post-delivery—can help technical teams understand client needs, uncover silent frustrations, and fine-tune their services. This topic introduces client feedback software platforms such as Client Savvy, AskNicely, and Simplesat, highlighting how they support structured, consistent, and scalable feedback processes. Rather than relying on anecdotal praise or complaints, firms can use these tools to create a real-time understanding of how clients experience their services. The topic also explores implementation strategies, common missteps, and how feedback data can be used to improve client satisfaction, refine internal processes, and guide future work.",
+  "subtopics": [
+    "choosing a feedback platform",
+    "feedback timing: when to ask and why it matters",
+    "turning feedback into operational change"
+  ]
+},
+{
+  "id": 131,
+  "title": "Un-Commoditizing Your Services by Delivering What Clients Truly Value",
+  "shortSummary": "When clients see your service as interchangeable with competitors, price becomes the only differentiator. This topic teaches you how to rise above commoditization by understanding and delivering what B2B clients truly value.",
+  "longSummary": "Based on the framework from Bain and Company’s 'The B2B Elements of Value,' this topic helps you escape the trap of being viewed as a commodity. It introduces a five-tier value pyramid that includes functional, emotional, personal, and inspirational elements—all of which influence client loyalty and decision-making. Through video summaries, editable templates, team exercises, and structured prompts, you'll learn how to map your current value delivery, gather meaningful client insights, and design targeted enhancements. Whether you're refining your offerings or launching a new strategy, this topic gives you the tools to identify what your clients value most and build around it.",
+  "subtopics": [
+    "understanding the B2B value pyramid",
+    "mapping and diagnosing your current value proposition",
+    "designing and testing enhancements clients will care about"
+  ]
+},
+
+{
+  "id": 132,
+  "title": "Pull Marketing",
+  "shortSummary": "Great technical work doesn’t market itself—but pull marketing can help. This topic shows you how to attract the right clients by turning your expertise into content, events, and experiences people actually want to engage with.",
+  "longSummary": "Pull marketing is about drawing clients in, not chasing them down. In technical services, that means turning your ideas, insights, and values into visible, engaging signals—ones that spark curiosity and show clients what it’s like to work with you. This topic explores how firms can use thought leadership, community involvement, and playful creativity to build visibility and preference before the sales cycle begins. Through videos, prompts, exercises, and templates, you'll explore how to plan memorable activities, share what makes your team unique, and build a brand that attracts. No advertising budget required—just the courage to show up and be seen.",
+  "subtopics": [
+    "understanding the difference between push and pull marketing",
+    "creating visibility without overselling",
+    "designing fun, generous, brand-aligned ideas"
+  ]
+},
+
+{
+  "id": 133,
+  "title": "Leading Change",
+  "shortSummary": "Change sticks when leaders set the pace, create safety, and show visible wins. This topic turns big intentions into small, testable steps your team can adopt fast—without stalling delivery.",
+  "longSummary": "Leading change is the craft of turning intent into outcomes. In technical services, that means writing a clear \"why now,\" sequencing work into small experiments, and proving value early so confidence grows. You’ll learn how to set a cadence that matches team capacity, remove friction, and make it safe to learn in public. We’ll cover coalition-building, decision rights, and the metrics that matter—cycle time, quality, adoption—so progress is visible and debates stay grounded. Through videos, prompts, exercises, and templates, you’ll practice planning pilots, running mini-QBRs, and embedding new behaviors in checklists, status updates, and handoffs. The goal: change that moves from initiative to identity.",
+  "subtopics": [
+    "crafting a persuasive \"why now\" narrative",
+    "setting pace and cadence without burnout",
+    "building a coalition and clarifying decision rights",
+    "designing pilots and showing early wins",
+    "creating psychological safety for learning in public",
+    "measuring adoption and outcomes (cycle time, quality, client impact)",
+    "embedding change in routines, templates, and checklists",
+    "closing the loop: reviews, adjustments, and sustainability"
+  ]
+},
+{
+    "id": 134,
+    "title": "Leading Groups on Twennie",
+    "shortSummary": "Lead learning like delivery: clear purpose, short cadences, and visible wins. This topic shows leaders how to assign focused units, run light check-ins, and use Twennie dashboards so teams learn fast without stalling project work.",
+    "longSummary": "Leading a group on Twennie means translating intent into steady progress using 20-minute bursts. You’ll set a crisp purpose for the next 30–60 days, choose a simple cadence (weekly or bi-weekly), and curate short units that map to real project needs. We’ll show you how to assign work with tags, set due windows, and use dashboards so everyone can see what’s next—“my tagged units,” “units tagged by my leader,” and “completed leader-assigned units.” You’ll practice running lightweight check-ins, capturing notes where work happens, and closing each sprint with a brief debrief: what changed, what needs help, and what’s next. We’ll cover facilitation posture (guide, don’t lecture), how to keep momentum with prompt sets and badges, and which signals to track—quality, schedule reliability, client feedback—so learning ties back to delivery. The result is a group that improves together, on purpose, without adding administrative drag.",
+    "subtopics": [
+      "defining purpose and 30–60 day outcomes",
+      "creating groups, inviting members, and roles",
+      "setting cadence and planning micro-sprints",
+      "assigning units with tags and due windows",
+      "using dashboards: \"my tagged units\", \"units tagged by my leader\", \"completed leader-assigned units\"",
+      "running check-ins, debriefs, and feedback loops",
+      "tracking KPIs (quality, schedule, client impact)",
+      "recognition and motivation (prompt sets, badges)"
+    ]
+  },
+  {
+    "id": 135,
+    "title": "Designing a Proposal Process",
+    "shortSummary": "Winning reliably is a system. Map a right-sized path from capture to submission, lock story before drafting, and thread compliance, pricing, and reviews to avoid last-minute thrash.",
+    "longSummary": "This topic helps you build a calm, repeatable proposal process that fits your firm. You’ll define go/no-go criteria and decision records, map phases from capture through submit, and assign clear roles (capture lead, writers, reviewers, production). We’ll lock the story with storyboards before heavy drafting, keep a living compliance matrix from day one, and thread pricing, assumptions, and exceptions through the same cadence so value is explicit—not a late surprise. You’ll design review gates (Blue for strategy, Pink for storyboards, Red for final draft; add Gold when fee/scope raises exposure) and add quality loops for proofing, graphics, and citations. We’ll cover timelines with buffers, version control and file hygiene, and a production plan with checklists and a submission rehearsal. The outcome is a right-sized process that reduces risk, preserves voice, and makes your differentiators unmistakable to evaluators.",
+    "subtopics": [
+      "go/no-go criteria and decision records",
+      "phase map and critical path scheduling",
+      "storyboarding before drafting",
+      "living compliance matrix and forms tracking",
+      "pricing, assumptions, and exceptions thread",
+      "color review cadence (Blue, Pink, Red; Gold as needed)",
+      "quality loops: proofing, graphics, citations",
+      "production plan, checklists, and submission rehearsal"
+    ]
+  },
+  {
+    "id": 136,
+    "title": "Conducting Color Reviews of Proposals",
+    "shortSummary": "Run Blue, Pink, and Red reviews—add Gold when risk warrants. Use impartial reviewers, tight agendas, and clear outputs to raise scores, sharpen strategy, and control commercial exposure.",
+    "longSummary": "Color reviews turn expert perspective into disciplined improvement. You’ll learn how Blue validates win themes with impartial reviewers who weren’t in the strategy session, Pink stress-tests storyboards before drafting, and Red scores the complete draft against the client’s evaluation criteria to prioritize high-impact edits. You’ll also learn when to run a Gold review—an executive check for risk, terms, and price when fee or scope elevates exposure. We’ll standardize reviewer packages (RFP, draft, context) sent 24+ hours in advance, pick a collaborative medium (large printouts or an online board), and prime the proposal team to receive critique without defensiveness. You’ll practice 45–60 minute facilitation, action logging with owners and deadlines, and closing the loop so reviewers see their input reflected. We’ll integrate price checks within earlier reviews and keep Gold focused on decision rights. Result: stronger strategy, cleaner narrative, compliant final, controlled risk.",
+    "subtopics": [
+      "reviewer selection and impartiality",
+      "pre-reading and reviewer packages",
+      "Blue Team: validating win themes and differentiators",
+      "Pink Team: testing storyboards, flow, and evidence",
+      "Red Team: scoring against RFP evaluation criteria",
+      "Gold Team: executive risk/terms/price decisions",
+      "facilitation, timeboxing, and action/decision logs",
+      "closing the loop: implementation and reviewer follow-up"
+    ]
+  }
+
+
+
+    ]
+  }

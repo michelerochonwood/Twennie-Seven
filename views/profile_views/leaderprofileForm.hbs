@@ -1,0 +1,144 @@
+{{#*inline "title"}}Leader Profile Form | Twennie{{/inline}}
+<div class="profile-form-container">
+
+  <h2 class="profile-form-title">edit leader profile</h2>
+
+  <form 
+    action="/profile/leader/{{profile.leaderId}}/update" 
+    method="POST" 
+    enctype="multipart/form-data"
+  >
+    <!-- CSRF Token -->
+    {{#if csrfToken}}
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    {{/if}}
+
+    <!-- Current Profile Image -->
+    {{#if profile.profileImage}}
+      <div class="form-field">
+        <label>Current Profile Image</label>
+        <img 
+          src="{{profile.profileImage}}" 
+          alt="Profile Image" 
+          style="width: 120px; height: auto; border-radius: 8px; margin-top: 8px;"
+        >
+      </div>
+    {{/if}}
+
+    <!-- Upload New Profile Image (sent to Cloudinary) -->
+    <div class="form-field">
+      <label for="profileImage">Upload New Profile Image</label>
+      <input 
+        type="file" 
+        id="profileImage" 
+        name="profileImage" 
+        accept="image/*"
+      >
+      <p class="form-hint">Image will be uploaded to Cloudinary when you save.</p>
+    </div>
+
+    <!-- Name -->
+    <div class="form-field">
+      <label for="name">Name</label>
+      <input 
+        type="text" 
+        id="name" 
+        name="name" 
+        value="{{profile.name}}" 
+        required
+      >
+    </div>
+
+    <!-- Professional Title -->
+    <div class="form-field">
+      <label for="professionalTitle">Professional Title</label>
+      <input 
+        type="text" 
+        id="professionalTitle" 
+        name="professionalTitle" 
+        value="{{profile.professionalTitle}}" 
+        required
+      >
+    </div>
+
+    <!-- Group Name -->
+    <div class="form-field">
+      <label for="groupName">Group Name</label>
+      <input 
+        type="text" 
+        id="groupName" 
+        name="groupName" 
+        value="{{profile.groupName}}" 
+        required
+      >
+    </div>
+
+    <!-- Biography -->
+    <div class="form-field">
+      <label for="biography">Biography</label>
+      <textarea 
+        id="biography" 
+        name="biography"
+      >{{profile.biography}}</textarea>
+    </div>
+
+    <!-- Learning Goals -->
+    <div class="form-field">
+      <label for="goals">Learning Goals</label>
+      <textarea 
+        id="goals" 
+        name="goals"
+      >{{profile.goals}}</textarea>
+    </div>
+
+    <!-- Group Leadership Goals -->
+    <div class="form-field">
+      <label for="groupLeadershipGoals">Group Leadership Goals</label>
+      <textarea 
+        id="groupLeadershipGoals" 
+        name="groupLeadershipGoals"
+      >{{profile.groupLeadershipGoals}}</textarea>
+    </div>
+
+    <!-- Topics -->
+    <div class="form-field">
+      <label for="topic1">Topic 1</label>
+      <select id="topic1" name="topics[topic1]">
+        {{#each allTopics}}
+          <option value="{{this}}" {{#if (eq this ../profile.topics.topic1)}}selected{{/if}}>{{this}}</option>
+        {{/each}}
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="topic2">Topic 2</label>
+      <select id="topic2" name="topics[topic2]">
+        {{#each allTopics}}
+          <option value="{{this}}" {{#if (eq this ../profile.topics.topic2)}}selected{{/if}}>{{this}}</option>
+        {{/each}}
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="topic3">Topic 3</label>
+      <select id="topic3" name="topics[topic3]">
+        {{#each allTopics}}
+          <option value="{{this}}" {{#if (eq this ../profile.topics.topic3)}}selected{{/if}}>{{this}}</option>
+        {{/each}}
+      </select>
+    </div>
+
+    <!-- Submit and Cancel -->
+    <div class="form-buttons">
+      <button type="submit" class="form-button submit-button">save changes</button>
+      <a href="/profile/leader/{{profile.leaderId}}" class="form-button save-button">cancel</a>
+    </div>
+
+  </form>
+
+</div>
+
+
+
+
+

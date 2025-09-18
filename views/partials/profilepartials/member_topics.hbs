@@ -1,0 +1,54 @@
+{{!-- PROFILE VERSION: Topics shown in the member profile --}}
+<div class="member-profile-topics-container">
+    <h3 class="member-profile-topics-title">my topics</h3>
+<p>These topics provide some focus for your learning in key areas of interest. Having a top three topics streamlines navigation through the library.</p>
+    <div class="member-profile-topics-grid">
+        {{#if member.selectedTopics.topic1.title}}
+            <div class="member-profile-topic-card" data-topic-id="{{member.selectedTopics.topic1.slug}}">
+                <div class="member-profile-topic-title">{{member.selectedTopics.topic1.title}}</div>
+                <ul class="member-profile-topic-subtopics">
+                    {{#each member.selectedTopics.topic1.subtopics}}
+                        <li>{{this}}</li>
+                    {{else}}
+                        <li>No subtopics available</li>
+                    {{/each}}
+                </ul>
+                <a href="/membertopics/{{member.selectedTopics.topic2.viewName}}" class="member-profile-topic-review">review this topic</a>
+            </div>
+        {{/if}}
+
+        {{#if member.selectedTopics.topic2}}
+            <div class="member-profile-topic-card" data-topic-id="{{member.selectedTopics.topic2.slug}}">
+                <div class="member-profile-topic-title">{{member.selectedTopics.topic2.title}}</div>
+                <ul class="member-profile-topic-subtopics">
+                    {{#each member.selectedTopics.topic2.subtopics}}
+                        <li>{{this}}</li>
+                    {{else}}
+                        <li>No subtopics available</li>
+                    {{/each}}
+                </ul>
+                <a href="/membertopics/{{member.selectedTopics.topic1.viewName}}" class="member-profile-topic-review">review this topic</a>
+            </div>
+        {{/if}}
+
+        {{#if member.selectedTopics.topic3}}
+            <div class="member-profile-topic-card" data-topic-id="{{member.selectedTopics.topic3.slug}}">
+                <div class="member-profile-topic-title">{{member.selectedTopics.topic3.title}}</div>
+                <ul class="member-profile-topic-subtopics">
+                    {{#each member.selectedTopics.topic3.subtopics}}
+                        <li>{{this}}</li>
+                    {{else}}
+                        <li>No subtopics available</li>
+                    {{/each}}
+                </ul>
+                <a href="/membertopics/{{member.selectedTopics.topic3.viewName}}" class="member-profile-topic-review">review this topic</a>
+            </div>
+        {{/if}}
+    </div>
+</div>
+
+
+
+
+
+

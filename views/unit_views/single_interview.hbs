@@ -1,0 +1,214 @@
+<div class="single_interview-container">
+  <!-- Main Section -->
+  <div class="single_interview-main">
+    <h1 class="single_interview-main-title">{{interview_title}}</h1>
+    <p class="single_interview-short-summary" style="color:#4e50a2;"><strong>{{short_summary}}</strong></p>
+    <p class="single_interview-long-summary" style="margin-bottom: 20px;">{{full_summary}}</p>
+
+    {{!-- Optional Estimated Time --}}
+    {{#if time_required}}
+      <div class="single_interview-time-display">
+        <p class="single_interview-short-summary">
+          <strong>Estimated Time:</strong> {{time_required}}
+        </p>
+      </div>
+    {{/if}}
+
+    <!-- Download Section (gated) -->
+    {{#if isAuthorizedToViewFullContent}}
+      <div class="single_interview-download">
+        <div class="single_interview-download-icon">
+          <!-- SVG icon omitted -->
+        </div>
+
+        {{#if document_uploads}}
+          <div class="single_interview-documents">
+            {{#each document_uploads}}
+              {{#with (split this "/") as |parts|}}
+                <a href="{{../this}}" target="_blank" rel="noopener" class="single_interview-download-btn" download>
+                  Download {{decode (last parts)}}
+                </a>
+              {{/with}}
+            {{/each}}
+          </div>
+        {{/if}}
+      </div>
+    {{/if}}
+
+    <!-- Leader Assignment Form -->
+    {{#if isLeader}}
+      <div class="assign-tag-form white-container">
+        <h4 class="assign-tag-title">Assign this interview to yourself or your group</h4>
+
+        <form action="/tags/create" method="POST">
+          <input type="hidden" name="_csrf" value="{{csrfToken}}">
+          <input type="hidden" name="itemId" value="{{_id}}">
+          <input type="hidden" name="itemType" value="interview">
+
+          <div class="form-field">
+            <label for="tagName">Give the tag a name</label>
+            <input type="text" id="tagName" name="tagName" required>
+          </div>
+
+          <fieldset class="assign-tag-members">
+            <legend class="assign-tag-legend">Select recipients and enter instructions:</legend>
+
+            <!-- Leader self-assignment -->
+            <div class="assign-tag-member-block">
+              <label class="assign-tag-member-label">
+                <input
+                  type="checkbox"
+                  name="assignedTo[{{leaderId}}][member]"
+                  value="{{leaderId}}"
+                  onchange="toggleInstructionField(this)">
+                {{leaderName}} (you)
+              </label>
+              <textarea
+                class="assign-tag-instructions"
+                name="assignedTo[{{leaderId}}][instructions]"
+                placeholder="Instructions for yourself"
+                style="display:none;"></textarea>
+            </div>
+
+            <hr class="assign-tag-divider">
+
+            <!-- Group members -->
+            {{#each groupMembers}}
+              <div class="assign-tag-member-block">
+                <label class="assign-tag-member-label">
+                  <input
+                    type="checkbox"
+                    name="assignedTo[{{_id}}][member]"
+                    value="{{_id}}"
+                    onchange="toggleInstructionField(this)">
+                  {{name}}
+                </label>
+                <textarea
+                  class="assign-tag-instructions"
+                  name="assignedTo[{{_id}}][instructions]"
+                  placeholder="Instructions for {{name}}"
+                  style="display:none;"></textarea>
+              </div>
+            {{/each}}
+          </fieldset>
+
+          <button type="submit" class="form-button submit-button">assign interview</button>
+        </form>
+      </div>
+    {{/if}}
+
+    <!-- Quick Tag (Member/Group Member) -->
+    {{#if isGroupMemberOrMember}}
+      <div class="single_unit-tag-container" style="margin-top:12px;">
+        <form action="/tags/create" method="POST" class="inline" id="interviewTagForm-{{_id}}">
+          <input type="hidden" name="_csrf" value="{{csrfToken}}">
+          <input type="hidden" name="itemId" value="{{_id}}">
+          <input type="hidden" name="itemType" value="interview">
+          <input type="hidden" name="tagName" value="Read Later">
+          <button type="button"
+                  class="tag-this-unit-link"
+                  onclick="promptAndSubmitTag('interviewTagForm-{{_id}}')"
+                  style="background:none;border:none;padding:0;cursor:pointer;">
+            tag this unit
+            <svg class="tag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 39.48 36.66">
+              <path class="cls-1" d="M38.77,21.12L16.05.56C15.65.19,15.13,0,14.59,0L2.12.16c-1.18.01-2.12.97-2.12,2.15v11.2c0,.63.28,1.24.77,1.64l24.95,21c.9.76,2.24.65,3.01-.24l10.23-11.8c.77-.88.69-2.22-.18-3ZM6.28,8.87c-1.57,0-2.84-1.27-2.84-2.84s1.27-2.84,2.84-2.84,2.84,1.27,2.84,2.84-1.27,2.84-2.84,2.84Z"/>
+            </svg>
+          </button>
+        </form>
+      </div>
+    {{/if}}
+
+    <!-- Notes Section -->
+    {{#if isGroupMemberOrLeader}}
+      <div class="single_interview-notes-container">
+        <h3 class="single_interview-notes-title">record notes</h3>
+        <p class="single_interview-notes-instructions">
+          Record notes on this interview. Consider how it relates to your work and how it might change your approach. These notes will be part of your Twennie learning record.
+        </p>
+
+        <form action="/notes/submit" method="POST" class="single_interview-notes-form">
+          <input type="hidden" name="_csrf" value="{{csrfToken}}">
+          <input type="hidden" name="unitId" value="{{_id}}">
+          <input type="hidden" name="unitType" value="interview">
+          <input type="hidden" name="main_topic" value="{{main_topic}}">
+          <input type="hidden" name="secondary_topic" value="{{sub_topic}}">
+
+          <textarea name="note_content" class="single_interview-notes-textarea" rows="5" maxlength="1000" placeholder="Write your notes here..."></textarea>
+
+          <button type="submit" class="single_interview-notes-submit">submit notes</button>
+        </form>
+      </div>
+    {{/if}}
+
+    <!-- Access notice (when gated) -->
+    {{#unless isAuthorizedToViewFullContent}}
+      <div class="interview-access-denied-message">
+        <p style="text-align:center; color:#4e50a2; font-weight:600;">
+          You do not have access to the full content of this interview.
+        </p>
+        <p style="text-align:center;">
+          Please upgrade your membership or join a Twennie group to view it.
+        </p>
+      </div>
+    {{/unless}}
+  </div> <!-- Closing .single_interview-main -->
+
+  <!-- Sidebar -->
+  <aside class="single_interview-sidebar">
+    <div class="single_interview-duration-image-container" style="text-align:center; margin-bottom:10px; width:100px; height:auto; display:inline-block">
+      <img src="https://www.twennie.com/images/30mins.svg" alt="Estimated Time: 30 Minutes" class="single_interview-duration-image">
+    </div>
+
+    <p class="single_interview-title-sidebar">{{interview_title}}</p>
+
+    <div class="single_interview-author">
+      <img src="{{creator.image}}" alt="Creator Image" class="single_interview-author-image">
+      <p class="single_interview-author-name">Created by: {{creator.name}}</p>
+    </div>
+
+    <div class="single_interview-details">
+      <p class="single_interview-unit-type">Interview</p>
+      <p class="single_interview-main-topic">Main Topic: {{main_topic}}</p>
+      <p class="single_interview-subtitle">Sub Topic(s): {{sub_topic}}</p>
+      <p class="single_interview-secondary-topics">
+        {{#each secondary_topics}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}
+      </p>
+
+      {{#if isOwner}}
+        <a href="/unitform/edit_interview/{{_id}}" class="single_interview-edit-btn">edit this unit</a>
+      {{/if}}
+    </div>
+  </aside>
+</div>
+
+<script>
+  function toggleInstructionField(checkbox) {
+    const memberId = checkbox.value;
+    const textarea = document.querySelector(`textarea[name="assignedTo[${memberId}][instructions]"]`);
+    if (textarea) {
+      textarea.style.display = checkbox.checked ? 'block' : 'none';
+    }
+  }
+
+  // Prompt for tag name and submit the form as a normal POST
+  function promptAndSubmitTag(formId) {
+    const form = document.getElementById(formId);
+    if (!form) return;
+    const input = form.querySelector('input[name="tagName"]');
+    const suggested = (input?.value || 'Read Later').trim();
+    const entered = window.prompt('Name this tag', suggested);
+    if (!entered) return;
+    input.value = entered.trim();
+    if (!input.value) return;
+    const btn = form.querySelector('.tag-this-unit-link');
+    if (btn) btn.disabled = true;
+    form.submit(); // controller redirects back with ?tag=ok
+  }
+</script>
+
+
+
+
+
+
+

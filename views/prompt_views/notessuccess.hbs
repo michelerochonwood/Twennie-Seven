@@ -1,0 +1,18 @@
+{{#*inline "title"}}Success! | Twennie{{/inline}}
+<div class="success-container">
+    <h1 class="success-title">Your notes were successfully posted!</h1>
+    <p class="success-message">
+        You have <strong>{{remainingPrompts}}</strong> prompts left in this prompt set.
+    </p>
+    <p class="success-message">
+        The target date for completion is <strong>{{targetDate}}</strong>, so you have <strong>{{timeRemaining}}</strong> to finish.
+    </p>
+<p class="success-message">
+  Once you complete the prompt set, you will receive the <strong>{{badgeName}}</strong> badge.
+</p>
+
+<div class="success-badge-display">
+  <img src="{{badgeImage}}" alt="{{badgeName}} badge" style="height: 100px; margin-top: 1rem;">
+</div>
+    <a href="{{dashboard}}" class="success-button">return to my dashboard</a>
+</div>

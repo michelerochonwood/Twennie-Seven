@@ -1,0 +1,127 @@
+{{#*inline "title"}}Create a Template | Twennie{{/inline}}
+{{> mainpartials/templateinstructions_partial}}
+
+
+<!-- near the top of every form_* file -->
+<input type="hidden" name="fromUpcomingId" value="{{fromUpcomingId}}">
+<div class="contribute-wave-divider">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 160">
+    <path fill="#939598" fill-opacity="1" d="M0,64L80,58.7C160,53,320,43,480,58.7C640,75,800,117,960,122.7C1120,128,1280,96,1360,80L1440,64L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z"></path>
+  </svg>
+</div>
+
+<div class="form-template-background">
+  <div class="form-template-container">
+    <form id="template-form" action="/unitform/submit_template" method="POST" enctype="multipart/form-data">
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+      <input type="hidden" name="_id" value="{{data._id}}">
+
+      <div class="form-field">
+        <label for="template-title">Template Title</label>
+        <input type="text" id="template-title" name="template_title" value="{{data.template_title}}" required>
+      </div>
+
+<!-- Main Topic -->
+<div class="form-field">
+  <label for="main-topic">Main Topic</label>
+  <select id="main-topic" name="main_topic" required>
+    <option value="">Please select a main topic</option>
+    {{#each mainTopics}}
+      <option value="{{this}}" {{#ifEquals this ../data.main_topic}}selected{{/ifEquals}}>{{this}}</option>
+    {{/each}}
+  </select>
+</div>
+
+<!-- Secondary Topic -->
+<div class="form-field">
+  <label for="secondary-topics">Secondary Topic (Optional)</label>
+  <select id="secondary-topics" name="secondary_topics">
+    <option value="">None</option>
+    {{#each mainTopics}}
+      <option value="{{this}}" {{#ifIncludes ../data.secondary_topics this}}selected{{/ifIncludes}}>{{this}}</option>
+    {{/each}}
+  </select>
+</div>
+
+      <div class="form-field">
+        <label for="sub-topic">Sub Topic (Optional)</label>
+        <input type="text" id="sub-topic" name="sub_topic" value="{{data.sub_topic}}">
+      </div>
+
+      {{#if data.documentUploads}}
+        <div class="uploaded-files">
+          {{#each data.documentUploads}}
+            <p><a href="{{this.url}}" target="_blank">{{this.filename}}</a></p>
+          {{/each}}
+        </div>
+      {{/if}}
+
+      <div class="form-field">
+        <label for="template_upload">Upload Template File (PDF, Word, Excel, PowerPoint)</label>
+        <input type="file" id="template_upload" name="document_uploads" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx">
+        <small>You may upload one file. Combine related files into a single PDF before submitting.</small>
+      </div>
+
+      <div class="form-field">
+        <div class="white-container">
+          <div class="toggle-group">
+            <label><input type="checkbox" name="clarify_topic" {{#if data.clarify_topic}}checked{{/if}}> Clarifies topic?</label>
+            <label><input type="checkbox" name="produce_deliverables" {{#if data.produce_deliverables}}checked{{/if}}> Produces deliverables?</label>
+            <label><input type="checkbox" name="new_ideas" {{#if data.new_ideas}}checked{{/if}}> Encourages creativity?</label>
+            <label><input type="checkbox" name="engaging" {{#if data.engaging}}checked{{/if}}> Insightful and engaging?</label>
+            <label><input type="checkbox" name="file_format" {{#if data.file_format}}checked{{/if}}> File format appropriate?</label>
+            <label><input type="checkbox" name="permission" {{#if data.permission}}checked{{/if}} required> Consent for promotional use?</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label for="short-summary">Short Summary (50 words)</label>
+        <textarea id="short-summary" name="short_summary" maxlength="300" required>{{data.short_summary}}</textarea>
+      </div>
+
+
+      <!-- Full Summary -->
+      <div class="form-field">
+        <label for="full-summary">
+          Full Summary <span style="font-weight: normal; font-size: 0.85em;">(Optional, 150 words)</span>
+        </label>
+        <p class="form-help-text" style="font-size: 0.85rem; color: #555; margin-top: 4px;">
+          The full summary gives further context about your template and helps other members decide if it fits their needs. Including both summaries is recommended.
+        </p>
+        <textarea id="full-summary" name="full_summary" maxlength="600">{{data.full_summary}}</textarea>
+      </div>
+
+      <div class="form-field">
+        <label>Who can access this template?</label>
+        <div class="visibility-toggle-row">
+          <label class="visibility-option">
+            <input type="radio" name="visibility" value="team_only" {{#ifEquals data.visibility "team_only"}}checked{{/ifEquals}} required>
+            Share with my team only
+          </label>
+          <label class="visibility-option">
+            <input type="radio" name="visibility" value="organization_only" {{#ifEquals data.visibility "organization_only"}}checked{{/ifEquals}} required>
+            Share with my organization only
+          </label>
+          <label class="visibility-option">
+            <input type="radio" name="visibility" value="all_members" {{#ifEquals data.visibility "all_members"}}checked{{/ifEquals}} required>
+            Share with all Twennie members
+          </label>
+        </div>
+      </div>
+
+      <div class="form-buttons">
+        {{#if data._id}}
+          <button type="submit" name="submit" value="edit" class="form-button submit-button">save edited template</button>
+        {{else}}
+          <button type="submit" name="submit" value="submit" class="form-button submit-button">submit for approval</button>
+        {{/if}}
+      </div>
+    </form>
+  </div>
+</div>
+
+{{> mainpartials/footer}}
+
+
+

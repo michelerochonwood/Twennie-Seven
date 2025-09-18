@@ -1,0 +1,139 @@
+{{#*inline "title"}}Upgrade Membership Form | Twennie{{/inline}}
+
+<form id="convert-leader-form" action="/member/convert-to-leader" method="POST" class="membership-form">
+  {{#if csrfToken}}
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+  {{/if}}
+
+  <div class="convert-leader-form-container">
+    <h1 class="form-title">convert to group leader</h1>
+    <p class="form-instructions">You're already a Twennie member. This form collects the additional information needed to convert your account to a group leader profile.</p>
+
+    <!-- Group Name -->
+    <div class="form-field">
+      <label for="group-name">Group Name</label>
+      <input type="text" id="group-name" name="groupName" placeholder="Your team name — fun and memorable!" required>
+    </div>
+
+    <!-- Leader Display Name -->
+    <div class="form-field">
+      <label for="group-leader-name">Group Leader Name</label>
+      <input type="text" id="group-leader-name" name="groupLeaderName" placeholder="The name your team knows you by." required>
+    </div>
+
+    <!-- Organization -->
+    <div class="form-field">
+      <label for="organization">Organization</label>
+      <input type="text" id="organization" name="organization" placeholder="Your company or organization name" required>
+    </div>
+
+    <!-- Industry -->
+    <div class="form-field">
+      <label for="industry">Industry</label>
+      <select id="industry" name="industry" required>
+        <option value="">Select your industry</option>
+        <option value="Engineering">Engineering</option>
+        <option value="Architecture">Architecture</option>
+        <option value="Project Management">Project Management</option>
+        <option value="Information Technology(IT)">Information Technology (IT)</option>
+        <option value="Web Design">Web Design</option>
+        <option value="Construction">Construction</option>
+        <option value="Technology">Technology</option>
+        <option value="AI and Robotics">AI and Robotics</option>
+        <option value="Social Media/Digital Advertising">Social Media / Digital Advertising</option>
+        <option value="Community Planning/Landscape Architecture">Community Planning / Landscape Architecture</option>
+        <option value="Land Development">Land Development</option>
+        <option value="Telecommunications">Telecommunications</option>
+        <option value="E-Commerce">E-Commerce</option>
+        <option value="Cybersecurity">Cybersecurity</option>
+        <option value="Fintech">Fintech</option>
+        <option value="Edtech">Edtech</option>
+        <option value="Energy and Utilities">Energy and Utilities</option>
+        <option value="Manufacturing">Manufacturing</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+
+    <!-- Group Size -->
+    <div class="form-field">
+      <label for="group-size">Group Size</label>
+      <select id="group-size" name="groupSize" required>
+        <option value="">Select group size</option>
+        <option value="2">2 members</option>
+        <option value="3">3 members</option>
+        <option value="4">4 members</option>
+        <option value="5">5 members</option>
+        <option value="6">6 members</option>
+        <option value="7">7 members</option>
+        <option value="8">8 members</option>
+        <option value="9">9 members</option>
+        <option value="10">10 members</option>
+      </select>
+    </div>
+
+    <!-- Registration Code -->
+    <div class="form-field">
+      <label for="registration-code">Create a Registration Code</label>
+      <input type="text" id="registration-code" name="registration_code" placeholder="e.g. BuildTeam2024" required>
+      <small class="form-instructions">
+        Your members will use this code to join your group.<br>
+        Must be at least 8 characters. Letters and numbers only. No special characters.
+      </small>
+    </div>
+
+    <!-- Topics -->
+    <div class="form-field-topic">
+      <label for="topic1">Team Topic 1</label>
+      <select id="topic1" name="topic1" required>
+        <option value="">Select a topic</option>
+        {{#each topicList}}
+          <option value="{{this}}">{{this}}</option>
+        {{/each}}
+      </select>
+    </div>
+
+    <div class="form-field-topic">
+      <label for="topic2">Team Topic 2</label>
+      <select id="topic2" name="topic2" required>
+        <option value="">Select a topic</option>
+        {{#each topicList}}
+          <option value="{{this}}">{{this}}</option>
+        {{/each}}
+      </select>
+    </div>
+
+    <div class="form-field-topic">
+      <label for="topic3">Team Topic 3</label>
+      <select id="topic3" name="topic3" required>
+        <option value="">Select a topic</option>
+        {{#each topicList}}
+          <option value="{{this}}">{{this}}</option>
+        {{/each}}
+      </select>
+    </div>
+
+    <h4>You can add more topics later from your leader dashboard.</h4>
+
+    <!-- Agreement -->
+    <div class="form-toggle">
+      <label for="group-agreement-toggle" class="form-toggle-label">
+        <input type="checkbox" id="group-agreement-toggle" name="group_agreement" value="true" required>
+        I agree to the Twennie group leadership responsibilities.
+      </label>
+    </div>
+
+    <!-- Payment Reminder -->
+    <div class="form-field" id="group-payment-placeholder">
+      <p><strong>Payment Reminder:</strong> This form initiates your group leadership upgrade. You'll be redirected to the payment step next. Your payment will cover all group members.</p>
+      <p>If your organization needs alternate billing, contact <a href="mailto:info@twennie.com">Twennie</a> before submitting.</p>
+    </div>
+
+    <input type="hidden" name="accessLevel" value="paid_leader">
+    <input type="hidden" name="redirectTarget" value="payment">
+
+    <!-- Submit Button -->
+    <button type="submit" class="make-member-button">
+      upgrade to group leader
+    </button>
+  </div>
+</form>

@@ -1,0 +1,143 @@
+{{#*inline "title"}}Group Member Dashboard | Twennie{{/inline}}
+
+<div class="dashboard-grid">
+  <!-- Sidebar (Left) -->
+  <div class="dashboard-sidebar">
+    {{> dashboardpartials/groupmember_sidebar }}
+  </div>
+
+  <!-- Main Content (Right) -->
+  <div class="dashboard-main">
+
+    <!-- Tab Navigation -->
+    <div class="dashboard-tabs-container">
+      <button class="dashboard-tab active" data-tab="membership">
+        <span class="tab-title">membership overview</span>
+        <div class="tab-arrow"></div>
+      </button>
+
+      <button class="dashboard-tab" data-tab="topics" data-count="{{gmCounts.topics}}">
+        <span class="tab-title">my favorite topics</span>
+        {{#if gmBadges.topics}}<span class="tab-dot"></span>{{/if}}
+        <div class="tab-arrow"></div>
+      </button>
+
+      <button class="dashboard-tab" data-tab="group" data-count="{{gmCounts.group}}">
+        <span class="tab-title">my group members</span>
+        {{#if gmBadges.group}}<span class="tab-dot"></span>{{/if}}
+        <div class="tab-arrow"></div>
+      </button>
+
+      <button class="dashboard-tab" data-tab="prompts" data-count="{{gmCounts.prompts}}">
+        <span class="tab-title">registered prompt sets</span>
+        {{#if gmBadges.prompts}}<span class="tab-dot"></span>{{/if}}
+        <div class="tab-arrow"></div>
+      </button>
+
+      <button class="dashboard-tab" data-tab="progress" data-count="{{gmCounts.progress}}">
+        <span class="tab-title">prompt set progress</span>
+        {{#if gmBadges.progress}}<span class="tab-dot"></span>{{/if}}
+        <div class="tab-arrow"></div>
+      </button>
+
+      <button class="dashboard-tab" data-tab="contribute">
+        <span class="tab-title">contribute to the library</span>
+        <div class="tab-arrow"></div>
+      </button>
+
+      <button class="dashboard-tab" data-tab="library" data-count="{{gmCounts.library}}">
+        <span class="tab-title">my library units</span>
+        {{#if gmBadges.library}}<span class="tab-dot"></span>{{/if}}
+        <div class="tab-arrow"></div>
+      </button>
+
+      <button class="dashboard-tab" data-tab="tagged" data-count="{{gmCounts.tagged}}">
+        <span class="tab-title">my tagged units</span>
+        {{#if gmBadges.tagged}}<span class="tab-dot"></span>{{/if}}
+        <div class="tab-arrow"></div>
+      </button>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="dashboard-tab-content active" id="membership">
+      {{> dashboardpartials/groupmember_membership }}
+    </div>
+
+    <div class="dashboard-tab-content" id="topics">
+      {{> dashboardpartials/groupmember_topics }}
+    </div>
+
+    <div class="dashboard-tab-content" id="group">
+      {{> dashboardpartials/groupmember_group }}
+    </div>
+
+    <div class="dashboard-tab-content" id="prompts">
+      {{#each registeredPromptSets}}
+        <section class="groupmember-prompt-section">
+          {{> dashboardpartials/groupmember_prompt promptSet=this }}
+        </section>
+      {{/each}}
+    </div>
+
+    <div class="dashboard-tab-content" id="progress">
+      {{> dashboardpartials/groupmember_progress }}
+    </div>
+
+    <div class="dashboard-tab-content" id="contribute">
+      {{> dashboardpartials/groupmember_contribution }}
+    </div>
+
+    <div class="dashboard-tab-content" id="library">
+      {{> dashboardpartials/groupmember_mylibraryunits }}
+    </div>
+
+    <div class="dashboard-tab-content" id="tagged">
+      {{> dashboardpartials/groupmember_tagged_units }}
+    </div>
+
+  </div>
+</div>
+
+<script>
+  async function markSeenGroupMember(tab, count) {
+    try {
+      await fetch('/dashboard/groupmember/mark-seen', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-csrf-token': '{{csrfToken}}'
+        },
+        body: JSON.stringify({ tab, count: Number(count || 0) })
+      });
+    } catch (e) { /* no-op */ }
+  }
+
+  // When a tab is clicked (or activated), update seen
+  document.querySelectorAll('.dashboard-tab[data-tab]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tab = btn.dataset.tab;
+      const count = btn.dataset.count || 0;
+      // Only track tabs that can have "new"
+      if (['group','topics','prompts','progress','library','tagged'].includes(tab)) {
+        markSeenGroupMember(tab, count);
+        // Optimistic UI: hide the dot immediately
+        const dot = btn.querySelector('.tab-dot');
+        if (dot) dot.style.display = 'none';
+      }
+    });
+  });
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

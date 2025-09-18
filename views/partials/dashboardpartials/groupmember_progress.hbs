@@ -1,0 +1,58 @@
+<div class="groupmember-progress-container" style="overflow: hidden; padding-bottom: 2rem;">
+
+  {{#if currentPromptSets.length}}
+    <h2 class="groupmember-progress-current-title">current prompt sets</h2>
+    <div class="groupmember-progress-current">
+      {{#each currentPromptSets}}
+        <div class="groupmember-progress-grid">
+          <h2 class="groupmember-progress-title">{{this.promptSetTitle}}</h2>
+
+          <!-- Progress SVG -->
+          <img 
+              src="/promptprogress/promptprogress{{increment @index}}-{{this.promptIndex}}.svg"
+              alt="Progress Pie Chart" 
+              class="groupmember-progress-svg"
+              data-progress="{{this.promptIndex}}"
+          >
+
+          <p class="groupmember-progress-target">
+            you have completed {{this.promptIndex}} prompts in this set
+          </p>
+        </div>
+      {{/each}}
+    </div>
+  {{/if}}
+
+  <div class="groupmember-progress-completed">
+    <h2 class="groupmember-progress-completed-title">completed prompt sets</h2>
+
+    {{#if completedPromptSets.length}}
+      <div class="groupmember-progress-completed-grid" style="overflow: hidden;">
+        {{#each completedPromptSets}}
+          <!-- card content -->
+        {{/each}}
+      </div>
+    {{else}}
+      <p class="no-data" style="text-align: center; margin-top: 1rem;">
+        You haven’t completed any prompt sets yet.
+      </p>
+    {{/if}}
+
+    <!-- Button always shown -->
+    <div class="member-progress-report-button-container">
+      <a href="/reports/groupmypromptsets" class="member-progress-report-button">
+        view my completed prompts
+      </a>
+    </div>
+  </div>
+
+  <!-- Layout reset to protect later tabs -->
+  <div style="height: 1px; clear: both;"></div>
+
+</div>
+
+
+
+
+
+    
