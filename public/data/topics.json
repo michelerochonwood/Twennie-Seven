@@ -526,7 +526,7 @@
 },
 {
   "id": 206,
-  "title": "Project Management Analytics",
+  "title": "Analytics in Project Management",
   "shortSummary": "Turn data into insight. Use dashboards, predictive tools, and balanced judgment to move from reactive to proactive delivery.",
   "longSummary": "Modern project management is increasingly data-driven. This topic equips you to translate raw numbers into decisions that improve outcomes. You’ll learn how to build dashboards that highlight trends, apply predictive analytics to identify risks early, and combine data with human judgment for balanced decisions. We’ll cover practical metrics like cost, schedule, earned value, and forecasting, along with tools that visualize project health. With these skills, project managers move beyond reporting—they shape proactive strategies and deliver stronger results.",
   "subtopics": [
@@ -542,7 +542,7 @@
 },
 {
   "id": 207,
-  "title": "Using Lean Principles",
+  "title": "Using Lean in Project Management",
   "shortSummary": "Apply Lean to projects: eliminate waste, improve flow, and embed continuous improvement in delivery practices.",
   "longSummary": "Lean principles aren’t just for manufacturing—they provide powerful tools for project management. This topic introduces Lean practices that eliminate waste, improve process flow, and focus on client value. You’ll explore A3 problem-solving, value stream mapping, pull systems, and feedback loops tailored for technical services. We’ll also look at how to embed continuous improvement into project culture so teams evolve with each engagement. The payoff: projects that run smoother, waste less, and deliver more value in less time.",
   "subtopics": [
@@ -558,18 +558,18 @@
 },
 {
   "id": 208,
-  "title": "Portfolio Management",
-  "shortSummary": "Look beyond individual projects. Balance risk, capacity, and priorities across a portfolio to maximize strategic value.",
-  "longSummary": "Portfolio management ensures that projects align with organizational goals and deliver maximum impact. In this topic, you’ll learn how to see the bigger picture—balancing competing priorities, allocating resources effectively, and sequencing work for optimal flow. We’ll cover portfolio selection frameworks, program-level governance, and techniques for monitoring benefits realization. The focus is on making tradeoffs across multiple projects to deliver value at scale. With these skills, leaders move from project oversight to enterprise-level impact.",
+  "title": "Portfolio and Program Management",
+  "shortSummary": "Look beyond individual projects. Balance risk, capacity, and priorities across portfolios while coordinating related projects to deliver benefits at scale.",
+  "longSummary": "Portfolio and program management operate at different but complementary levels. Portfolio management ensures the organization invests in the right mix of projects and programs aligned to strategy, balancing risk, capacity, and timing. Program management coordinates interdependent projects to deliver a larger, integrated outcome and realize benefits—not just complete tasks. In this topic, you’ll learn selection frameworks, governance patterns, and benefits tracking, plus how to make resource tradeoffs across portfolios while sequencing program work sensibly. The focus is enterprise impact: choosing what to do and coordinating how related efforts come together to deliver value.",
   "subtopics": [
     "aligning portfolios with organizational strategy",
-    "balancing competing project priorities",
-    "resource allocation across the portfolio",
-    "sequencing and timing decisions",
-    "portfolio selection frameworks",
-    "program governance structures",
-    "monitoring benefits realization",
-    "adjusting portfolios as priorities evolve"
+    "portfolio selection and prioritization frameworks",
+    "resource and capacity balancing across portfolios",
+    "program coordination and dependency management",
+    "benefits realization vs. outputs",
+    "governance models for portfolios and programs",
+    "sequencing and timing across interdependent work",
+    "adjusting investments as priorities evolve"
   ]
 },
 {
