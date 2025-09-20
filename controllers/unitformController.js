@@ -832,13 +832,39 @@ submitVideo: async (req, res) => {
       console.log('New video created successfully.');
     }
 
-    // 🔁 If published from an upcoming, migrate tags → video, then delete upcoming
-    if (fromUpcomingId) {
-      await migrateAndDeleteUpcoming({
-        fromUpcomingId,
-        toItemId: video._id,
-        toUnitType: 'video',
-      });
+    // Helper: determine published state robustly
+    const isPublished = (() => {
+      const status =
+        (typeof video.status !== 'undefined' ? video.status : undefined) ??
+        videoData.status ??
+        videoData.publish_status ??
+        video.is_published ??
+        videoData.is_published;
+
+      // Accept common patterns: boolean true or status string "published"
+      return status === true || String(status).toLowerCase() === 'published';
+    })();
+
+    /**
+     * If this video came from an Upcoming item AND it's now published:
+     * - migrate any tags/links from the upcoming → this video
+     * - delete the upcoming record
+     *
+     * NOTE: We only touch Upcoming when we have explicit context (fromUpcomingId)
+     * and the item is published. Drafts/updates without publishing do nothing here.
+     */
+    if (fromUpcomingId && isPublished) {
+      try {
+        await migrateAndDeleteUpcoming({
+          fromUpcomingId,
+          toItemId: video._id,
+          toUnitType: 'video',
+        });
+        console.log(`Upcoming ${fromUpcomingId} migrated and deleted after publish.`);
+      } catch (migrateErr) {
+        console.error('Failed migrating/deleting upcoming during publish:', migrateErr);
+        // Non-fatal: proceed to success page; the unit is saved.
+      }
     }
 
     // ✅ Always render success page
@@ -868,10 +894,10 @@ submitVideo: async (req, res) => {
   }
 },
 
-    
 
     
 
+    
 
 
 submitInterview: async (req, res) => {
@@ -915,13 +941,37 @@ submitInterview: async (req, res) => {
       console.log('New interview created successfully.');
     }
 
-    // 🔁 If published from an upcoming, migrate tags → interview, then delete upcoming
-    if (fromUpcomingId) {
-      await migrateAndDeleteUpcoming({
-        fromUpcomingId,
-        toItemId: interview._id,
-        toUnitType: 'interview',
-      });
+    // Determine "published" state robustly
+    const isPublished = (() => {
+      const status =
+        (typeof interview.status !== 'undefined' ? interview.status : undefined) ??
+        interviewData.status ??
+        interviewData.publish_status ??
+        interview.is_published ??
+        interviewData.is_published;
+
+      return status === true || String(status).toLowerCase() === 'published';
+    })();
+
+    /**
+     * If this interview came from an Upcoming item AND it's now published:
+     * - migrate any tags/links from the upcoming → this interview
+     * - delete the upcoming record
+     *
+     * Draft saves/updates without publishing: do nothing to Upcoming.
+     */
+    if (fromUpcomingId && isPublished) {
+      try {
+        await migrateAndDeleteUpcoming({
+          fromUpcomingId,
+          toItemId: interview._id,
+          toUnitType: 'interview',
+        });
+        console.log(`Upcoming ${fromUpcomingId} migrated and deleted after publish.`);
+      } catch (migrateErr) {
+        console.error('Failed migrating/deleting upcoming during publish:', migrateErr);
+        // Non-fatal; the interview itself is saved.
+      }
     }
 
     // ✅ Always render success page
@@ -950,6 +1000,7 @@ submitInterview: async (req, res) => {
     });
   }
 },
+
 
     
     getPromptForm: async (req, res) => {
@@ -1164,13 +1215,38 @@ submitPromptSet: async (req, res) => {
       console.log('New prompt set created successfully.');
     }
 
-    // 🔁 If published from an upcoming: migrate tags → promptset, then delete upcoming
-    if (fromUpcomingId) {
-      await migrateAndDeleteUpcoming({
-        fromUpcomingId,
-        toItemId: promptSet._id,
-        toUnitType: 'promptset',
-      });
+    // Determine "published" state robustly
+    const isPublished = (() => {
+      const status =
+        (typeof promptSet.status !== 'undefined' ? promptSet.status : undefined) ??
+        promptSetData.status ??
+        promptSetData.publish_status ??
+        promptSet.is_published ??
+        promptSetData.is_published;
+
+      // Accept common patterns: boolean true or status string "published"
+      return status === true || String(status).toLowerCase() === 'published';
+    })();
+
+    /**
+     * If this prompt set originated from an Upcoming item AND it's now published:
+     * - migrate tags/links from Upcoming → this prompt set
+     * - delete the Upcoming record
+     *
+     * Draft saves/updates without publishing do NOT touch Upcoming.
+     */
+    if (fromUpcomingId && isPublished) {
+      try {
+        await migrateAndDeleteUpcoming({
+          fromUpcomingId,
+          toItemId: promptSet._id,
+          toUnitType: 'promptset',
+        });
+        console.log(`Upcoming ${fromUpcomingId} migrated and deleted after publish.`);
+      } catch (migrateErr) {
+        console.error('Failed migrating/deleting upcoming during publish:', migrateErr);
+        // Non-fatal: proceed to success; the prompt set itself is persisted.
+      }
     }
 
     // ✅ Always render success page
@@ -1200,9 +1276,9 @@ submitPromptSet: async (req, res) => {
   }
 },
 
+
       
-      
-submitExercise: async (req, res) => {
+ submitExercise: async (req, res) => {
   const mainTopics = [
     'Career Development in Technical Services',
     'Soft Skills in Technical Environments',
@@ -1317,13 +1393,32 @@ submitExercise: async (req, res) => {
       console.log('New exercise created successfully.');
     }
 
-    // 🔁 If publishing from an upcoming: migrate tags → exercise, then delete upcoming
-    if (fromUpcomingId) {
-      await migrateAndDeleteUpcoming({
-        fromUpcomingId,
-        toItemId: exercise._id,
-        toUnitType: 'exercise',
-      });
+    // Determine "published" state robustly
+    const isPublished = (() => {
+      const status =
+        (typeof exercise.status !== 'undefined' ? exercise.status : undefined) ??
+        exerciseData.status ??
+        exerciseData.publish_status ??
+        exercise.is_published ??
+        exerciseData.is_published;
+
+      // Accept common patterns: boolean true or status string "published"
+      return status === true || String(status).toLowerCase() === 'published';
+    })();
+
+    // 🔁 Only if this came from an Upcoming AND it's now published → migrate & delete Upcoming
+    if (fromUpcomingId && isPublished) {
+      try {
+        await migrateAndDeleteUpcoming({
+          fromUpcomingId,
+          toItemId: exercise._id,
+          toUnitType: 'exercise',
+        });
+        console.log(`Upcoming ${fromUpcomingId} migrated and deleted after publish.`);
+      } catch (migrateErr) {
+        console.error('Failed migrating/deleting upcoming during publish:', migrateErr);
+        // Non-fatal: continue; exercise itself is saved.
+      }
     }
 
     // ✅ Always render success page
@@ -1365,8 +1460,8 @@ submitExercise: async (req, res) => {
   }
 },
 
-    
-submitTemplate: async (req, res) => {
+
+   submitTemplate: async (req, res) => {
   try {
     // CSRF guard
     if (!isDevelopment && !req.body._csrf) {
@@ -1385,7 +1480,7 @@ submitTemplate: async (req, res) => {
       'produce_deliverables',
       'new_ideas',
       'engaging',
-      'permission', // ⬅️ removed 'file_format' (not a boolean)
+      'permission', // ⬅️ 'file_format' intentionally excluded
     ];
     booleanFields.forEach((field) => {
       templateData[field] = req.body[field] === 'on';
@@ -1476,13 +1571,32 @@ submitTemplate: async (req, res) => {
       console.log('New template created successfully.');
     }
 
-    // 🔁 If publishing from an upcoming: migrate tags → template, then delete upcoming
-    if (fromUpcomingId) {
-      await migrateAndDeleteUpcoming({
-        fromUpcomingId,
-        toItemId: templateDoc._id,
-        toUnitType: 'template',
-      });
+    // Determine "published" state robustly
+    const isPublished = (() => {
+      const status =
+        (typeof templateDoc.status !== 'undefined' ? templateDoc.status : undefined) ??
+        templateData.status ??
+        templateData.publish_status ??
+        templateDoc.is_published ??
+        templateData.is_published;
+
+      // Accept common patterns: boolean true or status string "published"
+      return status === true || String(status).toLowerCase() === 'published';
+    })();
+
+    // 🔁 Only migrate/delete Upcoming if originated from Upcoming AND is now published
+    if (fromUpcomingId && isPublished) {
+      try {
+        await migrateAndDeleteUpcoming({
+          fromUpcomingId,
+          toItemId: templateDoc._id,
+          toUnitType: 'template',
+        });
+        console.log(`Upcoming ${fromUpcomingId} migrated and deleted after publish.`);
+      } catch (migrateErr) {
+        console.error('Failed migrating/deleting upcoming during publish:', migrateErr);
+        // Non-fatal: continue; template itself is saved.
+      }
     }
 
     // ✅ Always render success page
@@ -1512,6 +1626,7 @@ submitTemplate: async (req, res) => {
     });
   }
 }
+
 
     };
       
