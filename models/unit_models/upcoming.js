@@ -1,7 +1,52 @@
 // models/library_models/upcoming_unit.js
 const mongoose = require('mongoose');
 
-const TOPIC_ENUM = [/* ... keep your topic list ... */];
+const TOPIC_ENUM = [
+  'Career Development in Technical Services',
+  'Soft Skills in Technical Environments',
+  'Project Management',
+  'Business Development in Technical Services',
+  'Finding Projects Before they Become RFPs',
+  'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
+  'Proposal Management',
+  'Proposal Strategy',
+  'Designing a Proposal Process',
+  'Conducting Color Reviews of Proposals',
+  'Candid Communication',
+  'Client Interactions',
+  'Cross Selling in Multi-Disciplinary Firms',
+  'Analytics in Project Management',
+  'Business Development Metrics',
+  'Using Lean in Project Management',
+  'Turning a Project into a Business Development Powerhouse',
+  'Portfolio and Program Management',
+  'Making a Proposal Easy to Read, Skim, and Evaluate',
+  'Storytelling in Technical Marketing',
+  'Client Experience',
+  'Social Media, Advertising, and Other Mysteries',
+  'Pull Marketing',
+  'Emotional Intelligence',
+  'The Pareto Principle or 80/20',
+  'People Before Profit',
+  'Non-Technical Roles in Technical Environments',
+  'Leadership in Technical Services',
+  'Leading Change',
+  'Leading Groups on Twennie',
+  'The Advantage of Failure',
+  'Social Entrepreneurship',
+  'Employee Experience',
+  'Project Management Software',
+  'CRM Platforms',
+  'Client Feedback Software',
+  'Workplace Culture',
+  'Mental Health in Consulting Environments',
+  'Remote and Hybrid Work',
+  'The Power of Play in the Workplace',
+  'Team Building in Consulting',
+  'AI in Consulting',
+  'AI in Project Management',
+  'AI in Learning',
+];
 
 const UNIT_TYPE = [
   'article','video','interview','exercise','template',
@@ -70,4 +115,5 @@ upcomingUnitSchema.virtual('interest_count').get(function(){
 
 // 👇 keep the original model name so Mongoose doesn't make a new collection
 module.exports = mongoose.models.UpcomingUnit || mongoose.model('UpcomingUnit', upcomingUnitSchema);
+
 

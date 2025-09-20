@@ -443,8 +443,151 @@
       "facilitation, timeboxing, and action/decision logs",
       "closing the loop: implementation and reviewer follow-up"
     ]
-  }
-
+  },
+  {
+  "id": 201,
+  "title": "Making a Proposal Easy to Read, Skim, and Evaluate",
+  "shortSummary": "Evaluators skim more than they read. Learn how to structure proposals with clear headings, callouts, and summaries so strengths stand out and compliance is effortless.",
+  "longSummary": "Most evaluators have limited time and skim proposals rather than reading every word. This topic shows you how to design proposals that highlight critical points instantly—through visual hierarchy, concise writing, and strategic use of callouts and graphics. You’ll learn how to guide reviewers toward win themes, differentiators, and compliance items without forcing them to hunt for information. We’ll cover formatting principles that respect evaluation criteria, techniques for surfacing value propositions in headers and tables, and methods to reduce cognitive load. The result: proposals that are effortless to navigate, easy to score, and compelling to recommend.",
+  "subtopics": [
+    "writing for the skimmer",
+    "structuring with headings, bullets, and callouts",
+    "highlighting differentiators and value",
+    "reducing cognitive load for evaluators",
+    "balancing compliance and persuasion",
+    "designing tables and graphics for clarity",
+    "anticipating evaluation scoring needs",
+    "creating visually accessible proposals"
+  ]
+},
+{
+  "id": 202,
+  "title": "Turning a Project into a Business Development Powerhouse",
+  "shortSummary": "Delivery doubles as marketing. Learn how to capture project outcomes, engage clients during delivery, and transform successes into pursuit-winning stories.",
+  "longSummary": "Every project you deliver is also a case study in your firm’s capabilities. This topic teaches you to use delivery as a platform for business development—capturing visuals, data, and stories while the project is live. You’ll explore how to involve clients in reviews and share insights that position you as a trusted advisor beyond the scope. We’ll show you how to package project outcomes into proposals, presentations, and recognition opportunities, creating proof points that fuel new pursuits. The outcome: projects that not only succeed technically but also generate momentum for future wins.",
+  "subtopics": [
+    "documenting milestones and outcomes",
+    "capturing visuals, photos, and data during delivery",
+    "gathering testimonials and endorsements",
+    "engaging clients in project reviews",
+    "turning insights into relationship-building tools",
+    "packaging project success into proposals and case studies",
+    "feeding pursuit narratives with live examples",
+    "showcasing projects for awards and recognition"
+  ]
+},
+{
+  "id": 203,
+  "title": "Business Development Metrics",
+  "shortSummary": "Measure what matters. Focus on metrics that track growth—leads, conversions, and retention—rather than vanity numbers that waste effort.",
+  "longSummary": "Not all metrics drive business development success. This topic shows you how to separate meaningful measures from noise. You’ll learn which metrics reflect real growth—qualified leads, meaningful conversations, conversion rates, client retention—and how to track them systematically. We’ll cover balancing short-term measures like proposals submitted with longer-term health indicators like repeat business. Finally, we’ll examine how to use transparent dashboards to create accountability, align teams, and foster data-driven decision-making. The goal: a metrics system that drives outcomes rather than distractions.",
+  "subtopics": [
+    "choosing outcome-based over vanity metrics",
+    "tracking qualified leads and meaningful conversations",
+    "measuring conversion and win rates",
+    "balancing short-term and long-term indicators",
+    "integrating client retention into BD tracking",
+    "using dashboards for transparency and accountability",
+    "tying metrics to coaching and improvement",
+    "avoiding metric overload and confusion"
+  ]
+},
+{
+  "id": 204,
+  "title": "Cross Selling in Multi-Disciplinary Firms",
+  "shortSummary": "Break down silos and introduce colleagues’ expertise authentically. Expand client relationships by positioning your firm as a comprehensive partner.",
+  "longSummary": "Multi-disciplinary firms often underuse the potential of cross selling. This topic explains how to identify natural opportunities to bring in colleagues’ services when clients face broader challenges. You’ll learn how to build internal awareness across disciplines, recognize signals in client conversations, and make introductions that add value without feeling forced. We’ll cover strategies for collaboration, relationship mapping, and presenting the firm as a unified partner. Done well, cross selling strengthens client loyalty, expands revenue, and positions the firm as more than a vendor—it becomes a trusted strategic advisor.",
+  "subtopics": [
+    "building internal awareness of firm capabilities",
+    "listening for client needs beyond current scope",
+    "making authentic introductions",
+    "collaborating across service lines",
+    "relationship mapping for cross selling",
+    "packaging multidisciplinary solutions",
+    "avoiding forced or inauthentic pitches",
+    "turning cross selling into loyalty and growth"
+  ]
+},
+{
+  "id": 205,
+  "title": "Client Interactions",
+  "shortSummary": "Every touchpoint builds or erodes trust. Learn how to turn daily interactions into long-term client confidence.",
+  "longSummary": "Client interactions go far beyond formal meetings—they include emails, site visits, and quick calls. Each one shapes perceptions of your firm’s reliability and professionalism. In this topic, you’ll learn how to build rapport quickly, handle difficult conversations with transparency, and maintain consistency across all touchpoints. We’ll explore techniques for active listening, aligning expectations, and ensuring that every team member projects the same standard of professionalism. Strong interactions accumulate into trust, loyalty, and repeat business.",
+  "subtopics": [
+    "building rapport in early conversations",
+    "active listening and expectation alignment",
+    "navigating difficult or tense discussions",
+    "managing tone in emails and written communication",
+    "site visits and informal client contact",
+    "creating consistency across all team members",
+    "reinforcing professionalism through follow-up",
+    "turning interactions into relationship capital"
+  ]
+},
+{
+  "id": 206,
+  "title": "Project Management Analytics",
+  "shortSummary": "Turn data into insight. Use dashboards, predictive tools, and balanced judgment to move from reactive to proactive delivery.",
+  "longSummary": "Modern project management is increasingly data-driven. This topic equips you to translate raw numbers into decisions that improve outcomes. You’ll learn how to build dashboards that highlight trends, apply predictive analytics to identify risks early, and combine data with human judgment for balanced decisions. We’ll cover practical metrics like cost, schedule, earned value, and forecasting, along with tools that visualize project health. With these skills, project managers move beyond reporting—they shape proactive strategies and deliver stronger results.",
+  "subtopics": [
+    "building project dashboards",
+    "tracking cost, schedule, and earned value",
+    "applying predictive analytics to risks",
+    "balancing data with professional judgment",
+    "forecasting project performance",
+    "selecting the right metrics to monitor",
+    "visualizing data for clarity",
+    "driving proactive decisions through analytics"
+  ]
+},
+{
+  "id": 207,
+  "title": "Using Lean Principles",
+  "shortSummary": "Apply Lean to projects: eliminate waste, improve flow, and embed continuous improvement in delivery practices.",
+  "longSummary": "Lean principles aren’t just for manufacturing—they provide powerful tools for project management. This topic introduces Lean practices that eliminate waste, improve process flow, and focus on client value. You’ll explore A3 problem-solving, value stream mapping, pull systems, and feedback loops tailored for technical services. We’ll also look at how to embed continuous improvement into project culture so teams evolve with each engagement. The payoff: projects that run smoother, waste less, and deliver more value in less time.",
+  "subtopics": [
+    "understanding value vs. waste in projects",
+    "A3 problem-solving method",
+    "value stream mapping for service delivery",
+    "using pull systems for smoother flow",
+    "reducing bottlenecks in handoffs",
+    "embedding continuous improvement cycles",
+    "training teams in Lean mindset",
+    "measuring and sustaining improvements"
+  ]
+},
+{
+  "id": 208,
+  "title": "Portfolio Management",
+  "shortSummary": "Look beyond individual projects. Balance risk, capacity, and priorities across a portfolio to maximize strategic value.",
+  "longSummary": "Portfolio management ensures that projects align with organizational goals and deliver maximum impact. In this topic, you’ll learn how to see the bigger picture—balancing competing priorities, allocating resources effectively, and sequencing work for optimal flow. We’ll cover portfolio selection frameworks, program-level governance, and techniques for monitoring benefits realization. The focus is on making tradeoffs across multiple projects to deliver value at scale. With these skills, leaders move from project oversight to enterprise-level impact.",
+  "subtopics": [
+    "aligning portfolios with organizational strategy",
+    "balancing competing project priorities",
+    "resource allocation across the portfolio",
+    "sequencing and timing decisions",
+    "portfolio selection frameworks",
+    "program governance structures",
+    "monitoring benefits realization",
+    "adjusting portfolios as priorities evolve"
+  ]
+},
+{
+  "id": 209,
+  "title": "Candid Communication",
+  "shortSummary": "Direct, respectful communication keeps projects on track. Learn to surface risks early, clarify scope, and build trust.",
+  "longSummary": "Candid communication is one of the most powerful tools for technical professionals. This topic teaches you to speak openly while maintaining respect, surfacing risks early and aligning expectations clearly. You’ll practice how to deliver tough feedback without damaging relationships, how to encourage transparency from clients and colleagues, and how to model honesty that builds credibility. Done well, candid communication strengthens teams, prevents misunderstandings, and drives projects toward smoother delivery.",
+  "subtopics": [
+    "principles of direct yet respectful communication",
+    "framing candid feedback constructively",
+    "surfacing risks early with clients",
+    "aligning expectations around scope and deliverables",
+    "encouraging openness from colleagues and clients",
+    "responding professionally to candid input",
+    "building credibility through honesty",
+    "embedding candor into team culture"
+  ]
+}
 
 
     ]
