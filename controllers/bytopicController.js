@@ -100,7 +100,7 @@ exports.getTopicView = async (req, res) => {
             'Using Lean in Project Management': 'usingleaninprojectmanagement',
             'Turning a Project into a Business Development Powerhouse': 'turningaprojectintoabusinessdevelopmentpowerhouse',
             'Portfolio and Program Management': 'portfolioandprogrammanagement',
-            'Making a Proposal Easy to Read, Skim, and Evaluate': 'makingaproposaleasiertoreadskimandevaluate',
+            'Making a Proposal Easy to Read, Skim, and Evaluate': 'makingaproposaleasytoreadskimandevaluate',
             'Storytelling in Technical Marketing': 'storytellingintechnicalmarketing',
             'Client Experience': 'clientexperience',
             'Social Media, Advertising, and Other Mysteries': 'socialmediaadvertisingandothermysteries',
