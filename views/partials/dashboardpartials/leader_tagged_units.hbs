@@ -18,14 +18,19 @@
           {{/if}}
         </div>
 
-        <div class="tagged-unit-actions" style="display:flex; gap:8px; align-items:center;">
+        <!-- Actions stacked vertically, reusing the "view" button style -->
+        <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
           <a href="/unitviews/{{capitalize unitType}}s/view/{{_id}}" class="tagged-unit-link">view unit</a>
-          <button class="tag-remove-btn"
-                  onclick="removeTagFromUnit('{{tagId}}','{{_id}}','{{unitType}}')">
+
+          <button
+            class="tagged-unit-link"
+            onclick="removeTagFromUnit('{{tagId}}','{{_id}}','{{unitType}}')">
             remove from this unit
           </button>
-          <button class="tag-delete-btn"
-                  onclick="deleteTag('{{tagId}}')">
+
+          <button
+            class="tagged-unit-link"
+            onclick="deleteTag('{{tagId}}')">
             delete tag
           </button>
         </div>
@@ -65,16 +70,21 @@
           {{/if}}
         </div>
 
-        <div class="tagged-unit-actions" style="display:flex; gap:8px; align-items:center;">
+        <!-- Actions stacked vertically, reusing the "view" button style -->
+        <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
           <a href="/unitviews/{{capitalize unitType}}s/view/{{_id}}" class="tagged-unit-link">view unit</a>
-          {{!-- Optional: unassign only this member (keep tag) --}}
-          <button class="tag-unassign-btn"
-                  onclick="unassignMember('{{tagId}}','{{assignedTo._id}}')">
+
+          <!-- Unassign only this member (keep the tag) -->
+          <button
+            class="tagged-unit-link"
+            onclick="unassignMember('{{tagId}}','{{assignedTo._id}}')">
             unassign
           </button>
-          {{!-- Delete entire tag (removes for all assignees + units) --}}
-          <button class="tag-delete-btn"
-                  onclick="deleteTag('{{tagId}}')">
+
+          <!-- Delete entire tag (removes for all assignees + units) -->
+          <button
+            class="tagged-unit-link"
+            onclick="deleteTag('{{tagId}}')">
             delete tag
           </button>
         </div>
@@ -138,6 +148,7 @@
     }
   }
 </script>
+
 
 
 
