@@ -15,28 +15,39 @@
         <span class="tab-title">membership overview</span>
         <div class="tab-arrow"></div>
       </button>
+
+      <!-- (No dots for topics in member dashboard; not counted in controller) -->
       <button class="dashboard-tab" data-tab="topics">
         <span class="tab-title">my favorite topics</span>
         <div class="tab-arrow"></div>
       </button>
-      <button class="dashboard-tab" data-tab="prompts">
+
+      <button class="dashboard-tab" data-tab="prompts" data-count="{{memberCounts.prompts}}">
         <span class="tab-title">registered prompt sets</span>
+        {{#if memberBadges.prompts}}<span class="tab-dot"></span>{{/if}}
         <div class="tab-arrow"></div>
       </button>
-      <button class="dashboard-tab" data-tab="progress">
+
+      <button class="dashboard-tab" data-tab="progress" data-count="{{memberCounts.progress}}">
         <span class="tab-title">prompt set progress</span>
+        {{#if memberBadges.progress}}<span class="tab-dot"></span>{{/if}}
         <div class="tab-arrow"></div>
       </button>
+
       <button class="dashboard-tab" data-tab="contribute">
         <span class="tab-title">contribute to the library</span>
         <div class="tab-arrow"></div>
       </button>
-      <button class="dashboard-tab" data-tab="library">
+
+      <button class="dashboard-tab" data-tab="library" data-count="{{memberCounts.library}}">
         <span class="tab-title">my library units</span>
+        {{#if memberBadges.library}}<span class="tab-dot"></span>{{/if}}
         <div class="tab-arrow"></div>
       </button>
-      <button class="dashboard-tab" data-tab="tagged">
+
+      <button class="dashboard-tab" data-tab="tagged" data-count="{{memberCounts.tagged}}">
         <span class="tab-title">my tagged units</span>
+        {{#if memberBadges.tagged}}<span class="tab-dot"></span>{{/if}}
         <div class="tab-arrow"></div>
       </button>
     </div>
@@ -50,21 +61,21 @@
       {{> dashboardpartials/member_topics }}
     </div>
 
-<div class="dashboard-tab-content" id="prompts">
-  {{#if registeredPromptSets.length}}
-    {{#each registeredPromptSets}}
-      <section class="member-prompt-section">
-        {{> dashboardpartials/member_prompt promptSet=this }}
-      </section>
-    {{/each}}
-  {{else}}
-    {{#ifEquals @root.member.accessLevel "free_individual"}}
-      <div style="text-align: center; margin-top: 2rem; font-style: italic; color: #4e50a2;">
-        To register for prompts, you must upgrade your membership.
-      </div>
-    {{/ifEquals}}
-  {{/if}}
-</div>
+    <div class="dashboard-tab-content" id="prompts">
+      {{#if registeredPromptSets.length}}
+        {{#each registeredPromptSets}}
+          <section class="member-prompt-section">
+            {{> dashboardpartials/member_prompt promptSet=this }}
+          </section>
+        {{/each}}
+      {{else}}
+        {{#ifEquals @root.member.accessLevel "free_individual"}}
+          <div style="text-align: center; margin-top: 2rem; font-style: italic; color: #4e50a2;">
+            To register for prompts, you must upgrade your membership.
+          </div>
+        {{/ifEquals}}
+      {{/if}}
+    </div>
 
     <div class="dashboard-tab-content" id="progress">
       {{> dashboardpartials/member_progress }}
@@ -84,6 +95,38 @@
 
   </div>
 </div>
+
+<script>
+  // Mark a tab as "seen" so green dots only show on increases
+  async function markSeenMember(tab, count){
+    try{
+      await fetch('/dashboard/member/mark-seen', {
+        method: 'POST',
+        headers: {
+          'Content-Type':'application/json',
+          'X-CSRF-Token': '{{csrfToken}}'
+        },
+        body: JSON.stringify({ tab, count: Number(count || 0), _csrf: '{{csrfToken}}' })
+      });
+    }catch(e){ /* no-op */ }
+  }
+
+  // When a tab is clicked (or activated), update seen for counted tabs
+  document.querySelectorAll('.dashboard-tab[data-tab]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tab = btn.dataset.tab;
+      const count = btn.dataset.count || 0;
+      // Only tabs with counters participate in dots
+      if (['prompts','progress','library','tagged'].includes(tab)) {
+        markSeenMember(tab, count);
+        // Optimistic UI: hide the dot immediately
+        const dot = btn.querySelector('.tab-dot');
+        if (dot) dot.style.display = 'none';
+      }
+    });
+  });
+</script>
+
 
 
 

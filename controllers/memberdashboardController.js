@@ -14,6 +14,7 @@ const MemberProfile = require('../models/profile_models/member_profile');
 const PromptSetCompletion = require('../models/prompt_models/promptsetcompletion');
 const TopicSuggestion = require('../models/topic/topic_suggestion');
 const Upcoming = require('../models/unit_models/upcoming');
+const DashboardSeen = require('../models/dashboard_seen');
 
  
 
@@ -110,7 +111,7 @@ const topicMappings = {
 'Using Lean in Project Management': 'usingleaninprojectmanagement',
 'Turning a Project into a Business Development Powerhouse': 'turningaprojectintoabusinessdevelopmentpowerhouse',
 'Portfolio and Program Management': 'portfolioandprogrammanagement',
-'Making a Proposal Easy to Read, Skim, and Evaluate': 'makingaproposaleasiertoreadskimandevaluate',
+'Making a Proposal Easy to Read, Skim, and Evaluate': 'makingaproposaleasytoreadskimandevaluate',
     'Storytelling in Technical Marketing': 'storytellingintechnicalmarketing',
     'Client Experience': 'clientexperience',
     'Social Media, Advertising, and Other Mysteries': 'socialmediaadvertisingandothermysteries',
@@ -487,6 +488,44 @@ const memberAccount = {
   username: userData?.username || ''
 };
 
+// ---------- NEW: tab counts + baseline + badges (member) ----------
+const memberCounts = {
+  prompts:  (registeredPromptSets || []).length,          // registered prompt sets
+  progress: (formattedCompletedSets || []).length,        // completed sets
+  library:  (memberUnits || []).length,                   // my contributed units (+ upcoming appended above)
+  tagged:   (memberTaggedUnits || []).length              // tags I created
+};
+
+// Load/create seen doc for this member
+let seenDocMember = await DashboardSeen.findOne({ userId: id, role: 'member' });
+
+if (!seenDocMember) {
+  // First time: baseline so no dots on first render
+  seenDocMember = new DashboardSeen({ userId: id, role: 'member', tabs: new Map() });
+  for (const [key, val] of Object.entries(memberCounts)) {
+    seenDocMember.tabs.set(key, { count: val, seenAt: new Date() });
+  }
+  await seenDocMember.save();
+} else {
+  // If a new tab key appears later, baseline it
+  let updated = false;
+  for (const [key, val] of Object.entries(memberCounts)) {
+    if (!seenDocMember.tabs?.has(key)) {
+      seenDocMember.tabs.set(key, { count: val, seenAt: new Date() });
+      updated = true;
+    }
+  }
+  if (updated) await seenDocMember.save();
+}
+
+// Compute badges: show dot ONLY if current > lastSeen
+const memberBadges = {};
+for (const [key, val] of Object.entries(memberCounts)) {
+  const last = seenDocMember.tabs?.get(key)?.count ?? val; // default = no dot
+  memberBadges[key] = val > last;
+}
+
+
 
 return res.render("member_dashboard", {
   layout: "dashboardlayout",
@@ -497,7 +536,9 @@ return res.render("member_dashboard", {
     profileImage: memberProfile?.profileImage || '/images/default-avatar.png',
     selectedTopics,
     accessLevel: userData.accessLevel,
-    accessLevelLabel
+    accessLevelLabel,
+      memberCounts,
+  memberBadges
   },
   // 👇 add this line
   mfaStatus,

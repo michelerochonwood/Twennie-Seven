@@ -858,6 +858,34 @@ updateAccountDetails: async (req, res) => {
     });
   }
 }
+,
+// --- POST /dashboard/groupmember/seen ---
+markGroupMemberTabSeen: async (req, res) => {
+  try {
+    const memberId = req.session?.user?.id;
+    if (!memberId) return res.status(401).json({ ok: false, error: 'unauthorized' });
+
+    const { tabKey, currentCount } = req.body || {};
+    if (!tabKey) return res.status(400).json({ ok: false, error: 'missing tabKey' });
+
+    // Load/create doc
+    let seenDoc = await DashboardSeen.findOne({ userId: memberId, role: 'group_member' });
+    if (!seenDoc) {
+      seenDoc = new DashboardSeen({ userId: memberId, role: 'group_member', tabs: new Map() });
+    }
+
+    // Update this tab with the current count and timestamp
+    const countNum = Number(currentCount) || 0;
+    seenDoc.tabs.set(tabKey, { count: countNum, seenAt: new Date() });
+    await seenDoc.save();
+
+    return res.json({ ok: true });
+  } catch (e) {
+    console.error('markGroupMemberTabSeen error:', e);
+    return res.status(500).json({ ok: false });
+  }
+},
+
 
 
 
