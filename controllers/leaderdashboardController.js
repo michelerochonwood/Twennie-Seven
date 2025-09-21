@@ -114,18 +114,6 @@ async function fetchTaggedUnits(userId) {
 
 
 
-const getModelByUnitType = (type) => {
-  switch (type) {
-    case 'article':   return Article;
-    case 'video':     return Video;
-    case 'interview': return Interview;
-    case 'exercise':  return Exercise;
-    case 'template':  return Template;
-    case 'upcoming':  return Upcoming; // 👈 add upcoming
-    default:          return null;
-  }
-};
-
 async function buildLeaderAssignedUnits(leaderId) {
   // All tags this leader created that have assignments
   const assignedTags = await Tag.find({
@@ -138,7 +126,7 @@ async function buildLeaderAssignedUnits(leaderId) {
   const leaderAssignmentsCompleted = [];
 
   for (const tag of assignedTags) {
-    // Gather open/completed rows (flat), per assignee
+    // Flat open/completed list (good for counts or a compact table, optional)
     for (const a of (tag.assignedTo || [])) {
       const row = {
         tagId: tag._id.toString(),
@@ -151,9 +139,9 @@ async function buildLeaderAssignedUnits(leaderId) {
       else leaderAssignmentsOpen.push(row);
     }
 
-    // Build per-unit rows for the “leaderAssignedUnits” section
+    // Per-unit cards for the partial
     for (const { item, unitType } of tag.associatedUnits || []) {
-      if (unitType === 'promptset' || unitType === 'prompt') continue; // skip if not desired
+      if (unitType === 'promptset' || unitType === 'prompt') continue;
 
       const Model = getModelByUnitType(unitType);
       if (!Model) continue;
@@ -189,6 +177,7 @@ async function buildLeaderAssignedUnits(leaderId) {
 
   return { leaderAssignedUnits, leaderAssignmentsOpen, leaderAssignmentsCompleted };
 }
+
 
 
 
