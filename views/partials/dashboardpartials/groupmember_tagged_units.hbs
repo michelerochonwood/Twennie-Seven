@@ -12,6 +12,7 @@
           <div class="tagged-unit-icon">
             <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
           </div>
+
           <div class="tagged-unit-info">
             <h3 class="tagged-unit-title">{{title}}</h3>
             <p class="tagged-unit-topic">{{mainTopic}}</p>
@@ -19,9 +20,16 @@
               <p class="tagged-unit-status">🚧 coming soon</p>
             {{/if}}
           </div>
-          <a href="/unitviews/{{capitalize unitType}}s/view/{{_id}}" class="tagged-unit-link">
-            view unit
-          </a>
+
+          <div class="tagged-unit-actions" style="display:flex; gap:8px; align-items:center;">
+            <a href="/unitviews/{{capitalize unitType}}s/view/{{_id}}" class="tagged-unit-link">view unit</a>
+            {{!-- I created this tag, so I can remove it from this unit --}}
+            <button
+              class="tag-remove-btn"
+              onclick="removeSelfTag('{{tagId}}','{{_id}}','{{unitType}}')">
+              remove tag
+            </button>
+          </div>
         </div>
       {{else}}
         <p class="tagged-no-units">You have not tagged any units.</p>
@@ -29,7 +37,7 @@
     </div>
   </div>
 
-  <!-- 👥 Section 2: Units Tagged by My Leader -->
+  <!-- 👥 Section 2: Units Tagged by My Leader (pending) -->
   <div class="group-member-tagged-subsection">
     <h3 class="group-member-tagged-subtitle">units tagged by my leader</h3>
     <div class="tagged-units-grid">
@@ -38,19 +46,31 @@
           <div class="tagged-unit-icon">
             <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
           </div>
+
           <div class="tagged-unit-info">
             <h3 class="tagged-unit-title">{{title}}</h3>
             <p class="tagged-unit-topic">{{mainTopic}}</p>
+
             {{#if instructions}}
               <p class="tagged-unit-instructions"><em>Instructions:</em> {{instructions}}</p>
             {{/if}}
+
             <p class="tagged-unit-status">
               {{#if (eq unitType "upcoming")}}🚧 coming soon{{else}}⏳ pending{{/if}}
             </p>
           </div>
-          <a href="/unitviews/{{capitalize unitType}}s/view/{{_id}}" class="tagged-unit-link">
-            view unit
-          </a>
+
+          <div class="tagged-unit-actions" style="display:flex; gap:8px; align-items:center;">
+            <a href="/unitviews/{{capitalize unitType}}s/view/{{_id}}" class="tagged-unit-link">view unit</a>
+            {{!-- I’m the assignee → can mark complete (not available for upcoming) --}}
+            {{#unless (eq unitType "upcoming")}}
+              <button
+                class="tag-complete-btn"
+                onclick="markAssignedComplete('{{tagId}}')">
+                mark complete
+              </button>
+            {{/unless}}
+          </div>
         </div>
       {{else}}
         <p class="tagged-no-units">You have no units assigned by your leader.</p>
@@ -67,14 +87,16 @@
           <div class="tagged-unit-icon">
             <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
           </div>
+
           <div class="tagged-unit-info">
             <h3 class="tagged-unit-title">{{title}}</h3>
             <p class="tagged-unit-topic">{{mainTopic}}</p>
             <p class="tagged-unit-completed"><strong>Completed:</strong> {{formatDate completedAt}}</p>
           </div>
-          <a href="/unitviews/{{capitalize unitType}}s/view/{{_id}}" class="tagged-unit-link">
-            review unit
-          </a>
+
+          <div class="tagged-unit-actions" style="display:flex; gap:8px; align-items:center;">
+            <a href="/unitviews/{{capitalize unitType}}s/view/{{_id}}" class="tagged-unit-link">review unit</a>
+          </div>
         </div>
       {{else}}
         <p class="tagged-no-units">No completed units yet.</p>
@@ -82,6 +104,56 @@
     </div>
   </div>
 </section>
+
+<script>
+  function getCsrf() {
+    return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+  }
+
+  // Group member removing their own tag from a unit (allowed by controller)
+  async function removeSelfTag(tagId, unitId, unitType) {
+    if (!confirm('Remove this tag from the unit?')) return;
+    try {
+      const res = await fetch(`/tags/remove/${tagId}/${unitId}/${unitType}`, {
+        method: 'DELETE',
+        headers: { 'X-CSRF-Token': getCsrf() }
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        location.reload();
+      } else {
+        alert(data.message || 'Failed to remove tag.');
+      }
+    } catch (e) {
+      console.error('removeSelfTag error', e);
+      alert('An error occurred while removing the tag.');
+    }
+  }
+
+  // Group member marking their assignment complete (allowed by controller)
+  async function markAssignedComplete(tagId) {
+    try {
+      const res = await fetch(`/tags/${tagId}/complete`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': getCsrf()
+        },
+        body: JSON.stringify({ _csrf: getCsrf() })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        location.reload();
+      } else {
+        alert(data.message || 'Could not mark complete.');
+      }
+    } catch (e) {
+      console.error('markAssignedComplete error', e);
+      alert('An error occurred while marking the assignment complete.');
+    }
+  }
+</script>
+
 
 
 

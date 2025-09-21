@@ -4,7 +4,7 @@
 <section class="tagged-units-section">
   <h2 class="tagged-units-title">tagged library units</h2>
   <div class="tagged-units-grid">
-    {{#each leaderTaggedUnits}}
+    {{#each leaderSelfTaggedUnits}}
       <div class="tagged-unit-card">
         <div class="tagged-unit-icon">
           <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
@@ -27,7 +27,7 @@
         </button>
       </div>
     {{else}}
-      <p class="tagged-no-units">You have no tagged units.</p>
+      <p class="tagged-no-units">You have no self-tagged units.</p>
     {{/each}}
   </div>
 </section>
@@ -80,7 +80,7 @@
     try {
       const response = await fetch(`/tags/remove/${tagId}/${unitId}/${unitType}`, {
         method: 'DELETE',
-        headers: { 'x-csrf-token': getCsrfToken() }
+        headers: { 'X-CSRF-Token': getCsrfToken() }
       });
 
       const result = await response.json().catch(() => ({}));
@@ -95,6 +95,7 @@
     }
   }
 </script>
+
 
 
 

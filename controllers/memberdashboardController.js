@@ -90,7 +90,7 @@ async function fetchTaggedUnits(userId) {
 const topicMappings = {
     'AI in Consulting': 'aiinconsulting',
     'AI in Project Management': 'aiinprojectmanagement',
-    'AI in Adult Learning': 'aiinlearning',
+'AI in Learning': 'aiinlearning',
     'Project Management': 'projectmanagement',
     'Workplace Culture': 'workplaceculture',
     'The Pareto Principle': 'theparetoprinciple',
@@ -98,10 +98,10 @@ const topicMappings = {
     'Soft Skills in Technical Environments': 'softskillsintechnicalenvironments',
     'Business Development in Technical Services': 'businessdevelopmentintechnicalservices',
     'Finding Projects Before they Become RFPs': 'findingprojectsbeforetheybecomerfps',
-    'Un-Commoditizing Your Services by Delivering What Clients Truly Value': 'uncommoditizingbydelivering',
+    'Un-Commoditizing Your Services by Delivering What Clients Truly Value': 'uncommoditizingyourservicesbydeliveringwhatclientstrulyvalue',
     'Proposal Management': 'proposalmanagement',
     'Proposal Strategy': 'proposalstrategy',
-    'Designing a Proposal Process': 'proposalprocess',
+    'Designing a Proposal Process': 'designingaproposalprocess',
     'Conducting Color Reviews of Proposals': 'conductingcolorreviews',
     'Candid Communication': 'candidcommunication',
     'Client Interactions': 'clientinteractions',
@@ -141,7 +141,7 @@ const topicViewMappings = {
     'aiinprojectmanagement': 'single_topic_aiprojectmgmt',
     'businessdevelopmentintechnicalservices': 'single_topic_bd',
     'findingprojectsbeforetheybecomerfps': 'single_topic_findingprojects',
-    'uncommoditizingbydelivering': 'uncommoditizingbydelivering',
+    'uncommoditizingyourservicesbydeliveringwhatclientstrulyvalue': 'single_topic_uncommoditize',
     'careerdevelopmentintechnicalservices': 'single_topic_careerdev',
     'clientexperience': 'single_topic_clientex',
     'clientfeedbacksoftware': 'single_topic_clientfeedback',
@@ -531,15 +531,15 @@ return res.render("member_dashboard", {
   layout: "dashboardlayout",
   title: "Member Dashboard",
   csrfToken: req.csrfToken(),
-  member: {
-    ...userData,
-    profileImage: memberProfile?.profileImage || '/images/default-avatar.png',
-    selectedTopics,
-    accessLevel: userData.accessLevel,
-    accessLevelLabel,
-      memberCounts,
-  memberBadges
-  },
+member: {
+  ...userData,
+  profileImage: memberProfile?.profileImage || '/images/default-avatar.png',
+  selectedTopics,
+  accessLevel: userData.accessLevel,
+  accessLevelLabel
+},
+memberCounts,
+memberBadges,
   // 👇 add this line
   mfaStatus,
 

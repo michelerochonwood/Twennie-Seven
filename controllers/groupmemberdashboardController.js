@@ -77,10 +77,10 @@ const topicMappings = {
     'Soft Skills in Technical Environments': 'softskillsintechnicalenvironments',
     'Business Development in Technical Services': 'businessdevelopmentintechnicalservices',
     'Finding Projects Before they Become RFPs': 'findingprojectsbeforetheybecomerfps',
-    'Un-Commoditizing Your Services by Delivering What Clients Truly Value': 'uncommoditizingbydelivering',
+'Un-Commoditizing Your Services by Delivering What Clients Truly Value': 'uncommoditizingyourservicesbydeliveringwhatclientstrulyvalue',
     'Proposal Management': 'proposalmanagement',
     'Proposal Strategy': 'proposalstrategy',
-    'Designing a Proposal Process': 'proposalprocess',
+'Designing a Proposal Process': 'designingaproposalprocess',
     'Conducting Color Reviews of Proposals': 'conductingcolorreviews',
     'Candid Communication': 'candidcommunication',
     'Client Interactions': 'clientinteractions',
@@ -108,7 +108,7 @@ const topicMappings = {
     'CRM Platforms': 'crmplatforms',
     'Client Feedback Software': 'clientfeedbacksoftware',
     'Mental Health in Consulting Environments': 'mentalhealthinconsultingenvironments',
-    'Remote and Hybrid Work': 'remoteorhybridwork',
+'Remote and Hybrid Work': 'remoteandhybridwork',
     'The Power of Play in the Workplace': 'thepowerofplayintheworkplace',
     'Team Building in Technical Consulting': 'teambuildingintechnicalconsulting',
 };
@@ -162,19 +162,21 @@ const topicViewMappings = {
 };
 
 //we have used lean here and it doesn't appear to have caused problems, but lean caused problems elsewhere, so don't use it
+//we have used lean here and it doesn't appear to have caused problems, but lean caused problems elsewhere, so don't use it
 async function fetchTaggedUnits(userId) {
   try {
-    // Get tags where this user was assigned (by anyone — leader or themself)
-    const tags = await Tag.find({ 'assignedTo.member': userId }).lean();
+    // UNION: tags I created (self-tags) OR tags assigned to me
+    const tags = await Tag.find({
+      $or: [
+        { createdBy: userId },                 // self-created tags
+        { 'assignedTo.member': userId }        // leader (or anyone) assignments to me
+      ]
+    }).lean();
+
     if (!tags.length) return [];
 
     const unitMap = {
-      article: [],
-      video: [],
-      promptset: [],
-      interview: [],
-      exercise: [],
-      template: []
+      article: [], video: [], promptset: [], interview: [], exercise: [], template: []
     };
 
     const tagLookup = new Map(); // key: `${itemId}-${unitType}` → tag object
@@ -184,7 +186,7 @@ async function fetchTaggedUnits(userId) {
         if (unitMap[unitType]) {
           const key = `${item.toString()}-${unitType}`;
           unitMap[unitType].push(item.toString());
-          tagLookup.set(key, tag); // Store full tag object
+          tagLookup.set(key, tag);
         }
       }
     }
@@ -202,18 +204,17 @@ async function fetchTaggedUnits(userId) {
       units.map(unit => {
         const key = `${unit._id.toString()}-${type}`;
         const tag = tagLookup.get(key);
-        const assignment = tag?.assignedTo.find(a => a.member.toString() === userId.toString());
-        
-return {
-  unitType: type,
-  title: unit[titleField] || `Untitled ${type}`,
-  mainTopic: unit.main_topic || "No topic",
-  _id: unit._id,
-  tagId: tag?._id.toString(),
-  tagIdCreator: tag?.createdBy?.toString(),
-  instructions: assignment?.instructions || '',
-  completedAt: assignment?.completedAt || null
-};
+        const assignment = (tag?.assignedTo || []).find(a => String(a.member) === String(userId));
+        return {
+          unitType: type,
+          title: unit[titleField] || `Untitled ${type}`,
+          mainTopic: unit.main_topic || "No topic",
+          _id: unit._id,
+          tagId: tag?._id?.toString(),
+          tagIdCreator: tag?.createdBy?.toString(),      // used to split self vs leader-assigned
+          instructions: assignment?.instructions || '',
+          completedAt: assignment?.completedAt || null
+        };
       });
 
     return [
@@ -229,6 +230,7 @@ return {
     return [];
   }
 }
+
 
 
 

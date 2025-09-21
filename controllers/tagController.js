@@ -20,23 +20,25 @@ exports.createTag = async (req, res) => {
     const { tagName, itemId, itemType } = req.body;
     const assignedToRaw = req.body.assignedTo || {};
     const normalizedAssignedTo = Object.values(assignedToRaw || {});
+    const fromForm = isHtmlForm(req);
 
     if (!req.user) {
-      return isHtmlForm(req)
-        ? res.redirect('/auth/login')
-        : res.status(401).json({ message: 'User must be logged in to create tags.' });
+      return fromForm ? res.redirect('/auth/login')
+                      : res.status(401).json({ message: 'User must be logged in to create tags.' });
     }
 
+    // Basic validation
     if (!tagName || !itemId || !itemType) {
       const msg = 'Tag name, item ID, and item type are required.';
-      return isHtmlForm(req)
+      return fromForm
         ? res.status(400).render('member_form_views/error', {
-            layout: 'memberformlayout',
-            title: 'Invalid tag',
-            errorMessage: msg
+            layout: 'memberformlayout', title: 'Invalid tag', errorMessage: msg
           })
         : res.status(400).json({ message: msg });
     }
+
+    // Allow either a UNIT_TYPES item or 'topic'
+    const isTopic = itemType === 'topic';
 
     const userId = req.user._id;
     let userModel = null;
@@ -45,87 +47,88 @@ exports.createTag = async (req, res) => {
     else if (await GroupMember.exists({ _id: userId })) userModel = 'group_member';
     else {
       const msg = 'Invalid user. Unable to create a tag.';
-      return isHtmlForm(req)
+      return fromForm
         ? res.status(403).render('member_form_views/error', {
-            layout: 'memberformlayout',
-            title: 'Permission denied',
-            errorMessage: msg
+            layout: 'memberformlayout', title: 'Permission denied', errorMessage: msg
           })
         : res.status(403).json({ message: msg });
     }
 
-    const cleanName = tagName.trim();
-    let tag = await Tag.findOne({ name: cleanName });
+    const cleanName = String(tagName).trim();
+    const nameLower = cleanName.toLowerCase();
+
+    // IMPORTANT: find/create ONLY within the current creator’s namespace
+    let tag = await Tag.findOne({ nameLower, createdBy: userId });
 
     if (!tag) {
       tag = new Tag({
         name: cleanName,
+        nameLower,
         createdBy: userId,
         createdByModel: userModel,
-        associatedUnits: itemType !== 'topic' ? [{ item: itemId, unitType: itemType }] : [],
-        associatedTopics: itemType === 'topic' ? [itemId] : [],
+        associatedUnits: isTopic ? [] : [{ item: itemId, unitType: itemType }],
+        associatedTopics: isTopic ? [itemId] : [],
         assignedTo: []
       });
     } else {
       // attach the current unit/topic if not already attached
-      const isAlreadyTagged =
-        itemType === 'topic'
-          ? (tag.associatedTopics || []).some(id => id.toString() === String(itemId))
-          : (tag.associatedUnits || []).some(u => u.item.toString() === String(itemId) && u.unitType === itemType);
+      const already = isTopic
+        ? (tag.associatedTopics || []).some(id => String(id) === String(itemId))
+        : (tag.associatedUnits || []).some(u => String(u.item) === String(itemId) && u.unitType === itemType);
 
-      if (!isAlreadyTagged) {
-        if (itemType === 'topic') tag.associatedTopics.push(itemId);
+      if (!already) {
+        if (isTopic) tag.associatedTopics.push(itemId);
         else tag.associatedUnits.push({ item: itemId, unitType: itemType });
       }
     }
 
     // leader assignment flow (optional)
-    if (userModel === 'leader' && normalizedAssignedTo.length > 0) {
-      const newAssignments = [];
-      for (const entry of normalizedAssignedTo) {
-        if (entry?.member) {
-          const alreadyAssigned = (tag.assignedTo || []).some(
-            existing => existing.member.toString() === String(entry.member)
-          );
-          if (!alreadyAssigned) {
-            newAssignments.push({
-              member: entry.member,
-              instructions: entry.instructions || ''
-            });
-          }
-        }
-      }
-      if (newAssignments.length) {
-        tag.assignedTo = [...(tag.assignedTo || []), ...newAssignments];
-        // ensure the unit is present
-        const alreadyHasUnit = (tag.associatedUnits || []).some(
-          u => u.item.toString() === String(itemId) && u.unitType === itemType
-        );
-        if (!alreadyHasUnit) {
-          tag.associatedUnits.push({ item: itemId, unitType: itemType });
-        }
-      }
+const newAssignments = [];
+for (const entry of normalizedAssignedTo) {
+  if (!entry?.member) continue;
+
+  const idx = (tag.assignedTo || []).findIndex(
+    a => String(a.member) === String(entry.member)
+  );
+
+  if (idx === -1) {
+    newAssignments.push({
+      member: entry.member,
+      instructions: entry.instructions || ''
+    });
+  } else {
+    // Update instructions if provided
+    if (entry.instructions && entry.instructions.trim()) {
+      tag.assignedTo[idx].instructions = entry.instructions.trim();
     }
+  }
+}
+
+if (newAssignments.length) {
+  tag.assignedTo = [...(tag.assignedTo || []), ...newAssignments];
+}
+
+// ensure the unit is present if assigning on it (non-topic only)
+if (!isTopic) {
+  const hasUnit = (tag.associatedUnits || []).some(
+    u => String(u.item) === String(itemId) && u.unitType === itemType
+  );
+  if (!hasUnit) tag.associatedUnits.push({ item: itemId, unitType: itemType });
+}
+
 
     await tag.save();
 
-    // --- Respond appropriately ---
-    const fromForm = isHtmlForm(req);
-
-    // If a leader assigned from an HTML form, keep success view
+    // HTML success flows
     if (fromForm && userModel === 'leader' && normalizedAssignedTo.length > 0) {
       return res.render('unit_views/assign_success', { layout: 'unitviewlayout' });
     }
-
-    // For normal (non-assign) HTML form posts, redirect back to the unit page with a toast-hint
     if (fromForm) {
       const referer = req.get('referer');
       if (referer) {
         const sep = referer.includes('?') ? '&' : '?';
         return res.redirect(`${referer}${sep}tag=ok`);
       }
-
-      // fallback by role if no referer
       const role = req.user?.membershipType || 'member';
       const fallback =
         role === 'leader' ? '/dashboard/leader'
@@ -134,19 +137,86 @@ exports.createTag = async (req, res) => {
       return res.redirect(fallback);
     }
 
-    // JSON for AJAX clients
+    // JSON
     return res.status(200).json({ message: 'Tag saved successfully.', tag });
   } catch (error) {
     console.error('❌ Error creating tag:', error);
     return isHtmlForm(req)
       ? res.status(500).render('member_form_views/error', {
-          layout: 'memberformlayout',
-          title: 'Error',
+          layout: 'memberformlayout', title: 'Error',
           errorMessage: 'An error occurred while creating the tag.'
         })
       : res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+exports.completeAssignment = async (req, res) => {
+  try {
+    if (!req.user) return res.status(401).json({ message: 'Login required.' });
+
+    const tagId = req.params.tagId;
+    const me = String(req.user._id);
+
+    const tag = await Tag.findById(tagId);
+    if (!tag) return res.status(404).json({ message: 'Tag not found.' });
+
+    // Only the assignee can complete their own assignment
+    const row = (tag.assignedTo || []).find(a => String(a.member) === me);
+    if (!row) return res.status(403).json({ message: 'No assignment found for this user.' });
+
+    row.completedAt = new Date();
+    await tag.save();
+
+    return res.json({ ok: true, tag });
+  } catch (e) {
+    console.error('❌ completeAssignment error:', e);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+exports.getAssignedToMe = async (req, res) => {
+  try {
+    if (!req.user) return res.status(401).json({ message: 'Login required.' });
+
+    // Only group members have leader assignments; others will just see empty
+    const isGroupMember = await GroupMember.exists({ _id: req.user._id });
+    if (!isGroupMember) return res.json([]);
+
+    const tags = await Tag.find({ 'assignedTo.member': req.user._id }).lean();
+    return res.json(tags);
+  } catch (e) {
+    console.error('❌ getAssignedToMe error:', e);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+exports.unassignMember = async (req, res) => {
+  try {
+    if (!req.user) return res.status(401).json({ message: 'Login required.' });
+
+    const tagId = req.params.tagId;
+    const memberId = req.params.memberId;
+
+    const isLeader = await Leader.exists({ _id: req.user._id });
+    if (!isLeader) return res.status(403).json({ message: 'Only leaders can unassign.' });
+
+    const tag = await Tag.findById(tagId);
+    if (!tag) return res.status(404).json({ message: 'Tag not found.' });
+
+    if (String(tag.createdBy) !== String(req.user._id)) {
+      return res.status(403).json({ message: 'Only the creating leader can unassign.' });
+    }
+
+    tag.assignedTo = (tag.assignedTo || []).filter(a => String(a.member) !== String(memberId));
+    await tag.save();
+
+    return res.json({ ok: true, tag });
+  } catch (e) {
+    console.error('❌ unassignMember error:', e);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 
 
 exports.getTagsForItem = async (req, res) => {
@@ -195,13 +265,13 @@ exports.removeTag = async (req, res) => {
       return res.status(404).json({ message: 'Tag not found.' });
     }
 
-    const tagCreatorId = String(tag.createdBy);
-    // group members can remove only tags they created
-    const isGroupMember = !!(await GroupMember.exists({ _id: userId }));
-    if (isGroupMember && userId !== tagCreatorId) {
-      console.warn(`🚫 Group member ${userId} attempted to remove tag created by ${tagCreatorId}`);
-      return res.status(403).json({ message: 'Group members can only remove tags they created.' });
-    }
+const tagCreatorId = String(tag.createdBy);
+
+// Only the creator of the tag may remove it from a unit/topic (applies to all roles)
+if (userId !== tagCreatorId) {
+  console.warn(`🚫 User ${userId} attempted to remove tag created by ${tagCreatorId}`);
+  return res.status(403).json({ message: 'Only the tag creator can remove this tag.' });
+}
 
     if (itemType === 'topic') {
       tag.associatedTopics = (tag.associatedTopics || []).filter(id => String(id) !== String(itemId));

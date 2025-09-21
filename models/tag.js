@@ -2,83 +2,73 @@
 const mongoose = require('mongoose');
 
 const UNIT_TYPES = [
-  'upcoming',
-  'article',
-  'video',
-  'interview',
-  'promptset',
-  'exercise',
-  'template',
-  'microcourse',   // ← include if you use micro courses
-  'microstudy',    // ← include if you use micro studies
-  // 'peercoaching', // ← uncomment if/when you add it
+  'upcoming', 'article', 'video', 'interview', 'promptset',
+  'exercise', 'template', 'microcourse', 'microstudy'
+  // 'peercoaching' // add when ready
 ];
 
 const tagSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    unique: true,     // global uniqueness across creators (as in your original)
-    trim: true,
+    trim: true
   },
 
-  // Who created the tag (we store the id + a lowercase label of the model)
+  // normalized name for uniqueness
+  nameLower: {
+    type: String,
+    required: true,
+    trim: true
+  },
+
+  // Who created the tag
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
+    index: true
   },
   createdByModel: {
     type: String,
     required: true,
-    enum: ['member', 'group_member', 'leader'], // labels (not Mongoose model names)
+    enum: ['member', 'group_member', 'leader']
   },
 
-  // Units this tag is attached to (ID + lowercase unitType label)
+  // Unit associations
   associatedUnits: [{
-    item: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-    },
-    unitType: {
-      type: String,
-      required: true,
-      enum: UNIT_TYPES,
-    }
+    item: { type: mongoose.Schema.Types.ObjectId, required: true },
+    unitType: { type: String, required: true, enum: UNIT_TYPES }
   }],
 
-  // Optional: direct topic associations
+  // Topic associations (optional)
   associatedTopics: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Topic',
   }],
 
-  // Leader assignments (as in your original)
+  // Leader assignments
   assignedTo: [{
     member: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'GroupMember',
       required: true,
+      index: true
     },
     instructions: { type: String, trim: true, default: '' },
-    completedAt: { type: Date, default: null },
-  }],
+    completedAt: { type: Date, default: null }
+  }]
 }, { timestamps: true });
 
+// Normalize before validate/save
+tagSchema.pre('validate', function(next) {
+  if (this.name) this.nameLower = String(this.name).trim().toLowerCase();
+  next();
+});
+
 /**
- * Static: migrate Tag.associatedUnits entries from one unit (usually 'upcoming')
- * to the newly published unit. Uses arrayFilters to update only matching elements.
- *
- * Params:
- *  - fromItemId: ObjectId|string of the "upcoming" doc
- *  - toItemId:   ObjectId|string of the new unit
- *  - toUnitType: string in UNIT_TYPES (e.g., 'article', 'video', ...)
- *  - fromUnitType: string (defaults to 'upcoming')
+ * Migrate Tag.associatedUnits entries from one unit (e.g., 'upcoming') to the newly published unit.
  */
 tagSchema.statics.migrateAssociatedUnits = async function ({
-  fromItemId,
-  toItemId,
-  toUnitType,
-  fromUnitType = 'upcoming',
+  fromItemId, toItemId, toUnitType, fromUnitType = 'upcoming'
 }) {
   if (!fromItemId || !toItemId || !toUnitType) return { modifiedCount: 0 };
 
@@ -87,23 +77,19 @@ tagSchema.statics.migrateAssociatedUnits = async function ({
 
   const res = await this.updateMany(
     { 'associatedUnits.item': fromId, 'associatedUnits.unitType': fromUnitType },
-    {
-      $set: {
-        'associatedUnits.$[elem].item'    : toId,
-        'associatedUnits.$[elem].unitType': toUnitType,
-      }
-    },
-    { arrayFilters: [{ 'elem.item': fromId, 'elem.unitType': fromUnitType }] }
+    { $set: { 'associatedUnits.$[e].item': toId, 'associatedUnits.$[e].unitType': toUnitType } },
+    { arrayFilters: [{ 'e.item': fromId, 'e.unitType': fromUnitType }] }
   );
 
   return { modifiedCount: res.modifiedCount ?? res.nModified ?? 0 };
 };
 
-// Helpful indexes
-tagSchema.index({ name: 1 }, { unique: true });
+// Indexes
+tagSchema.index({ nameLower: 1, createdBy: 1 }, { unique: true });
 tagSchema.index({ 'associatedUnits.item': 1, 'associatedUnits.unitType': 1 });
 tagSchema.index({ createdBy: 1 });
 
 module.exports = mongoose.models.Tag || mongoose.model('Tag', tagSchema);
+
 
 

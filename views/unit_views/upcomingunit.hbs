@@ -119,13 +119,14 @@
 
       <!-- Quick Tag (group members & individual members) -->
       {{#if isGroupMemberOrMember}}
-        <div class="single_unit-tag-container" style="margin-bottom: 200px;">
-          <form action="/tags/create" method="POST" class="inline" id="tagForm">
+        <div class="single_unit-tag-container" style="margin-bottom: 24px;">
+          <form action="/tags/create" method="POST" class="inline" id="tagForm-upcoming-{{_id}}">
             <input type="hidden" name="_csrf" value="{{csrfToken}}">
             <input type="hidden" name="itemId" value="{{_id}}">
             <input type="hidden" name="itemType" value="upcoming">
             <input type="hidden" name="tagName" value="Read Later">
-            <button type="submit" class="tag-this-unit-link" style="background:none;border:none;padding:0;cursor:pointer;">
+            <button type="button" class="tag-this-unit-link" onclick="promptAndSubmitTag('tagForm-upcoming-{{_id}}')"
+                    style="background:none;border:none;padding:0;cursor:pointer;">
               tag this unit
               <svg class="tag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 39.48 36.66">
                 <path class="cls-1" d="M38.77,21.12L16.05.56C15.65.19,15.13,0,14.59,0L2.12.16c-1.18.01-2.12.97-2.12,2.15v11.2c0,.63.28,1.24.77,1.64l24.95,21c.9.76,2.24.65,3.01-.24l10.23-11.8c.77-.88.69-2.22-.18-3ZM6.28,8.87c-1.57,0-2.84-1.27-2.84-2.84s1.27-2.84,2.84-2.84,2.84,1.27,2.84,2.84-1.27,2.84-2.84,2.84Z"/>
@@ -134,6 +135,45 @@
           </form>
         </div>
       {{/if}}
+
+      {{!-- TAGS FOR THIS UPCOMING UNIT (read + actions) --}}
+      <div class="single_unit-tags white-container" style="margin-top:0; margin-bottom:24px;">
+        <h4 class="assign-tag-title" style="margin-bottom:10px;">tags for this upcoming unit</h4>
+
+        {{#if tagsForUnit.length}}
+          <ul class="unit-tag-list" style="list-style:none; padding:0; margin:0; display:flex; flex-wrap:wrap; gap:10px;">
+            {{#each tagsForUnit}}
+              <li class="tag-pill" style="display:flex; align-items:center; gap:8px; background:#f4f5ff; color:#4e50a2; border-radius:999px; padding:6px 10px;">
+                <span class="tag-name" style="font-weight:600;">{{name}}</span>
+
+                {{!-- Assignments shown, but not completable for upcoming --}}
+                {{#if assignedToMe}}
+                  <span class="tag-status" style="font-size:12px; color:#6b7280;">⏳ pending</span>
+                  {{#if instructions}}
+                    <span class="tag-instructions" style="font-size:12px; color:#6b7280;">“{{instructions}}”</span>
+                  {{/if}}
+                {{/if}}
+
+                {{!-- If I created this tag, I can remove it from this upcoming --}}
+                {{#if createdByMe}}
+                  <button
+                    type="button"
+                    class="tag-action"
+                    data-action="remove"
+                    data-tag="{{_id}}"
+                    data-item="{{@root._id}}"
+                    data-type="upcoming"
+                    style="border:none; background:#e11d48; color:#fff; border-radius:999px; padding:4px 8px; cursor:pointer; font-size:12px;">
+                    remove from this unit
+                  </button>
+                {{/if}}
+              </li>
+            {{/each}}
+          </ul>
+        {{else}}
+          <p style="margin:0; color:#6b7280;">No tags yet. Use “assign” (leaders) or “tag this unit” to add one.</p>
+        {{/if}}
+      </div>
 
       {{!-- No notes composer for upcoming items --}}
     </div>
@@ -205,6 +245,50 @@
     if (textarea) textarea.style.display = checkbox.checked ? 'block' : 'none';
   }
 
+  // Prompt + submit for quick tag
+  function promptAndSubmitTag(formId) {
+    const form = document.getElementById(formId);
+    if (!form) return;
+    const input = form.querySelector('input[name="tagName"]');
+    const suggested = (input?.value || 'Read Later').trim();
+    const entered = window.prompt('Name this tag', suggested);
+    if (!entered) return;
+    input.value = entered.trim();
+    if (!input.value) return;
+    const btn = form.querySelector('.tag-this-unit-link');
+    if (btn) btn.disabled = true;
+    form.submit();
+  }
+
+  // Remove a self-created tag from this upcoming unit
+  async function removeTagFromUnit(tagId, itemId, itemType) {
+    try {
+      const res = await fetch(`/tags/remove/${tagId}/${itemId}/${itemType}`, {
+        method: 'DELETE',
+        headers: { 'X-CSRF-Token': '{{csrfToken}}' },
+        body: JSON.stringify({ _csrf: '{{csrfToken}}' })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        location.reload();
+      } else {
+        alert(data.message || 'Could not remove tag.');
+      }
+    } catch (e) {
+      alert('Could not remove tag. Please try again.');
+    }
+  }
+
+  // delegate clicks for tag actions (only remove; upcoming has no "complete")
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.tag-action');
+    if (!btn) return;
+    const action = btn.dataset.action;
+    if (action === 'remove') {
+      return removeTagFromUnit(btn.dataset.tag, btn.dataset.item, btn.dataset.type);
+    }
+  });
+
   // Confirm before publish
   document.getElementById('publishNowLink')?.addEventListener('click', (e) => {
     if (!confirm('Open the prefilled form to publish now? After you submit, this upcoming card will be removed.')) {
@@ -212,5 +296,6 @@
     }
   });
 </script>
+
 
 

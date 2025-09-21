@@ -127,17 +127,33 @@ const getModelByUnitType = (type) => {
 };
 
 async function buildLeaderAssignedUnits(leaderId) {
+  // All tags this leader created that have assignments
   const assignedTags = await Tag.find({
     createdBy: leaderId,
     assignedTo: { $exists: true, $ne: [] },
   }).lean();
 
   const leaderAssignedUnits = [];
+  const leaderAssignmentsOpen = [];
+  const leaderAssignmentsCompleted = [];
 
   for (const tag of assignedTags) {
+    // Gather open/completed rows (flat), per assignee
+    for (const a of (tag.assignedTo || [])) {
+      const row = {
+        tagId: tag._id.toString(),
+        tagName: tag.name,
+        memberId: a.member?.toString(),
+        instructions: a.instructions || '',
+        completedAt: a.completedAt || null
+      };
+      if (row.completedAt) leaderAssignmentsCompleted.push(row);
+      else leaderAssignmentsOpen.push(row);
+    }
+
+    // Build per-unit rows for the “leaderAssignedUnits” section
     for (const { item, unitType } of tag.associatedUnits || []) {
-      // skip types you don't want here
-      if (unitType === 'promptset' || unitType === 'prompt') continue;
+      if (unitType === 'promptset' || unitType === 'prompt') continue; // skip if not desired
 
       const Model = getModelByUnitType(unitType);
       if (!Model) continue;
@@ -145,7 +161,7 @@ async function buildLeaderAssignedUnits(leaderId) {
       const unit = await Model.findById(item).lean();
       if (!unit) continue;
 
-      for (const assignee of tag.assignedTo) {
+      for (const assignee of tag.assignedTo || []) {
         const member = await GroupMember.findById(assignee.member).select('name').lean();
         if (!member) continue;
 
@@ -164,15 +180,17 @@ async function buildLeaderAssignedUnits(leaderId) {
             _id: assignee.member?.toString(),
             name: member.name,
             instructions: assignee.instructions || '',
-            completedAt: assignee.completedAt || null, // ← KEY: timestamp or null
+            completedAt: assignee.completedAt || null,
           }
         });
       }
     }
   }
 
-  return leaderAssignedUnits;
+  return { leaderAssignedUnits, leaderAssignmentsOpen, leaderAssignmentsCompleted };
 }
+
+
 
 
 const topicMappings = {
@@ -186,10 +204,11 @@ const topicMappings = {
     'Soft Skills in Technical Environments': 'softskillsintechnicalenvironments',
     'Business Development in Technical Services': 'businessdevelopmentintechnicalservices',
     'Finding Projects Before they Become RFPs': 'findingprojectsbeforetheybecomerfps',
-    'Un-Commoditizing Your Services by Delivering What Clients Truly Value': 'uncommoditizingbydeliveringuncommoditizingyourservicesbydeliveringwhatclientstrulyvalue',
+    'Un-Commoditizing Your Services by Delivering What Clients Truly Value': 'uncommoditizingyourservicesbydeliveringwhatclientstrulyvalue',
+
     'Proposal Management': 'proposalmanagement',
     'Proposal Strategy': 'proposalstrategy',
-    'Designing a Proposal Process': 'proposalprocess',
+    'Designing a Proposal Process': 'designingaproposalprocess',
     'Conducting Color Reviews of Proposals': 'conductingcolorreviews',
     'Candid Communication': 'candidcommunication',
     'Client Interactions': 'clientinteractions',
@@ -229,7 +248,8 @@ const topicViewMappings = {
     'aiinprojectmanagement': 'single_topic_aiprojectmgmt',
     'businessdevelopmentintechnicalservices': 'single_topic_bd',
     'findingprojectsbeforetheybecomerfps': 'single_topic_findingprojects',
-    'uncommoditizingbydelivering': 'uncommoditizingbydelivering',
+    'uncommoditizingyourservicesbydeliveringwhatclientstrulyvalue': 'single_topic_uncommoditize',
+
     'careerdevelopmentintechnicalservices': 'single_topic_careerdev',
     'clientexperience': 'single_topic_clientex',
     'clientfeedbacksoftware': 'single_topic_clientfeedback',
@@ -590,7 +610,7 @@ console.log("Selected Topics for Leader:", selectedTopics);
 const allLeaderTaggedUnits = await fetchTaggedUnits(id);
 
 // Only self-tags (no assignments) count toward "my tagged units"
-const leaderTaggedUnits = allLeaderTaggedUnits.filter(u => u.assignedCount === 0);
+const leaderSelfTaggedUnits = allLeaderTaggedUnits.filter(u => u.assignedCount === 0);
 const leaderTaggedCountAll = allLeaderTaggedUnits.length;
 
             const [leaderArticles, leaderVideos, leaderPromptSets, leaderInterviews, leaderExercises, leaderTemplates] = await Promise.all([
@@ -666,7 +686,7 @@ const formattedCompletedSets = completedRecords.map(record => ({
     badge: record.earnedBadge // This should now contain an object with { image, name }
 }));
 
-const leaderAssignedUnits = await buildLeaderAssignedUnits(id);
+const { leaderAssignedUnits, leaderAssignmentsOpen, leaderAssignmentsCompleted } = await buildLeaderAssignedUnits(id);
 // --- Membership tab: derive view flags & user fields for template ---
 
 // 1) Email preference flags (defaults to Level 1 if unset/invalid)
@@ -738,8 +758,8 @@ return res.render('leader_dashboard', {
   maxGroupSize: userData.maxGroupSize,
   leaderUnits,
   groupMemberUnits,
-  leaderTaggedUnits,
-  leaderAssignedUnits,
+leaderAssignmentsOpen,
+leaderAssignmentsCompleted,
   registeredPromptSets: leaderPrompts,
   promptSchedules,
   currentPromptSets,
@@ -748,6 +768,7 @@ return res.render('leader_dashboard', {
   topicSuggestions,
   leaderAccount,
   emailPreferenceLevel,
+  leaderSelfTaggedUnits,
 
   // 👇 add this line
   mfaStatus,
