@@ -162,24 +162,28 @@ async function buildLeaderAssignedUnits(leaderId) {
         const member = await GroupMember.findById(assignee.member).select('name').lean();
         if (!member) continue;
 
-        leaderAssignedUnits.push({
-          _id: item,
-          unitType,
-          title:
-            unit.article_title ||
-            unit.video_title ||
-            unit.interview_title ||
-            unit.exercise_title ||
-            unit.template_title ||
-            "Untitled",
-          mainTopic: unit.main_topic || "No topic",
-          assignedTo: {
-            _id: assignee.member?.toString(),
-            name: member.name,
-            instructions: assignee.instructions || '',
-            completedAt: assignee.completedAt || null,
-          }
-        });
+leaderAssignedUnits.push({
+  _id: item,
+  unitType,
+  title:
+    unit.article_title ||
+    unit.video_title ||
+    unit.interview_title ||
+    unit.exercise_title ||
+    unit.template_title ||
+    "Untitled",
+  mainTopic: unit.main_topic || "No topic",
+
+  // ✅ add this line so the partial can delete the tag:
+  tagId: tag._id.toString(),
+
+  assignedTo: {
+    _id: assignee.member?.toString(),
+    name: member.name,
+    instructions: assignee.instructions || '',
+    completedAt: assignee.completedAt || null,
+  }
+});
       }
     }
   }

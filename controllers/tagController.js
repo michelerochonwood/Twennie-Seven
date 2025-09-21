@@ -250,6 +250,29 @@ exports.getTagsForUser = async (req, res) => {
   }
 };
 
+// controllers/tagController.js
+exports.deleteTag = async (req, res) => {
+  try {
+    if (!req.user) return res.status(401).json({ message: 'Login required.' });
+
+    const tagId = req.params.tagId;
+    const tag = await Tag.findById(tagId);
+    if (!tag) return res.status(404).json({ message: 'Tag not found.' });
+
+    // Only the creator can delete the tag entirely
+    if (String(tag.createdBy) !== String(req.user._id)) {
+      return res.status(403).json({ message: 'Only the tag creator can delete this tag.' });
+    }
+
+    await Tag.findByIdAndDelete(tagId);
+    return res.json({ ok: true });
+  } catch (e) {
+    console.error('❌ deleteTag error:', e);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
 
 exports.removeTag = async (req, res) => {
   try {

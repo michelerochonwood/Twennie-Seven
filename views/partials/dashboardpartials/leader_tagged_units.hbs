@@ -18,13 +18,17 @@
           {{/if}}
         </div>
 
-        <a href="/unitviews/{{capitalize unitType}}s/view/{{_id}}" class="tagged-unit-link">view unit</a><br>
-
-        <button
-          class="tag-remove-btn"
-          onclick="removeTag('{{tagId}}', '{{_id}}', '{{unitType}}')">
-          remove tag
-        </button>
+        <div class="tagged-unit-actions" style="display:flex; gap:8px; align-items:center;">
+          <a href="/unitviews/{{capitalize unitType}}s/view/{{_id}}" class="tagged-unit-link">view unit</a>
+          <button class="tag-remove-btn"
+                  onclick="removeTagFromUnit('{{tagId}}','{{_id}}','{{unitType}}')">
+            remove from this unit
+          </button>
+          <button class="tag-delete-btn"
+                  onclick="deleteTag('{{tagId}}')">
+            delete tag
+          </button>
+        </div>
       </div>
     {{else}}
       <p class="tagged-no-units">You have no self-tagged units.</p>
@@ -61,7 +65,19 @@
           {{/if}}
         </div>
 
-        <a href="/unitviews/{{capitalize unitType}}s/view/{{_id}}" class="tagged-unit-link">view unit</a>
+        <div class="tagged-unit-actions" style="display:flex; gap:8px; align-items:center;">
+          <a href="/unitviews/{{capitalize unitType}}s/view/{{_id}}" class="tagged-unit-link">view unit</a>
+          {{!-- Optional: unassign only this member (keep tag) --}}
+          <button class="tag-unassign-btn"
+                  onclick="unassignMember('{{tagId}}','{{assignedTo._id}}')">
+            unassign
+          </button>
+          {{!-- Delete entire tag (removes for all assignees + units) --}}
+          <button class="tag-delete-btn"
+                  onclick="deleteTag('{{tagId}}')">
+            delete tag
+          </button>
+        </div>
       </div>
     {{else}}
       <p class="tagged-no-units">You have no assigned units.</p>
@@ -74,27 +90,55 @@
     return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
   }
 
-  async function removeTag(tagId, unitId, unitType) {
-    if (!confirm("Are you sure you want to remove this tag?")) return;
-
+  // Remove this tag from ONE unit (keeps the tag if it has other associations)
+  async function removeTagFromUnit(tagId, unitId, unitType) {
+    if (!confirm("Remove this tag from the unit?")) return;
     try {
-      const response = await fetch(`/tags/remove/${tagId}/${unitId}/${unitType}`, {
+      const res = await fetch(`/tags/remove/${tagId}/${unitId}/${unitType}`, {
         method: 'DELETE',
         headers: { 'X-CSRF-Token': getCsrfToken() }
       });
-
-      const result = await response.json().catch(() => ({}));
-      if (response.ok) {
-        location.reload();
-      } else {
-        alert(result.message || 'Failed to remove tag.');
-      }
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) location.reload(); else alert(data.message || 'Failed to remove tag.');
     } catch (err) {
-      console.error('❌ Tag removal failed:', err);
+      console.error('removeTagFromUnit error:', err);
       alert('An error occurred while removing the tag.');
     }
   }
+
+  // Unassign a single member from a tag (keeps the tag and other assignees)
+  async function unassignMember(tagId, memberId) {
+    if (!confirm("Unassign this member from the tag?")) return;
+    try {
+      const res = await fetch(`/tags/${tagId}/assigned/${memberId}`, {
+        method: 'DELETE',
+        headers: { 'X-CSRF-Token': getCsrfToken() }
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) location.reload(); else alert(data.message || 'Could not unassign.');
+    } catch (err) {
+      console.error('unassignMember error:', err);
+      alert('An error occurred while unassigning.');
+    }
+  }
+
+  // Delete the entire tag (creator-only, enforced by controller)
+  async function deleteTag(tagId) {
+    if (!confirm("Delete this tag entirely? This removes it from all units and all assignees.")) return;
+    try {
+      const res = await fetch(`/tags/${tagId}`, {
+        method: 'DELETE',
+        headers: { 'X-CSRF-Token': getCsrfToken() }
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) location.reload(); else alert(data.message || 'Failed to delete tag.');
+    } catch (err) {
+      console.error('deleteTag error:', err);
+      alert('An error occurred while deleting the tag.');
+    }
+  }
 </script>
+
 
 
 
