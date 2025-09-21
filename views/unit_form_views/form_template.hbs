@@ -1,7 +1,6 @@
 {{#*inline "title"}}Create a Template | Twennie{{/inline}}
 {{> mainpartials/templateinstructions_partial}}
 
-
 <!-- near the top of every form_* file -->
 <input type="hidden" name="fromUpcomingId" value="{{fromUpcomingId}}">
 <div class="contribute-wave-divider">
@@ -16,38 +15,41 @@
       <input type="hidden" name="_csrf" value="{{csrfToken}}">
       <input type="hidden" name="_id" value="{{data._id}}">
 
+      <!-- Title -->
       <div class="form-field">
         <label for="template-title">Template Title</label>
         <input type="text" id="template-title" name="template_title" value="{{data.template_title}}" required>
       </div>
 
-<!-- Main Topic -->
-<div class="form-field">
-  <label for="main-topic">Main Topic</label>
-  <select id="main-topic" name="main_topic" required>
-    <option value="">Please select a main topic</option>
-    {{#each mainTopics}}
-      <option value="{{this}}" {{#ifEquals this ../data.main_topic}}selected{{/ifEquals}}>{{this}}</option>
-    {{/each}}
-  </select>
-</div>
+      <!-- Main Topic -->
+      <div class="form-field">
+        <label for="main-topic">Main Topic</label>
+        <select id="main-topic" name="main_topic" required>
+          <option value="">Please select a main topic</option>
+          {{#each mainTopics}}
+            <option value="{{this}}" {{#ifEquals this ../data.main_topic}}selected{{/ifEquals}}>{{this}}</option>
+          {{/each}}
+        </select>
+      </div>
 
-<!-- Secondary Topic -->
-<div class="form-field">
-  <label for="secondary-topics">Secondary Topic (Optional)</label>
-  <select id="secondary-topics" name="secondary_topics">
-    <option value="">None</option>
-    {{#each mainTopics}}
-      <option value="{{this}}" {{#ifIncludes ../data.secondary_topics this}}selected{{/ifIncludes}}>{{this}}</option>
-    {{/each}}
-  </select>
-</div>
+      <!-- Secondary Topic -->
+      <div class="form-field">
+        <label for="secondary-topics">Secondary Topic (Optional)</label>
+        <select id="secondary-topics" name="secondary_topics">
+          <option value="">None</option>
+          {{#each mainTopics}}
+            <option value="{{this}}" {{#ifIncludes ../data.secondary_topics this}}selected{{/ifIncludes}}>{{this}}</option>
+          {{/each}}
+        </select>
+      </div>
 
+      <!-- Sub Topic -->
       <div class="form-field">
         <label for="sub-topic">Sub Topic (Optional)</label>
         <input type="text" id="sub-topic" name="sub_topic" value="{{data.sub_topic}}">
       </div>
 
+      <!-- Previously uploaded files -->
       {{#if data.documentUploads}}
         <div class="uploaded-files">
           {{#each data.documentUploads}}
@@ -56,12 +58,39 @@
         </div>
       {{/if}}
 
+      <!-- File upload -->
       <div class="form-field">
         <label for="template_upload">Upload Template File (PDF, Word, Excel, PowerPoint)</label>
         <input type="file" id="template_upload" name="document_uploads" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx">
         <small>You may upload one file. Combine related files into a single PDF before submitting.</small>
       </div>
 
+      <!-- File format (RADIO GROUP - REQUIRED) -->
+      <div class="form-field">
+        <label>File Format</label>
+        <div class="white-container">
+          <div class="toggle-group">
+            <label>
+              <input type="radio" name="file_format" value="pdf" {{#ifEquals data.file_format "pdf"}}checked{{/ifEquals}} required> PDF
+            </label>
+            <label>
+              <input type="radio" name="file_format" value="word" {{#ifEquals data.file_format "word"}}checked{{/ifEquals}}> Word (DOC/DOCX)
+            </label>
+            <label>
+              <input type="radio" name="file_format" value="excel" {{#ifEquals data.file_format "excel"}}checked{{/ifEquals}}> Excel (XLS/XLSX)
+            </label>
+            <label>
+              <input type="radio" name="file_format" value="ppt" {{#ifEquals data.file_format "ppt"}}checked{{/ifEquals}}> PowerPoint (PPT/PPTX)
+            </label>
+            <label>
+              <input type="radio" name="file_format" value="other" {{#ifEquals data.file_format "other"}}checked{{/ifEquals}}> Other
+            </label>
+          </div>
+        </div>
+        <small>Please select the format of the file you’re uploading.</small>
+      </div>
+
+      <!-- Attributes (checkboxes) - file_format removed from here -->
       <div class="form-field">
         <div class="white-container">
           <div class="toggle-group">
@@ -69,17 +98,16 @@
             <label><input type="checkbox" name="produce_deliverables" {{#if data.produce_deliverables}}checked{{/if}}> Produces deliverables?</label>
             <label><input type="checkbox" name="new_ideas" {{#if data.new_ideas}}checked{{/if}}> Encourages creativity?</label>
             <label><input type="checkbox" name="engaging" {{#if data.engaging}}checked{{/if}}> Insightful and engaging?</label>
-            <label><input type="checkbox" name="file_format" {{#if data.file_format}}checked{{/if}}> File format appropriate?</label>
             <label><input type="checkbox" name="permission" {{#if data.permission}}checked{{/if}} required> Consent for promotional use?</label>
           </div>
         </div>
       </div>
 
+      <!-- Short Summary -->
       <div class="form-field">
         <label for="short-summary">Short Summary (50 words)</label>
         <textarea id="short-summary" name="short_summary" maxlength="300" required>{{data.short_summary}}</textarea>
       </div>
-
 
       <!-- Full Summary -->
       <div class="form-field">
@@ -92,6 +120,7 @@
         <textarea id="full-summary" name="full_summary" maxlength="600">{{data.full_summary}}</textarea>
       </div>
 
+      <!-- Visibility -->
       <div class="form-field">
         <label>Who can access this template?</label>
         <div class="visibility-toggle-row">
@@ -110,6 +139,7 @@
         </div>
       </div>
 
+      <!-- Buttons -->
       <div class="form-buttons">
         {{#if data._id}}
           <button type="submit" name="submit" value="edit" class="form-button submit-button">save edited template</button>
@@ -122,6 +152,7 @@
 </div>
 
 {{> mainpartials/footer}}
+
 
 
 
