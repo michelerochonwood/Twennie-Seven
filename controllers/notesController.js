@@ -1,78 +1,127 @@
 // controllers/notesController.js
 const mongoose = require('mongoose');
 const Note = require('../models/notes/notes');
+
 const Article = require('../models/unit_models/article');
 const Video = require('../models/unit_models/video');
 const Interview = require('../models/unit_models/interview');
 const Exercise = require('../models/unit_models/exercise');
 const Template = require('../models/unit_models/template');
+
 const GroupMember = require('../models/member_models/group_member');
 const Leader = require('../models/member_models/leader');
+
 const Tag = require('../models/tag');
+
+/**
+ * Resolve unit by id across known unit collections.
+ * Returns { unit, type } where type ∈ 'article' | 'video' | 'interview' | 'exercise' | 'template' | null
+ */
+async function resolveUnitAndType(unitId) {
+  const id = new mongoose.Types.ObjectId(unitId);
+
+  const [a, v, i, e, t] = await Promise.all([
+    Article.findById(id).select('main_topic secondary_topics').lean(),
+    Video.findById(id).select('main_topic secondary_topics').lean(),
+    Interview.findById(id).select('main_topic secondary_topics').lean(),
+    Exercise.findById(id).select('main_topic secondary_topics').lean(),
+    Template.findById(id).select('main_topic secondary_topics').lean()
+  ]);
+
+  if (a) return { unit: a, type: 'article' };
+  if (v) return { unit: v, type: 'video' };
+  if (i) return { unit: i, type: 'interview' };
+  if (e) return { unit: e, type: 'exercise' };
+  if (t) return { unit: t, type: 'template' };
+  return { unit: null, type: null };
+}
 
 // 1️⃣ CREATE / UPSERT NOTE (Submission Form Handler)
 exports.createNote = async (req, res) => {
   try {
-    const userId = req.user?._id || req.user?.id; // normalized by app.js
+    const userId = req.user?._id || req.user?.id;
     if (!userId) return res.status(401).send('Unauthorized: Please log in.');
 
     const {
       unitId,
-      unitType,              // we now pass 'article' from the view; optional but useful
-      main_topic,            // may be provided by the form
-      secondary_topic,       // may be provided by the form
+      unitType,         // optional but preferred; your views pass this
+      main_topic,       // optional; view often supplies
+      secondary_topic,  // optional; view often supplies
       note_content
     } = req.body;
 
     if (!unitId) return res.status(400).send('Missing unitId.');
 
-    // Ensure only group members or leaders can submit
+    // Must be group member or leader to submit notes
     const [isGroupMember, isLeader] = await Promise.all([
-      GroupMember.findById(userId).select('_id'),
-      Leader.findById(userId).select('_id')
+      GroupMember.exists({ _id: userId }),
+      Leader.exists({ _id: userId })
     ]);
+
     if (!isGroupMember && !isLeader) {
       return res.status(403).send('Unauthorized: Only group members and leaders can submit notes.');
     }
 
-    // Resolve the unit to derive topics if not provided in the form
-    let unit = null;
-    if (!main_topic || !secondary_topic) {
-      unit =
-        (await Article.findById(unitId)) ||
-        (await Video.findById(unitId)) ||
-        (await Interview.findById(unitId)) ||
-        (await Exercise.findById(unitId)) ||
-        (await Template.findById(unitId));
+    // Resolve topics/unit type if the form didn't provide them
+    let effectiveUnitType = unitType || null;
+    let effectiveMainTopic = main_topic || null;
+    let effectiveSecondary = secondary_topic || null;
 
+    if (!effectiveUnitType || !effectiveMainTopic || !effectiveSecondary) {
+      const { unit, type } = await resolveUnitAndType(unitId);
       if (!unit) return res.status(404).send('Unit not found.');
+
+      if (!effectiveUnitType) effectiveUnitType = type;
+      if (!effectiveMainTopic) effectiveMainTopic = unit.main_topic ?? null;
+
+      // Your schemas vary between `secondary_topic` (single) and `secondary_topics` (array).
+      // Preserve the single-field behavior used in your note forms.
+      if (!effectiveSecondary) {
+        // prefer a single secondary_topic from the unit if present
+        if (typeof unit.secondary_topic === 'string') {
+          effectiveSecondary = unit.secondary_topic;
+        } else if (Array.isArray(unit.secondary_topics) && unit.secondary_topics.length) {
+          effectiveSecondary = unit.secondary_topics.join(', ');
+        } else {
+          effectiveSecondary = null;
+        }
+      }
     }
 
-    const effectiveMainTopic = main_topic ?? unit?.main_topic ?? null;
-    const effectiveSecondary = secondary_topic ?? unit?.secondary_topic ?? null; // your schema names vary slightly; keep as-is
+    // Upsert the note (one note per user+unit)
+    const content = (note_content || '').trim();
 
-    // Upsert the note so we don't create duplicates per (member, unit)
     await Note.findOneAndUpdate(
       { unitID: unitId, memberID: userId },
       {
         $set: {
-          unitType: unitType || undefined,
+          unitType: effectiveUnitType || undefined,
           main_topic: effectiveMainTopic,
           secondary_topic: effectiveSecondary,
-          note_content: (note_content || '').trim(),
+          note_content: content,
           updatedAt: new Date()
         }
       },
       { upsert: true, new: true, setDefaultsOnInsert: true }
     );
 
-    // ✅ Mark the corresponding leader-assigned tag as completed for this member+unit
+    /**
+     * ✅ Mark the corresponding leader assignment as completed for THIS member and THIS unit.
+     * We mark completion immediately after saving the note, which preserves your rule:
+     * "The unit shows as completed only once the group member has submitted notes."
+     *
+     * - Only the assignee's row is updated (arrayFilters on assignedTo.member).
+     * - We match tags that are attached to this unit via associatedUnits.
+     */
     await Tag.updateMany(
       {
         'assignedTo.member': new mongoose.Types.ObjectId(userId),
-        'associatedUnits.item': new mongoose.Types.ObjectId(unitId)
-        // If you want to match by type too:
-        // 'associatedUnits.unitType': unitType
+        associatedUnits: {
+          $elemMatch: {
+            item: new mongoose.Types.ObjectId(unitId),
+            ...(effectiveUnitType ? { unitType: effectiveUnitType } : {})
+          }
+        }
       },
       {
         $set: { 'assignedTo.$[ass].completedAt': new Date() }
@@ -83,6 +132,7 @@ exports.createNote = async (req, res) => {
     );
 
     const dashboardLink = isGroupMember ? '/dashboard/groupmember' : '/dashboard/leader';
+
     return res.render('unit_views/unitnotessuccess', {
       layout: 'unitviewlayout',
       dashboard: dashboardLink
@@ -106,7 +156,7 @@ exports.getNotesByLeader = async (req, res) => {
       return res.status(403).send('Unauthorized: Only leaders can view notes.');
     }
 
-    // Get all group members under this leader (consistent with rest of app: groupId → leader._id)
+    // Get all group members under this leader (groupId = leaderId in your app)
     const groupMembers = await GroupMember.find({ groupId: leaderId }).select('_id');
     const groupMemberIds = groupMembers.map(m => m._id);
 
@@ -147,4 +197,5 @@ exports.getNotesByGroupMember = async (req, res) => {
     return res.status(500).send('Error retrieving notes.');
   }
 };
+
 
