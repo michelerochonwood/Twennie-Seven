@@ -125,7 +125,6 @@ async function fetchTaggedUnits(userId) {
 
 
 async function buildLeaderAssignedUnits(leaderId) {
-  // All tags this leader created that have assignments
   const assignedTags = await Tag.find({
     createdBy: leaderId,
     assignedTo: { $exists: true, $ne: [] },
@@ -136,7 +135,7 @@ async function buildLeaderAssignedUnits(leaderId) {
   const leaderAssignmentsCompleted = [];
 
   for (const tag of assignedTags) {
-    // Flat open/completed list (good for counts or a compact table, optional)
+    // Flat open/completed rows (optional, handy for counts/mini tables)
     for (const a of (tag.assignedTo || [])) {
       const row = {
         tagId: tag._id.toString(),
@@ -187,6 +186,7 @@ async function buildLeaderAssignedUnits(leaderId) {
 
   return { leaderAssignedUnits, leaderAssignmentsOpen, leaderAssignmentsCompleted };
 }
+
 
 
 
