@@ -90,7 +90,7 @@ async function fetchTaggedUnits(userId) {
 const topicMappings = {
     'AI in Consulting': 'aiinconsulting',
     'AI in Project Management': 'aiinprojectmanagement',
-    'AI in Adult Learning': 'aiinadultlearning',
+    'AI in Adult Learning': 'aiinlearning',
     'Project Management': 'projectmanagement',
     'Workplace Culture': 'workplaceculture',
     'The Pareto Principle': 'theparetoprinciple',
@@ -102,7 +102,7 @@ const topicMappings = {
     'Proposal Management': 'proposalmanagement',
     'Proposal Strategy': 'proposalstrategy',
     'Designing a Proposal Process': 'proposalprocess',
-    'Conducting Color Reviews of Proposals': 'colorreviews',
+    'Conducting Color Reviews of Proposals': 'conductingcolorreviews',
     'Candid Communication': 'candidcommunication',
     'Client Interactions': 'clientinteractions',
 'Cross Selling in Multi-Disciplinary Firms': 'crossselling',
@@ -128,7 +128,7 @@ const topicMappings = {
     'CRM Platforms': 'crmplatforms',
     'Client Feedback Software': 'clientfeedbacksoftware',
     'Mental Health in Consulting Environments': 'mentalhealthinconsultingenvironments',
-    'Remote or Hybrid Work': 'remoteorhybridwork',
+    'Remote and Hybrid Work': 'remoteandhybridwork',
     'Four Day Work Week': 'fourdayworkweek',
     'The Power of Play in the Workplace': 'thepowerofplayintheworkplace',
     'Team Building in Technical Consulting': 'teambuildingintechnicalconsulting',
@@ -137,7 +137,7 @@ const topicMappings = {
 // Mapping topic slugs to their corresponding view filenames
 const topicViewMappings = {
     'aiinconsulting': 'single_topic_aiconsulting',
-    'aiinadultlearning': 'single_topic_ailearn',
+    'aiinlearning': 'single_topic_ailearn',
     'aiinprojectmanagement': 'single_topic_aiprojectmgmt',
     'businessdevelopmentintechnicalservices': 'single_topic_bd',
     'findingprojectsbeforetheybecomerfps': 'single_topic_findingprojects',
@@ -172,14 +172,14 @@ const topicViewMappings = {
     'projectmanagement': 'single_topic_projectmgmt',
     'proposalmanagement': 'single_topic_proposalmgmt',
     'proposalstrategy': 'single_topic_proposalstrat',
-    'proposalprocess': 'single_topic_proposalprocess',
+    'designingaproposalprocess': 'single_topic_proposalprocess',
     'pullmarketing': 'single_topic_pullmarketing',
-    'remoteorhybridwork': 'single_topic_remote',
+    'remoteandhybridwork': 'single_topic_remote',
     'socialentrepreneurship': 'single_topic_social',
     'socialmediaadvertisingandothermysteries': 'single_topic_socialmedia',
     'softskillsintechnicalenvironments': 'single_topic_softskills',
     'storytellingintechnicalmarketing': 'single_topic_storytelling',
-    'teambuildingintechnicalconsulting': 'single_topic_teambuilding',
+    'teambuildinginconsulting': 'single_topic_teambuilding',
     'workplaceculture': 'single_topic_workplaceculture'
 };
 
