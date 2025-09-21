@@ -102,7 +102,6 @@
     return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
   }
 
-  // Group member removing their own tag from a unit (allowed by controller)
   async function removeSelfTag(tagId, unitId, unitType) {
     if (!confirm('Remove this tag from the unit?')) return;
     try {
@@ -120,6 +119,26 @@
       alert('An error occurred while removing the tag.');
     }
   }
+
+  // 🔵 Auto-mark the "tagged" tab as seen when this partial loads
+  (async function markTaggedSeenOnce() {
+    try {
+      const count = Number('{{@root.gmCounts.tagged}}') || 0;
+      await fetch('/dashboard/groupmember/mark-seen', {
+        method: 'POST',
+        headers: {
+          'Content-Type':'application/json',
+          'X-CSRF-Token': getCsrf()
+        },
+        body: JSON.stringify({ tabKey: 'tagged', currentCount: count })
+      });
+      // Optimistically clear the dot in the tab button
+      const dot = document.querySelector('.dashboard-tab[data-tab="tagged"] .tab-dot');
+      if (dot) dot.remove();
+    } catch (e) {
+      // no-op; dot will clear next click
+    }
+  })();
 </script>
 
 
