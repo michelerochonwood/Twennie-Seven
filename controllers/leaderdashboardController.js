@@ -757,8 +757,13 @@ return res.render('leader_dashboard', {
   maxGroupSize: userData.maxGroupSize,
   leaderUnits,
   groupMemberUnits,
-leaderAssignmentsOpen,
-leaderAssignmentsCompleted,
+
+  // ✅ Add this
+  leaderAssignedUnits,
+
+  // already present
+  leaderAssignmentsOpen,
+  leaderAssignmentsCompleted,
   registeredPromptSets: leaderPrompts,
   promptSchedules,
   currentPromptSets,
@@ -769,11 +774,11 @@ leaderAssignmentsCompleted,
   emailPreferenceLevel,
   leaderSelfTaggedUnits,
 
-  // 👇 add this line
   mfaStatus,
-  leaderCounts,     // 👈 NEW
-  leaderBadges,     // 👈 NEW
+  leaderCounts,
+  leaderBadges,
 });
+
 
 
     } catch (err) {
