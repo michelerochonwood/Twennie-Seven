@@ -21,7 +21,17 @@ const Upcoming = require('../models/unit_models/upcoming');
 const DashboardSeen = require('../models/dashboard_seen');
 
 
-
+function getModelByUnitType(type) {
+  switch (type) {
+    case 'article':   return Article;
+    case 'video':     return Video;
+    case 'interview': return Interview;
+    case 'exercise':  return Exercise;
+    case 'template':  return Template;
+    case 'upcoming':  return Upcoming;
+    default:          return null;
+  }
+}
 
 
 
