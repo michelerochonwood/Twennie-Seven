@@ -378,7 +378,7 @@ submitUpcoming: async (req, res) => {
         mainTopics,
         unitTypes: [
           'article','video','interview','exercise','template',
-          'prompt_set','micro_course','micro_study','peer_coaching'
+          'promptset','micro_course','micro_study','peer_coaching'
         ],
         csrfToken: getCsrfToken(req),
       });
