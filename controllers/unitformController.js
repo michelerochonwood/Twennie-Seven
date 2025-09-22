@@ -269,7 +269,7 @@ getUpcomingForm: (req, res) => {
 
     const unitTypes = [
       'article','video','interview','exercise','template',
-      'prompt_set','micro_course','micro_study','peer_coaching'
+      'promptset','micro_course','micro_study','peer_coaching'
     ];
 
     return res.render('unit_form_views/form_upcoming', {
