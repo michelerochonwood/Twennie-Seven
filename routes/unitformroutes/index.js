@@ -181,7 +181,7 @@ router.get('/edit_upcoming/:id', ensureAuthenticated, async (req, res) => {
     // Unit types for select
     const unitTypes = [
       'article','video','interview','exercise','template',
-      'prompt_set','micro_course','micro_study','peer_coaching'
+      'promptset','micro_course','micro_study','peer_coaching'
     ];
 
     res.render('unit_form_views/form_upcoming', {
