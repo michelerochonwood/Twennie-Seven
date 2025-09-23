@@ -21,15 +21,7 @@
       <input type="hidden" name="_csrf" value="{{csrfToken}}">
       <input type="hidden" name="_id" value="{{data._id}}">
 
-      <!-- Current Image -->
-      <div class="form-field">
-        <label>Upcoming Unit Image</label>
-        <img
-          src="{{#if data.image.url}}{{data.image.url}}{{else}}/images/default-upcoming.png{{/if}}"
-          alt="Upcoming Unit Image"
-          style="width: 240px; height: auto; border-radius: 8px; margin-top: 8px;"
-        >
-      </div>
+
 
       <!-- Upload New Image -->
       <div class="form-field">
