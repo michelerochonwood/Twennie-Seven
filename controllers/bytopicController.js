@@ -94,7 +94,7 @@ exports.getTopicView = async (req, res) => {
             'Conducting Color Reviews of Proposals': 'conductingcolorreviewsofproposals',
             'Candid Communication': 'candidcommunication',
             'Client Interactions': 'clientinteractions',
-            'Cross Selling in Multi-Disciplinary Firms': 'crossselling',
+            'Cross Selling in Multi-Disciplinary Firms': 'crosssellinginmultidisciplinaryfirms',
             'Analytics in Project Management': 'analyticsinprojectmanagement',
             'Business Development Metrics': 'businessdevelopmentmetrics',
             'Using Lean in Project Management': 'usingleaninprojectmanagement',
