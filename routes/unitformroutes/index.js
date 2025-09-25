@@ -561,90 +561,143 @@ router.post(
 router.get('/form_promptset', ensureAuthenticated, unitFormController.getPromptForm);
 
 router.get('/edit_promptset/:id', ensureAuthenticated, async (req, res) => {
-    try {
-        const { id } = req.params;
-        console.log(`Edit form requested for prompt set ID: ${id}`);
-        const promptSet = await PromptSet.findById(id).populate({
-            path: 'author.id',
-            model: 'Member',
-            select: 'name profileImage',
-        });
+  try {
+    const { id } = req.params;
+    console.log(`Edit form requested for prompt set ID: ${id}`);
 
-        if (!promptSet) {
-            console.warn(`Prompt set with ID ${id} not found.`);
-            return res.status(404).render('unit_form_views/error', {
-                layout: 'unitformlayout',
-                title: 'Prompt Set Not Found',
-                errorMessage: `The prompt set with ID ${id} does not exist.`,
-            });
-        }
+    // --- Static options expected by the form ---
+    // Keep these in sync with your create route so create/edit show identical choices.
+    const mainTopics = [
+      'Career Development in Technical Services',
+      'Soft Skills in Technical Environments',
+      'Project Management',
+      'Business Development in Technical Services',
+      'Finding Projects Before they Become RFPs',
+      'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
+      'Proposal Management',
+      'Proposal Strategy',
+      'Designing a Proposal Process',
+      'Conducting Color Reviews of Proposals',
+      'Candid Communication',
+      'Client Interactions',
+      'Cross Selling in Multi-Disciplinary Firms',
+      'Analytics in Project Management',
+      'Business Development Metrics',
+      'Using Lean in Project Management',
+      'Turning a Project into a Business Development Powerhouse',
+      'Portfolio and Program Management',
+      'Making a Proposal Easy to Read, Skim, and Evaluate',
+      'Storytelling in Technical Marketing',
+      'Client Experience',
+      'Social Media, Advertising, and Other Mysteries',
+      'Pull Marketing',
+      'Emotional Intelligence',
+      'The Pareto Principle or 80/20',
+      'People Before Profit',
+      'Non-Technical Roles in Technical Environments',
+      'Leadership in Technical Services',
+      'Leading Change',
+      'Leading Groups on Twennie',
+      'The Advantage of Failure',
+      'Social Entrepreneurship',
+      'Employee Experience',
+      'Project Management Software',
+      'CRM Platforms',
+      'Client Feedback Software',
+      'Workplace Culture',
+      'Mental Health in Consulting Environments',
+      'Remote and Hybrid Work',
+      'The Power of Play in the Workplace',
+      'Team Building in Consulting',
+      'AI in Consulting',
+      'AI in Project Management',
+      'AI in Learning',
+    ];
 
-        res.render('unit_form_views/form_promptset', {
-            layout: 'unitformlayout',
-            data: {
-                ...promptSet.toObject(),
-                author: promptSet.author?.id || {
-                    name: 'Unknown Author',
-                    image: '/images/default-avatar.png',
-                },
-            },
-            mainTopics: [
-        'Career Development in Technical Services',
-        'Soft Skills in Technical Environments',
-        'Project Management',
-        'Business Development in Technical Services',
-        'Finding Projects Before they Become RFPs',
-        'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
-        'Proposal Management',
-        'Proposal Strategy',
-        'Designing a Proposal Process',
-        'Conducting Color Reviews of Proposals',
-        'Candid Communication',
-                                'Client Interactions',
-            'Cross Selling in Multi-Disciplinary Firms',
-            'Analytics in Project Management',
-            'Business Development Metrics',
-            'Using Lean in Project Management',
-            'Turning a Project into a Business Development Powerhouse',
-            'Portfolio and Program Management',
-            'Making a Proposal Easy to Read, Skim, and Evaluate',
-        'Storytelling in Technical Marketing',
-        'Client Experience',
-        'Social Media, Advertising, and Other Mysteries',
-        'Pull Marketing',
-        'Emotional Intelligence',
-        'The Pareto Principle or 80/20',
-        'People Before Profit',
-        'Non-Technical Roles in Technical Environments',
-        'Leadership in Technical Services',
-        'Leading Change',
-        'Leading Groups on Twennie',
-        'The Advantage of Failure',
-        'Social Entrepreneurship',
-        'Employee Experience',
-        'Project Management Software',
-        'CRM Platforms',
-        'Client Feedback Software',
-        'Workplace Culture',
-        'Mental Health in Consulting Environments',
-        'Remote and Hybrid Work',
-        'The Power of Play in the Workplace',
-        'Team Building in Consulting',
-        'AI in Consulting',
-        'AI in Project Management',
-        'AI in Learning',
-            ],
-            csrfToken: isDevelopment ? null : req.csrfToken(),
-        });
-    } catch (error) {
-        console.error(`Error loading edit form for prompt set ID ${req.params.id}:`, error);
-        res.status(500).render('unit_form_views/error', {
-            layout: 'unitformlayout',
-            title: 'Error',
-            errorMessage: 'An error occurred while loading the edit form.',
-        });
+    // If you use a curated subset, replace with that array. Otherwise, mirroring mainTopics works.
+    const secondaryTopics = mainTopics;
+
+    // Frequencies shown in the "Suggested Frequency" <select>
+    const frequencies = [
+      'daily',
+      'weekly',
+      'monthly',
+      'quarterly',
+
+    ];
+
+    // Adjectives shown as checkboxes in the "Characteristics" section
+    const characteristics = [
+      'motivational',
+      'educational',
+      'silly',
+      'team building',
+      'encouraging',
+      'competitive',
+      'stress-relieving',
+      'creative',
+      'provocative',
+      'restorative',
+      'insightful',
+      'imaginative',
+      'fun',
+      'energizing',
+      'calming',
+      'heart-warming',
+      'hilarious',
+      'relationship-building',
+      'reassuring',
+      'other'
+    ];
+
+    // --- Load the document ---
+    const promptSet = await PromptSet.findById(id).populate({
+      path: 'author.id',
+      model: 'Member',
+      select: 'name profileImage',
+    });
+
+    if (!promptSet) {
+      console.warn(`Prompt set with ID ${id} not found.`);
+      return res.status(404).render('unit_form_views/error', {
+        layout: 'unitformlayout',
+        title: 'Prompt Set Not Found',
+        errorMessage: `The prompt set with ID ${id} does not exist.`,
+      });
     }
+
+    // Normalize author for the template
+    const author =
+      promptSet.author?.id
+        ? {
+            name: promptSet.author.id.name || 'Unknown Author',
+            image: promptSet.author.id.profileImage || '/images/default-avatar.png',
+          }
+        : { name: 'Unknown Author', image: '/images/default-avatar.png' };
+
+    // Render with all required option arrays + data
+    res.render('unit_form_views/form_promptset', {
+      layout: 'unitformlayout',
+      data: {
+        ...promptSet.toObject(),
+        author,
+      },
+      mainTopics,
+      secondaryTopics,
+      frequencies,
+      characteristics,
+      csrfToken: isDevelopment ? null : req.csrfToken(),
+    });
+  } catch (error) {
+    console.error(`Error loading edit form for prompt set ID ${req.params.id}:`, error);
+    res.status(500).render('unit_form_views/error', {
+      layout: 'unitformlayout',
+      title: 'Error',
+      errorMessage: 'An error occurred while loading the edit form.',
+    });
+  }
 });
+
 
 router.post('/submit_promptset', ensureAuthenticated, unitFormController.submitPromptSet);
 
