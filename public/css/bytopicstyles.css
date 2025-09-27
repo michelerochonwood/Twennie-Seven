@@ -40,9 +40,9 @@ html, body {
 
 .topic-sidebar {
   position: fixed;
-  top: 250px;        /* topic pages header clearance */
+  top: 250px;         /* clears global header */
   right: 75px;
-  bottom: 150px;     /* <- replaces height: calc(100vh - 400px) */
+  bottom: 150px;      /* 250 + 150 = 400 total */
   width: 180px;
   overflow-y: auto;
   padding: 10px;
@@ -182,11 +182,12 @@ html, body {
 }
 /* ----- Reusing the topics sidebar inside dashboards ----- */
 .dashboard-page .topic-sidebar {
-  top: 160px;        /* dashboard header + tabs */
+  position: fixed;
+  top: 250px;         /* match topic view so it sits under the same header */
   right: 3.5rem;
-  bottom: 240px;     /* 160 + 240 = 400 → same visual height */
+  bottom: 150px;      /* keep total height identical */
   width: 200px;
-  z-index: 1200;
+  z-index: 900;       /* lower than header so it doesn’t cover it */
   pointer-events: auto;
 }
 
