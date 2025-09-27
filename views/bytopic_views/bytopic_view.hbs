@@ -1,7 +1,8 @@
 {{#*inline "title"}}Search by Topic | Twennie{{/inline}}
 
 <div class="bytopic-container">
-  <div class="bytopic-content">
+  <!-- Main content column -->
+  <div class="bytopic-content has-right-rail">
     <h1 class="bytopic-title">{{title}}</h1>
     <p class="bytopic-short-summary">{{shortSummary}}</p>
     <p class="bytopic-long-summary">{{longSummary}}</p>
@@ -13,18 +14,17 @@
       {{#if this.units.length}}
         <div class="bytopic-library-units-grid">
           {{#each this.units}}
-            <div class="bytopic-library-unit-card">
-
+            <article class="bytopic-library-unit-card" data-unit-id="{{_id}}">
               <!-- SVG Header -->
               <div class="bytopic-card-svg-header">
                 {{#if (eq this.type "upcoming")}}
-                  <!-- Orange wave for upcoming (match Latest) -->
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 198.89 17.83">
+                  <!-- Orange wave for upcoming -->
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 198.89 17.83" aria-hidden="true" focusable="false">
                     <path fill="#f7941d" d="M0,9.74s30.57,13.88,92.83,1.88c0,0,68.2-13.17,106.06,6.21V0H0v9.74Z"/>
                   </svg>
                 {{else}}
                   <!-- Default purple wave -->
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 198.89 17.83">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 198.89 17.83" aria-hidden="true" focusable="false">
                     <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
                     <path class="cls-1" d="M0,9.74s30.57,13.88,92.83,1.88c0,0,68.2-13.17,106.06,6.21V0H0v9.74Z"/>
                   </svg>
@@ -48,15 +48,15 @@
                 </div>
 
                 <!-- Expand Toggle -->
-                <div class="bytopic-expand-toggle" onclick="toggleCard(this)">
-                  <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99">
+                <button class="bytopic-expand-toggle" type="button" onclick="toggleCard(this)" aria-expanded="false" aria-label="Toggle details">
+                  <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99" aria-hidden="true" focusable="false">
                     <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
                     <polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/>
                   </svg>
-                </div>
+                </button>
 
                 <!-- Expandable content -->
-                <div class="bytopic-hidden-content">
+                <div class="bytopic-hidden-content" style="display:none;">
                   <div class="bytopic-author-label">
                     {{#if (eq this.type "upcoming")}}PROJECTED{{else}}AUTHOR{{/if}}
                   </div>
@@ -124,7 +124,7 @@
                   </div>
                 </div>
               </div>
-            </div>
+            </article>
           {{/each}}
         </div>
       {{else}}
@@ -134,25 +134,25 @@
       {{/if}}
     {{/each}}
   </div>
+
+  <!-- Right Topics Column (fixed; reused partial) -->
+  <div class="bytopic-page">
+    {{> topicpartials/topics_column_partial}}
+  </div>
 </div>
 
 <!-- Expand Toggle Script -->
 <script>
-  function toggleCard(element) {
-    const card = element.closest('.bytopic-library-unit-card');
+  function toggleCard(el) {
+    const card = el.closest('.bytopic-library-unit-card');
     const content = card.querySelector('.bytopic-hidden-content');
-
-    const isActive = card.classList.contains("active");
-
-    if (isActive) {
-      card.classList.remove("active");
-      content.style.display = "none";
-    } else {
-      card.classList.add("active");
-      content.style.display = "flex"; // ensure this matches your layout
-    }
+    const isOpen = card.classList.contains('active');
+    card.classList.toggle('active', !isOpen);
+    el.setAttribute('aria-expanded', String(!isOpen));
+    content.style.display = isOpen ? 'none' : 'flex';
   }
 </script>
+
 
 
 
