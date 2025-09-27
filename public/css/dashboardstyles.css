@@ -115,6 +115,10 @@ html, body {
 } */
 
 /* Topics Column */
+
+.dashboard-page .mobile-sidebar { 
+  display: none !important; 
+}
 .topic-sidebar {
   position: fixed;
   top: 215px;
