@@ -125,7 +125,7 @@ html, body {
   top: 215px;
   right: 75px;
   width: 180px;
-  height: calc(100vh - 400px);
+  height: calc(100vh - 500px);
   overflow-y: auto;
   padding: 10px;
   font-size: 10px;
