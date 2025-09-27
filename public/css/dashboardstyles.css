@@ -115,6 +115,34 @@ html, body {
 } */
 
 
+/* ----- Reusing the topics sidebar inside dashboards ----- */
+.dashboard-page .topic-sidebar {
+  position: fixed;
+  /* sit below your dashboard header + tabs */
+  top: 160px;                 /* tweak to 140–180px if needed */
+  right: 3.5rem;              /* matches your dashboard padding rhythm */
+  width: 200px;
+  height: calc(100vh - 220px);
+  z-index: 1200;              /* above cards, below any overlays/dialogs */
+  pointer-events: auto;       /* ensure it’s fully interactive */
+}
+
+@media (max-width: 1200px) {
+  .dashboard-page .topic-sidebar {
+    right: 2.5rem;
+    height: calc(100vh - 200px);
+  }
+}
+
+/* Hide the fixed sidebar on smaller screens to protect layout */
+@media (max-width: 1080px) {
+  .dashboard-page .topic-sidebar {
+    display: none !important;
+    visibility: hidden !important;
+  }
+}
+
+
 /* LOGIN PAGE */
 /* Container for the entire login page */
 .login-container {
