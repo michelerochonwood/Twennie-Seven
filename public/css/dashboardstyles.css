@@ -119,6 +119,7 @@ html, body {
 .dashboard-page .mobile-sidebar { 
   display: none !important; 
 }
+
 .topic-sidebar {
   position: fixed;
   top: 215px;
@@ -254,6 +255,12 @@ html, body {
       }
     }  
   }  
+}
+
+.topic-sidebar .sidebar-item.is-active,
+.topic-sidebar a[aria-current="page"] .sidebar-item {
+  background-color: #dc176a;
+  box-shadow: 0 0 0 2px #e5e7ff inset;
 }
 /* ----- Reusing the topics sidebar inside dashboards ----- */
 .dashboard-page .topic-sidebar {
