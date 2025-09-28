@@ -227,29 +227,40 @@ html, body {
 }
 
 .bytopic-expand-toggle {
-  all: unset;                    /* remove UA + global button styles */
+  appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  width: 36px;              /* explicit hit area */
+  height: 36px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  line-height: 0;                /* trims stray inline height */
-  /* Safety if you have heavy global button rules: */
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
+  line-height: 0;
+  border-radius: 50%;
+  pointer-events: auto;
 }
 
-/* Keep the SVG crisp and click target tight */
+/* Make sure the arrow has a size */
 .bytopic-expand-toggle svg {
+  width: 40px;
+  height: 40px;
   display: block;
 }
 
-/* Accessible focus without a chunky square */
+/* If any global CSS overrides polygon fills, force ours */
+.bytopic-expand-toggle svg .cls-1 {
+  fill: #4e50a2 !important;
+}
+
+/* Optional: tidy hover/focus without a square box */
+.bytopic-expand-toggle:hover { background: transparent; }
 .bytopic-expand-toggle:focus { outline: none; }
 .bytopic-expand-toggle:focus-visible {
-  outline: 2px solid #4e50a2;   /* or remove if you truly want no ring */
-  outline-offset: 4px;
-  border-radius: 999px;         /* rounded focus ring, not a square */
+  outline: 2px solid #4e50a2;
+  outline-offset: 3px;
+  border-radius: 50%;
 }
 
 
