@@ -7,58 +7,61 @@
   </div>
 
   <!-- Main Content (Right) -->
-  <div class="dashboard-main">
+  <div class="dashboard-main has-right-rail">  {{!-- add has-right-rail if you want padding on wide screens --}}
 
     <!-- Tab Navigation -->
-<!-- Tab Navigation -->
-<div class="dashboard-tabs-container">
-  <button class="dashboard-tab active" data-tab="membership">
-    <span class="tab-title">membership overview</span>
-    <div class="tab-arrow"></div>
-  </button>
+    <div class="dashboard-tabs-container">
+      <button class="dashboard-tab active" data-tab="membership">
+        <span class="tab-title">membership overview</span>
+        <div class="tab-arrow"></div>
+      </button>
 
-  <button class="dashboard-tab" data-tab="group" data-count="{{leaderCounts.group}}">
-    <span class="tab-title">my group members</span>
-    {{#if leaderBadges.group}}<span class="tab-dot"></span>{{/if}}
-    <div class="tab-arrow"></div>
-  </button>
+      <button class="dashboard-tab" data-tab="group" data-count="{{leaderCounts.group}}">
+        <span class="tab-title">my group members</span>
+        {{#if leaderBadges.group}}<span class="tab-dot"></span>{{/if}}
+        <div class="tab-arrow"></div>
+      </button>
 
-  <button class="dashboard-tab" data-tab="topics" data-count="{{leaderCounts.topics}}">
-    <span class="tab-title">my favorite topics</span>
-    {{#if leaderBadges.topics}}<span class="tab-dot"></span>{{/if}}
-    <div class="tab-arrow"></div>
-  </button>
+      <button class="dashboard-tab" data-tab="topics" data-count="{{leaderCounts.topics}}">
+        <span class="tab-title">my favorite topics</span>
+        {{#if leaderBadges.topics}}<span class="tab-dot"></span>{{/if}}
+        <div class="tab-arrow"></div>
+      </button>
 
-  <button class="dashboard-tab" data-tab="prompts" data-count="{{leaderCounts.prompts}}">
-    <span class="tab-title">registered prompt sets</span>
-    {{#if leaderBadges.prompts}}<span class="tab-dot"></span>{{/if}}
-    <div class="tab-arrow"></div>
-  </button>
+      <button class="dashboard-tab" data-tab="prompts" data-count="{{leaderCounts.prompts}}">
+        <span class="tab-title">registered prompt sets</span>
+        {{#if leaderBadges.prompts}}<span class="tab-dot"></span>{{/if}}
+        <div class="tab-arrow"></div>
+      </button>
 
-  <button class="dashboard-tab" data-tab="progress" data-count="{{leaderCounts.progress}}">
-    <span class="tab-title">prompt set progress</span>
-    {{#if leaderBadges.progress}}<span class="tab-dot"></span>{{/if}}
-    <div class="tab-arrow"></div>
-  </button>
+      <button class="dashboard-tab" data-tab="progress" data-count="{{leaderCounts.progress}}">
+        <span class="tab-title">prompt set progress</span>
+        {{#if leaderBadges.progress}}<span class="tab-dot"></span>{{/if}}
+        <div class="tab-arrow"></div>
+      </button>
 
-  <button class="dashboard-tab" data-tab="contribute">
-    <span class="tab-title">contribute to the library</span>
-    <div class="tab-arrow"></div>
-  </button>
+      <button class="dashboard-tab" data-tab="contribute">
+        <span class="tab-title">contribute to the library</span>
+        <div class="tab-arrow"></div>
+      </button>
 
-  <button class="dashboard-tab" data-tab="library" data-count="{{leaderCounts.library}}">
-    <span class="tab-title">my library units</span>
-    {{#if leaderBadges.library}}<span class="tab-dot"></span>{{/if}}
-    <div class="tab-arrow"></div>
-  </button>
+      <button class="dashboard-tab" data-tab="library" data-count="{{leaderCounts.library}}">
+        <span class="tab-title">my library units</span>
+        {{#if leaderBadges.library}}<span class="tab-dot"></span>{{/if}}
+        <div class="tab-arrow"></div>
+      </button>
 
-  <button class="dashboard-tab" data-tab="tagged" data-count="{{leaderCounts.tagged}}">
-    <span class="tab-title">my tagged units</span>
-    {{#if leaderBadges.tagged}}<span class="tab-dot"></span>{{/if}}
-    <div class="tab-arrow"></div>
-  </button>
-</div>
+      <button class="dashboard-tab" data-tab="tagged" data-count="{{leaderCounts.tagged}}">
+        <span class="tab-title">my tagged units</span>
+        {{#if leaderBadges.tagged}}<span class="tab-dot"></span>{{/if}}
+        <div class="tab-arrow"></div>
+      </button>
+    </div>
 
+    <!-- Right Topics Column (fixed; reused partial) -->
+    <div class="dashboard-page">
+      {{> topicpartials/topics_column_partial}}
+    </div>
 
     <!-- Tab Content -->
     <div class="dashboard-tab-content active" id="membership">
@@ -114,21 +117,19 @@
     } catch (e) { /* no-op */ }
   }
 
-  // When a tab is clicked (or activated), update seen
   document.querySelectorAll('.dashboard-tab[data-tab]').forEach(btn => {
     btn.addEventListener('click', () => {
       const tab = btn.dataset.tab;
       const count = btn.dataset.count || 0;
-      // Only track tabs that can have "new"
       if (['group','topics','prompts','progress','library','tagged'].includes(tab)) {
         markSeenLeader(tab, count);
-        // Optimistic UI: hide the dot immediately
         const dot = btn.querySelector('.tab-dot');
         if (dot) dot.style.display = 'none';
       }
     });
   });
 </script>
+
 
 
 
