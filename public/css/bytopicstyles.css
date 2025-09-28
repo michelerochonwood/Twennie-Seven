@@ -33,6 +33,9 @@ html, body {
 } */
 
 /* Topics Column */
+.bytopic-page .mobile-sidebar {
+  display: none !important;
+}
 
 .dashboard-page .mobile-sidebar { 
   display: none !important; 
