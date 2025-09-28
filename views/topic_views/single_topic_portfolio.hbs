@@ -1,9 +1,10 @@
-{{#*inline "title"}}Using Lean Principles | Twennie{{/inline}}
+{{#*inline "title"}}Portfolio and Program Management | Twennie{{/inline}}
+
 <div class="topic-page-wrapper">
   <div class="topic-main-area">
     <div class="topic-header">
       <div>
-        <h1 class="topic-title">Using Lean Principles</h1>
+        <h1 class="topic-title">Portfolio and Program Management</h1>
       </div>
 
       <!-- Mobile Sidebar Toggle Button -->
@@ -14,12 +15,12 @@
     </div>
 
     <!-- Subtopics Partial -->
-    {{> topicpartials/leanprinciples_topic }}
+    {{> topicpartials/portfolio_topic }}
 
     <!-- Bluey + CTA -->
     <div class="topic-resource-cta-wrapper">
       <img src="/images/blueydown.png" alt="Bluey pointing down" class="bluey-cta-img" style="margin-bottom: 5px;">
-      <a href="/bytopic/Using Lean Principles" class="single-topic-resource-btn">
+      <a href="/bytopic/Portfolio and Program Management" class="single-topic-resource-btn">
         <button class="topic-resource-btn" style="margin-bottom: 200px">
           let me show you Twennie's units on this topic
         </button>
@@ -34,8 +35,9 @@
 <script>
   function toggleCard(element) {
     let card = element.closest('.bytopic-library-unit-card');
-    card.classList.toggle('active');
+    card && card.classList.toggle('active');
     let arrow = element.querySelector('.bytopic-arrow-icon');
-    arrow.classList.toggle('open');
+    arrow && arrow.classList.toggle('open');
   }
 </script>
+
