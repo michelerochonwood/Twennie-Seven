@@ -227,16 +227,29 @@ html, body {
 }
 
 .bytopic-expand-toggle {
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
+  all: unset;                    /* remove UA + global button styles */
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  line-height: 0;                /* trims stray inline height */
+  /* Safety if you have heavy global button rules: */
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Keep the SVG crisp and click target tight */
+.bytopic-expand-toggle svg {
+  display: block;
+}
+
+/* Accessible focus without a chunky square */
+.bytopic-expand-toggle:focus { outline: none; }
+.bytopic-expand-toggle:focus-visible {
+  outline: 2px solid #4e50a2;   /* or remove if you truly want no ring */
+  outline-offset: 4px;
+  border-radius: 999px;         /* rounded focus ring, not a square */
 }
 
 
