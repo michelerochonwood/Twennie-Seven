@@ -12,6 +12,7 @@ const sanitizeHtml = require('sanitize-html');
 const Upcoming = require('../models/unit_models/upcoming'); // ← add this
 const Tag = require('../models/tag'); 
 console.log('unitFormController loaded');
+const Nugget = require('../models/unit_models/nugget');
 
 
 
@@ -124,6 +125,19 @@ const unitFormController = {
     getTemplateForm: createGetFormHandler('template', 'form_template'),
     getMicroCourseForm: createGetFormHandler('microcourse', 'form_microcourse'),
     getMicroStudyForm: createGetFormHandler('microstudy', 'form_microstudy'),
+        getNuggetForm: (req, res) => {
+      try {
+        res.render('unit_form_views/form_nugget', {
+          layout: 'unitformlayout',
+          unitType: 'nugget',
+          data: {},
+          csrfToken: getCsrfToken(req),
+        });
+      } catch (error) {
+        console.error('Error rendering nugget form:', error);
+        res.status(500).send('Error rendering nugget form.');
+      }
+    },
 
     // POST Handlers with Validation
     submitUnit: (Model, unitType, validateFunction) => async (req, res) => {
@@ -190,6 +204,7 @@ const unitFormController = {
                     exercise: Exercise,
                     microstudy: MicroStudy,
                     microcourse: MicroCourse,
+                    nugget: Nugget, // 👈 add this
                 }[unitType];
 
                 unit = await Model.findById(id);
@@ -619,6 +634,128 @@ prefillFromUpcoming: async (req, res) => {
 
 
 
+    submitNugget: async (req, res) => {
+      try {
+        if (!req.user || !req.user._id) {
+          throw new Error('User is not authenticated or missing user ID.');
+        }
+
+        const {
+          _id,
+          title,
+          client,
+          horizon,
+          discipline,
+          region,
+          'estimatedValue.amount': estimatedValueAmount,
+          projectDeliveryType,
+          'originalSource.label': sourceLabel,
+          'originalSource.url': sourceUrl,
+          likelihood,
+          connectedTwennieUnits,
+          notes,
+          visibility,
+          fromUpcomingId
+        } = req.body;
+
+        const errors = [];
+        if (!title?.trim()) errors.push('Title is required.');
+        if (!client?.trim()) errors.push('Client is required.');
+        if (!horizon) errors.push('Horizon is required.');
+        if (!sourceLabel?.trim()) errors.push('Original source label is required.');
+
+        if (errors.length) {
+          return res.status(400).render('unit_form_views/form_nugget', {
+            layout: 'unitformlayout',
+            unitType: 'nugget',
+            data: req.body,
+            errors,
+            csrfToken: getCsrfToken(req),
+          });
+        }
+
+        // normalize connected units (textarea → array or objects)
+        let parsedConnected = [];
+        if (connectedTwennieUnits) {
+          try {
+            parsedConnected = JSON.parse(connectedTwennieUnits);
+          } catch {
+            parsedConnected = connectedTwennieUnits
+              .split(',')
+              .map(s => ({ kind: 'article', unitId: s.trim() }))
+              .filter(x => x.unitId);
+          }
+        }
+
+        const nuggetData = {
+          title: title.trim(),
+          client: client.trim(),
+          horizon,
+          discipline: discipline?.trim(),
+          region: region?.trim(),
+          estimatedValue: {
+            amount: estimatedValueAmount ? Number(estimatedValueAmount) : undefined,
+            currency: 'CAD'
+          },
+          projectDeliveryType: projectDeliveryType || 'unknown',
+          originalSource: {
+            label: sourceLabel.trim(),
+            url: sourceUrl?.trim()
+          },
+          likelihood: likelihood ? Number(likelihood) : 50,
+          connectedTwennieUnits: parsedConnected,
+          notes: notes?.trim(),
+          visibility: visibility || 'team_only',
+          createdBy: req.user._id
+        };
+
+        let nugget;
+        if (_id) {
+          nugget = await Nugget.findByIdAndUpdate(_id, nuggetData, {
+            new: true,
+            runValidators: true
+          });
+          console.log(`Nugget with ID ${_id} updated successfully.`);
+        } else {
+          nugget = new Nugget(nuggetData);
+          await nugget.save();
+          console.log('New nugget created successfully.');
+        }
+
+        // migrate tags if this came from an upcoming unit
+        if (fromUpcomingId) {
+          await migrateAndDeleteUpcoming({
+            fromUpcomingId,
+            toItemId: nugget._id,
+            toUnitType: 'nugget',
+          });
+        }
+
+        return res.render('unit_form_views/unit_success', {
+          layout: 'unitformlayout',
+          unitType: 'nugget',
+          unit: nugget,
+          csrfToken: getCsrfToken(req),
+        });
+      } catch (error) {
+        const isCsrfError = error.code === 'EBADCSRFTOKEN';
+        console.error('Error submitting nugget:', error);
+
+        if (isCsrfError) {
+          return res.status(403).render('unit_form_views/error', {
+            layout: 'unitformlayout',
+            title: 'Session Expired',
+            errorMessage: 'Your session has expired. Please refresh and try again.',
+          });
+        }
+
+        return res.status(500).render('unit_form_views/error', {
+          layout: 'unitformlayout',
+          title: 'Error',
+          errorMessage: error.message || 'An error occurred while submitting the nugget.',
+        });
+      }
+    },
 
 
 

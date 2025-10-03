@@ -11,6 +11,7 @@ const Template = require('../../models/unit_models/template');
 
 // ✨ NEW: Upcoming model
 const Upcoming = require('../../models/unit_models/upcoming');
+const Nugget = require('../../models/unit_models/nugget');
 
 const unitFormController = require('../../controllers/unitformController');
 const ensureAuthenticated = require('../../middleware/ensureAuthenticated');
@@ -72,6 +73,55 @@ const mainTopics = [
   'AI in Project Management',
   'AI in Learning',
 ];
+
+router.get('/form_nugget', ensureAuthenticated, unitFormController.getNuggetForm);
+
+router.get('/edit_nugget/:id', ensureAuthenticated, async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log(`Edit form requested for nugget ID: ${id}`);
+
+    const nugget = await Nugget.findById(id).populate({
+      path: 'createdBy',
+      model: 'Member',
+      select: 'name profileImage',
+    });
+
+    if (!nugget) {
+      console.warn(`Nugget with ID ${id} not found.`);
+      return res.status(404).render('unit_form_views/error', {
+        layout: 'unitformlayout',
+        title: 'Nugget Not Found',
+        errorMessage: `The nugget with ID ${id} does not exist.`,
+      });
+    }
+
+    res.render('unit_form_views/form_nugget', {
+      layout: 'unitformlayout',
+      data: {
+        ...nugget.toObject(),
+        creator: {
+          name: nugget.createdBy?.name || 'Unknown Creator',
+          image: nugget.createdBy?.profileImage || '/images/default-avatar.png',
+        },
+      },
+      csrfToken: isDevelopment ? null : req.csrfToken(),
+    });
+  } catch (error) {
+    console.error(`Error loading edit form for nugget ID ${req.params.id}:`, error);
+    res.status(500).render('unit_form_views/error', {
+      layout: 'unitformlayout',
+      title: 'Error',
+      errorMessage: 'An error occurred while loading the nugget edit form.',
+    });
+  }
+});
+
+router.post(
+  '/submit_nugget',
+  ensureAuthenticated,
+  unitFormController.submitNugget
+);
 
 // =========================
 // Article Form Routes (existing)

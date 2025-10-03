@@ -1,0 +1,135 @@
+{{#*inline "title"}}Create a Nugget | Twennie{{/inline}}
+{{> mainpartials/nuggetinstructions_partial}}
+
+<input type="hidden" name="fromUpcomingId" value="{{fromUpcomingId}}">
+<div class="contribute-wave-divider">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 160">
+    <path fill="#939598" fill-opacity="1"
+      d="M0,64L80,58.7C160,53,320,43,480,58.7C640,75,800,117,960,122.7C1120,128,1280,96,1360,80L1440,64L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z">
+    </path>
+  </svg>
+</div>
+
+<div class="form-nugget-background">
+  <div class="form-nugget-container">
+<form 
+  id="nugget-form" 
+  class="nugget-form" 
+  action="/unitform/submit_nugget" 
+  method="POST"
+>
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+      <input type="hidden" name="_id" value="{{data._id}}">
+
+      <!-- Title -->
+      <div class="form-field">
+        <label for="nugget-title">Nugget Title</label>
+        <input type="text" id="nugget-title" name="title" value="{{data.title}}" required>
+      </div>
+
+      <!-- Client -->
+      <div class="form-field">
+        <label for="client">Client</label>
+        <input type="text" id="client" name="client" value="{{data.client}}" required>
+      </div>
+
+      <!-- Horizon -->
+      <div class="form-field">
+        <label for="horizon">Horizon</label>
+        <select id="horizon" name="horizon" required>
+          <option value="">Select horizon</option>
+          <option value="1y" {{#ifEquals data.horizon "1y"}}selected{{/ifEquals}}>1 Year</option>
+          <option value="3y" {{#ifEquals data.horizon "3y"}}selected{{/ifEquals}}>3 Years</option>
+          <option value="5y" {{#ifEquals data.horizon "5y"}}selected{{/ifEquals}}>5 Years</option>
+        </select>
+      </div>
+
+      <!-- Discipline -->
+      <div class="form-field">
+        <label for="discipline">Discipline</label>
+        <input type="text" id="discipline" name="discipline" value="{{data.discipline}}">
+      </div>
+
+      <!-- Region -->
+      <div class="form-field">
+        <label for="region">Region</label>
+        <input type="text" id="region" name="region" value="{{data.region}}">
+      </div>
+
+      <!-- Estimated Value -->
+      <div class="form-field">
+        <label for="estimated-value">Estimated Value (CAD)</label>
+        <input type="number" id="estimated-value" name="estimatedValue.amount" value="{{data.estimatedValue.amount}}" min="0" step="1000">
+      </div>
+
+      <!-- Project Delivery Type -->
+      <div class="form-field">
+        <label for="delivery-type">Project Delivery Type</label>
+        <select id="delivery-type" name="projectDeliveryType">
+          <option value="unknown" {{#ifEquals data.projectDeliveryType "unknown"}}selected{{/ifEquals}}>Unknown</option>
+          <option value="design" {{#ifEquals data.projectDeliveryType "design"}}selected{{/ifEquals}}>Design</option>
+          <option value="design-build" {{#ifEquals data.projectDeliveryType "design-build"}}selected{{/ifEquals}}>Design-Build</option>
+          <option value="CMAR" {{#ifEquals data.projectDeliveryType "CMAR"}}selected{{/ifEquals}}>CMAR</option>
+          <option value="P3" {{#ifEquals data.projectDeliveryType "P3"}}selected{{/ifEquals}}>P3</option>
+          <option value="DBFM" {{#ifEquals data.projectDeliveryType "DBFM"}}selected{{/ifEquals}}>DBFM</option>
+          <option value="DBF" {{#ifEquals data.projectDeliveryType "DBF"}}selected{{/ifEquals}}>DBF</option>
+        </select>
+      </div>
+
+      <!-- Original Source -->
+      <div class="form-field">
+        <label for="source-label">Original Source</label>
+        <input type="text" id="source-label" name="originalSource.label" value="{{data.originalSource.label}}" required>
+        <input type="url" id="source-url" name="originalSource.url" value="{{data.originalSource.url}}" placeholder="http://...">
+      </div>
+
+      <!-- Likelihood -->
+      <div class="form-field">
+        <label for="likelihood">Likelihood (%)</label>
+        <input type="number" id="likelihood" name="likelihood" value="{{data.likelihood}}" min="0" max="100" step="5">
+      </div>
+
+      <!-- Connected Twennie Units -->
+      <div class="form-field">
+        <label for="connected-units">Connected Twennie Units</label>
+        <textarea id="connected-units" name="connectedTwennieUnits" placeholder="List related unit IDs or references here...">{{data.connectedTwennieUnits}}</textarea>
+        <p class="form-hint">Link any articles, videos, interviews, or prompt sets related to this nugget.</p>
+      </div>
+
+      <!-- Notes -->
+      <div class="form-field">
+        <label for="notes">Notes</label>
+        <textarea id="notes" name="notes" rows="5">{{data.notes}}</textarea>
+      </div>
+
+      <!-- Visibility -->
+      <div class="form-field">
+        <label>Who can access this nugget?</label>
+        <div class="visibility-toggle-row">
+          <label class="visibility-option">
+            <input type="radio" name="visibility" value="team_only" {{#ifEquals data.visibility "team_only"}}checked{{/ifEquals}} required>
+            share with my team only
+          </label>
+          <label class="visibility-option">
+            <input type="radio" name="visibility" value="organization_only" {{#ifEquals data.visibility "organization_only"}}checked{{/ifEquals}} required>
+            share with my organization only
+          </label>
+          <label class="visibility-option">
+            <input type="radio" name="visibility" value="all_members" {{#ifEquals data.visibility "all_members"}}checked{{/ifEquals}} required>
+            share with all Twennie members
+          </label>
+        </div>
+      </div>
+
+      <div class="form-buttons">
+        {{#if data._id}}
+          <button type="submit" name="submit" value="edit" class="form-button submit-button">save edited nugget</button>
+        {{else}}
+          <button type="submit" name="submit" value="submit" class="form-button submit-button">submit nugget</button>
+        {{/if}}
+      </div>
+    </form>
+  </div>
+</div>
+
+{{> mainpartials/footer}}

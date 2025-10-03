@@ -10,7 +10,7 @@ const isAuthenticated = (req, res, next) => {
   return res.status(401).json({ error: 'Not authenticated' });
 };
 
-// ----- existing routes -----
+// ----- existing unit routes -----
 router.get('/articles/view/:id', unitviewController.viewArticle);
 router.get('/videos/view/:id', unitviewController.viewVideo);
 router.get('/interviews/view/:id', unitviewController.viewInterview);
@@ -18,16 +18,19 @@ router.get('/promptsets/view/:id', unitviewController.viewPromptset);
 router.get('/exercises/view/:id', unitviewController.viewExercise);
 router.get('/templates/view/:id', unitviewController.viewTemplate);
 
+// ----- nuggets (new) -----
+router.get('/nuggets/view/:id', unitviewController.viewNugget);
+
+// ----- upcoming unit -----
+router.get('/upcoming/view/:id', unitviewController.viewUpcoming);
+
+// ----- notes success (shared) -----
 router.get('/unitnotessuccess', (req, res) => {
   res.render('unit_views/unitnotessuccess', { layout: 'unitviewlayout' });
 });
 
-// ----- NEW: upcoming unit -----
-router.get('/upcoming/view/:id', unitviewController.viewUpcoming);
-
-
-
 module.exports = router;
+
 
 
 

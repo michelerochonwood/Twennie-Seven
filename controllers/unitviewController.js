@@ -14,6 +14,7 @@ const GroupMemberProfile = require('../models/profile_models/groupmember_profile
 const MemberProfile = require('../models/profile_models/member_profile');
 const sanitizeHtml = require('sanitize-html');
 const UpcomingUnit = require('../models/unit_models/upcoming'); // models/unit_models/upcoming.js
+const Nugget = require('../models/unit_models/nugget'); // add this at the top with other models
 
 // Add this helper at the top of the controller file (outside the viewInterview function)
 function convertYouTubeToEmbed(url) {
@@ -82,6 +83,111 @@ async function resolveAuthorById(authorId) {
 
 
 module.exports = {
+
+  viewNugget: async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log(`💎 Fetching nugget with ID: ${id}`);
+
+    // 1) Fetch the nugget
+    const nugget = await Nugget.findById(id);
+    if (!nugget) {
+      console.warn(`❌ Nugget with ID ${id} not found.`);
+      return res.status(404).render('unit_views/error', {
+        layout: 'unitviewlayout',
+        title: 'Nugget Not Found',
+        errorMessage: `The nugget with ID ${id} does not exist.`,
+      });
+    }
+
+    // 2) Enforce membership: nuggets are for paying members only
+    const membershipType = req.user?.accessLevel || req.user?.membershipType;
+    const paidMemberships = ['paid_individual', 'leader', 'group_member']; 
+    // adjust this list depending on which Twennie roles you consider "paid"
+    if (!membershipType || !paidMemberships.includes(membershipType)) {
+      console.log(`🚫 Access denied for membership type: ${membershipType}`);
+      return res.status(403).render('unit_views/error', {
+        layout: 'unitviewlayout',
+        title: 'Access Restricted',
+        errorMessage: 'Nuggets are only available to paid members.',
+      });
+    }
+
+    // 3) Resolve creator
+    const creatorId = nugget.createdBy?.toString();
+    const creator = await resolveAuthorById(creatorId);
+
+    // 4) Current user helpers
+    const currentUserId = (req.user?._id || req.user?.id)?.toString();
+    const currentMembership = req.user?.membershipType || req.user?.accessLevel;
+    const isOwner = !!(currentUserId && creatorId && currentUserId === creatorId);
+
+    // 5) If leader, load group members for assignment UI
+    let groupMembers = [];
+    let leaderId, leaderName;
+    if (currentMembership === 'leader' && currentUserId) {
+      const leaderDoc = await Leader.findById(currentUserId);
+      if (leaderDoc) {
+        groupMembers = await GroupMember.find({ groupId: leaderDoc._id })
+          .select('_id name')
+          .lean();
+        leaderId = leaderDoc._id.toString();
+        leaderName = leaderDoc.groupLeaderName || leaderDoc.username || 'You';
+      }
+    }
+
+    // 6) Render the nugget view
+    return res.render('unit_views/single_nugget', {
+      layout: 'unitviewlayout',
+
+      // Unit identity
+      _id: nugget._id.toString(),
+      unitType: 'nugget',
+
+      // Core fields
+      title: nugget.title,
+      client: nugget.client,
+      horizon: nugget.horizon,
+      discipline: nugget.discipline,
+      region: nugget.region,
+      estimatedValue: nugget.estimatedValue,
+      projectDeliveryType: nugget.projectDeliveryType,
+      originalSource: nugget.originalSource,
+      likelihood: nugget.likelihood,
+      connectedTwennieUnits: nugget.connectedTwennieUnits || [],
+      notes: nugget.notes,
+
+      // Creator sidebar
+      creator: {
+        name: creator.name,
+        image: creator.image,
+      },
+
+      // Flags
+      isOwner,
+      isAuthenticated: !!req.user,
+      isLeader: currentMembership === 'leader',
+      isGroupMemberOrLeader:
+        currentMembership === 'leader' || currentMembership === 'group_member',
+      isGroupMemberOrMember:
+        currentMembership === 'group_member' || currentMembership === 'member',
+
+      // Leader-only assignment data
+      groupMembers,
+      leaderId,
+      leaderName: leaderName || req.user?.username || 'You',
+
+      csrfToken: req.csrfToken(),
+    });
+  } catch (err) {
+    console.error('💥 Error fetching nugget:', err.stack || err.message);
+    return res.status(500).render('unit_views/error', {
+      layout: 'unitviewlayout',
+      title: 'Error',
+      errorMessage: 'An error occurred while fetching the nugget.',
+    });
+  }
+},
     
 viewArticle: async (req, res) => {
   try {

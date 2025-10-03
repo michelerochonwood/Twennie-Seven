@@ -1,0 +1,180 @@
+{{#*inline "title"}}View Nugget | Twennie{{/inline}}
+
+<div class="single_nugget-container">
+  <!-- Main Section -->
+  <div class="single_nugget-main">
+    <h1 class="single_nugget-title">{{title}}</h1>
+
+    <!-- Summary -->
+    <div class="single_nugget-summary white-container">
+      <p><strong>Client:</strong> {{client}}</p>
+      <p><strong>Horizon:</strong> 
+        {{#ifEquals horizon "1y"}}1 Year{{/ifEquals}}
+        {{#ifEquals horizon "3y"}}3 Years{{/ifEquals}}
+        {{#ifEquals horizon "5y"}}5 Years{{/ifEquals}}
+      </p>
+      <p><strong>Discipline:</strong> {{discipline}}</p>
+      <p><strong>Region:</strong> {{region}}</p>
+    </div>
+
+    <!-- Core Details -->
+    <div class="single_nugget-details white-container">
+      <h3>Project Details</h3>
+      <p><strong>Estimated Value:</strong> 
+        {{#if estimatedValue.amount}}
+          ${{estimatedValue.amount}} {{estimatedValue.currency}}
+        {{else}}Not available{{/if}}
+      </p>
+      <p><strong>Project Delivery Type:</strong> {{projectDeliveryType}}</p>
+      <p><strong>Likelihood:</strong> {{likelihood}}%</p>
+      <p><strong>Original Source:</strong> 
+        <a href="{{originalSource.url}}" target="_blank">{{originalSource.label}}</a>
+      </p>
+      {{#if notes}}
+        <div class="single_nugget-notes">
+          <h4>Notes</h4>
+          <p>{{notes}}</p>
+        </div>
+      {{/if}}
+    </div>
+
+    <!-- Connected Units -->
+    <div class="single_nugget-connected-units white-container">
+      <h3>Connected Twennie Units</h3>
+      {{#if connectedTwennieUnits.length}}
+        <ul class="connected-unit-list">
+          {{#each connectedTwennieUnits}}
+            <li>
+              <a href="/units/{{this.kind}}/{{this.unitId}}" class="connected-unit-link">
+                {{capitalize this.kind}}: {{this.unitId}}
+              </a>
+              {{#if this.note}}<p class="connected-unit-note">{{this.note}}</p>{{/if}}
+            </li>
+          {{/each}}
+        </ul>
+      {{else}}
+        <p>No connected units yet. Leaders can link this nugget to articles, videos, or prompt sets.</p>
+      {{/if}}
+    </div>
+
+    <!-- Tagging / Assignments -->
+    {{#if isLeader}}
+      <div class="assign-tag-form white-container">
+        <h4>Assign this nugget</h4>
+        <form id="assignNuggetForm" action="/tags/create" method="POST">
+          <input type="hidden" name="_csrf" value="{{csrfToken}}">
+          <input type="hidden" name="itemId" value="{{_id}}">
+          <input type="hidden" name="itemType" value="nugget">
+
+          <div class="form-field">
+            <label for="tagName">Give the tag a name</label>
+            <input type="text" id="tagName" name="tagName" required>
+          </div>
+
+          <fieldset class="assign-tag-members">
+            <legend>Select recipients and enter instructions:</legend>
+            <div class="assign-tag-member-block">
+              <label><input type="checkbox" name="assignedTo[{{leaderId}}][member]" value="{{leaderId}}" onchange="toggleInstructionField(this)"> {{leaderName}} (you)</label>
+              <textarea class="assign-tag-instructions" name="assignedTo[{{leaderId}}][instructions]}" placeholder="Instructions for yourself" style="display:none;"></textarea>
+            </div>
+            <hr>
+            {{#each groupMembers}}
+              <div class="assign-tag-member-block">
+                <label><input type="checkbox" name="assignedTo[{{_id}}][member]" value="{{_id}}" onchange="toggleInstructionField(this)"> {{name}}</label>
+                <textarea class="assign-tag-instructions" name="assignedTo[{{_id}}][instructions]}" placeholder="Instructions for {{name}}" style="display:none;"></textarea>
+              </div>
+            {{/each}}
+          </fieldset>
+
+          <button type="submit" class="form-button submit-button">assign nugget</button>
+        </form>
+      </div>
+    {{/if}}
+
+    <!-- Member/Group Member Quick Tag -->
+    {{#if isGroupMemberOrMember}}
+      <div class="single_unit-tag-container">
+        <form action="/tags/create" method="POST" class="inline" id="nuggetTagForm">
+          <input type="hidden" name="_csrf" value="{{csrfToken}}">
+          <input type="hidden" name="itemId" value="{{_id}}">
+          <input type="hidden" name="itemType" value="nugget">
+          <input type="hidden" name="tagName" value="Watch Later">
+          <button type="button" class="tag-this-unit-link" onclick="promptAndSubmitTag('nuggetTagForm')">tag this nugget</button>
+        </form>
+      </div>
+    {{/if}}
+
+    <!-- Tags -->
+    <div class="single_unit-tags white-container">
+      <h4>tags for this nugget</h4>
+      {{#if tagsForUnit.length}}
+        <ul class="unit-tag-list">
+          {{#each tagsForUnit}}
+            <li class="tag-pill">
+              <span class="tag-name">{{name}}</span>
+              {{#if assignedToMe}}
+                {{#if completedAt}}<span class="tag-status">completed</span>
+                {{else}}<button type="button" class="tag-action" data-action="complete" data-tag="{{_id}}">mark complete</button>{{/if}}
+              {{/if}}
+              {{#if createdByMe}}
+                <button type="button" class="tag-action" data-action="remove" data-tag="{{_id}}" data-item="{{@root._id}}" data-type="nugget">remove</button>
+              {{/if}}
+            </li>
+          {{/each}}
+        </ul>
+      {{else}}
+        <p>No tags yet. Use “assign” (leaders) or “tag this nugget” to add one.</p>
+      {{/if}}
+    </div>
+
+    <!-- Notes -->
+    {{#if isGroupMemberOrLeader}}
+      <div class="single_nugget-notes-container">
+        <h3>record notes</h3>
+        <form action="/notes/submit" method="POST" class="single_nugget-notes-form">
+          <input type="hidden" name="_csrf" value="{{csrfToken}}">
+          <input type="hidden" name="unitId" value="{{_id}}">
+          <input type="hidden" name="unitType" value="nugget">
+          <textarea name="note_content" class="single_nugget-notes-textarea" rows="5" maxlength="1000" placeholder="Write your notes here..."></textarea>
+          <button type="submit" class="single_nugget-notes-submit">submit notes</button>
+        </form>
+      </div>
+    {{/if}}
+  </div>
+
+  <!-- Sidebar -->
+  <aside class="single_nugget-sidebar">
+    <div class="single_nugget-author">
+      <img src="{{creator.image}}" alt="Creator Image" class="single_nugget-author-image">
+      <p class="single_nugget-author-name">Created by: {{creator.name}}</p>
+    </div>
+    <div class="single_nugget-details-meta">
+      <p class="single_nugget-unit-type">Unit Type: Nugget</p>
+      {{#if isOwner}}
+        <a href="/unitform/edit_nugget/{{_id}}" class="single_nugget-edit-btn">edit this nugget</a>
+      {{/if}}
+    </div>
+  </aside>
+</div>
+
+<script>
+  function toggleInstructionField(checkbox) {
+    const memberId = checkbox.value;
+    const selector = `textarea[name="assignedTo[${memberId}][instructions]"]`;
+    const textarea = document.querySelector(selector);
+    if (textarea) textarea.style.display = checkbox.checked ? 'block' : 'none';
+  }
+
+  function promptAndSubmitTag(formId) {
+    const form = document.getElementById(formId);
+    const btn  = form.querySelector('.tag-this-unit-link');
+    const input = form.querySelector('input[name="tagName"]');
+    const suggested = (input.value || 'Watch Later').trim();
+    const entered = window.prompt('Name this tag', suggested);
+    if (!entered) return;
+    input.value = entered.trim();
+    if (!input.value) return;
+    if (btn) btn.disabled = true;
+    form.submit();
+  }
+</script>
