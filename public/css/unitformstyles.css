@@ -741,6 +741,25 @@ label[for=short-summary] {
   width: 100%;  
 }
 
+.form-nugget-background {
+  background-color: #939598;
+  width: 100%;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: -1;
+}
+
+.form-nugget-container { 
+  padding:2rem 5rem; 
+  width:50%; 
+  margin:1rem 0 5rem 0; }
+
+.nugget-form { 
+  font-family:"Figtree", sans-serif; 
+  color:#4a4ab2; }
+
 @media screen and (max-width: 1366px) {
   .file-upload-group {
     flex-direction: column;
@@ -756,16 +775,20 @@ label[for=short-summary] {
   .form-exercise-container, 
   .form-promptset-container, 
   .form-microstudy-container, 
-  .form-microcourse-container {
+  .form-microcourse-container,
+  .form-nugget-container {
     padding: 2rem 5rem;
     width: 60%;
   }
+
   .prompt-intro-text {
     width: 100%;
   }
+
   .characteristics-row {
     grid-template-columns: repeat(3, 1fr);
   }
+
   @media screen and (max-width: 800px) {
     .form-article-container,
     .form-video-container,
@@ -774,10 +797,12 @@ label[for=short-summary] {
     .form-exercise-container, 
     .form-promptset-container, 
     .form-microstudy-container, 
-    .form-microcourse-container {
+    .form-microcourse-container,
+    .form-nugget-container {
       padding: 2rem 5rem;
       width: 80%;
     }
+
     @media screen and (max-width: 600px) {
       .form-article-container,
       .form-video-container,
@@ -786,17 +811,21 @@ label[for=short-summary] {
       .form-exercise-container, 
       .form-promptset-container, 
       .form-microstudy-container, 
-      .form-microcourse-container {
+      .form-microcourse-container,
+      .form-nugget-container {
         padding: 2rem 3rem;
         width: 90%;
       }
+
       .target-audience {
         width: 100%;
       }
+
       .characteristics-row {
         grid-template-columns: repeat(2, 1fr);
         gap: 10px;
       }
+
       @media screen and (max-width: 460px) {
         .howtoarticle-image > img,
         .howtovideo-image > img,
@@ -806,8 +835,9 @@ label[for=short-summary] {
         .howtoprompt-image > img,
         .howtomicrostudy-image > img,
         .howtomicrocourse-image > img {
-            max-width: 300px;
+          max-width: 300px;
         }
+
         .form-article-container,
         .form-video-container,
         .form-interview-container, 
@@ -815,10 +845,12 @@ label[for=short-summary] {
         .form-exercise-container, 
         .form-promptset-container, 
         .form-microstudy-container, 
-        .form-microcourse-container {
+        .form-microcourse-container,
+        .form-nugget-container {
           padding: 2rem 1.5rem;
           width: 90%;
         }
+
         @media screen and (max-width: 340px) {
           .howtoarticle-image > img,
           .howtovideo-image > img,
@@ -828,10 +860,11 @@ label[for=short-summary] {
           .howtoprompt-image > img,
           .howtomicrostudy-image > img,
           .howtomicrocourse-image > img {
-              max-width: 270px;
+            max-width: 270px;
           }
         }
       }
     }
   }
 }
+
