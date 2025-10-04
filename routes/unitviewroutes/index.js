@@ -21,7 +21,7 @@ router.get('/templates/view/:id', unitviewController.viewTemplate);
 // ----- The Mine (landing) -----
 // Renders the main Mine page (miner Bluey + three tiles). Uses unitviewlayout.
 router.get('/mine', (req, res) => {
-  return res.render('unit_views/mine', { layout: 'unitviewlayout' });
+  return res.render('unit_views/mine_list', { layout: 'unitviewlayout' });
 });
 
 // ----- The Mine (lists managed by controller) -----
