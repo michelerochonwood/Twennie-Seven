@@ -19,9 +19,20 @@ router.get('/exercises/view/:id', unitviewController.viewExercise);
 router.get('/templates/view/:id', unitviewController.viewTemplate);
 
 // ----- The Mine (landing) -----
-// Renders the main Mine page (miner Bluey + three tiles). Uses unitviewlayout.
+// Uses the single mine_list.hbs to show three category tiles
 router.get('/mine', (req, res) => {
-  return res.render('unit_views/mine_list', { layout: 'unitviewlayout' });
+  return res.render('unit_views/mine_list', {
+    layout: 'unitviewlayout',
+    listTitle: 'Welcome to the Twennie Mine',
+    listSubtitle: 'Choose a path to explore Nuggets by Client, Region, or Discipline.',
+    // Treat this as a "landing" — three tiles linking to the category lists
+    items: [
+      { label: 'client', href: '/mine/clients' },
+      { label: 'region', href: '/mine/regions' },
+      { label: 'discipline', href: '/mine/disciplines' },
+    ],
+    itemType: 'category'
+  });
 });
 
 // ----- The Mine (lists managed by controller) -----
