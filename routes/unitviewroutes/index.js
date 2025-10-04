@@ -18,24 +18,32 @@ router.get('/promptsets/view/:id', unitviewController.viewPromptset);
 router.get('/exercises/view/:id', unitviewController.viewExercise);
 router.get('/templates/view/:id', unitviewController.viewTemplate);
 
-// ----- The Mine (landing) -----
+// ----- The Mine (section root and landing) -----
+// Visiting /unitviews will bounce to the Mine landing for convenience
+router.get('/', (req, res) => res.redirect('/unitviews/mine'));
+
 // Uses the single mine_list.hbs to show three category tiles
 router.get('/mine', (req, res) => {
+  console.log('[unitviewroutes] GET /unitviews/mine');
   return res.render('unit_views/mine_list', {
     layout: 'unitviewlayout',
     listTitle: 'Welcome to the Twennie Mine',
     listSubtitle: 'Choose a path to explore Nuggets by Client, Region, or Discipline.',
-    // Treat this as a "landing" — three tiles linking to the category lists
+    // Landing tiles → category list pages
     items: [
-      { label: 'client', href: '/mine/clients' },
-      { label: 'region', href: '/mine/regions' },
-      { label: 'discipline', href: '/mine/disciplines' },
+      { label: 'client', href: '/unitviews/mine/clients' },
+      { label: 'region', href: '/unitviews/mine/regions' },
+      { label: 'discipline', href: '/unitviews/mine/disciplines' },
     ],
     itemType: 'category'
   });
 });
 
 // ----- The Mine (lists managed by controller) -----
+// Effective URLs (because of /unitviews mount):
+//   /unitviews/mine/clients
+//   /unitviews/mine/regions
+//   /unitviews/mine/disciplines
 router.get('/mine/clients', unitviewController.viewMineClients);
 router.get('/mine/regions', unitviewController.viewMineRegions);
 router.get('/mine/disciplines', unitviewController.viewMineDisciplines);
@@ -52,6 +60,7 @@ router.get('/unitnotessuccess', (req, res) => {
 });
 
 module.exports = router;
+
 
 
 
