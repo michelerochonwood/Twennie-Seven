@@ -2472,3 +2472,93 @@ label {
   border: 1px solid #ccc;
   font-size: 14px;
 }
+
+ .mine-wrapper{
+    max-width: 1100px;
+    margin: 160px auto 120px;
+    padding: 0 24px;
+    text-align: center;
+    font-family: "Figtree", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  }
+
+  .mine-title{
+    color:#262262;
+    font-weight:800;
+    font-size: clamp(1.8rem, 2.4vw, 2.6rem);
+    margin:0 0 12px;
+  }
+
+  .mine-hero{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin: 8px 0 10px;
+  }
+  .mine-hero-img{
+    width:min(360px, 60vw);
+    height:auto;
+    display:block;
+  }
+
+  .mine-subtitle{
+    color:#4e50a2;
+    font-weight:600;
+    margin: 18px auto 36px;
+    max-width: 780px;
+  }
+
+  /* Tic-tac-toe style grid (mirrors the look of your contribute tiles) */
+  .mine-grid{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    justify-items:center;
+    align-items:stretch;
+    margin: 0 auto;
+    max-width: 900px;
+  }
+
+  .mine-card{
+    text-decoration:none;
+    width:100%;
+    background:#eeeeef;
+    border-radius: 22px;
+    box-shadow: 0 2px 0 rgba(0,0,0,0.06);
+    transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+  }
+  .mine-card:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(38,34,98,0.18);
+    background:#f5f6ff;
+  }
+
+  .mine-card-inner{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding: 28px 14px 30px;
+    height:100%;
+  }
+
+  .mine-card-icon{
+    font-size: 34px;
+    margin-bottom: 14px;
+  }
+
+  .mine-card-label{
+    color:#4e50a2;
+    font-weight:800;
+    font-size:1.1rem;
+    text-transform: lowercase;
+    letter-spacing: .2px;
+  }
+
+  /* Responsive */
+  @media (max-width: 900px){
+    .mine-grid{ grid-template-columns: 1fr; max-width: 520px; }
+  }
+  @media (max-width: 520px){
+    .mine-wrapper{ margin: 140px auto 80px; }
+    .mine-card-label{ font-size:1rem; }
+  }

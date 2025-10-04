@@ -1,0 +1,37 @@
+{{!-- File: views/unit_views/mine.hbs --}}
+{{#*inline "title"}}The Mine | Twennie{{/inline}}
+
+<div class="mine-wrapper">
+  <h1 class="mine-title">Welcome to the Twennie Mine</h1>
+
+  <div class="mine-hero">
+    <img src="/images/minerbluey.png" alt="Miner Bluey" class="mine-hero-img" />
+  </div>
+
+  <p class="mine-subtitle">
+    Start digging for early intel. Choose a path to see nuggets organized by <strong>Client</strong>, <strong>Region</strong>, or <strong>Discipline</strong>.
+  </p>
+
+  <div class="mine-grid">
+    <a href="/mine/clients" class="mine-card">
+      <div class="mine-card-inner">
+        <div class="mine-card-icon"><img src="https://www.twennie.com/icons/clienticon.svg" alt="client icon" id="client-icon"></div>
+
+      </div>
+    </a>
+
+    <a href="/mine/regions" class="mine-card">
+      <div class="mine-card-inner">
+        <div class="mine-card-icon"><img src="https://www.twennie.com/icons/regionicon.svg" alt="region icon" id="region-icon"></div>
+
+      </div>
+    </a>
+
+    <a href="/mine/disciplines" class="mine-card">
+      <div class="mine-card-inner">
+        <div class="mine-card-icon"><img src="https://www.twennie.com/icons/disciplineicon.svg" alt="discipline icon" id="discipline-icon"></div>
+
+      </div>
+    </a>
+  </div>
+</div>

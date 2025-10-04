@@ -23,6 +23,9 @@
       style="width: 90px; height: 90px; border-radius: 50%; object-fit: cover; display: inline-block; overflow: hidden;"
     >
   </li>
+  <li>
+    <a href="/mine">The Mine</a>
+  </li>
 {{/if}}
 
 
@@ -34,6 +37,9 @@
                     </li>                    
                     <li>
                       <a href="{{dashboardLink}}">Dashboard</a>
+                    </li>
+                    <li>
+                      <a href="/mine">The Mine</a>
                     </li>
                     <li>
                       <a href="/auth/logout">Logout</a>
@@ -119,6 +125,12 @@
     <a href="/latest" class="nav-square">
       <img src="https://www.twennie.com/icons/latesticon.svg" alt="Latest">
       <span class="nav-text">latest</span>
+    </a>
+
+    <!-- The Mine (logged-in only) -->
+    <a href="/mine" class="nav-square">
+      <img src="https://www.twennie.com/icons/mineicon.svg" alt="The Mine">
+      <span class="nav-text">the mine</span>
     </a>
 
     <!-- Log out for user -->

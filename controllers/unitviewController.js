@@ -16,6 +16,11 @@ const sanitizeHtml = require('sanitize-html');
 const UpcomingUnit = require('../models/unit_models/upcoming'); // models/unit_models/upcoming.js
 const Nugget = require('../models/unit_models/nugget'); // add this at the top with other models
 
+function isPaidMember(req) {
+  const t = req.user?.accessLevel || req.user?.membershipType;
+  return ['paid_individual', 'leader', 'group_member'].includes(t);
+}
+
 // Add this helper at the top of the controller file (outside the viewInterview function)
 function convertYouTubeToEmbed(url) {
   if (!url) return null;
@@ -83,6 +88,128 @@ async function resolveAuthorById(authorId) {
 
 
 module.exports = {
+
+  // ---- The Mine: Clients list ----
+viewMineClients: async (req, res) => {
+  try {
+    if (!isPaidMember(req)) {
+      return res.status(403).render('unit_views/error', {
+        layout: 'unitviewlayout',
+        title: 'Access Restricted',
+        errorMessage: 'The Mine is available to paid members only.',
+      });
+    }
+
+    // Group nuggets by client with counts
+    const rows = await Nugget.aggregate([
+      { $match: { client: { $exists: true, $ne: '' } } },
+      { $group: { _id: '$client', count: { $sum: 1 } } },
+      { $sort: { _id: 1 } },
+    ]);
+
+    const items = rows.map(r => ({
+      label: r._id,
+      count: r.count,
+      href: `/mine/clients/${encodeURIComponent(r._id)}` // detail route (can add later)
+    }));
+
+    return res.render('unit_views/mine_list', {
+      layout: 'unitviewlayout',
+      listTitle: 'Clients in the Mine',
+      listSubtitle: 'Browse all Nuggets grouped by client.',
+      itemType: 'client',
+      items,
+    });
+  } catch (err) {
+    console.error('viewMineClients error:', err);
+    return res.status(500).render('unit_views/error', {
+      layout: 'unitviewlayout',
+      title: 'Error',
+      errorMessage: 'Unable to load clients.',
+    });
+  }
+},
+
+// ---- The Mine: Regions list ----
+viewMineRegions: async (req, res) => {
+  try {
+    if (!isPaidMember(req)) {
+      return res.status(403).render('unit_views/error', {
+        layout: 'unitviewlayout',
+        title: 'Access Restricted',
+        errorMessage: 'The Mine is available to paid members only.',
+      });
+    }
+
+    const rows = await Nugget.aggregate([
+      { $match: { region: { $exists: true, $ne: '' } } },
+      { $group: { _id: '$region', count: { $sum: 1 } } },
+      { $sort: { _id: 1 } },
+    ]);
+
+    const items = rows.map(r => ({
+      label: r._id,
+      count: r.count,
+      href: `/mine/regions/${encodeURIComponent(r._id)}`
+    }));
+
+    return res.render('unit_views/mine_list', {
+      layout: 'unitviewlayout',
+      listTitle: 'Regions in the Mine',
+      listSubtitle: 'Browse all Nuggets grouped by region.',
+      itemType: 'region',
+      items,
+    });
+  } catch (err) {
+    console.error('viewMineRegions error:', err);
+    return res.status(500).render('unit_views/error', {
+      layout: 'unitviewlayout',
+      title: 'Error',
+      errorMessage: 'Unable to load regions.',
+    });
+  }
+},
+
+// ---- The Mine: Disciplines list ----
+viewMineDisciplines: async (req, res) => {
+  try {
+    if (!isPaidMember(req)) {
+      return res.status(403).render('unit_views/error', {
+        layout: 'unitviewlayout',
+        title: 'Access Restricted',
+        errorMessage: 'The Mine is available to paid members only.',
+      });
+    }
+
+    const rows = await Nugget.aggregate([
+      { $match: { discipline: { $exists: true, $ne: '' } } },
+      { $group: { _id: '$discipline', count: { $sum: 1 } } },
+      { $sort: { _id: 1 } },
+    ]);
+
+    const items = rows.map(r => ({
+      label: r._id,
+      count: r.count,
+      href: `/mine/disciplines/${encodeURIComponent(r._id)}`
+    }));
+
+    return res.render('unit_views/mine_list', {
+      layout: 'unitviewlayout',
+      listTitle: 'Disciplines in the Mine',
+      listSubtitle: 'Browse all Nuggets grouped by discipline.',
+      itemType: 'discipline',
+      items,
+    });
+  } catch (err) {
+    console.error('viewMineDisciplines error:', err);
+    return res.status(500).render('unit_views/error', {
+      layout: 'unitviewlayout',
+      title: 'Error',
+      errorMessage: 'Unable to load disciplines.',
+    });
+  }
+},
+
 
   viewNugget: async (req, res) => {
   try {

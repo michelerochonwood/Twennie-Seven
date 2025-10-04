@@ -20,6 +20,9 @@ router.get('/templates/view/:id', unitviewController.viewTemplate);
 
 // ----- nuggets (new) -----
 router.get('/nuggets/view/:id', unitviewController.viewNugget);
+router.get('/mine/clients', unitviewController.viewMineClients);
+router.get('/mine/regions', unitviewController.viewMineRegions);
+router.get('/mine/disciplines', unitviewController.viewMineDisciplines);
 
 // ----- upcoming unit -----
 router.get('/upcoming/view/:id', unitviewController.viewUpcoming);
