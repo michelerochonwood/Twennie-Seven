@@ -44,7 +44,16 @@ router.get('/mine', (req, res) => {
 //   /unitviews/mine/clients
 //   /unitviews/mine/regions
 //   /unitviews/mine/disciplines
-router.get('/mine/clients', unitviewController.viewMineClients);
+// routes/unitviewroutes/index.js
+router.get('/mine/clients', (req, res) => {
+  return res.render('unit_views/client_view', {
+    layout: 'unitviewlayout',
+    pageTitle: 'Nuggets by Client',
+    pageIntro: 'Browse Nuggets grouped by client.',
+    sectionedNuggets: []
+  });
+});
+
 router.get('/mine/regions', unitviewController.viewMineRegions);
 router.get('/mine/disciplines', unitviewController.viewMineDisciplines);
 

@@ -90,6 +90,7 @@ async function resolveAuthorById(authorId) {
 module.exports = {
 
   // ---- The Mine: Clients list ----
+// ---- The Mine: Clients view (cards of nuggets; card title = client) ----
 viewMineClients: async (req, res) => {
   try {
     if (!isPaidMember(req)) {
@@ -100,35 +101,47 @@ viewMineClients: async (req, res) => {
       });
     }
 
-    // Group nuggets by client with counts
-    const rows = await Nugget.aggregate([
-      { $match: { client: { $exists: true, $ne: '' } } },
-      { $group: { _id: '$client', count: { $sum: 1 } } },
-      { $sort: { _id: 1 } },
-    ]);
+    // 1) Load nuggets that have a client value
+    const nuggets = await Nugget.find({ client: { $exists: true, $ne: '' } })
+      .sort({ client: 1 })
+      .lean();
 
-    const items = rows.map(r => ({
-      label: r._id,
-      count: r.count,
-      href: `/mine/clients/${encodeURIComponent(r._id)}` // detail route (can add later)
-    }));
+    // 2) Partition into the four sections (stub logic for group/org)
+    const meId = (req.user?._id || req.user?.id || '').toString();
 
-    return res.render('unit_views/mine_list', {
+    const createdByMe      = nuggets.filter(n => (n.createdBy || '').toString() === meId);
+
+    // TODO: replace these with real group/org scopes once wired:
+    const createdByMyGroup = [];         // e.g., nuggets.filter(n => inMyGroup(n.createdBy))
+    const createdByMyOrg   = [];         // e.g., nuggets.filter(n => sameOrg(n.createdBy))
+    const fromAllMembers   = nuggets;    // catch-all for now
+
+    const sectionedNuggets = [
+      { sectionTitle: 'Created by Me',              nuggets: createdByMe,      emptyMessage: 'No client nuggets created by you yet.' },
+      { sectionTitle: 'Created by My Group',        nuggets: createdByMyGroup, emptyMessage: 'No client nuggets from your group yet.' },
+      { sectionTitle: 'Created by My Organization', nuggets: createdByMyOrg,   emptyMessage: 'No client nuggets from your organization yet.' },
+      { sectionTitle: 'From All Members',           nuggets: fromAllMembers,   emptyMessage: 'No client nuggets yet.' },
+    ];
+
+    // 3) Render the new client cards view
+    return res.render('unit_views/client_view', {
       layout: 'unitviewlayout',
-      listTitle: 'Clients in the Mine',
-      listSubtitle: 'Browse all Nuggets grouped by client.',
-      itemType: 'client',
-      items,
+      pageTitle: 'Nuggets by Client',
+      pageIntro: 'Browse Nuggets grouped by client. Open any card to see details and jump to the full Nugget.',
+      shortSummary: '',
+      longSummary: '',
+      sectionedNuggets,
     });
   } catch (err) {
     console.error('viewMineClients error:', err);
     return res.status(500).render('unit_views/error', {
       layout: 'unitviewlayout',
       title: 'Error',
-      errorMessage: 'Unable to load clients.',
+      errorMessage: 'Unable to load client Nuggets.',
     });
   }
 },
+
 
 // ---- The Mine: Regions list ----
 viewMineRegions: async (req, res) => {
