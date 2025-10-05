@@ -185,6 +185,8 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use('/icons', express.static(path.join(__dirname, 'public/icons')));
+
 // Consent locals (must come before views/routes)
 app.use((req, res, next) => {
   const defaults = { version: 1, necessary: true, functional: false, analytics: false, marketing: false };
