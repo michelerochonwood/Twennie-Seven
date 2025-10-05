@@ -92,8 +92,10 @@ module.exports = {
   // ---- The Mine: Clients list ----
 // ---- The Mine: Clients view (cards of nuggets; card title = client) ----
 // ---- The Mine: Clients view (cards of nuggets; card title = client) ----
+// ---- The Mine: Clients view (cards; card title = client) ----
 viewMineClients: async (req, res) => {
   try {
+    // 1) paid-only
     if (!isPaidMember(req)) {
       return res.status(403).render('unit_views/error', {
         layout: 'unitviewlayout',
@@ -102,22 +104,103 @@ viewMineClients: async (req, res) => {
       });
     }
 
-    // Load all nuggets that have a client
+    // 2) Load all nuggets that have a client
     const nuggets = await Nugget.find({ client: { $exists: true, $ne: '' } })
       .sort({ client: 1 })
       .lean();
 
+    // Quick exit: render empty sections if no nuggets at all
+    if (!nuggets || nuggets.length === 0) {
+      const sectionedNuggets = [
+        { sectionTitle: 'Created by Me',              nuggets: [], emptyMessage: 'No client nuggets created by you yet.' },
+        { sectionTitle: 'Created by My Group',        nuggets: [], emptyMessage: 'No client nuggets from your group yet.' },
+        { sectionTitle: 'Created by My Organization', nuggets: [], emptyMessage: 'No client nuggets from your organization yet.' },
+        { sectionTitle: 'From All Members',           nuggets: [], emptyMessage: 'No client nuggets yet.' },
+      ];
+      return res.render('unit_views/client_view', {
+        layout: 'unitviewlayout',
+        pageTitle: 'Nuggets by Client',
+        pageIntro: 'Open any client card to see details and jump to the full Nugget.',
+        sectionedNuggets,
+      });
+    }
+
+    // 3) Current user identity
     const meId = (req.user?._id || req.user?.id || '').toString();
+    const membershipType = req.user?.membershipType || req.user?.accessLevel || null;
 
-    // Partition into sections (group/org are stubs you can wire later)
-    const createdByMe = nuggets.filter(n => (n.createdBy || '').toString() === meId);
+    // Resolve MY group/org (best effort)
+    let myGroupId = null;
+    let myOrg = null;
+    if (meId) {
+      const [meAsLeader, meAsGroupMember, meAsMember] = await Promise.all([
+        Leader.findById(meId).select('_id organization').lean(),
+        GroupMember.findById(meId).select('_id organization groupId').lean(),
+        Member.findById(meId).select('_id organization').lean(),
+      ]);
+      if (meAsLeader) {
+        myGroupId = meAsLeader._id?.toString() || null; // leaders use their own _id as team anchor in your app
+        myOrg     = meAsLeader.organization || null;
+      } else if (meAsGroupMember) {
+        myGroupId = meAsGroupMember.groupId ? meAsGroupMember.groupId.toString() : null;
+        myOrg     = meAsGroupMember.organization || null;
+      } else if (meAsMember) {
+        myOrg     = meAsMember.organization || null;
+      }
+    }
 
-    // TODO: wire these using your group/org model relationships
-    const createdByMyGroup = [];  // e.g., nuggets.filter(n => isInMyGroup(n.createdBy))
-    const createdByMyOrg   = [];  // e.g., nuggets.filter(n => isInMyOrg(n.createdBy))
+    // 4) Build maps of creator -> org/group for all creators present in these nuggets
+    const creatorIds = [
+      ...new Set(
+        nuggets
+          .map(n => (n.createdBy ? n.createdBy.toString() : null))
+          .filter(Boolean)
+      )
+    ];
 
-    // Always show a catch-all so your single Mongo record appears
-    const fromAllMembers   = nuggets;
+    let orgByCreator = Object.create(null);
+    let groupByCreator = Object.create(null);
+
+    if (creatorIds.length) {
+      const [creatorsAsLeaders, creatorsAsGroupMembers] = await Promise.all([
+        Leader.find({ _id: { $in: creatorIds } }).select('_id organization').lean(),
+        GroupMember.find({ _id: { $in: creatorIds } }).select('_id organization groupId').lean(),
+      ]);
+
+      creatorsAsLeaders.forEach(doc => {
+        const id = doc._id.toString();
+        orgByCreator[id]   = doc.organization || orgByCreator[id] || null;
+        groupByCreator[id] = doc._id.toString(); // leaders anchor to their own id
+      });
+
+      creatorsAsGroupMembers.forEach(doc => {
+        const id = doc._id.toString();
+        orgByCreator[id]   = doc.organization || orgByCreator[id] || null;
+        groupByCreator[id] = (doc.groupId && doc.groupId.toString()) || groupByCreator[id] || null;
+      });
+    }
+
+    // 5) Partition into sections
+    const createdByMe = meId
+      ? nuggets.filter(n => (n.createdBy || '').toString() === meId)
+      : [];
+
+    const createdByMyGroup = myGroupId
+      ? nuggets.filter(n => {
+          const cid = (n.createdBy || '').toString();
+          return cid && groupByCreator[cid] && groupByCreator[cid] === myGroupId;
+        })
+      : [];
+
+    const createdByMyOrg = myOrg
+      ? nuggets.filter(n => {
+          const cid = (n.createdBy || '').toString();
+          return cid && orgByCreator[cid] && orgByCreator[cid] === myOrg;
+        })
+      : [];
+
+    // Always include a catch-all so records without createdBy still appear
+    const fromAllMembers = nuggets;
 
     const sectionedNuggets = [
       { sectionTitle: 'Created by Me',              nuggets: createdByMe,      emptyMessage: 'No client nuggets created by you yet.' },
@@ -126,7 +209,7 @@ viewMineClients: async (req, res) => {
       { sectionTitle: 'From All Members',           nuggets: fromAllMembers,   emptyMessage: 'No client nuggets yet.' },
     ];
 
-    // IMPORTANT: Render the new client view (not the Mine landing list)
+    // 6) Render the page
     return res.render('unit_views/client_view', {
       layout: 'unitviewlayout',
       pageTitle: 'Nuggets by Client',
@@ -144,6 +227,7 @@ viewMineClients: async (req, res) => {
     });
   }
 },
+
 
 
 
