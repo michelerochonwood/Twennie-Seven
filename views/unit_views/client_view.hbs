@@ -1,68 +1,59 @@
-{{!-- File: views/unit_views/mine_clients.hbs --}}
+{{!-- File: views/unit_views/client_view.hbs --}}
 {{#*inline "title"}}Nuggets by Client | Twennie{{/inline}}
 
-<div class="mineclients-container">
+<div class="mineclients-container bytopic-container">
   <!-- Hero -->
   <div class="mineclients-hero">
-    <h1 class="mineclients-title">{{pageTitle}}</h1>
+    <h1 class="mineclients-title bytopic-title">{{#if pageTitle}}{{pageTitle}}{{else}}Nuggets by Client{{/if}}</h1>
     <img src="/images/clientbluey.png" alt="Client Bluey" class="mineclients-hero-img" />
-    {{#if pageIntro}}
-      <p class="mineclients-intro">{{pageIntro}}</p>
-    {{/if}}
+    {{#if pageIntro}}<p class="mineclients-intro bytopic-short-summary">{{pageIntro}}</p>{{/if}}
+    {{#if shortSummary}}<p class="mineclients-short-summary bytopic-short-summary">{{shortSummary}}</p>{{/if}}
+    {{#if longSummary}}<p class="mineclients-long-summary bytopic-long-summary">{{longSummary}}</p>{{/if}}
   </div>
 
-  <!-- Main content column with right rail, like bytopic -->
-  <div class="mineclients-content has-right-rail">
-    {{!-- Optional page summaries --}}
-    {{#if shortSummary}}<p class="mineclients-short-summary">{{shortSummary}}</p>{{/if}}
-    {{#if longSummary}}<p class="mineclients-long-summary">{{longSummary}}</p>{{/if}}
-
-    {{!-- We expect sectionedNuggets to be an array of:
-          [{ sectionTitle, nuggets: [...] , emptyMessage? }]
-          Recommended sections (in order):
-          1) Created by Me
-          2) Created by My Group
-          3) Created by My Organization
-          4) From All Members
-    --}}
+  <!-- Main content + right rail (mirrors bytopic layout) -->
+  <div class="mineclients-content has-right-rail bytopic-content">
+    {{!-- Sectioned nuggets --}}
     {{#each sectionedNuggets}}
-      <h2 class="mineclients-section-title">{{this.sectionTitle}}</h2>
-      <hr class="mineclients-section-divider">
+      <h2 class="mineclients-section-title bytopic-section-title">{{this.sectionTitle}}</h2>
+      <hr class="mineclients-section-divider bytopic-section-divider">
 
       {{#if this.nuggets.length}}
-        <div class="mineclients-nuggets-grid">
+        <div class="mineclients-nuggets-grid bytopic-library-units-grid">
           {{#each this.nuggets}}
-            <article class="mineclients-nugget-card" data-nugget-id="{{_id}}">
-              <!-- Wave header (purple) -->
-              <div class="mineclients-card-svg-header">
+            <article class="mineclients-nugget-card bytopic-library-unit-card" data-nugget-id="{{_id}}">
+              <!-- Header wave -->
+              <div class="mineclients-card-svg-header bytopic-card-svg-header">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 198.89 17.83" aria-hidden="true" focusable="false">
                   <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
                   <path class="cls-1" d="M0,9.74s30.57,13.88,92.83,1.88c0,0,68.2-13.17,106.06,6.21V0H0v9.74Z"/>
                 </svg>
               </div>
 
-              <div class="mineclients-card-content">
-                <div class="mineclients-visible-content">
-                  <div class="mineclients-nugget-icon-container">
-                    <img src="/images/icons/nuggeticon.svg" alt="Nugget icon" class="mineclients-nugget-icon">
+              <!-- Card content -->
+              <div class="mineclients-card-content bytopic-card-content">
+                <div class="mineclients-visible-content bytopic-visible-content">
+                  <div class="mineclients-nugget-icon-container bytopic-unit-type-icon-container">
+                    <img src="/images/icons/nuggeticon.svg" alt="Nugget icon" class="mineclients-nugget-icon bytopic-unit-type-icon">
                   </div>
 
-                  {{!-- Title in client view = CLIENT name per your spec --}}
-                  <div class="mineclients-nugget-title-container">
-                    <h2 class="mineclients-nugget-title">{{client}}</h2>
+                  {{!-- Per spec: the title on CLIENT view is the client name --}}
+                  <div class="mineclients-nugget-title-container bytopic-unit-title-container">
+                    <h2 class="mineclients-nugget-title bytopic-unit-title">{{client}}</h2>
                   </div>
                 </div>
 
                 <!-- Expand Toggle -->
-                <button class="mineclients-expand-toggle" type="button" onclick="toggleMineClientCard(this)" aria-expanded="false" aria-label="Toggle details">
+                <button class="mineclients-expand-toggle bytopic-expand-toggle" type="button"
+                        onclick="toggleMineClientCard(this)" aria-expanded="false" aria-label="Toggle details">
                   <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99" aria-hidden="true" focusable="false">
                     <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
                     <polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/>
                   </svg>
                 </button>
 
-                <!-- Hidden / Expanded content -->
-                <div class="mineclients-hidden-content" style="display:none;">
+                <!-- Hidden (expanded) content -->
+                <div class="mineclients-hidden-content bytopic-hidden-content" style="display:none;">
                   <div class="mineclients-meta-badges">
                     {{#if horizon}}<span class="mineclients-badge">horizon: {{horizon}}</span>{{/if}}
                     {{#if discipline}}<span class="mineclients-badge">discipline: {{discipline}}</span>{{/if}}
@@ -76,7 +67,7 @@
 
                   {{#if title}}
                     <div class="mineclients-detail-row">
-                      <strong>Working title:</strong>&nbsp;<span>{{title}}</span>
+                      <strong>working title:</strong>&nbsp;<span>{{title}}</span>
                     </div>
                   {{/if}}
 
@@ -97,8 +88,10 @@
                     </div>
                   {{/if}}
 
-                  <div class="mineclients-actions">
-                    <a href="/unitviews/nuggets/view/{{_id}}" class="mineclients-view-btn">view nugget</a>
+                  <div class="mineclients-actions bytopic-unit-review-container">
+                    <a href="/unitviews/nuggets/view/{{_id}}" class="mineclients-view-btn bytopic-unit-review-btn">
+                      view nugget
+                    </a>
                   </div>
                 </div>
               </div>
@@ -106,15 +99,15 @@
           {{/each}}
         </div>
       {{else}}
-        <div class="mineclients-empty-section-message">
+        <div class="mineclients-empty-section-message bytopic-empty-section-message">
           {{#if this.emptyMessage}}<p>{{this.emptyMessage}}</p>{{/if}}
         </div>
       {{/if}}
     {{/each}}
   </div>
 
-  <!-- Right Topics Column (reuse your topics sidebar partial for visual parity) -->
-  <div class="mineclients-right-rail">
+  <!-- Right Topics Column (reused partial) -->
+  <div class="mineclients-right-rail bytopic-page">
     {{> topicpartials/topics_column_partial}}
   </div>
 </div>
@@ -126,6 +119,7 @@
     const isOpen = card.classList.contains('active');
     card.classList.toggle('active', !isOpen);
     el.setAttribute('aria-expanded', String(!isOpen));
-    content.style.display = isOpen ? 'none' : 'flex';
+    if (content) content.style.display = isOpen ? 'none' : 'flex';
   }
 </script>
+

@@ -2969,3 +2969,77 @@ label {
   margin-left: 10px;
   fill: #4e50a2;
 }
+
+
+/* Mine Clients Right Rail (Modeled After Topics Column) */
+.mineclients-right-rail.bytopic-page {
+  position: fixed;
+  top: 250px;          /* aligns with main header */
+  right: 75px;
+  bottom: 150px;       /* spacing from footer */
+  width: 200px;
+  overflow-y: auto;
+  background-color: #f7f7f9;
+  border-left: 2px solid #4e50a2;
+  padding: 15px;
+  border-radius: 10px 0 0 10px;
+  font-family: 'Figtree', sans-serif;
+  z-index: 900;
+}
+
+/* Scrollbar styling */
+.mineclients-right-rail.bytopic-page::-webkit-scrollbar {
+  width: 5px;
+  border-radius: 5px;
+}
+.mineclients-right-rail.bytopic-page::-webkit-scrollbar-track {
+  background: #eaeaea;
+}
+.mineclients-right-rail.bytopic-page::-webkit-scrollbar-thumb {
+  background-color: #4e50a2;
+  border-radius: 5px;
+}
+
+/* Section headings inside sidebar */
+.mineclients-right-rail .sidebar-heading {
+  color: #262262;
+  font-weight: 800;
+  font-size: 1.1em;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+/* Links or navigation buttons */
+.mineclients-right-rail .sidebar-item {
+  background-color: #262262;
+  color: #fff;
+  border-radius: 99px;
+  padding: 12px 15px;
+  margin-bottom: 10px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1em;
+  transition: background-color 0.2s ease;
+  text-decoration: none;
+  display: block;
+}
+
+.mineclients-right-rail .sidebar-item:hover {
+  background-color: #4a4ab2;
+}
+
+/* Active state */
+.mineclients-right-rail .sidebar-item.is-active,
+.mineclients-right-rail a[aria-current="page"] .sidebar-item {
+  background-color: #dc176a;
+  box-shadow: 0 0 0 2px #e5e7ff inset;
+}
+
+/* Responsive */
+@media screen and (max-width: 1080px) {
+  .mineclients-right-rail.bytopic-page {
+    display: none !important;
+    visibility: hidden !important;
+  }
+}
+
