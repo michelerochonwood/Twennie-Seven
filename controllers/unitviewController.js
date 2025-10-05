@@ -91,6 +91,7 @@ module.exports = {
 
   // ---- The Mine: Clients list ----
 // ---- The Mine: Clients view (cards of nuggets; card title = client) ----
+// ---- The Mine: Clients view (cards of nuggets; card title = client) ----
 viewMineClients: async (req, res) => {
   try {
     if (!isPaidMember(req)) {
@@ -101,20 +102,22 @@ viewMineClients: async (req, res) => {
       });
     }
 
-    // 1) Load nuggets that have a client value
+    // Load all nuggets that have a client
     const nuggets = await Nugget.find({ client: { $exists: true, $ne: '' } })
       .sort({ client: 1 })
       .lean();
 
-    // 2) Partition into the four sections (stub logic for group/org)
     const meId = (req.user?._id || req.user?.id || '').toString();
 
-    const createdByMe      = nuggets.filter(n => (n.createdBy || '').toString() === meId);
+    // Partition into sections (group/org are stubs you can wire later)
+    const createdByMe = nuggets.filter(n => (n.createdBy || '').toString() === meId);
 
-    // TODO: replace these with real group/org scopes once wired:
-    const createdByMyGroup = [];         // e.g., nuggets.filter(n => inMyGroup(n.createdBy))
-    const createdByMyOrg   = [];         // e.g., nuggets.filter(n => sameOrg(n.createdBy))
-    const fromAllMembers   = nuggets;    // catch-all for now
+    // TODO: wire these using your group/org model relationships
+    const createdByMyGroup = [];  // e.g., nuggets.filter(n => isInMyGroup(n.createdBy))
+    const createdByMyOrg   = [];  // e.g., nuggets.filter(n => isInMyOrg(n.createdBy))
+
+    // Always show a catch-all so your single Mongo record appears
+    const fromAllMembers   = nuggets;
 
     const sectionedNuggets = [
       { sectionTitle: 'Created by Me',              nuggets: createdByMe,      emptyMessage: 'No client nuggets created by you yet.' },
@@ -123,11 +126,11 @@ viewMineClients: async (req, res) => {
       { sectionTitle: 'From All Members',           nuggets: fromAllMembers,   emptyMessage: 'No client nuggets yet.' },
     ];
 
-    // 3) Render the new client cards view
+    // IMPORTANT: Render the new client view (not the Mine landing list)
     return res.render('unit_views/client_view', {
       layout: 'unitviewlayout',
       pageTitle: 'Nuggets by Client',
-      pageIntro: 'Browse Nuggets grouped by client. Open any card to see details and jump to the full Nugget.',
+      pageIntro: 'Open any client card to see details and jump to the full Nugget.',
       shortSummary: '',
       longSummary: '',
       sectionedNuggets,
@@ -141,6 +144,7 @@ viewMineClients: async (req, res) => {
     });
   }
 },
+
 
 
 // ---- The Mine: Regions list ----
