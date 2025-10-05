@@ -2521,7 +2521,7 @@ label {
   .mine-card{
     text-decoration:none;
     width:100%;
-    height: 260px;
+    height: 275px;
     background:#eeeeef;
     border-radius: 22px;
     box-shadow: 0 2px 0 rgba(0,0,0,0.06);
@@ -2589,7 +2589,7 @@ label {
 
 .mineclients-hero-img {
   display: inline-block;
-  width: min(360px, 60vw);
+  width: min(260px, 40vw);
   height: auto;
 }
 
