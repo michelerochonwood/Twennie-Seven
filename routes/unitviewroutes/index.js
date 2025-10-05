@@ -29,7 +29,6 @@ router.get('/mine', (req, res) => {
     layout: 'unitviewlayout',
     listTitle: 'Welcome to the Twennie Mine',
     listSubtitle: 'Choose a path to explore Nuggets by Client, Region, or Discipline.',
-    // Landing tiles → category list pages
     items: [
       { label: 'client', href: '/unitviews/mine/clients' },
       { label: 'region', href: '/unitviews/mine/regions' },
@@ -44,15 +43,9 @@ router.get('/mine', (req, res) => {
 //   /unitviews/mine/clients
 //   /unitviews/mine/regions
 //   /unitviews/mine/disciplines
-// routes/unitviewroutes/index.js
-router.get('/mine/clients', (req, res) => {
-    console.log('[unitviewroutes] -> /unitviews/mine/clients (calling viewMineClients)');
-  return res.render('unit_views/client_view', {
-    layout: 'unitviewlayout',
-    pageTitle: 'Nuggets by Client',
-    pageIntro: 'Browse Nuggets grouped by client.',
-    sectionedNuggets: []
-  });
+router.get('/mine/clients', (req, res, next) => {
+  console.log('[unitviewroutes] -> /unitviews/mine/clients (calling viewMineClients)');
+  return unitviewController.viewMineClients(req, res, next);
 });
 
 router.get('/mine/regions', unitviewController.viewMineRegions);
@@ -70,6 +63,7 @@ router.get('/unitnotessuccess', (req, res) => {
 });
 
 module.exports = router;
+
 
 
 
