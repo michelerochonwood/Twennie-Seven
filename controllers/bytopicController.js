@@ -13,7 +13,7 @@ const TopicSuggestion = require('../models/topic/topic_suggestion'); // Adjust t
 const MemberProfile = require('../models/profile_models/member_profile');
 const GroupMemberProfile = require('../models/profile_models/groupmember_profile');
 const LeaderProfile = require('../models/profile_models/leader_profile');
-const Upcoming = require('../models/unit_models/upcoming');
+const Upcoming = require('../models/unit_models/upcoming'); 
 
 
 
@@ -108,7 +108,7 @@ exports.getTopicView = async (req, res) => {
             'Emotional Intelligence': 'emotionalintelligence',
             'People Before Profit': 'peoplebeforeprofit',
             'Non-Technical Roles in Technical Environments': 'nontechnicalrolesintechnicalenvironments',
-            'Leadership in Technical Services': 'leadershipintechnicalservices',
+            'Leadership in Technical Consulting': 'leadershipintechnicalconsulting',
             'Leading Change': 'leadingchange',
             'Leading Groups on Twennie': 'leadinggroupsontwennie',
             'The Advantage of Failure': 'theadvantageoffailure',
