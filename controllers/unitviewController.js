@@ -93,9 +93,10 @@ module.exports = {
 // ---- The Mine: Clients view (cards of nuggets; card title = client) ----
 // ---- The Mine: Clients view (cards of nuggets; card title = client) ----
 // ---- The Mine: Clients view (cards; card title = client) ----
+// ---- The Mine: Clients view (requires createdBy on every nugget) ----
 viewMineClients: async (req, res) => {
   try {
-    // 1) paid-only
+    // 1) Paid-only access
     if (!isPaidMember(req)) {
       return res.status(403).render('unit_views/error', {
         layout: 'unitviewlayout',
@@ -104,18 +105,21 @@ viewMineClients: async (req, res) => {
       });
     }
 
-    // 2) Load all nuggets that have a client
-    const nuggets = await Nugget.find({ client: { $exists: true, $ne: '' } })
+    // 2) Load ONLY nuggets that have a client AND a createdBy
+    const nuggets = await Nugget.find({
+      client: { $exists: true, $ne: '' },
+      createdBy: { $exists: true, $ne: null }
+    })
       .sort({ client: 1 })
       .lean();
 
-    // Quick exit: render empty sections if no nuggets at all
+    // If nothing qualifies, render empty sections
     if (!nuggets || nuggets.length === 0) {
       const sectionedNuggets = [
         { sectionTitle: 'Created by Me',              nuggets: [], emptyMessage: 'No client nuggets created by you yet.' },
         { sectionTitle: 'Created by My Group',        nuggets: [], emptyMessage: 'No client nuggets from your group yet.' },
         { sectionTitle: 'Created by My Organization', nuggets: [], emptyMessage: 'No client nuggets from your organization yet.' },
-        { sectionTitle: 'From All Members',           nuggets: [], emptyMessage: 'No client nuggets yet.' },
+        { sectionTitle: 'From All Members',           nuggets: [], emptyMessage: 'No client nuggets available (each nugget must have a creator).' },
       ];
       return res.render('unit_views/client_view', {
         layout: 'unitviewlayout',
@@ -125,11 +129,9 @@ viewMineClients: async (req, res) => {
       });
     }
 
-    // 3) Current user identity
+    // 3) Current user + my group/org
     const meId = (req.user?._id || req.user?.id || '').toString();
-    const membershipType = req.user?.membershipType || req.user?.accessLevel || null;
 
-    // Resolve MY group/org (best effort)
     let myGroupId = null;
     let myOrg = null;
     if (meId) {
@@ -139,7 +141,7 @@ viewMineClients: async (req, res) => {
         Member.findById(meId).select('_id organization').lean(),
       ]);
       if (meAsLeader) {
-        myGroupId = meAsLeader._id?.toString() || null; // leaders use their own _id as team anchor in your app
+        myGroupId = meAsLeader._id?.toString() || null; // leaders anchor to their own _id in your app
         myOrg     = meAsLeader.organization || null;
       } else if (meAsGroupMember) {
         myGroupId = meAsGroupMember.groupId ? meAsGroupMember.groupId.toString() : null;
@@ -149,64 +151,60 @@ viewMineClients: async (req, res) => {
       }
     }
 
-    // 4) Build maps of creator -> org/group for all creators present in these nuggets
+    // 4) Build creator -> org/group maps for all creators in these nuggets
     const creatorIds = [
-      ...new Set(
-        nuggets
-          .map(n => (n.createdBy ? n.createdBy.toString() : null))
-          .filter(Boolean)
-      )
+      ...new Set(nuggets.map(n => n.createdBy?.toString()).filter(Boolean))
     ];
 
-    let orgByCreator = Object.create(null);
+    let orgByCreator   = Object.create(null);
     let groupByCreator = Object.create(null);
 
     if (creatorIds.length) {
-      const [creatorsAsLeaders, creatorsAsGroupMembers] = await Promise.all([
+      const [leaders, groupMembers] = await Promise.all([
         Leader.find({ _id: { $in: creatorIds } }).select('_id organization').lean(),
         GroupMember.find({ _id: { $in: creatorIds } }).select('_id organization groupId').lean(),
       ]);
 
-      creatorsAsLeaders.forEach(doc => {
+      leaders.forEach(doc => {
         const id = doc._id.toString();
         orgByCreator[id]   = doc.organization || orgByCreator[id] || null;
-        groupByCreator[id] = doc._id.toString(); // leaders anchor to their own id
+        groupByCreator[id] = doc._id.toString(); // leaders use their own id as team anchor
       });
 
-      creatorsAsGroupMembers.forEach(doc => {
+      groupMembers.forEach(doc => {
         const id = doc._id.toString();
         orgByCreator[id]   = doc.organization || orgByCreator[id] || null;
         groupByCreator[id] = (doc.groupId && doc.groupId.toString()) || groupByCreator[id] || null;
       });
     }
 
-    // 5) Partition into sections
+    // 5) Partition into sections (all require createdBy)
     const createdByMe = meId
-      ? nuggets.filter(n => (n.createdBy || '').toString() === meId)
+      ? nuggets.filter(n => n.createdBy?.toString() === meId)
       : [];
 
     const createdByMyGroup = myGroupId
       ? nuggets.filter(n => {
-          const cid = (n.createdBy || '').toString();
+          const cid = n.createdBy?.toString();
           return cid && groupByCreator[cid] && groupByCreator[cid] === myGroupId;
         })
       : [];
 
     const createdByMyOrg = myOrg
       ? nuggets.filter(n => {
-          const cid = (n.createdBy || '').toString();
+          const cid = n.createdBy?.toString();
           return cid && orgByCreator[cid] && orgByCreator[cid] === myOrg;
         })
       : [];
 
-    // Always include a catch-all so records without createdBy still appear
+    // Catch-all still requires createdBy (we filtered at query)
     const fromAllMembers = nuggets;
 
     const sectionedNuggets = [
       { sectionTitle: 'Created by Me',              nuggets: createdByMe,      emptyMessage: 'No client nuggets created by you yet.' },
       { sectionTitle: 'Created by My Group',        nuggets: createdByMyGroup, emptyMessage: 'No client nuggets from your group yet.' },
       { sectionTitle: 'Created by My Organization', nuggets: createdByMyOrg,   emptyMessage: 'No client nuggets from your organization yet.' },
-      { sectionTitle: 'From All Members',           nuggets: fromAllMembers,   emptyMessage: 'No client nuggets yet.' },
+      { sectionTitle: 'From All Members',           nuggets: fromAllMembers,   emptyMessage: 'No client nuggets available.' },
     ];
 
     // 6) Render the page
@@ -227,6 +225,7 @@ viewMineClients: async (req, res) => {
     });
   }
 },
+
 
 
 
