@@ -2563,3 +2563,223 @@ label {
     .mine-wrapper{ margin: 140px auto 80px; }
     .mine-card-label{ font-size:1rem; }
   }
+
+  
+/* ====== The Mine – CLIENT VIEW ====== */
+
+.mineclients-container {
+  padding: 0 8%;
+  box-sizing: border-box;
+  margin: 7rem auto 3rem auto;
+  min-height: 100vh;
+  position: relative;
+  font-family: "Figtree", sans-serif;
+}
+
+.mineclients-hero {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.mineclients-title {
+  color: #262262;
+  font-size: clamp(1.5rem, 5vw, 2.3rem);
+  margin-bottom: .25rem;
+}
+
+.mineclients-hero-img {
+  display: inline-block;
+  width: min(360px, 60vw);
+  height: auto;
+}
+
+.mineclients-intro,
+.mineclients-short-summary,
+.mineclients-long-summary {
+  width: 60%;
+  margin: .5rem auto;
+  text-align: center;
+}
+
+.mineclients-short-summary {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #4a4ab2;
+}
+
+.mineclients-long-summary {
+  font-size: 0.75rem;
+  line-height: 1.25;
+}
+
+/* Mirror the two-column feel (main + right rail) */
+
+
+/* Section headings */
+.mineclients-section-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #262262;
+  margin-top: 3rem;
+}
+
+.mineclients-section-divider {
+  border: 2px dashed #dc176a;
+  margin: 2rem 0;
+}
+
+/* Grid of nugget cards (like bytopic library grid) */
+.mineclients-nuggets-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0 1.5rem;
+  margin: 2.5rem 0 200px 0;
+}
+
+/* Nugget card */
+.mineclients-nugget-card {
+  background-color: #d0cfcf;
+  border-radius: 10px;
+  height: 350px;
+  overflow: hidden;
+  transition: height 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.mineclients-nugget-card.active {
+  height: auto;
+  overflow: visible;
+}
+
+/* Wave header */
+.mineclients-card-svg-header {
+  width: 100%;
+  position: absolute;
+  top: 0; left: 0; right: 0;
+}
+
+/* Card content */
+.mineclients-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding-bottom: 2.5rem;
+  margin-top: 4rem; /* room for the wave */
+  position: relative;
+}
+
+.mineclients-visible-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .5rem;
+  text-align: center;
+}
+
+/* Icon + title */
+.mineclients-nugget-icon-container { margin-bottom: 5px; }
+.mineclients-nugget-icon { width: 65px; height: auto; }
+
+.mineclients-nugget-title {
+  font-size: clamp(0.8rem, 5vw, 0.95rem);
+  font-weight: bold;
+  color: #4a4ab2;
+  margin: 10px;
+  text-align: center;
+}
+
+/* Toggle button + arrow */
+.mineclients-expand-toggle {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  width: 36px;
+  height: 36px;
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  line-height: 0;
+  border-radius: 50%;
+  pointer-events: auto;
+}
+.mineclients-expand-toggle svg { width: 40px; height: 40px; display: block; }
+.mineclients-expand-toggle svg .cls-1 { fill: #4e50a2 !important; }
+.mineclients-expand-toggle:hover { background: transparent; }
+.mineclients-expand-toggle:focus { outline: none; }
+.mineclients-expand-toggle:focus-visible {
+  outline: 2px solid #4e50a2; outline-offset: 3px; border-radius: 50%;
+}
+/* rotate when active */
+.mineclients-nugget-card.active .expand-arrow { transform: rotate(180deg); transition: transform .3s; }
+
+/* Hidden/expanded content */
+.mineclients-hidden-content { display: none; }
+.mineclients-nugget-card.active .mineclients-hidden-content {
+  display: flex; flex-direction: column; align-items: center; gap: .75rem; margin-top: 1rem;
+}
+
+/* Meta badges row */
+.mineclients-meta-badges {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 6px;
+}
+.mineclients-badge {
+  background-color: #f1f1f8; color:#4e50a2; border-radius: 999px; padding: 6px 10px;
+  font-size: .72rem; font-weight: 800;
+}
+
+/* Detail rows + notes */
+.mineclients-detail-row {
+  font-size: .8rem; color: #333; background:#ededf3; border-radius: 10px; padding: 8px 12px;
+  max-width: 80%; margin: 0 auto;
+}
+.mineclients-detail-row a { color:#262262; text-decoration: underline; }
+.mineclients-notes {
+  font-size: .75rem; line-height: 1.2; background: rgb(217,217,219);
+  padding: 10px; border-radius: 10px; width: 80%; text-align: center; margin: 0 auto;
+}
+
+/* CTA */
+.mineclients-actions { margin-top: 1rem; margin-bottom: 1.25rem; }
+.mineclients-view-btn {
+  display: inline-block;
+  padding: 10px 18px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  color: white; background-color: #262262;
+  border-radius: 1rem; transition: background-color 0.3s ease;
+}
+.mineclients-view-btn:hover { background-color: #4a4ab2; }
+
+/* Empty message */
+.mineclients-empty-section-message {
+  background-color: #fdf3f7;
+  border-left: 4px solid #dc176a;
+  padding: 1rem; margin-bottom: 2rem; font-size: .85rem; color:#4a4a4a; border-radius: 8px;
+  width: 60%;
+}
+
+/* Responsive mirrors of bytopic */
+@media screen and (max-width: 1200px) {
+  .mineclients-container { padding: 0 4%; }
+  .mineclients-intro, .mineclients-short-summary, .mineclients-long-summary { width: 100%; }
+  .mineclients-nuggets-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media screen and (max-width: 900px) {
+  .mineclients-container { padding: 0 2rem; }
+  .mineclients-nuggets-grid { grid-template-columns: repeat(2, 1fr); }
+  .mineclients-card-content { margin-top: 3rem; }
+}
+@media screen and (max-width: 600px) {
+  .mineclients-container { padding: 0 1rem; }
+  .mineclients-nuggets-grid { grid-template-columns: 1fr; }
+  .mineclients-card-content { margin-top: 2.5rem; padding-bottom: 2rem; }
+  .mineclients-nugget-title { font-size: 0.85rem; }
+  .mineclients-view-btn { font-size: 0.75rem; padding: 8px 14px; }
+}
