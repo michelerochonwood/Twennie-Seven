@@ -46,6 +46,7 @@ router.get('/mine', (req, res) => {
 //   /unitviews/mine/disciplines
 // routes/unitviewroutes/index.js
 router.get('/mine/clients', (req, res) => {
+    console.log('[unitviewroutes] -> /unitviews/mine/clients (calling viewMineClients)');
   return res.render('unit_views/client_view', {
     layout: 'unitviewlayout',
     pageTitle: 'Nuggets by Client',
