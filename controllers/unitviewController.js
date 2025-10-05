@@ -98,6 +98,7 @@ viewMineClients: async (req, res) => {
   try {
     // 1) Paid-only access
     if (!isPaidMember(req)) {
+      console.log('[mine/clients] denied: not paid'); // diag
       return res.status(403).render('unit_views/error', {
         layout: 'unitviewlayout',
         title: 'Access Restricted',
@@ -113,24 +114,11 @@ viewMineClients: async (req, res) => {
       .sort({ client: 1 })
       .lean();
 
-    // If nothing qualifies, render empty sections
-    if (!nuggets || nuggets.length === 0) {
-      const sectionedNuggets = [
-        { sectionTitle: 'Created by Me',              nuggets: [], emptyMessage: 'No client nuggets created by you yet.' },
-        { sectionTitle: 'Created by My Group',        nuggets: [], emptyMessage: 'No client nuggets from your group yet.' },
-        { sectionTitle: 'Created by My Organization', nuggets: [], emptyMessage: 'No client nuggets from your organization yet.' },
-        { sectionTitle: 'From All Members',           nuggets: [], emptyMessage: 'No client nuggets available (each nugget must have a creator).' },
-      ];
-      return res.render('unit_views/client_view', {
-        layout: 'unitviewlayout',
-        pageTitle: 'Nuggets by Client',
-        pageIntro: 'Open any client card to see details and jump to the full Nugget.',
-        sectionedNuggets,
-      });
-    }
+    console.log('[mine/clients] total nuggets w/createdBy:', nuggets.length); // diag
 
     // 3) Current user + my group/org
     const meId = (req.user?._id || req.user?.id || '').toString();
+    console.log('[mine/clients] meId:', meId); // diag
 
     let myGroupId = null;
     let myOrg = null;
@@ -141,7 +129,7 @@ viewMineClients: async (req, res) => {
         Member.findById(meId).select('_id organization').lean(),
       ]);
       if (meAsLeader) {
-        myGroupId = meAsLeader._id?.toString() || null; // leaders anchor to their own _id in your app
+        myGroupId = meAsLeader._id?.toString() || null;
         myOrg     = meAsLeader.organization || null;
       } else if (meAsGroupMember) {
         myGroupId = meAsGroupMember.groupId ? meAsGroupMember.groupId.toString() : null;
@@ -150,12 +138,10 @@ viewMineClients: async (req, res) => {
         myOrg     = meAsMember.organization || null;
       }
     }
+    console.log('[mine/clients] myGroupId:', myGroupId, 'myOrg:', myOrg); // diag
 
     // 4) Build creator -> org/group maps for all creators in these nuggets
-    const creatorIds = [
-      ...new Set(nuggets.map(n => n.createdBy?.toString()).filter(Boolean))
-    ];
-
+    const creatorIds = [...new Set(nuggets.map(n => n.createdBy?.toString()).filter(Boolean))];
     let orgByCreator   = Object.create(null);
     let groupByCreator = Object.create(null);
 
@@ -164,13 +150,11 @@ viewMineClients: async (req, res) => {
         Leader.find({ _id: { $in: creatorIds } }).select('_id organization').lean(),
         GroupMember.find({ _id: { $in: creatorIds } }).select('_id organization groupId').lean(),
       ]);
-
       leaders.forEach(doc => {
         const id = doc._id.toString();
         orgByCreator[id]   = doc.organization || orgByCreator[id] || null;
-        groupByCreator[id] = doc._id.toString(); // leaders use their own id as team anchor
+        groupByCreator[id] = doc._id.toString();
       });
-
       groupMembers.forEach(doc => {
         const id = doc._id.toString();
         orgByCreator[id]   = doc.organization || orgByCreator[id] || null;
@@ -182,14 +166,12 @@ viewMineClients: async (req, res) => {
     const createdByMe = meId
       ? nuggets.filter(n => n.createdBy?.toString() === meId)
       : [];
-
     const createdByMyGroup = myGroupId
       ? nuggets.filter(n => {
           const cid = n.createdBy?.toString();
           return cid && groupByCreator[cid] && groupByCreator[cid] === myGroupId;
         })
       : [];
-
     const createdByMyOrg = myOrg
       ? nuggets.filter(n => {
           const cid = n.createdBy?.toString();
@@ -197,8 +179,12 @@ viewMineClients: async (req, res) => {
         })
       : [];
 
-    // Catch-all still requires createdBy (we filtered at query)
     const fromAllMembers = nuggets;
+
+    console.log('[mine/clients] counts => me:', createdByMe.length,
+      'group:', createdByMyGroup.length,
+      'org:', createdByMyOrg.length,
+      'all:', fromAllMembers.length); // diag
 
     const sectionedNuggets = [
       { sectionTitle: 'Created by Me',              nuggets: createdByMe,      emptyMessage: 'No client nuggets created by you yet.' },
@@ -208,12 +194,11 @@ viewMineClients: async (req, res) => {
     ];
 
     // 6) Render the page
+    console.log('[mine/clients] rendering client_view'); // diag
     return res.render('unit_views/client_view', {
       layout: 'unitviewlayout',
       pageTitle: 'Nuggets by Client',
       pageIntro: 'Open any client card to see details and jump to the full Nugget.',
-      shortSummary: '',
-      longSummary: '',
       sectionedNuggets,
     });
   } catch (err) {
@@ -225,6 +210,7 @@ viewMineClients: async (req, res) => {
     });
   }
 },
+
 
 
 
