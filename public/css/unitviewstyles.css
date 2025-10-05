@@ -2475,7 +2475,7 @@ label {
 
  .mine-wrapper{
     max-width: 1100px;
-    margin: 160px auto 120px;
+    margin: 130px auto 120px;
     padding: 0 24px;
     text-align: center;
     font-family: "Figtree", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
@@ -2495,7 +2495,7 @@ label {
     margin: 8px 0 10px;
   }
   .mine-hero-img{
-    width:min(360px, 60vw);
+    width:min(260px, 40vw);
     height:auto;
     display:block;
   }
@@ -2521,7 +2521,7 @@ label {
   .mine-card{
     text-decoration:none;
     width:100%;
-    height: 300px;
+    height: 260px;
     background:#eeeeef;
     border-radius: 22px;
     box-shadow: 0 2px 0 rgba(0,0,0,0.06);
