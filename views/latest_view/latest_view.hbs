@@ -2,7 +2,7 @@
 
 
 
-<div class="latest-container" style="background-color: rgb(208, 208, 208);">
+<div class="latest-container">
   <div class="latest-content">
 
 
@@ -163,16 +163,33 @@
         <!-- Section: Upcoming Units -->
 <div class="latest-section">
   <h2 class="latest-section-title">upcoming units</h2>
-  <div class="latest-library-units-grid">
-    {{#each upcomingItems}}
-      <div class="latest-library-unit-card">
-        <!-- Header SVG (orange) -->
-<div class="latest-card-svg-header">
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 198.89 17.83">
-    <path fill="#f7941d" d="M0,9.74s30.57,13.88,92.83,1.88c0,0,68.2-13.17,106.06,6.21V0H0v9.74Z"/>
-  </svg>
-</div>
+<div class="latest-library-units-grid">
+  {{#each upcomingItems}}
+    <div class="latest-library-unit-card">
+      <!-- Upcoming corner badge -->
       <img src="/icons/upcoming.svg" alt="" aria-hidden="true" class="latest-upcoming-badge">
+
+      <!-- NEW inner wrapper that gets the clipping instead of the outer card -->
+      <div class="latest-card-inner">
+        <!-- Header SVG (orange) -->
+        <div class="latest-card-svg-header">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 198.89 17.83">
+            <path fill="#f7941d" d="M0,9.74s30.57,13.88,92.83,1.88c0,0,68.2-13.17,106.06,6.21V0H0v9.74Z"/>
+          </svg>
+        </div>
+
+        <!-- Card Content -->
+        <div class="latest-card-content">
+          <img src="{{getUnitTypeIcon unit_type}}" alt="Unit Type Icon" class="latest-unit-type-icon">
+          <h2 class="latest-unit-title">{{title}}</h2>
+          ...
+        </div>
+      </div>
+    </div>
+  {{/each}}
+</div>
+
+
 
         <!-- Card Content -->
         <div class="latest-card-content">
