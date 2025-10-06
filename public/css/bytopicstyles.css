@@ -767,6 +767,8 @@ html, body {
   right: calc(var(--unit-icon-size) / -2); /* half outside the right edge */
   z-index: 3;
   pointer-events: none; /* purely decorative */
+  width: 40px;
+  height: auto;
 }
 
 
