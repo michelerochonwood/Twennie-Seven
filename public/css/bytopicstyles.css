@@ -761,8 +761,6 @@ html, body {
 
 .latest-upcoming-badge {
   position: absolute;
-  width: var(--unit-icon-size);
-  height: auto;
   top: calc(var(--unit-icon-size) / -2);   /* half outside the top edge */
   right: calc(var(--unit-icon-size) / -2); /* half outside the right edge */
   z-index: 3;
