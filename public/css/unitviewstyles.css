@@ -2756,6 +2756,8 @@ label {
   font-weight: 700;
   background: transparent;   /* no white bg */
   padding: 0;                 /* no pill padding */
+  width: 75%;
+  text-align: center;
 }
 
 .mineclients-badge {
