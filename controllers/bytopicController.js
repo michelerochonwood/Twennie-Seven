@@ -114,7 +114,7 @@ exports.getTopicView = async (req, res) => {
             'The Advantage of Failure': 'theadvantageoffailure',
             'Social Entrepreneurship': 'socialentrepreneurship',
             'Employee Experience': 'employeeexperience',
-            'Project Management Software': 'projectmanagementsoftware',
+            'Project Management Software': 'projectmanagementsoftware', 
             'CRM Platforms': 'crmplatforms',
             'Client Feedback Software': 'clientfeedbacksoftware',
             'Mental Health in Consulting Environments': 'mentalhealthinconsultingenvironments',
