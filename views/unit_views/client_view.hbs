@@ -54,11 +54,21 @@
       </button>
 
       <!-- Hidden (expanded) content -->
-      <div class="mineclients-hidden-content bytopic-hidden-content" style="display:none;">
-        <div class="mineclients-meta-badges">
-          {{#if discipline}}<span class="mineclients-badge">discipline: {{discipline}}</span>{{/if}}
-          {{#if region}}<span class="mineclients-badge">region: {{region}}</span>{{/if}}
-        </div>
+<div class="mineclients-meta-badges">
+  {{#if discipline}}
+    <div class="mineclients-meta-item">
+      <div class="mineclients-meta-label">discipline</div>
+      <div class="mineclients-meta-value">{{discipline}}</div>
+    </div>
+  {{/if}}
+
+  {{#if region}}
+    <div class="mineclients-meta-item">
+      <div class="mineclients-meta-label">region</div>
+      <div class="mineclients-meta-value">{{region}}</div>
+    </div>
+  {{/if}}
+</div>
 
         <div class="mineclients-actions bytopic-unit-review-container">
           <a href="/unitviews/nuggets/view/{{_id}}" class="mineclients-view-btn bytopic-unit-review-btn">

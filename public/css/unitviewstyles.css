@@ -2725,8 +2725,39 @@ label {
 
 /* Meta badges row */
 .mineclients-meta-badges {
-  display: flex; flex-wrap: wrap; justify-content: center; gap: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: .5rem;
 }
+
+.mineclients-meta-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 120px; /* optional: keeps columns tidy */
+}
+
+.mineclients-meta-label {
+  color: #4a4ab2;           /* blue label */
+  font-weight: 800;
+  font-size: .72rem;
+  line-height: 1;
+  margin-bottom: 4px;
+  text-transform: lowercase; /* matches your style */
+}
+
+
+.mineclients-meta-value {
+  color: #262262;
+  font-size: .82rem;
+  font-weight: 700;
+  background: transparent;   /* no white bg */
+  padding: 0;                 /* no pill padding */
+}
+
 .mineclients-badge {
   background-color: #f1f1f8; color:#4e50a2; border-radius: 999px; padding: 6px 10px;
   font-size: .72rem; font-weight: 800;
