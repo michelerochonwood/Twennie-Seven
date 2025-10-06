@@ -2650,9 +2650,10 @@ label {
   margin-bottom: 1.5rem;
 }
 
-.mineclients-nugget-card.active {
-  height: auto;
-  overflow: visible;
+/* add bottom space inside the expanded card */
+.mineclients-nugget-card.active .mineclients-hidden-content {
+  padding-bottom: 40px;
+  box-sizing: border-box;
 }
 
 /* Wave header */
