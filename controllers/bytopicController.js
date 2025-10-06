@@ -115,7 +115,7 @@ exports.getTopicView = async (req, res) => {
             'Social Entrepreneurship': 'socialentrepreneurship',
             'Employee Experience': 'employeeexperience',
             'Project Management Software': 'projectmanagementsoftware', 
-            'CRM Platforms': 'crmplatforms',
+            'CRM Software': 'crmsoftware',
             'Client Feedback Software': 'clientfeedbacksoftware',
             'Mental Health in Consulting Environments': 'mentalhealthinconsultingenvironments',
             'Remote and Hybrid Work': 'remoteandhybridwork',
