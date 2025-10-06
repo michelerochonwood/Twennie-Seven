@@ -213,25 +213,24 @@ html, body {
   }
 }
 
-/* BY TOPIC PAGE */
+/* =========================
+   BY TOPIC PAGE (Consolidated)
+   ========================= */
 
-/*arrows*/
-
+/* ---- Arrow / Toggle ---- */
 .expand-arrow {
   transition: transform 0.3s ease-in-out;
   margin-left: 0.5rem;
 }
-
 .bytopic-library-unit-card.active .expand-arrow {
   transform: rotate(180deg);
 }
-
 .bytopic-expand-toggle {
   appearance: none;
   background: transparent;
   border: 0;
   padding: 0;
-  width: 36px;              /* explicit hit area */
+  width: 36px;
   height: 36px;
   display: inline-flex;
   align-items: center;
@@ -241,20 +240,14 @@ html, body {
   border-radius: 50%;
   pointer-events: auto;
 }
-
-/* Make sure the arrow has a size */
 .bytopic-expand-toggle svg {
   width: 40px;
   height: 40px;
   display: block;
 }
-
-/* If any global CSS overrides polygon fills, force ours */
-.bytopic-expand-toggle svg .cls-1 {
+.bytopic-expand-toggle svg .cls-1 { /* force fill if globals exist */
   fill: #4e50a2 !important;
 }
-
-/* Optional: tidy hover/focus without a square box */
 .bytopic-expand-toggle:hover { background: transparent; }
 .bytopic-expand-toggle:focus { outline: none; }
 .bytopic-expand-toggle:focus-visible {
@@ -263,70 +256,74 @@ html, body {
   border-radius: 50%;
 }
 
-
-/* === CONTAINER AND PAGE LAYOUT === */
-
+/* ---- Container / Page ---- */
 .bytopic-container {
+  --unit-icon-size: 60px; /* single source of truth (badge + unit icon) */
   padding: 0 8%;
   box-sizing: border-box;
   margin: 7rem auto 3rem auto;
   min-height: 100vh;
 }
-
 .bytopic-title {
   color: #262262;
   font-size: clamp(1.5rem, 5vw, 2.3rem);
 }
-
 .bytopic-short-summary,
 .bytopic-long-summary {
   width: 60%;
 }
-
 .bytopic-short-summary {
   font-size: 0.9rem;
   font-weight: 800;
   color: #4a4ab2;
 }
-
 .bytopic-long-summary {
   font-size: 0.7rem;
   line-height: 1.2;
 }
 
-/* === GRID OF CARDS === */
-
+/* ---- Grid of Cards ---- */
 .bytopic-library-units-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 0 1.5rem;
   margin: 2.5rem 0 200px 0;
+  overflow: visible; /* ensure corner badges aren't clipped */
 }
 
-/* === LIBRARY UNIT CARD === */
-
+/* ---- Card (outer) ---- */
 .bytopic-library-unit-card {
   background-color: #d0cfcf;
   border-radius: 10px;
   height: 350px;
-  overflow: hidden;
   transition: height 0.3s ease;
   display: flex;
   flex-direction: column;
   align-items: center;
-  position: relative;
+  position: relative;       /* anchor for absolute badge */
   margin-bottom: 1.5rem;
+  overflow: visible;        /* allow badge to hang out */
+  z-index: 1;               /* base stacking so badges layer correctly */
 }
-
+.bytopic-library-unit-card:hover,
+.bytopic-library-unit-card.active {
+  z-index: 2;               /* lift above neighbors on hover/expand */
+}
 .bytopic-library-unit-card.active {
   height: auto;
-  overflow: visible;
 }
 
+/* ---- Card (inner wrapper for clipping + radius) ---- */
+.bytopic-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  overflow: hidden;         /* clip wave + inner content to radius */
+  background: inherit;
+}
 
-
-/* === HEADER WAVE SVG === */
-
+/* ---- Header Wave ---- */
 .bytopic-card-svg-header {
   width: 100%;
   position: absolute;
@@ -335,8 +332,7 @@ html, body {
   right: 0;
 }
 
-/* === CARD CONTENT === */
-
+/* ---- Card Content ---- */
 .bytopic-card-content {
   display: flex;
   flex-direction: column;
@@ -346,7 +342,6 @@ html, body {
   margin-top: 4rem;
   position: relative;
 }
-
 .bytopic-visible-content {
   display: flex;
   flex-direction: column;
@@ -355,17 +350,12 @@ html, body {
   text-align: center;
 }
 
-/* === ICON AND TITLE === */
-
-.bytopic-unit-type-icon-container {
-  margin-bottom: 5px;
-}
-
+/* ---- Icon + Title ---- */
+.bytopic-unit-type-icon-container { margin-bottom: 5px; }
 .bytopic-unit-type-icon {
-  width: 65px;
+  width: var(--unit-icon-size);
   height: auto;
 }
-
 .bytopic-unit-title {
   font-size: clamp(0.8rem, 5vw, 0.95rem);
   font-weight: bold;
@@ -374,16 +364,8 @@ html, body {
   text-align: center;
 }
 
-
-
-
-
-/* === HIDDEN CONTENT AREA === */
-
-.bytopic-hidden-content {
-  display: none;
-}
-
+/* ---- Hidden / Expanded Content ---- */
+.bytopic-hidden-content { display: none; }
 .bytopic-library-unit-card.active .bytopic-hidden-content {
   display: flex;
   flex-direction: column;
@@ -392,20 +374,17 @@ html, body {
   margin-top: 1rem;
 }
 
-/* === EXPANDED SECTION STYLES === */
-
+/* ---- Expanded Section Elements ---- */
 .bytopic-author-label {
   font-weight: 800;
   font-size: 0.7rem;
 }
-
 .bytopic-author-image {
   width: 65px;
   height: 65px;
   border-radius: 50%;
   border: 2px solid #4e50a2;
 }
-
 .bytopic-author-name {
   font-size: 0.8rem;
   font-weight: bold;
@@ -414,11 +393,7 @@ html, body {
   padding: 8px 12px;
   border-radius: 40px;
 }
-
-.bytopic-unit-summary-container {
-  margin-top: 10px;
-}
-
+.bytopic-unit-summary-container { margin-top: 10px; }
 .bytopic-unit-long-summary {
   font-size: 0.7rem;
   background-color: rgb(217, 217, 219);
@@ -428,7 +403,6 @@ html, body {
   text-align: center;
   margin: 0 auto;
 }
-
 .bytopic-detail-value-purpose {
   font-size: 0.8rem;
   color: black;
@@ -436,13 +410,11 @@ html, body {
   padding: 0 2rem;
 }
 
-/* === REVIEW BUTTON === */
-
+/* ---- CTA Button ---- */
 .bytopic-unit-review-container {
   margin-top: 1.25rem;
   margin-bottom: 1rem;
 }
-
 .bytopic-unit-review-btn {
   display: inline-block;
   padding: 10px 18px;
@@ -460,11 +432,7 @@ html, body {
   -webkit-appearance: none;
   margin-bottom: 30px;
 }
-
-.bytopic-unit-review-btn:hover {
-  background-color: #4a4ab2;
-}
-
+.bytopic-unit-review-btn:hover { background-color: #4a4ab2; }
 .bytopic-unit-review-btn.disabled {
   background-color: #ccc;
   color: #666;
@@ -478,22 +446,19 @@ html, body {
   user-select: none;
 }
 
-/* === SECTION HEADINGS === */
-
+/* ---- Section Headings / Divider ---- */
 .bytopic-section-title {
   font-size: 1.1rem;
   font-weight: 800;
   color: #262262;
   margin-top: 3rem;
 }
-
 .bytopic-section-divider {
   border: 2px dashed #dc176a;
   margin: 2rem 0;
 }
 
-/* === EMPTY MESSAGE === */
-
+/* ---- Empty Message ---- */
 .bytopic-empty-section-message {
   background-color: #fdf3f7;
   border-left: 4px solid #dc176a;
@@ -505,60 +470,49 @@ html, body {
   width: 60%;
 }
 
+/* ---- Upcoming Corner Badge ---- */
+.bytopic-upcoming-badge {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  z-index: 3;
+  pointer-events: none;
+  width: var(--unit-icon-size);
+  height: auto;
+}
 
-/* === Responsive: Large tablets and below (≤ 1200px) === */
+/* ---- Responsive ---- */
 @media screen and (max-width: 1200px) {
-  .bytopic-container {
-    padding: 0 4%;
-  }
-
-  .bytopic-short-summary,
-  .bytopic-long-summary {
-    width: 100%;
-  }
-
-  .bytopic-library-units-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
+  .bytopic-container { padding: 0 4%; }
+  .bytopic-short-summary, .bytopic-long-summary { width: 100%; }
+  .bytopic-library-units-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
-/* === Responsive: Small tablets and below (≤ 900px) === */
 @media screen and (max-width: 900px) {
-  .bytopic-container {
-    padding: 0 2rem;
-  }
-
-  .bytopic-library-units-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .bytopic-card-content {
-    margin-top: 3rem;
-  }
+  .bytopic-container { padding: 0 2rem; }
+  .bytopic-library-units-grid { grid-template-columns: repeat(2, 1fr); }
+  .bytopic-card-content { margin-top: 3rem; }
 }
 
-/* === Responsive: Mobile screens (≤ 600px) === */
 @media screen and (max-width: 600px) {
-  .bytopic-container {
-    padding: 0 1rem;
-  }
-
-  .bytopic-library-units-grid {
-    grid-template-columns: 1fr;
-  }
-
+  .bytopic-container { padding: 0 1rem; }
+  .bytopic-library-units-grid { grid-template-columns: 1fr; }
   .bytopic-card-content {
     margin-top: 2.5rem;
     padding-bottom: 2rem;
   }
-
-  .bytopic-unit-title {
-    font-size: 0.85rem;
-  }
-
+  .bytopic-unit-title { font-size: 0.85rem; }
   .bytopic-unit-review-btn {
     font-size: 0.75rem;
     padding: 8px 14px;
+  }
+}
+
+/* ---- Motion Safety ---- */
+@media (prefers-reduced-motion: reduce) {
+  .expand-arrow,
+  .bytopic-library-unit-card {
+    transition: none;
   }
 }
 
