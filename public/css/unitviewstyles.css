@@ -2636,23 +2636,15 @@ label {
     justify-content:center;
     align-items:center;
     margin: 8px 0 10px;
+      margin: 0 auto;        /* also centers if display stays block elsewhere */
   }
-  .mine-hero-img{
-    width:min(260px, 40vw);
-    height:auto;
-    display:block;
-  }
-
-  .minediscipline-hero-img {
-    width:min(260px, 40vw);
-    height:auto;
-    display:block;
-}
-
+.minediscipline-hero-img,
+.mineclients-region-img,
 .mineclients-region-img {
-    width:min(260px, 40vw);
-    height:auto;
-    display:block;
+  width: min(260px, 40vw);
+  height: auto;
+  display: inline-block; /* allow text-align:center to work */
+  margin: 0 auto;        /* also centers if display stays block elsewhere */
 }
 
   .mine-subtitle{
