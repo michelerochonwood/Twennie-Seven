@@ -12,12 +12,12 @@
 
 <div class="form-nugget-background">
   <div class="form-nugget-container">
-<form 
-  id="nugget-form" 
-  class="nugget-form" 
-  action="/unitform/submit_nugget" 
-  method="POST"
->
+    <form 
+      id="nugget-form" 
+      class="nugget-form" 
+      action="/unitform/submit_nugget" 
+      method="POST"
+    >
       <input type="hidden" name="_csrf" value="{{csrfToken}}">
       <input type="hidden" name="_id" value="{{data._id}}">
 
@@ -44,35 +44,73 @@
         </select>
       </div>
 
-      <!-- Discipline -->
+      <!-- Discipline (alphabetical) -->
       <div class="form-field">
         <label for="discipline">Discipline</label>
-        <input type="text" id="discipline" name="discipline" value="{{data.discipline}}">
+        <select id="discipline" name="discipline" required>
+          <option value="">Select discipline</option>
+          <option value="Architecture"           {{#ifEquals data.discipline "Architecture"}}selected{{/ifEquals}}>Architecture</option>
+          <option value="Bridges"                {{#ifEquals data.discipline "Bridges"}}selected{{/ifEquals}}>Bridges</option>
+          <option value="Buildings"              {{#ifEquals data.discipline "Buildings"}}selected{{/ifEquals}}>Buildings</option>
+          <option value="Electrical"             {{#ifEquals data.discipline "Electrical"}}selected{{/ifEquals}}>Electrical</option>
+          <option value="Environmental"          {{#ifEquals data.discipline "Environmental"}}selected{{/ifEquals}}>Environmental</option>
+          <option value="Geotechnical"           {{#ifEquals data.discipline "Geotechnical"}}selected{{/ifEquals}}>Geotechnical</option>
+          <option value="Hydrology"              {{#ifEquals data.discipline "Hydrology"}}selected{{/ifEquals}}>Hydrology</option>
+          <option value="Interior Design"        {{#ifEquals data.discipline "Interior Design"}}selected{{/ifEquals}}>Interior Design</option>
+          <option value="Landscape Architecture" {{#ifEquals data.discipline "Landscape Architecture"}}selected{{/ifEquals}}>Landscape Architecture</option>
+          <option value="Land Development"       {{#ifEquals data.discipline "Land Development"}}selected{{/ifEquals}}>Land Development</option>
+          <option value="Mechanical"             {{#ifEquals data.discipline "Mechanical"}}selected{{/ifEquals}}>Mechanical</option>
+          <option value="Planning"               {{#ifEquals data.discipline "Planning"}}selected{{/ifEquals}}>Planning</option>
+          <option value="Transit"                {{#ifEquals data.discipline "Transit"}}selected{{/ifEquals}}>Transit</option>
+          <option value="Transportation"         {{#ifEquals data.discipline "Transportation"}}selected{{/ifEquals}}>Transportation</option>
+          <option value="Water and Wastewater"   {{#ifEquals data.discipline "Water and Wastewater"}}selected{{/ifEquals}}>Water and Wastewater</option>
+          <option value="Other"   {{#ifEquals data.discipline "Water and Wastewater"}}selected{{/ifEquals}}>Other</option>
+        </select>
       </div>
 
       <!-- Region -->
       <div class="form-field">
         <label for="region">Region</label>
-        <input type="text" id="region" name="region" value="{{data.region}}">
+        <select id="region" name="region" required>
+          <option value="">Select region</option>
+          <option value="Southern Ontario"                  {{#ifEquals data.region "Southern Ontario"}}selected{{/ifEquals}}>Southern Ontario</option>
+          <option value="Northern Ontario"                  {{#ifEquals data.region "Northern Ontario"}}selected{{/ifEquals}}>Northern Ontario</option>
+          <option value="Prairies"                          {{#ifEquals data.region "Prairies"}}selected{{/ifEquals}}>Prairies</option>
+          <option value="BC"                                {{#ifEquals data.region "BC"}}selected{{/ifEquals}}>BC</option>
+          <option value="Quebec"                            {{#ifEquals data.region "Quebec"}}selected{{/ifEquals}}>Quebec</option>
+          <option value="Maritimes"                         {{#ifEquals data.region "Maritimes"}}selected{{/ifEquals}}>Maritimes</option>
+          <option value="Nunavut, NWT, and the Yukon"       {{#ifEquals data.region "Nunavut, NWT, and the Yukon"}}selected{{/ifEquals}}>Nunavut, NWT, and the Yukon</option>
+        </select>
       </div>
 
-      <!-- Estimated Value -->
+      <!-- Estimated Value (range bucket) -->
       <div class="form-field">
-        <label for="estimated-value">Estimated Value (CAD)</label>
-        <input type="number" id="estimated-value" name="estimatedValue.amount" value="{{data.estimatedValue.amount}}" min="0" step="1000">
+        <label for="estimated-value-bucket">Estimated Value (CAD)</label>
+        <select id="estimated-value-bucket" name="estimatedValue.bucket">
+          <option value="">Select range</option>
+          <option value="<$100K"            {{#ifEquals data.estimatedValue.bucket "<$100K"}}selected{{/ifEquals}}>&lt;$100K</option>
+          <option value="$100K - $500K"     {{#ifEquals data.estimatedValue.bucket "$100K - $500K"}}selected{{/ifEquals}}>$100K - $500K</option>
+          <option value="$500K - $1M"       {{#ifEquals data.estimatedValue.bucket "$500K - $1M"}}selected{{/ifEquals}}>$500K - $1M</option>
+          <option value="$1M - $5M"         {{#ifEquals data.estimatedValue.bucket "$1M - $5M"}}selected{{/ifEquals}}>$1M - $5M</option>
+          <option value="$5M - $10M"        {{#ifEquals data.estimatedValue.bucket "$5M - $10M"}}selected{{/ifEquals}}>$5M - $10M</option>
+          <option value="$10M - $50M"       {{#ifEquals data.estimatedValue.bucket "$10M - $50M"}}selected{{/ifEquals}}>$10M - $50M</option>
+          <option value=">$50M"             {{#ifEquals data.estimatedValue.bucket ">$50M"}}selected{{/ifEquals}}>>&nbsp;$50M</option>
+        </select>
+        <input type="hidden" name="estimatedValue.currency" value="{{#if data.estimatedValue.currency}}{{data.estimatedValue.currency}}{{else}}CAD{{/if}}">
       </div>
 
       <!-- Project Delivery Type -->
       <div class="form-field">
         <label for="delivery-type">Project Delivery Type</label>
         <select id="delivery-type" name="projectDeliveryType">
-          <option value="unknown" {{#ifEquals data.projectDeliveryType "unknown"}}selected{{/ifEquals}}>Unknown</option>
-          <option value="design" {{#ifEquals data.projectDeliveryType "design"}}selected{{/ifEquals}}>Design</option>
-          <option value="design-build" {{#ifEquals data.projectDeliveryType "design-build"}}selected{{/ifEquals}}>Design-Build</option>
-          <option value="CMAR" {{#ifEquals data.projectDeliveryType "CMAR"}}selected{{/ifEquals}}>CMAR</option>
-          <option value="P3" {{#ifEquals data.projectDeliveryType "P3"}}selected{{/ifEquals}}>P3</option>
-          <option value="DBFM" {{#ifEquals data.projectDeliveryType "DBFM"}}selected{{/ifEquals}}>DBFM</option>
-          <option value="DBF" {{#ifEquals data.projectDeliveryType "DBF"}}selected{{/ifEquals}}>DBF</option>
+          <option value="unknown"     {{#ifEquals data.projectDeliveryType "unknown"}}selected{{/ifEquals}}>Unknown</option>
+          <option value="design"      {{#ifEquals data.projectDeliveryType "design"}}selected{{/ifEquals}}>Design</option>
+          <option value="design-build"{{#ifEquals data.projectDeliveryType "design-build"}}selected{{/ifEquals}}>Design-Build</option>
+          <option value="CMAR"        {{#ifEquals data.projectDeliveryType "CMAR"}}selected{{/ifEquals}}>CMAR</option>
+          <option value="P3"          {{#ifEquals data.projectDeliveryType "P3"}}selected{{/ifEquals}}>P3</option>
+          <option value="DBFM"        {{#ifEquals data.projectDeliveryType "DBFM"}}selected{{/ifEquals}}>DBFM</option>
+          <option value="DBF"         {{#ifEquals data.projectDeliveryType "DBF"}}selected{{/ifEquals}}>DBF</option>
+          <option value="Other"         {{#ifEquals data.projectDeliveryType "DBF"}}selected{{/ifEquals}}>Other</option>
         </select>
       </div>
 
