@@ -6,15 +6,13 @@
   <section class="current-membership">
     <h2>your current membership</h2>
     <p><strong>membership type:</strong> {{user.membershipType}}</p>
-    {{#if user.accessLevel}}
-      <p><strong>access level:</strong> {{user.accessLevel}}</p>
-    {{/if}}
+
     <p>Below are the membership options available to you. Choose an option to continue.</p>
   </section>
 
   <section class="membership-buttons">    
     <button class="membership-button" onclick="showForm('free')">free membership</button>
-    <button class="membership-button" onclick="showForm('individual')">individual member</button>
+    <button class="membership-button" onclick="showForm('individual')">paid membership</button>
     <button class="membership-button" onclick="showForm('leader')">leader</button>
     <button class="membership-button" onclick="showForm('group')">group member</button>
     <button class="membership-button" onclick="showForm('cancel')">cancel membership</button>
