@@ -2640,15 +2640,19 @@ label {
 .mineclients-nugget-card {
   background-color: #d0cfcf;
   border-radius: 10px;
-  height: 350px;
-  overflow: hidden;
+  height: auto;            /* was 350px */
+  overflow: visible;       /* allow content to expand */
   transition: height 0.3s ease;
   display: flex;
   flex-direction: column;
   align-items: center;
   position: relative;
   margin-bottom: 1.5rem;
+  z-index: 1;
 }
+
+.mineclients-nugget-card:hover,
+.mineclients-nugget-card.active { z-index: 2; }
 
 /* add bottom space inside the expanded card */
 .mineclients-nugget-card.active .mineclients-hidden-content {
@@ -2672,6 +2676,15 @@ label {
   padding-bottom: 2.5rem;
   margin-top: 4rem; /* room for the wave */
   position: relative;
+}
+
+.mineclients-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  overflow: hidden;        /* clip to radius */
+  background: inherit;
 }
 
 .mineclients-visible-content {
@@ -2721,8 +2734,26 @@ label {
 /* Hidden/expanded content */
 .mineclients-hidden-content { display: none; }
 .mineclients-nugget-card.active .mineclients-hidden-content {
-  display: flex; flex-direction: column; align-items: center; gap: .75rem; margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .75rem;
+  margin-top: 1rem;
+  padding-bottom: 40px;   /* bottom space lives here */
+  box-sizing: border-box;
 }
+
+.mineclients-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin-top: 4rem;       /* room for wave */
+  padding-bottom: 2rem;   /* consistent bottom padding */
+  position: relative;
+}
+
+
 
 /* Meta badges row */
 .mineclients-meta-badges {

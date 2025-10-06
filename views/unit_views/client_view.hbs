@@ -22,63 +22,66 @@
         <div class="mineclients-nuggets-grid bytopic-library-units-grid">
           {{#each this.nuggets}}
            <article class="mineclients-nugget-card bytopic-library-unit-card" data-nugget-id="{{_id}}">
-  <!-- Header wave -->
-  <div class="mineclients-card-svg-header bytopic-card-svg-header">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 198.89 17.83" aria-hidden="true" focusable="false">
-      <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
-      <path class="cls-1" d="M0,9.74s30.57,13.88,92.83,1.88c0,0,68.2-13.17,106.06,6.21V0H0v9.74Z"/>
-    </svg>
-  </div>
-
-  <!-- Card content -->
-  <div class="mineclients-card-content bytopic-card-content">
-    <div class="mineclients-visible-content bytopic-visible-content">
-      <div class="mineclients-nugget-icon-container bytopic-unit-type-icon-container">
-        <img src="/images/nuggeticon.png" alt="Nugget icon" class="mineclients-nugget-icon bytopic-unit-type-icon">
-      </div>
-
-      <!-- Title is the client name -->
-      <div class="mineclients-nugget-title-container bytopic-unit-title-container">
-        <h2 class="mineclients-nugget-title bytopic-unit-title">{{client}}</h2>
-      </div>
+  <!-- Inner wrapper handles rounded-corner clipping -->
+  <div class="mineclients-card-inner">
+    <!-- Header wave -->
+    <div class="mineclients-card-svg-header bytopic-card-svg-header">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 198.89 17.83" aria-hidden="true" focusable="false">
+        <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
+        <path class="cls-1" d="M0,9.74s30.57,13.88,92.83,1.88c0,0,68.2-13.17,106.06,6.21V0H0v9.74Z"/>
+      </svg>
     </div>
 
-    {{#if (or discipline region)}}
-      <!-- Expand Toggle (only if there's something to show) -->
-      <button class="mineclients-expand-toggle bytopic-expand-toggle" type="button"
-              onclick="toggleMineClientCard(this)" aria-expanded="false" aria-label="Toggle details">
-        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99" aria-hidden="true" focusable="false">
-          <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
-          <polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/>
-        </svg>
-      </button>
+    <!-- Card content -->
+    <div class="mineclients-card-content bytopic-card-content">
+      <div class="mineclients-visible-content bytopic-visible-content">
+        <div class="mineclients-nugget-icon-container bytopic-unit-type-icon-container">
+          <img src="/images/nuggeticon.png" alt="Nugget icon" class="mineclients-nugget-icon bytopic-unit-type-icon">
+        </div>
 
-      <!-- Hidden (expanded) content -->
-<div class="mineclients-meta-badges">
-  {{#if discipline}}
-    <div class="mineclients-meta-item">
-      <div class="mineclients-meta-label">discipline</div>
-      <div class="mineclients-meta-value">{{discipline}}</div>
-    </div>
-  {{/if}}
-
-  {{#if region}}
-    <div class="mineclients-meta-item">
-      <div class="mineclients-meta-label">region</div>
-      <div class="mineclients-meta-value">{{region}}</div>
-    </div>
-  {{/if}}
-</div>
-
-        <div class="mineclients-actions bytopic-unit-review-container">
-          <a href="/unitviews/nuggets/view/{{_id}}" class="mineclients-view-btn bytopic-unit-review-btn">
-            view nugget
-          </a>
+        <!-- Title is the client name -->
+        <div class="mineclients-nugget-title-container bytopic-unit-title-container">
+          <h2 class="mineclients-nugget-title bytopic-unit-title">{{client}}</h2>
         </div>
       </div>
-    {{/if}}
-  </div>
+
+      {{#if (or discipline region)}}
+        <!-- Expand Toggle -->
+        <button class="mineclients-expand-toggle bytopic-expand-toggle" type="button"
+                onclick="toggleMineClientCard(this)" aria-expanded="false" aria-label="Toggle details">
+          <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99" aria-hidden="true" focusable="false">
+            <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
+            <polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/>
+          </svg>
+        </button>
+
+        <!-- Hidden (expanded) content -->
+        <div class="mineclients-hidden-content bytopic-hidden-content" style="display:none;">
+          <div class="mineclients-meta-badges">
+            {{#if discipline}}
+              <div class="mineclients-meta-item">
+                <div class="mineclients-meta-label">discipline</div>
+                <div class="mineclients-meta-value">{{discipline}}</div>
+              </div>
+            {{/if}}
+
+            {{#if region}}
+              <div class="mineclients-meta-item">
+                <div class="mineclients-meta-label">region</div>
+                <div class="mineclients-meta-value">{{region}}</div>
+              </div>
+            {{/if}}
+          </div>
+
+          <div class="mineclients-actions bytopic-unit-review-container">
+            <a href="/unitviews/nuggets/view/{{_id}}" class="mineclients-view-btn bytopic-unit-review-btn">view nugget</a>
+          </div>
+        </div>
+      {{/if}}
+    </div> <!-- /.mineclients-card-content -->
+  </div>   <!-- /.mineclients-card-inner -->
 </article>
+
           {{/each}}
         </div>
       {{else}}
@@ -93,13 +96,11 @@
 </div>
 
 <script>
-  function toggleMineClientCard(el) {
-    const card = el.closest('.mineclients-nugget-card');
-    const content = card.querySelector('.mineclients-hidden-content');
-    const isOpen = card.classList.contains('active');
-    card.classList.toggle('active', !isOpen);
-    el.setAttribute('aria-expanded', String(!isOpen));
-    if (content) content.style.display = isOpen ? 'none' : 'flex';
-  }
+function toggleMineClientCard(el) {
+  const card = el.closest('.mineclients-nugget-card');
+  const isOpen = card.classList.contains('active');
+  card.classList.toggle('active', !isOpen);
+  el.setAttribute('aria-expanded', String(!isOpen));
+}
 </script>
 
