@@ -21,81 +21,54 @@
       {{#if this.nuggets.length}}
         <div class="mineclients-nuggets-grid bytopic-library-units-grid">
           {{#each this.nuggets}}
-            <article class="mineclients-nugget-card bytopic-library-unit-card" data-nugget-id="{{_id}}">
-              <!-- Header wave -->
-              <div class="mineclients-card-svg-header bytopic-card-svg-header">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 198.89 17.83" aria-hidden="true" focusable="false">
-                  <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
-                  <path class="cls-1" d="M0,9.74s30.57,13.88,92.83,1.88c0,0,68.2-13.17,106.06,6.21V0H0v9.74Z"/>
-                </svg>
-              </div>
+           <article class="mineclients-nugget-card bytopic-library-unit-card" data-nugget-id="{{_id}}">
+  <!-- Header wave -->
+  <div class="mineclients-card-svg-header bytopic-card-svg-header">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 198.89 17.83" aria-hidden="true" focusable="false">
+      <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
+      <path class="cls-1" d="M0,9.74s30.57,13.88,92.83,1.88c0,0,68.2-13.17,106.06,6.21V0H0v9.74Z"/>
+    </svg>
+  </div>
 
-              <!-- Card content -->
-              <div class="mineclients-card-content bytopic-card-content">
-                <div class="mineclients-visible-content bytopic-visible-content">
-                  <div class="mineclients-nugget-icon-container bytopic-unit-type-icon-container">
-                    <img src="/images/icons/nuggeticon.svg" alt="Nugget icon" class="mineclients-nugget-icon bytopic-unit-type-icon">
-                  </div>
+  <!-- Card content -->
+  <div class="mineclients-card-content bytopic-card-content">
+    <div class="mineclients-visible-content bytopic-visible-content">
+      <div class="mineclients-nugget-icon-container bytopic-unit-type-icon-container">
+        <img src="/images/icons/nuggeticon.svg" alt="Nugget icon" class="mineclients-nugget-icon bytopic-unit-type-icon">
+      </div>
 
-                  {{!-- Per spec: the title on CLIENT view is the client name --}}
-                  <div class="mineclients-nugget-title-container bytopic-unit-title-container">
-                    <h2 class="mineclients-nugget-title bytopic-unit-title">{{client}}</h2>
-                  </div>
-                </div>
+      <!-- Title is the client name -->
+      <div class="mineclients-nugget-title-container bytopic-unit-title-container">
+        <h2 class="mineclients-nugget-title bytopic-unit-title">{{client}}</h2>
+      </div>
+    </div>
 
-                <!-- Expand Toggle -->
-                <button class="mineclients-expand-toggle bytopic-expand-toggle" type="button"
-                        onclick="toggleMineClientCard(this)" aria-expanded="false" aria-label="Toggle details">
-                  <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99" aria-hidden="true" focusable="false">
-                    <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
-                    <polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/>
-                  </svg>
-                </button>
+    {{#if (or discipline region)}}
+      <!-- Expand Toggle (only if there's something to show) -->
+      <button class="mineclients-expand-toggle bytopic-expand-toggle" type="button"
+              onclick="toggleMineClientCard(this)" aria-expanded="false" aria-label="Toggle details">
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99" aria-hidden="true" focusable="false">
+          <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
+          <polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </button>
 
-                <!-- Hidden (expanded) content -->
-                <div class="mineclients-hidden-content bytopic-hidden-content" style="display:none;">
-                  <div class="mineclients-meta-badges">
-                    {{#if horizon}}<span class="mineclients-badge">horizon: {{horizon}}</span>{{/if}}
-                    {{#if discipline}}<span class="mineclients-badge">discipline: {{discipline}}</span>{{/if}}
-                    {{#if region}}<span class="mineclients-badge">region: {{region}}</span>{{/if}}
-                    {{#if projectDeliveryType}}<span class="mineclients-badge">delivery: {{projectDeliveryType}}</span>{{/if}}
-                    {{#if likelihood}}<span class="mineclients-badge">likelihood: {{likelihood}}%</span>{{/if}}
-                    {{#if estimatedValue.amount}}
-                      <span class="mineclients-badge">est. value: {{estimatedValue.currency}} {{estimatedValue.amount}}</span>
-                    {{/if}}
-                  </div>
+      <!-- Hidden (expanded) content -->
+      <div class="mineclients-hidden-content bytopic-hidden-content" style="display:none;">
+        <div class="mineclients-meta-badges">
+          {{#if discipline}}<span class="mineclients-badge">discipline: {{discipline}}</span>{{/if}}
+          {{#if region}}<span class="mineclients-badge">region: {{region}}</span>{{/if}}
+        </div>
 
-                  {{#if title}}
-                    <div class="mineclients-detail-row">
-                      <strong>working title:</strong>&nbsp;<span>{{title}}</span>
-                    </div>
-                  {{/if}}
-
-                  {{#if originalSource}}
-                    <div class="mineclients-detail-row">
-                      <strong>source:</strong>&nbsp;
-                      {{#if originalSource.url}}
-                        <a href="{{originalSource.url}}" target="_blank" rel="noopener">{{originalSource.label}}</a>
-                      {{else}}
-                        <span>{{originalSource.label}}</span>
-                      {{/if}}
-                    </div>
-                  {{/if}}
-
-                  {{#if notes}}
-                    <div class="mineclients-notes">
-                      <p>{{notes}}</p>
-                    </div>
-                  {{/if}}
-
-                  <div class="mineclients-actions bytopic-unit-review-container">
-                    <a href="/unitviews/nuggets/view/{{_id}}" class="mineclients-view-btn bytopic-unit-review-btn">
-                      view nugget
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </article>
+        <div class="mineclients-actions bytopic-unit-review-container">
+          <a href="/unitviews/nuggets/view/{{_id}}" class="mineclients-view-btn bytopic-unit-review-btn">
+            view nugget
+          </a>
+        </div>
+      </div>
+    {{/if}}
+  </div>
+</article>
           {{/each}}
         </div>
       {{else}}

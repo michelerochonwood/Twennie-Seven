@@ -292,6 +292,19 @@ html, body {
   }
 }
 
+/* Hide the fixed topics column earlier (tablet and below) */
+@media (max-width: 1200px) {
+  .dashboard-page .topic-sidebar {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  /* (Optional) if you have a mobile topics panel/button, enable it here */
+  .dashboard-page .mobile-sidebar {
+    display: block !important;
+  }
+}
+
+
 
 /* LOGIN PAGE */
 /* Container for the entire login page */
