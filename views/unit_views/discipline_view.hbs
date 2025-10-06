@@ -1,0 +1,102 @@
+{{!-- File: views/unit_views/discipline_view.hbs --}}
+{{#*inline "title"}}Nuggets by Discipline | Twennie{{/inline}}
+
+<div class="mineclients-container bytopic-container">
+  <!-- Hero -->
+  <div class="mineclients-hero">
+    <h1 class="mineclients-title bytopic-title">{{#if pageTitle}}{{pageTitle}}{{else}}Nuggets by Discipline{{/if}}</h1>
+    <img src="/images/clientbluey.png" alt="Discipline Bluey" class="mineclients-hero-img" />
+    {{#if pageIntro}}<p class="mineclients-intro bytopic-short-summary">{{pageIntro}}</p>{{/if}}
+    {{#if shortSummary}}<p class="mineclients-short-summary bytopic-short-summary">{{shortSummary}}</p>{{/if}}
+    {{#if longSummary}}<p class="mineclients-long-summary bytopic-long-summary">{{longSummary}}</p>{{/if}}
+  </div>
+
+  <!-- Main content + right rail -->
+  <div class="mineclients-content has-right-rail bytopic-content">
+    {{!-- Sectioned nuggets --}}
+    {{#each sectionedNuggets}}
+      <h2 class="mineclients-section-title bytopic-section-title">{{this.sectionTitle}}</h2>
+      <hr class="mineclients-section-divider bytopic-section-divider">
+
+      {{#if this.nuggets.length}}
+        <div class="mineclients-nuggets-grid bytopic-library-units-grid">
+          {{#each this.nuggets}}
+            <article class="mineclients-nugget-card bytopic-library-unit-card" data-nugget-id="{{_id}}">
+              <!-- Inner wrapper handles rounded-corner clipping -->
+              <div class="mineclients-card-inner">
+                <!-- Header wave -->
+                <div class="mineclients-card-svg-header bytopic-card-svg-header">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 198.89 17.83" aria-hidden="true" focusable="false">
+                    <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
+                    <path class="cls-1" d="M0,9.74s30.57,13.88,92.83,1.88c0,0,68.2-13.17,106.06,6.21V0H0v9.74Z"/>
+                  </svg>
+                </div>
+
+                <!-- Card content -->
+                <div class="mineclients-card-content bytopic-card-content">
+                  <div class="mineclients-visible-content bytopic-visible-content">
+                    <div class="mineclients-nugget-icon-container bytopic-unit-type-icon-container">
+                      <img src="/images/nuggeticon.png" alt="Nugget icon" class="mineclients-nugget-icon bytopic-unit-type-icon">
+                    </div>
+
+                    <!-- Title is the DISCIPLINE -->
+                    <div class="mineclients-nugget-title-container bytopic-unit-title-container">
+                      <h2 class="mineclients-nugget-title bytopic-unit-title">{{discipline}}</h2>
+                    </div>
+                  </div>
+
+                  {{#if (or discipline region)}}
+                    <!-- Expand Toggle -->
+                    <button class="mineclients-expand-toggle bytopic-expand-toggle" type="button"
+                            onclick="toggleMineClientCard(this)" aria-expanded="false" aria-label="Toggle details">
+                      <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99" aria-hidden="true" focusable="false">
+                        <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
+                        <polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/>
+                      </svg>
+                    </button>
+
+                    <!-- Hidden (expanded) content -->
+                    <div class="mineclients-hidden-content bytopic-hidden-content">
+                      <div class="mineclients-meta-badges">
+                        {{#if discipline}}
+                          <div class="mineclients-meta-item">
+                            <div class="mineclients-meta-label">discipline</div>
+                            <div class="mineclients-meta-value">{{discipline}}</div>
+                          </div>
+                        {{/if}}
+
+                        {{#if region}}
+                          <div class="mineclients-meta-item">
+                            <div class="mineclients-meta-label">region</div>
+                            <div class="mineclients-meta-value">{{region}}</div>
+                          </div>
+                        {{/if}}
+                      </div>
+
+                      <div class="mineclients-actions bytopic-unit-review-container">
+                        <a href="/unitviews/nuggets/view/{{_id}}" class="mineclients-view-btn bytopic-unit-review-btn">view nugget</a>
+                      </div>
+                    </div>
+                  {{/if}}
+                </div> <!-- /.mineclients-card-content -->
+              </div>   <!-- /.mineclients-card-inner -->
+            </article>
+          {{/each}}
+        </div>
+      {{else}}
+        <div class="mineclients-empty-section-message bytopic-empty-section-message">
+          {{#if this.emptyMessage}}<p>{{this.emptyMessage}}</p>{{/if}}
+        </div>
+      {{/if}}
+    {{/each}}
+  </div>
+</div>
+
+<script>
+function toggleMineClientCard(el) {
+  const card = el.closest('.mineclients-nugget-card');
+  const isOpen = card.classList.contains('active');
+  card.classList.toggle('active', !isOpen);
+  el.setAttribute('aria-expanded', String(!isOpen));
+}
+</script>
