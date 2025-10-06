@@ -380,6 +380,38 @@ viewMineDisciplines: async (req, res) => {
     }
 
     // Partition
+    const createdByMe      = meId     ? nuggets.filter(n => n.createdBy?.toString() === meId) : [];
+    const createdByMyGroup = myGroupId? nuggets.filter(n => groupByCreator[n.createdBy?.toString()] === myGroupId) : [];
+    const createdByMyOrg   = myOrg    ? nuggets.filter(n => orgByCreator[n.createdBy?.toString()]   === myOrg)   : [];
+    const fromAllMembers   = nuggets;
+
+    console.log('[viewMineDisciplines] buckets => me:', createdByMe.length,
+      'group:', createdByMyGroup.length, 'org:', createdByMyOrg.length, 'all:', fromAllMembers.length);
+
+    const sectionedNuggets = [
+      { sectionTitle: 'Created by Me',              nuggets: createdByMe,      emptyMessage: 'No discipline nuggets created by you yet.' },
+      { sectionTitle: 'Created by My Group',        nuggets: createdByMyGroup, emptyMessage: 'No discipline nuggets from your group yet.' },
+      { sectionTitle: 'Created by My Organization', nuggets: createdByMyOrg,   emptyMessage: 'No discipline nuggets from your organization yet.' },
+      { sectionTitle: 'From All Members',           nuggets: fromAllMembers,   emptyMessage: 'No discipline nuggets available.' },
+    ];
+
+    console.log('[viewMineDisciplines] rendering discipline_view');
+    return res.render('unit_views/discipline_view', {
+      layout: 'unitviewlayout',
+      pageTitle: 'Nuggets by Discipline',
+      pageIntro: 'Open any discipline card to see details and jump to the full Nugget.',
+      sectionedNuggets,
+    });
+  } catch (err) {
+    console.error('viewMineDisciplines error:', err);
+    return res.status(500).render('unit_views/error', {
+      layout: 'unitviewlayout',
+      title: 'Error',
+      errorMessage: 'Unable to load discipline Nuggets.',
+    });
+  }
+},
+
 
 
   viewNugget: async (req, res) => {
