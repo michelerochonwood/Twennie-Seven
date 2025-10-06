@@ -2643,6 +2643,18 @@ label {
     display:block;
   }
 
+  .minediscipline-hero-img {
+    width:min(260px, 40vw);
+    height:auto;
+    display:block;
+}
+
+.mineclients-region-img {
+    width:min(260px, 40vw);
+    height:auto;
+    display:block;
+}
+
   .mine-subtitle{
     color:#4e50a2;
     font-weight:600;
@@ -2711,6 +2723,8 @@ label {
 /* ================================
    The Mine — CLIENT VIEW (clean)
    ================================ */
+
+
 
 .mineclients-container {
   padding: 0 8%;
