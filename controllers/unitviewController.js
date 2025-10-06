@@ -206,9 +206,13 @@ viewMineClients: async (req, res) => {
 
 
 // ---- The Mine: Regions list ----
+// ---- The Mine: Regions list (cards like client_view, title = region) ----
 viewMineRegions: async (req, res) => {
   try {
+    console.log('[viewMineRegions] start, user:', req.user?.id || req.user?._id);
+
     if (!isPaidMember(req)) {
+      console.log('[viewMineRegions] blocked: not paid member');
       return res.status(403).render('unit_views/error', {
         layout: 'unitviewlayout',
         title: 'Access Restricted',
@@ -216,39 +220,103 @@ viewMineRegions: async (req, res) => {
       });
     }
 
-    const rows = await Nugget.aggregate([
-      { $match: { region: { $exists: true, $ne: '' } } },
-      { $group: { _id: '$region', count: { $sum: 1 } } },
-      { $sort: { _id: 1 } },
-    ]);
+    // Only nuggets with region + createdBy
+    const nuggets = await Nugget.find({
+      region: { $exists: true, $ne: '' },
+      createdBy: { $exists: true, $ne: null },
+    })
+      .sort({ region: 1 })
+      .lean();
 
-    const items = rows.map(r => ({
-      label: r._id,
-      count: r.count,
-      href: `/mine/regions/${encodeURIComponent(r._id)}`
-    }));
+    console.log('[viewMineRegions] nuggets count (region & createdBy):', nuggets.length);
 
-    return res.render('unit_views/mine_list', {
+    const meId = (req.user?._id || req.user?.id || '').toString();
+    console.log('[viewMineRegions] meId:', meId);
+
+    // Resolve my group/org (best effort)
+    let myGroupId = null, myOrg = null;
+    if (meId) {
+      const [meAsLeader, meAsGroupMember, meAsMember] = await Promise.all([
+        Leader.findById(meId).select('_id organization').lean(),
+        GroupMember.findById(meId).select('_id organization groupId').lean(),
+        Member.findById(meId).select('_id organization').lean(),
+      ]);
+      if (meAsLeader) {
+        myGroupId = meAsLeader._id?.toString() || null;
+        myOrg     = meAsLeader.organization || null;
+      } else if (meAsGroupMember) {
+        myGroupId = meAsGroupMember.groupId ? meAsGroupMember.groupId.toString() : null;
+        myOrg     = meAsGroupMember.organization || null;
+      } else if (meAsMember) {
+        myOrg     = meAsMember.organization || null;
+      }
+    }
+    console.log('[viewMineRegions] myGroupId:', myGroupId, 'myOrg:', myOrg);
+
+    // Build creator maps (org / group for each creator)
+    const creatorIds = [...new Set(nuggets.map(n => n.createdBy?.toString()).filter(Boolean))];
+    const orgByCreator = Object.create(null);
+    const groupByCreator = Object.create(null);
+
+    if (creatorIds.length) {
+      const [leaders, groupMembers] = await Promise.all([
+        Leader.find({ _id: { $in: creatorIds } }).select('_id organization').lean(),
+        GroupMember.find({ _id: { $in: creatorIds } }).select('_id organization groupId').lean(),
+      ]);
+      leaders.forEach(doc => {
+        const id = doc._id.toString();
+        orgByCreator[id]   = doc.organization || orgByCreator[id] || null;
+        groupByCreator[id] = id; // leader anchors to own id
+      });
+      groupMembers.forEach(doc => {
+        const id = doc._id.toString();
+        orgByCreator[id]   = doc.organization || orgByCreator[id] || null;
+        groupByCreator[id] = (doc.groupId && doc.groupId.toString()) || groupByCreator[id] || null;
+      });
+    }
+
+    // Partition
+    const createdByMe      = meId     ? nuggets.filter(n => n.createdBy?.toString() === meId) : [];
+    const createdByMyGroup = myGroupId? nuggets.filter(n => groupByCreator[n.createdBy?.toString()] === myGroupId) : [];
+    const createdByMyOrg   = myOrg    ? nuggets.filter(n => orgByCreator[n.createdBy?.toString()]   === myOrg)   : [];
+    const fromAllMembers   = nuggets;
+
+    console.log('[viewMineRegions] buckets => me:', createdByMe.length,
+      'group:', createdByMyGroup.length, 'org:', createdByMyOrg.length, 'all:', fromAllMembers.length);
+
+    const sectionedNuggets = [
+      { sectionTitle: 'Created by Me',              nuggets: createdByMe,      emptyMessage: 'No region nuggets created by you yet.' },
+      { sectionTitle: 'Created by My Group',        nuggets: createdByMyGroup, emptyMessage: 'No region nuggets from your group yet.' },
+      { sectionTitle: 'Created by My Organization', nuggets: createdByMyOrg,   emptyMessage: 'No region nuggets from your organization yet.' },
+      { sectionTitle: 'From All Members',           nuggets: fromAllMembers,   emptyMessage: 'No region nuggets available.' },
+    ];
+
+    console.log('[viewMineRegions] rendering region_view');
+    return res.render('unit_views/region_view', {
       layout: 'unitviewlayout',
-      listTitle: 'Regions in the Mine',
-      listSubtitle: 'Browse all Nuggets grouped by region.',
-      itemType: 'region',
-      items,
+      pageTitle: 'Nuggets by Region',
+      pageIntro: 'Open any region card to see details and jump to the full Nugget.',
+      sectionedNuggets,
     });
   } catch (err) {
     console.error('viewMineRegions error:', err);
     return res.status(500).render('unit_views/error', {
       layout: 'unitviewlayout',
       title: 'Error',
-      errorMessage: 'Unable to load regions.',
+      errorMessage: 'Unable to load region Nuggets.',
     });
   }
 },
 
+
 // ---- The Mine: Disciplines list ----
+// ---- The Mine: Disciplines list (cards like client_view, title = discipline) ----
 viewMineDisciplines: async (req, res) => {
   try {
+    console.log('[viewMineDisciplines] start, user:', req.user?.id || req.user?._id);
+
     if (!isPaidMember(req)) {
+      console.log('[viewMineDisciplines] blocked: not paid member');
       return res.status(403).render('unit_views/error', {
         layout: 'unitviewlayout',
         title: 'Access Restricted',
@@ -256,34 +324,62 @@ viewMineDisciplines: async (req, res) => {
       });
     }
 
-    const rows = await Nugget.aggregate([
-      { $match: { discipline: { $exists: true, $ne: '' } } },
-      { $group: { _id: '$discipline', count: { $sum: 1 } } },
-      { $sort: { _id: 1 } },
-    ]);
+    // Only nuggets with discipline + createdBy
+    const nuggets = await Nugget.find({
+      discipline: { $exists: true, $ne: '' },
+      createdBy:  { $exists: true, $ne: null },
+    })
+      .sort({ discipline: 1 })
+      .lean();
 
-    const items = rows.map(r => ({
-      label: r._id,
-      count: r.count,
-      href: `/mine/disciplines/${encodeURIComponent(r._id)}`
-    }));
+    console.log('[viewMineDisciplines] nuggets count (discipline & createdBy):', nuggets.length);
 
-    return res.render('unit_views/mine_list', {
-      layout: 'unitviewlayout',
-      listTitle: 'Disciplines in the Mine',
-      listSubtitle: 'Browse all Nuggets grouped by discipline.',
-      itemType: 'discipline',
-      items,
-    });
-  } catch (err) {
-    console.error('viewMineDisciplines error:', err);
-    return res.status(500).render('unit_views/error', {
-      layout: 'unitviewlayout',
-      title: 'Error',
-      errorMessage: 'Unable to load disciplines.',
-    });
-  }
-},
+    const meId = (req.user?._id || req.user?.id || '').toString();
+    console.log('[viewMineDisciplines] meId:', meId);
+
+    // Resolve my group/org (best effort)
+    let myGroupId = null, myOrg = null;
+    if (meId) {
+      const [meAsLeader, meAsGroupMember, meAsMember] = await Promise.all([
+        Leader.findById(meId).select('_id organization').lean(),
+        GroupMember.findById(meId).select('_id organization groupId').lean(),
+        Member.findById(meId).select('_id organization').lean(),
+      ]);
+      if (meAsLeader) {
+        myGroupId = meAsLeader._id?.toString() || null;
+        myOrg     = meAsLeader.organization || null;
+      } else if (meAsGroupMember) {
+        myGroupId = meAsGroupMember.groupId ? meAsGroupMember.groupId.toString() : null;
+        myOrg     = meAsGroupMember.organization || null;
+      } else if (meAsMember) {
+        myOrg     = meAsMember.organization || null;
+      }
+    }
+    console.log('[viewMineDisciplines] myGroupId:', myGroupId, 'myOrg:', myOrg);
+
+    // Build creator maps (org / group for each creator)
+    const creatorIds = [...new Set(nuggets.map(n => n.createdBy?.toString()).filter(Boolean))];
+    const orgByCreator = Object.create(null);
+    const groupByCreator = Object.create(null);
+
+    if (creatorIds.length) {
+      const [leaders, groupMembers] = await Promise.all([
+        Leader.find({ _id: { $in: creatorIds } }).select('_id organization').lean(),
+        GroupMember.find({ _id: { $in: creatorIds } }).select('_id organization groupId').lean(),
+      ]);
+      leaders.forEach(doc => {
+        const id = doc._id.toString();
+        orgByCreator[id]   = doc.organization || orgByCreator[id] || null;
+        groupByCreator[id] = id; // leader anchors to own id
+      });
+      groupMembers.forEach(doc => {
+        const id = doc._id.toString();
+        orgByCreator[id]   = doc.organization || orgByCreator[id] || null;
+        groupByCreator[id] = (doc.groupId && doc.groupId.toString()) || groupByCreator[id] || null;
+      });
+    }
+
+    // Partition
 
 
   viewNugget: async (req, res) => {
