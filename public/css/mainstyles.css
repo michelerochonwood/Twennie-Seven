@@ -1980,7 +1980,7 @@ html, body {
   margin: 0 auto;
   padding-left: 1.5rem;
   padding-right: 1.5rem;
-  max-width: 1320px;
+  max-width: 1500px;
 }
 
 .membership-title {
@@ -1993,7 +1993,7 @@ html, body {
 
 .membership-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 30px;
   width: 100%;
   margin: 0 auto 60px auto;
