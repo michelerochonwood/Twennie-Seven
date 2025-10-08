@@ -587,6 +587,22 @@
     "building credibility through honesty",
     "embedding candor into team culture"
   ]
+},
+{
+  "id": 210,
+  "title": "Tips and Tricks for Proposal Proofreading",
+  "shortSummary": "Proofreading that wins points starts with compliance, then clarity. Use checklists, style sheets, and two-pass edits to deliver evaluator-friendly proposals.",
+  "longSummary": "Proposal proofreading is more than catching typos—it protects compliance and makes strengths easy to score. This topic teaches a practical workflow: run an RFP compliance check first, then apply a mini style sheet to standardize names, numbers, acronyms, and units. Use targeted searches to remove inconsistencies, verify figures and dates against source records, and confirm cross-references, captions, and numbering. Finally, polish layout for readability (headings, callouts, widows/orphans) and finalize deliverables with clean filenames, metadata, working links, and a locked PDF. Tools, checklists, and samples included.",
+  "subtopics": [
+    "compliance-first proofreading checklist",
+    "creating and using a mini style sheet",
+    "targeted search techniques for common errors",
+    "verifying names, numbers, units, and dates",
+    "cross-references, captions, and numbering control",
+    "readability and layout polish (headings, callouts, widows/orphans)",
+    "accessibility and evaluator-friendly language",
+    "final file hygiene (links, metadata, filenames, PDFs)"
+  ]
 }
 
 

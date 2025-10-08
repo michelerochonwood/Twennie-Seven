@@ -72,6 +72,7 @@ const mainTopics = [
   'AI in Consulting',
   'AI in Project Management',
   'AI in Learning',
+    'Tips and Tricks for Proposal Proofreading'
 ];
 
 router.get('/form_nugget', ensureAuthenticated, unitFormController.getNuggetForm);
@@ -356,6 +357,7 @@ router.get('/edit_video/:id', ensureAuthenticated, async (req, res) => {
         'AI in Consulting',
         'AI in Project Management',
         'AI in Learning',
+          'Tips and Tricks for Proposal Proofreading',
       ];
   
       const secondaryTopics = mainTopics.map((topic) => ({
@@ -483,6 +485,7 @@ router.get('/edit_interview/:id', ensureAuthenticated, async (req, res) => {
         'AI in Consulting',
         'AI in Project Management',
         'AI in Learning',
+          'Tips and Tricks for Proposal Proofreading',
             ],
             csrfToken: isDevelopment ? null : req.csrfToken(),
         });
@@ -569,6 +572,7 @@ router.get('/edit_template/:id', ensureAuthenticated, async (req, res) => {
             'AI in Consulting',
             'AI in Project Management',
             'AI in Learning',
+              'Tips and Tricks for Proposal Proofreading',
         ];
 
         // Ensure all topics (both selected and unselected) are available
@@ -662,6 +666,7 @@ router.get('/edit_promptset/:id', ensureAuthenticated, async (req, res) => {
       'AI in Consulting',
       'AI in Project Management',
       'AI in Learning',
+        'Tips and Tricks for Proposal Proofreading',
     ];
 
     // If you use a curated subset, replace with that array. Otherwise, mirroring mainTopics works.
@@ -827,6 +832,7 @@ router.get('/edit_exercise/:id', ensureAuthenticated, csrfProtection, async (req
         'AI in Consulting',
         'AI in Project Management',
         'AI in Learning',
+          'Tips and Tricks for Proposal Proofreading',
         ],
         csrfToken: req.csrfToken(), // ✅ always pass the token
       });

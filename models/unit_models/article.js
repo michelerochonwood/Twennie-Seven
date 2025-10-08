@@ -66,6 +66,7 @@ const articleSchema = new mongoose.Schema({
             'AI in Consulting',
             'AI in Project Management',
             'AI in Learning',
+              'Tips and Tricks for Proposal Proofreading',
         ],
     },
     secondary_topics: [
@@ -116,6 +117,7 @@ const articleSchema = new mongoose.Schema({
                 'AI in Consulting',
                 'AI in Project Management',
                 'AI in Learning',
+                  'Tips and Tricks for Proposal Proofreading',
             ],
         },
     ],

@@ -132,6 +132,7 @@ const topicMappings = {
     'Four Day Work Week': 'fourdayworkweek',
     'The Power of Play in the Workplace': 'thepowerofplayintheworkplace',
     'Team Building in Technical Consulting': 'teambuildingintechnicalconsulting',
+    'Tips and Tricks for Proposal Proofreading': 'tipsandtricksforproposalproofreading'
 };
 
 // Mapping topic slugs to their corresponding view filenames
@@ -180,6 +181,7 @@ const topicViewMappings = {
     'softskillsintechnicalenvironments': 'single_topic_softskills',
     'storytellingintechnicalmarketing': 'single_topic_storytelling',
     'teambuildinginconsulting': 'single_topic_teambuilding',
+    'tipsandtricksforproposalproofreading': 'single_topic_proofreading',
     'workplaceculture': 'single_topic_workplaceculture'
 };
 

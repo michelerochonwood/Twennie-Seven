@@ -110,6 +110,7 @@ const topicMappings = {
     'Mental Health in Consulting Environments': 'mentalhealthinconsultingenvironments',
 'Remote and Hybrid Work': 'remoteandhybridwork',
     'The Power of Play in the Workplace': 'thepowerofplayintheworkplace',
+    'Tips and Tricks for Proposal Proofreading': 'tipsandtricksforproposalproofreading',
     'Team Building in Technical Consulting': 'teambuildingintechnicalconsulting',
 };
 
@@ -158,7 +159,8 @@ const topicViewMappings = {
     'storytellingintechnicalmarketing': 'single_topic_storytelling',
     'teambuildinginconsulting': 'single_topic_teambuilding',
     'pullmarketing': 'single_topic_pullmarketing',
-    'workplaceculture': 'single_topic_workplaceculture'
+    'workplaceculture': 'single_topic_workplaceculture',
+    'tipsandtricksforproposalproofreading': 'single_topic_proofreading'
 };
 
 //we have used lean here and it doesn't appear to have caused problems, but lean caused problems elsewhere, so don't use it

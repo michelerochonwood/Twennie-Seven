@@ -46,6 +46,7 @@ const TOPIC_ENUM = [
   'AI in Consulting',
   'AI in Project Management',
   'AI in Learning',
+        'Tips and Tricks for Proposal Proofreading'
 ];
 
 const UNIT_TYPE = [

@@ -120,6 +120,7 @@ exports.getTopicView = async (req, res) => {
             'Mental Health in Consulting Environments': 'mentalhealthinconsultingenvironments',
             'Remote and Hybrid Work': 'remoteandhybridwork',
             'The Power of Play in the Workplace': 'thepowerofplayintheworkplace',
+            'Tips and Tricks for Proposal Proofreading': 'tipsandtricksforproposalproofreading',
             'Team Building in Technical Consulting': 'teambuilding',
         };
 
