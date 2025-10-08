@@ -82,7 +82,7 @@ exports.getTopicView = async (req, res) => {
             'AI in Adult Learning': 'aiinadultlearning',
             'Project Management': 'projectmanagement',
             'Workplace Culture': 'workplaceculture',
-            'The Pareto Principle': 'theparetoprinciple',
+            'The Pareto Principle or 80-20': 'theparetoprincipleor8020',
             'Career Development in Technical Services': 'careerdevelopmentintechnicalservices',
             'Soft Skills in Technical Environments': 'softskillsintechnicalenvironments',
             'Business Development in Technical Services': 'businessdevelopmentintechnicalservices',
