@@ -26,10 +26,10 @@ const TOPIC_ENUM = [
   'Social Media, Advertising, and Other Mysteries',
   'Pull Marketing',
   'Emotional Intelligence',
-  'The Pareto Principle or 80/20',
+  'The Pareto Principle',
   'People Before Profit',
   'Non-Technical Roles in Technical Environments',
-  'Leadership in Technical Services',
+  'Leadership in Technical Consulting',
   'Leading Change',
   'Leading Groups on Twennie',
   'The Advantage of Failure',
@@ -46,7 +46,7 @@ const TOPIC_ENUM = [
   'AI in Consulting',
   'AI in Project Management',
   'AI in Learning',
-        'Tips and Tricks for Proposal Proofreading'
+  'Tips and Tricks for Proposal Proofreading'
 ];
 
 const UNIT_TYPE = [
