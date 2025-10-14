@@ -137,13 +137,14 @@
       </p>
 
       <div class="leader-form-field">
-        <label for="group-size">Number of Members</label>
+        <label for="group-size">Number of Members (excluding you)</label>
         <select id="group-size" name="groupSize" required>
           <option value="">Select group size</option>
           {{#each [2,3,4,5,6,7,8,9,10]}}
             <option value="{{this}}">{{this}} members</option>
           {{/each}}
         </select>
+        <small class="form-instructions">You’ll be billed for your seat + your members.</small>
       </div>
 
       <div class="individual-members-container">
@@ -153,24 +154,46 @@
       </div>
     </fieldset>
 
-    <!-- Topics (optional presets shared to members) -->
-    <fieldset class="form-section">
-      <legend>Starter Topics (optional)</legend>
+    <!-- Billing Seats Summary -->
+    <fieldset class="form-section" id="billing-summary-section" aria-live="polite">
+      <legend>Billing seats</legend>
 
-      <div class="form-field">
-        <label for="topic1">Topic 1</label>
-        <input type="text" id="topic1" name="topic1" placeholder="e.g., Proposal Strategy">
+      <div class="billing-summary">
+        <div class="billing-row">
+          <span>Leader seat</span>
+          <strong><span id="billing-leader-seats">1</span></strong>
+        </div>
+
+        <div class="billing-row">
+          <span>Member seats</span>
+          <strong><span id="billing-member-seats">0</span></strong>
+        </div>
+
+        <hr class="billing-divider">
+
+        <div class="billing-row billing-total">
+          <span>Total seats billed</span>
+          <strong><span id="billing-total-seats">1</span></strong>
+        </div>
+
+        <div class="billing-row">
+          <span>Price per seat</span>
+          <strong>$<span id="billing-price-per-seat">17.00</span>/month</strong>
+        </div>
+
+        <div class="billing-row">
+          <span>Subtotal (before tax)</span>
+          <strong>$<span id="billing-subtotal">17.00</span> CAD / month</strong>
+        </div>
+
+        <small class="form-instructions">
+          Taxes are calculated at checkout. The address you enter there will be saved to your account.
+        </small>
       </div>
 
-      <div class="form-field">
-        <label for="topic2">Topic 2</label>
-        <input type="text" id="topic2" name="topic2" placeholder="e.g., Client Experience">
-      </div>
-
-      <div class="form-field">
-        <label for="topic3">Topic 3</label>
-        <input type="text" id="topic3" name="topic3" placeholder="e.g., Leadership">
-      </div>
+      <!-- Optional: expose computed values to the server -->
+      <input type="hidden" name="computedSeats" id="computedSeats" value="1">
+      <input type="hidden" name="computedSubtotalCents" id="computedSubtotalCents" value="1700">
     </fieldset>
 
     <!-- Registration code -->
@@ -240,6 +263,45 @@
       icon.name = "eye-outline";
     }
   }
+
+  (function () {
+    const PRICE_PER_SEAT_CENTS = 1700; // $17 CAD
+    const select = document.getElementById('group-size');
+
+    const leaderSeatsEl = document.getElementById('billing-leader-seats');
+    const memberSeatsEl = document.getElementById('billing-member-seats');
+    const totalSeatsEl  = document.getElementById('billing-total-seats');
+    const priceSeatEl   = document.getElementById('billing-price-per-seat');
+    const subtotalEl    = document.getElementById('billing-subtotal');
+
+    const seatsInput    = document.getElementById('computedSeats');
+    const subtotalInput = document.getElementById('computedSubtotalCents');
+
+    function formatDollars(cents) {
+      return (cents / 100).toFixed(2);
+    }
+
+    function updateSummary() {
+      const memberCount = parseInt(select && select.value ? select.value : '0', 10) || 0;
+      const seats = 1 + memberCount;
+      const subtotalCents = seats * PRICE_PER_SEAT_CENTS;
+
+      leaderSeatsEl.textContent = '1';
+      memberSeatsEl.textContent = String(memberCount);
+      totalSeatsEl.textContent  = String(seats);
+      priceSeatEl.textContent   = formatDollars(PRICE_PER_SEAT_CENTS);
+      subtotalEl.textContent    = formatDollars(subtotalCents);
+
+      seatsInput.value = String(seats);
+      subtotalInput.value = String(subtotalCents);
+    }
+
+    if (select) {
+      select.addEventListener('change', updateSummary);
+    }
+    document.addEventListener('DOMContentLoaded', updateSummary);
+  })();
 </script>
+
 
 

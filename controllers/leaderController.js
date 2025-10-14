@@ -205,58 +205,69 @@ module.exports = {
       // });
 
       // 8) Stripe (payment redirect if requested)
-      if (redirectTarget === 'payment') {
-        const groupSizeInt = parseInt(groupSize, 10) || savedLeader.groupSize;
-        const unitAmount = groupSizeInt * 1700; // $17 CAD in cents per member
+// … after you've built memberList and saved members …
 
-        // Create Stripe Customer (minimal; DON'T send partial address here)
-        const customer = await stripe.customers.create({
-          email: groupLeaderEmail,
-          name: groupLeaderName,
-          metadata: {
-            leaderId: savedLeader._id.toString(),
-            groupName: groupName
-          }
-          // No address block here; let Checkout collect & save it
-        });
+// Stripe (payment redirect if requested)
+if (redirectTarget === 'payment') {
+  // Prefer the actual submitted members length for accuracy
+  const memberList = coerceMembers(members);
+  const memberCount = Array.isArray(memberList) ? memberList.length : 0;
 
-        // Save customer id
-        savedLeader.stripeCustomerId = customer.id;
-        await savedLeader.save();
+  // Seats = leader (1) + members
+  const seats = 1 + memberCount;
 
-        // Create product & price (you may want to reuse in production)
-        const product = await stripe.products.create({
-          name: `Twennie Group Membership (${groupSizeInt} members)`
-        });
+  // Optional: sanity-check if dropdown groupSize matches memberCount
+  const groupSizeInt = parseInt(groupSize, 10);
+  if (Number.isFinite(groupSizeInt) && groupSizeInt !== memberCount) {
+    console.warn(`⚠️ groupSize (${groupSizeInt}) != memberCount (${memberCount}) – using seats=${seats}`);
+  }
 
-        const price = await stripe.prices.create({
-          unit_amount: unitAmount,
-          currency: 'cad',
-          recurring: { interval: 'month' },
-          product: product.id,
-          tax_behavior: 'exclusive'
-        });
+  const unitAmount = seats * 1700; // $17 CAD in cents per seat
 
-        // Create Checkout Session with automatic tax + address capture
-        const session = await stripe.checkout.sessions.create({
-          customer: customer.id,
-          payment_method_types: ['card'],
-          mode: 'subscription',
-          line_items: [{ price: price.id, quantity: 1 }],
-          automatic_tax: { enabled: true },
-          billing_address_collection: 'required',
-          // 👇 Key: save the address the user enters back onto the Customer
-          customer_update: { address: 'auto', name: 'auto' },
-          // Optional for B2B tax (collect GST/HST/QST VAT IDs, etc.)
-          // tax_id_collection: { enabled: true },
+  // Create Stripe Customer (no partial address; Checkout will save it)
+  const customer = await stripe.customers.create({
+    email: groupLeaderEmail,
+    name: groupLeaderName,
+    metadata: {
+      leaderId: savedLeader._id.toString(),
+      groupName,
+      seats: String(seats),
+      members: String(memberCount)
+    }
+  });
 
-          success_url: `${baseUrl}/member/payment/success`,
-          cancel_url: `${baseUrl}/member/payment/cancel`
-        });
+  savedLeader.stripeCustomerId = customer.id;
+  await savedLeader.save();
 
-        console.log(`✅ Stripe session created: ${session.id}`);
-        return res.redirect(303, session.url);
-      }
+  // Create product & price (you can reuse in prod if you want)
+  const product = await stripe.products.create({
+    name: `Twennie Group Membership (${seats} seats)`
+  });
+
+  const price = await stripe.prices.create({
+    unit_amount: unitAmount,
+    currency: 'cad',
+    recurring: { interval: 'month' },
+    product: product.id,
+    tax_behavior: 'exclusive'
+  });
+
+  const session = await stripe.checkout.sessions.create({
+    customer: customer.id,
+    payment_method_types: ['card'],
+    mode: 'subscription',
+    line_items: [{ price: price.id, quantity: 1 }],
+    automatic_tax: { enabled: true },
+    billing_address_collection: 'required',
+    customer_update: { address: 'auto', name: 'auto' },
+    success_url: `${baseUrl}/member/payment/success`,
+    cancel_url: `${baseUrl}/member/payment/cancel`
+  });
+
+  console.log(`✅ Stripe session created: ${session.id} | seats=${seats} amount=${unitAmount}`);
+  return res.redirect(303, session.url);
+}
+
 
       // 9) Default success page (non-payment path)
       return res.render('member_form_views/register_success', {
