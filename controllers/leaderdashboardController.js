@@ -348,16 +348,14 @@ async function getLeaderPromptSchedule(leaderId, promptSetId) {
     const remainingDays = Math.max(0, Math.ceil((targetDate - today) / (1000 * 60 * 60 * 24)));
 
     // Fetch progress and determine remaining prompts
-    const progress = await PromptSetProgress.findOne({ memberId: leaderId, promptSetId });
+let progress = await PromptSetProgress.findOne({ memberId: leaderId, promptSetId });
 
-    if (!progress) {
-  console.warn(`⚠️ No progress found for promptSetId ${registration.promptSetId}. Showing Prompt 0 fallback.`);
-  progress = {
-    currentPromptIndex: 0,
-    completedPrompts: []
-  };
+if (!progress) {
+  console.warn(`⚠️ No progress found for promptSetId ${String(promptSetId)}. Showing Prompt 0 fallback.`);
+  progress = { currentPromptIndex: 0, completedPrompts: [] };
 }
-    const remainingPrompts = progress && progress.completedPrompts ? 21 - progress.completedPrompts.length : 21;
+const remainingPrompts = progress.completedPrompts ? 21 - progress.completedPrompts.length : 21;
+
 
     const spread = remainingPrompts > 0 ? Math.floor(remainingDays / remainingPrompts) : 0;
 
@@ -415,7 +413,9 @@ const mfaStatus = {
       })
     : null
 };
-            const leaderProfile = await LeaderProfile.findOne({ leaderId: id }).select('profileImage');
+const leaderProfile = await LeaderProfile
+  .findOne({ leaderId: id })
+  .select('profileImage topics');
 
             const topicSuggestions = await TopicSuggestion.find({
             suggestedBy: id,
@@ -587,28 +587,42 @@ if (progressRecords.length > 0) {
             
             console.log("All session keys before rendering:", Object.keys(req.session));
             // Attach subtopics and slugs for the leader's topics
+// ---- Safe topics (leaders may not have topics on account doc) ----
+function buildTopicObj(title) {
+  if (!title) {
+    return {
+      title: null,
+      subtopics: [],
+      slug: 'pick-a-topic',
+      viewName: null,         // your HBS can check for this and show a placeholder card
+      placeholder: true
+    };
+  }
+  const slug = topicMappings[title] || 'unknown-topic';
+  return {
+    title,
+    subtopics: getSubtopics(title),
+    slug,
+    viewName: topicViewMappings[slug] || 'not_found',
+    placeholder: false
+  };
+}
+
+// Prefer profile topics; fall back to legacy leader.topics if present
+const profileTopics = (leaderProfile && typeof leaderProfile.topics === 'object') ? leaderProfile.topics : {};
+const accountTopics = (userData && typeof userData.topics === 'object') ? userData.topics : {};
+
 const selectedTopics = {
-    topic1: {
-        title: leader.topics.topic1,
-        subtopics: getSubtopics(leader.topics.topic1),
-        slug: topicMappings[leader.topics.topic1] || 'unknown-topic',
-        viewName: topicViewMappings[topicMappings[leader.topics.topic1]] || 'not_found'
-    },
-    topic2: {
-        title: leader.topics.topic2,
-        subtopics: getSubtopics(leader.topics.topic2),
-        slug: topicMappings[leader.topics.topic2] || 'unknown-topic',
-        viewName: topicViewMappings[topicMappings[leader.topics.topic2]] || 'not_found'
-    },
-    topic3: {
-        title: leader.topics.topic3,
-        subtopics: getSubtopics(leader.topics.topic3),
-        slug: topicMappings[leader.topics.topic3] || 'unknown-topic',
-        viewName: topicViewMappings[topicMappings[leader.topics.topic3]] || 'not_found'
-    }
+  topic1: buildTopicObj(profileTopics.topic1 || accountTopics.topic1 || null),
+  topic2: buildTopicObj(profileTopics.topic2 || accountTopics.topic2 || null),
+  topic3: buildTopicObj(profileTopics.topic3 || accountTopics.topic3 || null)
 };
 
-console.log("Selected Topics for Leader:", selectedTopics);
+const topicsEmpty =
+  !selectedTopics.topic1.title &&
+  !selectedTopics.topic2.title &&
+  !selectedTopics.topic3.title;
+
 
             
 
@@ -750,6 +764,12 @@ for (const [key, val] of Object.entries(leaderCounts)) {
   leaderBadges[key] = val > last;
 }
 
+const leaderTopicsShim = {
+  topic1: selectedTopics.topic1.title,
+  topic2: selectedTopics.topic2.title,
+  topic3: selectedTopics.topic3.title
+};
+
 
 return res.render('leader_dashboard', {
   layout: 'dashboardlayout',
@@ -757,6 +777,7 @@ return res.render('leader_dashboard', {
   csrfToken: req.csrfToken(),
   leader: {
     ...userData,
+    topics: leaderTopicsShim,  // 👈 prevents leader.topics.topic1 from exploding in HBS
     profileImage: leaderProfile?.profileImage || '/images/default-avatar.png'
   },
   leaderGroupMembers: resolvedGroupMembers,
@@ -775,6 +796,7 @@ return res.render('leader_dashboard', {
   currentPromptSets,
   completedPromptSets: formattedCompletedSets,
   selectedTopics,
+    topicsEmpty,
   topicSuggestions,
   leaderAccount,
   emailPreferenceLevel,
