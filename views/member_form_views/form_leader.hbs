@@ -1,21 +1,17 @@
 {{#*inline "title"}}Leader Membership Form | Twennie{{/inline}}
 
-<form id="lf-leader-form" action="/leader/form" method="POST" class="lf-form" novalidate>
+<form id="lf-leader-form" action="/leader/form" method="POST" novalidate>
   {{#if csrfToken}}<input type="hidden" name="_csrf" value="{{csrfToken}}">{{/if}}
 
   <div class="lf-wrapper">
-    <!-- Hero -->
     <div class="lf-hero">
       <img src="/images/leaderbluey_2.png" alt="Leader Membership" class="lf-hero-img">
     </div>
 
     <h1 class="lf-title">group leader membership form</h1>
 
-    {{#if errorMessage}}
-      <div class="lf-banner lf-banner--error">{{errorMessage}}</div>
-    {{/if}}
+    {{#if errorMessage}}<div class="lf-banner lf-banner--error">{{errorMessage}}</div>{{/if}}
 
-    <!-- Group Information -->
     <section class="lf-section">
       <h2 class="lf-section-title">Group Information</h2>
 
@@ -73,7 +69,6 @@
       </div>
     </section>
 
-    <!-- Account -->
     <section class="lf-section">
       <h2 class="lf-section-title">Leader Account</h2>
 
@@ -85,8 +80,7 @@
 
       <div class="lf-field">
         <label for="lf-email" class="lf-label">Group Leader Email Address</label>
-        <input id="lf-email" name="groupLeaderEmail" class="lf-input" type="email" required
-               autocomplete="email">
+        <input id="lf-email" name="groupLeaderEmail" class="lf-input" type="email" required autocomplete="email">
       </div>
 
       <div class="lf-field">
@@ -102,7 +96,6 @@
       </div>
     </section>
 
-    <!-- Billing Address -->
     <section class="lf-section">
       <h2 class="lf-section-title">Billing Address <span class="lf-muted">(optional)</span></h2>
 
@@ -142,7 +135,6 @@
       <div class="lf-hint">At checkout, you’ll confirm billing details. Stripe will securely save the final address to your account.</div>
     </section>
 
-    <!-- Group Size & Members -->
     <section class="lf-section">
       <h2 class="lf-section-title">Group Members</h2>
 
@@ -160,13 +152,10 @@
 
       <div class="lf-members">
         <h3 class="lf-subtitle">Individual Group Members</h3>
-        <div id="lf-members-grid" class="lf-members-grid"><!-- your JS can insert rows here --></div>
-        <!-- Hidden field your JS can populate with JSON: -->
-        <!-- <input type="hidden" id="lf-members-json" name="members"> -->
+        <div id="lf-members-grid" class="lf-members-grid"></div>
       </div>
     </section>
 
-    <!-- Billing Seats Summary -->
     <section class="lf-section">
       <h2 class="lf-section-title">Billing seats</h2>
       <div class="lf-billing" aria-live="polite">
@@ -181,73 +170,11 @@
       <input type="hidden" name="computedSubtotalCents" id="lf-computed-subtotal" value="1700">
     </section>
 
-    <!-- Registration Code -->
     <section class="lf-section">
       <h2 class="lf-section-title">Team Registration Code</h2>
       <div class="lf-field">
         <label for="lf-regcode" class="lf-label">Create a Registration Code</label>
-        <input id="lf-regcode" name="registration_code" class="lf-input" type="text" required
-               placeholder="Create a unique code for your team"
-               pattern="[A-Za-z0-9]{8,}" title="At least 8 characters, letters and numbers only"
-               autocomplete="off">
-        <div class="lf-hint">
-          <strong>Rules:</strong> At least 8 characters, letters and numbers only. No special characters. Keep it secure.
-        </div>
-      </div>
-    </section>
-
-    <!-- Agreement -->
-    <section class="lf-section">
-      <h2 class="lf-section-title">Agreement</h2>
-      <label class="lf-check">
-        <input type="checkbox" name="group_agreement" value="true" required>
-        <span>I agree to fulfill the responsibilities of a group leader according to the Twennie guidelines and our group agreement.</span>
-      </label>
-    </section>
-
-    <!-- Payment -->
-    <section class="lf-section">
-      <h2 class="lf-section-title">Payment</h2>
-      <div class="lf-info">
-        <p><strong>Payment Reminder:</strong> After submit, you’ll be redirected to a secure checkout page to start your group subscription. Taxes are calculated automatically.</p>
-        <p>If your organization prefers to be invoiced, please <a href="mailto:info@twennie.com">contact Twennie</a> first to arrange billing.</p>
-      </div>
-      <input type="hidden" name="redirectTarget" value="payment">
-    </section>
-
-    <div class="lf-actions">
-      <button type="submit" class="lf-btn lf-btn--primary">make me a Twennie group leader</button>
-    </div>
-  </div>
-</form>
-
-<script>
-  (function(){
-    const PRICE = 1700; // cents
-    const fmt = c => '$' + (c/100).toFixed(2);
-    const size = document.getElementById('lf-group-size');
-    const seatLeader = document.getElementById('lf-seat-leader');
-    const seatMembers = document.getElementById('lf-seat-members');
-    const seatTotal = document.getElementById('lf-seat-total');
-    const subtotal = document.getElementById('lf-subtotal');
-    const hiddenSeats = document.getElementById('lf-computed-seats');
-    const hiddenSubtotal = document.getElementById('lf-computed-subtotal');
-
-    function update() {
-      const members = parseInt(size && size.value ? size.value : '0', 10) || 0;
-      const seats = 1 + members;
-      const cents = seats * PRICE;
-      seatLeader.textContent = '1';
-      seatMembers.textContent = String(members);
-      seatTotal.textContent = String(seats);
-      subtotal.textContent = fmt(cents) + ' CAD / month';
-      hiddenSeats.value = String(seats);
-      hiddenSubtotal.value = String(cents);
-    }
-    if (size) size.addEventListener('change', update);
-    document.addEventListener('DOMContentLoaded', update);
-  })();
-</script>
+        <input id="lf-reg
 
 
 
