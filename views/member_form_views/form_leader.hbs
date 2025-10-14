@@ -12,9 +12,7 @@
     <h1 class="form-title">group leader membership form</h1>
 
     {{#if errorMessage}}
-      <div class="form-error-banner">
-        <p>{{errorMessage}}</p>
-      </div>
+      <div class="form-error-banner"><p>{{errorMessage}}</p></div>
     {{/if}}
 
     <!-- Group Information -->
@@ -23,33 +21,52 @@
 
       <div class="form-field">
         <label for="group-name">Group Name</label>
-        <input type="text" id="group-name" name="groupName"
-               placeholder="Hint: you'll want a fun name, like the Marshmallow Spartans or the Zen Mechanics."
-               required autocomplete="organization">
+        <input
+          type="text"
+          id="group-name"
+          name="groupName"
+          placeholder="Hint: you'll want a fun name, like the Marshmallow Spartans or the Zen Mechanics."
+          required
+          autocomplete="organization"
+        >
       </div>
 
       <div class="form-field">
         <label for="group-leader-name">Group Leader Name</label>
-        <input type="text" id="group-leader-name" name="groupLeaderName"
-               placeholder="Your full name, or the name by which your team knows you, first and last."
-               required autocomplete="name">
+        <input
+          type="text"
+          id="group-leader-name"
+          name="groupLeaderName"
+          placeholder="Your full name, or the name by which your team knows you, first and last."
+          required
+          autocomplete="name"
+        >
       </div>
 
       <div class="form-field">
         <label for="professional-title">Professional Title</label>
-        <input type="text" id="professional-title" name="professionalTitle"
-               placeholder="This should be the title by which your organization knows you."
-               required autocomplete="organization-title">
+        <input
+          type="text"
+          id="professional-title"
+          name="professionalTitle"
+          placeholder="This should be the title by which your organization knows you."
+          required
+          autocomplete="organization-title"
+        >
       </div>
 
       <div class="form-field">
         <label for="organization">Organization</label>
-        <input type="text" id="organization" name="organization"
-               placeholder="If you prefer not to name your organization, write 'anonymous'."
-               autocomplete="organization">
+        <input
+          type="text"
+          id="organization"
+          name="organization"
+          placeholder="If you prefer not to name your organization, write 'anonymous'."
+          autocomplete="organization"
+        >
       </div>
 
-      <!-- Industry (use select styling block) -->
+      <!-- Industry (styled select) -->
       <div class="form-field-industry">
         <label for="industry">Industry</label>
         <select id="industry" name="industry" required>
@@ -82,19 +99,38 @@
 
       <div class="form-field">
         <label for="username">Username</label>
-        <input type="text" id="username" name="username"
-               placeholder="Choose a username for login" required autocomplete="username">
+        <input
+          type="text"
+          id="username"
+          name="username"
+          placeholder="Choose a username for login"
+          required
+          autocomplete="username"
+        >
       </div>
 
       <div class="form-field">
         <label for="group-leader-email">Group Leader Email Address</label>
-        <input type="email" id="group-leader-email" name="groupLeaderEmail" required autocomplete="email">
+        <input
+          type="email"
+          id="group-leader-email"
+          name="groupLeaderEmail"
+          required
+          autocomplete="email"
+        >
       </div>
 
       <div class="form-field password-toggle-container">
         <label for="password">Password</label>
         <div class="password-wrapper">
-          <input type="password" id="password" name="password" required autocomplete="new-password" minlength="6">
+          <input
+            type="password"
+            id="password"
+            name="password"
+            required
+            minlength="6"
+            autocomplete="new-password"
+          >
           <button type="button" class="toggle-password" aria-label="Toggle password visibility" onclick="togglePasswordVisibility()">
             <ion-icon id="toggleIcon" name="eye-outline"></ion-icon>
           </button>
@@ -103,7 +139,7 @@
       </div>
     </fieldset>
 
-    <!-- Billing Address (optional, but saved if provided) -->
+    <!-- Billing Address (optional) -->
     <fieldset>
       <legend>Billing Address</legend>
 
@@ -167,7 +203,7 @@
       <div class="individual-members-container">
         <h3>Individual Group Members</h3>
         <div id="members-grid" class="members-grid"></div>
-        <!-- Your leaderform.js should serialize entries to a hidden input named "members" -->
+        <!-- leaderform.js should serialize entries into a hidden input named "members" -->
       </div>
     </fieldset>
 
@@ -218,11 +254,16 @@
       <legend>Team Registration Code</legend>
       <div class="form-field">
         <label for="registration-code">Create a Registration Code</label>
-        <input type="text" id="registration-code" name="registration_code"
-               placeholder="Create a unique code for your team"
-               required pattern="[A-Za-z0-9]{8,}"
-               title="At least 8 characters, letters and numbers only"
-               autocomplete="off">
+        <input
+          type="text"
+          id="registration-code"
+          name="registration_code"
+          placeholder="Create a unique code for your team"
+          required
+          pattern="[A-Za-z0-9]{8,}"
+          title="At least 8 characters, letters and numbers only"
+          autocomplete="off"
+        >
         <small class="form-instructions">
           <strong>Rules:</strong> At least 8 characters, letters and numbers only. No special characters. Keep it secure.<br>
           <strong>Examples:</strong> TechTeam2025, ZenGrowth45
@@ -288,9 +329,7 @@
     const seatsInput    = document.getElementById('computedSeats');
     const subtotalInput = document.getElementById('computedSubtotalCents');
 
-    function formatDollars(cents) {
-      return (cents / 100).toFixed(2);
-    }
+    function formatDollars(cents) { return (cents / 100).toFixed(2); }
 
     function updateSummary() {
       const memberCount = parseInt(select && select.value ? select.value : '0', 10) || 0;
@@ -311,5 +350,6 @@
     document.addEventListener('DOMContentLoaded', updateSummary);
   })();
 </script>
+
 
 

@@ -270,9 +270,7 @@
     const seatsInput    = document.getElementById('computedSeats');
     const subtotalInput = document.getElementById('computedSubtotalCents');
 
-    function formatDollars(cents) {
-      return (cents / 100).toFixed(2);
-    }
+    function formatDollars(cents) { return (cents / 100).toFixed(2); }
 
     function updateSummary() {
       const memberCount = parseInt(select && select.value ? select.value : '0', 10) || 0;
@@ -293,6 +291,7 @@
     document.addEventListener('DOMContentLoaded', updateSummary);
   })();
 </script>
+
 
 
 
