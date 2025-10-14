@@ -43,7 +43,8 @@
         <input type="text" id="organization" name="organization" value="{{user.organization}}" autocomplete="organization">
       </div>
 
-      <div class="form-field">
+      <!-- CHANGED: Use form-field-industry so the select gets full-width/custom styling -->
+      <div class="form-field-industry">
         <label for="industry">Industry</label>
         <select id="industry" name="industry" required>
           <option value="">Please select your industry</option>
@@ -191,7 +192,6 @@
         </small>
       </div>
 
-      <!-- Optional: expose computed values to the server -->
       <input type="hidden" name="computedSeats" id="computedSeats" value="1">
       <input type="hidden" name="computedSubtotalCents" id="computedSubtotalCents" value="1700">
     </fieldset>
@@ -238,11 +238,9 @@
         <p>If your organization prefers to be invoiced, <a href="mailto:info@twennie.com">contact Twennie</a>.</p>
       </div>
 
-      <!-- Hidden Submission Info -->
       <input type="hidden" name="redirectTarget" value="payment">
     </fieldset>
 
-    <!-- Submit -->
     <div class="form-actions">
       <button type="submit" class="make-member-button">make me a Twennie group leader</button>
     </div>
