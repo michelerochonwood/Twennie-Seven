@@ -10,8 +10,8 @@ const GroupProfile = require('../models/profile_models/group_profile');
 const { validateLeaderData } = require('../utils/validateLeader');
 const { validateGroupMemberData } = require('../utils/validateGroupMember');
 
-// NOTE: In production, set BASE_URL=https://www.twennie.com (Option A you chose)
-const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
+// NOTE: In production, set BASE_URL=https://www.twennie.com
+const ENV_BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 
 // Whitelist fields set directly on Leader
 const ALLOWED_LEADER_FIELDS = [
@@ -33,12 +33,23 @@ const pick = (obj, keys) =>
 function coerceMembers(raw) {
   if (!raw) return [];
   if (Array.isArray(raw)) return raw;
+  // Handles hidden input stringified JSON
   try {
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed : [];
   } catch {
     return [];
   }
+}
+
+// Prefer configured BASE_URL; otherwise derive from request (proxy aware)
+function getBaseUrl(req) {
+  if (ENV_BASE_URL && /^https?:\/\//.test(ENV_BASE_URL)) {
+    return ENV_BASE_URL.replace(/\/$/, '');
+  }
+  const proto = (req.headers['x-forwarded-proto'] || req.protocol || 'https');
+  const host = (req.headers['x-forwarded-host'] || req.get('host'));
+  return `${proto}://${host}`;
 }
 
 module.exports = {
@@ -52,7 +63,7 @@ module.exports = {
         csrfToken
       });
     } catch (err) {
-      console.error('Error rendering leader form:', err.message);
+      console.error('Error rendering leader form:', err);
       res.status(500).render('member_form_views/error', {
         layout: 'mainlayout',
         title: 'Error',
@@ -74,7 +85,7 @@ module.exports = {
         groupLeaderEmail,
         password,
 
-        // Optional address fields (may be undefined if not shown/filled)
+        // Optional address fields
         line1, line2, city, province, postalCode, country,
 
         groupSize,             // dropdown count of members (excludes leader)
@@ -107,7 +118,25 @@ module.exports = {
         billingAddress: { line1, line2, city, province, postalCode, country }
       });
 
-      const savedLeader = await leader.save();
+      let savedLeader;
+      try {
+        savedLeader = await leader.save();
+      } catch (e) {
+        // Friendly duplicate-key message
+        if (e && e.code === 11000) {
+          const fields = Object.keys(e.keyPattern || {});
+          const msg = fields.length
+            ? `The value for ${fields.join(', ')} is already in use. Please choose another.`
+            : 'One or more fields must be unique and are already in use.';
+          return res.status(400).render('member_form_views/form_leader', {
+            layout: 'memberformlayout',
+            title: 'Leader Membership Form',
+            csrfToken: req.csrfToken ? req.csrfToken() : null,
+            errorMessage: msg
+          });
+        }
+        throw e;
+      }
       console.log('✅ Leader saved successfully:', savedLeader._id.toString());
 
       // 4) Create LeaderProfile (no initial topics)
@@ -182,9 +211,8 @@ module.exports = {
 
       // 7) Stripe payment (if requested)
       if (redirectTarget === 'payment') {
-        // Seats = leader (1) + actual members submitted
         const count = Array.isArray(memberList) ? memberList.length : 0;
-        const seats = 1 + count;
+        const seats = 1 + count; // leader + members
 
         // Sanity check against dropdown
         const groupSizeInt = parseInt(groupSize, 10);
@@ -209,7 +237,7 @@ module.exports = {
         savedLeader.stripeCustomerId = customer.id;
         await savedLeader.save();
 
-        // Create product & price (could be reused in prod)
+        // Create product & price (could be reused in prod; kept simple here)
         const product = await stripe.products.create({
           name: `Twennie Group Membership (${seats} seats)`
         });
@@ -222,6 +250,7 @@ module.exports = {
           tax_behavior: 'exclusive'
         });
 
+        const successBase = getBaseUrl(req); // prefer ENV_BASE_URL; fallback to request
         const session = await stripe.checkout.sessions.create({
           customer: customer.id,
           payment_method_types: ['card'],
@@ -232,8 +261,8 @@ module.exports = {
           // Let Checkout collect + save address & name to the Customer
           customer_update: { address: 'auto', name: 'auto' },
           // IMPORTANT: include session_id for your success handler
-          success_url: `${baseUrl}/member/payment/success?session_id={CHECKOUT_SESSION_ID}`,
-          cancel_url: `${baseUrl}/member/payment/cancel`
+          success_url: `${successBase}/member/payment/success?session_id={CHECKOUT_SESSION_ID}`,
+          cancel_url: `${successBase}/member/payment/cancel`
         });
 
         console.log(`✅ Stripe session created: ${session.id} | seats=${seats} amount=${unitAmount}`);
@@ -249,7 +278,20 @@ module.exports = {
         dashboardLink: '/dashboard/leader'
       });
     } catch (err) {
-      console.error('Error creating leader or group members:', err.message);
+      console.error('Error creating leader or group members:', err);
+      // Duplicate-key fallback (if thrown from deep save)
+      if (err && err.code === 11000) {
+        const fields = Object.keys(err.keyPattern || {});
+        const msg = fields.length
+          ? `The value for ${fields.join(', ')} is already in use. Please choose another.`
+          : 'One or more fields must be unique and are already in use.';
+        return res.status(400).render('member_form_views/form_leader', {
+          layout: 'memberformlayout',
+          title: 'Leader Membership Form',
+          csrfToken: req.csrfToken ? req.csrfToken() : null,
+          errorMessage: msg
+        });
+      }
       return res.status(500).render('member_form_views/error', {
         layout: 'mainlayout',
         title: 'Error',
@@ -283,7 +325,7 @@ module.exports = {
         csrfToken: req.csrfToken ? req.csrfToken() : null
       });
     } catch (err) {
-      console.error('Error rendering add group member form:', err.message);
+      console.error('Error rendering add group member form:', err);
       res.status(500).render('member_form_views/error', {
         layout: 'mainlayout',
         title: 'Error',
@@ -343,7 +385,7 @@ module.exports = {
 
       return res.redirect('/dashboard');
     } catch (err) {
-      console.error('Error adding group member:', err.message);
+      console.error('Error adding group member:', err);
       return res.status(500).render('member_form_views/error', {
         layout: 'mainlayout',
         title: 'Error',
@@ -364,8 +406,9 @@ module.exports = {
       }
       console.log('Update complete!');
     } catch (err) {
-      console.error('Error updating members:', err.message);
+      console.error('Error updating members:', err);
     }
   }
 };
+
 
