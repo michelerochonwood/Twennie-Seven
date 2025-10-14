@@ -1,53 +1,58 @@
 {{#*inline "title"}}Complete your Membership | Twennie{{/inline}}
 <div class="completegroupmemberform-container">
-    <h1 class="completegroupmemberform-title">complete your registration</h1>
+  <h1 class="completegroupmemberform-title">complete your registration</h1>
 
-    <form id="completegroupmembergroup-member-form" class="completegroupmembermembership-form" method="POST" action="/member/group/register">
-        {{#if csrfToken}}
-            <input type="hidden" name="_csrf" value="{{csrfToken}}">
-        {{/if}}
+  {{#if errorMessage}}
+    <div class="form-error-banner">
+      <p>{{errorMessage}}</p>
+    </div>
+  {{/if}}
 
-        <input type="hidden" name="groupId" value="{{memberInfo.groupId}}">
-        <input type="hidden" name="groupName" value="{{memberInfo.groupName}}">
-        
-        <div class="completegroupmemberform-section">
-            <div class="completegroupmemberform-field">
-                <label>Name</label>
-                <input type="text" name="name" value="{{memberInfo.name}}" readonly>
-            </div>
+  <form id="completegroupmember-form" class="completegroupmembermembership-form" method="POST" action="/member/group/register" novalidate>
+    {{#if csrfToken}}<input type="hidden" name="_csrf" value="{{csrfToken}}">{{/if}}
 
-            <div class="completegroupmemberform-field">
-                <label>Email</label>
-                <input type="email" name="email" value="{{memberInfo.email}}" readonly>
-            </div>
+    <!-- Required by controller -->
+    <input type="hidden" name="groupId" value="{{member.groupId}}">
+    <input type="hidden" name="email"   value="{{member.email}}">
 
-            <div class="completegroupmemberform-field">
-                <label for="username">Choose a Username*</label>
-                <input type="text" id="username" name="username" required>
-                <span class="help-text">This will be your login name.</span>
-            </div>
+    <div class="completegroupmemberform-section">
+      <div class="completegroupmemberform-field">
+        <label>Name</label>
+        <input type="text" name="name" value="{{member.name}}" readonly autocomplete="name">
+      </div>
 
-<div class="completegroupmemberform-field password-toggle-container">
-  <label for="password">Choose a Password*</label>
-  <div class="password-wrapper">
-    <input type="password" id="password" name="password" required minlength="6">
-    <span class="toggle-password" onclick="togglePasswordVisibility()">
-      <ion-icon id="toggleIcon" name="eye-outline"></ion-icon>
-    </span>
-  </div>
-  <span class="help-text">Minimum 6 characters.</span>
-</div>
+      <div class="completegroupmemberform-field">
+        <label>Email</label>
+        <input type="email" name="email_display" value="{{member.email}}" readonly autocomplete="email">
+      </div>
+
+      <div class="completegroupmemberform-field">
+        <label for="username">Choose a Username*</label>
+        <input type="text" id="username" name="username" required autocomplete="username" minlength="3">
+        <span class="help-text">This will be your login name.</span>
+      </div>
+
+      <div class="completegroupmemberform-field password-toggle-container">
+        <label for="password">Choose a Password*</label>
+        <div class="password-wrapper">
+          <input type="password" id="password" name="password" required minlength="6" autocomplete="new-password">
+          <button type="button" class="toggle-password" aria-label="Toggle password visibility" onclick="togglePasswordVisibility()">
+            <ion-icon id="toggleIcon" name="eye-outline"></ion-icon>
+          </button>
         </div>
+        <span class="help-text">Minimum 6 characters.</span>
+      </div>
+    </div>
 
-        <div class="completegroupmemberform-section">
-            <div class="completegroupmemberformagreement-box">
-                <input type="checkbox" id="agreement" name="agreement" required>
-                <label for="agreement">I agree to the group membership terms.</label>
-            </div>
-        </div>
+    <div class="completegroupmemberform-section">
+      <div class="completegroupmemberformagreement-box">
+        <input type="checkbox" id="agreement" name="agreement" required>
+        <label for="agreement">I agree to the group membership terms.</label>
+      </div>
+    </div>
 
-        <button type="submit" class="submit-button">complete registration</button>
-    </form>
+    <button type="submit" class="submit-button">complete registration</button>
+  </form>
 </div>
 
 <script>

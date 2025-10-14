@@ -6,23 +6,28 @@
   <section class="current-membership">
     <h2>your current membership</h2>
     <p><strong>membership type:</strong> {{user.membershipType}}</p>
-
     <p>Below are the membership options available to you. Choose an option to continue.</p>
   </section>
 
-  <section class="membership-buttons">    
-    <button class="membership-button" onclick="showForm('free')">free membership</button>
-    <button class="membership-button" onclick="showForm('individual')">paid membership</button>
-    <button class="membership-button" onclick="showForm('leader')">leader</button>
-    <button class="membership-button" onclick="showForm('group')">group member</button>
-    <button class="membership-button" onclick="showForm('cancel')">cancel membership</button>
+  <!-- Choice buttons -->
+  <section class="membership-buttons" role="tablist" aria-label="Change membership options">
+    <button type="button" class="membership-button" role="tab" aria-controls="free-form-section" onclick="showForm('free')">free membership</button>
+    <button type="button" class="membership-button" role="tab" aria-controls="individual-form-section" onclick="showForm('individual')">paid membership</button>
+    <button type="button" class="membership-button" role="tab" aria-controls="leader-form-section" onclick="showForm('leader')">leader</button>
+    <button type="button" class="membership-button" role="tab" aria-controls="group-form-section" onclick="showForm('group')">group member</button>
+    <button type="button" class="membership-button" role="tab" aria-controls="cancel-form-section" onclick="showForm('cancel')">cancel membership</button>
   </section>
 
-  <section id="individual-form-section" class="hidden">
-    {{> memberformpartials/form_individuals }}
+  <!-- Forms live region for screenreader updates -->
+  <div id="form-live-region" class="visually-hidden" aria-live="polite"></div>
+
+  <!-- Paid Individual -->
+  <section id="individual-form-section" class="hidden" role="tabpanel" aria-labelledby="individual">
+    {{> memberformpartials/form_individuals csrfToken=csrfToken }}
   </section>
 
-  <section id="group-form-section" class="hidden">
+  <!-- Group Member guidance -->
+  <section id="group-form-section" class="hidden" role="tabpanel" aria-labelledby="group">
     <div class="group-member-instructions">
       <h3>group membership instructions</h3>
       <p>Group memberships must be created by a group leader. If your leader has already registered your group, they will send you a link or registration code. You cannot join a group on your own from this page.</p>
@@ -30,32 +35,86 @@
     </div>
   </section>
 
-  <section id="leader-form-section" class="hidden">
-    {{> memberformpartials/form_leader }}
+  <!-- Leader -->
+  <section id="leader-form-section" class="hidden" role="tabpanel" aria-labelledby="leader">
+    {{> memberformpartials/form_leader csrfToken=csrfToken }}
   </section>
 
-  <section id="free-form-section" class="hidden">
-    {{> memberformpartials/free_individuals }}
+  <!-- Free Individual -->
+  <section id="free-form-section" class="hidden" role="tabpanel" aria-labelledby="free">
+    {{> memberformpartials/free_individuals csrfToken=csrfToken }}
   </section>
 
-  <section id="cancel-form-section" class="hidden">
-    <form action="/change_membership/cancel" method="POST" class="cancel-membership-form">
-      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+  <!-- Cancel membership -->
+  <section id="cancel-form-section" class="hidden" role="tabpanel" aria-labelledby="cancel">
+    <form action="/billing/cancel" method="POST" class="cancel-membership-form">
+      {{#if csrfToken}}<input type="hidden" name="_csrf" value="{{csrfToken}}">{{/if}}
+
       <h3 style="margin-top: 40px">We're sorry to see you go.</h3>
-      <p>Please let us know why you're cancelling (optional):</p>
-      <textarea name="reason" rows="4" placeholder="Your feedback helps us improve." style="width:75%; border-radius:8px; padding:10px;"></textarea>
-      <br>
+
+      <fieldset class="form-section" style="margin: 16px 0;">
+        <legend>cancellation options</legend>
+        <label style="display:block; margin-bottom:8px;">
+          <input type="radio" name="mode" value="period_end" checked>
+          Cancel at the end of the current billing period (recommended)
+        </label>
+        <label style="display:block;">
+          <input type="radio" name="mode" value="immediate">
+          Cancel immediately (access ends now)
+        </label>
+      </fieldset>
+
+      <div class="form-field" style="margin: 16px 0;">
+        <label for="cancel-reason">Optional: why are you cancelling?</label>
+        <textarea id="cancel-reason" name="reason" rows="4" placeholder="Your feedback helps us improve." style="width:75%; border-radius:8px; padding:10px;"></textarea>
+      </div>
+
       <button type="submit" class="make-member-button" style="background-color:#aa2e2e">confirm cancellation</button>
     </form>
   </section>
 </div>
 
 <script>
-  function showForm(type) {
+  (function () {
     const sections = ['individual', 'group', 'leader', 'free', 'cancel'];
-    sections.forEach(sec => {
-      document.getElementById(`${sec}-form-section`).classList.add('hidden');
+    const live = document.getElementById('form-live-region');
+
+    function setActiveButton(type) {
+      document.querySelectorAll('.membership-buttons [role="tab"]').forEach(btn => {
+        const controls = btn.getAttribute('aria-controls') || '';
+        const isActive = controls === `${type}-form-section`;
+        btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        btn.classList.toggle('is-active', isActive);
+      });
+    }
+
+    window.showForm = function (type) {
+      sections.forEach(sec => {
+        const el = document.getElementById(`${sec}-form-section`);
+        if (el) el.classList.add('hidden');
+      });
+      const active = document.getElementById(`${type}-form-section`);
+      if (active) {
+        active.classList.remove('hidden');
+        setActiveButton(type);
+        if (live) live.textContent = type.replace('-', ' ') + ' form shown';
+        // update hash for deep-linking
+        if (history.replaceState) history.replaceState(null, '', '#' + type);
+      }
+    };
+
+    // On load: honor hash (e.g., #leader), else default based on current membership
+    document.addEventListener('DOMContentLoaded', () => {
+      const hash = (location.hash || '').replace('#', '');
+      if (sections.includes(hash)) return showForm(hash);
+
+      // Default: show a likely path based on current membership
+      const currentType = (document.querySelector('.current-membership strong')?.textContent || '').trim();
+      if (currentType === 'leader') showForm('leader');
+      else if (currentType === 'member') showForm('individual');
+      else showForm('free');
     });
-    document.getElementById(`${type}-form-section`).classList.remove('hidden');
-  }
+  })();
 </script>
+
+

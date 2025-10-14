@@ -2,6 +2,42 @@
 
 <div class="success-container">
   <h1 class="registration-complete">membership updated!</h1>
-  <p>Your membership has been successfully updated, {{username}}.</p>
-  <a href="{{dashboardLink}}" class="dashboard-button">access my dashboard</a>
+
+  <p>Your membership has been successfully updated{{#if username}}, {{username}}{{/if}}.</p>
+
+  {{!-- Optional details if your route provides them --}}
+  {{#if newMembershipType}}
+    <p><strong>New membership:</strong> {{newMembershipType}}</p>
+  {{/if}}
+
+  {{#if accessLevel}}
+    <p><strong>Access level:</strong> {{accessLevel}}</p>
+  {{/if}}
+
+  {{#if seats}}
+    <p><strong>Seats billed:</strong> {{seats}}</p>
+  {{/if}}
+
+  {{#if effectiveDate}}
+    <p><strong>Effective:</strong> {{effectiveDate}}</p>
+  {{/if}}
+
+  <div class="button-row" style="display:flex; gap:10px; flex-wrap:wrap; margin-top:16px;">
+    <a href="{{#if dashboardLink}}{{dashboardLink}}{{else}}/dashboard{{/if}}" class="dashboard-button">
+      access my dashboard
+    </a>
+
+    {{#if portalUrl}}
+      <a href="{{portalUrl}}" class="dashboard-button" rel="noopener">open billing portal</a>
+    {{/if}}
+
+    <a href="/" class="dashboard-button button-secondary">return to homepage</a>
+  </div>
+
+  <p class="fineprint" style="margin-top:12px; font-size:0.95rem; opacity:0.85;">
+    Need help? Email
+    <a href="mailto:{{#if supportEmail}}{{supportEmail}}{{else}}info@twennie.com{{/if}}">
+      {{#if supportEmail}}{{supportEmail}}{{else}}info@twennie.com{{/if}}
+    </a>.
+  </p>
 </div>

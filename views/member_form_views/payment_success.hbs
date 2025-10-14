@@ -1,9 +1,29 @@
-{{#*inline "title"}}Payment Successful! | Twennie{{/inline}}
+{{#*inline "title"}}Payment Successful | Twennie{{/inline}}
 
 <div class="success-container">
-  <h1 class="registration-complete">payment successful!</h1>
-  <p>Welcome to Twennie, {{username}}. Your membership is now active.</p>
-  <p>You can now access all Twennie resources available to paid members.</p>
+  <h1 class="registration-complete">payment successful</h1>
 
-  <a href="{{dashboardLink}}" class="dashboard-button">access my dashboard</a>
+  <p>Thanks{{#if username}}, {{username}}{{/if}}! Your subscription is active and your account is ready.</p>
+
+  {{#if subscriptionId}}
+    <p><strong>Subscription ID:</strong> <code>{{subscriptionId}}</code></p>
+  {{/if}}
+
+  <div class="success-actions" style="display:flex; gap:10px; flex-wrap:wrap; margin:16px 0;">
+    <a href="{{#if dashboardLink}}{{dashboardLink}}{{else}}/dashboard{{/if}}" class="dashboard-button">go to your dashboard</a>
+
+    {{!-- Optional: show if you add a billing portal route that injects portalUrl --}}
+    {{#if portalUrl}}
+      <a href="{{portalUrl}}" class="dashboard-button" rel="noopener">open billing portal</a>
+    {{/if}}
+
+    <a href="/" class="dashboard-button button-secondary">return to homepage</a>
+  </div>
+
+  <p class="fineprint" style="margin-top:12px; font-size:0.95rem; opacity:0.85;">
+    A receipt will arrive at the email you used during checkout. If you need any help,
+    email <a href="mailto:{{#if supportEmail}}{{supportEmail}}{{else}}info@twennie.com{{/if}}">
+      {{#if supportEmail}}{{supportEmail}}{{else}}info@twennie.com{{/if}}
+    </a>.
+  </p>
 </div>

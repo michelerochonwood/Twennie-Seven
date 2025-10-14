@@ -371,6 +371,7 @@ app.use('/change_membership', require('./routes/changemembershiproutes'));
 app.use('/badges', require('./routes/badgesroutes'));
 app.use('/dashboard', require('./routes/preferenceroutes'));
 app.use('/ui', require('./routes/uiroutes'));
+app.use('/', require('./routes/billingroutes'));
 
 // ---- Error handlers ----
 app.use((err, req, res, next) => {

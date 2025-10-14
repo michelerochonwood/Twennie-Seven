@@ -1,146 +1,263 @@
 {{#*inline "title"}}Leader Membership Form | Twennie{{/inline}}
 
-<form id="leader-form" action="/leader/form" method="POST" class="membership-form">
-  {{#if csrfToken}}
-    <input type="hidden" name="_csrf" value="{{csrfToken}}">
-  {{/if}}
-      <!-- Centered Image -->
-    <div style="text-align: center; margin-bottom: 1.5rem;">
-      <img src="/images/bluey_3.png" alt="Leader Membership" style="max-height: 200px;">
-    </div>
+<form id="leader-form" action="/leader/form" method="POST" class="membership-form" novalidate>
+  {{#if csrfToken}}<input type="hidden" name="_csrf" value="{{csrfToken}}">{{/if}}
+
+  <!-- Hero -->
+  <div style="text-align: center; margin-bottom: 1.5rem;">
+    <img src="/images/bluey_3.png" alt="Leader Membership" style="max-height: 200px;">
+  </div>
 
   <div class="leader-form-container">
     <h1 class="form-title">group leader membership form</h1>
 
-    <!-- Group Information -->
-    <div class="form-field">
-      <label for="group-name">Group Name</label>
-      <input type="text" id="group-name" name="groupName" placeholder="Hint: you'll want a fun name, like the Marshmallow Spartans or the Zen Mechanics." required>
-    </div>
-
-    <div class="form-field">
-      <label for="group-leader-name">Group Leader Name</label>
-      <input type="text" id="group-leader-name" name="groupLeaderName" placeholder="Your full name, or the name by which your team knows you, first and last." required>
-    </div>
-
-    <div class="form-field">
-      <label for="professionalTitle">Professional Title</label>
-      <input type="text" id="professional-title" name="professionalTitle" placeholder="This should be the title by which your organization knows you." required>
-    </div>
-
-    <div class="form-field">
-      <label for="organization">Organization</label>
-      <input type="text" id="organization" name="organization" placeholder="If you prefer not to name your organization, write 'anonymous'.">
-    </div>
-
-    <!-- Industry field -->
-    <div class="form-field">
-      <label for="industry">Industry</label>
-      <select id="industry" name="industry" required>
-        <option value="">Please select your industry</option>
-        <option value="Engineering">Engineering</option>
-        <option value="Architecture">Architecture</option>
-        <option value="Project Management">Project Management</option>
-        <option value="Information Technology(IT)">Information Technology(IT)</option>
-        <option value="Web Design">Web Design</option>
-        <option value="Construction">Construction</option>
-        <option value="Technology">Technology</option>
-        <option value="AI and Robotics">AI and Robotics</option>
-        <option value="Social Media/Digital Advertising">Social Media/Digital Advertising</option>
-        <option value="Community Planning/Landscape Architecture">Community Planning/Landscape Architecture</option>
-        <option value="Land Development">Land Development</option>
-        <option value="Telecommunications">Telecommunications</option>
-        <option value="E-Commerce">E-Commerce</option>
-        <option value="Cybersecurity">Cybersecurity</option>
-        <option value="Edtech">Edtech</option>
-        <option value="Energy and Utilities">Energy and Utilities</option>
-        <option value="Manufacturing">Manufacturing</option>
-        <option value="Other">Other</option>
-      </select>
-    </div>
-
-    <div class="form-field">
-      <label for="username">Username</label>
-      <input type="text" id="username" name="username" placeholder="Choose a username for login" required>
-    </div>
-
-    <div class="form-field">
-      <label for="group-leader-email">Group Leader Email Address</label>
-      <input type="text" id="group-leader-email" name="groupLeaderEmail" required>
-    </div>
-
-<div class="form-field password-toggle-container">
-  <label for="password">Password</label>
-  <div class="password-wrapper">
-    <input type="password" id="password" name="password" required>
-    <span class="toggle-password" onclick="togglePasswordVisibility()">
-      <ion-icon id="toggleIcon" name="eye-outline"></ion-icon>
-    </span>
-  </div>
-</div>
-<p style="width: 50%; text-align: center;">Group leaders must start memberships for all members of their group. Select the number of members and enter their names and email addresses. Each of your group members will then log in and complete their registration using the unique registration code you've given them.</p>
-    <div class="leader-form-field">
-      <label for="group-size">Number of Members</label>
-      <select id="group-size" name="groupSize" required>
-        <option value="">Select group size</option>
-        <option value="2">2 members</option>
-        <option value="3">3 members</option>
-        <option value="4">4 members</option>
-        <option value="5">5 members</option>
-        <option value="6">6 members</option>
-        <option value="7">7 members</option>
-        <option value="8">8 members</option>
-        <option value="9">9 members</option>
-        <option value="10">10 members</option>
-      </select>
-    </div>
-
-    <!-- Individual Member Details -->
-    <div class="individual-members-container">
-      <h3>Individual Group Members</h3>
-      <div id="members-grid" class="members-grid">
-        <!-- Member fields will be dynamically added by JS -->
+    {{#if errorMessage}}
+      <div class="form-error-banner">
+        <p>{{errorMessage}}</p>
       </div>
-    </div>
+    {{/if}}
 
-    <div class="form-field">
-      <label for="registration-code">Create a Registration Code</label>
-      <input type="text" id="registration-code" name="registration_code" placeholder="Create a unique code for your team" required>
+    <!-- Group Information -->
+    <fieldset class="form-section">
+      <legend>Group Information</legend>
+
+      <div class="form-field">
+        <label for="group-name">Group Name</label>
+        <input type="text" id="group-name" name="groupName"
+               placeholder="Hint: you'll want a fun name, like the Marshmallow Spartans or the Zen Mechanics."
+               required autocomplete="organization">
+      </div>
+
+      <div class="form-field">
+        <label for="group-leader-name">Group Leader Name</label>
+        <input type="text" id="group-leader-name" name="groupLeaderName"
+               placeholder="Your full name, or the name by which your team knows you, first and last."
+               required autocomplete="name">
+      </div>
+
+      <div class="form-field">
+        <label for="professional-title">Professional Title</label>
+        <input type="text" id="professional-title" name="professionalTitle"
+               placeholder="This should be the title by which your organization knows you."
+               required autocomplete="organization-title">
+      </div>
+
+      <div class="form-field">
+        <label for="organization">Organization</label>
+        <input type="text" id="organization" name="organization"
+               placeholder="If you prefer not to name your organization, write 'anonymous'."
+               autocomplete="organization">
+      </div>
+
+      <div class="form-field">
+        <label for="industry">Industry</label>
+        <select id="industry" name="industry" required>
+          <option value="">Please select your industry</option>
+          <option value="Engineering">Engineering</option>
+          <option value="Architecture">Architecture</option>
+          <option value="Project Management">Project Management</option>
+          <option value="Information Technology(IT)">Information Technology(IT)</option>
+          <option value="Web Design">Web Design</option>
+          <option value="Construction">Construction</option>
+          <option value="Technology">Technology</option>
+          <option value="AI and Robotics">AI and Robotics</option>
+          <option value="Social Media/Digital Advertising">Social Media/Digital Advertising</option>
+          <option value="Community Planning/Landscape Architecture">Community Planning/Landscape Architecture</option>
+          <option value="Land Development">Land Development</option>
+          <option value="Telecommunications">Telecommunications</option>
+          <option value="E-Commerce">E-Commerce</option>
+          <option value="Cybersecurity">Cybersecurity</option>
+          <option value="Edtech">Edtech</option>
+          <option value="Energy and Utilities">Energy and Utilities</option>
+          <option value="Manufacturing">Manufacturing</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+    </fieldset>
+
+    <!-- Account -->
+    <fieldset class="form-section">
+      <legend>Leader Account</legend>
+
+      <div class="form-field">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username"
+               placeholder="Choose a username for login" required autocomplete="username">
+      </div>
+
+      <div class="form-field">
+        <label for="group-leader-email">Group Leader Email Address</label>
+        <input type="email" id="group-leader-email" name="groupLeaderEmail" required autocomplete="email">
+      </div>
+
+      <div class="form-field password-toggle-container">
+        <label for="password">Password</label>
+        <div class="password-wrapper">
+          <input type="password" id="password" name="password" required autocomplete="new-password" minlength="6">
+          <button type="button" class="toggle-password" aria-label="Toggle password visibility" onclick="togglePasswordVisibility()">
+            <ion-icon id="toggleIcon" name="eye-outline"></ion-icon>
+          </button>
+        </div>
+        <small class="form-instructions">Minimum 6 characters.</small>
+      </div>
+    </fieldset>
+
+    <!-- Billing Address (optional, but saved if provided) -->
+    <fieldset class="form-section">
+      <legend>Billing Address</legend>
+
+      <div class="form-field">
+        <label for="line1">Street Address</label>
+        <input type="text" id="line1" name="line1" autocomplete="address-line1" placeholder="123 Main St">
+      </div>
+
+      <div class="form-field">
+        <label for="line2">Apartment / Suite (optional)</label>
+        <input type="text" id="line2" name="line2" autocomplete="address-line2" placeholder="Unit 5B">
+      </div>
+
+      <div class="form-field">
+        <label for="city">City</label>
+        <input type="text" id="city" name="city" autocomplete="address-level2">
+      </div>
+
+      <div class="form-field">
+        <label for="province">Province / State</label>
+        <input type="text" id="province" name="province" autocomplete="address-level1" placeholder="ON">
+      </div>
+
+      <div class="form-field">
+        <label for="postalCode">Postal Code</label>
+        <input type="text" id="postalCode" name="postalCode" autocomplete="postal-code" placeholder="A1A 1A1">
+      </div>
+
+      <div class="form-field">
+        <label for="country">Country</label>
+        <select id="country" name="country" autocomplete="country">
+          <option value="CA" selected>Canada</option>
+          <option value="US">United States</option>
+        </select>
+      </div>
+
       <small class="form-instructions">
-        <strong>How to Create a Registration Code:</strong><br>
-        - Must be <strong>at least 8 characters</strong> long.<br>
-        - Use <strong>letters (A-Z, a-z) and numbers (0-9)</strong> only.<br>
-        - <strong>No special characters</strong> (e.g., @, $, %, !).<br>
-        - Your team will use this code to register.<br>
-        - <strong>Keep it secure</strong>—only share it with trusted team members.<br><br>
-        <strong>Examples:</strong> "TechTeam2024", "ZenGrowth45", "BuildStronger87".
+        At checkout, you'll confirm billing details. Stripe will securely save the final address to your account.
       </small>
+    </fieldset>
+
+    <!-- Group Size & Members -->
+    <fieldset class="form-section">
+      <legend>Group Members</legend>
+
+      <p class="form-note" style="text-align:center; max-width:640px; margin: 0 auto 1rem;">
+        Group leaders must start memberships for all members of their group. Select the number of members and enter their names and email addresses.
+      </p>
+
+      <div class="leader-form-field">
+        <label for="group-size">Number of Members (excluding you)</label>
+        <select id="group-size" name="groupSize" required>
+          <option value="">Select group size</option>
+          {{#each [2,3,4,5,6,7,8,9,10]}}
+            <option value="{{this}}">{{this}} members</option>
+          {{/each}}
+        </select>
+        <small class="form-instructions">You’ll be billed for your seat + your members.</small>
+      </div>
+
+      <div class="individual-members-container">
+        <h3>Individual Group Members</h3>
+        <div id="members-grid" class="members-grid"></div>
+        <!-- Your leaderform.js should serialize entries to a hidden input named "members" -->
+      </div>
+    </fieldset>
+
+    <!-- Billing Seats Summary -->
+    <fieldset class="form-section" id="billing-summary-section" aria-live="polite">
+      <legend>Billing seats</legend>
+
+      <div class="billing-summary">
+        <div class="billing-row">
+          <span>Leader seat</span>
+          <strong><span id="billing-leader-seats">1</span></strong>
+        </div>
+
+        <div class="billing-row">
+          <span>Member seats</span>
+          <strong><span id="billing-member-seats">0</span></strong>
+        </div>
+
+        <hr class="billing-divider">
+
+        <div class="billing-row billing-total">
+          <span>Total seats billed</span>
+          <strong><span id="billing-total-seats">1</span></strong>
+        </div>
+
+        <div class="billing-row">
+          <span>Price per seat</span>
+          <strong>$<span id="billing-price-per-seat">17.00</span>/month</strong>
+        </div>
+
+        <div class="billing-row">
+          <span>Subtotal (before tax)</span>
+          <strong>$<span id="billing-subtotal">17.00</span> CAD / month</strong>
+        </div>
+
+        <small class="form-instructions">
+          Taxes are calculated at checkout. The address you enter there will be saved to your account.
+        </small>
+      </div>
+
+      <!-- Optional: expose computed values to the server -->
+      <input type="hidden" name="computedSeats" id="computedSeats" value="1">
+      <input type="hidden" name="computedSubtotalCents" id="computedSubtotalCents" value="1700">
+    </fieldset>
+
+    <!-- Registration Code -->
+    <fieldset class="form-section">
+      <legend>Team Registration Code</legend>
+      <div class="form-field">
+        <label for="registration-code">Create a Registration Code</label>
+        <input type="text" id="registration-code" name="registration_code"
+               placeholder="Create a unique code for your team"
+               required pattern="[A-Za-z0-9]{8,}"
+               title="At least 8 characters, letters and numbers only"
+               autocomplete="off">
+        <small class="form-instructions">
+          <strong>Rules:</strong> At least 8 characters, letters and numbers only. No special characters. Keep it secure.<br>
+          <strong>Examples:</strong> TechTeam2025, ZenGrowth45
+        </small>
+      </div>
+    </fieldset>
+
+    <!-- Agreement -->
+    <fieldset class="form-section">
+      <legend>Agreement</legend>
+      <div class="form-toggle">
+        <label for="group-agreement-toggle" class="form-toggle-label">
+          <input type="checkbox" id="group-agreement-toggle" name="group_agreement" value="true" required>
+          I agree to fulfill the responsibilities of a group leader according to the Twennie guidelines and our group agreement.
+        </label>
+      </div>
+    </fieldset>
+
+    <!-- Payment -->
+    <fieldset class="form-section">
+      <legend>Payment</legend>
+      <div class="form-field" id="group-payment-placeholder">
+        <p><strong>Payment Reminder:</strong> After submit, you’ll be redirected to a secure checkout page to start your group subscription. Taxes are calculated automatically.</p>
+        <p>If your organization prefers to be invoiced, please <a href="mailto:info@twennie.com">contact Twennie</a> first to arrange billing.</p>
+      </div>
+
+      <!-- Hidden Submission Info -->
+      <input type="hidden" name="redirectTarget" value="payment">
+    </fieldset>
+
+    <!-- Submit -->
+    <div class="form-actions">
+      <button type="submit" class="make-member-button">make me a Twennie group leader</button>
     </div>
 
-    <!-- Group Agreement -->
-    <div class="form-toggle">
-      <label for="group-agreement-toggle" class="form-toggle-label">
-        <input type="checkbox" id="group-agreement-toggle" name="group_agreement" value="true" required>
-        I agree to fulfill the responsibilities of a group leader according to the Twennie guidelines and our group agreement.
-      </label>
-    </div>
-
-    <!-- Payment Note -->
-    <div class="form-field" id="group-payment-placeholder">
-      <p><strong>Payment Reminder:</strong> Once you submit this form, you’ll be redirected to a placeholder page for payment. Your payment will cover <strong>all registered group members</strong>.</p>
-      <p>If your organization prefers to be invoiced, please <a href="mailto:info@twennie.com">contact Twennie</a> before registering to arrange billing.</p>
-    </div>
-
-    <!-- Hidden Submission Info -->
-    <input type="hidden" name="accessLevel" value="paid_leader">
-    <input type="hidden" name="redirectTarget" value="payment">
-
-    <!-- Submit Button -->
-    <button type="submit" class="make-member-button">
-      make me a Twennie group leader
-    </button>
-
-    <script src="https://www.twennie.com/javascript/leaderform/leaderform.js"></script>
+    <script src="https://www.twennie.com/javascript/leaderform/leaderform.js" defer></script>
   </div>
 </form>
 
@@ -156,4 +273,41 @@
       icon.name = "eye-outline";
     }
   }
+
+  (function () {
+    const PRICE_PER_SEAT_CENTS = 1700; // $17 CAD
+    const select = document.getElementById('group-size');
+
+    const leaderSeatsEl = document.getElementById('billing-leader-seats');
+    const memberSeatsEl = document.getElementById('billing-member-seats');
+    const totalSeatsEl  = document.getElementById('billing-total-seats');
+    const priceSeatEl   = document.getElementById('billing-price-per-seat');
+    const subtotalEl    = document.getElementById('billing-subtotal');
+
+    const seatsInput    = document.getElementById('computedSeats');
+    const subtotalInput = document.getElementById('computedSubtotalCents');
+
+    function formatDollars(cents) {
+      return (cents / 100).toFixed(2);
+    }
+
+    function updateSummary() {
+      const memberCount = parseInt(select && select.value ? select.value : '0', 10) || 0;
+      const seats = 1 + memberCount;
+      const subtotalCents = seats * PRICE_PER_SEAT_CENTS;
+
+      leaderSeatsEl.textContent = '1';
+      memberSeatsEl.textContent = String(memberCount);
+      totalSeatsEl.textContent  = String(seats);
+      priceSeatEl.textContent   = formatDollars(PRICE_PER_SEAT_CENTS);
+      subtotalEl.textContent    = formatDollars(subtotalCents);
+
+      seatsInput.value = String(seats);
+      subtotalInput.value = String(subtotalCents);
+    }
+
+    if (select) select.addEventListener('change', updateSummary);
+    document.addEventListener('DOMContentLoaded', updateSummary);
+  })();
 </script>
+

@@ -1,12 +1,9 @@
 {{#*inline "title"}}Free Membership Form | Twennie{{/inline}}
 
-<form id="member-form" action="/member/form" method="POST" class="membership-form">
-  <input type="hidden" name="_csrf" value="{{csrfToken}}">
-  <input type="hidden" name="accessLevel" value="free_individual">
-  <input type="hidden" name="redirectTarget" value="form">
+<form id="member-form" action="/member/form" method="POST" class="membership-form" novalidate>
+  {{#if csrfToken}}<input type="hidden" name="_csrf" value="{{csrfToken}}">{{/if}}
 
   <div class="individual-form-container">
-
     <!-- Centered Image -->
     <div style="text-align: center; margin-bottom: 1.5rem;">
       <img src="/images/freebluey.png" alt="Free Membership" style="max-height: 200px;">
@@ -14,31 +11,33 @@
 
     <h1 class="form-title">free membership form</h1>
 
+    <!-- Access level -->
     <div class="form-field-access-level">
-  <label for="accessLevel">Choose your membership type</label>
-  <select id="accessLevel" name="accessLevel" required onchange="handleAccessLevelChange(this.value)">
-    <option value="">Please select an access level</option>
-    <option value="free_individual">Free Member</option>
-    <option value="contributor_individual">Contributor Member</option>
-  </select>
-</div>
+      <label for="accessLevel">Choose your membership type</label>
+      <select id="accessLevel" name="accessLevel" required>
+        <option value="">Please select an access level</option>
+        <option value="free_individual" selected>Free Member</option>
+        <option value="contributor_individual">Contributor Member</option>
+      </select>
+    </div>
 
-    <!-- EXISTING FIELDS -->
+    <!-- Identity -->
     <div class="form-field">
       <label for="name">Full Name</label>
-      <input type="text" id="name" name="name" required>
+      <input type="text" id="name" name="name" required autocomplete="name">
     </div>
 
     <div class="form-field">
       <label for="professionalTitle">Professional Title</label>
-      <input type="text" id="professionalTitle" name="professionalTitle" required>
+      <input type="text" id="professionalTitle" name="professionalTitle" required autocomplete="organization-title">
     </div>
 
     <div class="form-field">
       <label for="organization">Organization (optional)</label>
-      <input type="text" id="organization" name="organization">
+      <input type="text" id="organization" name="organization" autocomplete="organization">
     </div>
 
+    <!-- Industry -->
     <div class="form-field-industry">
       <label for="industry">Industry</label>
       <select id="industry" name="industry" required>
@@ -62,25 +61,27 @@
       </select>
     </div>
 
+    <!-- Account -->
     <div class="form-field">
-      <label for="username">Username (your first name, how you prefer to be addressed on twennie.com)</label>
-      <input type="text" name="username" id="username" required>
+      <label for="username">Username (how you prefer to be addressed on twennie.com)</label>
+      <input type="text" name="username" id="username" required autocomplete="username" minlength="3">
       <span id="username-message"></span>
     </div>
 
     <div class="form-field">
       <label for="email">Email</label>
-      <input type="email" id="email" name="email" required>
+      <input type="email" id="email" name="email" required autocomplete="email">
     </div>
 
     <div class="form-field password-toggle-container">
       <label for="password">Password</label>
       <div class="password-wrapper">
-        <input type="password" id="password" name="password" required>
-        <span class="toggle-password" onclick="togglePasswordVisibility()">
+        <input type="password" id="password" name="password" required minlength="6" autocomplete="new-password">
+        <button type="button" class="toggle-password" aria-label="Toggle password visibility" onclick="togglePasswordVisibility()">
           <ion-icon id="toggleIcon" name="eye-outline"></ion-icon>
-        </span>
+        </button>
       </div>
+      <small class="form-instructions">Minimum 6 characters.</small>
     </div>
 
     <!-- Submit -->
@@ -104,24 +105,28 @@
   }
 
   document.querySelector('#username').addEventListener('blur', async function () {
-    const username = this.value;
-    const res = await fetch(`/check-username?username=${encodeURIComponent(username)}`);
-    const data = await res.json();
-    const msg = document.querySelector('#username-message');
-    if (!data.available) {
-      msg.textContent = 'That username is already taken. Try something unique like Brian-Warrior1.';
-      msg.style.color = 'red';
-    } else {
-      msg.textContent = 'Username is available!';
-      msg.style.color = 'green';
+    const username = this.value.trim();
+    if (!username) return;
+
+    try {
+      const res = await fetch(`/member/check-username?username=${encodeURIComponent(username)}`);
+      const data = await res.json();
+      const msg = document.querySelector('#username-message');
+      if (!data.available) {
+        msg.textContent = 'That username is already taken. Try something unique like Brian-Warrior1.';
+        msg.style.color = 'red';
+      } else {
+        msg.textContent = 'Username is available!';
+        msg.style.color = 'green';
+      }
+    } catch (_) {
+      // silent fail on network errors
     }
   });
 </script>
 
 <style>
-  .hidden {
-    display: none;
-  }
+  .hidden { display: none; }
 </style>
 
 

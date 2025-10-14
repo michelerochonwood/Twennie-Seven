@@ -1,8 +1,13 @@
 {{#*inline "title"}}Registered! | Twennie{{/inline}}
 
 <div class="success-container">
-    <h1 class="registration-complete">registration complete!</h1>
-    <p>Welcome to Twennie, {{username}}!</p>
-<a href="{{dashboardLink}}" class="dashboard-button">access my dashboard</a>
+  <h1 class="registration-complete">registration complete!</h1>
+  <p>Welcome to Twennie{{#if username}}, {{username}}{{/if}}!</p>
 
+  <div class="button-row" style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
+    <a href="{{#if dashboardLink}}{{dashboardLink}}{{else}}/dashboard{{/if}}" class="dashboard-button">
+      access my dashboard
+    </a>
+    <a href="/" class="dashboard-button button-secondary">return to homepage</a>
+  </div>
 </div>
