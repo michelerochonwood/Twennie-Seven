@@ -18,7 +18,7 @@
     {{/if}}
 
     <!-- Group Information -->
-    <fieldset class="form-section">
+    <fieldset>
       <legend>Group Information</legend>
 
       <div class="form-field">
@@ -77,7 +77,7 @@
     </fieldset>
 
     <!-- Account -->
-    <fieldset class="form-section">
+    <fieldset>
       <legend>Leader Account</legend>
 
       <div class="form-field">
@@ -104,7 +104,7 @@
     </fieldset>
 
     <!-- Billing Address (optional, but saved if provided) -->
-    <fieldset class="form-section">
+    <fieldset>
       <legend>Billing Address</legend>
 
       <div class="form-field">
@@ -146,7 +146,7 @@
     </fieldset>
 
     <!-- Group Size & Members -->
-    <fieldset class="form-section">
+    <fieldset>
       <legend>Group Members</legend>
 
       <p class="form-note" style="text-align:center; max-width:640px; margin: 0 auto 1rem;">
@@ -172,7 +172,7 @@
     </fieldset>
 
     <!-- Billing Seats Summary -->
-    <fieldset class="form-section" id="billing-summary-section" aria-live="polite">
+    <fieldset id="billing-summary-section" aria-live="polite">
       <legend>Billing seats</legend>
 
       <div class="billing-summary">
@@ -214,7 +214,7 @@
     </fieldset>
 
     <!-- Registration Code -->
-    <fieldset class="form-section">
+    <fieldset>
       <legend>Team Registration Code</legend>
       <div class="form-field">
         <label for="registration-code">Create a Registration Code</label>
@@ -231,7 +231,7 @@
     </fieldset>
 
     <!-- Agreement -->
-    <fieldset class="form-section">
+    <fieldset>
       <legend>Agreement</legend>
       <div class="form-toggle">
         <label for="group-agreement-toggle" class="form-toggle-label">
@@ -242,7 +242,7 @@
     </fieldset>
 
     <!-- Payment -->
-    <fieldset class="form-section">
+    <fieldset>
       <legend>Payment</legend>
       <div class="form-field" id="group-payment-placeholder">
         <p><strong>Payment Reminder:</strong> After submit, you’ll be redirected to a secure checkout page to start your group subscription. Taxes are calculated automatically.</p>
@@ -311,4 +311,5 @@
     document.addEventListener('DOMContentLoaded', updateSummary);
   })();
 </script>
+
 

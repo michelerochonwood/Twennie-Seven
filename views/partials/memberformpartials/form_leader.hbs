@@ -1,9 +1,7 @@
 {{#*inline "title"}}Leader Membership Form | Twennie{{/inline}}
 
 <form id="leader-form" action="/change_membership/leader" method="POST" class="membership-form" novalidate>
-  {{#if csrfToken}}
-    <input type="hidden" name="_csrf" value="{{csrfToken}}">
-  {{/if}}
+  {{#if csrfToken}}<input type="hidden" name="_csrf" value="{{csrfToken}}">{{/if}}
 
   <!-- Brand / Hero -->
   <div style="text-align: center; margin-bottom: 1.5rem;">
@@ -14,13 +12,11 @@
     <h1 class="form-title">group leader membership form</h1>
 
     {{#if errorMessage}}
-      <div class="form-error-banner">
-        <p>{{errorMessage}}</p>
-      </div>
+      <div class="form-error-banner"><p>{{errorMessage}}</p></div>
     {{/if}}
 
     <!-- Group Info -->
-    <fieldset class="form-section">
+    <fieldset>
       <legend>Group Information</legend>
 
       <div class="form-field">
@@ -43,7 +39,7 @@
         <input type="text" id="organization" name="organization" value="{{user.organization}}" autocomplete="organization">
       </div>
 
-      <!-- CHANGED: Use form-field-industry so the select gets full-width/custom styling -->
+      <!-- Full-width/custom select styling -->
       <div class="form-field-industry">
         <label for="industry">Industry</label>
         <select id="industry" name="industry" required>
@@ -62,7 +58,7 @@
     </fieldset>
 
     <!-- Account -->
-    <fieldset class="form-section">
+    <fieldset>
       <legend>Leader Account</legend>
 
       <div class="form-field">
@@ -87,8 +83,8 @@
       </div>
     </fieldset>
 
-    <!-- Billing Address (optional, but stored if provided) -->
-    <fieldset class="form-section">
+    <!-- Billing Address (optional, stored if provided) -->
+    <fieldset>
       <legend>Billing Address</legend>
 
       <div class="form-field">
@@ -130,7 +126,7 @@
     </fieldset>
 
     <!-- Group Size & Members -->
-    <fieldset class="form-section">
+    <fieldset>
       <legend>Group Members</legend>
 
       <p class="form-note" style="text-align:center; max-width:640px; margin: 0 auto 1rem;">
@@ -156,7 +152,7 @@
     </fieldset>
 
     <!-- Billing Seats Summary -->
-    <fieldset class="form-section" id="billing-summary-section" aria-live="polite">
+    <fieldset id="billing-summary-section" aria-live="polite">
       <legend>Billing seats</legend>
 
       <div class="billing-summary">
@@ -197,9 +193,8 @@
     </fieldset>
 
     <!-- Registration code -->
-    <fieldset class="form-section">
+    <fieldset>
       <legend>Team Registration Code</legend>
-
       <div class="form-field">
         <label for="registration-code">Create a Registration Code</label>
         <input
@@ -220,7 +215,7 @@
     </fieldset>
 
     <!-- Agreement -->
-    <fieldset class="form-section">
+    <fieldset>
       <legend>Agreement</legend>
       <div class="form-toggle">
         <label for="group-agreement-toggle" class="form-toggle-label">
@@ -231,7 +226,7 @@
     </fieldset>
 
     <!-- Payment -->
-    <fieldset class="form-section">
+    <fieldset>
       <legend>Payment</legend>
       <div class="form-field" id="group-payment-placeholder">
         <p><strong>Payment Reminder:</strong> You’ll be redirected to a secure checkout page to start your group subscription. Taxes are calculated automatically.</p>
@@ -294,9 +289,7 @@
       subtotalInput.value = String(subtotalCents);
     }
 
-    if (select) {
-      select.addEventListener('change', updateSummary);
-    }
+    if (select) select.addEventListener('change', updateSummary);
     document.addEventListener('DOMContentLoaded', updateSummary);
   })();
 </script>
