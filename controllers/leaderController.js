@@ -89,7 +89,6 @@ const leader = new Leader({
   topics: { topic1, topic2, topic3 },
   members: [],
   registration_code,
-  accessLevel: 'paid_leader',
   billingAddress: {
     line1,
     line2,
@@ -320,47 +319,66 @@ const customer = await stripe.customers.create({
     
 
     // Handle submission of the add group member form
-    addGroupMember: async (req, res) => {
+addGroupMember: async (req, res) => {
+  try {
+    const { leaderId } = req.params;
+    const { name, email } = req.body;
 
-        try {
-            const { leaderId } = req.params;
-            const { name, email } = req.body;
-    
-            const leader = await Leader.findById(leaderId);
-    
-            if (!leader) {
-                return res.status(404).render('member_form_views/error', {
-                    layout: 'mainlayout',
-                    title: 'Leader Not Found',
-                    errorMessage: 'The specified leader does not exist.',
-                });
-            }
-    
-            const groupMember = new GroupMember({
-                groupId: leader._id,
-                groupName: leader.groupName,
-                name,
-                email,
-                username: `member_${leader.members.length}_${leader.groupName.toLowerCase().replace(/\s+/g, '_')}`,
-                password: 'defaultPassword123',
-                topics: leader.topics,
-            });
-    
-            const savedMember = await groupMember.save();
-            leader.members.push(savedMember._id);
-            await leader.save();
-    
-            // Redirect to the dashboard
-            res.redirect('/dashboard');
-        } catch (err) {
-            console.error('Error adding group member:', err.message);
-            res.status(500).render('member_form_views/error', {
-                layout: 'mainlayout',
-                title: 'Error',
-                errorMessage: 'An error occurred while adding the group member.',
-            });
-        }
-    },
+    const leader = await Leader.findById(leaderId);
+    if (!leader) {
+      return res.status(404).render('member_form_views/error', {
+        layout: 'mainlayout',
+        title: 'Leader Not Found',
+        errorMessage: 'The specified leader does not exist.',
+      });
+    }
+
+    // (Optional) quick validation reuse
+    const vErrors = validateGroupMemberData({
+      groupId: leader._id.toString(),
+      groupName: leader.groupName,
+      name,
+      email,
+      username: `member_${leader.members.length}_${leader.groupName.toLowerCase().replace(/\s+/g, '_')}`,
+      password: 'defaultPassword123',
+    });
+    if (vErrors.length) {
+      return res.status(400).render('member_form_views/add_group_member', {
+        layout: 'memberformlayout',
+        title: 'Add Group Member',
+        leader: leader.toObject(),
+        csrfToken: req.csrfToken ? req.csrfToken() : null,
+        errorMessage: vErrors.join(' ')
+      });
+    }
+
+    const hashed = await bcrypt.hash('defaultPassword123', 10); // ✅ hash
+
+    const groupMember = new GroupMember({
+      groupId: leader._id,
+      groupName: leader.groupName,
+      name,
+      email,
+      username: `member_${leader.members.length}_${leader.groupName.toLowerCase().replace(/\s+/g, '_')}`,
+      password: hashed, // ✅ hashed
+      topics: leader.topics,
+    });
+
+    const savedMember = await groupMember.save();
+    leader.members.push(savedMember._id);
+    await leader.save();
+
+    res.redirect('/dashboard');
+  } catch (err) {
+    console.error('Error adding group member:', err.message);
+    res.status(500).render('member_form_views/error', {
+      layout: 'mainlayout',
+      title: 'Error',
+      errorMessage: 'An error occurred while adding the group member.',
+    });
+  }
+},
+
     
 
     // Function to update members for existing leaders
