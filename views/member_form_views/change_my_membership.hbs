@@ -6,22 +6,23 @@
   <section class="current-membership">
     <h2>your current membership</h2>
     <p><strong>membership type:</strong> {{user.membershipType}}</p>
-
     <p>Below are the membership options available to you. Choose an option to continue.</p>
   </section>
 
-  <section class="membership-buttons">    
-    <button class="membership-button" onclick="showForm('free')">free membership</button>
-    <button class="membership-button" onclick="showForm('individual')">paid membership</button>
-    <button class="membership-button" onclick="showForm('leader')">leader</button>
-    <button class="membership-button" onclick="showForm('group')">group member</button>
-    <button class="membership-button" onclick="showForm('cancel')">cancel membership</button>
+  <section class="membership-buttons">
+    <button class="membership-button" type="button" onclick="showForm('free')">free membership</button>
+    <button class="membership-button" type="button" onclick="showForm('individual')">paid membership</button>
+    <button class="membership-button" type="button" onclick="showForm('leader')">leader</button>
+    <button class="membership-button" type="button" onclick="showForm('group')">group member</button>
+    <button class="membership-button" type="button" onclick="showForm('cancel')">cancel membership</button>
   </section>
 
+  <!-- Paid Individual -->
   <section id="individual-form-section" class="hidden">
     {{> memberformpartials/form_individuals }}
   </section>
 
+  <!-- Group Member info -->
   <section id="group-form-section" class="hidden">
     <div class="group-member-instructions">
       <h3>group membership instructions</h3>
@@ -30,22 +31,56 @@
     </div>
   </section>
 
+  <!-- Leader -->
   <section id="leader-form-section" class="hidden">
     {{> memberformpartials/form_leader }}
   </section>
 
+  <!-- Free Individual -->
   <section id="free-form-section" class="hidden">
     {{> memberformpartials/free_individuals }}
   </section>
 
+  <!-- Cancel membership -->
   <section id="cancel-form-section" class="hidden">
     <form action="/change_membership/cancel" method="POST" class="cancel-membership-form">
       <input type="hidden" name="_csrf" value="{{csrfToken}}">
       <h3 style="margin-top: 40px">We're sorry to see you go.</h3>
-      <p>Please let us know why you're cancelling (optional):</p>
-      <textarea name="reason" rows="4" placeholder="Your feedback helps us improve." style="width:75%; border-radius:8px; padding:10px;"></textarea>
-      <br>
-      <button type="submit" class="make-member-button" style="background-color:#aa2e2e">confirm cancellation</button>
+
+      <!-- Cancellation options -->
+      <fieldset class="form-section" style="margin: 16px 0;">
+        <legend>cancellation options</legend>
+
+        <label style="display:block; margin-bottom:8px;">
+          <input type="radio" name="mode" value="period_end" checked>
+          Cancel at the end of the current billing period (recommended)
+        </label>
+        <p class="form-instructions" style="margin:6px 0 14px 24px;">
+          You’ll keep access until your current billing cycle ends. Your subscription will not renew.
+        </p>
+
+        <label style="display:block;">
+          <input type="radio" name="mode" value="immediate">
+          Cancel immediately (access ends now)
+        </label>
+        <p class="form-instructions" style="margin:6px 0 0 24px;">
+          Your access ends right away. Future renewals stop immediately.
+        </p>
+      </fieldset>
+
+      <!-- Optional feedback -->
+      <div class="form-field" style="margin: 16px 0;">
+        <label for="cancel-reason"><strong>Optional:</strong> why are you cancelling?</label>
+        <textarea id="cancel-reason" name="reason" rows="4" placeholder="Your feedback helps us improve." style="width:75%; border-radius:8px; padding:10px;"></textarea>
+      </div>
+
+      <button type="submit" class="make-member-button" style="background-color:#aa2e2e">
+        confirm cancellation
+      </button>
+
+      <p class="form-instructions" style="margin-top:10px;">
+        After cancellation, your account is set to inactive. You will not be able to log in unless you reinstate your membership.
+      </p>
     </form>
   </section>
 </div>
@@ -54,8 +89,11 @@
   function showForm(type) {
     const sections = ['individual', 'group', 'leader', 'free', 'cancel'];
     sections.forEach(sec => {
-      document.getElementById(`${sec}-form-section`).classList.add('hidden');
+      const el = document.getElementById(`${sec}-form-section`);
+      if (el) el.classList.add('hidden');
     });
-    document.getElementById(`${type}-form-section`).classList.remove('hidden');
+    const target = document.getElementById(`${type}-form-section`);
+    if (target) target.classList.remove('hidden');
   }
 </script>
+

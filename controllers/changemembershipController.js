@@ -25,64 +25,82 @@ module.exports = {
   },
 
   // Cancel Membership
-  cancelMembership: async (req, res) => {
-    try {
-      const user = req.user;
-      const reason = req.body.reason || '';
+// controllers/changemembershipController.js
+cancelMembership: async (req, res) => {
+  try {
+    const user = req.user;
+    const reason = req.body.reason || '';
+    const mode = req.body.mode === 'immediate' ? 'immediate' : 'period_end';
 
-      if (!user) {
-        return res.status(401).render('member_form_views/error', {
-          layout: 'memberformlayout',
-          title: 'Unauthorized',
-          errorMessage: 'You must be logged in to cancel your membership.'
-        });
-      }
-
-      // Archive
-      const CancelRecord = new CancelledMember({
-        originalId: user._id,
-        name: user.name || user.groupLeaderName,
-        username: user.username,
-        email: user.email || user.groupLeaderEmail,
-        membershipType: user.membershipType,
-        accessLevel: user.accessLevel || null,
-        wasLeader: user.membershipType === 'leader',
-        reason
-      });
-
-      await CancelRecord.save();
-
-      // Deactivate active record
-      switch (user.membershipType) {
-        case 'member':
-          await Member.findByIdAndUpdate(user._id, { isActive: false });
-          break;
-        case 'leader':
-          await Leader.findByIdAndUpdate(user._id, { isActive: false });
-          break;
-        case 'group_member':
-          await GroupMember.findByIdAndUpdate(user._id, { isActive: false });
-          break;
-        default:
-          console.warn('⚠️ Unknown membership type during cancellation:', user.membershipType);
-      }
-
-      req.session.destroy(() => {
-        res.render('member_form_views/cancel_success', {
-          layout: 'memberformlayout',
-          title: 'Membership Cancelled'
-        });
-      });
-
-    } catch (err) {
-      console.error('❌ Error cancelling membership:', err);
-      res.status(500).render('member_form_views/error', {
+    if (!user) {
+      return res.status(401).render('member_form_views/error', {
         layout: 'memberformlayout',
-        title: 'Error Cancelling Membership',
-        errorMessage: 'An error occurred while cancelling your membership. Please try again.'
+        title: 'Unauthorized',
+        errorMessage: 'You must be logged in to cancel your membership.'
       });
     }
-  },
+
+    // Archive the cancellation
+    await new CancelledMember({
+      originalId: user._id,
+      name: user.name || user.groupLeaderName,
+      username: user.username,
+      email: user.email || user.groupLeaderEmail,
+      membershipType: user.membershipType,
+      accessLevel: user.accessLevel || null,
+      wasLeader: user.membershipType === 'leader',
+      reason
+    }).save();
+
+    // Identify the right model + load latest doc
+    const ModelsByType = { member: Member, leader: Leader, group_member: GroupMember };
+    const Model = ModelsByType[user.membershipType];
+    const doc = Model ? await Model.findById(user._id) : null;
+
+    // Cancel Stripe if we have a subscription id
+    let cancelAt = null;
+    const subId = doc?.stripeSubscriptionId;
+    if (subId) {
+      if (mode === 'immediate') {
+        await stripe.subscriptions.cancel(subId);
+      } else {
+        const s = await stripe.subscriptions.update(subId, { cancel_at_period_end: true });
+        if (s.cancel_at) cancelAt = new Date(s.cancel_at * 1000);
+      }
+    }
+
+    // Deactivate the account + set statuses
+    if (doc) {
+      doc.isActive = false;
+      if ('subscriptionStatus' in doc) doc.subscriptionStatus = 'cancelled';
+      if ('paymentStatus' in doc) doc.paymentStatus = 'pending';
+      await doc.save();
+    }
+
+    // Logout and show success
+    req.logout?.(() => {});
+    req.session.destroy(() => {
+      res.render('member_form_views/cancel_success', {
+        layout: 'memberformlayout',
+        title: mode === 'immediate' ? 'Subscription Cancelled' : 'Cancellation Scheduled',
+        when: mode === 'immediate' ? 'cancelled' : 'cancellation scheduled',
+        cancelAt: cancelAt ? cancelAt.toLocaleString('en-CA') : null,
+        subscriptionId: subId,
+        dashboardPath: '/',
+        supportEmail: 'info@twennie.com'
+      });
+    });
+
+  } catch (err) {
+    console.error('❌ Error cancelling membership:', err);
+    res.status(500).render('member_form_views/error', {
+      layout: 'memberformlayout',
+      title: 'Error Cancelling Membership',
+      errorMessage: 'An error occurred while cancelling your membership. Please try again.'
+    });
+  }
+},
+
 
   // Confirm success
   changeSuccess: (req, res) => {

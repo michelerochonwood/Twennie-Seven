@@ -257,8 +257,50 @@ app.use((req, _res, next) => {
   next();
 });
 
+// AFTER: app.use(passport.session());
+// BEFORE: the inactive-logout guard
+
+app.use(async (req, res, next) => {
+  try {
+    // If user is present but we don't know isActive yet, load just that flag.
+    if (req.user && typeof req.user.isActive === 'undefined') {
+      let doc = null;
+      if (req.user.membershipType === 'leader') {
+        doc = await Leader.findById(req.user.id).select('isActive').lean();
+      } else if (req.user.membershipType === 'group_member') {
+        doc = await GroupMember.findById(req.user.id).select('isActive').lean();
+      } else {
+        // default to member
+        doc = await Member.findById(req.user.id).select('isActive').lean();
+      }
+      req.user.isActive = doc?.isActive ?? true; // default true if somehow missing
+    }
+  } catch (e) {
+    // don't block the request on a read error; just continue
+  }
+  next();
+});
+
+
 // ---- Stripe webhook (assumes its route configures body parsing) ----
 app.use('/stripe', require('./routes/stripe/stripewebhook'));
+
+// after app.use(passport.session());
+app.use((req, res, next) => {
+  if (req.user && req.user.isActive === false) {
+    req.logout?.(() => {});
+    req.session.destroy(() => {
+      return res.status(403).render('member_form_views/error', {
+        layout: 'memberformlayout',
+        title: 'Account Inactive',
+        errorMessage: 'Your account is inactive. Please contact support to reinstate your membership.'
+      });
+    });
+    return;
+  }
+  next();
+});
+
 
 // ---- Global user/session locals ----
 app.use(async (req, res, next) => {
