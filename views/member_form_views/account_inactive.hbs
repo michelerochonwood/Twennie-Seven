@@ -1,0 +1,61 @@
+{{#*inline "title"}}Account Inactive | Twennie{{/inline}}
+
+<div class="success-container" style="max-width: 640px; margin-top: 140px;">
+  <h1 class="registration-complete">your account is currently inactive</h1>
+
+  <p style="margin-top: 12px;">
+    {{#if username}}Hi {{username}},{{else}}Hi,{{/if}}
+    your {{#if membershipType}}{{membershipType}}{{else}}Twennie{{/if}} account is inactive. You won’t be able to sign in or access dashboards until it’s re-activated.
+  </p>
+
+  <div style="text-align:left; margin: 18px auto; background:#f8f8ff; border:1px solid #e6e6f5; border-radius:12px; padding:16px;">
+    <p><strong>What this means:</strong></p>
+    <ul style="margin:8px 0 0 20px; line-height:1.5;">
+      <li>Sign-in is disabled for this account.</li>
+      <li>Billing has been cancelled or scheduled to end at the current period.</li>
+      <li>You can request re-activation at any time.</li>
+    </ul>
+  </div>
+
+  <!-- Request re-activation -->
+  <form action="/auth/reactivate" method="POST" style="margin-top: 12px;">
+    {{#if csrfToken}}<input type="hidden" name="_csrf" value="{{csrfToken}}">{{/if}}
+
+    <div style="text-align:left; margin: 0 auto 12px auto;">
+      <label for="reactivate-email" style="display:block; font-weight:800; color:#4a4ab2; margin-bottom:6px;">email</label>
+      <input
+        id="reactivate-email"
+        name="email"
+        type="email"
+        value="{{email}}"
+        required
+        style="width:100%; border:1px solid #ccc; border-radius:99px; padding:10px 14px; font-family:'Figtree';"
+      >
+    </div>
+
+    <div style="text-align:left; margin: 0 auto 16px auto;">
+      <label for="reactivate-notes" style="display:block; font-weight:800; color:#4a4ab2; margin-bottom:6px;">optional message</label>
+      <textarea
+        id="reactivate-notes"
+        name="message"
+        rows="3"
+        placeholder="Share any details that will help us process your request."
+        style="width:100%; border:1px solid #ccc; border-radius:12px; padding:10px 12px; font-family:'Figtree';"
+      ></textarea>
+    </div>
+
+    <input type="hidden" name="membershipType" value="{{membershipType}}">
+    <button type="submit" class="dashboard-button" style="display:inline-block;">request re-activation</button>
+  </form>
+
+  <div style="margin-top: 14px;">
+    <a href="/" class="dashboard-button button-secondary" style="display:inline-block; margin-right:8px;">return to homepage</a>
+    <a href="mailto:{{#if supportEmail}}{{supportEmail}}{{else}}info@twennie.com{{/if}}" class="dashboard-button" style="display:inline-block; background:#4e50a2;">
+      contact support
+    </a>
+  </div>
+
+  <p style="margin-top: 12px; opacity:.85; font-size:.95rem;">
+    We’ll review your request and follow up by email with the next steps to restore access.
+  </p>
+</div>

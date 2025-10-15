@@ -18,7 +18,6 @@ function redirectFor(user) {
 // After OAuth, block inactive accounts (cancelled users)
 function blockInactiveAfterOAuth(req, res, next) {
   if (req.user && req.user.isActive === false) {
-    // Immediately log out any inactive user and show a friendly message
     req.logout?.(() => {});
     req.session?.destroy?.(() => {});
     return res.status(403).render('member_form_views/error', {
@@ -36,29 +35,33 @@ function blockInactiveAfterOAuth(req, res, next) {
 // Render login page
 router.get('/login', loginController.showLoginForm);
 
-// Local login (uses controller which already blocks inactive users)
+// Local login (controller blocks inactive accounts)
 router.post('/login', loginController.handleLogin);
 
 // Logout
 router.get('/logout', loginController.handleLogout);
 
+// --- Inactive account + Reactivation (works for all membership types) ---
+router.get('/inactive', loginController.showInactiveAccount);
+router.post('/reactivate', loginController.requestReactivation);
+
 // ---------- Google Authentication ----------
 
-// Start Google OAuth (members only per your strategy)
+// Start Google OAuth
 router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 // Callback after Google login
 router.get(
   '/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/login' }),
-  blockInactiveAfterOAuth, // ⬅️ NEW: prevent cancelled accounts from logging in via Google
+  blockInactiveAfterOAuth, // prevent cancelled users from logging in via Google
   (req, res) => {
-    // Optional: route by role; otherwise keep /dashboard
     const to = redirectFor(req.user) || '/dashboard';
     return res.redirect(to);
   }
 );
 
 module.exports = router;
+
 
 
