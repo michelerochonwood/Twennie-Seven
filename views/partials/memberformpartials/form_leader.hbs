@@ -34,6 +34,44 @@
       <input type="text" id="organization" name="organization" value="{{user.organization}}">
     </div>
 
+<!-- Billing Address (optional, saved if provided) -->
+<div class="form-field">
+  <label for="line1">Street Address</label>
+  <input type="text" id="line1" name="line1" placeholder="123 Main St" autocomplete="address-line1">
+</div>
+
+<div class="form-field">
+  <label for="line2">Apartment / Suite (optional)</label>
+  <input type="text" id="line2" name="line2" placeholder="Unit 5B" autocomplete="address-line2">
+</div>
+
+<div class="form-field">
+  <label for="city">City</label>
+  <input type="text" id="city" name="city" autocomplete="address-level2">
+</div>
+
+<div class="form-field">
+  <label for="province">Province / State</label>
+  <input type="text" id="province" name="province" placeholder="ON" autocomplete="address-level1">
+</div>
+
+<div class="form-field">
+  <label for="postalCode">Postal Code</label>
+  <input type="text" id="postalCode" name="postalCode" placeholder="A1A 1A1" autocomplete="postal-code">
+</div>
+
+<div class="form-field">
+  <label for="country">Country</label>
+  <select id="country" name="country" autocomplete="country">
+    <option value="CA" selected>Canada</option>
+    <option value="US">United States</option>
+  </select>
+</div>
+
+<small class="form-instructions">
+  At checkout, you'll confirm billing details. Stripe will securely save the final address to your account.
+</small>
+
     <!-- Industry -->
     <div class="form-field">
       <label for="industry">Industry</label>
