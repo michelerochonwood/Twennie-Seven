@@ -1,79 +1,93 @@
 <div class="member-topics-container">
   <h3 class="member-dashboard-subtitles">my topics</h3>
   <p>
-    These are your three topics of interest. This makes it so you can get to those topics without having to navigate the whole topic tree. The links help you access relevant content quickly and determine which email alerts you receive. To change them or opt out of emails, go to your membership overview tab and choose from three different levels of email preferences. 
+    These are your three topics of interest. The links help you access relevant content quickly and determine which email alerts you receive. To change them or opt out of emails, go to your membership overview tab and choose from three different levels of email preferences. 
   </p>
 
-  <div class="member-topics-grid">
-    {{#if member.selectedTopics.topic1.title}}
-      <div class="member-topic-card">
-        <div class="member-topic-inner">
-          <div class="member-topic-title-area">
-            <div class="member-topic-title">{{member.selectedTopics.topic1.title}}</div>
-          </div>
-          <div class="member-topic-subtopics-area">
-            <ul class="member-topic-subtopics">
-              {{#each member.selectedTopics.topic1.subtopics}}
-                <li>{{this}}</li>
-              {{else}}
-                <li>No subtopics available</li>
-              {{/each}}
-            </ul>
-          </div>
-          <div class="member-topic-button-area">
-            <a href="/topics/{{member.selectedTopics.topic1.viewName}}" class="member-topic-review">review this topic</a>
+  {{!-- If ANY topic exists, show the cards; otherwise show CTA to profile --}}
+  {{#if (or member.selectedTopics.topic1.title (or member.selectedTopics.topic2.title member.selectedTopics.topic3.title))}}
+    <div class="member-topics-grid">
+      {{#if member.selectedTopics.topic1.title}}
+        <div class="member-topic-card">
+          <div class="member-topic-inner">
+            <div class="member-topic-title-area">
+              <div class="member-topic-title">{{member.selectedTopics.topic1.title}}</div>
+            </div>
+            <div class="member-topic-subtopics-area">
+              <ul class="member-topic-subtopics">
+                {{#each member.selectedTopics.topic1.subtopics}}
+                  <li>{{this}}</li>
+                {{else}}
+                  <li>No subtopics available</li>
+                {{/each}}
+              </ul>
+            </div>
+            <div class="member-topic-button-area">
+              <a href="/topics/{{member.selectedTopics.topic1.viewName}}" class="member-topic-review">review this topic</a>
+            </div>
           </div>
         </div>
-      </div>
-    {{/if}}
+      {{/if}}
 
-    {{#if member.selectedTopics.topic2.title}}
-      <div class="member-topic-card">
-        <div class="member-topic-inner">
-          <div class="member-topic-title-area">
-            <div class="member-topic-title">{{member.selectedTopics.topic2.title}}</div>
-          </div>
-          <div class="member-topic-subtopics-area">
-            <ul class="member-topic-subtopics">
-              {{#each member.selectedTopics.topic2.subtopics}}
-                <li>{{this}}</li>
-              {{else}}
-                <li>No subtopics available</li>
-              {{/each}}
-            </ul>
-          </div>
-          <div class="member-topic-button-area">
-            <a href="/topics/{{member.selectedTopics.topic2.viewName}}" class="member-topic-review">review this topic</a>
+      {{#if member.selectedTopics.topic2.title}}
+        <div class="member-topic-card">
+          <div class="member-topic-inner">
+            <div class="member-topic-title-area">
+              <div class="member-topic-title">{{member.selectedTopics.topic2.title}}</div>
+            </div>
+            <div class="member-topic-subtopics-area">
+              <ul class="member-topic-subtopics">
+                {{#each member.selectedTopics.topic2.subtopics}}
+                  <li>{{this}}</li>
+                {{else}}
+                  <li>No subtopics available</li>
+                {{/each}}
+              </ul>
+            </div>
+            <div class="member-topic-button-area">
+              <a href="/topics/{{member.selectedTopics.topic2.viewName}}" class="member-topic-review">review this topic</a>
+            </div>
           </div>
         </div>
-      </div>
-    {{/if}}
+      {{/if}}
 
-    {{#if member.selectedTopics.topic3.title}}
-      <div class="member-topic-card">
-        <div class="member-topic-inner">
-          <div class="member-topic-title-area">
-            <div class="member-topic-title">{{member.selectedTopics.topic3.title}}</div>
-          </div>
-          <div class="member-topic-subtopics-area">
-            <ul class="member-topic-subtopics">
-              {{#each member.selectedTopics.topic3.subtopics}}
-                <li>{{this}}</li>
-              {{else}}
-                <li>No subtopics available</li>
-              {{/each}}
-            </ul>
-          </div>
-          <div class="member-topic-button-area">
-            <a href="/topics/{{member.selectedTopics.topic3.viewName}}" class="member-topic-review">review this topic</a>
+      {{#if member.selectedTopics.topic3.title}}
+        <div class="member-topic-card">
+          <div class="member-topic-inner">
+            <div class="member-topic-title-area">
+              <div class="member-topic-title">{{member.selectedTopics.topic3.title}}</div>
+            </div>
+            <div class="member-topic-subtopics-area">
+              <ul class="member-topic-subtopics">
+                {{#each member.selectedTopics.topic3.subtopics}}
+                  <li>{{this}}</li>
+                {{else}}
+                  <li>No subtopics available</li>
+                {{/each}}
+              </ul>
+            </div>
+            <div class="member-topic-button-area">
+              <a href="/topics/{{member.selectedTopics.topic3.viewName}}" class="member-topic-review">review this topic</a>
+            </div>
           </div>
         </div>
-      </div>
-    {{/if}}
-  </div>
+      {{/if}}
+    </div>
+  {{else}}
+    <div class="no-topics-cta" style="text-align:center; padding:1rem; background:#f8f8ff; border:1px solid #e6e6f5; border-radius:12px; margin-top:.75rem;">
+      <p><strong>No topics yet</strong></p>
+      <p>You haven’t chosen your personal topics. Select up to three in your profile to personalize your dashboard and email alerts.</p>
+      <a
+        href="/profile/member/{{member._id}}"
+        class="member-profile-btn"
+        style="display:inline-block; margin-top:.5rem;"
+      >
+        my profile
+      </a>
+    </div>
+  {{/if}}
 </div>
 
-<!-- ✅ Topic Suggestion Section -->
 <!-- ✅ Topic Suggestion Section -->
 <div class="leader-topic-suggestion-card">
   {{#if topicSuggestions.length}}
@@ -117,6 +131,7 @@
     </div>
   </div>
 </div>
+
 
 
 
