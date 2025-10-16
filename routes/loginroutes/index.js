@@ -39,7 +39,18 @@ router.get('/login', loginController.showLoginForm);
 router.post('/login', loginController.handleLogin);
 
 // Logout
-router.get('/logout', loginController.handleLogout);
+router.get('/logout', (req, res, next) => {
+  req.logout(err => {
+    if (err) return next(err);
+    // destroy the session cookie + store record
+    req.session?.destroy(() => {
+      res.clearCookie?.('connect.sid'); // optional but tidy
+      console.log('Logout successful');
+      return res.redirect('/auth/login');
+    });
+  });
+});
+
 
 // --- Inactive account + Reactivation (works for all membership types) ---
 router.get('/inactive', loginController.showInactiveAccount);

@@ -338,7 +338,9 @@ module.exports = {
       await leader.save();
 
       // Redirect to the dashboard
-      return res.redirect('/dashboard');
+// Redirect to the success page for a clean GET
+return res.redirect(`/leader/${leader._id}/add_group_member/success?memberId=${savedMember._id.toString()}`);
+
     } catch (err) {
       console.error('Error adding group member:', err.message);
       return res.status(500).render('member_form_views/error', {
@@ -364,6 +366,42 @@ module.exports = {
       console.error('Error updating members:', err.message);
     }
   },
+
+  // Renders success page after adding a group member
+showAddGroupMemberSuccess: async (req, res) => {
+  try {
+    const { leaderId } = req.params;
+    const { memberId } = req.query;
+
+    const [leader, member] = await Promise.all([
+      Leader.findById(leaderId).select('groupName registration_code').lean(),
+      GroupMember.findById(memberId).select('name email username').lean()
+    ]);
+
+    if (!leader || !member) {
+      return res.status(404).render('member_form_views/error', {
+        layout: 'memberformlayout',
+        title: 'Not Found',
+        errorMessage: 'We could not find that leader or group member.'
+      });
+    }
+
+return res.render('member_form_views/new_member_success', {
+  layout: 'memberformlayout',
+  title: 'Member Added',
+  leader,
+  member
+});
+  } catch (err) {
+    console.error('Error rendering add_group_member_success:', err);
+    return res.status(500).render('member_form_views/error', {
+      layout: 'memberformlayout',
+      title: 'Error',
+      errorMessage: 'An error occurred after adding the group member.'
+    });
+  }
+},
+
 };
 
 

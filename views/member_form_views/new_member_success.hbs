@@ -1,0 +1,23 @@
+{{#*inline "title"}}Member Added | Twennie{{/inline}}
+
+<div class="success-container">
+  <h1 class="registration-complete">group member added</h1>
+
+  <p>You've successfully added a new group member to <strong>{{leader.groupName}}</strong>.</p>
+
+  <div style="margin:1rem auto; max-width:560px; text-align:left; background:#f8f8ff; border:1px solid #e6e6f5; border-radius:12px; padding:16px;">
+    <p><strong>Name:</strong> {{member.name}}</p>
+    <p><strong>Email:</strong> {{member.email}}</p>
+    <p><strong>Temporary username:</strong> {{member.username}}</p>
+    <p style="margin-top:.5rem;">
+      Share this registration code with your team (they will need it on the verify page):
+      <br><strong>Registration Code:</strong> {{leader.registration_code}}
+    </p>
+  </div>
+
+  <div style="display:flex; flex-wrap:wrap; gap:.75rem; justify-content:center; margin-top:1rem;">
+    <a href="/leader/{{leader._id}}/add_group_member" class="dashboard-button">add another member</a>
+    <a href="/member/group/verify" class="dashboard-button">open verify page</a>
+    <a href="/dashboard/leader" class="dashboard-button">return to leader dashboard</a>
+  </div>
+</div>

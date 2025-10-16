@@ -17,4 +17,8 @@ router.get('/:leaderId/add_group_member', leaderController.showAddGroupMemberFor
 // Route to handle group member addition for a specific leader by ID
 router.post('/:leaderId/add_group_member', leaderController.addGroupMember);
 
+// Success page after adding a group member
+router.get('/:leaderId/add_group_member/success', leaderController.showAddGroupMemberSuccess);
+
+
 module.exports = router;
