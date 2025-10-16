@@ -7,49 +7,64 @@
     For group leaders: These are your personal topics. Each team member can select their own, and your group has a separate set visible in the group profile. To update group topics, click your group profile on the left sidebar.
   </p>
 
-  <div class="leader-topics-grid">
-    {{#if leader.topics.topic1}}
-      <div class="leader-topic-card" data-topic-id="{{selectedTopics.topic1.slug}}">
-        <div class="leader-topic-title">{{leader.topics.topic1}}</div>
-        <ul class="leader-topic-subtopics">
-          {{#each selectedTopics.topic1.subtopics}}
-            <li>{{this}}</li>
-          {{else}}
-            <li>No subtopics available</li>
-          {{/each}}
-        </ul>
-        <a href="/membertopics/{{selectedTopics.topic1.viewName}}" class="leader-topic-review">review this topic</a>
-      </div>
-    {{/if}}
+  {{!-- If ANY topic exists, show the cards; otherwise show CTA to profile --}}
+  {{#if (or selectedTopics.topic1.title (or selectedTopics.topic2.title selectedTopics.topic3.title))}}
+    <div class="leader-topics-grid">
+      {{#if selectedTopics.topic1.title}}
+        <div class="leader-topic-card" data-topic-id="{{selectedTopics.topic1.slug}}">
+          <div class="leader-topic-title">{{selectedTopics.topic1.title}}</div>
+          <ul class="leader-topic-subtopics">
+            {{#each selectedTopics.topic1.subtopics}}
+              <li>{{this}}</li>
+            {{else}}
+              <li>No subtopics available</li>
+            {{/each}}
+          </ul>
+          <a href="/membertopics/{{selectedTopics.topic1.viewName}}" class="leader-topic-review">review this topic</a>
+        </div>
+      {{/if}}
 
-    {{#if leader.topics.topic2}}
-      <div class="leader-topic-card" data-topic-id="{{selectedTopics.topic2.slug}}">
-        <div class="leader-topic-title">{{leader.topics.topic2}}</div>
-        <ul class="leader-topic-subtopics">
-          {{#each selectedTopics.topic2.subtopics}}
-            <li>{{this}}</li>
-          {{else}}
-            <li>No subtopics available</li>
-          {{/each}}
-        </ul>
-        <a href="/membertopics/{{selectedTopics.topic2.viewName}}" class="leader-topic-review">review this topic</a>
-      </div>
-    {{/if}}
+      {{#if selectedTopics.topic2.title}}
+        <div class="leader-topic-card" data-topic-id="{{selectedTopics.topic2.slug}}">
+          <div class="leader-topic-title">{{selectedTopics.topic2.title}}</div>
+          <ul class="leader-topic-subtopics">
+            {{#each selectedTopics.topic2.subtopics}}
+              <li>{{this}}</li>
+            {{else}}
+              <li>No subtopics available</li>
+            {{/each}}
+          </ul>
+          <a href="/membertopics/{{selectedTopics.topic2.viewName}}" class="leader-topic-review">review this topic</a>
+        </div>
+      {{/if}}
 
-    {{#if leader.topics.topic3}}
-      <div class="leader-topic-card" data-topic-id="{{selectedTopics.topic3.slug}}">
-        <div class="leader-topic-title">{{leader.topics.topic3}}</div>
-        <ul class="leader-topic-subtopics">
-          {{#each selectedTopics.topic3.subtopics}}
-            <li>{{this}}</li>
-          {{else}}
-            <li>No subtopics available</li>
-          {{/each}}
-        </ul>
-        <a href="/membertopics/{{selectedTopics.topic3.viewName}}" class="leader-topic-review">review this topic</a>
-      </div>
-    {{/if}}
-  </div>
+      {{#if selectedTopics.topic3.title}}
+        <div class="leader-topic-card" data-topic-id="{{selectedTopics.topic3.slug}}">
+          <div class="leader-topic-title">{{selectedTopics.topic3.title}}</div>
+          <ul class="leader-topic-subtopics">
+            {{#each selectedTopics.topic3.subtopics}}
+              <li>{{this}}</li>
+            {{else}}
+              <li>No subtopics available</li>
+            {{/each}}
+          </ul>
+          <a href="/membertopics/{{selectedTopics.topic3.viewName}}" class="leader-topic-review">review this topic</a>
+        </div>
+      {{/if}}
+    </div>
+  {{else}}
+    <div class="no-topics-cta" style="text-align:center; padding:1rem; background:#f8f8ff; border:1px solid #e6e6f5; border-radius:12px; margin-top:.75rem;">
+      <p><strong>No topics yet</strong></p>
+      <p>You haven’t chosen your personal topics. Select up to three in your profile to personalize your dashboard and email alerts.</p>
+      <a
+        href="/profile/leader/{{leader._id}}"
+        class="leader-profile-btn"
+        style="display:inline-block; margin-top:.5rem;"
+      >
+        my profile
+      </a>
+    </div>
+  {{/if}}
 </div>
 
 <!-- ✅ Topic Suggestion Section with Headings -->
