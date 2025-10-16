@@ -335,54 +335,77 @@ const mfaStatus = {
 };
 
         
-            console.log("🔍 Fetched user data:", JSON.stringify(userData, null, 2));
-            if (!userData) {
-                console.error(`Group Member with ID ${id} not found.`);
-                return res.status(404).render('error', { title: 'Error', errorMessage: `Group Member with ID ${id} not found.` });
-            }
+console.log("🔍 Fetched user data:", JSON.stringify(userData, null, 2));
+if (!userData) {
+  console.error(`Group Member with ID ${id} not found.`);
+  return res.status(404).render('error', {
+    title: 'Error',
+    errorMessage: `Group Member with ID ${id} not found.`
+  });
+}
 
-                        // Attach subtopics instead of long summary
-                        const selectedTopics = {
-                            topic1: {
-                                title: userData.groupId.topics.topic1,
-                                subtopics: getSubtopics(userData.groupId.topics.topic1),
-                                slug: topicMappings[userData.groupId.topics.topic1] || 'unknown-topic',
-                                viewName: topicViewMappings[topicMappings[userData.groupId.topics.topic1]] || 'not_found'
-                            },
-                            topic2: {
-                                title: userData.groupId.topics.topic2,
-                                subtopics: getSubtopics(userData.groupId.topics.topic2),
-                                slug: topicMappings[userData.groupId.topics.topic2] || 'unknown-topic',
-                                viewName: topicViewMappings[topicMappings[userData.groupId.topics.topic2]] || 'not_found'
-                            },
-                            topic3: {
-                                title: userData.groupId.topics.topic3,
-                                subtopics: getSubtopics(userData.groupId.topics.topic3),
-                                slug: topicMappings[userData.groupId.topics.topic3] || 'unknown-topic',
-                                viewName: topicViewMappings[topicMappings[userData.groupId.topics.topic3]] || 'not_found'
-                            }
-                        };
-                        console.log("Selected Topics with View Names:", selectedTopics);
-                        
-    
-            console.log("Fetched user data:", userData);
-            console.log("Group members before processing:", JSON.stringify(userData.groupId.members, null, 2));
-    
-            const groupMembers = userData.groupId?.members?.length > 0
-                ? userData.groupId.members.map(member => ({
-                    name: member.name,
-                    profileImage: member.profileImage,
-                    professionalTitle: member.professionalTitle
-                }))
-                : [];
-    
-                const memberRegistrations = await PromptSetRegistration.find({ memberId: id }).populate('promptSetId');
-                const assignedPromptSets = await AssignPromptSet.find({ assignedMemberIds: id }).populate('promptSetId');
-                
- 
-                console.log(`Total assigned prompt sets for member ${id}: ${assignedPromptSets.length}`);
-                
-            console.log(`Total prompt sets found for member ${id}: ${memberRegistrations.length}`);
+/* ---------- SAFE TOPICS (based on leader's group) ---------- */
+function gmBuildTopicObj(title) {
+  if (!title) {
+    return {
+      title: null,
+      subtopics: [],
+      slug: 'pick-a-topic',
+      viewName: null,
+      placeholder: true
+    };
+  }
+  const slug = topicMappings[title] || 'unknown-topic';
+  return {
+    title,
+    subtopics: getSubtopics(title),
+    slug,
+    viewName: topicViewMappings[slug] || 'not_found',
+    placeholder: false
+  };
+}
+
+// Guard: groupId or groupId.topics may be missing for new setups
+const leaderTopics =
+  (userData.groupId && typeof userData.groupId.topics === 'object')
+    ? userData.groupId.topics
+    : {};
+
+const selectedTopics = {
+  topic1: gmBuildTopicObj(leaderTopics.topic1 || null),
+  topic2: gmBuildTopicObj(leaderTopics.topic2 || null),
+  topic3: gmBuildTopicObj(leaderTopics.topic3 || null)
+};
+
+console.log("Selected Topics with View Names:", selectedTopics);
+
+/* ---------- GROUP MEMBERS (safe) ---------- */
+console.log("Fetched user data (object):", userData);
+console.log(
+  "Group members before processing:",
+  JSON.stringify(userData.groupId?.members || [], null, 2)
+);
+
+const groupMembers = Array.isArray(userData.groupId?.members) && userData.groupId.members.length > 0
+  ? userData.groupId.members.map(member => ({
+      name: member.name,
+      profileImage: member.profileImage || '/images/default-avatar.png',
+      professionalTitle: member.professionalTitle || ''
+    }))
+  : [];
+
+/* ---------- PROMPTSET REGISTRATIONS / ASSIGNMENTS ---------- */
+const memberRegistrations = await PromptSetRegistration
+  .find({ memberId: id })
+  .populate('promptSetId');
+
+const assignedPromptSets = await AssignPromptSet
+  .find({ assignedMemberIds: id })
+  .populate('promptSetId');
+
+console.log(`Total assigned prompt sets for member ${id}: ${assignedPromptSets.length}`);
+console.log(`Total prompt sets found for member ${id}: ${memberRegistrations.length}`);
+
 
 
 

@@ -449,36 +449,42 @@ memberUnits = [...memberUnits, ...myUpcomingRows];
 
             // Attach subtopics and slugs for the member's topics
 // Attach subtopics and slugs for the member's topics (Fix for missing topics)
+/* ---------- SAFE TOPICS (member’s own topics; may be unset) ---------- */
+function mbBuildTopicObj(title) {
+  if (!title) {
+    return {
+      title: null,
+      subtopics: [],
+      slug: 'pick-a-topic',
+      viewName: null,
+      placeholder: true
+    };
+  }
+  const slug = topicMappings[title] || "unknown-topic";
+  return {
+    title,
+    subtopics: getSubtopics(title),
+    slug,
+    viewName: topicViewMappings[slug] || "not_found",
+    placeholder: false
+  };
+}
+
+const memberTopics = (userData && typeof userData.topics === 'object') ? userData.topics : {};
+
 const selectedTopics = {
-    topic1: userData.topics?.topic1
-        ? {
-            title: userData.topics.topic1,
-            subtopics: getSubtopics(userData.topics.topic1), // ✅ Fetch subtopics from topics.json
-            slug: topicMappings[userData.topics.topic1] || "unknown-topic",
-            viewName: topicViewMappings[topicMappings[userData.topics.topic1]] || "not_found"
-        }
-        : null,
-    topic2: userData.topics?.topic2
-        ? {
-            title: userData.topics.topic2,
-            subtopics: getSubtopics(userData.topics.topic2), // ✅ Fetch subtopics from topics.json
-            slug: topicMappings[userData.topics.topic2] || "unknown-topic",
-            viewName: topicViewMappings[topicMappings[userData.topics.topic2]] || "not_found"
-        }
-        : null,
-    topic3: userData.topics?.topic3
-        ? {
-            title: userData.topics.topic3,
-            subtopics: getSubtopics(userData.topics.topic3), // ✅ Fetch subtopics from topics.json
-            slug: topicMappings[userData.topics.topic3] || "unknown-topic",
-            viewName: topicViewMappings[topicMappings[userData.topics.topic3]] || "not_found"
-        }
-        : null
+  topic1: mbBuildTopicObj(memberTopics.topic1 || null),
+  topic2: mbBuildTopicObj(memberTopics.topic2 || null),
+  topic3: mbBuildTopicObj(memberTopics.topic3 || null)
 };
 
+const topicsEmpty =
+  !selectedTopics.topic1.title &&
+  !selectedTopics.topic2.title &&
+  !selectedTopics.topic3.title;
 
-// ✅ Log topics to debug missing data
 console.log("🔍 Selected Topics for Member Dashboard:", selectedTopics);
+
 const emailPreferenceLevel = [1, 2, 3].includes(Number(userData?.emailPreferenceLevel))
   ? Number(userData.emailPreferenceLevel)
   : 1;
