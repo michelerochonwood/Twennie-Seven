@@ -15,5 +15,17 @@ router.get("/complete-registration", groupmemberController.showCompleteMemberFor
 // ✅ Register a group member (final registration step)
 router.post('/register', groupmemberController.registerGroupMember);
 
+// ✅ Registration success page (group member)
+router.get('/register_success', (req, res) => {
+  const username = req.session?.user?.username || 'User';
+  return res.render('member_form_views/register_success', {
+    layout: 'memberformlayout',
+    title: 'Registration Successful',
+    username,
+    dashboardLink: '/dashboard/groupmember'
+  });
+});
+
+
 module.exports = router;
 

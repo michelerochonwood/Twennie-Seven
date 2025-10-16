@@ -256,20 +256,20 @@ module.exports = {
       }
 
       // Set session + redirect
-      req.session.user = {
-        id: gm._id.toString(),
-        username: gm.username,
-        membershipType: 'group_member' // ✅ canonical spelling
-      };
+req.session.user = {
+  id: gm._id.toString(),
+  username: gm.username,
+  membershipType: 'group_member'
+};
 
-      // Render success (avoid race with redirect + session)
-      return res.render("member_form_views/register_success", {
-        layout: "memberformlayout",
-        title: "Registration Successful",
-        username: gm.username,
-        user: gm,
-        dashboardLink: "/dashboard/groupmember"
-      });
+return req.session.save(err => {
+  if (err) {
+    console.error("❌ Error saving session:", err);
+    return renderError(res, "An error occurred while logging in after registration.");
+  }
+  // Redirect so the browser hits a clean GET and the success view picks up session state
+  return res.redirect('/member/group/register_success');
+});
     } catch (err) {
       console.error("❌ Error registering group member:", err.message);
       return renderError(res, "An error occurred while registering the group member.");
