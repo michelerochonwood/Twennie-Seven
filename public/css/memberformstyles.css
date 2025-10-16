@@ -1512,3 +1512,91 @@ html, body {
   .groupsection-card-image img { width: 78px; height: 78px; }
 }
 
+
+/* ================================
+   GROUP TAB — DELETE A MEMBER BUTTON
+   Scoped to .groupsection so it won't
+   override the delete view or other pages
+   ================================ */
+
+.groupsection .groupsection-button-container {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* Destructive CTA */
+.groupsection .groupsection-deletemember-button {
+  appearance: none;
+  -webkit-appearance: none;
+  font-family: "Figtree", system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0.8rem 1.4rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: #dc176a;      /* Twennie pink for destructive */
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(220,23,106,0.18);
+  transition: background .15s ease, box-shadow .15s ease, transform .05s ease;
+}
+
+.groupsection .groupsection-deletemember-button:hover {
+  background: #b01453;
+  box-shadow: 0 6px 16px rgba(220,23,106,0.28);
+}
+
+.groupsection .groupsection-deletemember-button:active {
+  transform: translateY(1px);
+}
+
+.groupsection .groupsection-deletemember-button:focus-visible {
+  outline: 3px solid rgba(220,23,106,0.35);
+  outline-offset: 2px;
+}
+
+/* Optional: disabled state if you ever need it */
+.groupsection .groupsection-deletemember-button:disabled,
+.groupsection .groupsection-deletemember-button[disabled] {
+  background: #f0a9c4;
+  color: #fff;
+  cursor: not-allowed;
+  box-shadow: none;
+  opacity: 0.8;
+}
+
+/* Keep the “add a member” (primary) consistent beside it */
+.groupsection .groupsection-addmember-button {
+  appearance: none;
+  -webkit-appearance: none;
+  font-family: "Figtree", system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0.8rem 1.4rem;
+  border-radius: 999px;
+  border: none;
+  background: #262262;
+  color: #fff;
+  cursor: pointer;
+  transition: background .15s ease, transform .05s ease;
+}
+
+.groupsection .groupsection-addmember-button:hover { background: #4e50a2; }
+.groupsection .groupsection-addmember-button:active { transform: translateY(1px); }
+.groupsection .groupsection-addmember-button:focus-visible {
+  outline: 3px solid rgba(78,80,162,0.35);
+  outline-offset: 2px;
+}
+
+/* Responsive spacing so the two CTAs don’t crowd on mobile */
+@media (max-width: 640px) {
+  .groupsection .groupsection-button-container {
+    gap: 0.6rem;
+  }
+}
+
+
