@@ -256,6 +256,7 @@ module.exports = {
       }
 
       // Set session + redirect
+// ---- Immediately log in user & redirect to success (PRG pattern) ----
 req.session.user = {
   id: gm._id.toString(),
   username: gm.username,
@@ -267,9 +268,36 @@ return req.session.save(err => {
     console.error("❌ Error saving session:", err);
     return renderError(res, "An error occurred while logging in after registration.");
   }
+
+  // Non-blocking profile creation: do not let this prevent redirect
+  (async () => {
+    try {
+      const exists = await GroupMemberProfile.findOne({ groupMemberId: gm._id });
+      if (!exists) {
+        await new GroupMemberProfile({
+          groupMemberId: gm._id,
+          name: gm.name,
+          professionalTitle: gm.professionalTitle || '',
+          profileImage: '/images/default-avatar.png',
+          biography: '',
+          goals: '',
+          topics: (topics && (topics.topic1 || topics.topic2 || topics.topic3)) ? {
+            topic1: topics.topic1 || '',
+            topic2: topics.topic2 || '',
+            topic3: topics.topic3 || ''
+          } : undefined
+        }).save();
+        console.log(`✅ Group Member Profile Created (non-blocking): ${gm._id}`);
+      }
+    } catch (e) {
+      console.error('⚠️ Non-fatal: failed to create GroupMemberProfile', e);
+    }
+  })();
+console.log('➡️ Redirecting to /member/group/register_success for', gm.username);
   // Redirect so the browser hits a clean GET and the success view picks up session state
   return res.redirect('/member/group/register_success');
 });
+
     } catch (err) {
       console.error("❌ Error registering group member:", err.message);
       return renderError(res, "An error occurred while registering the group member.");
