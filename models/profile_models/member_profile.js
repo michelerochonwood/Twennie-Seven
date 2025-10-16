@@ -1,61 +1,86 @@
+// models/profile_models/member_profile.js
 const mongoose = require('mongoose');
 
-const memberProfileSchema = new mongoose.Schema({
+const TopicsSchema = new mongoose.Schema(
+  {
+    topic1: { type: String, required: false },
+    topic2: { type: String, required: false },
+    topic3: { type: String, required: false }
+  },
+  { _id: false }
+);
+
+const memberProfileSchema = new mongoose.Schema(
+  {
     memberId: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: 'Member', // Links the profile to the member
-        unique: true
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: 'Member',
+      unique: true
     },
+
     name: {
-        type: String,
-        required: true,
-        trim: true
+      type: String,
+      required: true,
+      trim: true
     },
+
     professionalTitle: {
-        type: String,
-        trim: true
+      type: String,
+      trim: true,
+      default: ''
     },
+
     profileImage: {
-        type: String,
-        default: '/images/default-avatar.png',
-        trim: true
+      type: String,
+      trim: true,
+      default: '/images/default-avatar.png'
     },
+
     biography: {
-        type: String,
-        maxlength: 1000
+      type: String,
+      maxlength: 1000,
+      default: ''
     },
+
     goals: {
-        type: String,
-        maxlength: 1000
+      type: String,
+      maxlength: 1000,
+      default: ''
     },
-topics: {
-  topic1: String,
-  topic2: String,
-  topic3: String
-},
+
+    // Optional topics; only persisted if at least one is provided
+    topics: {
+      type: TopicsSchema,
+      required: false,
+      default: undefined
+    },
+
     libraryUnits: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'LibraryUnit' // References units submitted by the member
-        }
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'LibraryUnit'
+      }
     ],
+
     completedPromptSets: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Completion' // References completed prompt sets
-        }
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Completion'
+      }
     ],
+
     earnedBadges: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Badge' // References earned badges
-        }
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Badge'
+      }
     ]
-}, {
+  },
+  {
     timestamps: true
-});
+  }
+);
 
 const MemberProfile = mongoose.model('MemberProfile', memberProfileSchema);
-
 module.exports = MemberProfile;
