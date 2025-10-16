@@ -1341,3 +1341,174 @@ html, body {
   cursor: pointer;
   color: #555;
 }
+
+/* ================================
+   DELETE GROUP MEMBER – VIEW STYLES
+   ================================ */
+
+
+
+/* Grid of member cards */
+.groupsection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.1rem;
+  align-items: stretch;
+  margin: 0 auto 2rem auto;
+  max-width: 1100px;
+}
+
+/* Member card */
+.groupsection-card {
+  background: #f9f9fb;
+  border: 1px solid #e8e8f2;
+  border-radius: 18px;
+  padding: 1rem;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+  font-family: "Figtree", system-ui, sans-serif;
+}
+
+.groupsection-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+  border-color: #d9d9ef;
+}
+
+/* Avatar */
+.groupsection-card-image img {
+  width: 88px;
+  height: 88px;
+  border-radius: 999px;
+  object-fit: cover;
+  display: block;
+  margin: 0.25rem auto 0.75rem auto;
+  border: 3px solid #ffffff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  background: #fff;
+}
+
+/* Text block */
+.groupsection-card-info {
+  margin: 0 auto 0.5rem auto;
+  padding: 0 0.5rem;
+}
+
+.groupsection-card-name {
+  margin: 0 0 0.15rem 0;
+  color: #262262;
+  font-weight: 800;
+  font-size: 1.05rem;
+  line-height: 1.2;
+  text-transform: none;
+}
+
+.groupsection-card-title {
+  margin: 0.1rem 0;
+  color: #4e50a2;
+  font-weight: 600;
+  font-size: 0.92rem;
+  line-height: 1.25;
+  word-break: break-word;
+}
+
+/* Delete button inside each card */
+.groupsection-card form {
+  margin-top: 0.5rem;
+}
+
+.groupsection-card form button[type="submit"] {
+  width: 100%;
+  display: inline-block;
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-family: "Figtree";
+  font-weight: 800;
+  font-size: 0.95rem;
+  cursor: pointer;
+  background: #dc176a;          /* Twennie pink as destructive */
+  color: #fff;
+  transition: background .15s ease, box-shadow .15s ease, transform .05s ease;
+}
+
+.groupsection-card form button[type="submit"]:hover {
+  background: #b01453;
+  box-shadow: 0 3px 10px rgba(220,23,106,0.25);
+}
+
+.groupsection-card form button[type="submit"]:active {
+  transform: translateY(1px);
+}
+
+.groupsection-card form button[type="submit"]:focus-visible {
+  outline: 3px solid rgba(220,23,106,0.35);
+  outline-offset: 2px;
+}
+
+/* Bottom action buttons */
+.groupsection-button-container {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* “Add a member” – primary */
+.groupsection-addmember-button {
+  font-family: "Figtree";
+  padding: 0.7rem 1.25rem;
+  background-color: #262262;
+  color: #fff;
+  font-weight: 800;
+  font-size: 1rem;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background .15s ease, transform .05s ease;
+}
+.groupsection-addmember-button:hover { background: #4e50a2; }
+.groupsection-addmember-button:active { transform: translateY(1px); }
+.groupsection-addmember-button:focus-visible {
+  outline: 3px solid rgba(78,80,162,0.35);
+  outline-offset: 2px;
+}
+
+/* “Return to dashboard” – secondary (outline) */
+.groupsection-deletemember-button {
+  font-family: "Figtree";
+  padding: 0.7rem 1.25rem;
+  background: transparent;
+  color: #262262;
+  font-weight: 800;
+  font-size: 1rem;
+  border: 2px solid #262262;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color .15s ease, border-color .15s ease, background .15s ease, transform .05s ease;
+}
+.groupsection-deletemember-button:hover {
+  color: #fff;
+  background: #262262;
+  border-color: #262262;
+}
+.groupsection-deletemember-button:active { transform: translateY(1px); }
+.groupsection-deletemember-button:focus-visible {
+  outline: 3px solid rgba(38,34,98,0.25);
+  outline-offset: 2px;
+}
+
+/* Success alert width harmony with forms */
+.membership-form-container .alert.alert-success {
+  width: clamp(260px, 60%, 700px);
+  margin: 0.5rem auto 1rem auto;
+}
+
+/* Responsive tweaks */
+@media (max-width: 640px) {
+  .groupsection-grid { gap: 0.85rem; }
+  .groupsection-card { padding: 0.85rem; }
+  .groupsection-card-image img { width: 78px; height: 78px; }
+}
+
