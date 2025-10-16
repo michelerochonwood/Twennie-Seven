@@ -469,11 +469,19 @@ const leaderTopicsShim = {
             memberType: 'Leader' // This ensures it's scoped to leaders only
 
 }).sort({ submittedAt: -1 }).lean();
-            const resolvedGroupMembers = await Promise.all(
-  (userData.members || []).map(async (member) => {
-    const profile = await GroupMemberProfile.findOne({ memberId: member._id }).select('profileImage');
+
+const resolvedGroupMembers = await Promise.all(
+  (userData.members || []).map(async (memberDoc) => {
+    // plain object for merging
+    const m = typeof memberDoc.toObject === 'function' ? memberDoc.toObject() : memberDoc;
+    // ✅ use groupMemberId (new schema), not memberId
+    const profile = await GroupMemberProfile
+      .findOne({ groupMemberId: m._id })
+      .select('profileImage')
+      .lean();
+
     return {
-      ...member,
+      ...m,
       profileImage: profile?.profileImage || '/images/default-avatar.png'
     };
   })
@@ -781,7 +789,8 @@ return res.render('leader_dashboard', {
   csrfToken: req.csrfToken(),
   leader: {
     ...userData,
-    topics: leaderTopicsShim, // 👈 prevent leader.topics.topic1 crashes in legacy templates
+    // 👇 make the template loop use members that include profileImage
+    members: resolvedGroupMembers,
     profileImage: leaderProfile?.profileImage || '/images/default-avatar.png'
   },
   leaderGroupMembers: resolvedGroupMembers,
