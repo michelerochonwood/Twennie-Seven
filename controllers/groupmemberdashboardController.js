@@ -640,7 +640,8 @@ const leader = await Leader.findOne({ _id: userData.groupId._id }).select('group
 
 console.log("✅ Final Leader Name Before Rendering:", leader ? leader.groupLeaderName : "Not Found");
 
-const groupMemberProfile = await GroupMemberProfile.findOne({ memberId: id });
+const groupMemberProfile = await GroupMemberProfile.findOne({ groupMemberId: id }).select('profileImage');
+
 
 const emailPreferenceLevel = [1, 2, 3].includes(Number(userData?.emailPreferenceLevel))
   ? Number(userData.emailPreferenceLevel)
