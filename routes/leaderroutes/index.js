@@ -20,5 +20,10 @@ router.post('/:leaderId/add_group_member', leaderController.addGroupMember);
 // Success page after adding a group member
 router.get('/:leaderId/add_group_member/success', leaderController.showAddGroupMemberSuccess);
 
+router.get('/:leaderId/delete_group_member', leaderController.showDeleteGroupMemberForm);
+
+// Handle delete
+router.post('/:leaderId/delete_group_member', leaderController.deleteGroupMember);
+
 
 module.exports = router;

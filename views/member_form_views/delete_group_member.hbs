@@ -1,0 +1,49 @@
+{{#*inline "title"}}Delete Group Member | Twennie{{/inline}}
+
+<div class="membership-form-container">
+  <h1 class="form-title">delete a group member</h1>
+  <p style="text-align:center; margin-bottom: 1rem;">
+    Group: <strong>{{leader.groupName}}</strong>
+  </p>
+
+  {{#if deleted}}
+    <div class="alert alert-success" style="margin:0 auto 1rem auto;">
+      Member deleted successfully.
+    </div>
+  {{/if}}
+
+  {{#if members.length}}
+    <div class="groupsection-grid">
+      {{#each members}}
+        <div class="groupsection-card">
+          <div class="groupsection-card-image">
+            <img src="{{profileImage}}" alt="{{name}}'s profile">
+          </div>
+          <div class="groupsection-card-info">
+            <h3 class="groupsection-card-name">{{name}}</h3>
+            <p class="groupsection-card-title">{{professionalTitle}}</p>
+            <p class="groupsection-card-title" style="opacity:.8;">{{email}}</p>
+          </div>
+          <form method="POST" action="/leader/{{../leader._id}}/delete_group_member" style="margin-top:.5rem;">
+            {{#if ../csrfToken}}<input type="hidden" name="_csrf" value="{{../csrfToken}}">{{/if}}
+            <input type="hidden" name="memberId" value="{{_id}}">
+<button type="submit" onclick="return confirm('Delete this member? This cannot be undone.');">
+  delete
+</button>
+          </form>
+        </div>
+      {{/each}}
+    </div>
+  {{else}}
+    <p style="text-align:center;">No members to delete.</p>
+  {{/if}}
+
+  <div class="groupsection-button-container" style="margin: 1.25rem 0 100px;">
+    <button type="button" class="groupsection-addmember-button" onclick="window.location.href='/leader/{{leader._id}}/add_group_member'">
+      add a member
+    </button>
+    <button type="button" class="groupsection-deletemember-button" onclick="window.location.href='/dashboard/leader'">
+      return to dashboard
+    </button>
+  </div>
+</div>

@@ -402,6 +402,109 @@ return res.render('member_form_views/new_member_success', {
   }
 },
 
+// --- Show Delete Group Member page ---
+showDeleteGroupMemberForm: async (req, res) => {
+  try {
+    const { leaderId } = req.params;
+
+    const leader = await Leader.findById(leaderId)
+      .select('groupName members')
+      .populate({
+        path: 'members',
+        model: 'GroupMember',
+        select: 'name email professionalTitle'
+      });
+
+    if (!leader) {
+      return res.status(404).render('member_form_views/error', {
+        layout: 'memberformlayout',
+        title: 'Leader Not Found',
+        errorMessage: 'The specified leader does not exist.'
+      });
+    }
+
+    // Attach profile images (new schema uses groupMemberId)
+    const membersWithImages = await Promise.all(
+      (leader.members || []).map(async (m) => {
+        const profile = await require('../models/profile_models/groupmember_profile')
+          .findOne({ groupMemberId: m._id })
+          .select('profileImage')
+          .lean();
+        return {
+          _id: m._id,
+          name: m.name,
+          email: m.email,
+          professionalTitle: m.professionalTitle || '',
+          profileImage: profile?.profileImage || '/images/default-avatar.png'
+        };
+      })
+    );
+
+    return res.render('member_form_views/delete_group_member', {
+      layout: 'memberformlayout',
+      title: 'Delete Group Member',
+      leader: { _id: leaderId, groupName: leader.groupName },
+      members: membersWithImages,
+      csrfToken: req.csrfToken ? req.csrfToken() : null,
+      deleted: req.query.deleted === '1'
+    });
+  } catch (err) {
+    console.error('Error rendering delete group member form:', err);
+    return res.status(500).render('member_form_views/error', {
+      layout: 'memberformlayout',
+      title: 'Error',
+      errorMessage: 'An unexpected error occurred while loading the delete page.'
+    });
+  }
+},
+
+// --- Handle Delete Group Member POST ---
+deleteGroupMember: async (req, res) => {
+  try {
+    const { leaderId } = req.params;
+    const { memberId } = req.body;
+
+    // Basic guard
+    const [leader, member] = await Promise.all([
+      Leader.findById(leaderId).select('_id'),
+      GroupMember.findById(memberId).select('_id groupId')
+    ]);
+
+    if (!leader || !member) {
+      return res.status(404).render('member_form_views/error', {
+        layout: 'memberformlayout',
+        title: 'Not Found',
+        errorMessage: 'Leader or group member not found.'
+      });
+    }
+
+    if (String(member.groupId) !== String(leader._id)) {
+      return res.status(403).render('member_form_views/error', {
+        layout: 'memberformlayout',
+        title: 'Access Denied',
+        errorMessage: 'This member does not belong to the specified leader.'
+      });
+    }
+
+    // Delete profile first (if present), then member, then pull from leader
+    const GroupMemberProfile = require('../models/profile_models/groupmember_profile');
+    await GroupMemberProfile.deleteOne({ groupMemberId: member._id });
+    await GroupMember.deleteOne({ _id: member._id });
+    await Leader.updateOne({ _id: leader._id }, { $pull: { members: member._id } });
+
+    // Back to the list with a "deleted" flag
+    return res.redirect(`/leader/${leaderId}/delete_group_member?deleted=1`);
+  } catch (err) {
+    console.error('Error deleting group member:', err);
+    return res.status(500).render('member_form_views/error', {
+      layout: 'memberformlayout',
+      title: 'Error',
+      errorMessage: 'An error occurred while deleting the group member.'
+    });
+  }
+},
+
+
 };
 
 
