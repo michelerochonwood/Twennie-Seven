@@ -1,4 +1,25 @@
+// models/member_models/leader.js
 const mongoose = require('mongoose');
+
+const billingAddressSchema = new mongoose.Schema({
+  line1: { type: String, trim: true },
+  line2: { type: String, trim: true },
+  city:  { type: String, trim: true },
+  province: { type: String, trim: true }, // use `state` if outside Canada
+  postalCode: { type: String, trim: true },
+  country: { type: String, default: 'CA', trim: true }
+}, { _id: false });
+
+const mfaSchema = new mongoose.Schema({
+  enabled:   { type: Boolean, default: false },
+  method:    { type: String, enum: ['totp'], default: undefined },
+  // Encrypted at rest (AES-256-GCM). Never store raw.
+  secretEnc: { type: String },  // base64 ciphertext
+  secretIv:  { type: String },  // base64 IV
+  secretTag: { type: String },  // base64 auth tag
+  recoveryCodes: [{ type: String }], // bcrypt-hashed codes
+  updatedAt: { type: Date }
+}, { _id: false });
 
 const leaderSchema = new mongoose.Schema({
   groupName: {
@@ -46,16 +67,17 @@ const leaderSchema = new mongoose.Schema({
       'Other'
     ]
   },
+
   username: {
     type: String,
     required: [true, 'Username is required'],
-    unique: true,
+    unique: true, // creates a unique index
     trim: true
   },
   groupLeaderEmail: {
     type: String,
     required: [true, 'Email is required'],
-    unique: true,
+    unique: true, // creates a unique index
     trim: true,
     lowercase: true,
     match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email']
@@ -65,109 +87,138 @@ const leaderSchema = new mongoose.Schema({
     required: [true, 'Password is required'],
     minlength: [6, 'Password must be at least 6 characters']
   },
-  billingAddress: {
-  line1: { type: String },
-  line2: { type: String },
-  city: { type: String },
-  province: { type: String }, // use `state` if you're not in Canada
-  postalCode: { type: String },
-  country: { type: String, default: 'CA' } // or 'US' if applicable
-},
+
+  billingAddress: billingAddressSchema,
+
   groupSize: {
     type: Number,
     required: [true, 'Group size is required'],
     min: [2, 'Group size must be at least 2 members'],
     max: [10, 'Group size must not exceed 10 members']
   },
-topics: {
-  topic1: {
-    type: String
+
+  topics: {
+    topic1: { type: String, trim: true },
+    topic2: { type: String, trim: true },
+    topic3: { type: String, trim: true }
   },
-  topic2: {
-    type: String
-  },
-  topic3: {
-    type: String
-  }
-},
 
   profileImage: {
     type: String,
     default: '/images/default-avatar.png',
     trim: true
   },
+
   members: [
     { type: mongoose.Schema.Types.ObjectId, ref: 'GroupMember' }
   ],
+
   membershipType: {
     type: String,
     default: 'leader',
     enum: ['leader']
   },
+
   registration_code: {
     type: String,
     required: [true, 'Registration code is required'],
     unique: true,
     trim: true
   },
+
   paymentStatus: {
     type: String,
     enum: ['pending', 'paid'],
     default: 'pending'
   },
+
   createdAt: {
     type: Date,
     default: Date.now
   },
 
   accessLevel: {
-  type: String,
-  default: 'leader',
-  enum: ['leader']
-},
+    type: String,
+    default: 'leader',
+    enum: ['leader']
+  },
+
   isActive: {
     type: Boolean,
     default: true
   },
-  stripeCustomerId: {
-    type: String
+
+  // ---------- Stripe / Billing ----------
+  stripeCustomerId: { type: String, trim: true },
+  stripeSubscriptionId: { type: String, trim: true },
+
+  // Seat-based billing line item (quantity = seats)
+  stripeSubscriptionItemId: { type: String, trim: true },
+
+  // Optional: price used for the seat item (handy for upgrades/downgrades)
+  stripePriceId: { type: String, trim: true },
+
+  // Cached bookkeeping for UI/audit
+  lastSeatQuantity: { type: Number, default: 0 },
+  lastSeatSyncAt: { type: Date },
+
+  // Decide how seats are counted (default: active members)
+  seatBillingMode: {
+    type: String,
+    enum: ['active_members', 'max_group_size'],
+    default: 'active_members'
   },
-  stripeSubscriptionId: {
-    type: String
-  },
+
   subscriptionStatus: {
     type: String,
-    enum: ['active', 'cancelled', 'pending'],
+    enum: ['active', 'canceled', 'pending'], // US spelling for Stripe parity
     default: 'pending'
   },
-    emailPreferenceLevel: {
+
+  // ---------- Email preferences ----------
+  emailPreferenceLevel: {
     type: Number,
-    enum: [1, 2, 3],           // 1=minimal, 2=product updates, 3=events+promotions
+    enum: [1, 2, 3], // 1=minimal, 2=product updates, 3=events+promotions
     default: 1
   },
-  emailPreferencesUpdatedAt: {
-    type: Date
-  },
-  mfa: {
-  enabled: { type: Boolean, default: false },
-  method: { type: String, enum: ['totp'], default: undefined },
-  // Encrypted at rest (AES-256-GCM). Never store raw.
-  secretEnc: { type: String },       // base64 of ciphertext
-  secretIv: { type: String },        // base64 of IV
-  secretTag: { type: String },       // base64 of auth tag
-  recoveryCodes: [{ type: String }], // bcrypt-hashed codes
-  updatedAt: { type: Date }
-},
+  emailPreferencesUpdatedAt: { type: Date },
+
+  // ---------- MFA ----------
+  mfa: mfaSchema
+
 }, {
-  timestamps: true // ✅ Properly placed as the second argument
-  
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
 });
 
+// ---------- Virtuals ----------
+// If GroupMember has isActive, bill only active members.
+// When members are populated, count only active ones; otherwise fall back to array length.
+leaderSchema.virtual('activeMemberCount').get(function () {
+  if (Array.isArray(this.members) && this.members.length && typeof this.members[0] === 'object') {
+    return this.members.filter(m => m?.isActive !== false).length;
+  }
+  return Array.isArray(this.members) ? this.members.length : 0;
+});
 
+// ---------- Instance Methods ----------
+// Decide the authoritative seat quantity for billing.
+leaderSchema.methods.getSeatQuantity = function () {
+  if (this.seatBillingMode === 'max_group_size') return this.groupSize || 0;
+  // default: active members
+  return this.activeMemberCount ?? (this.members?.length || 0);
+};
+
+// ---------- Indexes ----------
+// Helpful to ensure uniqueness at the DB level (unique above defines indexes, this is explicit safety)
+leaderSchema.index({ username: 1 }, { unique: true });
+leaderSchema.index({ groupLeaderEmail: 1 }, { unique: true });
+leaderSchema.index({ registration_code: 1 }, { unique: true });
 
 const Leader = mongoose.model('Leader', leaderSchema);
-
 module.exports = Leader;
+
 
 
 

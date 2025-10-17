@@ -37,6 +37,17 @@ console.log('✅ COOKIE_SECRET present:', !!process.env.COOKIE_SECRET);
 // (Optional) expose GA ID to layouts if you choose to gate analytics by GA_ID
 app.locals.GA_ID = process.env.NODE_ENV === 'production' ? process.env.GA_MEASUREMENT_ID : null;
 
+/* ------------------------------------------------------------------
+   1) STRIPE WEBHOOKS — MOUNT FIRST (RAW BODY INSIDE THE ROUTER)
+   ------------------------------------------------------------------ */
+try {
+  const webhookRoutes = require('./routes/webhooks'); // defines POST /webhooks/stripe with express.raw
+  app.use('/webhooks', webhookRoutes);
+  console.log('✅ Webhooks router mounted at /webhooks');
+} catch (e) {
+  console.error('⚠️ Failed to mount /webhooks router:', e?.message || e);
+}
+
 // ---- Handlebars setup ----
 const hbs = create({
   extname: '.hbs',
@@ -123,7 +134,9 @@ app.engine('hbs', hbs.engine);
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));
 
-// ---- Core middleware ----
+/* ------------------------------------------------------------------
+   2) CORE MIDDLEWARE (after webhooks)
+   ------------------------------------------------------------------ */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
@@ -133,6 +146,7 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/images', express.static(path.join(__dirname, 'public/images')));
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+app.use('/icons', express.static(path.join(__dirname, 'public/icons')));
 
 // Minimal health endpoint for platform checks
 app.get('/healthz', (_req, res) => res.status(200).send('ok'));
@@ -147,7 +161,9 @@ app.use((req, res, next) => {
   next();
 });
 
-// ---- Session (guarded) ----
+/* ------------------------------------------------------------------
+   3) SESSION
+   ------------------------------------------------------------------ */
 const sessionOptions = {
   secret: process.env.SESSION_SECRET || 'defaultsecret',
   resave: true,
@@ -185,8 +201,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/icons', express.static(path.join(__dirname, 'public/icons')));
-
 // Consent locals (must come before views/routes)
 app.use((req, res, next) => {
   const defaults = { version: 1, necessary: true, functional: false, analytics: false, marketing: false };
@@ -199,14 +213,15 @@ app.use((req, res, next) => {
   next();
 });
 
-// ---- CSRF (with safe bypasses) ----
+/* ------------------------------------------------------------------
+   4) CSRF (with safe bypasses)
+   ------------------------------------------------------------------ */
 const csrfProtection = csrf();
-
 app.use((req, res, next) => {
   const skipPaths = [
     '/member/group/verify-registration-code',
-    '/badges/pick', // allow this POST without CSRF token
-    '/stripe', // webhooks commonly bypass CSRF (your route sets its own parser)
+    '/badges/pick',
+    '/webhooks/stripe', // ⬅️ Stripe webhooks bypass CSRF (verified by signature instead)
   ];
   const csrfExemptDeletes = [/^\/promptsetregistration\/unregister\/[\w\d]+$/];
   const contentType = req.headers['content-type'] || '';
@@ -218,7 +233,9 @@ app.use((req, res, next) => {
   return csrfProtection(req, res, next);
 });
 
-// ---- Request logging ----
+/* ------------------------------------------------------------------
+   5) LOGGING + PASSPORT
+   ------------------------------------------------------------------ */
 app.use((req, _res, next) => {
   console.log(
     `[${new Date().toISOString()}] ${req.method} ${req.url} - User: ${req.session?.user?.username || 'Guest'}`
@@ -226,7 +243,6 @@ app.use((req, _res, next) => {
   next();
 });
 
-// ---- Passport (guarded) ----
 try {
   require('./config/passport-config')(passport);
   console.log('✅ Passport config loaded');
@@ -259,10 +275,8 @@ app.use((req, _res, next) => {
 
 // AFTER: app.use(passport.session());
 // BEFORE: the inactive-logout guard
-
 app.use(async (req, res, next) => {
   try {
-    // If user is present but we don't know isActive yet, load just that flag.
     if (req.user && typeof req.user.isActive === 'undefined') {
       let doc = null;
       if (req.user.membershipType === 'leader') {
@@ -270,22 +284,15 @@ app.use(async (req, res, next) => {
       } else if (req.user.membershipType === 'group_member') {
         doc = await GroupMember.findById(req.user.id).select('isActive').lean();
       } else {
-        // default to member
         doc = await Member.findById(req.user.id).select('isActive').lean();
       }
-      req.user.isActive = doc?.isActive ?? true; // default true if somehow missing
+      req.user.isActive = doc?.isActive ?? true;
     }
-  } catch (e) {
-    // don't block the request on a read error; just continue
-  }
+  } catch (e) { /* non-blocking */ }
   next();
 });
 
-
-// ---- Stripe webhook (assumes its route configures body parsing) ----
-app.use('/stripe', require('./routes/stripe/stripewebhook'));
-
-// after app.use(passport.session());
+// Inactive logout guard
 app.use((req, res, next) => {
   if (req.user && req.user.isActive === false) {
     req.logout?.(() => {});
@@ -301,88 +308,30 @@ app.use((req, res, next) => {
   next();
 });
 
-
-// ---- Global user/session locals ----
-app.use(async (req, res, next) => {
-  if (req.session?.user?.id) {
-    try {
-      let membershipType = req.session.user.membershipType;
-      const [member, leader, groupMember] = await Promise.all([
-        Member.findById(req.session.user.id),
-        Leader.findById(req.session.user.id),
-        GroupMember.findById(req.session.user.id),
-      ]);
-
-      if (member) membershipType = 'member';
-      else if (leader) membershipType = 'leader';
-      else if (groupMember) membershipType = 'group_member';
-
-      req.session.user.membershipType = membershipType;
-
-      const roleToPath = {
-        leader: '/dashboard/leader',
-        group_member: '/dashboard/groupmember',
-        member: '/dashboard/member',
-      };
-
-      res.locals.dashboardLink = roleToPath[membershipType] || '/dashboard';
-      // console.log(`✅ dashboardLink set: ${res.locals.dashboardLink}`);
-    } catch (err) {
-      console.error('❌ Error retrieving membershipType:', err);
-      res.locals.dashboardLink = '/dashboard';
-    }
-  } else {
-    res.locals.dashboardLink = '/dashboard';
-  }
-
-  const sessionUser = req.session?.user || null;
-  const passportUser = req.user || null;
-
-  res.locals.user = passportUser || sessionUser;
-  res.locals.isAuthenticated =
-    (typeof req.isAuthenticated === 'function' && req.isAuthenticated()) || !!sessionUser;
-
-  res.locals.userProfileImage = '/images/default-avatar.png';
-  try {
-    if (req.session?.user?.id) {
-      const { id, membershipType } = req.session.user;
-      if (membershipType === 'member') {
-        const profile = await MemberProfile.findOne({ memberId: id }).lean();
-        if (profile?.profileImage) res.locals.userProfileImage = profile.profileImage;
-      } else if (membershipType === 'leader') {
-        const profile = await LeaderProfile.findOne({ leaderId: id }).lean();
-        if (profile?.profileImage) res.locals.userProfileImage = profile.profileImage;
-      } else if (membershipType === 'group_member') {
-        const profile = await GroupMemberProfile.findOne({ groupMemberId: id }).lean();
-        if (profile?.profileImage) res.locals.userProfileImage = profile.profileImage;
-      }
-    }
-  } catch (err) {
-    console.error('❌ Error loading profile image:', err);
-  }
-
-  next();
-});
-
-// ---- MongoDB connect (no hard exit) ----
+/* ------------------------------------------------------------------
+   6) MONGO CONNECT
+   ------------------------------------------------------------------ */
 if (process.env.MONGO_URI) {
   mongoose
     .connect(process.env.MONGO_URI)
     .then(() => console.log('✅ MongoDB connected'))
     .catch((err) => {
       console.error('❌ MongoDB connection error:', err);
-      // Do NOT exit; keep app running so Railway health checks can pass and logs are visible
     });
 } else {
   console.warn('⚠️ MONGO_URI not set; skipping DB connect.');
 }
 
-// ---- Ensure directories exist ----
+/* ------------------------------------------------------------------
+   7) ENSURE DIRECTORIES
+   ------------------------------------------------------------------ */
 ['public/uploads/profiles', 'public/uploads/groups'].forEach((dir) => {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 });
 
-// ---- Routes ----
+/* ------------------------------------------------------------------
+   8) ROUTES
+   ------------------------------------------------------------------ */
 app.use('/', require('./routes/promoroutes/promoroutes'));
 app.use('/member', require('./routes/memberroutes'));
 app.use('/member/group', require('./routes/groupmemberroutes'));
@@ -414,7 +363,17 @@ app.use('/badges', require('./routes/badgesroutes'));
 app.use('/dashboard', require('./routes/preferenceroutes'));
 app.use('/ui', require('./routes/uiroutes'));
 
-// ---- Error handlers ----
+// ⬇️ New: Billing routes
+try {
+  app.use('/billing', require('./routes/billing'));
+  console.log('✅ Billing routes mounted at /billing');
+} catch (e) {
+  console.error('⚠️ Failed to mount /billing routes:', e?.message || e);
+}
+
+/* ------------------------------------------------------------------
+   9) ERRORS
+   ------------------------------------------------------------------ */
 app.use((err, req, res, next) => {
   if (err?.code === 'EBADCSRFTOKEN') {
     console.error('❌ CSRF token validation failed.');
@@ -449,6 +408,7 @@ app.use((err, req, res, _next) => {
 });
 
 module.exports = app;
+
 
 
 
