@@ -415,7 +415,11 @@ const mfaStatus = {
       })
     : null
 };
-            const leaderProfile = await LeaderProfile.findOne({ leaderId: id }).select('profileImage topics');
+            const leaderProfile = await LeaderProfile
+  .findOne({ leaderId: id })
+  .select('profileImage groupImage topics')
+  .lean();
+
 
             // ---- Safe topics (leaders may not have topics on account doc) ----
 function buildTopicObj(title) {
@@ -787,12 +791,12 @@ return res.render('leader_dashboard', {
   layout: 'dashboardlayout',
   title: 'Leader Dashboard',
   csrfToken: req.csrfToken(),
-  leader: {
-    ...userData,
-    // 👇 make the template loop use members that include profileImage
-    members: resolvedGroupMembers,
-    profileImage: leaderProfile?.profileImage || '/images/default-avatar.png'
-  },
+leader: {
+  ...userData,
+  members: resolvedGroupMembers,
+  profileImage: leaderProfile?.profileImage || '/images/default-avatar.png',
+  groupImage: leaderProfile?.groupImage || '/images/default-avatar.png'
+},
   leaderGroupMembers: resolvedGroupMembers,
   maxGroupSize: userData.maxGroupSize,
   leaderUnits,

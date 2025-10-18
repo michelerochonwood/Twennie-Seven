@@ -2,6 +2,17 @@
   <h2 class="groupsection-title">group overview</h2>
   <p class="groupsection-title2">{{leader.groupName}}</p>
 
+  {{!-- Group image under the name --}}
+  <div class="groupsection-groupimage-wrapper" style="display:flex; justify-content:center; margin: 10px 0 20px;">
+    <div class="groupsection-groupimage" style="width:140px; height:140px; border-radius:999px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.08);">
+      <img
+        src="{{#if leader.groupImage}}{{leader.groupImage}}{{else}}/images/default-avatar.png{{/if}}"
+        alt="{{leader.groupName}} group image"
+        style="width:100%; height:100%; object-fit:cover; display:block;"
+      >
+    </div>
+  </div>
+
   <div class="groupsection-stats">
     <p>Total Members: {{leader.members.length}} of possible {{leader.maxGroupSize}}</p>
   </div>
@@ -70,6 +81,7 @@
     </button>
   </div>
 </section>
+
 
 
 
