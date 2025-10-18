@@ -4299,6 +4299,7 @@ box-shadow: none !important;
   padding: 0.7rem 1.4rem;
   border-radius: 999px;
   border: none;
+  width: 200px;
   background: #262262;          /* navy */
   color: #fff;
   cursor: pointer;
@@ -4306,7 +4307,7 @@ box-shadow: none !important;
 }
 
 .groupsection .groupsection-deletemember-button:hover {
-  background: #4e50a2;          /* hover purple */
+  background: #4e50a2;           /* hover purple */
 }
 
 
