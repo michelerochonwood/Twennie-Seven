@@ -82,24 +82,6 @@ async function resolveAuthorById(authorId) {
 }
 
 
-// ---- Access helper: tier-based entitlement (leaders/group = full; paid = full; free = articles/videos) ----
-function canViewByTier(req, unitType) {
-  const user = req.user;
-  if (!user) return false; // must be logged in to view full content
-
-  const role = user.membershipType; // 'leader' | 'group_member' | 'member'
-  const access = user.accessLevel;  // 'free_individual' | 'paid_individual' | 'contributor_individual'
-
-  if (role === 'leader' || role === 'group_member') return true;
-
-  if (role === 'member') {
-    if (access === 'paid_individual' || access === 'contributor_individual') return true;
-    if (access === 'free_individual') {
-      return unitType === 'article' || unitType === 'video';
-    }
-  }
-  return false;
-}
 
 
 
@@ -573,16 +555,14 @@ viewArticle: async (req, res) => {
     const isOwner = !!(currentUserId && authorId && currentUserId === authorId);
     console.log(`👑 Is owner: ${isOwner}`);
 
-    // 4) Visibility → access  (fixed to require login + tier entitlement)
+    // 4) Visibility → access
     let isAuthorizedToViewFullContent = false;
     let isOrgMatch = false;
     let isTeamMatch = false;
 
     if (article.visibility === 'all_members') {
-      // Now requires being logged in AND entitled for 'article'
-      isAuthorizedToViewFullContent = canViewByTier(req, 'article');
+      isAuthorizedToViewFullContent = true;
     } else {
-      // If you have org/team scoping fields available on req.user/author, keep using them:
       isOrgMatch =
         article.visibility === 'organization_only' &&
         req.user?.organization &&
@@ -595,10 +575,7 @@ viewArticle: async (req, res) => {
         author.groupId &&
         req.user.groupId.toString() === author.groupId.toString();
 
-      const hasScopeAccess = isOwner || isOrgMatch || isTeamMatch;
-
-      // Must satisfy BOTH: scope access AND tier entitlement
-      isAuthorizedToViewFullContent = hasScopeAccess && canViewByTier(req, 'article');
+      isAuthorizedToViewFullContent = isOwner || isOrgMatch || isTeamMatch;
     }
 
     console.log("🔒 Access breakdown:");
@@ -743,14 +720,12 @@ viewVideo: async (req, res) => {
       authorGroupId = authorAsGroupMember.groupId || null;
     }
 
-    // ---- FIXED ACCESS LOGIC (minimal change) ----
     let isAuthorizedToViewFullContent = false;
     let isOrgMatch = false;
     let isTeamMatch = false;
 
     if (video.visibility === 'all_members') {
-      // must be logged in AND entitled for 'video'
-      isAuthorizedToViewFullContent = canViewByTier(req, 'video');
+      isAuthorizedToViewFullContent = true;
     } else {
       isOrgMatch =
         video.visibility === 'organization_only' &&
@@ -764,10 +739,7 @@ viewVideo: async (req, res) => {
         authorGroupId &&
         req.user.groupId.toString() === authorGroupId.toString();
 
-      const hasScopeAccess = isOwner || isOrgMatch || isTeamMatch;
-
-      // must satisfy BOTH: scope access AND tier entitlement
-      isAuthorizedToViewFullContent = hasScopeAccess && canViewByTier(req, 'video');
+      isAuthorizedToViewFullContent = isOwner || isOrgMatch || isTeamMatch;
     }
 
     console.log("🔒 Access breakdown (video):", { isOrgMatch, isTeamMatch, isAuthorizedToViewFullContent });
@@ -849,7 +821,6 @@ viewVideo: async (req, res) => {
 
 
 
-
       
     
     
@@ -875,10 +846,9 @@ viewInterview: async (req, res) => {
     console.log("✅ Interview found:", interview);
 
     // 2. Resolve the author
-    const authorIdRaw = interview.author?.id || interview.author;
-    const authorId = authorIdRaw ? authorIdRaw.toString() : null;
+    const authorId = interview.author?.id || interview.author;
     const author = await resolveAuthorById(authorId);
-    if (!authorId || !author) {
+    if (!author) {
       console.error(`❌ Author with ID ${authorId} not found.`);
       return res.status(404).render('unit_views/error', {
         layout: 'unitviewlayout',
@@ -888,21 +858,17 @@ viewInterview: async (req, res) => {
     }
 
     // 3. Check if the current user is the owner
-    const currentUserId = (req.user?._id || req.user?.id)?.toString();
-    const currentMembership = req.user?.membershipType || null;
-    const isOwner = !!(currentUserId && authorId && currentUserId === authorId);
+    const isOwner = req.user && req.user.id.toString() === authorId.toString();
     console.log(`👑 Is owner: ${isOwner}`);
 
-    // 4. Determine access based on visibility (fixed)
+    // 4. Determine access based on visibility
     let isAuthorizedToViewFullContent = false;
     let isOrgMatch = false;
     let isTeamMatch = false;
 
     if (interview.visibility === 'all_members') {
-      // must be logged in AND entitled for 'interview'
-      isAuthorizedToViewFullContent = canViewByTier(req, 'interview');
+      isAuthorizedToViewFullContent = true;
     } else {
-      // If you have org/team fields for the author, keep using them exactly as before
       isOrgMatch =
         interview.visibility === 'organization_only' &&
         req.user?.organization &&
@@ -915,10 +881,7 @@ viewInterview: async (req, res) => {
         author.groupId &&
         req.user.groupId.toString() === author.groupId.toString();
 
-      const hasScopeAccess = isOwner || isOrgMatch || isTeamMatch;
-
-      // Must satisfy BOTH: scope access AND tier entitlement
-      isAuthorizedToViewFullContent = hasScopeAccess && canViewByTier(req, 'interview');
+      isAuthorizedToViewFullContent = isOwner || isOrgMatch || isTeamMatch;
     }
 
     console.log("🔒 Access breakdown:");
@@ -931,8 +894,8 @@ viewInterview: async (req, res) => {
     let leaderName = null;
     let leaderId = null;
 
-    if (currentMembership === 'leader' && currentUserId) {
-      const leader = await Leader.findById(currentUserId);
+    if (req.user?.membershipType === 'leader') {
+      const leader = await Leader.findById(req.user.id);
       if (leader) {
         groupMembers = await GroupMember.find({ groupId: leader._id })
           .select('_id name')
@@ -950,42 +913,30 @@ viewInterview: async (req, res) => {
     res.render('unit_views/single_interview', {
       layout: 'unitviewlayout',
       _id: interview._id.toString(),
-
-      // identity & content
       interview_title: interview.interview_title,
       short_summary: interview.short_summary,
       full_summary: interview.full_summary,
       interview_link: interview.video_link || '',
       embedLink,
       interview_content: interview.transcript || "Transcript will be available soon.",
-
-      // author card
       author: {
         name: author.name || 'Unknown Author',
         image: author.image || '/images/default-avatar.png',
       },
-
-      // topics
       main_topic: interview.main_topic,
       secondary_topics: interview.secondary_topics,
       sub_topic: interview.sub_topic,
-
-      // flags
       isOwner,
       isAuthorizedToViewFullContent,
-      isAuthenticated: !!req.user, // keep consistent with other handlers
-      isLeader: currentMembership === 'leader',
+      isAuthenticated: req.isAuthenticated(),
+      isLeader: req.user?.membershipType === 'leader',
       isGroupMemberOrLeader:
-        currentMembership === 'leader' || currentMembership === 'group_member',
+        req.user?.membershipType === 'leader' || req.user?.membershipType === 'group_member',
       isGroupMemberOrMember:
-        currentMembership === 'group_member' || currentMembership === 'member',
-
-      // leader-only assignment data
+        req.user?.membershipType === 'group_member' || req.user?.membershipType === 'member',
       groupMembers,
-      leaderId: leaderId || currentUserId, // fallback stays intact
-      leaderName: leaderName || req.user?.username || 'You',
-
-      // CSRF
+      leaderId: leaderId || req.user._id.toString(), // ✅ Ensures correct leaderId even if fallback
+      leaderName: leaderName || req.user.username || 'You',
       csrfToken: req.csrfToken()
     });
 
@@ -1064,29 +1015,25 @@ viewPromptset: async (req, res) => {
       ['paid_individual', 'contributor_individual'].includes(req.user?.accessLevel);
 
     // 4) Visibility check
-let isAuthorizedToViewFullContent = false;
+    let isAuthorizedToViewFullContent = false;
+    if (promptSet.visibility === 'all_members') {
+      isAuthorizedToViewFullContent = true;
+    } else {
+      const isOrgMatch =
+        promptSet.visibility === 'organization_only' &&
+        req.user?.organization &&
+        authorOrg &&
+        req.user.organization === authorOrg;
 
-if (promptSet.visibility === 'all_members') {
-  // must be logged in AND entitled for 'promptset'
-  isAuthorizedToViewFullContent = canViewByTier(req, 'promptset');
-} else {
-  const isOrgMatch =
-    promptSet.visibility === 'organization_only' &&
-    req.user?.organization &&
-    authorOrg &&
-    req.user.organization === authorOrg;
+      const isTeamMatch =
+        promptSet.visibility === 'team_only' &&
+        req.user?.groupId &&
+        authorGroupId &&
+        req.user.groupId.toString() === authorGroupId.toString();
 
-  const isTeamMatch =
-    promptSet.visibility === 'team_only' &&
-    req.user?.groupId &&
-    authorGroupId &&
-    req.user.groupId.toString() === authorGroupId.toString();
-
-  // keep your original role/scope logic, then AND with tier entitlement
-  isAuthorizedToViewFullContent =
-    (isOwner || isLeader || isGroupMember || isPaidIndividual || isOrgMatch || isTeamMatch)
-    && canViewByTier(req, 'promptset');
-}
+      isAuthorizedToViewFullContent =
+        isOwner || isLeader || isGroupMember || isPaidIndividual || isOrgMatch || isTeamMatch;
+    }
 
     // 5) Leader context for assignment UI
     let groupMembers = [];
@@ -1217,14 +1164,12 @@ viewExercise: async (req, res) => {
       authorGroupId = authorAsGroupMember.groupId || null;
     }
 
-    // ---- FIXED ACCESS LOGIC ----
     let isAuthorizedToViewFullContent = false;
     let isOrgMatch = false;
     let isTeamMatch = false;
 
     if (exercise.visibility === 'all_members') {
-      // must be logged in AND entitled for 'exercise'
-      isAuthorizedToViewFullContent = canViewByTier(req, 'exercise');
+      isAuthorizedToViewFullContent = true;
     } else {
       isOrgMatch =
         exercise.visibility === 'organization_only' &&
@@ -1238,10 +1183,7 @@ viewExercise: async (req, res) => {
         authorGroupId &&
         req.user.groupId.toString() === authorGroupId.toString();
 
-      const hasScopeAccess = isOwner || isOrgMatch || isTeamMatch;
-
-      // must satisfy BOTH: scope access AND tier entitlement
-      isAuthorizedToViewFullContent = hasScopeAccess && canViewByTier(req, 'exercise');
+      isAuthorizedToViewFullContent = isOwner || isOrgMatch || isTeamMatch;
     }
 
     console.log('🔒 Access breakdown (exercise):', { isOwner, isOrgMatch, isTeamMatch, isAuthorizedToViewFullContent });
@@ -1378,14 +1320,12 @@ viewTemplate: async (req, res) => {
       authorGroupId = authorAsGroupMember.groupId || null;
     }
 
-    // ---- FIXED ACCESS LOGIC (minimal change) ----
     let isAuthorizedToViewFullContent = false;
     let isOrgMatch = false;
     let isTeamMatch = false;
 
     if (template.visibility === 'all_members') {
-      // must be logged in AND entitled for 'template'
-      isAuthorizedToViewFullContent = canViewByTier(req, 'template');
+      isAuthorizedToViewFullContent = true;
     } else {
       isOrgMatch =
         template.visibility === 'organization_only' &&
@@ -1399,10 +1339,7 @@ viewTemplate: async (req, res) => {
         authorGroupId &&
         req.user.groupId.toString() === authorGroupId.toString();
 
-      const hasScopeAccess = isOwner || isOrgMatch || isTeamMatch;
-
-      // must satisfy BOTH: scope access AND tier entitlement
-      isAuthorizedToViewFullContent = hasScopeAccess && canViewByTier(req, 'template');
+      isAuthorizedToViewFullContent = isOwner || isOrgMatch || isTeamMatch;
     }
 
     console.log("🔒 Access breakdown (template):", { isOwner, isOrgMatch, isTeamMatch, isAuthorizedToViewFullContent });
@@ -1500,7 +1437,6 @@ viewTemplate: async (req, res) => {
 },
 
 
-
 viewUpcoming: async (req, res) => {
   try {
     const { id } = req.params;
@@ -1526,11 +1462,13 @@ viewUpcoming: async (req, res) => {
       if (modelPath) return res.redirect(`/${modelPath}/view/${upcoming.published_unit_ref.id}`);
     }
 
-    // ✅ Updated rule: any logged-in user can view upcoming units
     const isAuthenticated = !!req.user;
     const isLeader = req.user?.membershipType === 'leader';
-    const canPublish = isLeader;
-    const isAuthorizedToViewFullContent = isAuthenticated;
+    const canPublish = isLeader; // leaders see "publish now"
+
+    // Lightweight teaser rule
+    const isAuthorizedToViewFullContent =
+      upcoming.visibility === 'all_members' ? true : isAuthenticated;
 
     // Leader context for assign form
     let groupMembers = [];
@@ -1538,6 +1476,7 @@ viewUpcoming: async (req, res) => {
     let leaderId = null;
 
     if (isLeader) {
+      // Use req.user.id (your session shim sets both id and _id as strings)
       const leaderDoc = await Leader.findById(req.user.id || req.user._id).select('groupLeaderName username').lean();
       if (leaderDoc) {
         const leaderObjectId = leaderDoc._id;
@@ -1594,7 +1533,6 @@ viewUpcoming: async (req, res) => {
     });
   }
 },
-
 
 
 
