@@ -421,6 +421,13 @@ const leaderProfile = await LeaderProfile
   .select('profileImage groupImage topics')
   .lean();
 
+  // Pull the group's image from the group profile doc
+const groupProfile = await GroupProfile
+  .findOne({ groupId: id })
+  .select('groupImage')
+  .lean();
+
+
 
             // ---- Safe topics (leaders may not have topics on account doc) ----
 function buildTopicObj(title) {
@@ -795,9 +802,12 @@ return res.render('leader_dashboard', {
 leader: {
   ...userData,
   members: resolvedGroupMembers,
+  // existing leader avatar (person)
   profileImage: leaderProfile?.profileImage || '/images/default-avatar.png',
-  groupImage: leaderProfile?.groupImage || '/images/default-avatar.png'
+  // NEW: actual group image (circle under the group name)
+  groupImage: groupProfile?.groupImage || '/images/defaultgroupavatar.jpg'
 },
+
   leaderGroupMembers: resolvedGroupMembers,
   maxGroupSize: userData.maxGroupSize,
   leaderUnits,
