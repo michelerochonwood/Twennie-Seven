@@ -1,4 +1,4 @@
-// app.js
+// app.js (rewritten to restore header user locals & simplify auth flow)
 const express = require('express');
 const path = require('path');
 const { create } = require('express-handlebars');
@@ -13,12 +13,12 @@ const MongoStore = require('connect-mongo');
 const cors = require('cors');
 const csrf = require('csurf');
 
-// Profiles used in global session middleware
+// Profiles (for userProfileImage lookup)
 const MemberProfile = require('./models/profile_models/member_profile');
 const LeaderProfile = require('./models/profile_models/leader_profile');
 const GroupMemberProfile = require('./models/profile_models/groupmember_profile');
 
-// User models for membership detection
+// User models (for inactive guard only)
 const Member = require('./models/member_models/member');
 const Leader = require('./models/member_models/leader');
 const GroupMember = require('./models/member_models/group_member');
@@ -27,28 +27,31 @@ dotenv.config();
 
 const app = express();
 
-// ---- Runtime diagnostics / infra sanity ----
+/* ------------------------------------------------------------------
+   RUNTIME / ENV
+------------------------------------------------------------------- */
 app.set('trust proxy', 1);
 console.log('✅ NODE_ENV:', process.env.NODE_ENV);
 console.log('✅ MONGO_URI present:', !!process.env.MONGO_URI);
 console.log('✅ SESSION_SECRET present:', !!process.env.SESSION_SECRET);
 console.log('✅ COOKIE_SECRET present:', !!process.env.COOKIE_SECRET);
 
-// (Optional) expose GA ID to layouts if you choose to gate analytics by GA_ID
 app.locals.GA_ID = process.env.NODE_ENV === 'production' ? process.env.GA_MEASUREMENT_ID : null;
 
 /* ------------------------------------------------------------------
-   1) STRIPE WEBHOOKS — MOUNT FIRST (RAW BODY INSIDE THE ROUTER)
-   ------------------------------------------------------------------ */
+   1) STRIPE WEBHOOKS — mount before body parsers (raw body inside router)
+------------------------------------------------------------------- */
 try {
-  const webhookRoutes = require('./routes/webhooks'); // defines POST /webhooks/stripe with express.raw
+  const webhookRoutes = require('./routes/webhooks');
   app.use('/webhooks', webhookRoutes);
   console.log('✅ Webhooks router mounted at /webhooks');
 } catch (e) {
-  console.error('⚠️ Failed to mount /webhooks router:', e?.message || e);
+  console.error('⚠️ Failed to mount /webhooks:', e?.message || e);
 }
 
-// ---- Handlebars setup ----
+/* ------------------------------------------------------------------
+   2) HANDLEBARS
+------------------------------------------------------------------- */
 const hbs = create({
   extname: '.hbs',
   layoutsDir: path.join(__dirname, 'views/layouts'),
@@ -59,25 +62,21 @@ const hbs = create({
     allowProtoMethodsByDefault: true,
   },
   helpers: {
-    replace: (string, find, replace) =>
-      typeof string === 'string' ? string.split(find).join(replace) : '',
-    formatContent: (content) => (content ? content.replace(/\n/g, '<br>') : ''),
-    ifEquals: function (a, b, options) {
-      return a === b ? options.fn(this) : options.inverse(this);
-    },
-    toLowerCase: (str) => (typeof str === 'string' ? str.toLowerCase() : ''),
-    formatDate: (date) => (date ? moment(date).format('MMMM D, YYYY') : ''),
+    replace: (string, find, rep) => (typeof string === 'string' ? string.split(find).join(rep) : ''),
+    formatContent: (c) => (c ? c.replace(/\n/g, '<br>') : ''),
+    ifEquals: (a, b, opts) => (a === b ? opts.fn(this) : opts.inverse(this)),
+    toLowerCase: (s) => (typeof s === 'string' ? s.toLowerCase() : ''),
+    formatDate: (d) => (d ? moment(d).format('MMMM D, YYYY') : ''),
     eq: (v1, v2) => v1 === v2,
     ne: (v1, v2) => v1 !== v2,
     and: (v1, v2) => v1 && v2,
     or: (v1, v2) => v1 || v2,
-    includes: (array, value) => Array.isArray(array) && array.includes(value),
-    ifIncludes: (array, value, options) =>
-      Array.isArray(array) && array.includes(value) ? options.fn(this) : options.inverse(this),
+    includes: (arr, val) => Array.isArray(arr) && arr.includes(val),
+    ifIncludes: (arr, val, opts) => (Array.isArray(arr) && arr.includes(val) ? opts.fn(this) : opts.inverse(this)),
     range: (start, end) => Array.from({ length: end - start }, (_, i) => start + i),
-    concat: (str1, str2) => `${str1}${str2}`,
+    concat: (a, b) => `${a}${b}`,
     lt: (a, b) => a < b,
-    equal: (a, b) => a === b, // alias
+    equal: (a, b) => a === b,
     getUnitTypeIcon: (unitType) => {
       const icons = {
         article: '/icons/article.svg',
@@ -90,7 +89,7 @@ const hbs = create({
       return icons[unitType] || '/icons/default.svg';
     },
     getDurationImage: (unitType) => {
-      const baseURL = 'https://www.twennie.com/images/';
+      const base = 'https://www.twennie.com/images/';
       const map = {
         article: '5mins.svg',
         video: '10mins.svg',
@@ -99,59 +98,47 @@ const hbs = create({
         exercise: '30mins.svg',
         template: '30mins.svg',
       };
-      if (!map[unitType]) {
-        console.warn(`⚠️ Unrecognized unitType for duration image: ${unitType}`);
-      }
-      return baseURL + (map[unitType] || '5mins.svg');
+      return base + (map[unitType] || '5mins.svg');
     },
-    capitalize: (str) => (typeof str === 'string' ? str.charAt(0).toUpperCase() + str.slice(1) : ''),
-    json: (context) => JSON.stringify(context, null, 2),
-    increment: (value) => parseInt(value) + 1,
+    capitalize: (s) => (typeof s === 'string' ? s.charAt(0).toUpperCase() + s.slice(1) : ''),
+    json: (ctx) => JSON.stringify(ctx, null, 2),
+    increment: (v) => parseInt(v) + 1,
     timestamp: () => Date.now(),
     getYouTubeEmbedUrl: (url) => {
       if (!url) return '';
-      if (url.includes('watch?v=')) {
-        const videoId = url.split('watch?v=')[1].split('&')[0];
-        return `https://www.youtube.com/embed/${videoId}`;
-      }
-      if (url.includes('youtu.be/')) {
-        const videoId = url.split('youtu.be/')[1].split('?')[0];
-        return `https://www.youtube.com/embed/${videoId}`;
-      }
+      if (url.includes('watch?v=')) return `https://www.youtube.com/embed/${url.split('watch?v=')[1].split('&')[0]}`;
+      if (url.includes('youtu.be/')) return `https://www.youtube.com/embed/${url.split('youtu.be/')[1].split('?')[0]}`;
       return url;
     },
-    split: (str, delimiter) => (typeof str === 'string' ? str.split(delimiter) : []),
-    last: (array) => (Array.isArray(array) ? array[array.length - 1] : ''),
-    decode: (str) => decodeURIComponent(str),
+    split: (str, d) => (typeof str === 'string' ? str.split(d) : []),
+    last: (arr) => (Array.isArray(arr) ? arr[arr.length - 1] : ''),
+    decode: (s) => decodeURIComponent(s),
   },
 });
 
-hbs.getPartials().then((partials) => {
-  console.log('🧩 Registered Partials:', Object.keys(partials));
-});
-
+hbs.getPartials().then((partials) => console.log('🧩 Registered Partials:', Object.keys(partials)));
 app.engine('hbs', hbs.engine);
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));
 
 /* ------------------------------------------------------------------
-   2) CORE MIDDLEWARE (after webhooks)
-   ------------------------------------------------------------------ */
+   3) CORE MIDDLEWARE
+------------------------------------------------------------------- */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(cors());
 
-// Static files
+// Static
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/images', express.static(path.join(__dirname, 'public/images')));
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 app.use('/icons', express.static(path.join(__dirname, 'public/icons')));
 
-// Minimal health endpoint for platform checks
+// Health
 app.get('/healthz', (_req, res) => res.status(200).send('ok'));
 
-// UI prefs
+// UI prefs → res.locals
 app.use((req, res, next) => {
   try {
     res.locals.uiPrefs = req.cookies.tw_ui ? JSON.parse(req.cookies.tw_ui) : {};
@@ -162,8 +149,8 @@ app.use((req, res, next) => {
 });
 
 /* ------------------------------------------------------------------
-   3) SESSION
-   ------------------------------------------------------------------ */
+   4) SESSION
+------------------------------------------------------------------- */
 const sessionOptions = {
   secret: process.env.SESSION_SECRET || 'defaultsecret',
   resave: true,
@@ -187,21 +174,21 @@ if (process.env.MONGO_URI) {
     });
     console.log('✅ Session store: Mongo');
   } catch (e) {
-    console.error('⚠️ Failed to init MongoStore, falling back to MemoryStore:', e);
+    console.error('⚠️ MongoStore init failed, using MemoryStore:', e?.message || e);
   }
 } else {
-  console.warn('⚠️ MONGO_URI not set; using MemoryStore for sessions.');
+  console.warn('⚠️ MONGO_URI not set; using MemoryStore');
 }
 
 app.use(session(sessionOptions));
 
-// Optional: help CDNs serve the right variant
+// Help caches/CDNs serve the right variant
 app.use((req, res, next) => {
   res.set('Vary', 'Cookie');
   next();
 });
 
-// Consent locals (must come before views/routes)
+// Consent → res.locals
 app.use((req, res, next) => {
   const defaults = { version: 1, necessary: true, functional: false, analytics: false, marketing: false };
   try {
@@ -214,14 +201,14 @@ app.use((req, res, next) => {
 });
 
 /* ------------------------------------------------------------------
-   4) CSRF (with safe bypasses)
-   ------------------------------------------------------------------ */
+   5) CSRF (with safe bypasses)
+------------------------------------------------------------------- */
 const csrfProtection = csrf();
 app.use((req, res, next) => {
   const skipPaths = [
     '/member/group/verify-registration-code',
     '/badges/pick',
-    '/webhooks/stripe', // ⬅️ Stripe webhooks bypass CSRF (verified by signature instead)
+    '/webhooks/stripe', // verified by Stripe signature
   ];
   const csrfExemptDeletes = [/^\/promptsetregistration\/unregister\/[\w\d]+$/];
   const contentType = req.headers['content-type'] || '';
@@ -234,15 +221,8 @@ app.use((req, res, next) => {
 });
 
 /* ------------------------------------------------------------------
-   5) LOGGING + PASSPORT
-   ------------------------------------------------------------------ */
-app.use((req, _res, next) => {
-  console.log(
-    `[${new Date().toISOString()}] ${req.method} ${req.url} - User: ${req.session?.user?.username || 'Guest'}`
-  );
-  next();
-});
-
+   6) PASSPORT
+------------------------------------------------------------------- */
 try {
   require('./config/passport-config')(passport);
   console.log('✅ Passport config loaded');
@@ -252,47 +232,64 @@ try {
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Normalize req.user if only session user exists
-app.use((req, _res, next) => {
-  if (!req.user && req.session?.user?.id) {
-    const s = req.session.user;
-    req.user = {
-      id: s.id,
-      _id: s.id,
-      username: s.username,
-      membershipType: s.membershipType,
-      groupId: s.membershipType === 'leader' ? s.id : undefined,
-    };
-  }
-  if (typeof req.isAuthenticated === 'function') {
-    const orig = req.isAuthenticated.bind(req);
-    req.isAuthenticated = function () {
-      return orig() || !!req.session?.user;
-    };
+/* ------------------------------------------------------------------
+   7) USER LOCALS (🔥 key fix for header)
+   - Copy req.user → res.locals.user
+   - Compute dashboardLink
+   - Resolve profile image (best-effort) with safe default
+------------------------------------------------------------------- */
+app.use(async (req, res, next) => {
+  try {
+    // Always expose 'user' to templates (null if not logged in)
+    res.locals.user = req.user || null;
+
+    // Dashboard link
+    let dashboardLink = '/dashboard/member';
+    const t = req.user?.membershipType;
+    if (t === 'leader') dashboardLink = '/dashboard/leader';
+    else if (t === 'group_member') dashboardLink = '/dashboard/groupmember';
+    res.locals.dashboardLink = dashboardLink;
+
+    // Profile image
+    let userProfileImage = '/images/default-avatar.png';
+    if (req.user) {
+      const id = req.user._id?.toString?.() || req.user.id?.toString?.() || null;
+      if (id) {
+        let p = null;
+        if (t === 'leader')        p = await LeaderProfile.findOne({ leaderId: id }).select('profileImage').lean();
+        else if (t === 'group_member') p = await GroupMemberProfile.findOne({ memberId: id }).select('profileImage').lean();
+        else                       p = await MemberProfile.findOne({ memberId: id }).select('profileImage').lean();
+        userProfileImage = p?.profileImage || userProfileImage;
+      }
+    }
+    res.locals.userProfileImage = userProfileImage;
+  } catch {
+    // non-blocking — keep defaults
+    res.locals.userProfileImage = res.locals.userProfileImage || '/images/default-avatar.png';
   }
   next();
 });
 
-// AFTER: app.use(passport.session());
-// BEFORE: the inactive-logout guard
+/* ------------------------------------------------------------------
+   8) INACTIVE / CANCELED GUARD
+------------------------------------------------------------------- */
 app.use(async (req, res, next) => {
   try {
     if (req.user && typeof req.user.isActive === 'undefined') {
       let doc = null;
       if (req.user.membershipType === 'leader') {
-        doc = await Leader.findById(req.user.id).select('isActive').lean();
+        doc = await Leader.findById(req.user.id || req.user._id).select('isActive').lean();
       } else if (req.user.membershipType === 'group_member') {
-        doc = await GroupMember.findById(req.user.id).select('isActive').lean();
+        doc = await GroupMember.findById(req.user.id || req.user._id).select('isActive').lean();
       } else {
-        doc = await Member.findById(req.user.id).select('isActive').lean();
+        doc = await Member.findById(req.user.id || req.user._id).select('isActive').lean();
       }
       req.user.isActive = doc?.isActive ?? true;
     }
-  } catch (e) { /* non-blocking */ }
+  } catch (_) { /* ignore */ }
   next();
 });
 
-// Inactive logout guard
 app.use((req, res, next) => {
   if (req.user && req.user.isActive === false) {
     req.logout?.(() => {});
@@ -309,29 +306,27 @@ app.use((req, res, next) => {
 });
 
 /* ------------------------------------------------------------------
-   6) MONGO CONNECT
-   ------------------------------------------------------------------ */
+   9) MONGO CONNECT
+------------------------------------------------------------------- */
 if (process.env.MONGO_URI) {
   mongoose
     .connect(process.env.MONGO_URI)
     .then(() => console.log('✅ MongoDB connected'))
-    .catch((err) => {
-      console.error('❌ MongoDB connection error:', err);
-    });
+    .catch((err) => console.error('❌ MongoDB connection error:', err));
 } else {
   console.warn('⚠️ MONGO_URI not set; skipping DB connect.');
 }
 
 /* ------------------------------------------------------------------
-   7) ENSURE DIRECTORIES
-   ------------------------------------------------------------------ */
+   10) ENSURE DIRECTORIES
+------------------------------------------------------------------- */
 ['public/uploads/profiles', 'public/uploads/groups'].forEach((dir) => {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 });
 
 /* ------------------------------------------------------------------
-   8) ROUTES
-   ------------------------------------------------------------------ */
+   11) ROUTES
+------------------------------------------------------------------- */
 app.use('/', require('./routes/promoroutes/promoroutes'));
 app.use('/member', require('./routes/memberroutes'));
 app.use('/member/group', require('./routes/groupmemberroutes'));
@@ -363,7 +358,7 @@ app.use('/badges', require('./routes/badgesroutes'));
 app.use('/dashboard', require('./routes/preferenceroutes'));
 app.use('/ui', require('./routes/uiroutes'));
 
-// ⬇️ New: Billing routes
+// Billing
 try {
   app.use('/billing', require('./routes/billing'));
   console.log('✅ Billing routes mounted at /billing');
@@ -372,13 +367,11 @@ try {
 }
 
 /* ------------------------------------------------------------------
-   9) ERRORS
-   ------------------------------------------------------------------ */
+   12) ERRORS
+------------------------------------------------------------------- */
 app.use((err, req, res, next) => {
   if (err?.code === 'EBADCSRFTOKEN') {
     console.error('❌ CSRF token validation failed.');
-    console.error('Request body at failure:', JSON.stringify(req.body, null, 2));
-    console.error('Session at failure:', JSON.stringify(req.session, null, 2));
     return res.status(403).render('member_form_views/error', {
       layout: 'memberformlayout',
       title: 'CSRF Error',
