@@ -4294,21 +4294,19 @@ box-shadow: none !important;
   -webkit-appearance: none;
   font-family: "Figtree", system-ui, sans-serif;
   font-weight: 800;
-  font-size: 1rem;
+  font-size: 0.8rem;
   line-height: 1;
-  padding: 0.8rem 1.4rem;
+  padding: 0.7rem 1.4rem;
   border-radius: 999px;
   border: none;
   background: #262262;          /* navy */
   color: #fff;
   cursor: pointer;
   transition: background .15s ease, box-shadow .15s ease, transform .05s ease;
-  box-shadow: 0 2px 6px rgba(38,34,98,0.18);
 }
 
 .groupsection .groupsection-deletemember-button:hover {
   background: #4e50a2;          /* hover purple */
-  box-shadow: 0 6px 16px rgba(78,80,162,0.28);
 }
 
 
