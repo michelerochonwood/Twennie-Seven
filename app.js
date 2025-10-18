@@ -252,26 +252,8 @@ try {
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Normalize req.user if only session user exists
-app.use((req, _res, next) => {
-  if (!req.user && req.session?.user?.id) {
-    const s = req.session.user;
-    req.user = {
-      id: s.id,
-      _id: s.id,
-      username: s.username,
-      membershipType: s.membershipType,
-      groupId: s.membershipType === 'leader' ? s.id : undefined,
-    };
-  }
-  if (typeof req.isAuthenticated === 'function') {
-    const orig = req.isAuthenticated.bind(req);
-    req.isAuthenticated = function () {
-      return orig() || !!req.session?.user;
-    };
-  }
-  next();
-});
+// Normalize req.user if only session user exists - we deleted this - ask ChatGPT why
+
 
 // AFTER: app.use(passport.session());
 // BEFORE: the inactive-logout guard
