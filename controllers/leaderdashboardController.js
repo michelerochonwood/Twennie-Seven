@@ -19,6 +19,7 @@ const Note = require('../models/notes/notes');
 const TopicSuggestion = require('../models/topic/topic_suggestion');
 const Upcoming = require('../models/unit_models/upcoming');
 const DashboardSeen = require('../models/dashboard_seen');
+const GroupProfile = require('../models/profile_models/group_profile');
 
 
 function getModelByUnitType(type) {
@@ -415,8 +416,8 @@ const mfaStatus = {
       })
     : null
 };
-            const leaderProfile = await LeaderProfile
-  .findOne({ leaderId: id })
+const leaderProfile = await LeaderProfile
+  .findOne({ $or: [ { leaderId: id }, { groupId: id } ] })
   .select('profileImage groupImage topics')
   .lean();
 
