@@ -1,42 +1,50 @@
-{{#*inline "title"}}MFA Settings | Twennie{{/inline}}
+{{!-- views/auth_views/mfa_settings.hbs --}}
+{{#*inline "title"}}Multi-Factor Authentication | Twennie{{/inline}}
 
-<div class="mfa-container">
-  <h1 class="mfa-title">multi-factor authentication</h1>
+<section class="mfa-settings">
+  <header class="mfa-inline-header" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+    <h1 class="mfa-inline-title" style="margin:0; text-transform:lowercase; color:#262262;">multi-factor authentication</h1>
+    {{#if mfaEnabled}}
+      <span class="mfa-chip mfa-chip--on" style="background:#0ea75a; color:#fff; padding:.25rem .6rem; border-radius:999px; font-weight:800; font-size:.85rem;">enabled</span>
+    {{else}}
+      <span class="mfa-chip mfa-chip--off" style="background:#f5c2c7; color:#7a1c1f; padding:.25rem .6rem; border-radius:999px; font-weight:800; font-size:.85rem;">not enabled</span>
+    {{/if}}
+  </header>
 
-  {{#if error}}
-    <div class="mfa-alert" role="alert">{{error}}</div>
-  {{/if}}
+  <p class="mfa-inline-desc" style="margin:0 0 16px 0; color:#4e50a2;">
+    Add an extra layer of security to your account with an authenticator app (TOTP). You’ll also get recovery codes you can store safely.
+  </p>
 
+  {{!-- Not enabled: show "Begin setup" --}}
+  {{#unless mfaEnabled}}
+    <form action="{{baseUrl}}/setup" method="POST" class="mfa-actions" style="margin-top:16px;">
+      {{#if csrfToken}}<input type="hidden" name="_csrf" value="{{csrfToken}}">{{/if}}
+      <button type="submit"
+              class="mfa-button"
+              style="background:#262262; color:#fff; font-weight:800; border:none; border-radius:999px; padding:.7rem 1.2rem; cursor:pointer;">
+        begin setup
+      </button>
+    </form>
+  {{/unless}}
+
+  {{!-- Enabled: show disable form --}}
   {{#if mfaEnabled}}
-    <p class="mfa-message">
-      MFA is <strong>enabled</strong> on your account.
-    </p>
-
-    <form action="{{baseUrl}}/disable" method="POST" class="mfa-form" novalidate>
-      {{#if csrfToken}}<input type="hidden" name="_csrf" value="{{csrfToken}}">{{/if}}
-
-      <div class="mfa-field">
-        <label class="mfa-label" for="disable_token">Authenticator code to confirm</label>
-        <input id="disable_token" name="token" type="text" required class="mfa-input" autocomplete="one-time-code" inputmode="numeric" />
-      </div>
-
-      <div class="mfa-actions">
-        <button class="mfa-button mfa-button--danger" type="submit">disable mfa</button>
-      </div>
-    </form>
-
-  {{else}}
-    <p class="mfa-message">
-      MFA is <strong>not enabled</strong>.
-    </p>
-
-    <form action="{{baseUrl}}/setup" method="POST" class="mfa-form">
-      {{#if csrfToken}}<input type="hidden" name="_csrf" value="{{csrfToken}}">{{/if}}
-      <div class="mfa-actions">
-        <button class="mfa-button" type="submit">enable mfa</button>
-      </div>
-    </form>
+    <div class="mfa-inline" style="margin-top:18px; padding:12px; border:1px solid #ececf7; border-radius:12px;">
+      <p style="margin:0 0 10px 0; color:#262262;"><strong>disable mfa</strong></p>
+      <form action="{{baseUrl}}/disable" method="POST" class="mfa-disable-form" style="display:flex; gap:.5rem; align-items:center; flex-wrap:wrap;">
+        {{#if csrfToken}}<input type="hidden" name="_csrf" value="{{csrfToken}}">{{/if}}
+        <label for="disable_token" class="mfa-label" style="font-weight:600; color:#4e50a2;">enter current 6-digit code</label>
+        <input id="disable_token" name="token" class="mfa-input" required inputmode="numeric" pattern="[0-9]{6}"
+               style="border:1px solid #dcdde8; border-radius:999px; height:36px; padding:0 .8rem;">
+        <button type="submit"
+                class="mfa-button"
+                style="background:#dc176a; color:#fff; font-weight:800; border:none; border-radius:999px; padding:.6rem 1.1rem; cursor:pointer;">
+          disable mfa
+        </button>
+      </form>
+    </div>
   {{/if}}
-</div>
+</section>
+
 
 
