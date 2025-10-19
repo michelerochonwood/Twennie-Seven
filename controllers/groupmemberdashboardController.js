@@ -110,6 +110,7 @@ const topicMappings = {
     'Mental Health in Consulting Environments': 'mentalhealthinconsultingenvironments',
 'Remote and Hybrid Work': 'remoteandhybridwork',
     'The Power of Play in the Workplace': 'thepowerofplayintheworkplace',
+    'The Power of Purpose': 'thepowerofpurpose',
     'Tips and Tricks for Proposal Proofreading': 'tipsandtricksforproposalproofreading',
     'Team Building in Technical Consulting': 'teambuildingintechnicalconsulting',
 };
@@ -160,6 +161,7 @@ const topicViewMappings = {
     'teambuildinginconsulting': 'single_topic_teambuilding',
     'pullmarketing': 'single_topic_pullmarketing',
     'workplaceculture': 'single_topic_workplaceculture',
+    'thepowerofpurpose': 'single_topic_purpose',
     'tipsandtricksforproposalproofreading': 'single_topic_proofreading'
 };
 

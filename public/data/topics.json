@@ -603,7 +603,24 @@
     "accessibility and evaluator-friendly language",
     "final file hygiene (links, metadata, filenames, PDFs)"
   ]
+},
+{
+  "id": 211,
+  "title": "The Power of Purpose",
+  "shortSummary": "Purpose connects effort to impact. When engineers and consultants see how their work makes a difference, motivation, quality, and collaboration rise.",
+  "longSummary": "Purpose has always been the quiet engine behind motivation and innovation, but in technical services it’s often overlooked. The Power of Purpose explores how visibility, recognition, and human connection create meaning in engineering and consulting work. When teams see the impact of their work, they deliver stronger outcomes, learn faster, and stay engaged longer. This topic helps leaders and teams reconnect people to the 'why' behind their projects—showing that meaningful work isn’t sentimental, it’s a competitive advantage.",
+  "subtopics": [
+    "the history and psychology of purpose in work",
+    "purpose and motivation in engineering and design teams",
+    "visibility, recognition, and the IKEA effect",
+    "how purpose drives collaboration and quality",
+    "making invisible work visible",
+    "leadership practices that sustain purpose",
+    "purpose and retention in technical services",
+    "the future of purpose in a digital and automated workplace"
+  ]
 }
+
 
 
     ]

@@ -131,6 +131,7 @@ const topicMappings = {
     'Remote and Hybrid Work': 'remoteandhybridwork',
     'Four Day Work Week': 'fourdayworkweek',
     'The Power of Play in the Workplace': 'thepowerofplayintheworkplace',
+    'The Power of Purpose': 'thepowerofpurpose',
     'Team Building in Technical Consulting': 'teambuildingintechnicalconsulting',
     'Tips and Tricks for Proposal Proofreading': 'tipsandtricksforproposalproofreading'
 };
@@ -182,6 +183,7 @@ const topicViewMappings = {
     'storytellingintechnicalmarketing': 'single_topic_storytelling',
     'teambuildinginconsulting': 'single_topic_teambuilding',
     'tipsandtricksforproposalproofreading': 'single_topic_proofreading',
+    'thepowerofpurpose': 'single_topic_purpose',
     'workplaceculture': 'single_topic_workplaceculture'
 };
 

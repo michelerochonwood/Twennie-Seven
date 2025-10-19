@@ -62,6 +62,7 @@ const videoSchema = new mongoose.Schema({
             'Mental Health in Consulting Environments',
             'Remote and Hybrid Work',
             'The Power of Play in the Workplace',
+            'The Power of Purpose',
             'Team Building in Consulting',
             'AI in Consulting',
             'AI in Project Management',
