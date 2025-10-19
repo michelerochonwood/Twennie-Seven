@@ -4310,4 +4310,77 @@ box-shadow: none !important;
   background: #4e50a2;           /* hover purple */
 }
 
+/* MFA page container: centered like other tabs */
+.mfa-center {
+  max-width: 820px;          /* adjust to match your usual content width (e.g., 720–920px) */
+  margin: 40px auto 100px;   /* centers and gives breathing room */
+  padding: 0 1.25rem;        /* comfortable side padding on narrow screens */
+}
+
+/* Optional: tidy the header/actions so they don’t stretch weirdly */
+.mfa-settings .mfa-inline-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  margin-bottom: 14px;
+}
+
+.mfa-settings .mfa-inline-desc {
+  margin: 0 0 16px 0;
+}
+
+/* Keep buttons consistent with your navy pill style */
+.mfa-settings .mfa-button {
+  background: #262262;
+  color: #fff;
+  font-family: "Figtree", system-ui, sans-serif;
+  font-weight: 800;
+  border: none;
+  border-radius: 999px;
+  padding: .7rem 1.2rem;
+  cursor: pointer;
+  transition: background .15s ease, box-shadow .15s ease, transform .05s ease;
+  box-shadow: 0 2px 6px rgba(38,34,98,0.18);
+}
+
+.mfa-settings .mfa-button:hover { background: #4e50a2; box-shadow: 0 6px 16px rgba(78,80,162,0.28); }
+.mfa-settings .mfa-button:active { transform: translateY(1px); }
+.mfa-settings .mfa-button:focus-visible { outline: 3px solid rgba(78,80,162,0.35); outline-offset: 2px; }
+
+/* Danger variant (disable) */
+.mfa-settings .mfa-inline .mfa-button {
+  background: #dc176a;
+}
+.mfa-settings .mfa-inline .mfa-button:hover {
+  background: #b01453;
+  box-shadow: 0 6px 16px rgba(220,23,106,0.28);
+}
+
+/* Inputs inside the disable form */
+.mfa-settings .mfa-input {
+  border: 1px solid #dcdde8;
+  border-radius: 999px;
+  height: 36px;
+  padding: 0 .8rem;
+}
+
+/* Status chips */
+.mfa-chip {
+  display: inline-block;
+  padding: .25rem .6rem;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: .85rem;
+}
+.mfa-chip--on  { background:#0ea75a; color:#fff; }
+.mfa-chip--off { background:#f5c2c7; color:#7a1c1f; }
+
+/* Responsive */
+@media (max-width: 640px) {
+  .mfa-center { margin: 24px auto 80px; padding: 0 .9rem; }
+  .mfa-settings .mfa-inline-header { flex-wrap: wrap; }
+}
+
+
 
