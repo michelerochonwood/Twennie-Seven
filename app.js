@@ -239,47 +239,65 @@ app.use(passport.session());
    - Resolve profile image (best-effort) with safe default
 ------------------------------------------------------------------- */
 /* 7) USER LOCALS */
+/* ------------------------------------------------------------------
+   7) USER LOCALS (header image + greeting)
+------------------------------------------------------------------- */
 app.use(async (req, res, next) => {
   try {
+    // Expose user for {{#if user}} in templates
     res.locals.user = req.user || null;
 
-    // 🔧 Normalize membership type: 'group_member' / 'groupmember' → 'groupmember'
-    const rawType = req.user?.membershipType || '';
-    const tNorm = rawType.replace(/[_\-]/g, '').toLowerCase(); // 'leader' | 'groupmember' | 'member'
+    // Normalize membership type: 'group_member' / 'groupmember' → 'groupmember'
+    const typeRaw = req.user?.membershipType || '';
+    const type = typeRaw.replace(/[_\-]/g, '').toLowerCase(); // 'leader' | 'groupmember' | 'member'
 
-    // Dashboard link (handle both)
+    // Dashboard link
     let dashboardLink = '/dashboard/member';
-    if (tNorm === 'leader') dashboardLink = '/dashboard/leader';
-    else if (tNorm === 'groupmember') dashboardLink = '/dashboard/groupmember';
+    if (type === 'leader') dashboardLink = '/dashboard/leader';
+    else if (type === 'groupmember') dashboardLink = '/dashboard/groupmember';
     res.locals.dashboardLink = dashboardLink;
 
-    // Profile image with robust lookup + fallback
-    let userProfileImage = req.user?.profileImage || '/images/default-avatar.png';
+    // Resolve profile image from the correct profile collection
+    let userProfileImage = null;
     const id = (req.user?._id || req.user?.id || '').toString();
 
-    if (id && (!userProfileImage || userProfileImage === '/images/default-avatar.png')) {
-      let prof = null;
-      if (tNorm === 'leader') {
-        prof = await LeaderProfile.findOne({ leaderId: id }).select('profileImage').lean();
-      } else if (tNorm === 'groupmember') {
-        prof = await GroupMemberProfile.findOne({ memberId: id }).select('profileImage').lean();
-      } else {
-        prof = await MemberProfile.findOne({ memberId: id }).select('profileImage').lean();
+    if (id) {
+      if (type === 'leader') {
+        const p = await LeaderProfile.findOne({ leaderId: id })
+          .select('profileImage')
+          .lean();
+        userProfileImage = p?.profileImage || null;
+      } else if (type === 'groupmember') {
+        // NOTE: schema field is groupMemberId (not memberId)
+        const p = await GroupMemberProfile.findOne({ groupMemberId: id })
+          .select('profileImage')
+          .lean();
+        userProfileImage = p?.profileImage || null;
+      } else { // 'member'
+        const p = await MemberProfile.findOne({ memberId: id })
+          .select('profileImage')
+          .lean();
+        userProfileImage = p?.profileImage || null;
       }
-      if (prof?.profileImage) userProfileImage = prof.profileImage;
     }
 
-    // Ensure local paths are absolute (header uses absolute refs)
+    // Fallbacks: user doc image → default
+    if (!userProfileImage) userProfileImage = req.user?.profileImage || '/images/default-avatar.png';
+
+    // Normalize local paths to absolute so the header <img> resolves correctly
     if (userProfileImage && !/^https?:\/\//i.test(userProfileImage)) {
-      userProfileImage = userProfileImage.startsWith('/') ? userProfileImage : `/${userProfileImage}`;
+      userProfileImage = userProfileImage.startsWith('/')
+        ? userProfileImage
+        : `/${userProfileImage}`;
     }
 
-    res.locals.userProfileImage = userProfileImage || '/images/default-avatar.png';
-  } catch {
-    res.locals.userProfileImage = res.locals.userProfileImage || '/images/default-avatar.png';
+    res.locals.userProfileImage = userProfileImage;
+  } catch (e) {
+    res.locals.userProfileImage = '/images/default-avatar.png';
   }
   next();
 });
+
 
 
 /* ------------------------------------------------------------------
