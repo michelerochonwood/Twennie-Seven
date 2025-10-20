@@ -44,13 +44,18 @@ async function resolveAuthorById(authorId) {
         if (profile) return { name: profile.name || 'Leader', image: profile.profileImage || '/images/default-avatar.png' };
 
         // Group member profile
-        profile = await GroupMemberProfile.findOne({ memberId: authorId }).select('profileImage name');
+        profile = await GroupMemberProfile.findOne({ groupMemberId: authorId }).select('profileImage name');
         if (profile) return { name: profile.name || 'Group Member', image: profile.profileImage || '/images/default-avatar.png' };
     } catch (err) {
         console.error('resolveAuthorById failed:', err);
     }
 
     return { name: 'Unknown Author', image: '/images/default-avatar.png' };
+}
+
+function pickAuthorId(u) {
+  // covers: { author: { id } }, { author: ObjectId }, createdBy, submittedBy
+  return u?.author?.id || u?.author || u?.createdBy || u?.submittedBy || null;
 }
 
 
@@ -529,7 +534,7 @@ const [
             
 let groupMemberUnits = await Promise.all(
   [...groupArticles, ...groupVideos, ...groupPromptSets, ...groupInterviews, ...groupExercises, ...groupTemplates].map(async (unit) => {
-    const author = await resolveAuthorById(unit.author.id);
+    const author = await resolveAuthorById(pickAuthorId(unit));
     return {
       unitType: resolveUnitType(unit),
       title:
@@ -687,7 +692,7 @@ const leaderUpcomingRows = (leaderUpcomings || []).map((u) => ({
 
 let leaderUnits = await Promise.all(
   [...leaderArticles, ...leaderVideos, ...leaderPromptSets, ...leaderInterviews, ...leaderExercises, ...leaderTemplates].map(async (unit) => {
-    const author = await resolveAuthorById(unit.author.id);
+    const author = await resolveAuthorById(pickAuthorId(unit));
     return {
       unitType: unit.unitType || unit.constructor?.modelName || 'Unknown',
       title:
