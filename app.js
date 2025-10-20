@@ -238,37 +238,49 @@ app.use(passport.session());
    - Compute dashboardLink
    - Resolve profile image (best-effort) with safe default
 ------------------------------------------------------------------- */
+/* 7) USER LOCALS */
 app.use(async (req, res, next) => {
   try {
-    // Always expose 'user' to templates (null if not logged in)
     res.locals.user = req.user || null;
 
-    // Dashboard link
+    // 🔧 Normalize membership type: 'group_member' / 'groupmember' → 'groupmember'
+    const rawType = req.user?.membershipType || '';
+    const tNorm = rawType.replace(/[_\-]/g, '').toLowerCase(); // 'leader' | 'groupmember' | 'member'
+
+    // Dashboard link (handle both)
     let dashboardLink = '/dashboard/member';
-    const t = req.user?.membershipType;
-    if (t === 'leader') dashboardLink = '/dashboard/leader';
-    else if (t === 'group_member') dashboardLink = '/dashboard/groupmember';
+    if (tNorm === 'leader') dashboardLink = '/dashboard/leader';
+    else if (tNorm === 'groupmember') dashboardLink = '/dashboard/groupmember';
     res.locals.dashboardLink = dashboardLink;
 
-    // Profile image
-    let userProfileImage = '/images/default-avatar.png';
-    if (req.user) {
-      const id = req.user._id?.toString?.() || req.user.id?.toString?.() || null;
-      if (id) {
-        let p = null;
-        if (t === 'leader')        p = await LeaderProfile.findOne({ leaderId: id }).select('profileImage').lean();
-        else if (t === 'group_member') p = await GroupMemberProfile.findOne({ memberId: id }).select('profileImage').lean();
-        else                       p = await MemberProfile.findOne({ memberId: id }).select('profileImage').lean();
-        userProfileImage = p?.profileImage || userProfileImage;
+    // Profile image with robust lookup + fallback
+    let userProfileImage = req.user?.profileImage || '/images/default-avatar.png';
+    const id = (req.user?._id || req.user?.id || '').toString();
+
+    if (id && (!userProfileImage || userProfileImage === '/images/default-avatar.png')) {
+      let prof = null;
+      if (tNorm === 'leader') {
+        prof = await LeaderProfile.findOne({ leaderId: id }).select('profileImage').lean();
+      } else if (tNorm === 'groupmember') {
+        prof = await GroupMemberProfile.findOne({ memberId: id }).select('profileImage').lean();
+      } else {
+        prof = await MemberProfile.findOne({ memberId: id }).select('profileImage').lean();
       }
+      if (prof?.profileImage) userProfileImage = prof.profileImage;
     }
-    res.locals.userProfileImage = userProfileImage;
+
+    // Ensure local paths are absolute (header uses absolute refs)
+    if (userProfileImage && !/^https?:\/\//i.test(userProfileImage)) {
+      userProfileImage = userProfileImage.startsWith('/') ? userProfileImage : `/${userProfileImage}`;
+    }
+
+    res.locals.userProfileImage = userProfileImage || '/images/default-avatar.png';
   } catch {
-    // non-blocking — keep defaults
     res.locals.userProfileImage = res.locals.userProfileImage || '/images/default-avatar.png';
   }
   next();
 });
+
 
 /* ------------------------------------------------------------------
    8) INACTIVE / CANCELED GUARD
