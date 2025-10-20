@@ -22,42 +22,53 @@ const Upcoming = require('../models/unit_models/upcoming');
 // Leaders, Group Members, and Members are stored in separate models by design.
 // Leaders use `groupLeaderName` instead of `name`, so we map it manually here for consistency.
 async function resolveAuthorById(authorId) {
-    try {
-        // Check Leader profile
-        let profile = await LeaderProfile.findOne({ leaderId: authorId }).select('profileImage name');
-        if (profile) {
-            return {
-                name: profile.name || 'Leader',
-                image: profile.profileImage || '/images/default-avatar.png'
-            };
-        }
-
-        // Check Group Member profile
-        profile = await GroupMemberProfile.findOne({ memberId: authorId }).select('profileImage name');
-        if (profile) {
-            return {
-                name: profile.name || 'Group Member',
-                image: profile.profileImage || '/images/default-avatar.png'
-            };
-        }
-
-        // Check Individual Member profile
-        profile = await MemberProfile.findOne({ memberId: authorId }).select('profileImage name');
-        if (profile) {
-            return {
-                name: profile.name || 'Member',
-                image: profile.profileImage || '/images/default-avatar.png'
-            };
-        }
-    } catch (error) {
-        console.error('Error resolving author profile:', error);
+  try {
+    // Leader profile by leaderId
+    let profile = await LeaderProfile.findOne({ leaderId: authorId })
+      .select('profileImage name')
+      .lean();
+    if (profile) {
+      return {
+        name: profile.name || 'Leader',
+        image: normalizeImg(profile.profileImage)
+      };
     }
 
-    return {
-        name: 'Unknown Author',
-        image: '/images/default-avatar.png'
-    };
+    // Group Member profile by groupMemberId  ✅ FIXED KEY
+    profile = await GroupMemberProfile.findOne({ groupMemberId: authorId })
+      .select('profileImage name')
+      .lean();
+    if (profile) {
+      return {
+        name: profile.name || 'Group Member',
+        image: normalizeImg(profile.profileImage)
+      };
+    }
+
+    // Individual Member profile by memberId
+    profile = await MemberProfile.findOne({ memberId: authorId })
+      .select('profileImage name')
+      .lean();
+    if (profile) {
+      return {
+        name: profile.name || 'Member',
+        image: normalizeImg(profile.profileImage)
+      };
+    }
+  } catch (error) {
+    console.error('Error resolving author profile:', error);
+  }
+
+  return { name: 'Unknown Author', image: '/images/default-avatar.png' };
 }
+
+// Ensure local paths are absolute (handles '/uploads/...' vs 'uploads/...')
+function normalizeImg(img) {
+  if (!img) return '/images/default-avatar.png';
+  if (/^https?:\/\//i.test(img)) return img;
+  return img.startsWith('/') ? img : `/${img}`;
+}
+
 
 
 exports.getTopicView = async (req, res) => {
