@@ -250,6 +250,8 @@
     <input type="hidden" name="promptSetId" value="{{_id}}">
 <!-- Will be populated with one hidden input per selected member -->
 <div id="selectedMembersContainer"></div>
+<!-- CSV mirror for legacy server code -->
+<input type="hidden" name="assignedMemberIds" id="assignedMembersCsv" value="">
     <input type="hidden" name="frequency" id="selectedFrequency">
 
     <label>assign to?</label>
@@ -546,17 +548,17 @@ function togglePromptsetMain(element) {
 
 /* --------------------------------------------
    Assignment helpers (array-friendly submission)
-   - Creates one hidden input per member: assignedMemberIds[]
-   - Falls back to #selectedMembers (comma string) if container not present
+   - Injects one hidden input per member: assignedMemberIds[]
+   - ALSO writes CSV mirror: assignedMemberIds (for legacy server code)
 ---------------------------------------------*/
 function getSelectedMemberIds() {
-  // canonical: selected CSS class on each .assign-member-option
   const selectedEls = document.querySelectorAll('.assign-member-option.selected');
   return Array.from(selectedEls).map(el => el.getAttribute('data-member-id')).filter(Boolean);
 }
 
 function renderSelectedMembersHiddenInputs() {
   const container = document.getElementById('selectedMembersContainer');
+  const csvField  = document.getElementById('assignedMembersCsv');
   const ids = getSelectedMemberIds();
 
   if (container) {
@@ -564,29 +566,22 @@ function renderSelectedMembersHiddenInputs() {
     ids.forEach(id => {
       const input = document.createElement('input');
       input.type = 'hidden';
-      input.name = 'assignedMemberIds[]';
+      input.name = 'assignedMemberIds[]';  // array posts
       input.value = id;
       container.appendChild(input);
     });
-  } else {
-    // Fallback: legacy single hidden input with comma string
-    const legacy = document.getElementById('selectedMembers');
-    if (legacy) legacy.value = ids.join(',');
+  }
+
+  if (csvField) {
+    csvField.value = ids.join(',');        // CSV mirror posts as assignedMemberIds
   }
 }
 
 function toggleMemberSelection(memberId, element) {
-  // Ensure element carries the id for consistent lookup later
   element.setAttribute('data-member-id', memberId);
-
-  // Toggle UI state
   element.classList.toggle('selected');
   element.style.color = element.classList.contains('selected') ? '#ee2a7b' : 'black';
-
-  // Rebuild hidden inputs each click
   renderSelectedMembersHiddenInputs();
-
-  // Debug
   console.log('✅ Selected member ids:', getSelectedMemberIds().join(', '));
 }
 
@@ -596,7 +591,6 @@ function showSuccessMessage() {
     const el = document.querySelector(`.assign-member-option[data-member-id="${id}"] span`);
     return el ? el.textContent : '';
   }).filter(Boolean);
-
   document.getElementById('assignedMembersDisplay').textContent = names.join(', ');
   document.getElementById('assignSuccessMessage').classList.remove('hidden');
 }
@@ -605,41 +599,36 @@ function showSuccessMessage() {
    Validation before submit (assign form)
 ---------------------------------------------*/
 function ensureDateBeforeSubmit() {
-  // frequency may live in several inputs across forms
+  // frequency across forms
   const freqInputs = document.querySelectorAll('#selectedFrequency, input[name="selectedFrequency"], input[name="frequency"]');
   const hasFrequency = Array.from(freqInputs).some(i => i.value && i.value.trim() !== '');
 
-  // date exists in register and assign forms (duplicate IDs handled)
+  // date across forms
   const dateInputs = document.querySelectorAll('#targetCompletionDate, input[name="targetCompletionDate"]');
   const hasDate = Array.from(dateInputs).some(i => i.value && i.value.trim() !== '');
 
-  // at least one assignee
-  const haveAssignees = getSelectedMemberIds().length > 0 ||
-    document.querySelectorAll('#selectedMembersContainer input[name="assignedMemberIds[]"]').length > 0 ||
-    (document.getElementById('selectedMembers') && document.getElementById('selectedMembers').value.trim() !== '');
+  // ensure hidden inputs reflect current UI
+  renderSelectedMembersHiddenInputs();
+
+  // at least one assignee (either array or CSV mirror)
+  const arrayInputs = document.querySelectorAll('#selectedMembersContainer input[name="assignedMemberIds[]"]');
+  const csvValue = (document.getElementById('assignedMembersCsv') || {}).value || '';
+  const haveAssignees = arrayInputs.length > 0 || (csvValue.trim() !== '');
 
   if (!hasFrequency) { alert('⚠️ Please select a frequency.'); return false; }
   if (!hasDate)      { alert('⚠️ Target completion date is missing.'); return false; }
   if (!haveAssignees){ alert('⚠️ Please select at least one team member.'); return false; }
 
-  // Final sync (make sure hidden inputs match UI)
-  renderSelectedMembersHiddenInputs();
   return true;
 }
 
 /* -------------------------------------------------
    Recommended completion date – robust implementation
-   Works with your existing inline onclicks:
-   selectFrequency('daily', 20) etc.
-   Also updates BOTH forms when IDs are duplicated.
+   Works with onclick: selectFrequency('daily', 20) etc.
+   Updates BOTH forms when IDs are duplicated.
 --------------------------------------------------*/
 (function () {
-  // Fallbacks in case daysToAdd isn’t passed by onclick
-  const DAYS_BY_CADENCE = {
-    daily:   20,   // 1 per day for 20 prompts (adjust if you like)
-    weekly:  140,  // ≈20 weeks
-    monthly: 600   // ≈20 months
-  };
+  const DAYS_BY_CADENCE = { daily: 20, weekly: 140, monthly: 600 };
 
   function allFrequencyInputs() {
     return document.querySelectorAll('#selectedFrequency, input[name="selectedFrequency"], input[name="frequency"]');
@@ -647,11 +636,9 @@ function ensureDateBeforeSubmit() {
   function allDateInputs() {
     return document.querySelectorAll('#targetCompletionDate, input[name="targetCompletionDate"]');
   }
-
   function setAllFrequencyHiddenFields(value) {
     allFrequencyInputs().forEach(i => i.value = value);
   }
-
   function setAllCompletionDateFields(yyyyMmDd) {
     allDateInputs().forEach(i => { i.value = yyyyMmDd; });
     const display = document.getElementById('recommendedTargetDate');
@@ -660,12 +647,7 @@ function ensureDateBeforeSubmit() {
       display.textContent = d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
     }
   }
-
-  function addDays(baseDate, days) {
-    const d = new Date(baseDate.getTime());
-    d.setDate(d.getDate() + days);
-    return d;
-  }
+  function addDays(baseDate, days) { const d = new Date(baseDate.getTime()); d.setDate(d.getDate() + days); return d; }
   function toYyyyMmDd(date) {
     const yyyy = date.getFullYear();
     const mm   = String(date.getMonth() + 1).padStart(2, '0');
@@ -673,19 +655,14 @@ function ensureDateBeforeSubmit() {
     return `${yyyy}-${mm}-${dd}`;
   }
 
-  // Expose a global used by your inline onclick handlers
   window.selectFrequency = function selectFrequency(frequency, daysToAdd) {
     try {
       const cadence = String(frequency || '').toLowerCase();
       const days = Number.isFinite(daysToAdd) ? Number(daysToAdd) : (DAYS_BY_CADENCE[cadence] || 20);
-
       console.log('✅ Frequency clicked:', cadence, '→ daysToAdd:', days);
 
       setAllFrequencyHiddenFields(cadence);
-
-      const target = addDays(new Date(), days);
-      const iso = toYyyyMmDd(target);
-
+      const iso = toYyyyMmDd(addDays(new Date(), days));
       setAllCompletionDateFields(iso);
 
       console.log('✅ Updated Frequency (all forms):', cadence);
@@ -696,6 +673,7 @@ function ensureDateBeforeSubmit() {
   };
 })();
 </script>
+
 
 
 
