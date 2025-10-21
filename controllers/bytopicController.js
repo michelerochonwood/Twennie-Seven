@@ -229,17 +229,116 @@ const libraryUnits = await Promise.all(
   })
 );
 
-const userId = req.session.user?.id;
+//
+// ---- BEGIN: smarter segmentation by authorship + visibility ----
+const userId = req.user?.id || req.session.user?.id || null;
 
+// Helper: normalize org keys consistently
+const normalize = (s) => (s || '').toString().trim().toLowerCase();
+const emailDomain = (e) => {
+  if (!e || !e.includes('@')) return null;
+  return e.split('@').pop().toLowerCase();
+};
 
-const myLibraryUnits = libraryUnits.filter(unit => String(unit.authorId) === String(userId));
+// Load current user and derive group + org context
+let leaderDoc = null;
+let groupMemberDoc = null;
+let memberDoc = null;
 
+try {
+  leaderDoc = userId ? await Leader.findById(userId).lean() : null;
+  groupMemberDoc = (!leaderDoc && userId) ? await GroupMember.findById(userId).lean() : null;
+  memberDoc = (!leaderDoc && !groupMemberDoc && userId) ? await Member.findById(userId).lean() : null;
+} catch (_) { /* ignore */ }
 
-const groupLibraryUnits = libraryUnits.filter(unit => unit.visibility === 'team_only');
+// Build group roster: includes the leader + all group members
+let myGroupAuthorIds = new Set();
 
-const orgLibraryUnits = libraryUnits.filter(unit => unit.visibility === 'organization_only');
+if (leaderDoc) {
+  myGroupAuthorIds.add(String(leaderDoc._id));
+  const groupMembersForLeader = await GroupMember.find({ leaderId: leaderDoc._id }).select('_id').lean();
 
-const twennieLibraryUnits = libraryUnits.filter(unit => unit.visibility === 'all_members');
+  if (!groupMembersForLeader.length && leaderDoc.groupName) {
+    const byGroupName = await GroupMember.find({ groupName: leaderDoc.groupName }).select('_id').lean();
+    byGroupName.forEach(m => myGroupAuthorIds.add(String(m._id)));
+  } else {
+    groupMembersForLeader.forEach(m => myGroupAuthorIds.add(String(m._id)));
+  }
+} else if (groupMemberDoc) {
+  if (groupMemberDoc.leaderId) myGroupAuthorIds.add(String(groupMemberDoc.leaderId));
+  myGroupAuthorIds.add(String(groupMemberDoc._id));
+
+  const peers = await GroupMember.find(
+    groupMemberDoc.leaderId
+      ? { leaderId: groupMemberDoc.leaderId }
+      : (groupMemberDoc.groupName ? { groupName: groupMemberDoc.groupName } : { _id: null })
+  ).select('_id').lean();
+
+  peers.forEach(p => myGroupAuthorIds.add(String(p._id)));
+}
+
+// Build an organization key for the current viewer
+const me = leaderDoc || groupMemberDoc || memberDoc || {};
+const myOrgKey =
+  normalize(me.organizationId) ||
+  normalize(me.organization) ||
+  emailDomain(me.email);
+
+// We’ll cache author org keys so we don’t keep hitting the DB
+const authorOrgKeyCache = new Map();
+
+async function getAuthorOrgKey(authorId) {
+  const key = String(authorId);
+  if (authorOrgKeyCache.has(key)) return authorOrgKeyCache.get(key);
+
+  let aLeader = null, aGM = null, aMember = null;
+  try {
+    aLeader = await Leader.findById(authorId).select('organizationId organization email').lean();
+    if (!aLeader) aGM = await GroupMember.findById(authorId).select('organizationId organization email').lean();
+    if (!aLeader && !aGM) aMember = await Member.findById(authorId).select('organizationId organization email').lean();
+  } catch (_) { /* ignore */ }
+
+  const doc = aLeader || aGM || aMember || {};
+  const orgKey =
+    normalize(doc.organizationId) ||
+    normalize(doc.organization) ||
+    emailDomain(doc.email) ||
+    null;
+
+  authorOrgKeyCache.set(key, orgKey);
+  return orgKey;
+}
+
+// 1) My units (authored by me)
+const myLibraryUnits = libraryUnits.filter(u => userId && String(u.authorId) === String(userId));
+
+// 2) My group's units = authored by anyone in my group roster (Leader + members)
+const groupLibraryUnits = libraryUnits.filter(u => myGroupAuthorIds.has(String(u.authorId)));
+
+// 3) My organization's units = authored by anyone whose org matches mine,
+//    and whose visibility allows org/community viewing (exclude team_only)
+let orgLibraryUnits = [];
+if (myOrgKey) {
+  const uniqAuthorIds = [...new Set(libraryUnits.map(u => String(u.authorId)).filter(Boolean))];
+  const orgKeyMap = new Map();
+  for (const aid of uniqAuthorIds) {
+    orgKeyMap.set(aid, await getAuthorOrgKey(aid));
+  }
+  orgLibraryUnits = libraryUnits.filter(u => {
+    const vis = u.visibility || 'all_members';
+    if (!['organization_only', 'all_members'].includes(vis)) return false;
+    const authorOrgKey = orgKeyMap.get(String(u.authorId));
+    return !!authorOrgKey && authorOrgKey === myOrgKey;
+  });
+} else {
+  orgLibraryUnits = libraryUnits.filter(u => u.visibility === 'organization_only');
+}
+
+// 4) Twennie’s units = globally visible (all_members)
+//    (These can ALSO appear in group/org sections; duplication across sections is OK)
+const twennieLibraryUnits = libraryUnits.filter(u => (u.visibility || 'all_members') === 'all_members');
+//
+// ---- END: smarter segmentation by authorship + visibility ----
 
 
 
