@@ -239,67 +239,61 @@ app.use(passport.session());
    - Resolve profile image (best-effort) with safe default
 ------------------------------------------------------------------- */
 /* ------------------------------------------------------------------
-   7) USER LOCALS (robust hydration for MFA/Passport/session)
-   - Ensures {{#if user}} works for MFA-enabled and non-MFA logins
-   - Sources user from: req.user → req.session.user → req.session.passport.user → req.session.mfa.userId
-   - Computes dashboardLink and resolves profile image
+   7) USER LOCALS (MFA/Passport rehydration + promote into req.login)
+   Fixes: req.user missing after MFA → req.isAuthenticated() false → redirects
 ------------------------------------------------------------------- */
 app.use(async (req, res, next) => {
   try {
-    // 1) Try to determine a user object or at least a userId from multiple places
+    // --- 1) Collect a candidate user id & type from various places ---
     let effectiveUser = req.user || null;
-    let candidateId = null;
-    let candidateType = null; // 'leader' | 'group_member' | 'member'
+    let candidateId = (effectiveUser?._id || effectiveUser?.id || '').toString() || null;
+    let candidateType = effectiveUser?.membershipType || null; // 'leader' | 'group_member' | 'member'
 
-    // a) Passport-populated user
-    if (effectiveUser) {
-      candidateId = (effectiveUser._id || effectiveUser.id || '').toString();
-      candidateType = effectiveUser.membershipType || null;
-    }
-
-    // b) Your own session user (some flows stash this before/after MFA)
+    // a) Your custom session user (often set pre/post MFA)
     if (!candidateId && req.session?.user) {
-      effectiveUser = req.session.user;
-      candidateId = (effectiveUser._id || effectiveUser.id || '').toString();
-      candidateType = effectiveUser.membershipType || candidateType;
+      const u = req.session.user;
+      candidateId = (u._id || u.id || '').toString() || candidateId;
+      candidateType = u.membershipType || candidateType;
     }
 
-    // c) Passport session store (some setups put just an id or object here)
+    // b) Passport session payload (some strategies store a string id, others an object)
     if (!candidateId && req.session?.passport?.user) {
       const u = req.session.passport.user;
       if (typeof u === 'string') {
         candidateId = u;
       } else if (u && typeof u === 'object') {
-        candidateId = (u._id || u.id || '').toString();
+        candidateId = (u._id || u.id || '').toString() || candidateId;
         candidateType = u.membershipType || candidateType;
       }
     }
 
-    // d) MFA staging (common pattern: stash pending/verified user id under session.mfa)
-    if (!candidateId && req.session?.mfa) {
-      candidateId = (req.session.mfa.userId || req.session.mfa.id || '').toString() || candidateId;
+    // c) MFA staging buckets you may be using
+    if (!candidateId && req.session?.mfa?.userId) {
+      candidateId = String(req.session.mfa.userId);
       candidateType = req.session.mfa.membershipType || candidateType;
     }
     if (!candidateId && req.session?.mfaUserId) {
       candidateId = String(req.session.mfaUserId);
     }
 
-    // 2) If we have an id but no hydrated doc in req.user, load it from DB
-    async function hydrateById(id) {
+    // --- 2) Hydrate a full user doc if req.user is absent/partial ---
+    const asString = (v) => (v == null ? '' : String(v));
+    async function hydrateById(id, hintedType) {
       if (!id) return null;
-      // Try explicit type first (fast path)
-      if (candidateType === 'leader') {
+
+      // Fast path: if we know the type, fetch that collection first
+      if (hintedType === 'leader') {
         const doc = await Leader.findById(id).lean();
         if (doc) return { ...doc, membershipType: 'leader' };
-      } else if (candidateType === 'group_member') {
+      } else if (hintedType === 'group_member') {
         const doc = await GroupMember.findById(id).lean();
         if (doc) return { ...doc, membershipType: 'group_member' };
-      } else if (candidateType === 'member') {
+      } else if (hintedType === 'member') {
         const doc = await Member.findById(id).lean();
         if (doc) return { ...doc, membershipType: 'member' };
       }
 
-      // If type is unknown, try each collection in order of likelihood
+      // Try all three if type unknown or previous miss
       let doc = await Leader.findById(id).lean();
       if (doc) return { ...doc, membershipType: 'leader' };
 
@@ -312,61 +306,82 @@ app.use(async (req, res, next) => {
       return null;
     }
 
-    if (!effectiveUser && candidateId) {
-      const hydrated = await hydrateById(candidateId);
+    let hydrated = effectiveUser;
+    if (!hydrated || !asString(hydrated._id || hydrated.id)) {
+      hydrated = await hydrateById(candidateId, candidateType);
       if (hydrated) {
-        effectiveUser = hydrated;
-        // Put it on req.user so downstream auth checks behave consistently
+        // Put on req so downstream policies work consistently
         req.user = hydrated;
+        effectiveUser = hydrated;
       }
     }
 
-    // 3) Expose to templates; if still no user, header will render logged-out state
-    res.locals.user = effectiveUser || null;
+    // --- 3) If Passport isn’t marked authenticated, promote the user into it ---
+    if (hydrated && typeof req.isAuthenticated === 'function' && !req.isAuthenticated()) {
+      await new Promise((resolve) => {
+        req.login(hydrated, (err) => {
+          if (err) {
+            console.error('⚠️ req.login failed during hydration:', err?.message || err);
+          }
+          // Also mirror into your own session.user for compatibility
+          req.session.user = {
+            id: asString(hydrated._id || hydrated.id),
+            membershipType: hydrated.membershipType,
+            email: hydrated.email,
+            accessLevel: hydrated.accessLevel,
+            groupId: hydrated.groupId,
+            organization: hydrated.organization,
+            username: hydrated.username || hydrated.groupLeaderName || hydrated.name || 'user',
+          };
+          req.session.save(() => resolve());
+        });
+      });
+    }
 
-    // 4) Compute dashboardLink (matches your existing logic)
-    const typeRaw = effectiveUser?.membershipType || '';
-    const typeNorm = typeRaw.replace(/[_\-]/g, '').toLowerCase(); // 'leader' | 'groupmember' | 'member'
+    // --- 4) Expose locals for header/templates ---
+    const userForView = hydrated || null;
+    res.locals.user = userForView;
+
+    const typeNorm = asString(userForView?.membershipType).replace(/[_\-]/g, '').toLowerCase(); // leader | groupmember | member
     let dashboardLink = '/dashboard/member';
     if (typeNorm === 'leader') dashboardLink = '/dashboard/leader';
-    else if (typeNorm === 'groupmember' || typeNorm === 'group_member') dashboardLink = '/dashboard/groupmember';
+    else if (typeNorm === 'groupmember') dashboardLink = '/dashboard/groupmember';
     res.locals.dashboardLink = dashboardLink;
 
-    // 5) Resolve profile image (best-effort; same logic you had, with safe fallbacks)
+    // Resolve profile image
     let userProfileImage = null;
-    const idForProfile = (effectiveUser?._id || effectiveUser?.id || '').toString();
-
+    const idForProfile = asString(userForView?._id || userForView?.id);
     if (idForProfile) {
       if (typeNorm === 'leader') {
         const p = await LeaderProfile.findOne({ leaderId: idForProfile }).select('profileImage').lean();
         userProfileImage = p?.profileImage || null;
-      } else if (typeNorm === 'groupmember' || typeNorm === 'group_member') {
+      } else if (typeNorm === 'groupmember') {
         const p = await GroupMemberProfile.findOne({ groupMemberId: idForProfile }).select('profileImage').lean();
         userProfileImage = p?.profileImage || null;
-      } else {
+      } else if (typeNorm === 'member') {
         const p = await MemberProfile.findOne({ memberId: idForProfile }).select('profileImage').lean();
         userProfileImage = p?.profileImage || null;
       }
     }
-
-    if (!userProfileImage) userProfileImage = effectiveUser?.profileImage || '/images/default-avatar.png';
+    if (!userProfileImage) userProfileImage = userForView?.profileImage || '/images/default-avatar.png';
     if (userProfileImage && !/^https?:\/\//i.test(userProfileImage)) {
       userProfileImage = userProfileImage.startsWith('/') ? userProfileImage : `/${userProfileImage}`;
     }
     res.locals.userProfileImage = userProfileImage;
 
-    // 6) Help prevent any stale cached header variant if a CDN ignores Vary
+    // Make sure caches choose the right variant
     res.set('Vary', 'Cookie');
 
     return next();
   } catch (e) {
-    // On any error, do not break rendering; show logged-out state with safe fallback
+    console.error('USER LOCALS hydrate error:', e?.message || e);
     res.locals.user = null;
     res.locals.dashboardLink = '/dashboard/member';
     res.locals.userProfileImage = '/images/default-avatar.png';
     return next();
   }
 });
+
 
 
 
