@@ -523,8 +523,10 @@
   </div>
 </aside>
 
-
 <script>
+/* ------------------------------
+   Promptset View – Utilities
+-------------------------------*/
 function togglePromptsetMain(element) {
   const isAuthorized = element.dataset.authorized === "true";
   const hiddenContent = element.nextElementSibling;
@@ -537,255 +539,128 @@ function togglePromptsetMain(element) {
   }
 }
 
-
-
-</script>
-
-
-
-
-
-<script>
 function ensureDateBeforeSubmit() {
-  const completionDateInput = document.getElementById('targetCompletionDate');
-  const frequencyInput = document.getElementById('selectedFrequency');
+  const completionInputs = document.querySelectorAll('#targetCompletionDate, input[name="targetCompletionDate"]');
+  const frequencyInputs  = document.querySelectorAll('#selectedFrequency, input[name="frequency"], input[name="selectedFrequency"]');
 
-  if (!frequencyInput.value) {
+  const hasFrequency = Array.from(frequencyInputs).some(i => i.value && i.value.trim() !== '');
+  const hasDate      = Array.from(completionInputs).some(i => i.value && i.value.trim() !== '');
+
+  if (!hasFrequency) {
     alert("⚠️ Please select a frequency before assigning the prompt set.");
     return false;
   }
-  if (!completionDateInput.value) {
+  if (!hasDate) {
     alert("⚠️ Target completion date is missing.");
     return false;
   }
   return true;
 }
 
-function selectFrequency(frequency, daysToAdd) {
-    console.log("✅ Frequency clicked:", frequency);
-
-    let frequencyInput = document.getElementById('selectedFrequency');
-    let completionDateInput = document.getElementById('targetCompletionDate');
-
-    frequencyInput.value = frequency;
-
-    let currentDate = new Date();
-    currentDate.setDate(currentDate.getDate() + daysToAdd);
-    let formattedDate = currentDate.toISOString().split('T')[0];
-
-    completionDateInput.value = formattedDate;
-    console.log("✅ Updated Frequency:", frequencyInput.value);
-    console.log("✅ Updated Completion Date:", completionDateInput.value);
-}
-
-
-
-
-
-
 function toggleMemberSelection(memberId, element) {
-    let selectedMembersInput = document.getElementById('selectedMembers');
-    let selectedMembers = selectedMembersInput.value ? selectedMembersInput.value.split(',') : [];
-    
-    if (selectedMembers.includes(memberId)) {
-        selectedMembers = selectedMembers.filter(id => id !== memberId);
-        element.style.color = "black";
-        console.log(`❌ Unselected Member: ${memberId}`);
-    } else {
-        selectedMembers.push(memberId);
-        element.style.color = "#ee2a7b";
-        console.log(`✅ Selected Member: ${memberId}`);
-    }
-    
-    selectedMembersInput.value = selectedMembers.join(',');
-    console.log("Updated Selected Members:", selectedMembersInput.value);
-}
-
-</script>
-
-<script>
-function showSuccessMessage() {
-    let assignedMembers = document.getElementById('selectedMembers').value.split(',').map(id => {
-      let memberElement = document.querySelector(`.assign-member-option[onclick*='${id}'] span`);
-      return memberElement ? memberElement.textContent : '';
-    }).filter(name => name !== '').join(', ');
-    
-    document.getElementById('assignedMembersDisplay').textContent = assignedMembers;
-    document.getElementById('assignSuccessMessage').classList.remove('hidden');
-}
-
-function validateAssignForm() {
-    let frequency = document.getElementById('selectedFrequency').value;
-    let completionDate = document.getElementById('targetCompletionDate').value;
-
-    if (!frequency || !completionDate) {
-        alert("⚠️ Please select a frequency before assigning the prompt set.");
-        return false; // Prevent submission
-    }
-
-    console.log("✅ Form is valid. Submitting...");
-    return true;
-}
-
-
-<script>
-
-
-(function () {
-  // --- DOM getters (tolerant to different IDs / classnames) ---
-  function $(sel, root = document) { return root.querySelector(sel); }
-  function $all(sel, root = document) { return Array.from(root.querySelectorAll(sel)); }
-
-  // Date input target(s)
-  const dateInput =
-      $('#recommendedDate') ||
-      $('#suggestedCompletionDate') ||
-      $('#completionDate') ||
-      $('input[type="date"]');
-
-  // Where to display human text; if not present, we’ll append under the date input.
-  let dateText =
-      $('#recommendedDateText') ||
-      $('#suggestedCompletionDateText') ||
-      null;
-
-  // Root node that might carry data-prompts-count
-  const root =
-      $('#promptset-root') ||
-      $('#promptset') ||
-      document.body;
-
-  // --- Prompt count detection ---
-  function detectPromptCount() {
-    const attrCount = parseInt(root?.getAttribute('data-prompts-count'), 10);
-    if (!Number.isNaN(attrCount) && attrCount > 0) return attrCount;
-
-    // Try to count visible prompt nodes
-    const candidates = $all('.prompt-item, .prompt-question, [data-prompt-id]');
-    if (candidates.length > 0) return candidates.length;
-
-    // Reasonable default for Twennie prompt sets
-    return 20;
+  const selectedMembersInput = document.getElementById('selectedMembers');
+  let selectedMembers = selectedMembersInput.value ? selectedMembersInput.value.split(',') : [];
+  
+  if (selectedMembers.includes(memberId)) {
+    selectedMembers = selectedMembers.filter(id => id !== memberId);
+    element.style.color = "black";
+    console.log(`❌ Unselected Member: ${memberId}`);
+  } else {
+    selectedMembers.push(memberId);
+    element.style.color = "#ee2a7b";
+    console.log(`✅ Selected Member: ${memberId}`);
   }
+  selectedMembersInput.value = selectedMembers.join(',');
+  console.log("Updated Selected Members:", selectedMembersInput.value);
+}
 
-  // --- Cadence model (tweak if you want a different pacing) ---
-  // Interpretation:
-  //  - daily: 1 prompt/day
-  //  - weekly: ~5 prompts/week
-  //  - monthly: ~10 prompts/month  (≈2 months for 20 prompts)
-  const CADENCE = {
-    daily:   { unit: 'day',   promptsPerUnit: 1  },
-    weekly:  { unit: 'week',  promptsPerUnit: 5  },
-    monthly: { unit: 'month', promptsPerUnit: 10 },
+function showSuccessMessage() {
+  const assignedMembers = document.getElementById('selectedMembers').value
+    .split(',')
+    .map(id => {
+      const el = document.querySelector(`.assign-member-option[onclick*='${id}'] span`);
+      return el ? el.textContent : '';
+    })
+    .filter(Boolean)
+    .join(', ');
+  document.getElementById('assignedMembersDisplay').textContent = assignedMembers;
+  document.getElementById('assignSuccessMessage').classList.remove('hidden');
+}
+
+/* -------------------------------------------------
+   Recommended completion date – robust implementation
+   Works with your existing inline onclicks:
+   selectFrequency('daily', 20) etc.
+--------------------------------------------------*/
+(function () {
+  // Fallbacks in case daysToAdd isn’t passed
+  const DAYS_BY_CADENCE = {
+    daily:   20,   // 1 per day for 20 prompts (adjust as needed)
+    weekly:  140,  // ~20 weeks
+    monthly: 600   // ~20 months
   };
 
-  // --- Helpers to add time ---
-  function addDays(date, days) {
-    const d = new Date(date.getTime());
+  // Update every matching input across both forms (handles duplicate IDs)
+  function setAllFrequencyHiddenFields(value) {
+    const freqInputs = document.querySelectorAll('#selectedFrequency, input[name="selectedFrequency"], input[name="frequency"]');
+    freqInputs.forEach(i => i.value = value);
+  }
+
+  function setAllCompletionDateFields(yyyyMmDd) {
+    const dateInputs = document.querySelectorAll('#targetCompletionDate, input[name="targetCompletionDate"]');
+    dateInputs.forEach(i => {
+      i.value = yyyyMmDd;
+      // in case one of them is readonly (register form), value still displays
+    });
+    const display = document.getElementById('recommendedTargetDate');
+    if (display) {
+      // Render as a nice human string too
+      const d = new Date(yyyyMmDd + 'T00:00:00');
+      display.textContent = d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+    }
+  }
+
+  function addDays(baseDate, days) {
+    const d = new Date(baseDate.getTime());
     d.setDate(d.getDate() + days);
     return d;
   }
-  function addWeeks(date, weeks) {
-    return addDays(date, weeks * 7);
-  }
-  function addMonths(date, months) {
-    const d = new Date(date.getTime());
-    const day = d.getDate();
-    d.setMonth(d.getMonth() + months);
 
-    // Handle month-end overflow (e.g., Jan 31 + 1 month → Feb 28/29)
-    if (d.getDate() < day) d.setDate(0);
-    return d;
-  }
-
-  function formatForDateInput(d) {
-    // yyyy-mm-dd in local time
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const dd = String(d.getDate()).padStart(2, '0');
+  function toYyyyMmDd(date) {
+    const yyyy = date.getFullYear();
+    const mm   = String(date.getMonth() + 1).padStart(2, '0');
+    const dd   = String(date.getDate()).padStart(2, '0');
     return `${yyyy}-${mm}-${dd}`;
   }
 
-  function formatHuman(d) {
-    // e.g., “Tue, Oct 21, 2025”
-    return d.toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
-  }
+  // Expose a global that your inline onclicks already call
+  window.selectFrequency = function selectFrequency(frequency, daysToAdd) {
+    try {
+      const cadence = String(frequency || '').toLowerCase();
+      const days = Number.isFinite(daysToAdd) ? Number(daysToAdd) : (DAYS_BY_CADENCE[cadence] || 20);
 
-  // --- Main compute function ---
-  function computeRecommendedDate(cadence) {
-    const prompts = detectPromptCount();
-    const cfg = CADENCE[cadence];
-    if (!cfg) return null;
+      console.log('✅ Frequency clicked:', cadence, '→ daysToAdd:', days);
 
-    const unitsNeeded = Math.max(1, Math.ceil(prompts / cfg.promptsPerUnit));
-    const now = new Date();
+      setAllFrequencyHiddenFields(cadence);
 
-    if (cfg.unit === 'day')   return addDays(now, unitsNeeded);
-    if (cfg.unit === 'week')  return addWeeks(now, unitsNeeded);
-    if (cfg.unit === 'month') return addMonths(now, unitsNeeded);
-    return null;
-  }
+      const now = new Date();
+      const target = addDays(now, days);
+      const iso = toYyyyMmDd(target);
 
-  // --- Apply to the page ---
-  function ensureTextNode() {
-    if (dateText || !dateInput) return;
-    dateText = document.createElement('div');
-    dateText.id = 'recommendedDateText';
-    dateText.style.marginTop = '6px';
-    dateText.style.fontSize = '0.9rem';
-    dateText.style.color = '#4e50a2';
-    dateInput.insertAdjacentElement('afterend', dateText);
-  }
+      setAllCompletionDateFields(iso);
 
-  function setRecommended(cadence) {
-    if (!dateInput) return;
-    const d = computeRecommendedDate(cadence);
-    if (!d) return;
-
-    // Only set value if the user hasn't typed a custom date or we’re reacting to cadence change
-    dateInput.value = formatForDateInput(d);
-
-    ensureTextNode();
-    if (dateText) {
-      dateText.textContent = `Recommended completion date (${cadence}): ${formatHuman(d)} (you can choose any date)`;
+      console.log('✅ Updated Frequency in all forms:', cadence);
+      console.log('✅ Updated Completion Date in all forms:', iso);
+    } catch (e) {
+      console.error('selectFrequency error:', e);
     }
-  }
+  };
 
-  // --- Bind events to cadence controls ---
-  function bindCadenceControls() {
-    // Radio inputs
-    const radios = $all('input[type="radio"][name="cadence"]');
-    radios.forEach((r) => {
-      r.addEventListener('change', () => {
-        if (r.checked) setRecommended(r.value);
-      });
-    });
-
-    // Buttons/links with data-cadence
-    const btns = $all('.cadence-option[data-cadence]');
-    btns.forEach((b) => {
-      b.addEventListener('click', (e) => {
-        // Don’t submit any form it might be inside
-        e.preventDefault?.();
-        const c = b.getAttribute('data-cadence');
-        setRecommended(c);
-      });
-    });
-
-    // On load: if a cadence is already selected, apply it once
-    const selected = radios.find(r => r.checked)?.value ||
-                     $all('.cadence-option.active[data-cadence]')[0]?.getAttribute('data-cadence') ||
-                     null;
-    if (selected) setRecommended(selected);
-  }
-
-  // Kick things off
-  bindCadenceControls();
+  // If you later want to also support non-inline wiring,
+  // you can add data-cadence listeners here.
 })();
-
-
-
 </script>
+
 
 
 
