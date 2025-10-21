@@ -628,6 +628,161 @@ function validateAssignForm() {
 }
 
 
+<script>
+
+
+(function () {
+  // --- DOM getters (tolerant to different IDs / classnames) ---
+  function $(sel, root = document) { return root.querySelector(sel); }
+  function $all(sel, root = document) { return Array.from(root.querySelectorAll(sel)); }
+
+  // Date input target(s)
+  const dateInput =
+      $('#recommendedDate') ||
+      $('#suggestedCompletionDate') ||
+      $('#completionDate') ||
+      $('input[type="date"]');
+
+  // Where to display human text; if not present, we’ll append under the date input.
+  let dateText =
+      $('#recommendedDateText') ||
+      $('#suggestedCompletionDateText') ||
+      null;
+
+  // Root node that might carry data-prompts-count
+  const root =
+      $('#promptset-root') ||
+      $('#promptset') ||
+      document.body;
+
+  // --- Prompt count detection ---
+  function detectPromptCount() {
+    const attrCount = parseInt(root?.getAttribute('data-prompts-count'), 10);
+    if (!Number.isNaN(attrCount) && attrCount > 0) return attrCount;
+
+    // Try to count visible prompt nodes
+    const candidates = $all('.prompt-item, .prompt-question, [data-prompt-id]');
+    if (candidates.length > 0) return candidates.length;
+
+    // Reasonable default for Twennie prompt sets
+    return 20;
+  }
+
+  // --- Cadence model (tweak if you want a different pacing) ---
+  // Interpretation:
+  //  - daily: 1 prompt/day
+  //  - weekly: ~5 prompts/week
+  //  - monthly: ~10 prompts/month  (≈2 months for 20 prompts)
+  const CADENCE = {
+    daily:   { unit: 'day',   promptsPerUnit: 1  },
+    weekly:  { unit: 'week',  promptsPerUnit: 5  },
+    monthly: { unit: 'month', promptsPerUnit: 10 },
+  };
+
+  // --- Helpers to add time ---
+  function addDays(date, days) {
+    const d = new Date(date.getTime());
+    d.setDate(d.getDate() + days);
+    return d;
+  }
+  function addWeeks(date, weeks) {
+    return addDays(date, weeks * 7);
+  }
+  function addMonths(date, months) {
+    const d = new Date(date.getTime());
+    const day = d.getDate();
+    d.setMonth(d.getMonth() + months);
+
+    // Handle month-end overflow (e.g., Jan 31 + 1 month → Feb 28/29)
+    if (d.getDate() < day) d.setDate(0);
+    return d;
+  }
+
+  function formatForDateInput(d) {
+    // yyyy-mm-dd in local time
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  }
+
+  function formatHuman(d) {
+    // e.g., “Tue, Oct 21, 2025”
+    return d.toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  // --- Main compute function ---
+  function computeRecommendedDate(cadence) {
+    const prompts = detectPromptCount();
+    const cfg = CADENCE[cadence];
+    if (!cfg) return null;
+
+    const unitsNeeded = Math.max(1, Math.ceil(prompts / cfg.promptsPerUnit));
+    const now = new Date();
+
+    if (cfg.unit === 'day')   return addDays(now, unitsNeeded);
+    if (cfg.unit === 'week')  return addWeeks(now, unitsNeeded);
+    if (cfg.unit === 'month') return addMonths(now, unitsNeeded);
+    return null;
+  }
+
+  // --- Apply to the page ---
+  function ensureTextNode() {
+    if (dateText || !dateInput) return;
+    dateText = document.createElement('div');
+    dateText.id = 'recommendedDateText';
+    dateText.style.marginTop = '6px';
+    dateText.style.fontSize = '0.9rem';
+    dateText.style.color = '#4e50a2';
+    dateInput.insertAdjacentElement('afterend', dateText);
+  }
+
+  function setRecommended(cadence) {
+    if (!dateInput) return;
+    const d = computeRecommendedDate(cadence);
+    if (!d) return;
+
+    // Only set value if the user hasn't typed a custom date or we’re reacting to cadence change
+    dateInput.value = formatForDateInput(d);
+
+    ensureTextNode();
+    if (dateText) {
+      dateText.textContent = `Recommended completion date (${cadence}): ${formatHuman(d)} (you can choose any date)`;
+    }
+  }
+
+  // --- Bind events to cadence controls ---
+  function bindCadenceControls() {
+    // Radio inputs
+    const radios = $all('input[type="radio"][name="cadence"]');
+    radios.forEach((r) => {
+      r.addEventListener('change', () => {
+        if (r.checked) setRecommended(r.value);
+      });
+    });
+
+    // Buttons/links with data-cadence
+    const btns = $all('.cadence-option[data-cadence]');
+    btns.forEach((b) => {
+      b.addEventListener('click', (e) => {
+        // Don’t submit any form it might be inside
+        e.preventDefault?.();
+        const c = b.getAttribute('data-cadence');
+        setRecommended(c);
+      });
+    });
+
+    // On load: if a cadence is already selected, apply it once
+    const selected = radios.find(r => r.checked)?.value ||
+                     $all('.cadence-option.active[data-cadence]')[0]?.getAttribute('data-cadence') ||
+                     null;
+    if (selected) setRecommended(selected);
+  }
+
+  // Kick things off
+  bindCadenceControls();
+})();
+
 
 
 </script>
