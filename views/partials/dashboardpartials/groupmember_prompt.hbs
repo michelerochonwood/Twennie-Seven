@@ -1,72 +1,126 @@
-{{#if promptSet}}
-<div class="groupmember-prompt-container">
-  <h2 class="groupmember-prompt-title">{{promptSet.frequency}} prompt</h2>
-  <h5 class="groupmember-prompt-set-title" style="font-size: 1rem;">
-    <strong>{{promptSet.promptSetTitle}}</strong> - {{promptSet.mainTopic}}
-  </h5>
-  <p class="groupmember-prompt-purpose">
-    <strong>Purpose of this prompt set:</strong> {{promptSet.purpose}}
-  </p>
+{{!-- groupmember_prompt_tab.hbs --}}
 
-  {{#if promptSchedule}}
-    <p class="groupmember-prompt-schedule">
-      To stay on schedule with this prompt set, Twennie recommends you complete this prompt by:
-    </p>
-    <p class="groupmember-prompt-schedule-date">{{promptSchedule.recommendedCompletionDate}}</p>
-  {{/if}}
-
-  {{#if promptSet.leaderNotes}}
-    <div class="groupmember-leader-notes">
-      <h4 class="groupmember-leader-notes-title">instructions from {{promptSet.leaderName}}:</h4>
-      <p class="groupmember-leader-notes-text">{{promptSet.leaderNotes}}</p>
-    </div>
-  {{/if}}
-
-  <div class="groupmember-prompt-card">
-    <div class="groupmember-prompt-border">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1224.99 153.32">
-        <defs><style>.cls-777 {fill: #4e50a2;}</style></defs>
-        <g>
-          <path class="cls-777" d="M149.91,136.71c-.06,0-.11,0-.17,0,.06,0,.11,0,.17,0Z"/>
-          <path class="cls-777" d="M109.06,90.03h-49.65c28.73-7.2,48.89-24.04,48.89-43.65C108.29,20.2,72.54.92,28.27.92,21,.92,14.68.28,7.69.28L.3,0h-.3l.64,149.68c31-6.8,68.57-11.39,108.41-14.03v-45.62Z"/>
-          <path class="cls-777" d="M1224.99,0L215,4.7c-68.86-.52-105.94,30.88-105.94,62.55,0,28.27,50.59,67.87,183.53,72.77h0c83.12,1.86,260.56-21.97,326.9-30.26,300.52-37.57,604.74,43.55,604.74,43.55l.76-153.32Z"/>
-        </g>
-      </svg>
-    </div>
-    <p class="groupmember-prompt-headline">{{promptSet.promptHeadline}}</p>
-    <p class="groupmember-prompt-text">{{promptSet.promptText}}</p>
-  </div>
-
-  {{#if promptSet.promptIndex}}
-    <!-- Notes form for prompts 1–20 -->
-    <form action="/promptsetnotes/submit-prompt-notes" method="POST" class="groupmember-prompt-form">
-      <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
-      <input type="hidden" name="promptSetId" value="{{promptSet.promptSetId}}">
-
-      <label for="notes" class="groupmember-prompt-notes-label">Record your notes here:</label>
-      <textarea name="notes" id="notes" class="groupmember-prompt-notes" placeholder="Write your notes here..." required></textarea>
-
-      {{#if (eq promptSet.promptIndex 20)}}
-        <p class="final-prompt-message">
-          <strong>Final Prompt!</strong> This is the last prompt in the set. Make sure to complete the prompt and add your final thoughts about what you learned and discovered!
-        </p>
-      {{/if}}
-
-      <button type="submit" class="groupmember-prompt-submit">submit this prompt</button>
-    </form>
+<div class="groupmember-prompt-tab" id="groupmemberPromptTab" data-member-id="{{@root.user.id}}">
+  {{!-- Prefer rendering from an array (promptSets) if the controller provides one; otherwise fall back to single promptSet --}}
+  {{#if promptSets}}
+    {{#each promptSets}}
+      {{> _gm_prompt_card promptSet=this csrfToken=@root.csrfToken}}
+    {{/each}}
+  {{else if promptSet}}
+    {{> _gm_prompt_card promptSet=promptSet csrfToken=@root.csrfToken}}
   {{else}}
-    <!-- Start form for Prompt 0 -->
-    <form action="/promptsetstart/start" method="POST">
-      <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
-      <input type="hidden" name="promptSetId" value="{{promptSet.promptSetId}}">
-      <button type="submit" class="groupmember-prompt-submit">get started completing prompts</button>
-    </form>
+    <div class="groupmember-prompt-empty">
+      <p>No prompt sets assigned yet.</p>
+    </div>
   {{/if}}
-
-  <button class="groupmember-unregister-btn" data-id="{{promptSet.registrationId}}">
-    unregister for this prompt set
-  </button>
 </div>
-{{/if}}
+
+{{!-- Inline sub-partial that mirrors your original markup/behavior one-for-one --}}
+{{#*inline "_gm_prompt_card"}}
+  {{!-- Expect: promptSet = { promptSetId, registrationId, frequency, promptSetTitle, mainTopic, purpose, leaderNotes?, leaderName?, promptHeadline, promptText, promptIndex?, promptSchedule? } --}}
+  {{!-- Use external promptSchedule if provided at root-level for back-compat --}}
+  {{#with promptSet as |ps|}}
+  <div class="groupmember-prompt-container" data-psid="{{ps.promptSetId}}" data-regid="{{ps.registrationId}}">
+    <h2 class="groupmember-prompt-title">{{ps.frequency}} prompt</h2>
+
+    <h5 class="groupmember-prompt-set-title" style="font-size: 1rem;">
+      <strong>{{ps.promptSetTitle}}</strong> - {{ps.mainTopic}}
+    </h5>
+
+    <p class="groupmember-prompt-purpose">
+      <strong>Purpose of this prompt set:</strong> {{ps.purpose}}
+    </p>
+
+    {{!-- schedule: support legacy {{promptSchedule}} OR ps.promptSchedule --}}
+    {{#if (or ../promptSchedule ps.promptSchedule)}}
+      <p class="groupmember-prompt-schedule">
+        To stay on schedule with this prompt set, Twennie recommends you complete this prompt by:
+      </p>
+      <p class="groupmember-prompt-schedule-date">
+        {{#if ../promptSchedule}}{{../promptSchedule.recommendedCompletionDate}}{{else}}{{ps.promptSchedule.recommendedCompletionDate}}{{/if}}
+      </p>
+    {{/if}}
+
+    {{#if ps.leaderNotes}}
+      <div class="groupmember-leader-notes">
+        <h4 class="groupmember-leader-notes-title">instructions from {{ps.leaderName}}:</h4>
+        <p class="groupmember-leader-notes-text">{{ps.leaderNotes}}</p>
+      </div>
+    {{/if}}
+
+    <div class="groupmember-prompt-card">
+      <div class="groupmember-prompt-border">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1224.99 153.32">
+          <defs><style>.cls-777 {fill: #4e50a2;}</style></defs>
+          <g>
+            <path class="cls-777" d="M149.91,136.71c-.06,0-.11,0-.17,0,.06,0,.11,0,.17,0Z"/>
+            <path class="cls-777" d="M109.06,90.03h-49.65c28.73-7.2,48.89-24.04,48.89-43.65C108.29,20.2,72.54.92,28.27.92,21,.92,14.68.28,7.69.28L.3,0h-.3l.64,149.68c31-6.8,68.57-11.39,108.41-14.03v-45.62Z"/>
+            <path class="cls-777" d="M1224.99,0L215,4.7c-68.86-.52-105.94,30.88-105.94,62.55,0,28.27,50.59,67.87,183.53,72.77h0c83.12,1.86,260.56-21.97,326.9-30.26,300.52-37.57,604.74,43.55,604.74,43.55l.76-153.32Z"/>
+          </g>
+        </svg>
+      </div>
+
+      <p class="groupmember-prompt-headline">{{ps.promptHeadline}}</p>
+      <p class="groupmember-prompt-text">{{ps.promptText}}</p>
+    </div>
+
+    {{#if ps.promptIndex}}
+      {{!-- Notes form for prompts 1–20 (kept identical, ids made unique per set) --}}
+      <form action="/promptsetnotes/submit-prompt-notes" method="POST" class="groupmember-prompt-form">
+        <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
+        <input type="hidden" name="promptSetId" value="{{ps.promptSetId}}">
+
+        <label for="notes-{{ps.promptSetId}}" class="groupmember-prompt-notes-label">Record your notes here:</label>
+        <textarea name="notes"
+                  id="notes-{{ps.promptSetId}}"
+                  class="groupmember-prompt-notes"
+                  placeholder="Write your notes here..."
+                  required></textarea>
+
+        {{#if (eq ps.promptIndex 20)}}
+          <p class="final-prompt-message">
+            <strong>Final Prompt!</strong> This is the last prompt in the set. Make sure to complete the prompt and add your final thoughts about what you learned and discovered!
+          </p>
+        {{/if}}
+
+        <button type="submit" class="groupmember-prompt-submit">submit this prompt</button>
+      </form>
+    {{else}}
+      {{!-- Start form for Prompt 0 (kept identical) --}}
+      <form action="/promptsetstart/start" method="POST">
+        <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
+        <input type="hidden" name="promptSetId" value="{{ps.promptSetId}}">
+        <button type="submit" class="groupmember-prompt-submit">get started completing prompts</button>
+      </form>
+    {{/if}}
+
+    <button class="groupmember-unregister-btn" data-id="{{ps.registrationId}}">
+      unregister for this prompt set
+    </button>
+  </div>
+  {{/with}}
+{{/inline}}
+
+{{!-- Small client-side de-duplication: if upstream accidentally sends duplicates, keep the first per promptSetId --}}
+<script>
+(function () {
+  var root = document.getElementById('groupmemberPromptTab');
+  if (!root) return;
+
+  var seen = Object.create(null);
+  var cards = root.querySelectorAll('.groupmember-prompt-container');
+
+  for (var i = 0; i < cards.length; i++) {
+    var card = cards[i];
+    var key = card.getAttribute('data-psid') || '';
+    if (!key) continue;
+    if (seen[key]) {
+      card.parentNode && card.parentNode.removeChild(card);
+    } else {
+      seen[key] = true;
+    }
+  }
+})();
+</script>
 
 
