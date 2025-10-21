@@ -16,164 +16,190 @@ const router = express.Router();
 router.use(bodyParser.urlencoded({ extended: true }));
 router.use(bodyParser.json());
 
-module.exports = {
-    // Assign a prompt set to group members
-    assignPromptSet: async (req, res) => {
+function normalizeAssignedIds(primary, fallback) {
+  let raw = [];
 
-        try {
-            console.log("Assigning prompt set - Full Request Body:", req.body);
-    
-            // Extract values from request
-            const { promptSetId, assignedMemberIds, targetCompletionDate, leaderNotes, frequency } = req.body;
-            const { id: groupLeaderId } = req.session.user;
+  if (Array.isArray(primary))       raw = primary;
+  else if (typeof primary === 'string' && primary.trim()) raw = [primary];
+  else if (Array.isArray(fallback)) raw = fallback;
+  else if (typeof fallback === 'string' && fallback.trim()) raw = [fallback];
 
-                    // Debugging: Log extracted values
-        console.log("🔍 Extracted Values - PromptSetId:", promptSetId);
-        console.log("🔍 Extracted Values - Assigned Member IDs:", assignedMemberIds);
-        console.log("🔍 Extracted Values - Frequency:", frequency);
-        console.log("🔍 Extracted Values - Target Completion Date:", targetCompletionDate);
-        console.log("🔍 Extracted Values - Leader Notes:", leaderNotes);
-    
-            // Validate input
-            if (!assignedMemberIds || assignedMemberIds.length === 0) {
-                return res.json({ success: false, errorMessage: "Please select at least one group member to assign." });
-            }
-    
-            let assignedIds = Array.isArray(assignedMemberIds) 
-                ? assignedMemberIds.map(id => id.toString().trim()) 
-                : [assignedMemberIds.toString().trim()];
-    
-            if (!promptSetId || !targetCompletionDate) {
-                return res.json({ success: false, errorMessage: "Missing required fields. Please fill out all fields." });
-            }
-    
-            console.log("Parsed assignedMemberIds:", assignedIds);
-            console.log("Target Completion Date:", targetCompletionDate);
-    
-            // Verify group members exist in MongoDB
-            console.log(" Checking assignedMemberIds in MongoDB:", assignedIds);
-            const validGroupMembers = await GroupMember.find({ _id: { $in: assignedIds } }).select('_id');
-            console.log("Found valid group members:", validGroupMembers.map(m => m._id.toString()));
-    
-            const validIds = validGroupMembers.map(member => member._id.toString());
-    
-            if (validIds.length !== assignedIds.length) {
-                return res.json({ success: false, errorMessage: "Some selected members are not valid group members." });
-            }
-    
-            console.log("Valid Group Members:", validIds);
-    
-            // Verify prompt set exists
-            const promptSet = await PromptSet.findById(promptSetId);
-            if (!promptSet) {
-                return res.json({ success: false, errorMessage: "Prompt set not found." });
-            }
-    
-            // Prevent duplicate assignments
-            const existingAssignments = await AssignPromptSet.find({
-                promptSetId,
-                assignedMemberIds: { $in: validIds }
-            });
-    
-            if (existingAssignments.length > 0) {
-                return res.json({ success: false, errorMessage: "One or more selected members already have this prompt set assigned." });
-            }
-    
-            // Save new assignment
-            const assignment = new AssignPromptSet({
-                promptSetId,
-                groupLeaderId,
-                assignedMemberIds: validIds,
-                frequency: frequency ? String(frequency).trim() : "monthly",
-                assignDate: new Date(),
-                targetCompletionDate,
-                leaderNotes
-            });
-    
-            await assignment.save();
-            console.log(" Assignment saved:", assignment);
+  // Expand single CSV string if needed
+  if (raw.length === 1 && typeof raw[0] === 'string' && raw[0].includes(',')) {
+    raw = raw[0].split(',');
+  }
 
+  // Clean, dedupe, validate
+  const strings = [...new Set(raw.map(s => String(s).trim()).filter(Boolean))];
+  const hex24   = strings.filter(x => /^[a-fA-F0-9]{24}$/.test(x));
 
-// Ensure all assigned members get their own registration and progress tracking
-for (const memberId of validIds) {
-    // Check if this member already has progress for this prompt set
-    const existingProgress = await PromptSetProgress.findOne({ memberId, promptSetId });
+  if (hex24.length !== strings.length) {
+    const bad = strings.filter(x => !/^[a-fA-F0-9]{24}$/.test(x));
+    console.warn('⚠️ Ignored invalid member IDs:', bad);
+  }
 
-    if (!existingProgress) {
-        const progress = new PromptSetProgress({
-            memberId,
-            memberType: "group_member",
-            promptSetId,
-            currentPromptIndex: 0,  // ✅ Start at Prompt 0
-            completedPrompts: [],
-            notes: []
-        });
-
-        await progress.save();
-        console.log(`✅ Progress initialized at Prompt 0 for member ${memberId}`);
-    } else {
-        console.log(`ℹ️ Progress already exists for member ${memberId}, skipping initialization.`);
-    }
-
-    // Check if this member is already registered before creating a new record
-    const existingRegistration = await PromptSetRegistration.findOne({ memberId, promptSetId });
-
-    if (!existingRegistration) {
-        const newRegistration = new PromptSetRegistration({
-            memberId,
-            promptSetId,
-            memberType: "group_member",
-            frequency,
-            targetCompletionDate,
-            assignerId: groupLeaderId
-        });
-
-        await newRegistration.save();
-        console.log(`✅ Registered assigned prompt set for ${memberId}`);
-    } else {
-        console.log(`ℹ️ Registration already exists for member ${memberId}, skipping duplicate entry.`);
-    }
+  return { objectIds: hex24.map(x => new ObjectId(x)), stringIds: hex24 };
 }
 
+module.exports = {
+    // Assign a prompt set to group members
+assignPromptSet: async (req, res) => {
+  try {
+    console.log("Assigning prompt set - Full Request Body:", req.body);
 
+    // Read both possible field names coming from the view
+    const arrayField = req.body['assignedMemberIds[]'];   // may be string or array
+    const csvMirror  = req.body.assignedMemberIds;        // may be CSV string or array
 
-// ✅ Store assigned prompt sets in session without overwriting order
-req.session.assignedPromptSets = validIds.map(memberId => ({
-    memberId,
-    promptSetId
-}));
+    // Normalize to clean arrays
+    const { objectIds: assignedObjectIds, stringIds: assignedStringIds } =
+      normalizeAssignedIds(arrayField, csvMirror);
 
-// ✅ Assign prompt sets explicitly to A, B, and C to prevent them from shifting in the session
-req.session.groupmemberPromptA = assignedIds[0] ? { memberId: assignedIds[0], promptSetId } : null;
-req.session.groupmemberPromptB = assignedIds[1] ? { memberId: assignedIds[1], promptSetId } : null;
-req.session.groupmemberPromptC = assignedIds[2] ? { memberId: assignedIds[2], promptSetId } : null;
+    // Extract other fields
+    const promptSetId          = req.body.promptSetId;
+    const frequencyRaw         = req.body.frequency;
+    const targetCompletionDate = req.body.targetCompletionDate;
+    const leaderNotes          = req.body.leaderNotes || '';
+    const groupLeaderId        = req.session.user?.id;
 
+    // Debugging
+    console.log("🔍 Extracted Values - PromptSetId:", promptSetId);
+    console.log("🔍 Extracted Values - Assigned Member IDs (raw):", arrayField || csvMirror);
+    console.log("🔍 Normalized IDs (strings):", assignedStringIds);
+    console.log("🔍 Frequency:", frequencyRaw);
+    console.log("🔍 Target Completion Date:", targetCompletionDate);
+    console.log("🔍 Leader Notes:", leaderNotes);
 
-// ✅ Save session before sending JSON response
-req.session.save(err => {
-    if (err) {
-        console.error("Error: Failed to save session after assignment.", err);
-        return res.status(500).json({ errorMessage: "Session update failed after assignment." });
+    // Validate input
+    if (!groupLeaderId) {
+      return res.json({ success: false, errorMessage: "You must be logged in as a leader to assign." });
+    }
+    if (!promptSetId || !targetCompletionDate) {
+      return res.json({ success: false, errorMessage: "Missing required fields. Please fill out all fields." });
+    }
+    if (!assignedObjectIds.length) {
+      return res.json({ success: false, errorMessage: "Please select at least one group member to assign." });
     }
 
-    console.log("Session after assignment update:", JSON.stringify(req.session, null, 2));
-    console.log("🔍 RAW Request Body:", req.body);
-    console.log("🔍 Frequency from Request:", req.body.frequency);
-    console.log("🔍 Target Completion Date from Request:", req.body.targetCompletionDate);
-    console.log("🔍 Assigned Members:", req.body.assignedMemberIds);
+    const frequency = (String(frequencyRaw || 'monthly')).toLowerCase();
+    const targetDateISO = new Date(targetCompletionDate); // trust yyyy-mm-dd from <input type="date">
+    if (isNaN(targetDateISO.getTime())) {
+      return res.json({ success: false, errorMessage: "Target completion date is invalid." });
+    }
 
+    // Verify group members exist
+    console.log(" Checking assignedMemberIds in MongoDB:", assignedStringIds);
+    const validGroupMembers = await GroupMember.find({ _id: { $in: assignedObjectIds } })
+      .select('_id')
+      .lean();
 
-    res.json({
+    const validObjectIds = validGroupMembers.map(m => m._id);
+    const validStrings   = validObjectIds.map(id => id.toString());
+
+    console.log("Found valid group members:", validStrings);
+
+    if (validObjectIds.length !== assignedObjectIds.length) {
+      return res.json({ success: false, errorMessage: "Some selected members are not valid group members." });
+    }
+
+    // Verify prompt set exists
+    const promptSet = await PromptSet.findById(promptSetId).lean();
+    if (!promptSet) {
+      return res.json({ success: false, errorMessage: "Prompt set not found." });
+    }
+
+    // Prevent duplicate assignments (any of these members already assigned this set)
+    const existingAssignments = await AssignPromptSet.find({
+      promptSetId,
+      assignedMemberIds: { $in: validObjectIds }
+    }).lean();
+
+    if (existingAssignments.length > 0) {
+      return res.json({ success: false, errorMessage: "One or more selected members already have this prompt set assigned." });
+    }
+
+    // Save new assignment (store ObjectIds)
+    const assignment = new AssignPromptSet({
+      promptSetId,
+      groupLeaderId,
+      assignedMemberIds: validObjectIds,  // store as ObjectIds, not strings
+      frequency,
+      assignDate: new Date(),
+      targetCompletionDate: targetDateISO,
+      leaderNotes
+    });
+
+    await assignment.save();
+    console.log(" Assignment saved:", assignment);
+
+    // Ensure all assigned members get their own registration and progress tracking
+    for (const oid of validObjectIds) {
+      const memberIdStr = oid.toString();
+
+      // Progress (start at prompt 0)
+      const existingProgress = await PromptSetProgress.findOne({ memberId: memberIdStr, promptSetId }).lean();
+      if (!existingProgress) {
+        const progress = new PromptSetProgress({
+          memberId: memberIdStr,
+          memberType: "group_member",
+          promptSetId,
+          currentPromptIndex: 0,
+          completedPrompts: [],
+          notes: []
+        });
+        await progress.save();
+        console.log(`✅ Progress initialized at Prompt 0 for member ${memberIdStr}`);
+      } else {
+        console.log(`ℹ️ Progress already exists for member ${memberIdStr}, skipping initialization.`);
+      }
+
+      // Registration
+      const existingRegistration = await PromptSetRegistration.findOne({ memberId: memberIdStr, promptSetId }).lean();
+      if (!existingRegistration) {
+        const newRegistration = new PromptSetRegistration({
+          memberId: memberIdStr,
+          promptSetId,
+          memberType: "group_member",
+          frequency,
+          targetCompletionDate: targetDateISO,
+          assignerId: groupLeaderId
+        });
+        await newRegistration.save();
+        console.log(`✅ Registered assigned prompt set for ${memberIdStr}`);
+      } else {
+        console.log(`ℹ️ Registration already exists for member ${memberIdStr}, skipping duplicate entry.`);
+      }
+    }
+
+    // Session bookkeeping (optional, unchanged)
+    req.session.assignedPromptSets = validStrings.map(memberId => ({
+      memberId,
+      promptSetId
+    }));
+    req.session.groupmemberPromptA = validStrings[0] ? { memberId: validStrings[0], promptSetId } : null;
+    req.session.groupmemberPromptB = validStrings[1] ? { memberId: validStrings[1], promptSetId } : null;
+    req.session.groupmemberPromptC = validStrings[2] ? { memberId: validStrings[2], promptSetId } : null;
+
+    // Save session and respond
+    req.session.save(err => {
+      if (err) {
+        console.error("Error: Failed to save session after assignment.", err);
+        return res.status(500).json({ success: false, errorMessage: "Session update failed after assignment." });
+      }
+
+      console.log("Session after assignment update:", JSON.stringify(req.session, null, 2));
+      res.json({
         success: true,
         redirectUrl: `/promptsetassign/assignsuccess?title=${encodeURIComponent(promptSet.promptset_title)}&frequency=${encodeURIComponent(frequency)}&completion_date=${encodeURIComponent(targetCompletionDate)}&dashboard=/dashboard/leader`
+      });
     });
-});
-    
-        } catch (error) {
-            console.error("Error assigning prompt set:", error);
-            res.json({ success: false, errorMessage: "An error occurred while assigning the prompt set. Please try again." });
-        }
-    },
+
+  } catch (error) {
+    console.error("Error assigning prompt set:", error);
+    res.json({ success: false, errorMessage: "An error occurred while assigning the prompt set. Please try again." });
+  }
+},
+
     
     
     
