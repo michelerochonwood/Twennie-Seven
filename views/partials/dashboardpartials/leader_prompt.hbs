@@ -1,154 +1,84 @@
-{{#if promptSet}}
-<div class="leader-prompt-container">
-  <h2 class="leader-prompt-title">{{promptSet.frequency}} prompt</h2>
-  <p class="leader-prompt-set-title">
-    <strong>{{promptSet.promptSetTitle}}</strong> - {{promptSet.mainTopic}}
+{{!--
+  Expects (passed by the dashboard view):
+    registeredPromptSets : Array  (leader’s own)
+    assignedPromptCards  : Array  (one-per-assignment-per-member)
+    csrfToken            : String
+--}}
+
+{{!-- ========== Registered prompt sets (unchanged UI) ========== --}}
+{{#if registeredPromptSets.length}}
+  {{#each registeredPromptSets}}
+    <section class="leader-prompt-section">
+      {{!-- Reuse the original registered partial exactly as before --}}
+      {{> dashboardpartials/leader_prompt promptSet=this csrfToken=../csrfToken }}
+    </section>
+  {{/each}}
+{{else}}
+  <p class="leader-assigned-empty" style="text-align:center;margin:6px 0 14px;">
+    You haven’t registered for any prompt sets yet.
   </p>
-  <p class="leader-prompt-purpose">
-    <strong>Purpose of this prompt set:</strong> {{promptSet.purpose}}
-  </p>
-
-  {{#if promptSchedule}}
-    <p class="leader-prompt-schedule">
-      To stay on schedule with this prompt set, Twennie recommends you complete this prompt by:
-    </p>
-    <p class="leader-prompt-schedule-date">{{promptSchedule.recommendedCompletionDate}}</p>
-  {{/if}}
-
-  <div class="leader-prompt-card">
-    <div class="leader-prompt-border">
-      <svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1224.99 153.32">
-        <defs>
-          <style>.cls-777 { fill: #4e50a2; }</style>
-        </defs>
-        <g id="Layer_1-2" data-name="Layer 1">
-          <g>
-            <path class="cls-777" d="M149.91,136.71c-.06,0-.11,0-.17,0,.06,0,.11,0,.17,0Z"/>
-            <path class="cls-777" d="M109.06,90.03h-49.65c28.73-7.2,48.89-24.04,48.89-43.65C108.29,20.2,72.54.92,28.27.92,21,.92,14.68.28,7.69.28L.3,0h-.3l.64,149.68c31-6.8,68.57-11.39,108.41-14.03v-45.62Z"/>
-            <path class="cls-777" d="M1224.99,0L215,4.7c-68.86-.52-105.94,30.88-105.94,62.55,0,28.27,50.59,67.87,183.53,72.77h0c83.12,1.86,260.56-21.97,326.9-30.26,300.52-37.57,604.74,43.55,604.74,43.55l.76-153.32Z"/>
-          </g>
-        </g>
-      </svg>
-    </div>
-
-    <p class="leader-prompt-headline">{{promptSet.promptHeadline}}</p>
-    <p class="leader-prompt-text">{{promptSet.promptText}}</p>
-  </div>
-
-  {{#if promptSet.promptIndex}}
-    <form action="/promptsetnotes/submit-prompt-notes" method="POST" enctype="application/x-www-form-urlencoded">
-      <input type="hidden" name="_csrf" value="{{csrfToken}}">
-      <input type="hidden" name="promptSetId" value="{{promptSet.promptSetId}}">
-
-      <label for="notes" class="leader-prompt-notes-label">Record your notes here:</label>
-      <textarea name="notes" id="notes" class="leader-prompt-notes" placeholder="Write your notes here..." required></textarea>
-
-      {{#if (equal promptSet.promptIndex 20)}}
-        <p class="final-prompt-message">
-          <strong>Final Prompt!</strong>
-          This is the last prompt in the set. Make sure to complete the prompt and add your final thoughts about what you learned and discovered!
-        </p>
-      {{/if}}
-
-      <button type="submit" class="leader-prompt-submit">submit this prompt</button>
-    </form>
-  {{else}}
-    <form action="/promptsetstart/start" method="POST">
-      <input type="hidden" name="_csrf" value="{{csrfToken}}">
-      <input type="hidden" name="promptSetId" value="{{promptSet.promptSetId}}">
-      <button type="submit" class="leader-prompt-submit">get started completing prompts</button>
-    </form>
-  {{/if}}
-
-  <!-- ✅ Unregister Button with correct reference -->
-<button type="button" class="leader-unregister-btn" data-id="{{promptSet.registrationId}}">
-  unregister for this prompt set
-</button>
-</div>
 {{/if}}
 
+{{!-- Divider only if there are assigned items --}}
+{{#if assignedPromptCards.length}}
+  <hr class="leader-prompts-divider">
+{{/if}}
 
+{{!-- ========== Assigned prompt sets (one card per assignment) ========== --}}
+{{#if assignedPromptCards.length}}
+  <section class="leader-prompt-section">
+    <h2 class="leader-assigned-title">assigned prompt sets</h2>
+    <p class="leader-assigned-subtitle">Each card is one member’s assignment.</p>
 
-<div class="dashboard-tab-content" id="prompts">
-  {{!-- Registered prompt sets (leader’s own; keep full flow: start/unregister/notes) --}}
-  {{#if registeredPromptSets.length}}
-    {{#each registeredPromptSets}}
-      <section class="leader-prompt-section">
-        {{> dashboardpartials/leader_prompt promptSet=this csrfToken=../csrfToken }}
-      </section>
-    {{/each}}
-  {{else}}
-    <p class="leader-assigned-empty" style="text-align:center;margin:6px 0 14px;">
-      You haven’t registered for any prompt sets yet.
-    </p>
-  {{/if}}
+    <div class="leader-assigned-grid">
+      {{#each assignedPromptCards}}
+        <div class="leader-assigned-card">
+          <div class="leader-assigned-card-top">
+            <span class="leader-assigned-status leader-assigned-status--{{status}}">{{statusLabel}}</span>
+            <span class="leader-assigned-due">due {{targetCompletionDate}}</span>
+          </div>
 
-  {{!-- Divider only if there are assigned items --}}
-  {{#if @root.assignedPromptCards.length}}
-    <hr class="leader-prompts-divider">
-  {{/if}}
+          <h3 class="leader-assigned-ps-title">{{promptSetTitle}}</h3>
+          <p class="leader-assigned-meta">
+            <span class="leader-assigned-pill">{{frequency}} prompt</span>
+            <span class="leader-assigned-sep">•</span>
+            <span class="leader-assigned-topic">{{mainTopic}}</span>
+          </p>
 
-  {{!-- Assigned prompt sets (one card per assignment per member) --}}
-  {{#if @root.assignedPromptCards.length}}
-    <section class="leader-prompt-section">
-      <h2 class="leader-assigned-title">assigned prompt sets</h2>
-      <p class="leader-assigned-subtitle">Each card is one member’s assignment.</p>
-
-      <div class="leader-assigned-grid">
-        {{#each @root.assignedPromptCards}}
-          <div class="leader-assigned-card">
-            <div class="leader-assigned-card-top">
-              <span class="leader-assigned-status leader-assigned-status--{{status}}">{{statusLabel}}</span>
-              <span class="leader-assigned-due">due {{targetCompletionDate}}</span>
-            </div>
-
-            <h3 class="leader-assigned-ps-title">{{promptSetTitle}}</h3>
-            <p class="leader-assigned-meta">
-              <span class="leader-assigned-pill">{{frequency}} prompt</span>
-              <span class="leader-assigned-sep">•</span>
-              <span class="leader-assigned-topic">{{mainTopic}}</span>
-            </p>
-
-            <div class="leader-assigned-member">
-              <img src="{{#if memberImage}}{{memberImage}}{{else}}/images/default-avatar.png{{/if}}"
-                   alt="{{memberName}}" class="leader-assigned-avatar">
-              <div class="leader-assigned-member-info">
-                <p class="leader-assigned-member-name">{{memberName}}</p>
-                <div class="leader-assigned-progress-wrap">
-                  <div class="leader-progress-bar">
-                    <div class="leader-progress-bar-fill" style="width: {{progressPercent}}%;"></div>
-                  </div>
-                  <p class="leader-assigned-progress-text">
-                    {{progressPercent}}% • prompt {{currentPromptIndex}}/20
-                  </p>
+          <div class="leader-assigned-member">
+            <img src="{{#if memberImage}}{{memberImage}}{{else}}/images/default-avatar.png{{/if}}"
+                 alt="{{memberName}}" class="leader-assigned-avatar">
+            <div class="leader-assigned-member-info">
+              <p class="leader-assigned-member-name">{{memberName}}</p>
+              <div class="leader-assigned-progress-wrap">
+                <div class="leader-progress-bar">
+                  <div class="leader-progress-bar-fill" style="width: {{progressPercent}}%;"></div>
                 </div>
+                <p class="leader-assigned-progress-text">
+                  {{progressPercent}}% • prompt {{currentPromptIndex}}/20
+                </p>
               </div>
             </div>
-
-            {{#if leaderNotes}}
-              <p class="leader-assigned-notes"><span>notes:</span> {{leaderNotes}}</p>
-            {{/if}}
-
-            <div class="leader-assigned-actions">
-              <form action="/promptsetassign/unassign/{{assignmentId}}" method="POST" class="leader-unassign-form" onsubmit="return confirm('Unassign this prompt set from {{memberName}}?');">
-                <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
-                <input type="hidden" name="_method" value="DELETE">
-                <button type="submit" class="leader-assigned-unassign">unassign</button>
-              </form>
-
-              <a href="/members/{{memberId}}/prompts/{{promptSetId}}" class="leader-assigned-view">open progress</a>
-            </div>
           </div>
-        {{/each}}
-      </div>
-    </section>
-  {{/if}}
-</div>
 
+          {{#if leaderNotes}}
+            <p class="leader-assigned-notes"><span>notes:</span> {{leaderNotes}}</p>
+          {{/if}}
 
+          <div class="leader-assigned-actions">
+            <form action="/promptsetassign/unassign/{{assignmentId}}" method="POST" class="leader-unassign-form" onsubmit="return confirm('Unassign this prompt set from {{memberName}}?');">
+              <input type="hidden" name="_csrf" value="{{../csrfToken}}">
+              <input type="hidden" name="_method" value="DELETE">
+              <button type="submit" class="leader-assigned-unassign">unassign</button>
+            </form>
 
-
-
+            <a href="/members/{{memberId}}/prompts/{{promptSetId}}" class="leader-assigned-view">open progress</a>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+  </section>
+{{/if}}
 
 
 
