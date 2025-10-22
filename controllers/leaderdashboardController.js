@@ -201,10 +201,11 @@ leaderAssignedUnits.push({
 
 // ↓↓↓ PUT THIS DIRECTLY UNDER buildLeaderAssignedUnits ↓↓↓
 async function buildAssignedPromptCards(leaderId) {
-  // One AssignPromptSet doc per member (your fan-out)
-  const assignments = await AssignPromptSet.find({ groupLeaderId: leaderId })
+  const leaderOid = new (require('mongoose').Types.ObjectId)(leaderId);
+
+  const assignments = await AssignPromptSet.find({ groupLeaderId: leaderOid })
     .populate('promptSetId', 'promptset_title main_topic')
-    .populate('assignedMemberIds', 'name profileImage') // array but we store exactly one id
+    .populate('assignedMemberIds', 'name profileImage') // fine even if ref uses Member
     .sort({ createdAt: -1 })
     .lean();
 
