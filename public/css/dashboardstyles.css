@@ -2691,6 +2691,13 @@ html, body {
   padding: 20px 0;
 }
 
+.leader-prompts-divider {
+  border: 0;
+  height: 1px;
+  background: linear-gradient(to right, rgba(0,0,0,0), rgba(38,34,98,.25), rgba(0,0,0,0));
+  margin: 18px 0 12px;
+}
+
 
 /* Progress Prompt Sets */
 .leader-progress-container {

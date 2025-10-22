@@ -69,14 +69,32 @@
 
 
 
-{{!-- ================= Leader: Assigned Prompt Sets ================= --}}
-<section class="leader-assigned-section">
-  <h2 class="leader-assigned-title">assigned prompt sets</h2>
-  <p class="leader-assigned-subtitle">Each card is one member’s assignment.</p>
+<div class="dashboard-tab-content" id="prompts">
+  {{!-- Registered prompt sets (leader’s own; keep full flow: start/unregister/notes) --}}
+  {{#if registeredPromptSets.length}}
+    {{#each registeredPromptSets}}
+      <section class="leader-prompt-section">
+        {{> dashboardpartials/leader_prompt promptSet=this csrfToken=../csrfToken }}
+      </section>
+    {{/each}}
+  {{else}}
+    <p class="leader-assigned-empty" style="text-align:center;margin:6px 0 14px;">
+      You haven’t registered for any prompt sets yet.
+    </p>
+  {{/if}}
 
-  <div class="leader-assigned-grid">
-    {{#if @root.assignedPromptCards}}
-      {{#if @root.assignedPromptCards.length}}
+  {{!-- Divider only if there are assigned items --}}
+  {{#if @root.assignedPromptCards.length}}
+    <hr class="leader-prompts-divider">
+  {{/if}}
+
+  {{!-- Assigned prompt sets (one card per assignment per member) --}}
+  {{#if @root.assignedPromptCards.length}}
+    <section class="leader-prompt-section">
+      <h2 class="leader-assigned-title">assigned prompt sets</h2>
+      <p class="leader-assigned-subtitle">Each card is one member’s assignment.</p>
+
+      <div class="leader-assigned-grid">
         {{#each @root.assignedPromptCards}}
           <div class="leader-assigned-card">
             <div class="leader-assigned-card-top">
@@ -93,8 +111,7 @@
 
             <div class="leader-assigned-member">
               <img src="{{#if memberImage}}{{memberImage}}{{else}}/images/default-avatar.png{{/if}}"
-                   alt="{{memberName}}"
-                   class="leader-assigned-avatar">
+                   alt="{{memberName}}" class="leader-assigned-avatar">
               <div class="leader-assigned-member-info">
                 <p class="leader-assigned-member-name">{{memberName}}</p>
                 <div class="leader-assigned-progress-wrap">
@@ -123,14 +140,11 @@
             </div>
           </div>
         {{/each}}
-      {{else}}
-        <p class="leader-assigned-empty">No assigned prompt sets yet.</p>
-      {{/if}}
-    {{else}}
-      <p class="leader-assigned-empty">No assigned prompt sets yet.</p>
-    {{/if}}
-  </div>
-</section>
+      </div>
+    </section>
+  {{/if}}
+</div>
+
 
 
 
