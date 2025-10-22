@@ -60,8 +60,8 @@ module.exports = {
       console.log("Assigning prompt set - Full Request Body:", req.body);
 
       // Normalize assignees (supports assignedMemberIds[] and CSV mirror)
-      const arrayField = req.body['assignedMemberIds[]'];
-      const csvMirror  = req.body.assignedMemberIds;
+const arrayField = req.body['assignedMemberIds[]'];   // array of ids (hidden inputs)
+const csvMirror  = req.body.assignedMemberIdsCsv;     // CSV string we just renamed
       const { objectIds: assignedObjectIds, stringIds: assignedStringIds } =
         normalizeAssignedIds(arrayField, csvMirror);
 
@@ -107,6 +107,8 @@ module.exports = {
       if (validObjectIds.length !== assignedObjectIds.length) {
         return res.json({ success: false, errorMessage: "Some selected members are not valid group members." });
       }
+
+      console.log('🧩 Fan-out will create docs for memberIds:', validObjectIds.map(String));
 
       // Validate prompt set
       const promptSet = await PromptSet.findById(promptSetId).lean();
