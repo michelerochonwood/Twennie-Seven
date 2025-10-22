@@ -205,7 +205,7 @@ async function buildAssignedPromptCards(leaderId) {
 
   const assignments = await AssignPromptSet.find({ groupLeaderId: leaderOid })
     .populate('promptSetId', 'promptset_title main_topic')
-    .populate('assignedMemberIds', 'name profileImage') // fine even if ref uses Member
+    .populate({ path: 'assignedMemberIds', select: 'name profileImage', model: 'GroupMember' })
     .sort({ createdAt: -1 })
     .lean();
 
@@ -251,7 +251,7 @@ async function buildAssignedPromptCards(leaderId) {
   return cards;
 }
 
-
+console.log('Assigned cards count:', assignedPromptCards.length);
 
 const topicMappings = {
     'AI in Consulting': 'aiinconsulting',
