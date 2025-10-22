@@ -247,12 +247,16 @@ async function getPromptSchedule(memberId, promptSetId) {
     const registration = await PromptSetRegistration.findOne({ memberId, promptSetId });
     if (registration) {
         targetDate = registration.targetCompletionDate;
-    } else {
-        const assignment = await AssignPromptSet.findOne({ assignedMemberId: memberId, promptSetId });
-        if (assignment) {
-            targetDate = assignment.targetCompletionDate;
-        }
-    }
+} else {
+  const memberOid = new (require('mongoose').Types.ObjectId)(memberId);
+  const assignment = await AssignPromptSet.findOne({
+    promptSetId,
+    assignedMemberIds: memberOid
+  });
+  if (assignment) {
+    targetDate = assignment.targetCompletionDate;
+  }
+}
 
     if (!targetDate) {
         console.warn(`No target date found for member ${memberId} and promptSetId ${promptSetId}`);
@@ -401,8 +405,10 @@ const memberRegistrations = await PromptSetRegistration
   .find({ memberId: id })
   .populate('promptSetId');
 
+const memberOid = new (require('mongoose').Types.ObjectId)(id);
+
 const assignedPromptSets = await AssignPromptSet
-  .find({ assignedMemberIds: id })
+  .find({ assignedMemberIds: memberOid })
   .populate('promptSetId');
 
 console.log(`Total assigned prompt sets for member ${id}: ${assignedPromptSets.length}`);

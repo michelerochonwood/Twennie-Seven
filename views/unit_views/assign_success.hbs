@@ -1,12 +1,40 @@
 {{#*inline "title"}}Assignment Successful | Twennie{{/inline}}
 
-<div class="success-container">
-  <h1 class="success-title">assignment complete!</h1>
-  <p class="success-message">
-    Your unit has been successfully assigned. Each selected recipient will see this unit in their dashboard.
+<h1 class="success-title">assignment complete!</h1>
+
+<p class="success-message">
+  The prompt set <strong>{{promptSetTitle}}</strong> was successfully assigned to:
+</p>
+
+{{#if assignedNames}}
+  <ul style="list-style: none; padding: 0; margin: 0 0 16px;">
+    {{#each assignedNames}}
+      <li style="margin: 6px 0;">{{this}}</li>
+    {{/each}}
+  </ul>
+{{else}}
+  <p class="success-message">No assignments were created.</p>
+{{/if}}
+
+<p class="success-message" style="margin-top: 20px;">
+  These members will see this prompt set in their dashboards.
+</p>
+
+{{!-- Optional: show skips for transparency --}}
+{{#if skippedLimitNames.length}}
+  <p class="success-message" style="margin-top: 20px;">
+    Skipped (limit of 3 active): {{#each skippedLimitNames}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}
   </p>
-  <a href="/dashboard/leader" class="success-button">return to your dashboard</a>
-</div>
+{{/if}}
+
+{{#if skippedDupesNames.length}}
+  <p class="success-message">
+    Already had this assigned: {{#each skippedDupesNames}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}
+  </p>
+{{/if}}
+
+<a href="/dashboard/leader" class="success-button">return to your dashboard</a>
+
 
 <style>
 .success-container {
