@@ -130,81 +130,14 @@ async function fetchTaggedUnits(userId) {
 
 
 
-async function buildLeaderAssignedUnits(leaderId) {
-  const assignedTags = await Tag.find({
-    createdBy: leaderId,
-    assignedTo: { $exists: true, $ne: [] },
-  }).lean();
-
-  const leaderAssignedUnits = [];
-  const leaderAssignmentsOpen = [];
-  const leaderAssignmentsCompleted = [];
-
-  for (const tag of assignedTags) {
-    // Flat open/completed rows (optional, handy for counts/mini tables)
-    for (const a of (tag.assignedTo || [])) {
-      const row = {
-        tagId: tag._id.toString(),
-        tagName: tag.name,
-        memberId: a.member?.toString(),
-        instructions: a.instructions || '',
-        completedAt: a.completedAt || null
-      };
-      if (row.completedAt) leaderAssignmentsCompleted.push(row);
-      else leaderAssignmentsOpen.push(row);
-    }
-
-    // Per-unit cards for the partial
-    for (const { item, unitType } of tag.associatedUnits || []) {
-      if (unitType === 'promptset' || unitType === 'prompt') continue;
-
-      const Model = getModelByUnitType(unitType);
-      if (!Model) continue;
-
-      const unit = await Model.findById(item).lean();
-      if (!unit) continue;
-
-      for (const assignee of tag.assignedTo || []) {
-        const member = await GroupMember.findById(assignee.member).select('name').lean();
-        if (!member) continue;
-
-leaderAssignedUnits.push({
-  _id: item,
-  unitType,
-  title:
-    unit.article_title ||
-    unit.video_title ||
-    unit.interview_title ||
-    unit.exercise_title ||
-    unit.template_title ||
-    "Untitled",
-  mainTopic: unit.main_topic || "No topic",
-
-  // ✅ add this line so the partial can delete the tag:
-  tagId: tag._id.toString(),
-
-  assignedTo: {
-    _id: assignee.member?.toString(),
-    name: member.name,
-    instructions: assignee.instructions || '',
-    completedAt: assignee.completedAt || null,
-  }
-});
-      }
-    }
-  }
-
-  return { leaderAssignedUnits, leaderAssignmentsOpen, leaderAssignmentsCompleted };
-}
-
-
-
-// ↓↓↓ PUT THIS DIRECTLY UNDER buildLeaderAssignedUnits ↓↓↓
-async function buildAssignedPromptCards(leaderId) {
+// Build "assigned prompt set" cards (one card per member assignment)
+// Uses AssignPromptSet → PromptSet + GroupMember + (optional) progress/completion
+async function buildAssignedPromptCardsForLeader(leaderId) {
   const leaderOid = new (require('mongoose').Types.ObjectId)(leaderId);
 
   const assignments = await AssignPromptSet.find({ groupLeaderId: leaderOid })
     .populate('promptSetId', 'promptset_title main_topic')
+    // Force the model so we reliably get name/profileImage even if ref differs
     .populate({ path: 'assignedMemberIds', select: 'name profileImage', model: 'GroupMember' })
     .sort({ createdAt: -1 })
     .lean();
@@ -214,20 +147,23 @@ async function buildAssignedPromptCards(leaderId) {
     const memberIdStr = member?._id ? String(member._id) : null;
     const psId = a.promptSetId?._id || a.promptSetId;
 
-    // Pull progress + completion to compute status
-    const [progress, completion] = await Promise.all([
-      memberIdStr ? PromptSetProgress.findOne({ memberId: memberIdStr, promptSetId: psId }).lean() : null,
-      memberIdStr ? PromptSetCompletion.findOne({ memberId: memberIdStr, promptSetId: psId }).lean() : null,
-    ]);
-
-    // Progress math (21 incl. Prompt 0)
-    const doneCount = progress?.completedPrompts?.length || 0;
-    const percent = Math.min(100, Math.round((doneCount / 21) * 100));
-    const currentIdx = progress?.currentPromptIndex ?? 0;
-
+    // Optional: derive status/progress so the card shows "assigned / in progress / completed"
     let status = 'assigned', statusLabel = 'assigned';
-    if (completion) { status = 'completed'; statusLabel = 'completed'; }
-    else if (doneCount > 0) { status = 'in_progress'; statusLabel = 'in progress'; }
+    let progressPercent = 0, currentPromptIndex = 0;
+
+    if (memberIdStr && psId) {
+      const [progress, completion] = await Promise.all([
+        PromptSetProgress.findOne({ memberId: memberIdStr, promptSetId: psId }).lean(),
+        PromptSetCompletion.findOne({ memberId: memberIdStr, promptSetId: psId }).lean()
+      ]);
+
+      const doneCount = progress?.completedPrompts?.length || 0;
+      progressPercent   = Math.min(100, Math.round((doneCount / 21) * 100)); // 21 incl. Prompt 0
+      currentPromptIndex = progress?.currentPromptIndex ?? 0;
+
+      if (completion) { status = 'completed'; statusLabel = 'completed'; }
+      else if (doneCount > 0) { status = 'in_progress'; statusLabel = 'in progress'; }
+    }
 
     return {
       assignmentId: a._id,
@@ -235,15 +171,17 @@ async function buildAssignedPromptCards(leaderId) {
       promptSetTitle: a.promptSetId?.promptset_title || 'Prompt Set',
       mainTopic: a.promptSetId?.main_topic || 'No topic',
       frequency: a.frequency,
-      targetCompletionDate: new Date(a.targetCompletionDate).toLocaleDateString('en-CA', { month:'short', day:'2-digit', year:'numeric' }),
+      targetCompletionDate: new Date(a.targetCompletionDate)
+        .toLocaleDateString('en-CA', { month: 'short', day: '2-digit', year: 'numeric' }),
 
       memberId: member?._id || null,
       memberName: member?.name || 'Member',
       memberImage: member?.profileImage || '/images/default-avatar.png',
 
-      currentPromptIndex: currentIdx,
-      progressPercent: percent,
-      status, statusLabel,
+      currentPromptIndex,
+      progressPercent,
+      status,
+      statusLabel,
       leaderNotes: a.leaderNotes || null
     };
   }));
@@ -251,7 +189,10 @@ async function buildAssignedPromptCards(leaderId) {
   return cards;
 }
 
-console.log('Assigned cards count:', assignedPromptCards.length);
+
+
+
+
 
 const topicMappings = {
     'AI in Consulting': 'aiinconsulting',
@@ -387,46 +328,47 @@ function getSubtopics(topicTitle) {
 
 
 async function getLeaderPromptSchedule(leaderId, promptSetId) {
-  let targetDate = null;
+    let targetDate = null;
 
-  // Cast for assignment lookup
-  const leaderOid = new (require('mongoose').Types.ObjectId)(leaderId);
+    // Check for registration or assignment and get the target completion date
+    const registration = await PromptSetRegistration.findOne({ memberId: leaderId, promptSetId });
+    if (registration) {
+        targetDate = registration.targetCompletionDate;
+    } else {
+        const assignment = await AssignPromptSet.findOne({ assignedMemberId: leaderId, promptSetId });
+        if (assignment) {
+            targetDate = assignment.targetCompletionDate;
+        }
+    }
 
-  // Registration (leader self-registered) OR assignment (leader was assigned)
-  const registration = await PromptSetRegistration.findOne({ memberId: leaderId, promptSetId });
-  if (registration) {
-    targetDate = registration.targetCompletionDate;
-  } else {
-    const assignment = await AssignPromptSet.findOne({ promptSetId, assignedMemberIds: leaderOid });
-    if (assignment) targetDate = assignment.targetCompletionDate;
-  }
+    if (!targetDate) return null; // No target date found
 
-  if (!targetDate) return null;
+    const today = new Date();
+    targetDate = new Date(targetDate);
+    const remainingDays = Math.max(0, Math.ceil((targetDate - today) / (1000 * 60 * 60 * 24)));
 
-  const today = new Date();
-  targetDate = new Date(targetDate);
-  const remainingDays = Math.max(0, Math.ceil((targetDate - today) / (1000 * 60 * 60 * 24)));
+    // Fetch progress and determine remaining prompts
+    const progress = await PromptSetProgress.findOne({ memberId: leaderId, promptSetId });
 
-  // Progress
-  let progress = await PromptSetProgress.findOne({ memberId: leaderId, promptSetId });
-  if (!progress) {
-    console.warn(`⚠️ No progress found for promptSetId ${String(promptSetId)} for leader ${leaderId}. Using Prompt 0 fallback.`);
-    progress = { currentPromptIndex: 0, completedPrompts: [] };
-  }
-
-  const totalPrompts = 21; // including Prompt 0
-  const remainingPrompts = totalPrompts - (progress.completedPrompts?.length || 0);
-  const spread = remainingPrompts > 0 ? Math.floor(remainingDays / remainingPrompts) : 0;
-
-  return {
-    targetCompletionDate: targetDate.toDateString(),
-    recommendedCompletionDate: new Date(today.getTime() + spread * 24 * 60 * 60 * 1000).toDateString(),
-    remainingDays,
-    remainingPrompts,
-    spread
+    if (!progress) {
+  console.warn(`⚠️ No progress found for promptSetId ${registration.promptSetId}. Showing Prompt 0 fallback.`);
+  progress = {
+    currentPromptIndex: 0,
+    completedPrompts: []
   };
 }
+    const remainingPrompts = progress && progress.completedPrompts ? 21 - progress.completedPrompts.length : 21;
 
+    const spread = remainingPrompts > 0 ? Math.floor(remainingDays / remainingPrompts) : 0;
+
+    return {
+        targetCompletionDate: targetDate.toDateString(),
+        recommendedCompletionDate: new Date(today.getTime() + spread * 24 * 60 * 60 * 1000).toDateString(),
+        remainingDays,
+        remainingPrompts,
+        spread
+    };
+}
 
 
 
@@ -794,7 +736,7 @@ const formattedCompletedSets = completedRecords.map(record => ({
 
 const { leaderAssignedUnits, leaderAssignmentsOpen, leaderAssignmentsCompleted } = await buildLeaderAssignedUnits(id);
 
-const assignedPromptCards = await buildAssignedPromptCards(id);
+const assignedPromptCards = await buildAssignedPromptCardsForLeader(id);
 // --- Membership tab: derive view flags & user fields for template ---
 
 // 1) Email preference flags (defaults to Level 1 if unset/invalid)
@@ -871,11 +813,10 @@ leader: {
   maxGroupSize: userData.maxGroupSize,
   leaderUnits,
   groupMemberUnits,
-
+  assignedPromptCards,
   leaderAssignedUnits,
   leaderAssignmentsOpen,
   leaderAssignmentsCompleted,
-    assignedPromptCards,
   registeredPromptSets: leaderPrompts,
   promptSchedules,
   currentPromptSets,
