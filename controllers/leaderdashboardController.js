@@ -130,63 +130,71 @@ async function fetchTaggedUnits(userId) {
 
 
 
-// Build "assigned prompt set" cards (one card per member assignment)
-// Uses AssignPromptSet → PromptSet + GroupMember + (optional) progress/completion
-async function buildAssignedPromptCardsForLeader(leaderId) {
-  const leaderOid = new (require('mongoose').Types.ObjectId)(leaderId);
+async function buildLeaderAssignedUnits(leaderId) {
+  const assignedTags = await Tag.find({
+    createdBy: leaderId,
+    assignedTo: { $exists: true, $ne: [] },
+  }).lean();
 
-  const assignments = await AssignPromptSet.find({ groupLeaderId: leaderOid })
-    .populate('promptSetId', 'promptset_title main_topic')
-    // Force the model so we reliably get name/profileImage even if ref differs
-    .populate({ path: 'assignedMemberIds', select: 'name profileImage', model: 'GroupMember' })
-    .sort({ createdAt: -1 })
-    .lean();
+  const leaderAssignedUnits = [];
+  const leaderAssignmentsOpen = [];
+  const leaderAssignmentsCompleted = [];
 
-  const cards = await Promise.all(assignments.map(async (a) => {
-    const member = Array.isArray(a.assignedMemberIds) ? a.assignedMemberIds[0] : null;
-    const memberIdStr = member?._id ? String(member._id) : null;
-    const psId = a.promptSetId?._id || a.promptSetId;
-
-    // Optional: derive status/progress so the card shows "assigned / in progress / completed"
-    let status = 'assigned', statusLabel = 'assigned';
-    let progressPercent = 0, currentPromptIndex = 0;
-
-    if (memberIdStr && psId) {
-      const [progress, completion] = await Promise.all([
-        PromptSetProgress.findOne({ memberId: memberIdStr, promptSetId: psId }).lean(),
-        PromptSetCompletion.findOne({ memberId: memberIdStr, promptSetId: psId }).lean()
-      ]);
-
-      const doneCount = progress?.completedPrompts?.length || 0;
-      progressPercent   = Math.min(100, Math.round((doneCount / 21) * 100)); // 21 incl. Prompt 0
-      currentPromptIndex = progress?.currentPromptIndex ?? 0;
-
-      if (completion) { status = 'completed'; statusLabel = 'completed'; }
-      else if (doneCount > 0) { status = 'in_progress'; statusLabel = 'in progress'; }
+  for (const tag of assignedTags) {
+    // Flat open/completed rows (optional, handy for counts/mini tables)
+    for (const a of (tag.assignedTo || [])) {
+      const row = {
+        tagId: tag._id.toString(),
+        tagName: tag.name,
+        memberId: a.member?.toString(),
+        instructions: a.instructions || '',
+        completedAt: a.completedAt || null
+      };
+      if (row.completedAt) leaderAssignmentsCompleted.push(row);
+      else leaderAssignmentsOpen.push(row);
     }
 
-    return {
-      assignmentId: a._id,
-      promptSetId: psId,
-      promptSetTitle: a.promptSetId?.promptset_title || 'Prompt Set',
-      mainTopic: a.promptSetId?.main_topic || 'No topic',
-      frequency: a.frequency,
-      targetCompletionDate: new Date(a.targetCompletionDate)
-        .toLocaleDateString('en-CA', { month: 'short', day: '2-digit', year: 'numeric' }),
+    // Per-unit cards for the partial
+    for (const { item, unitType } of tag.associatedUnits || []) {
+      if (unitType === 'promptset' || unitType === 'prompt') continue;
 
-      memberId: member?._id || null,
-      memberName: member?.name || 'Member',
-      memberImage: member?.profileImage || '/images/default-avatar.png',
+      const Model = getModelByUnitType(unitType);
+      if (!Model) continue;
 
-      currentPromptIndex,
-      progressPercent,
-      status,
-      statusLabel,
-      leaderNotes: a.leaderNotes || null
-    };
-  }));
+      const unit = await Model.findById(item).lean();
+      if (!unit) continue;
 
-  return cards;
+      for (const assignee of tag.assignedTo || []) {
+        const member = await GroupMember.findById(assignee.member).select('name').lean();
+        if (!member) continue;
+
+leaderAssignedUnits.push({
+  _id: item,
+  unitType,
+  title:
+    unit.article_title ||
+    unit.video_title ||
+    unit.interview_title ||
+    unit.exercise_title ||
+    unit.template_title ||
+    "Untitled",
+  mainTopic: unit.main_topic || "No topic",
+
+  // ✅ add this line so the partial can delete the tag:
+  tagId: tag._id.toString(),
+
+  assignedTo: {
+    _id: assignee.member?.toString(),
+    name: member.name,
+    instructions: assignee.instructions || '',
+    completedAt: assignee.completedAt || null,
+  }
+});
+      }
+    }
+  }
+
+  return { leaderAssignedUnits, leaderAssignmentsOpen, leaderAssignmentsCompleted };
 }
 
 
@@ -735,8 +743,6 @@ const formattedCompletedSets = completedRecords.map(record => ({
 }));
 
 const { leaderAssignedUnits, leaderAssignmentsOpen, leaderAssignmentsCompleted } = await buildLeaderAssignedUnits(id);
-
-const assignedPromptCards = await buildAssignedPromptCardsForLeader(id);
 // --- Membership tab: derive view flags & user fields for template ---
 
 // 1) Email preference flags (defaults to Level 1 if unset/invalid)
@@ -813,7 +819,7 @@ leader: {
   maxGroupSize: userData.maxGroupSize,
   leaderUnits,
   groupMemberUnits,
-  assignedPromptCards,
+
   leaderAssignedUnits,
   leaderAssignmentsOpen,
   leaderAssignmentsCompleted,
