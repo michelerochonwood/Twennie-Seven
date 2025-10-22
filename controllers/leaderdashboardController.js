@@ -199,6 +199,56 @@ leaderAssignedUnits.push({
 
 
 
+// ↓↓↓ PUT THIS DIRECTLY UNDER buildLeaderAssignedUnits ↓↓↓
+async function buildAssignedPromptCards(leaderId) {
+  // One AssignPromptSet doc per member (your fan-out)
+  const assignments = await AssignPromptSet.find({ groupLeaderId: leaderId })
+    .populate('promptSetId', 'promptset_title main_topic')
+    .populate('assignedMemberIds', 'name profileImage') // array but we store exactly one id
+    .sort({ createdAt: -1 })
+    .lean();
+
+  const cards = await Promise.all(assignments.map(async (a) => {
+    const member = Array.isArray(a.assignedMemberIds) ? a.assignedMemberIds[0] : null;
+    const memberIdStr = member?._id ? String(member._id) : null;
+    const psId = a.promptSetId?._id || a.promptSetId;
+
+    // Pull progress + completion to compute status
+    const [progress, completion] = await Promise.all([
+      memberIdStr ? PromptSetProgress.findOne({ memberId: memberIdStr, promptSetId: psId }).lean() : null,
+      memberIdStr ? PromptSetCompletion.findOne({ memberId: memberIdStr, promptSetId: psId }).lean() : null,
+    ]);
+
+    // Progress math (21 incl. Prompt 0)
+    const doneCount = progress?.completedPrompts?.length || 0;
+    const percent = Math.min(100, Math.round((doneCount / 21) * 100));
+    const currentIdx = progress?.currentPromptIndex ?? 0;
+
+    let status = 'assigned', statusLabel = 'assigned';
+    if (completion) { status = 'completed'; statusLabel = 'completed'; }
+    else if (doneCount > 0) { status = 'in_progress'; statusLabel = 'in progress'; }
+
+    return {
+      assignmentId: a._id,
+      promptSetId: psId,
+      promptSetTitle: a.promptSetId?.promptset_title || 'Prompt Set',
+      mainTopic: a.promptSetId?.main_topic || 'No topic',
+      frequency: a.frequency,
+      targetCompletionDate: new Date(a.targetCompletionDate).toLocaleDateString('en-CA', { month:'short', day:'2-digit', year:'numeric' }),
+
+      memberId: member?._id || null,
+      memberName: member?.name || 'Member',
+      memberImage: member?.profileImage || '/images/default-avatar.png',
+
+      currentPromptIndex: currentIdx,
+      progressPercent: percent,
+      status, statusLabel,
+      leaderNotes: a.leaderNotes || null
+    };
+  }));
+
+  return cards;
+}
 
 
 
@@ -336,47 +386,46 @@ function getSubtopics(topicTitle) {
 
 
 async function getLeaderPromptSchedule(leaderId, promptSetId) {
-    let targetDate = null;
+  let targetDate = null;
 
-    // Check for registration or assignment and get the target completion date
-    const registration = await PromptSetRegistration.findOne({ memberId: leaderId, promptSetId });
-    if (registration) {
-        targetDate = registration.targetCompletionDate;
-    } else {
-        const assignment = await AssignPromptSet.findOne({ assignedMemberId: leaderId, promptSetId });
-        if (assignment) {
-            targetDate = assignment.targetCompletionDate;
-        }
-    }
+  // Cast for assignment lookup
+  const leaderOid = new (require('mongoose').Types.ObjectId)(leaderId);
 
-    if (!targetDate) return null; // No target date found
+  // Registration (leader self-registered) OR assignment (leader was assigned)
+  const registration = await PromptSetRegistration.findOne({ memberId: leaderId, promptSetId });
+  if (registration) {
+    targetDate = registration.targetCompletionDate;
+  } else {
+    const assignment = await AssignPromptSet.findOne({ promptSetId, assignedMemberIds: leaderOid });
+    if (assignment) targetDate = assignment.targetCompletionDate;
+  }
 
-    const today = new Date();
-    targetDate = new Date(targetDate);
-    const remainingDays = Math.max(0, Math.ceil((targetDate - today) / (1000 * 60 * 60 * 24)));
+  if (!targetDate) return null;
 
-    // Fetch progress and determine remaining prompts
-    const progress = await PromptSetProgress.findOne({ memberId: leaderId, promptSetId });
+  const today = new Date();
+  targetDate = new Date(targetDate);
+  const remainingDays = Math.max(0, Math.ceil((targetDate - today) / (1000 * 60 * 60 * 24)));
 
-    if (!progress) {
-  console.warn(`⚠️ No progress found for promptSetId ${registration.promptSetId}. Showing Prompt 0 fallback.`);
-  progress = {
-    currentPromptIndex: 0,
-    completedPrompts: []
+  // Progress
+  let progress = await PromptSetProgress.findOne({ memberId: leaderId, promptSetId });
+  if (!progress) {
+    console.warn(`⚠️ No progress found for promptSetId ${String(promptSetId)} for leader ${leaderId}. Using Prompt 0 fallback.`);
+    progress = { currentPromptIndex: 0, completedPrompts: [] };
+  }
+
+  const totalPrompts = 21; // including Prompt 0
+  const remainingPrompts = totalPrompts - (progress.completedPrompts?.length || 0);
+  const spread = remainingPrompts > 0 ? Math.floor(remainingDays / remainingPrompts) : 0;
+
+  return {
+    targetCompletionDate: targetDate.toDateString(),
+    recommendedCompletionDate: new Date(today.getTime() + spread * 24 * 60 * 60 * 1000).toDateString(),
+    remainingDays,
+    remainingPrompts,
+    spread
   };
 }
-    const remainingPrompts = progress && progress.completedPrompts ? 21 - progress.completedPrompts.length : 21;
 
-    const spread = remainingPrompts > 0 ? Math.floor(remainingDays / remainingPrompts) : 0;
-
-    return {
-        targetCompletionDate: targetDate.toDateString(),
-        recommendedCompletionDate: new Date(today.getTime() + spread * 24 * 60 * 60 * 1000).toDateString(),
-        remainingDays,
-        remainingPrompts,
-        spread
-    };
-}
 
 
 
@@ -743,6 +792,8 @@ const formattedCompletedSets = completedRecords.map(record => ({
 }));
 
 const { leaderAssignedUnits, leaderAssignmentsOpen, leaderAssignmentsCompleted } = await buildLeaderAssignedUnits(id);
+
+const assignedPromptCards = await buildAssignedPromptCards(id);
 // --- Membership tab: derive view flags & user fields for template ---
 
 // 1) Email preference flags (defaults to Level 1 if unset/invalid)
@@ -823,6 +874,7 @@ leader: {
   leaderAssignedUnits,
   leaderAssignmentsOpen,
   leaderAssignmentsCompleted,
+    assignedPromptCards,
   registeredPromptSets: leaderPrompts,
   promptSchedules,
   currentPromptSets,
