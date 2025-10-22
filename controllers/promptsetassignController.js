@@ -12,31 +12,40 @@ const ObjectId = mongoose.Types.ObjectId;
 
 /** Normalize incoming member ids from array and/or CSV mirror */
 function normalizeAssignedIds(primary, fallback) {
-  let raw = [];
+  // Collect from BOTH sources, not either-or
+  const pieces = [];
 
-  if (Array.isArray(primary)) raw = primary;
-  else if (typeof primary === 'string' && primary.trim()) raw = [primary];
-  else if (Array.isArray(fallback)) raw = fallback;
-  else if (typeof fallback === 'string' && fallback.trim()) raw = [fallback];
-
-  // Expand CSV
-  if (raw.length === 1 && typeof raw[0] === 'string' && raw[0].includes(',')) {
-    raw = raw[0].split(',');
+  // Primary (assignedMemberIds[]) may be array or single string
+  if (Array.isArray(primary)) {
+    pieces.push(...primary);
+  } else if (typeof primary === 'string' && primary.trim()) {
+    pieces.push(primary);
   }
 
-  const strings = [...new Set(raw.map(s => String(s).trim()).filter(Boolean))];
-  const hex24 = strings.filter(x => /^[a-fA-F0-9]{24}$/.test(x));
+  // Fallback CSV mirror (assignedMemberIds) may be array or CSV string
+  if (Array.isArray(fallback)) {
+    pieces.push(...fallback);
+  } else if (typeof fallback === 'string' && fallback.trim()) {
+    // may be comma-separated ids
+    pieces.push(...fallback.split(','));
+  }
 
+  // Clean + dedupe
+  const strings = [...new Set(pieces.map(s => String(s).trim()).filter(Boolean))];
+
+  // Validate 24-hex
+  const hex24 = strings.filter(x => /^[a-fA-F0-9]{24}$/.test(x));
   if (hex24.length !== strings.length) {
     const bad = strings.filter(x => !/^[a-fA-F0-9]{24}$/.test(x));
     console.warn('⚠️ Ignored invalid member IDs:', bad);
   }
 
   return {
-    objectIds: hex24.map(x => new ObjectId(x)),
+    objectIds: hex24.map(x => new mongoose.Types.ObjectId(x)),
     stringIds: hex24
   };
 }
+
 
 module.exports = {
   /**
