@@ -198,7 +198,8 @@ leaderAssignedUnits.push({
 }
 
 
-// ---- helpers for "assigned prompt sets" cards ----
+const { Types } = require('mongoose');
+
 function fmtDate(d) {
   if (!d) return 'Not set';
   const dd = new Date(d);
@@ -206,26 +207,20 @@ function fmtDate(d) {
   return dd.toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: '2-digit' });
 }
 
-/**
- * Build cards for the dashboard's "assigned prompt sets" section.
- * One card per (assignment x member) to match the partial.
- * Uses your schema fields exactly: groupLeaderId, assignedMemberIds[], frequency, leaderNotes, targetCompletionDate.
- */
 async function buildAssignedPromptCards(leaderId) {
-  // 1) get all prompt-set assignments created by this leader
-  const assignments = await AssignPromptSet.find({ groupLeaderId: leaderId }).lean();
+  const leaderObjectId = Types.ObjectId.isValid(leaderId) ? new Types.ObjectId(leaderId) : leaderId;
+
+  const assignments = await AssignPromptSet.find({ groupLeaderId: leaderObjectId }).lean();
+
   if (!assignments.length) return [];
 
-  // 2) collect unique IDs we’ll need to hydrate in batches
   const promptSetIds = new Set();
   const memberIds = new Set();
-
   for (const a of assignments) {
     if (a.promptSetId) promptSetIds.add(a.promptSetId.toString());
     for (const mid of a.assignedMemberIds || []) memberIds.add(mid.toString());
   }
 
-  // 3) hydrate prompt sets + members + member profiles
   const [promptSets, members, profiles] = await Promise.all([
     PromptSet.find({ _id: { $in: [...promptSetIds] } }).lean(),
     GroupMember.find({ _id: { $in: [...memberIds] } }).select('name').lean(),
@@ -236,21 +231,17 @@ async function buildAssignedPromptCards(leaderId) {
   const memberById = new Map(members.map(m => [m._id.toString(), m]));
   const profileByMemberId = new Map(profiles.map(p => [p.groupMemberId.toString(), p]));
 
-  // 4) build cards (and fetch progress per member/prompt-set)
   const cards = [];
   for (const a of assignments) {
     const ps = psById.get(a.promptSetId?.toString());
     if (!ps) continue;
-
     const target = a.targetCompletionDate || ps.target_completion_date || null;
     const now = new Date();
 
-    // one card per assignee
     for (const memberId of a.assignedMemberIds || []) {
       const mid = memberId?.toString();
       const m = memberById.get(mid);
       if (!m) continue;
-
       const prof = profileByMemberId.get(mid);
       const memberImage = prof?.profileImage || '/images/default-avatar.png';
 
@@ -269,19 +260,12 @@ async function buildAssignedPromptCards(leaderId) {
 
       let status = 'assigned';
       let statusLabel = 'assigned';
-      if (isCompleted) {
-        status = 'completed';
-        statusLabel = 'completed';
-      } else if (isOverdue) {
-        status = 'overdue';
-        statusLabel = 'overdue';
-      } else if (hasStarted) {
-        status = 'inprogress';
-        statusLabel = 'in progress';
-      }
+      if (isCompleted) { status = 'completed'; statusLabel = 'completed'; }
+      else if (isOverdue) { status = 'overdue'; statusLabel = 'overdue'; }
+      else if (hasStarted) { status = 'inprogress'; statusLabel = 'in progress'; }
 
       cards.push({
-        assignmentId: a._id.toString(),                    // used by your unassign form
+        assignmentId: a._id.toString(),
         promptSetId: ps._id.toString(),
         promptSetTitle: ps.promptset_title,
         mainTopic: ps.main_topic || 'No topic',
@@ -303,9 +287,16 @@ async function buildAssignedPromptCards(leaderId) {
     }
   }
 
-  // sort by due date string (already formatted). If you prefer strict date sort, sort on Date(target) before formatting.
-  return cards.sort((a, b) => a.targetCompletionDate.localeCompare(b.targetCompletionDate));
+  // sort by real date, not the formatted string
+  cards.sort((a, b) => {
+    const ad = new Date(a.targetCompletionDate);
+    const bd = new Date(b.targetCompletionDate);
+    return ad - bd;
+  });
+
+  return cards;
 }
+
 
 
 
@@ -910,6 +901,8 @@ for (const [key, val] of Object.entries(leaderCounts)) {
 }
 
 const assignedPromptCards = await buildAssignedPromptCards(id);
+console.log('assignedPromptCards count:', assignedPromptCards.length);
+if (assignedPromptCards[0]) console.log('assignedPromptCards[0] sample:', assignedPromptCards[0]);
 
 return res.render('leader_dashboard', {
   layout: 'dashboardlayout',

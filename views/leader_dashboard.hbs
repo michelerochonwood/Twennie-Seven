@@ -76,13 +76,17 @@
       {{> dashboardpartials/leader_topics }}
     </div>
 
-    <div class="dashboard-tab-content" id="prompts">
-      {{#each registeredPromptSets}}
-        <section class="leader-prompt-section">
-          {{> dashboardpartials/leader_prompt promptSet=this csrfToken=../csrfToken }}
-        </section>
-      {{/each}}
-    </div>
+<div class="dashboard-tab-content" id="prompts">
+  {{#each registeredPromptSets}}
+    <section class="leader-prompt-section">
+      {{> dashboardpartials/leader_prompt
+          promptSet=this
+          csrfToken=../csrfToken
+          assignedPromptCards=../assignedPromptCards
+      }}
+    </section>
+  {{/each}}
+</div>
 
     <div class="dashboard-tab-content" id="progress">
       {{> dashboardpartials/leader_progress }}
