@@ -130,72 +130,7 @@ async function fetchTaggedUnits(userId) {
 
 
 
-async function buildLeaderAssignedUnits(leaderId) {
-  const assignedTags = await Tag.find({
-    createdBy: leaderId,
-    assignedTo: { $exists: true, $ne: [] },
-  }).lean();
 
-  const leaderAssignedUnits = [];
-  const leaderAssignmentsOpen = [];
-  const leaderAssignmentsCompleted = [];
-
-  for (const tag of assignedTags) {
-    // Flat open/completed rows (optional, handy for counts/mini tables)
-    for (const a of (tag.assignedTo || [])) {
-      const row = {
-        tagId: tag._id.toString(),
-        tagName: tag.name,
-        memberId: a.member?.toString(),
-        instructions: a.instructions || '',
-        completedAt: a.completedAt || null
-      };
-      if (row.completedAt) leaderAssignmentsCompleted.push(row);
-      else leaderAssignmentsOpen.push(row);
-    }
-
-    // Per-unit cards for the partial
-    for (const { item, unitType } of tag.associatedUnits || []) {
-      if (unitType === 'promptset' || unitType === 'prompt') continue;
-
-      const Model = getModelByUnitType(unitType);
-      if (!Model) continue;
-
-      const unit = await Model.findById(item).lean();
-      if (!unit) continue;
-
-      for (const assignee of tag.assignedTo || []) {
-        const member = await GroupMember.findById(assignee.member).select('name').lean();
-        if (!member) continue;
-
-leaderAssignedUnits.push({
-  _id: item,
-  unitType,
-  title:
-    unit.article_title ||
-    unit.video_title ||
-    unit.interview_title ||
-    unit.exercise_title ||
-    unit.template_title ||
-    "Untitled",
-  mainTopic: unit.main_topic || "No topic",
-
-  // ✅ add this line so the partial can delete the tag:
-  tagId: tag._id.toString(),
-
-  assignedTo: {
-    _id: assignee.member?.toString(),
-    name: member.name,
-    instructions: assignee.instructions || '',
-    completedAt: assignee.completedAt || null,
-  }
-});
-      }
-    }
-  }
-
-  return { leaderAssignedUnits, leaderAssignmentsOpen, leaderAssignmentsCompleted };
-}
 
 
 
