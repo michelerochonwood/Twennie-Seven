@@ -130,9 +130,182 @@ async function fetchTaggedUnits(userId) {
 
 
 
+async function buildLeaderAssignedUnits(leaderId) {
+  const assignedTags = await Tag.find({
+    createdBy: leaderId,
+    assignedTo: { $exists: true, $ne: [] },
+  }).lean();
+
+  const leaderAssignedUnits = [];
+  const leaderAssignmentsOpen = [];
+  const leaderAssignmentsCompleted = [];
+
+  for (const tag of assignedTags) {
+    // Flat open/completed rows (optional, handy for counts/mini tables)
+    for (const a of (tag.assignedTo || [])) {
+      const row = {
+        tagId: tag._id.toString(),
+        tagName: tag.name,
+        memberId: a.member?.toString(),
+        instructions: a.instructions || '',
+        completedAt: a.completedAt || null
+      };
+      if (row.completedAt) leaderAssignmentsCompleted.push(row);
+      else leaderAssignmentsOpen.push(row);
+    }
+
+    // Per-unit cards for the partial
+    for (const { item, unitType } of tag.associatedUnits || []) {
+      if (unitType === 'promptset' || unitType === 'prompt') continue;
+
+      const Model = getModelByUnitType(unitType);
+      if (!Model) continue;
+
+      const unit = await Model.findById(item).lean();
+      if (!unit) continue;
+
+      for (const assignee of tag.assignedTo || []) {
+        const member = await GroupMember.findById(assignee.member).select('name').lean();
+        if (!member) continue;
+
+leaderAssignedUnits.push({
+  _id: item,
+  unitType,
+  title:
+    unit.article_title ||
+    unit.video_title ||
+    unit.interview_title ||
+    unit.exercise_title ||
+    unit.template_title ||
+    "Untitled",
+  mainTopic: unit.main_topic || "No topic",
+
+  // ✅ add this line so the partial can delete the tag:
+  tagId: tag._id.toString(),
+
+  assignedTo: {
+    _id: assignee.member?.toString(),
+    name: member.name,
+    instructions: assignee.instructions || '',
+    completedAt: assignee.completedAt || null,
+  }
+});
+      }
+    }
+  }
+
+  return { leaderAssignedUnits, leaderAssignmentsOpen, leaderAssignmentsCompleted };
+}
 
 
+// ---- helpers for "assigned prompt sets" cards ----
+function fmtDate(d) {
+  if (!d) return 'Not set';
+  const dd = new Date(d);
+  if (Number.isNaN(dd.getTime())) return 'Not set';
+  return dd.toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: '2-digit' });
+}
 
+/**
+ * Build cards for the dashboard's "assigned prompt sets" section.
+ * One card per (assignment x member) to match the partial.
+ * Uses your schema fields exactly: groupLeaderId, assignedMemberIds[], frequency, leaderNotes, targetCompletionDate.
+ */
+async function buildAssignedPromptCards(leaderId) {
+  // 1) get all prompt-set assignments created by this leader
+  const assignments = await AssignPromptSet.find({ groupLeaderId: leaderId }).lean();
+  if (!assignments.length) return [];
+
+  // 2) collect unique IDs we’ll need to hydrate in batches
+  const promptSetIds = new Set();
+  const memberIds = new Set();
+
+  for (const a of assignments) {
+    if (a.promptSetId) promptSetIds.add(a.promptSetId.toString());
+    for (const mid of a.assignedMemberIds || []) memberIds.add(mid.toString());
+  }
+
+  // 3) hydrate prompt sets + members + member profiles
+  const [promptSets, members, profiles] = await Promise.all([
+    PromptSet.find({ _id: { $in: [...promptSetIds] } }).lean(),
+    GroupMember.find({ _id: { $in: [...memberIds] } }).select('name').lean(),
+    GroupMemberProfile.find({ groupMemberId: { $in: [...memberIds] } }).select('groupMemberId profileImage').lean()
+  ]);
+
+  const psById = new Map(promptSets.map(ps => [ps._id.toString(), ps]));
+  const memberById = new Map(members.map(m => [m._id.toString(), m]));
+  const profileByMemberId = new Map(profiles.map(p => [p.groupMemberId.toString(), p]));
+
+  // 4) build cards (and fetch progress per member/prompt-set)
+  const cards = [];
+  for (const a of assignments) {
+    const ps = psById.get(a.promptSetId?.toString());
+    if (!ps) continue;
+
+    const target = a.targetCompletionDate || ps.target_completion_date || null;
+    const now = new Date();
+
+    // one card per assignee
+    for (const memberId of a.assignedMemberIds || []) {
+      const mid = memberId?.toString();
+      const m = memberById.get(mid);
+      if (!m) continue;
+
+      const prof = profileByMemberId.get(mid);
+      const memberImage = prof?.profileImage || '/images/default-avatar.png';
+
+      const progress = await PromptSetProgress
+        .findOne({ memberId: mid, promptSetId: ps._id })
+        .select('currentPromptIndex completedPrompts')
+        .lean();
+
+      const completedCount = Array.isArray(progress?.completedPrompts) ? progress.completedPrompts.length : 0;
+      const progressPercent = Math.min(100, Math.round((completedCount / 20) * 100));
+      const currentPromptIndex = Number.isInteger(progress?.currentPromptIndex) ? progress.currentPromptIndex : 0;
+
+      const isCompleted = completedCount >= 20;
+      const isOverdue = !isCompleted && target && new Date(target) < now;
+      const hasStarted = !isCompleted && completedCount > 0;
+
+      let status = 'assigned';
+      let statusLabel = 'assigned';
+      if (isCompleted) {
+        status = 'completed';
+        statusLabel = 'completed';
+      } else if (isOverdue) {
+        status = 'overdue';
+        statusLabel = 'overdue';
+      } else if (hasStarted) {
+        status = 'inprogress';
+        statusLabel = 'in progress';
+      }
+
+      cards.push({
+        assignmentId: a._id.toString(),                    // used by your unassign form
+        promptSetId: ps._id.toString(),
+        promptSetTitle: ps.promptset_title,
+        mainTopic: ps.main_topic || 'No topic',
+        frequency: a.frequency || ps.suggested_frequency || 'weekly',
+        targetCompletionDate: fmtDate(target),
+
+        memberId: mid,
+        memberName: m.name,
+        memberImage,
+
+        currentPromptIndex,
+        progressPercent,
+
+        status,
+        statusLabel,
+
+        leaderNotes: a.leaderNotes || ''
+      });
+    }
+  }
+
+  // sort by due date string (already formatted). If you prefer strict date sort, sort on Date(target) before formatting.
+  return cards.sort((a, b) => a.targetCompletionDate.localeCompare(b.targetCompletionDate));
+}
 
 
 
@@ -736,6 +909,7 @@ for (const [key, val] of Object.entries(leaderCounts)) {
   leaderBadges[key] = val > last;
 }
 
+const assignedPromptCards = await buildAssignedPromptCards(id);
 
 return res.render('leader_dashboard', {
   layout: 'dashboardlayout',
@@ -755,7 +929,7 @@ leader: {
   leaderUnits,
   groupMemberUnits,
 
-  leaderAssignedUnits,
+  assignedPromptCards,
   leaderAssignmentsOpen,
   leaderAssignmentsCompleted,
   registeredPromptSets: leaderPrompts,
