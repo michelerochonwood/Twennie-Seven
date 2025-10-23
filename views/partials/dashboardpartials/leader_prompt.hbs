@@ -67,7 +67,7 @@
 </div>
 {{/if}}
 
-  {{!-- Always show the divider and assigned section BELOW the registered area --}}
+   {{!-- Always show the divider and assigned section BELOW the registered area --}}
   <hr class="leader-prompts-divider">
 
   {{!-- Assigned prompt sets (SEPARATE; different collection; one card per assignment) --}}
@@ -76,8 +76,8 @@
     <p class="leader-assigned-subtitle">Each card is one member’s assignment.</p>
 
     <div class="leader-assigned-grid">
-      {{#if @root.assignedPromptCards.length}}
-        {{#each @root.assignedPromptCards}}
+      {{#if assignedPromptCards.length}}
+        {{#each assignedPromptCards}}
           <div class="leader-assigned-card">
             <div class="leader-assigned-card-top">
               <span class="leader-assigned-status leader-assigned-status--{{status}}">{{statusLabel}}</span>
@@ -92,8 +92,11 @@
             </p>
 
             <div class="leader-assigned-member">
-              <img src="{{#if memberImage}}{{memberImage}}{{else}}/images/default-avatar.png{{/if}}"
-                   alt="{{memberName}}" class="leader-assigned-avatar">
+              <img
+                src="{{#if memberImage}}{{memberImage}}{{else}}/images/default-avatar.png{{/if}}"
+                alt="{{memberName}}"
+                class="leader-assigned-avatar"
+              >
               <div class="leader-assigned-member-info">
                 <p class="leader-assigned-member-name">{{memberName}}</p>
                 <div class="leader-assigned-progress-wrap">
@@ -112,8 +115,13 @@
             {{/if}}
 
             <div class="leader-assigned-actions">
-              <form action="/promptsetassign/unassign/{{assignmentId}}" method="POST" class="leader-unassign-form" onsubmit="return confirm('Unassign this prompt set from {{memberName}}?');">
-                <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
+              <form
+                action="/promptsetassign/unassign/{{assignmentId}}"
+                method="POST"
+                class="leader-unassign-form"
+                onsubmit="return confirm('Unassign this prompt set from {{memberName}}?');"
+              >
+                <input type="hidden" name="_csrf" value="{{../csrfToken}}">
                 <input type="hidden" name="_method" value="DELETE">
                 <button type="submit" class="leader-assigned-unassign">unassign</button>
               </form>
@@ -129,8 +137,8 @@
   </section>
 
   {{!-- Debug (temporary; remove after) --}}
-  <!-- dbg reg={{registeredPromptSets.length}} assigned={{@root.assignedPromptCards.length}} -->
-</div>
+  <!-- dbg assigned={{assignedPromptCards.length}} -->
+
 
 
 
