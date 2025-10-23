@@ -19,15 +19,19 @@
         <div class="single_video-window">
           {{#if embedLink}}
             <div class="single_video-video-wrapper" style="text-align: center;">
-              <iframe
-                width="100%"
-                height="450"
-                src="{{embedLink}}"
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen
-                class="single_video-frame">
-              </iframe>
+  <iframe
+    id="yt-player-{{_id}}"
+    width="100%"
+    height="450"
+    src=""
+    data-base="{{embedLink}}"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowfullscreen
+    loading="lazy"
+    referrerpolicy="strict-origin-when-cross-origin"
+    class="single_video-frame">
+  </iframe>
               <p style="text-align: center; margin-top: 0.5rem;">
                 Having trouble viewing? <a href="{{embedLink}}" target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
               </p>
@@ -309,7 +313,55 @@ document.addEventListener('click', (e) => {
   if (action === 'complete') return markTagComplete(btn.dataset.tag);
   if (action === 'remove')   return removeTagFromUnit(btn.dataset.tag, btn.dataset.item, btn.dataset.type);
 });
+
+
+(function () {
+  const iframe = document.getElementById('yt-player-{{_id}}');
+  const link   = document.getElementById('yt-watch-link-{{_id}}');
+  if (!iframe) return;
+
+  const addParams = (urlStr) => {
+    try {
+      const u = new URL(urlStr, window.location.origin);
+
+      // Switch to privacy-enhanced domain for embeds
+      if (u.hostname.endsWith('youtube.com')) {
+        u.hostname = 'www.youtube-nocookie.com';
+      }
+
+      // Ensure we're using the /embed/ endpoint (handles watch?v=... cases if you ever pass them)
+      if (u.pathname === '/watch' && u.searchParams.get('v')) {
+        const vid = u.searchParams.get('v');
+        u.pathname = `/embed/${vid}`;
+        u.search = ''; // clear old params; we’ll set fresh below
+      }
+
+      // Force safer/default params
+      u.searchParams.set('rel', '0');                // related from same channel only
+      u.searchParams.set('modestbranding', '1');     // reduce YT branding
+      u.searchParams.set('playsinline', '1');        // inline on iOS
+      u.searchParams.set('iv_load_policy', '3');     // hide annotations
+      u.searchParams.set('fs', '1');                 // allow fullscreen
+
+      return u.toString();
+    } catch (e) {
+      // Fallback: naive append if URL can't be parsed (rare)
+      const sep = urlStr.includes('?') ? '&' : '?';
+      return urlStr + sep + 'rel=0&modestbranding=1&playsinline=1&iv_load_policy=3&fs=1';
+    }
+  };
+
+  const base = iframe.getAttribute('data-base') || '';
+  const finalSrc = addParams(base);
+  iframe.src = finalSrc;
+
+  // Keep the "Watch on YouTube" link pointing to the original (signed-in users sometimes prefer this)
+  if (link && base) {
+    link.href = base;
+  }
+})();
 </script>
+
 
 
 
