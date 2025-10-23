@@ -1,40 +1,43 @@
 {{#*inline "title"}}Assignment Successful | Twennie{{/inline}}
 
-<h1 class="success-title">assignment complete!</h1>
+<div class="success-container">
+  <h1 class="success-title">assignment complete!</h1>
 
-<p class="success-message">
-  The prompt set <strong>{{promptSetTitle}}</strong> was successfully assigned to:
-</p>
-
-{{#if assignedNames}}
-  <ul style="list-style: none; padding: 0; margin: 0 0 16px;">
-    {{#each assignedNames}}
-      <li style="margin: 6px 0;">{{this}}</li>
-    {{/each}}
-  </ul>
-{{else}}
-  <p class="success-message">No assignments were created.</p>
-{{/if}}
-
-<p class="success-message" style="margin-top: 20px;">
-  These members will see this prompt set in their dashboards.
-</p>
-
-{{!-- Optional: show skips for transparency --}}
-{{#if skippedLimitNames.length}}
-  <p class="success-message" style="margin-top: 20px;">
-    Skipped (limit of 3 active): {{#each skippedLimitNames}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}
-  </p>
-{{/if}}
-
-{{#if skippedDupesNames.length}}
   <p class="success-message">
-    Already had this assigned: {{#each skippedDupesNames}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}
+    The prompt set <strong>{{promptSetTitle}}</strong> was successfully assigned to:
   </p>
-{{/if}}
 
-<a href="/dashboard/leader" class="success-button">return to your dashboard</a>
+  {{#if assignedNames}}
+    <ul>
+      {{#each assignedNames}}
+        <li>{{this}}</li>
+      {{/each}}
+    </ul>
+  {{else}}
+    <p class="success-message">No assignments were created.</p>
+  {{/if}}
 
+  <p class="success-message">
+    These members will see this prompt set in their dashboards.
+  </p>
+
+  {{!-- Optional: show skips for transparency --}}
+  {{#if skippedLimitNames.length}}
+    <p class="success-message">
+      Skipped (limit of 3 active):
+      {{#each skippedLimitNames}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}
+    </p>
+  {{/if}}
+
+  {{#if skippedDupesNames.length}}
+    <p class="success-message">
+      Already had this assigned:
+      {{#each skippedDupesNames}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}
+    </p>
+  {{/if}}
+
+  <a href="/dashboard/leader" class="success-button">return to your dashboard</a>
+</div>
 
 <style>
 .success-container {
@@ -43,20 +46,17 @@
   padding: 20px;
   max-width: 500px;
 }
-
 .success-title {
   margin-top: 200px;
   color: #262262;
   font-size: 24px;
   font-weight: bold;
 }
-
 .success-message {
   font-size: 18px;
   margin: 10px 0;
   font-family: "Figtree";
 }
-
 .success-button {
   display: block;
   font-size: 11pt;
@@ -73,8 +73,8 @@
   cursor: pointer;
   width: 50%;
 }
-
 .success-button:hover {
   background-color: #4a4ab2;
 }
 </style>
+

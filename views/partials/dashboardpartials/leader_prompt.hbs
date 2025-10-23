@@ -104,15 +104,13 @@
                     <div class="leader-progress-bar-fill" style="width: {{progressPercent}}%;"></div>
                   </div>
                   <p class="leader-assigned-progress-text">
-                    {{progressPercent}}% • prompt {{currentPromptIndex}}/20
+                    prompt {{currentPromptIndex}}/20
                   </p>
                 </div>
               </div>
             </div>
 
-            {{#if leaderNotes}}
-              <p class="leader-assigned-notes"><span>notes:</span> {{leaderNotes}}</p>
-            {{/if}}
+
 
             <div class="leader-assigned-actions">
               <form
@@ -126,7 +124,7 @@
                 <button type="submit" class="leader-assigned-unassign">unassign</button>
               </form>
 
-              <a href="/members/{{memberId}}/prompts/{{promptSetId}}" class="leader-assigned-view">open progress</a>
+
             </div>
           </div>
         {{/each}}
