@@ -574,73 +574,78 @@ req.session.save(err => {
 
 
 
-// Fetch prompt set progress - DO NOT DELETE, this ensures correct progress tracking
+// ---- Unified progress/completion build (deduped) ----
 
+// Constants: Prompt0 + Prompts1–20
+const TOTAL_PROMPTS = 21;
 
+// 1) Fetch COMPLETED sets for this member, build exclusion set
+const completedRecords = await PromptSetCompletion
+  .find({ memberId: id })
+  .populate('promptSetId');
 
+const completedIds = new Set(
+  completedRecords
+    .map(r => r.promptSetId?._id?.toString())
+    .filter(Boolean)
+);
 
-const progressRecords = await PromptSetProgress.find({ memberId: id }).populate('promptSetId');
+// 2) Fetch PROGRESS rows once
+const progressRecords = await PromptSetProgress
+  .find({ memberId: id })
+  .populate('promptSetId');
 
-// Only process progress records if they exist
-if (progressRecords.length > 0) {
-    progressRecords.forEach(record => {
-        const progressPercentage = (record.completedPrompts?.length / 21) * 100 || 0; // Ensure valid calculation
-        const promptSetData = {
-            promptSetTitle: record.promptSetId.promptset_title,
-            frequency: record.promptSetId.suggested_frequency,
-            progress: `${progressPercentage}%`,
-            targetCompletionDate: record.promptSetId.target_completion_date || "Not Set",
-            promptIndex: record.currentPromptIndex || 0
-        };
+// 3) Build CURRENT (deduped) from progress only, excluding completed
+const currentByPsId = new Map();
 
-        // If fully completed (20/20), move to completed prompt sets
-        if (record.completedPrompts?.length >= 21) {
-            completedPromptSets.push({
-                promptSetTitle: record.promptSetId.promptset_title,
-                frequency: record.promptSetId.suggested_frequency,
-                mainTopic: record.promptSetId.main_topic,
-                completedAt: record.completedAt ? new Date(record.completedAt).toDateString() : "Unknown Date", // ✅ Correctly fetching from PromptSetCompletion
-                badge: "placeholder-badge"
-            });
-        } else {
-            currentPromptSets.push(promptSetData);
-        }
+for (const record of progressRecords) {
+  const ps = record.promptSetId;
+  if (!ps) continue;
+
+  const psId = ps._id.toString();
+  if (completedIds.has(psId)) continue; // exclude completed
+
+  const completedCount = Array.isArray(record.completedPrompts)
+    ? record.completedPrompts.length
+    : 0;
+
+  // Use TOTAL_PROMPTS=21 consistently (Prompt0 + 1–20)
+  const progressPct = Math.round((completedCount / TOTAL_PROMPTS) * 100);
+  const currentPromptIndex = Number.isInteger(record.currentPromptIndex)
+    ? record.currentPromptIndex
+    : 0;
+
+  // Deduped insert (progress is source of truth for "current")
+  if (!currentByPsId.has(psId)) {
+    currentByPsId.set(psId, {
+      promptSetId: psId,
+      promptSetTitle: ps.promptset_title,
+      frequency: ps.suggested_frequency,
+      progress: `${progressPct}%`,
+      targetCompletionDate: ps.target_completion_date || "Not Set",
+      promptIndex: currentPromptIndex
     });
+  }
 }
+
+// 4) Map COMPLETED sets for display (single pass)
+const formattedCompletedSets = completedRecords.map(record => ({
+  promptSetTitle: record.promptSetId?.promptset_title || 'Unknown Title',
+  frequency: record.promptSetId?.suggested_frequency,
+  mainTopic: record.promptSetId?.main_topic || 'No Topic',
+  completedAt: record.completedAt
+    ? new Date(record.completedAt).toDateString()
+    : "Unknown Date",
+  badge: record.earnedBadge // { image, name }
+}));
+
+// 5) Final arrays (sorted) to render
+currentPromptSets = Array.from(currentByPsId.values())
+  .sort((a, b) => a.promptSetTitle.localeCompare(b.promptSetTitle));
 
 console.log("Group Member Prompts Data:", JSON.stringify(groupmemberPrompts, null, 2));
 console.log("All session keys before rendering:", Object.keys(req.session));
 
-const completedRecords = await PromptSetCompletion.find({ memberId: id }).populate('promptSetId');
-const completedIds = new Set(completedRecords.map(record => record.promptSetId._id.toString()));
-
-// ✅ Fetch progress records
-
-
-if (progressRecords.length > 0) {
-  progressRecords.forEach(record => {
-    const promptSetId = record.promptSetId._id.toString();
-    if (!completedIds.has(promptSetId)) {
-      const progressPercentage = (record.completedPrompts?.length / 20) * 100 || 0;
-      currentPromptSets.push({
-        promptSetTitle: record.promptSetId.promptset_title,
-        frequency: record.promptSetId.suggested_frequency,
-        progress: `${progressPercentage}%`,
-        targetCompletionDate: record.promptSetId.target_completion_date || "Not Set",
-        promptIndex: record.currentPromptIndex || 0
-      });
-    }
-  });
-}
-
-// ✅ Format completed sets for display
-const formattedCompletedSets = completedRecords.map(record => ({
-  promptSetTitle: record.promptSetId.promptset_title,
-  frequency: record.promptSetId.suggested_frequency,
-  mainTopic: record.promptSetId.main_topic,
-  completedAt: record.completedAt ? new Date(record.completedAt).toDateString() : "Unknown Date",
-  badge: record.earnedBadge // ✅ Uses actual badge object with name + image
-}));
 
 console.log("Group Data for Leader Lookup:", JSON.stringify(userData.groupId, null, 2));
 
