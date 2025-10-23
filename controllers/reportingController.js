@@ -408,7 +408,6 @@ const getUnitsCompletedReport = async (req, res) => {
     
 };
 
-const PromptSetProgress = require('../models/prompt_models/promptsetprogress'); // ensure this require is at top
 
 const TOTAL_PROMPTS = 21; // Prompt0 + Prompts 1..20
 
