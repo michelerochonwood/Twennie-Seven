@@ -406,53 +406,78 @@ const getUnitsCompletedReport = async (req, res) => {
     
 };
 
+const PromptSetProgress = require('../models/prompt_models/promptsetprogress'); // ensure this require is at top
+
+const TOTAL_PROMPTS = 21; // Prompt0 + Prompts 1..20
+
 const getIndividualPromptSetCompletionReport = async (req, res) => {
   try {
     console.log("✅ Fetching Individual Prompt Set Completion Report...");
 
     const memberId = req.user._id;
 
-    // ✅ Find all prompt set completions for the logged-in member
+    // All completions for this member
     const completions = await PromptSetCompletion.find({ memberId })
       .populate("promptSetId")
       .lean();
 
-    const reportData = await Promise.all(completions.map(async (completion) => {
-      const promptSet = completion.promptSetId;
-      if (!promptSet) return null;
+    const reportData = await Promise.all(
+      completions.map(async (completion) => {
+        const ps = completion.promptSetId;
+        if (!ps) return null;
 
-      const prompts = Array.from({ length: 20 }, (_, index) => ({
-        promptNumber: `Prompt ${index + 1}`,
-        promptHeadline: promptSet[`prompt_headline${index + 1}`] || "No headline",
-        promptText: promptSet[`Prompt${index + 1}`] || "No prompt text available"
-      }));
+        // Notes source: prefer completion.notes; fallback to progress.notes for legacy rows
+        let notesArr = Array.isArray(completion.notes) && completion.notes.length
+          ? completion.notes
+          : null;
 
-      return {
-        promptSetTitle: promptSet.promptset_title,
-        main_topic: promptSet.main_topic,
-        secondary_topics: promptSet.secondary_topics || [],
-        purpose: promptSet.purpose || "No purpose provided",
-        characteristics: promptSet.characteristics || [],
-        targetAudience: promptSet.target_audience || "No audience specified",
-        dateCompleted: completion.completedAt,
-        prompts,
-        promptNotes: await Promise.all(completion.notes.map(async (note, index) => ({
-          promptNumber: `Prompt ${index + 1}`,
-          notes: [{
-            content: note
-          }]
-        })))
-      };
-    }));
+        if (!notesArr) {
+          const prog = await PromptSetProgress.findOne({ memberId, promptSetId: ps._id }).lean();
+          notesArr = Array.isArray(prog?.notes) ? prog.notes : [];
+        }
 
-    res.render("report_views/individual_promptsets_completed", {
+        // Normalize to exactly 21 cells
+        const normalizedNotes = Array.from({ length: TOTAL_PROMPTS }, (_, i) => notesArr[i] || '');
+
+        // Build 21 prompt cells from PromptSet fields: prompt_headline0..20, Prompt0..20
+        const prompts = Array.from({ length: TOTAL_PROMPTS }, (_, i) => {
+          const headlineKey = `prompt_headline${i}`;
+          const textKey     = `Prompt${i}`;
+          return {
+            promptNumber: `Prompt ${i + 1}`, // display label 1..21
+            promptHeadline: ps?.[headlineKey] || `Prompt ${i + 1}`,
+            promptText: ps?.[textKey] || ''
+          };
+        });
+
+        return {
+          promptSetTitle: ps.promptset_title,
+          main_topic: ps.main_topic,
+          secondary_topics: ps.secondary_topics || [],
+          purpose: ps.purpose || "No purpose provided",
+          characteristics: ps.characteristics || [],
+          targetAudience: ps.target_audience || "No audience specified",
+          dateCompleted: completion.completedAt,
+
+          prompts, // [{promptNumber, promptHeadline, promptText}] x21
+          // Each column expects { notes: [{content: "..."}] } or [] when empty
+          promptNotes: normalizedNotes.map(n => ({
+            notes: n ? [{ content: n }] : []
+          })),
+          // Optional: include finalNotes if you want to show it elsewhere
+          finalNotes: completion.finalNotes || ''
+        };
+      })
+    );
+
+    return res.render("report_views/individual_promptsets_completed", {
       layout: "dashboardlayout",
       promptSetsCompletedReports: reportData.filter(Boolean)
     });
 
   } catch (err) {
     console.error("❌ Error loading individual prompt set completion report:", err);
-    res.status(500).render("member_form_views/error", {
+    return res.status(500).render("member_form_views/error", {
       layout: "memberformlayout",
       title: "Report Error",
       errorMessage: "We couldn't load your prompt set completion report. Please try again later."
@@ -466,53 +491,70 @@ const getGroupMemberPromptSetCompletionReport = async (req, res) => {
 
     const memberId = req.user._id;
 
-    // ✅ Find all prompt set completions for the logged-in group member
     const completions = await PromptSetCompletion.find({ memberId })
       .populate("promptSetId")
       .lean();
 
-    const reportData = await Promise.all(completions.map(async (completion) => {
-      const promptSet = completion.promptSetId;
-      if (!promptSet) return null;
+    const reportData = await Promise.all(
+      completions.map(async (completion) => {
+        const ps = completion.promptSetId;
+        if (!ps) return null;
 
-      const prompts = Array.from({ length: 20 }, (_, index) => ({
-        promptNumber: `Prompt ${index + 1}`,
-        promptHeadline: promptSet[`prompt_headline${index + 1}`] || "No headline",
-        promptText: promptSet[`Prompt${index + 1}`] || "No prompt text available"
-      }));
+        // Notes source: prefer completion.notes; fallback to progress.notes
+        let notesArr = Array.isArray(completion.notes) && completion.notes.length
+          ? completion.notes
+          : null;
 
-      return {
-        promptSetTitle: promptSet.promptset_title,
-        main_topic: promptSet.main_topic,
-        secondary_topics: promptSet.secondary_topics || [],
-        purpose: promptSet.purpose || "No purpose provided",
-        characteristics: promptSet.characteristics || [],
-        targetAudience: promptSet.target_audience || "No audience specified",
-        dateCompleted: completion.completedAt,
-        prompts,
-        promptNotes: await Promise.all(completion.notes.map(async (note, index) => ({
-          promptNumber: `Prompt ${index + 1}`,
-          notes: [{
-            content: note
-          }]
-        })))
-      };
-    }));
+        if (!notesArr) {
+          const prog = await PromptSetProgress.findOne({ memberId, promptSetId: ps._id }).lean();
+          notesArr = Array.isArray(prog?.notes) ? prog.notes : [];
+        }
 
-    res.render("report_views/groupmember_promptsets_completed", {
+        const normalizedNotes = Array.from({ length: TOTAL_PROMPTS }, (_, i) => notesArr[i] || '');
+
+        const prompts = Array.from({ length: TOTAL_PROMPTS }, (_, i) => {
+          const headlineKey = `prompt_headline${i}`;
+          const textKey     = `Prompt${i}`;
+          return {
+            promptNumber: `Prompt ${i + 1}`,
+            promptHeadline: ps?.[headlineKey] || `Prompt ${i + 1}`,
+            promptText: ps?.[textKey] || ''
+          };
+        });
+
+        return {
+          promptSetTitle: ps.promptset_title,
+          main_topic: ps.main_topic,
+          secondary_topics: ps.secondary_topics || [],
+          purpose: ps.purpose || "No purpose provided",
+          characteristics: ps.characteristics || [],
+          targetAudience: ps.target_audience || "No audience specified",
+          dateCompleted: completion.completedAt,
+
+          prompts,
+          promptNotes: normalizedNotes.map(n => ({
+            notes: n ? [{ content: n }] : []
+          })),
+          finalNotes: completion.finalNotes || ''
+        };
+      })
+    );
+
+    return res.render("report_views/groupmember_promptsets_completed", {
       layout: "dashboardlayout",
       promptSetsCompletedReports: reportData.filter(Boolean)
     });
 
   } catch (err) {
     console.error("❌ Error loading group member prompt set completion report:", err);
-    res.status(500).render("groupmember_form_views/error", {
+    return res.status(500).render("groupmember_form_views/error", {
       layout: "groupmemberformlayout",
       title: "Report Error",
       errorMessage: "We couldn't load your prompt set completion report. Please try again later."
     });
   }
 };
+
 
 
 
