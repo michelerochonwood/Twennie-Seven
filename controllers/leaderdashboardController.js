@@ -128,84 +128,75 @@ async function fetchTaggedUnits(userId) {
   }
 }
 
-async function buildAssignedPromptCards(leaderId) {
-  // Try to be resilient to schema field naming
-  const assignments = await AssignPromptSet.find({
-    $or: [
-      { leaderId },           // common
-      { assignedById: leaderId },
-      { createdBy: leaderId }
-    ]
+
+
+async function buildLeaderAssignedUnits(leaderId) {
+  const assignedTags = await Tag.find({
+    createdBy: leaderId,
+    assignedTo: { $exists: true, $ne: [] },
   }).lean();
 
-  if (!assignments.length) return [];
+  const leaderAssignedUnits = [];
+  const leaderAssignmentsOpen = [];
+  const leaderAssignmentsCompleted = [];
 
-  const cards = [];
-  for (const a of assignments) {
-    const promptSet = await PromptSet.findById(a.promptSetId).lean();
-    if (!promptSet) continue;
-
-    const member = await GroupMember.findById(a.assignedMemberId).select('name').lean();
-    if (!member) continue;
-
-    const profile = await GroupMemberProfile
-      .findOne({ groupMemberId: member._id })
-      .select('profileImage')
-      .lean();
-
-    // progress for this member on this prompt set
-    const progress = await PromptSetProgress
-      .findOne({ memberId: a.assignedMemberId, promptSetId: a.promptSetId })
-      .lean();
-
-    const completedCount = Array.isArray(progress?.completedPrompts) ? progress.completedPrompts.length : 0;
-    const progressPercent = Math.min(100, Math.round((completedCount / 20) * 100));
-    const currentPromptIndex = Number.isInteger(progress?.currentPromptIndex) ? progress.currentPromptIndex : 0;
-
-    const target = a.targetCompletionDate || promptSet.target_completion_date || null;
-    const now = new Date();
-    const isCompleted = completedCount >= 20;
-    const isOverdue = !isCompleted && target && new Date(target) < now;
-    const hasStarted = !isCompleted && completedCount > 0;
-
-    let status = 'assigned';
-    let statusLabel = 'assigned';
-    if (isCompleted) {
-      status = 'completed';
-      statusLabel = 'completed';
-    } else if (isOverdue) {
-      status = 'overdue';
-      statusLabel = 'overdue';
-    } else if (hasStarted) {
-      status = 'inprogress';
-      statusLabel = 'in progress';
+  for (const tag of assignedTags) {
+    // Flat open/completed rows (optional, handy for counts/mini tables)
+    for (const a of (tag.assignedTo || [])) {
+      const row = {
+        tagId: tag._id.toString(),
+        tagName: tag.name,
+        memberId: a.member?.toString(),
+        instructions: a.instructions || '',
+        completedAt: a.completedAt || null
+      };
+      if (row.completedAt) leaderAssignmentsCompleted.push(row);
+      else leaderAssignmentsOpen.push(row);
     }
 
-    cards.push({
-      assignmentId: a._id.toString(),
-      promptSetId: promptSet._id.toString(),
-      promptSetTitle: promptSet.promptset_title,
-      mainTopic: promptSet.main_topic || 'No topic',
-      frequency: a.frequency || promptSet.suggested_frequency || 'weekly',
-      targetCompletionDate: fmtDate(target),
+    // Per-unit cards for the partial
+    for (const { item, unitType } of tag.associatedUnits || []) {
+      if (unitType === 'promptset' || unitType === 'prompt') continue;
 
-      memberId: member._id.toString(),
-      memberName: member.name,
-      memberImage: profile?.profileImage || '/images/default-avatar.png',
+      const Model = getModelByUnitType(unitType);
+      if (!Model) continue;
 
-      currentPromptIndex,
-      progressPercent,
+      const unit = await Model.findById(item).lean();
+      if (!unit) continue;
 
-      status,
-      statusLabel,
+      for (const assignee of tag.assignedTo || []) {
+        const member = await GroupMember.findById(assignee.member).select('name').lean();
+        if (!member) continue;
 
-      leaderNotes: a.leaderNotes || ''
-    });
+leaderAssignedUnits.push({
+  _id: item,
+  unitType,
+  title:
+    unit.article_title ||
+    unit.video_title ||
+    unit.interview_title ||
+    unit.exercise_title ||
+    unit.template_title ||
+    "Untitled",
+  mainTopic: unit.main_topic || "No topic",
+
+  // ✅ add this line so the partial can delete the tag:
+  tagId: tag._id.toString(),
+
+  assignedTo: {
+    _id: assignee.member?.toString(),
+    name: member.name,
+    instructions: assignee.instructions || '',
+    completedAt: assignee.completedAt || null,
+  }
+});
+      }
+    }
   }
 
-  // Optional: newest first (or sort by due date)
-  return cards.sort((a, b) => (a.targetCompletionDate > b.targetCompletionDate ? 1 : -1));
+  return { leaderAssignedUnits, leaderAssignmentsOpen, leaderAssignmentsCompleted };
 }
+
 
 
 
@@ -751,7 +742,7 @@ const formattedCompletedSets = completedRecords.map(record => ({
     badge: record.earnedBadge // This should now contain an object with { image, name }
 }));
 
-
+const { leaderAssignedUnits, leaderAssignmentsOpen, leaderAssignmentsCompleted } = await buildLeaderAssignedUnits(id);
 // --- Membership tab: derive view flags & user fields for template ---
 
 // 1) Email preference flags (defaults to Level 1 if unset/invalid)
@@ -771,7 +762,15 @@ const leaderAccount = {
   username: userData?.username || ''
 };
 
-
+// ---------- NEW: tab counts + badges ----------
+const leaderCounts = {
+  group:    (resolvedGroupMembers || []).length,       // my group members
+  topics:   (topicSuggestions || []).length,           // my suggested topics
+  prompts:  (leaderRegistrations || []).length,        // registered prompt sets
+  progress: (formattedCompletedSets || []).length,     // simple monotonic signal
+  library:  (leaderUnits || []).length,                // my contributions (incl. upcoming)
+  tagged:   leaderTaggedCountAll                       // 👈 all tags I created (self + assignments)
+};
 
 // Load/create seen doc for this leader
 let seenDocLeader = await DashboardSeen.findOne({ userId: id, role: 'leader' });
@@ -803,34 +802,18 @@ for (const [key, val] of Object.entries(leaderCounts)) {
 }
 
 
-const { leaderAssignedUnits, leaderAssignmentsOpen, leaderAssignmentsCompleted } = await buildLeaderAssignedUnits(id);
-
-// 👇 NEW: build the cards the partial expects (no @root)
-const assignedPromptCards = await buildAssignedPromptCards(id);
-
-// ---------- NEW: tab counts + badges ----------
-const leaderCounts = {
-  group:    (resolvedGroupMembers || []).length,
-  topics:   (topicSuggestions || []).length,
-  prompts:  (leaderRegistrations || []).length,
-  progress: (formattedCompletedSets || []).length,
-  library:  (leaderUnits || []).length,
-  tagged:   leaderTaggedCountAll
-};
-
-// ... existing code continues ...
-
 return res.render('leader_dashboard', {
   layout: 'dashboardlayout',
   title: 'Leader Dashboard',
   csrfToken: req.csrfToken(),
-
-  leader: {
-    ...userData,
-    members: resolvedGroupMembers,
-    profileImage: leaderProfile?.profileImage || '/images/default-avatar.png',
-    groupImage: groupProfile?.groupImage || '/images/defaultgroupavatar.jpg'
-  },
+leader: {
+  ...userData,
+  members: resolvedGroupMembers,
+  // existing leader avatar (person)
+  profileImage: leaderProfile?.profileImage || '/images/default-avatar.png',
+  // NEW: actual group image (circle under the group name)
+  groupImage: groupProfile?.groupImage || '/images/defaultgroupavatar.jpg'
+},
 
   leaderGroupMembers: resolvedGroupMembers,
   maxGroupSize: userData.maxGroupSize,
@@ -840,17 +823,13 @@ return res.render('leader_dashboard', {
   leaderAssignedUnits,
   leaderAssignmentsOpen,
   leaderAssignmentsCompleted,
-
-  // 👇 make it available to the partial with no @root
-  assignedPromptCards,
-
   registeredPromptSets: leaderPrompts,
   promptSchedules,
   currentPromptSets,
   completedPromptSets: formattedCompletedSets,
 
-  selectedTopics,
-  topicsEmpty,
+  selectedTopics,   // 👈 add this
+  topicsEmpty,      // 👈 and this
   topicSuggestions,
   leaderAccount,
   emailPreferenceLevel,
@@ -858,7 +837,7 @@ return res.render('leader_dashboard', {
 
   mfaStatus,
   leaderCounts,
-  leaderBadges
+  leaderBadges,
 });
 
 
