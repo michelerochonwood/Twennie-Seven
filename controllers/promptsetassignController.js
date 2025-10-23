@@ -231,6 +231,24 @@ const csvMirror  = req.body.assignedMemberIdsCsv;     // CSV string we just rena
     }
   },
 
+  assignSuccess: (req, res) => {
+  // pull once; then clear so it doesn’t linger across refreshes
+  const s = req.session.lastAssignSummary || {};
+  delete req.session.lastAssignSummary;
+
+  const locals = {
+    layout: 'dashboardlayout',
+    title: 'Assignment Successful',
+    // Prefer session (authoritative), fall back to query string
+    promptSetTitle: s.promptSetTitle || req.query.title || 'Prompt Set',
+    assignedNames: Array.isArray(s.assignedNames) ? s.assignedNames : [],
+    skippedLimitNames: Array.isArray(s.skippedLimitNames) ? s.skippedLimitNames : [],
+    skippedDupesNames: Array.isArray(s.skippedDupesNames) ? s.skippedDupesNames : []
+  };
+
+  return res.render('member_form_views/assignsuccess', locals);
+},
+
   /** GET leader’s assigned prompt sets */
   getAssignedPromptSets: async (req, res) => {
     try {
