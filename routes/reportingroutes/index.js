@@ -11,7 +11,10 @@ router.get("/unitscompleted", ensureAuthenticated, reportingController.getUnitsC
 router.get('/mypromptsets', ensureAuthenticated, reportingController.getIndividualPromptSetCompletionReport);
 router.get('/groupmypromptsets', ensureAuthenticated, reportingController.getGroupMemberPromptSetCompletionReport);
 
-
+router.get('/memberengagement.csv', isAuthenticated, reportsController.memberEngagementCSV);
+router.get('/teamengagement.csv', isAuthenticated, reportsController.teamEngagementCSV);
+router.get('/promptsetscompleted.csv', isAuthenticated, reportsController.promptSetsCompletedCSV);
+router.get('/unitscompleted.csv', isAuthenticated, reportsController.unitsCompletedCSV);
 
 
 module.exports = router;
