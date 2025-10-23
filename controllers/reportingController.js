@@ -8,6 +8,7 @@ const Exercise = require('../models/unit_models/exercise');
 const Template = require('../models/unit_models/template');
 const PromptSetCompletion = require('../models/prompt_models/promptsetcompletion');
 const Notes = require('../models/notes/notes');
+const PromptSetProgress = require('../models/prompt_models/promptsetprogress');
 
 
 
@@ -412,41 +413,42 @@ const TOTAL_PROMPTS = 21; // Prompt0 + Prompts 1..20
 
 const getIndividualPromptSetCompletionReport = async (req, res) => {
   try {
-    console.log("✅ Fetching Individual Prompt Set Completion Report...");
+    console.log("✅ Fetching Individual Prompt Set Report from PROGRESS...");
 
     const memberId = req.user._id;
+    const TOTAL_PROMPTS = 21; // Prompt0 + Prompts 1..20
 
-    // All completions for this member
-    const completions = await PromptSetCompletion.find({ memberId })
-      .populate("promptSetId")
+    // Pull all progress rows for this member (source of truth for notes)
+    const progresses = await PromptSetProgress.find({ memberId })
+      .populate('promptSetId')
       .lean();
 
-    const reportData = await Promise.all(
-      completions.map(async (completion) => {
-        const ps = completion.promptSetId;
-        if (!ps) return null;
+    const reportData = progresses
+      .filter(p => !!p.promptSetId) // guard missing PS
+      .map(p => {
+        const ps = p.promptSetId;
 
-        // Notes source: prefer completion.notes; fallback to progress.notes for legacy rows
-        let notesArr = Array.isArray(completion.notes) && completion.notes.length
-          ? completion.notes
-          : null;
-
-        if (!notesArr) {
-          const prog = await PromptSetProgress.findOne({ memberId, promptSetId: ps._id }).lean();
-          notesArr = Array.isArray(prog?.notes) ? prog.notes : [];
-        }
-
-        // Normalize to exactly 21 cells
-        const normalizedNotes = Array.from({ length: TOTAL_PROMPTS }, (_, i) => notesArr[i] || '');
-
-        // Build 21 prompt cells from PromptSet fields: prompt_headline0..20, Prompt0..20
-        const prompts = Array.from({ length: TOTAL_PROMPTS }, (_, i) => {
-          const headlineKey = `prompt_headline${i}`;
-          const textKey     = `Prompt${i}`;
+        // Build the 21 prompt descriptors from the PromptSet doc.
+        // We render 21 columns labeled 1..21 in the view; internally we map:
+        // column 1 → Prompt0, column 2 → Prompt1, ... column 21 → Prompt20
+        const prompts = Array.from({ length: TOTAL_PROMPTS }, (_, col) => {
+          const idx = col === 0 ? 0 : col; // col=0→0, col=20→20 (1-based view, 0-based storage)
+          const headlineKey = `prompt_headline${idx}`;
+          const textKey     = `Prompt${idx}`;
           return {
-            promptNumber: `Prompt ${i + 1}`, // display label 1..21
-            promptHeadline: ps?.[headlineKey] || `Prompt ${i + 1}`,
+            promptHeadline: ps?.[headlineKey] || `Prompt ${col + 1}`,
             promptText: ps?.[textKey] || ''
+          };
+        });
+
+        // Notes from progress; pad to 21
+        const notes = Array.isArray(p.notes) ? p.notes : [];
+        const promptNotes = Array.from({ length: TOTAL_PROMPTS }, (_, col) => {
+          const idx = col === 0 ? 0 : col; // same mapping as above
+          const content = notes[idx] || '';
+          return {
+            promptNumber: `Prompt ${col + 1}`,
+            notes: content ? [{ content }] : []
           };
         });
 
@@ -457,68 +459,66 @@ const getIndividualPromptSetCompletionReport = async (req, res) => {
           purpose: ps.purpose || "No purpose provided",
           characteristics: ps.characteristics || [],
           targetAudience: ps.target_audience || "No audience specified",
-          dateCompleted: completion.completedAt,
+          // We don't have an actual completion date here; use updatedAt as a proxy
+          dateCompleted: p.updatedAt || p.createdAt,
 
-          prompts, // [{promptNumber, promptHeadline, promptText}] x21
-          // Each column expects { notes: [{content: "..."}] } or [] when empty
-          promptNotes: normalizedNotes.map(n => ({
-            notes: n ? [{ content: n }] : []
-          })),
-          // Optional: include finalNotes if you want to show it elsewhere
-          finalNotes: completion.finalNotes || ''
+          prompts,      // for the “Prompt Texts” row
+          promptNotes   // for the “Your Notes” row
         };
-      })
-    );
+      });
 
     return res.render("report_views/individual_promptsets_completed", {
       layout: "dashboardlayout",
-      promptSetsCompletedReports: reportData.filter(Boolean)
+      promptSetsCompletedReports: reportData
     });
 
   } catch (err) {
-    console.error("❌ Error loading individual prompt set completion report:", err);
+    console.error("❌ Error loading individual prompt set report (from progress):", err);
     return res.status(500).render("member_form_views/error", {
       layout: "memberformlayout",
       title: "Report Error",
-      errorMessage: "We couldn't load your prompt set completion report. Please try again later."
+      errorMessage: "We couldn't load your prompt set report. Please try again later."
     });
   }
 };
 
+
 const getGroupMemberPromptSetCompletionReport = async (req, res) => {
   try {
-    console.log("✅ Fetching Group Member Prompt Set Completion Report...");
+    console.log("✅ Fetching Group Member Prompt Set Report from PROGRESS...");
 
     const memberId = req.user._id;
+    const TOTAL_PROMPTS = 21; // Prompt0 + Prompts 1..20
 
-    const completions = await PromptSetCompletion.find({ memberId })
-      .populate("promptSetId")
+    // Pull all progress rows for this member (source of truth for notes)
+    const progresses = await PromptSetProgress.find({ memberId })
+      .populate('promptSetId')
       .lean();
 
-    const reportData = await Promise.all(
-      completions.map(async (completion) => {
-        const ps = completion.promptSetId;
-        if (!ps) return null;
+    const reportData = progresses
+      .filter(p => !!p.promptSetId)
+      .map(p => {
+        const ps = p.promptSetId;
 
-        // Notes source: prefer completion.notes; fallback to progress.notes
-        let notesArr = Array.isArray(completion.notes) && completion.notes.length
-          ? completion.notes
-          : null;
-
-        if (!notesArr) {
-          const prog = await PromptSetProgress.findOne({ memberId, promptSetId: ps._id }).lean();
-          notesArr = Array.isArray(prog?.notes) ? prog.notes : [];
-        }
-
-        const normalizedNotes = Array.from({ length: TOTAL_PROMPTS }, (_, i) => notesArr[i] || '');
-
-        const prompts = Array.from({ length: TOTAL_PROMPTS }, (_, i) => {
-          const headlineKey = `prompt_headline${i}`;
-          const textKey     = `Prompt${i}`;
+        // Build 21 prompt descriptors (view shows 1..21; map to 0..20 internally)
+        const prompts = Array.from({ length: TOTAL_PROMPTS }, (_, col) => {
+          const idx = col === 0 ? 0 : col;
+          const headlineKey = `prompt_headline${idx}`;
+          const textKey     = `Prompt${idx}`;
           return {
-            promptNumber: `Prompt ${i + 1}`,
-            promptHeadline: ps?.[headlineKey] || `Prompt ${i + 1}`,
+            promptHeadline: ps?.[headlineKey] || `Prompt ${col + 1}`,
             promptText: ps?.[textKey] || ''
+          };
+        });
+
+        // Notes from progress; pad to 21
+        const notes = Array.isArray(p.notes) ? p.notes : [];
+        const promptNotes = Array.from({ length: TOTAL_PROMPTS }, (_, col) => {
+          const idx = col === 0 ? 0 : col;
+          const content = notes[idx] || '';
+          return {
+            promptNumber: `Prompt ${col + 1}`,
+            notes: content ? [{ content }] : []
           };
         });
 
@@ -529,31 +529,28 @@ const getGroupMemberPromptSetCompletionReport = async (req, res) => {
           purpose: ps.purpose || "No purpose provided",
           characteristics: ps.characteristics || [],
           targetAudience: ps.target_audience || "No audience specified",
-          dateCompleted: completion.completedAt,
+          dateCompleted: p.updatedAt || p.createdAt,
 
           prompts,
-          promptNotes: normalizedNotes.map(n => ({
-            notes: n ? [{ content: n }] : []
-          })),
-          finalNotes: completion.finalNotes || ''
+          promptNotes
         };
-      })
-    );
+      });
 
     return res.render("report_views/groupmember_promptsets_completed", {
       layout: "dashboardlayout",
-      promptSetsCompletedReports: reportData.filter(Boolean)
+      promptSetsCompletedReports: reportData
     });
 
   } catch (err) {
-    console.error("❌ Error loading group member prompt set completion report:", err);
+    console.error("❌ Error loading group member prompt set report (from progress):", err);
     return res.status(500).render("groupmember_form_views/error", {
       layout: "groupmemberformlayout",
       title: "Report Error",
-      errorMessage: "We couldn't load your prompt set completion report. Please try again later."
+      errorMessage: "We couldn't load your prompt set report. Please try again later."
     });
   }
 };
+
 
 
 
