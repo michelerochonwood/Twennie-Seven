@@ -921,7 +921,7 @@ leader: {
   maxGroupSize: userData.maxGroupSize,
   leaderUnits,
   groupMemberUnits,
-
+  leaderAssignedUnits,
   assignedPromptCards,
   leaderAssignmentsOpen,
   leaderAssignmentsCompleted,
