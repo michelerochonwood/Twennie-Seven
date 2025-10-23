@@ -1,3 +1,4 @@
+const PromptSetProgress = require('../models/prompt_models/promptsetprogress');
 const GroupMember = require('../models/member_models/group_member');
 const Leader = require('../models/member_models/leader');
 const Article = require('../models/unit_models/article');
@@ -8,7 +9,7 @@ const Exercise = require('../models/unit_models/exercise');
 const Template = require('../models/unit_models/template');
 const PromptSetCompletion = require('../models/prompt_models/promptsetcompletion');
 const Notes = require('../models/notes/notes');
-const PromptSetProgress = require('../models/prompt_models/promptsetprogress');
+
 
 
 
