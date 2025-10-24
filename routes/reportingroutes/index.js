@@ -16,10 +16,7 @@ router.get("/mypromptsets",         ensureAuthenticated, reportingController.get
 router.get("/groupmypromptsets",    ensureAuthenticated, reportingController.getGroupMemberPromptSetCompletionReport);
 
 // ---------- CSV export routes ----------
-router.get("/memberengagement.csv",    ensureAuthenticated, reportingController.memberEngagementCSV);
-router.get("/teamengagement.csv",      ensureAuthenticated, reportingController.teamEngagementCSV);
-router.get("/promptsetscompleted.csv", ensureAuthenticated, reportingController.promptSetsCompletedCSV);
-router.get("/unitscompleted.csv",      ensureAuthenticated, reportingController.unitsCompletedCSV);
+
 
 module.exports = router;
 
