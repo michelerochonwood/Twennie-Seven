@@ -1,9 +1,6 @@
 <!-- CSRF token for AJAX deletes -->
 <meta name="csrf-token" content="{{csrfToken}}">
 
-{{!-- =========================
-     1) SELF-TAGGED (BLENDED)
-     ========================= --}}
 <section class="tagged-units-section">
   <h2 class="tagged-units-title">tagged library units</h2>
   <div class="tagged-units-grid">
@@ -15,18 +12,15 @@
 
         <div class="tagged-unit-info">
           <h3 class="tagged-unit-title">{{title}}</h3>
-          {{#if mainTopic}}<p class="tagged-unit-topic">{{mainTopic}}</p>{{/if}}
+          <p class="tagged-unit-topic">{{mainTopic}}</p>
           {{#if (eq unitType "upcoming")}}
             <p class="tagged-unit-status">🚧 coming soon</p>
           {{/if}}
         </div>
 
+        <!-- Actions stacked vertically, reusing the "view" button style -->
         <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
-          {{!-- View link: special-case nuggets --}}
-          <a
-            href="{{#if (eq unitType 'nugget')}}/unitviews/nuggets/view/{{_id}}{{else}}/unitviews/{{unitType}}s/view/{{_id}}{{/if}}"
-            class="tagged-unit-link"
-          >view unit</a>
+          <a href="/unitviews/{{capitalize unitType}}s/view/{{_id}}" class="tagged-unit-link">view unit</a>
 
           <button
             class="tagged-unit-link"
@@ -46,125 +40,58 @@
     {{/each}}
   </div>
 </section>
-<hr class="tagged-section-divider" aria-hidden="true">
 
-{{!-- =========================
-     3) ASSIGNED UNITS (NON-NUGGETS ONLY)
-     ========================= --}}
 <section class="leader-assigned-units-section" style="margin-top:20px">
   <h2 class="tagged-units-title">assigned units</h2>
   <div class="tagged-units-grid">
-    {{#let 0}}{{/let}}
     {{#each leaderAssignedUnits}}
-      {{#unless (eq unitType "nugget")}}
-        <div class="leader-assigned-unit-card">
-          <div class="tagged-unit-icon">
-            <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
-          </div>
-
-          <div class="tagged-unit-info">
-            <h3 class="tagged-unit-title">{{title}}</h3>
-            {{#if mainTopic}}<p class="tagged-unit-topic">{{mainTopic}}</p>{{/if}}
-            <p class="leader-assigned-to">assigned to: {{assignedTo.name}}</p>
-
-            {{!-- 3-state status --}}
-            {{#if (eq unitType "upcoming")}}
-              <p class="leader-assigned-status">🚧 coming soon</p>
-            {{else if assignedTo.completedAt}}
-              <p class="leader-assigned-status">✅ completed <span class="muted">({{formatDate assignedTo.completedAt}})</span></p>
-            {{else}}
-              <p class="leader-assigned-status">⏳ pending</p>
-            {{/if}}
-
-            {{#if assignedTo.instructions}}
-              <p class="leader-assigned-instructions"><em>{{assignedTo.instructions}}</em></p>
-            {{/if}}
-          </div>
-
-          <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
-            <a href="/unitviews/{{unitType}}s/view/{{_id}}" class="tagged-unit-link">view unit</a>
-
-            <!-- Unassign only this member (keep the tag) -->
-            <button
-              class="tagged-unit-link"
-              onclick="unassignMember('{{tagId}}','{{assignedTo._id}}')">
-              unassign
-            </button>
-
-            <!-- Delete entire tag (removes for all assignees + units) -->
-            <button
-              class="tagged-unit-link"
-              onclick="deleteTag('{{tagId}}')">
-              delete tag
-            </button>
-          </div>
+      <div class="leader-assigned-unit-card">
+        <div class="tagged-unit-icon">
+          <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
         </div>
-      {{/unless}}
-    {{/each}}
 
-    {{!-- Empty state if there were no non-nuggets --}}
-    {{#unless (some leaderAssignedUnits this (notEq unitType "nugget"))}}
-      <p class="tagged-no-units">You have no assigned non-nugget units.</p>
-    {{/unless}}
-  </div>
-</section>
-<hr class="tagged-section-divider" aria-hidden="true">
+        <div class="tagged-unit-info">
+          <h3 class="tagged-unit-title">{{title}}</h3>
+          <p class="tagged-unit-topic">{{mainTopic}}</p>
 
-{{!-- =========================
-     4) ASSIGNED NUGGETS (NUGGETS ONLY)
-     ========================= --}}
-<section class="leader-assigned-nuggets-section" style="margin-top:20px">
-  <h2 class="tagged-units-title">assigned nuggets</h2>
-  <div class="tagged-units-grid">
-    {{#each leaderAssignedUnits}}
-      {{#if (eq unitType "nugget")}}
-        <div class="leader-assigned-unit-card">
-          <div class="tagged-unit-icon">
-            <img src="/icons/nugget.svg" alt="nugget icon">
-          </div>
+          <p class="leader-assigned-to">assigned to: {{assignedTo.name}}</p>
 
-          <div class="tagged-unit-info">
-            <h3 class="tagged-unit-title">{{title}}</h3>
-            {{#if client}}<p class="tagged-unit-topic">client: {{client}}</p>{{/if}}
-            {{#if region}}<p class="tagged-unit-topic">region: {{region}}</p>{{/if}}
-            {{#if discipline}}<p class="tagged-unit-topic">discipline: {{discipline}}</p>{{/if}}
+          {{!-- 3-state status --}}
+          {{#if (eq unitType "upcoming")}}
+            <p class="leader-assigned-status">🚧 coming soon</p>
+          {{else if assignedTo.completedAt}}
+            <p class="leader-assigned-status">✅ completed <span class="muted">({{formatDate assignedTo.completedAt}})</span></p>
+          {{else}}
+            <p class="leader-assigned-status">⏳ pending</p>
+          {{/if}}
 
-            <p class="leader-assigned-to">assigned to: {{assignedTo.name}}</p>
-
-            {{#if assignedTo.completedAt}}
-              <p class="leader-assigned-status">✅ completed <span class="muted">({{formatDate assignedTo.completedAt}})</span></p>
-            {{else}}
-              <p class="leader-assigned-status">⏳ pending</p>
-            {{/if}}
-
-            {{#if assignedTo.instructions}}
-              <p class="leader-assigned-instructions"><em>{{assignedTo.instructions}}</em></p>
-            {{/if}}
-          </div>
-
-          <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
-            <a href="/unitviews/nuggets/view/{{_id}}" class="tagged-unit-link">view nugget</a>
-
-            <button
-              class="tagged-unit-link"
-              onclick="unassignMember('{{tagId}}','{{assignedTo._id}}')">
-              unassign
-            </button>
-
-            <button
-              class="tagged-unit-link"
-              onclick="deleteTag('{{tagId}}')">
-              delete tag
-            </button>
-          </div>
+          {{#if assignedTo.instructions}}
+            <p class="leader-assigned-instructions"><em>{{assignedTo.instructions}}</em></p>
+          {{/if}}
         </div>
-      {{/if}}
-    {{/each}}
 
-    {{!-- Empty state if no nuggets --}}
-    {{#unless (some leaderAssignedUnits this (eq unitType "nugget"))}}
-      <p class="tagged-no-units">You have no assigned nuggets.</p>
-    {{/unless}}
+        <!-- Actions stacked vertically, reusing the "view" button style -->
+        <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
+          <a href="/unitviews/{{capitalize unitType}}s/view/{{_id}}" class="tagged-unit-link">view unit</a>
+
+          <!-- Unassign only this member (keep the tag) -->
+          <button
+            class="tagged-unit-link"
+            onclick="unassignMember('{{tagId}}','{{assignedTo._id}}')">
+            unassign
+          </button>
+
+          <!-- Delete entire tag (removes for all assignees + units) -->
+          <button
+            class="tagged-unit-link"
+            onclick="deleteTag('{{tagId}}')">
+            delete tag
+          </button>
+        </div>
+      </div>
+    {{else}}
+      <p class="tagged-no-units">You have no assigned units.</p>
+    {{/each}}
   </div>
 </section>
 
@@ -221,7 +148,6 @@
     }
   }
 </script>
-
 
 
 
