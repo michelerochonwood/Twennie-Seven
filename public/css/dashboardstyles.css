@@ -3044,7 +3044,29 @@ html, body {
 
 
 
+.tagged-section-divider {
+  border: 0;
+  height: 2px;                 /* bar thickness */
+  width: 100%;
+  margin: 24px 0;              /* space above/below */
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    #4e50a2 12%,
+    #8a8cd6 50%,
+    #4e50a2 88%,
+    transparent 100%
+  );
+  opacity: 0.8;                /* soften slightly */
+  border-radius: 2px;
+}
 
+/* Optional: tighter spacing on mobile */
+@media (max-width: 640px) {
+  .tagged-section-divider {
+    margin: 16px 0;
+  }
+}
 
 
 
