@@ -3,102 +3,90 @@
 <section class="group-member-tagged-units-section">
   <h2 class="tagged-units-title">tagged library units</h2>
 
-  <!-- 🔖 Section 1: Units I Tagged Myself -->
+  {{!-- =========================
+       1) MY TAGGED UNITS (SELF)
+       expects: groupMemberSelfTaggedUnits = [{ _id, title, mainTopic, unitType, tagId, viewPath }]
+       ========================= --}}
   <div class="group-member-tagged-subsection">
     <h3 class="group-member-tagged-subtitle">my tagged units</h3>
+
     <div class="tagged-units-grid">
-      {{#each groupMemberTaggedUnits}}
-        <div class="tagged-unit-card">
-          <div class="tagged-unit-icon">
-            <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
-          </div>
+      {{#if groupMemberSelfTaggedUnits.length}}
+        {{#each groupMemberSelfTaggedUnits}}
+          <div class="tagged-unit-card">
+            <div class="tagged-unit-icon">
+              <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
+            </div>
 
-          <div class="tagged-unit-info">
-            <h3 class="tagged-unit-title">{{title}}</h3>
-            <p class="tagged-unit-topic">{{mainTopic}}</p>
-            {{#if (eq unitType "upcoming")}}
-              <p class="tagged-unit-status">🚧 coming soon</p>
-            {{/if}}
-          </div>
+            <div class="tagged-unit-info">
+              <h3 class="tagged-unit-title">{{title}}</h3>
+              {{#if mainTopic}}<p class="tagged-unit-topic">{{mainTopic}}</p>{{/if}}
+            </div>
 
-          <!-- Actions stacked vertically -->
-          <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
-            <a href="/unitviews/{{capitalize unitType}}s/view/{{_id}}" class="tagged-unit-link">view unit</a>
-            <button
-              class="tagged-unit-link"
-              onclick="removeSelfTag('{{tagId}}','{{_id}}','{{unitType}}')">
-              remove tag
-            </button>
+            <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
+              <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
+
+              <button
+                class="tagged-unit-link"
+                onclick="removeSelfTag('{{tagId}}','{{_id}}','{{unitType}}')">
+                remove tag
+              </button>
+            </div>
           </div>
-        </div>
+        {{/each}}
       {{else}}
         <p class="tagged-no-units">You have not tagged any units.</p>
-      {{/each}}
+      {{/if}}
     </div>
   </div>
 
-  <!-- 👥 Section 2: Units Tagged by My Leader (pending; completion tracked by notes, not a button) -->
-  <div class="group-member-tagged-subsection">
-    <h3 class="group-member-tagged-subtitle">units tagged by my leader</h3>
+  <div class="tagged-section-divider" aria-hidden="true"></div>
+
+  {{!-- =========================
+       2) MY ASSIGNED UNITS (LEADER-ASSIGNED)
+       expects: groupMemberAssignedUnits = [{ _id, title, mainTopic, unitType, tagId, viewPath, assignedInstructions, assignedCompletedAtFormatted, leaderName }]
+       ========================= --}}
+  <div class="group-member-tagged-subsection" style="margin-top:20px;">
+    <h3 class="group-member-tagged-subtitle">my assigned units</h3>
+
     <div class="tagged-units-grid">
-      {{#each leaderAssignedTags}}
-        <div class="tagged-unit-card">
-          <div class="tagged-unit-icon">
-            <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
-          </div>
+      {{#if groupMemberAssignedUnits.length}}
+        {{#each groupMemberAssignedUnits}}
+          <div class="tagged-unit-card">
+            <div class="tagged-unit-icon">
+              <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
+            </div>
 
-          <div class="tagged-unit-info">
-            <h3 class="tagged-unit-title">{{title}}</h3>
-            <p class="tagged-unit-topic">{{mainTopic}}</p>
-            {{#if instructions}}
-              <p class="tagged-unit-instructions"><em>Instructions:</em> {{instructions}}</p>
-            {{/if}}
-            <p class="tagged-unit-status">
-              {{#if (eq unitType "upcoming")}}🚧 coming soon{{else}}⏳ pending{{/if}}
-            </p>
-          </div>
+            <div class="tagged-unit-info">
+              <h3 class="tagged-unit-title">{{title}}</h3>
+              {{#if mainTopic}}<p class="tagged-unit-topic">{{mainTopic}}</p>{{/if}}
+              {{#if leaderName}}<p class="tagged-unit-meta">assigned by: {{leaderName}}</p>{{/if}}
+              {{#if assignedInstructions}}
+                <p class="tagged-unit-instructions"><em>instructions:</em> {{assignedInstructions}}</p>
+              {{/if}}
 
-          <!-- Only "view unit" (no mark-complete button) -->
-          <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
-            <a href="/unitviews/{{capitalize unitType}}s/view/{{_id}}" class="tagged-unit-link">view unit</a>
+              {{#if assignedCompletedAtFormatted}}
+                <p class="leader-assigned-status">✅ completed <span class="muted">({{assignedCompletedAtFormatted}})</span></p>
+              {{else}}
+                <p class="leader-assigned-status">⏳ pending</p>
+              {{/if}}
+            </div>
+
+            <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
+              <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
+              {{!-- No "remove" or "complete" button here; completion can be handled from unit view or notes as per your flow --}}
+            </div>
           </div>
-        </div>
+        {{/each}}
       {{else}}
         <p class="tagged-no-units">You have no units assigned by your leader.</p>
-      {{/each}}
-    </div>
-  </div>
-
-  <!-- ✅ Completed Units Section -->
-  <div class="group-member-tagged-subsection">
-    <h3 class="group-member-tagged-subtitle">completed leader-assigned units</h3>
-    <div class="tagged-units-grid">
-      {{#each completedLeaderAssignedTags}}
-        <div class="tagged-unit-card">
-          <div class="tagged-unit-icon">
-            <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
-          </div>
-
-          <div class="tagged-unit-info">
-            <h3 class="tagged-unit-title">{{title}}</h3>
-            <p class="tagged-unit-topic">{{mainTopic}}</p>
-            <p class="tagged-unit-completed"><strong>Completed:</strong> {{formatDate completedAt}}</p>
-          </div>
-
-          <!-- Only "review unit" -->
-          <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
-            <a href="/unitviews/{{capitalize unitType}}s/view/{{_id}}" class="tagged-unit-link">review unit</a>
-          </div>
-        </div>
-      {{else}}
-        <p class="tagged-no-units">No completed units yet.</p>
-      {{/each}}
+      {{/if}}
     </div>
   </div>
 </section>
 
 <script>
-  function getCsrf() {
+  function getCsrfGM() {
     return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
   }
 
@@ -107,13 +95,11 @@
     try {
       const res = await fetch(`/tags/remove/${tagId}/${unitId}/${unitType}`, {
         method: 'DELETE',
-        headers: { 'X-CSRF-Token': getCsrf() }
+        headers: { 'X-CSRF-Token': getCsrfGM() }
       });
+      const data = await res.json().catch(() => ({}));
       if (res.ok) location.reload();
-      else {
-        const data = await res.json().catch(() => ({}));
-        alert(data.message || 'Failed to remove tag.');
-      }
+      else alert(data.message || 'Failed to remove tag.');
     } catch (e) {
       console.error('removeSelfTag error', e);
       alert('An error occurred while removing the tag.');
@@ -127,16 +113,15 @@
       await fetch('/dashboard/groupmember/mark-seen', {
         method: 'POST',
         headers: {
-          'Content-Type':'application/json',
-          'X-CSRF-Token': getCsrf()
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': getCsrfGM()
         },
         body: JSON.stringify({ tabKey: 'tagged', currentCount: count })
       });
-      // Optimistically clear the dot in the tab button
       const dot = document.querySelector('.dashboard-tab[data-tab="tagged"] .tab-dot');
       if (dot) dot.remove();
     } catch (e) {
-      // no-op; dot will clear next click
+      /* no-op */
     }
   })();
 </script>
