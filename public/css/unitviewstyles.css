@@ -2754,6 +2754,7 @@ label {
   gap: 0 1.5rem;
   margin: 2.5rem 0 200px 0;
   overflow: visible; /* ensure nothing gets clipped at card edges */
+  margin-bottom: 200px;
 }
 
 /* Card (outer) */
@@ -3078,6 +3079,11 @@ label {
   background-color: #dc176a;
   box-shadow: 0 0 0 2px #e5e7ff inset;
 }
+
+
+
+
+
 /* ----- Reusing the topics sidebar inside dashboards ----- */
 .dashboard-page .topic-sidebar {
   position: fixed;
@@ -3188,3 +3194,8 @@ label {
   }
 }
 
+
+.single_nugget-sideheader { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.single_nugget-icon-wrap { width: 32px; height: 32px; display: inline-flex; }
+.single_nugget-icon { width: 32px; height: 32px; object-fit: contain; }
+.single_nugget-side-title { font-size: 1rem; line-height: 1.2; margin: 0; }

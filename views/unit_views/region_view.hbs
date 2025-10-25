@@ -4,7 +4,9 @@
 <div class="mineclients-container bytopic-container">
   <!-- Hero -->
   <div class="mineclients-hero">
-    <h1 class="mineclients-title bytopic-title">{{#if pageTitle}}{{pageTitle}}{{else}}Nuggets by Region{{/if}}</h1>
+    <h1 class="mineclients-title bytopic-title">
+      {{#if pageTitle}}{{pageTitle}}{{else}}Nuggets by Region{{/if}}
+    </h1>
     <img src="/images/mapbluey.png" alt="Region Bluey" class="mineclients-region-img"/>
     {{#if pageIntro}}<p class="mineclients-intro bytopic-short-summary">{{pageIntro}}</p>{{/if}}
     {{#if shortSummary}}<p class="mineclients-short-summary bytopic-short-summary">{{shortSummary}}</p>{{/if}}
@@ -39,16 +41,28 @@
                       <img src="/images/nuggeticon.png" alt="Nugget icon" class="mineclients-nugget-icon bytopic-unit-type-icon">
                     </div>
 
-                    <!-- Title is the REGION -->
+                    <!-- Title line = REGION -->
                     <div class="mineclients-nugget-title-container bytopic-unit-title-container">
                       <h2 class="mineclients-nugget-title bytopic-unit-title">{{region}}</h2>
+                    </div>
+
+                    <!-- ✅ NEW: Always-visible nugget title (subtitle) -->
+                    <div class="mineregion-nugget-subtitle-container bytopic-unit-subtitle-container">
+                      <h3 class="mineregion-nugget-subtitle bytopic-unit-subtitle" title="{{title}}">
+                        {{title}}
+                      </h3>
                     </div>
                   </div>
 
                   {{#if (or discipline region)}}
                     <!-- Expand Toggle -->
-                    <button class="mineclients-expand-toggle bytopic-expand-toggle" type="button"
-                            onclick="toggleMineClientCard(this)" aria-expanded="false" aria-label="Toggle details">
+                    <button
+                      class="mineclients-expand-toggle bytopic-expand-toggle"
+                      type="button"
+                      onclick="toggleMineRegionCard(this)"
+                      aria-expanded="false"
+                      aria-label="Toggle details"
+                    >
                       <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99" aria-hidden="true" focusable="false">
                         <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
                         <polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/>
@@ -93,10 +107,11 @@
 </div>
 
 <script>
-function toggleMineClientCard(el) {
+function toggleMineRegionCard(el) {
   const card = el.closest('.mineclients-nugget-card');
   const isOpen = card.classList.contains('active');
   card.classList.toggle('active', !isOpen);
   el.setAttribute('aria-expanded', String(!isOpen));
 }
 </script>
+

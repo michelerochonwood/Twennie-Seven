@@ -143,18 +143,31 @@
   </div>
 
   <!-- Sidebar -->
-  <aside class="single_nugget-sidebar">
-    <div class="single_nugget-author">
-      <img src="{{creator.image}}" alt="Creator Image" class="single_nugget-author-image">
-      <p class="single_nugget-author-name">Created by: {{creator.name}}</p>
+<!-- Sidebar -->
+<aside class="single_nugget-sidebar">
+  <!-- ✅ Nugget icon + title -->
+  <div class="single_nugget-sideheader">
+    <div class="single_nugget-icon-wrap">
+      <img src="/images/nuggeticon.png" alt="" class="single_nugget-icon" aria-hidden="true">
     </div>
-    <div class="single_nugget-details-meta">
-      <p class="single_nugget-unit-type">Unit Type: Nugget</p>
-      {{#if isOwner}}
-        <a href="/unitform/edit_nugget/{{_id}}" class="single_nugget-edit-btn">edit this nugget</a>
-      {{/if}}
-    </div>
-  </aside>
+    <h2 class="single_nugget-side-title" title="{{title}}">{{title}}</h2>
+  </div>
+
+  <!-- Creator -->
+  <div class="single_nugget-author">
+    <img src="{{creator.image}}" alt="Creator Image" class="single_nugget-author-image">
+    <p class="single_nugget-author-name">Created by: {{creator.name}}</p>
+  </div>
+
+  <!-- Meta / actions -->
+  <div class="single_nugget-details-meta">
+    <p class="single_nugget-unit-type">Unit Type: Nugget</p>
+    {{#if isOwner}}
+      <a href="/unitform/edit_nugget/{{_id}}" class="single_nugget-edit-btn">edit this nugget</a>
+    {{/if}}
+  </div>
+</aside>
+
 </div>
 
 <script>
