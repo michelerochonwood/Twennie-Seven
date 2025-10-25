@@ -650,7 +650,8 @@ const [
   groupInterviews,
   groupExercises,
   groupTemplates,
-  groupUpcomings // 👈 NEW
+  groupUpcomings,  // uses createdBy
+  groupNuggets     // ✅ NEW
 ] = await Promise.all([
   Article.find({ 'author.id': { $in: leaderGroupMemberIds } }).lean(),
   Video.find({ 'author.id': { $in: leaderGroupMemberIds } }).lean(),
@@ -658,7 +659,8 @@ const [
   Interview.find({ 'author.id': { $in: leaderGroupMemberIds } }).lean(),
   Exercise.find({ 'author.id': { $in: leaderGroupMemberIds } }).lean(),
   Template.find({ 'author.id': { $in: leaderGroupMemberIds } }).lean(),
-  Upcoming.find({ createdBy: { $in: leaderGroupMemberIds } }).lean() // 👈 upcoming uses createdBy
+  Upcoming.find({ createdBy: { $in: leaderGroupMemberIds } }).lean(),
+  Nugget.find({ createdBy: { $in: leaderGroupMemberIds } }).lean()   // ✅ NEW
 ]);
             
 let groupMemberUnits = await Promise.all(
@@ -697,6 +699,24 @@ const gmUpcomingRows = await Promise.all(
     };
   })
 );
+
+const gmNuggetRows = await Promise.all(
+  (groupNuggets || []).map(async (n) => {
+    const author = await resolveAuthorById(n.createdBy);
+    return {
+      author: author?.name || 'Group Member',
+      unitType: 'nugget',
+      title: n.title,
+      status: '—', // nuggets have no status; you can change to 'active' if you prefer
+      mainTopic: n.discipline || n.client || n.region || 'No classification',
+      _id: n._id
+    };
+  })
+);
+
+// Keep existing upcoming append
+groupMemberUnits = [...groupMemberUnits, ...gmUpcomingRows, ...gmNuggetRows];
+
             
 groupMemberUnits = [...groupMemberUnits, ...gmUpcomingRows];
 
@@ -798,16 +818,26 @@ const allLeaderTaggedUnits = await fetchTaggedUnits(id);
 const leaderSelfTaggedUnits = allLeaderTaggedUnits.filter(u => u.assignedCount === 0);
 const leaderTaggedCountAll = allLeaderTaggedUnits.length;
 
-            const [leaderArticles, leaderVideos, leaderPromptSets, leaderInterviews, leaderExercises, leaderTemplates] = await Promise.all([
-                Article.find({ 'author.id': id }),
-                Video.find({ 'author.id': id }),
-                PromptSet.find({ 'author.id': id }),
-                Interview.find({ 'author.id': id }),
-                Exercise.find({ 'author.id': id }),
-                Template.find({ 'author.id': id }),
-            ]);
+const [
+  leaderArticles,
+  leaderVideos,
+  leaderPromptSets,
+  leaderInterviews,
+  leaderExercises,
+  leaderTemplates
+] = await Promise.all([
+  Article.find({ 'author.id': id }),
+  Video.find({ 'author.id': id }),
+  PromptSet.find({ 'author.id': id }),
+  Interview.find({ 'author.id': id }),
+  Exercise.find({ 'author.id': id }),
+  Template.find({ 'author.id': id })
+]);
 
-            const leaderUpcomings = await Upcoming.find({ createdBy: id }).lean();
+const [leaderUpcomings, leaderNuggets] = await Promise.all([
+  Upcoming.find({ createdBy: id }).lean(),
+  Nugget.find({ createdBy: id }).lean() // ✅ NEW
+]);
 
 const leaderUpcomingRows = (leaderUpcomings || []).map((u) => ({
   unitType: 'upcoming',
@@ -818,6 +848,17 @@ const leaderUpcomingRows = (leaderUpcomings || []).map((u) => ({
   _id: u._id,
   projectedRelease: u.projected_release_at
 }));
+
+const leaderNuggetRows = (leaderNuggets || []).map((n) => ({
+  unitType: 'nugget',
+  title: n.title,
+  status: '—', // no status on nuggets
+  mainTopic: n.discipline || n.client || n.region || 'No classification',
+  _id: n._id
+}));
+
+leaderUnits = [...leaderUnits, ...leaderNuggetRows, ...leaderUpcomingRows];
+
 
 let leaderUnits = await Promise.all(
   [...leaderArticles, ...leaderVideos, ...leaderPromptSets, ...leaderInterviews, ...leaderExercises, ...leaderTemplates].map(async (unit) => {
