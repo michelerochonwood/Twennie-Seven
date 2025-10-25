@@ -873,6 +873,24 @@ const formattedCompletedSets = completedRecords.map(record => ({
 const { leaderAssignedUnits, leaderAssignmentsOpen, leaderAssignmentsCompleted } = await buildLeaderAssignedUnits(id);
 // --- Membership tab: derive view flags & user fields for template ---
 
+// ✅ helper to flatten assignedTo for the template
+const mapAssigned = (u) => ({
+  ...u,
+  assignedToName: u.assignedTo?.name || '',
+  assignedToId: u.assignedTo?._id || '',
+  assignedInstructions: u.assignedTo?.instructions || '',
+  assignedCompletedAtFormatted: u.assignedTo?.completedAt ? fmtDate(u.assignedTo.completedAt) : ''
+});
+
+// ✅ Arrays for the safe partial (flattened; no template-side logic needed)
+const leaderAssignedNonNuggetUnits = leaderAssignedUnits
+  .filter(u => u.unitType !== 'nugget')
+  .map(mapAssigned);
+
+const leaderAssignedNuggets = leaderAssignedUnits
+  .filter(u => u.unitType === 'nugget')
+  .map(mapAssigned);
+
 // 1) Email preference flags (defaults to Level 1 if unset/invalid)
 // --- Membership tab: prepare leader account & email preference flags ---
 // NOTE: Make sure your earlier Leader.findById(id).select(...) includes
@@ -934,9 +952,7 @@ console.log('assignedPromptCards count:', assignedPromptCards.length);
 if (assignedPromptCards[0]) console.log('assignedPromptCards[0] sample:', assignedPromptCards[0]);
 
 
-// ✅ Arrays for the safe partial (no template-side filtering)
-const leaderAssignedNonNuggetUnits = leaderAssignedUnits.filter(u => u.unitType !== 'nugget');
-const leaderAssignedNuggets       = leaderAssignedUnits.filter(u => u.unitType === 'nugget');
+
 
 
 
