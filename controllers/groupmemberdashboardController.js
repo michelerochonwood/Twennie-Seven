@@ -376,6 +376,18 @@ const userData = await GroupMember.findById(id)
     populate: { path: 'members', model: 'GroupMember', select: 'name profileImage professionalTitle' }
   });
 
+  // ✅ Pull the group's image from GroupProfile and attach it to the populated groupId
+const groupProfileDoc = await GroupProfile
+  .findOne({ groupId: userData.groupId?._id })
+  .select('groupImage')
+  .lean();
+
+// We will build a plain object for groupMember to guarantee the extra field is present
+const groupMemberObj = userData.toObject();
+if (!groupMemberObj.groupId) groupMemberObj.groupId = {};
+groupMemberObj.groupId.groupImage = groupProfileDoc?.groupImage || groupMemberObj.groupId.groupImage || '/images/defaultgroupavatar.jpg';
+
+
   const mfa = userData?.mfa || {};
 const mfaStatus = {
   enabled: !!mfa.enabled,
@@ -387,17 +399,6 @@ const mfaStatus = {
       })
     : null
 };
-
-const groupProfileDoc = await GroupProfile
-  .findOne({ groupId: userData.groupId?._id })
-  .select('groupImage')
-  .lean();
-
-if (groupProfileDoc?.groupImage) {
-  // mutate the populated groupId object so the HBS can read groupMember.groupId.groupImage
-  if (!userData.groupId) userData.groupId = {};
-  userData.groupId.groupImage = groupProfileDoc.groupImage;
-}
 
         
 console.log("🔍 Fetched user data:", JSON.stringify(userData, null, 2));
@@ -452,18 +453,18 @@ console.log(
 );
 
 // ✅ Resolve each member's avatar from GroupMemberProfile
+// ✅ Resolve avatars from GroupMemberProfile to ensure pictures show up
 let groupMembers = [];
 if (Array.isArray(userData.groupId?.members) && userData.groupId.members.length > 0) {
   groupMembers = await Promise.all(
     userData.groupId.members.map(async (m) => {
-      // m is a GroupMember doc (from populate)
       const prof = await GroupMemberProfile
         .findOne({ groupMemberId: m._id })
         .select('profileImage')
         .lean();
 
       return {
-        _id: m._id, // keep id for profile links
+        _id: m._id,
         name: m.name,
         professionalTitle: m.professionalTitle || '',
         profileImage: prof?.profileImage || '/images/default-avatar.png'
@@ -471,6 +472,7 @@ if (Array.isArray(userData.groupId?.members) && userData.groupId.members.length 
     })
   );
 }
+
 
 
 /* ---------- PROMPTSET REGISTRATIONS / ASSIGNMENTS ---------- */
@@ -865,12 +867,12 @@ return res.render('groupmember_dashboard', {
 
   mfaStatus,
 
-  groupMember: {
-    ...userData.toObject(),
-    profileImage: groupMemberProfile?.profileImage || '/images/default-avatar.png'
-  },
-  groupMembers,
-  maxGroupSize: userData.groupId.groupSize,
+groupMember: {
+  ...groupMemberObj, // ✅ use the object we augmented with groupId.groupImage
+  profileImage: groupMemberProfile?.profileImage || '/images/default-avatar.png'
+},
+groupMembers,
+maxGroupSize: userData.groupId.groupSize,
   groupMemberUnits,
   registeredPromptSets: groupmemberPrompts,
   promptSchedules,

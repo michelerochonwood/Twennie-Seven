@@ -540,6 +540,7 @@ const userData = await Leader.findById(id)
   })
   .lean();
   
+  
 const mfa = userData?.mfa || {};
 const mfaStatus = {
   enabled: !!mfa.enabled,
