@@ -81,6 +81,37 @@ async function resolveAuthorById(authorId) {
   };
 }
 
+// Unified leader assign context for ALL unit views
+async function getLeaderAssignContext(req) {
+  const currentUserId = (req.user?._id || req.user?.id)?.toString();
+  const isLeader = req.user?.membershipType === 'leader';
+  let groupMembers = [];
+  let leaderId = null;
+  let leaderName = null;
+
+  if (isLeader && currentUserId) {
+    const leaderDoc = await Leader.findById(currentUserId).select('_id groupLeaderName username').lean();
+    if (leaderDoc) {
+      leaderId = leaderDoc._id.toString();
+      leaderName = leaderDoc.groupLeaderName || leaderDoc.username || 'You';
+      groupMembers = await GroupMember.find({ groupId: leaderDoc._id })
+        .select('_id name')
+        .lean();
+    }
+  }
+
+  return { isLeader, groupMembers, leaderId, leaderName };
+}
+
+// Build the tiny assign payload expected by the tag form
+function makeAssignProps(itemId, itemType) {
+  return {
+    assign: {
+      itemId: itemId?.toString(),
+      itemType // e.g., 'article','video','interview','exercise','template','promptset','upcoming','nugget'
+    }
+  };
+}
 
 
 

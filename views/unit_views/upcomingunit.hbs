@@ -265,8 +265,7 @@
     try {
       const res = await fetch(`/tags/remove/${tagId}/${itemId}/${itemType}`, {
         method: 'DELETE',
-        headers: { 'X-CSRF-Token': '{{csrfToken}}' },
-        body: JSON.stringify({ _csrf: '{{csrfToken}}' })
+        headers: { 'X-CSRF-Token': '{{csrfToken}}' }
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok) {

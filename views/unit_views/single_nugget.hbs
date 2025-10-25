@@ -8,7 +8,7 @@
     <!-- Summary -->
     <div class="single_nugget-summary white-container">
       <p><strong>Client:</strong> {{client}}</p>
-      <p><strong>Horizon:</strong> 
+      <p><strong>Horizon:</strong>
         {{#ifEquals horizon "1y"}}1 Year{{/ifEquals}}
         {{#ifEquals horizon "3y"}}3 Years{{/ifEquals}}
         {{#ifEquals horizon "5y"}}5 Years{{/ifEquals}}
@@ -20,15 +20,17 @@
     <!-- Core Details -->
     <div class="single_nugget-details white-container">
       <h3>Project Details</h3>
-      <p><strong>Estimated Value:</strong> 
+      <p><strong>Estimated Value:</strong>
         {{#if estimatedValue.amount}}
           ${{estimatedValue.amount}} {{estimatedValue.currency}}
         {{else}}Not available{{/if}}
       </p>
       <p><strong>Project Delivery Type:</strong> {{projectDeliveryType}}</p>
       <p><strong>Likelihood:</strong> {{likelihood}}%</p>
-      <p><strong>Original Source:</strong> 
-        <a href="{{originalSource.url}}" target="_blank">{{originalSource.label}}</a>
+      <p><strong>Original Source:</strong>
+        <a href="{{originalSource.url}}" target="_blank" rel="noopener">
+          {{#if originalSource.label}}{{originalSource.label}}{{else}}{{originalSource.url}}{{/if}}
+        </a>
       </p>
       {{#if notes}}
         <div class="single_nugget-notes">
@@ -45,7 +47,11 @@
         <ul class="connected-unit-list">
           {{#each connectedTwennieUnits}}
             <li>
-              <a href="/units/{{this.kind}}/{{this.unitId}}" class="connected-unit-link">
+              <a
+                href="/unitviews/{{this.kind}}s/view/{{this.unitId}}"
+                class="connected-unit-link"
+                rel="noopener"
+              >
                 {{capitalize this.kind}}: {{this.unitId}}
               </a>
               {{#if this.note}}<p class="connected-unit-note">{{this.note}}</p>{{/if}}
@@ -57,7 +63,7 @@
       {{/if}}
     </div>
 
-    <!-- Tagging / Assignments -->
+    <!-- Tagging / Assignments (Leader) -->
     {{#if isLeader}}
       <div class="assign-tag-form white-container">
         <h4>Assign this nugget</h4>
@@ -73,15 +79,44 @@
 
           <fieldset class="assign-tag-members">
             <legend>Select recipients and enter instructions:</legend>
+
             <div class="assign-tag-member-block">
-              <label><input type="checkbox" name="assignedTo[{{leaderId}}][member]" value="{{leaderId}}" onchange="toggleInstructionField(this)"> {{leaderName}} (you)</label>
-              <textarea class="assign-tag-instructions" name="assignedTo[{{leaderId}}][instructions]}" placeholder="Instructions for yourself" style="display:none;"></textarea>
+              <label>
+                <input
+                  type="checkbox"
+                  name="assignedTo[{{leaderId}}][member]"
+                  value="{{leaderId}}"
+                  onchange="toggleInstructionField(this)"
+                >
+                {{leaderName}} (you)
+              </label>
+              <textarea
+                class="assign-tag-instructions"
+                name="assignedTo[{{leaderId}}][instructions]"
+                placeholder="Instructions for yourself"
+                style="display:none;"
+              ></textarea>
             </div>
+
             <hr>
+
             {{#each groupMembers}}
               <div class="assign-tag-member-block">
-                <label><input type="checkbox" name="assignedTo[{{_id}}][member]" value="{{_id}}" onchange="toggleInstructionField(this)"> {{name}}</label>
-                <textarea class="assign-tag-instructions" name="assignedTo[{{_id}}][instructions]}" placeholder="Instructions for {{name}}" style="display:none;"></textarea>
+                <label>
+                  <input
+                    type="checkbox"
+                    name="assignedTo[{{_id}}][member]"
+                    value="{{_id}}"
+                    onchange="toggleInstructionField(this)"
+                  >
+                  {{name}}
+                </label>
+                <textarea
+                  class="assign-tag-instructions"
+                  name="assignedTo[{{_id}}][instructions]"
+                  placeholder="Instructions for {{name}}"
+                  style="display:none;"
+                ></textarea>
               </div>
             {{/each}}
           </fieldset>
@@ -99,7 +134,9 @@
           <input type="hidden" name="itemId" value="{{_id}}">
           <input type="hidden" name="itemType" value="nugget">
           <input type="hidden" name="tagName" value="Watch Later">
-          <button type="button" class="tag-this-unit-link" onclick="promptAndSubmitTag('nuggetTagForm')">tag this nugget</button>
+          <button type="button" class="tag-this-unit-link" onclick="promptAndSubmitTag('nuggetTagForm')">
+            tag this nugget
+          </button>
         </form>
       </div>
     {{/if}}
@@ -112,12 +149,28 @@
           {{#each tagsForUnit}}
             <li class="tag-pill">
               <span class="tag-name">{{name}}</span>
+
               {{#if assignedToMe}}
-                {{#if completedAt}}<span class="tag-status">completed</span>
-                {{else}}<button type="button" class="tag-action" data-action="complete" data-tag="{{_id}}">mark complete</button>{{/if}}
+                {{#if completedAt}}
+                  <span class="tag-status">completed</span>
+                {{else}}
+                  <button type="button" class="tag-action" data-action="complete" data-tag="{{_id}}">
+                    mark complete
+                  </button>
+                {{/if}}
               {{/if}}
+
               {{#if createdByMe}}
-                <button type="button" class="tag-action" data-action="remove" data-tag="{{_id}}" data-item="{{@root._id}}" data-type="nugget">remove</button>
+                <button
+                  type="button"
+                  class="tag-action"
+                  data-action="remove"
+                  data-tag="{{_id}}"
+                  data-item="{{@root._id}}"
+                  data-type="nugget"
+                >
+                  remove
+                </button>
               {{/if}}
             </li>
           {{/each}}
@@ -143,32 +196,28 @@
   </div>
 
   <!-- Sidebar -->
-<!-- Sidebar -->
-<!-- Sidebar -->
-<aside class="single_nugget-sidebar">
-  <!-- Top: centered nugget icon + title -->
-  <div class="single_nugget-sideheader">
-    <div class="single_nugget-icon-wrap" aria-hidden="true">
-      <img src="/images/nuggeticon.png" alt="" class="single_nugget-icon">
+  <aside class="single_nugget-sidebar">
+    <!-- Top: centered nugget icon + title -->
+    <div class="single_nugget-sideheader">
+      <div class="single_nugget-icon-wrap" aria-hidden="true">
+        <img src="/images/nuggeticon.png" alt="" class="single_nugget-icon">
+      </div>
+      <h2 class="single_nugget-side-title" title="{{title}}">{{title}}</h2>
     </div>
-    <h2 class="single_nugget-side-title" title="{{title}}">{{title}}</h2>
-  </div>
 
-  <!-- Creator -->
-  <div class="single_nugget-author">
-    <img src="{{creator.image}}" alt="Creator Image" class="single_nugget-author-image">
-    <p class="single_nugget-author-name">Created by: {{creator.name}}</p>
-  </div>
+    <!-- Creator -->
+    <div class="single_nugget-author">
+      <img src="{{creator.image}}" alt="Creator Image" class="single_nugget-author-image">
+      <p class="single_nugget-author-name">Created by: {{creator.name}}</p>
+    </div>
 
-  <!-- Meta / actions -->
-  <div class="single_nugget-details-meta">
-    {{#if isOwner}}
-      <a href="/unitform/edit_nugget/{{_id}}" class="single_nugget-edit-btn">edit this nugget</a>
-    {{/if}}
-  </div>
-</aside>
-
-
+    <!-- Meta / actions -->
+    <div class="single_nugget-details-meta">
+      {{#if isOwner}}
+        <a href="/unitform/edit_nugget/{{_id}}" class="single_nugget-edit-btn">edit this nugget</a>
+      {{/if}}
+    </div>
+  </aside>
 </div>
 
 <script>
@@ -192,3 +241,4 @@
     form.submit();
   }
 </script>
+
