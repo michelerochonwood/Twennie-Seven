@@ -717,9 +717,6 @@ const gmNuggetRows = await Promise.all(
 // Keep existing upcoming append
 groupMemberUnits = [...groupMemberUnits, ...gmUpcomingRows, ...gmNuggetRows];
 
-            
-groupMemberUnits = [...groupMemberUnits, ...gmUpcomingRows];
-
             if (!userData) {
                 throw new Error(`Leader with ID ${id} not found.`);
             }
@@ -836,29 +833,8 @@ const [
 
 const [leaderUpcomings, leaderNuggets] = await Promise.all([
   Upcoming.find({ createdBy: id }).lean(),
-  Nugget.find({ createdBy: id }).lean() // ✅ NEW
+  Nugget.find({ createdBy: id }).lean()
 ]);
-
-const leaderUpcomingRows = (leaderUpcomings || []).map((u) => ({
-  unitType: 'upcoming',
-  plannedType: u.unit_type,                 // e.g., 'video'
-  title: u.title,
-  status: u.status || 'in production',
-  mainTopic: u.main_topic || 'No topic',
-  _id: u._id,
-  projectedRelease: u.projected_release_at
-}));
-
-const leaderNuggetRows = (leaderNuggets || []).map((n) => ({
-  unitType: 'nugget',
-  title: n.title,
-  status: '—', // no status on nuggets
-  mainTopic: n.discipline || n.client || n.region || 'No classification',
-  _id: n._id
-}));
-
-leaderUnits = [...leaderUnits, ...leaderNuggetRows, ...leaderUpcomingRows];
-
 
 let leaderUnits = await Promise.all(
   [...leaderArticles, ...leaderVideos, ...leaderPromptSets, ...leaderInterviews, ...leaderExercises, ...leaderTemplates].map(async (unit) => {
@@ -879,6 +855,29 @@ let leaderUnits = await Promise.all(
     };
   })
 );
+
+// Now build rows to append
+const leaderUpcomingRows = (leaderUpcomings || []).map((u) => ({
+  unitType: 'upcoming',
+  plannedType: u.unit_type, // e.g., 'video'
+  title: u.title,
+  status: u.status || 'in production',
+  mainTopic: u.main_topic || 'No topic',
+  _id: u._id,
+  projectedRelease: u.projected_release_at
+}));
+
+const leaderNuggetRows = (leaderNuggets || []).map((n) => ({
+  unitType: 'nugget',
+  title: n.title,
+  status: '—', // nuggets have no status
+  mainTopic: n.discipline || n.client || n.region || 'No classification',
+  _id: n._id
+}));
+
+// Append once
+leaderUnits = [...leaderUnits, ...leaderNuggetRows, ...leaderUpcomingRows];
+
 
 
       leaderUnits = [...leaderUnits, ...leaderUpcomingRows];      
@@ -1030,7 +1029,6 @@ leader: {
   topicSuggestions,
   leaderAccount,
   emailPreferenceLevel,
-  leaderSelfTaggedUnits,
   leaderSelfTaggedUnits,          // blended, with viewPath (includes nuggets)
   leaderAssignedNonNuggetUnits,   // assigned, non-nuggets only
   leaderAssignedNuggets,          // assigned nuggets only
