@@ -20,6 +20,7 @@ const TopicSuggestion = require('../models/topic/topic_suggestion');
 const Upcoming = require('../models/unit_models/upcoming');
 const DashboardSeen = require('../models/dashboard_seen');
 const GroupProfile = require('../models/profile_models/group_profile');
+const Nugget = require('../models/unit_models/nugget'); // ✅ NEW
 
 
 function getModelByUnitType(type) {
@@ -30,6 +31,7 @@ function getModelByUnitType(type) {
     case 'exercise':  return Exercise;
     case 'template':  return Template;
     case 'upcoming':  return Upcoming;
+    case 'nugget':    return Nugget;  // ✅ NEW
     default:          return null;
   }
 }
@@ -61,11 +63,10 @@ function pickAuthorId(u) {
 
 async function fetchTaggedUnits(userId) {
   try {
-    // Only tags CREATED by this leader
     const tags = await Tag.find({ createdBy: userId }).lean();
     if (!tags.length) return [];
 
-    // Build a fetch list by unit type
+    // include nugget
     const unitMap = {
       article:   [],
       video:     [],
@@ -73,10 +74,10 @@ async function fetchTaggedUnits(userId) {
       interview: [],
       exercise:  [],
       template:  [],
-      upcoming: []
+      upcoming:  [],
+      nugget:    []   // ✅ NEW
     };
 
-    // Map key → tag (so we can read assignedTo length per unit)
     const tagByKey = new Map(); // `${itemId}-${unitType}` → tag doc
 
     for (const tag of tags) {
@@ -89,17 +90,24 @@ async function fetchTaggedUnits(userId) {
       }
     }
 
-    // Fetch units
-    const [articles, videos, promptSets, interviews, exercises, templates] = await Promise.all([
+    const [
+      articles, videos, promptSets, interviews, exercises, templates, nuggets
+    ] = await Promise.all([
       Article.find({ _id: { $in: unitMap.article } }).lean(),
       Video.find({ _id: { $in: unitMap.video } }).lean(),
       PromptSet.find({ _id: { $in: unitMap.promptset } }).lean(),
       Interview.find({ _id: { $in: unitMap.interview } }).lean(),
       Exercise.find({ _id: { $in: unitMap.exercise } }).lean(),
-      Template.find({ _id: { $in: unitMap.template } }).lean()
+      Template.find({ _id: { $in: unitMap.template } }).lean(),
+      Nugget.find({ _id: { $in: unitMap.nugget } }).lean() // ✅ NEW
     ]);
 
-    const tagResult = (units, type, titleField) =>
+    const viewPathFor = (type, id) =>
+      type === 'nugget'
+        ? `/unitviews/nuggets/view/${id}`
+        : `/unitviews/${type}s/view/${id}`;
+
+    const tagResult = (units, type, titleField, topicField = 'main_topic') =>
       units.map(unit => {
         const key = `${unit._id.toString()}-${type}`;
         const tag = tagByKey.get(key);
@@ -107,26 +115,40 @@ async function fetchTaggedUnits(userId) {
         return {
           unitType: type,
           title: unit[titleField] || `Untitled ${type}`,
-          mainTopic: unit.main_topic || "No topic",
+          mainTopic: unit[topicField] || "No topic",
           _id: unit._id,
           tagId: tag?._id?.toString() || null,
-          assignedCount // 👈 0 = self-tag, >0 = assignment tag
+          assignedCount,
+          viewPath: viewPathFor(type, unit._id) // ✅ NEW
         };
       });
 
     return [
-      ...tagResult(articles, 'article',   'article_title'),
-      ...tagResult(videos,   'video',     'video_title'),
-      ...tagResult(promptSets,'promptset','promptset_title'),
-      ...tagResult(interviews,'interview','interview_title'),
-      ...tagResult(exercises,'exercise',  'exercise_title'),
-      ...tagResult(templates,'template',  'template_title')
+      ...tagResult(articles,   'article',   'article_title'),
+      ...tagResult(videos,     'video',     'video_title'),
+      ...tagResult(promptSets, 'promptset', 'promptset_title'),
+      ...tagResult(interviews, 'interview', 'interview_title'),
+      ...tagResult(exercises,  'exercise',  'exercise_title'),
+      ...tagResult(templates,  'template',  'template_title'),
+      // Nuggets: title is `title`, and show something useful in “topic”
+      ...nuggets.map(n => ({
+        unitType: 'nugget',
+        title: n.title || 'Untitled nugget',
+        mainTopic: n.discipline || n.client || n.region || 'No classification',
+        _id: n._id,
+        tagId: (tagByKey.get(`${n._id.toString()}-nugget`) || {})._id?.toString() || null,
+        assignedCount: Array.isArray((tagByKey.get(`${n._id.toString()}-nugget`) || {}).assignedTo)
+          ? (tagByKey.get(`${n._id.toString()}-nugget`).assignedTo.length)
+          : 0,
+        viewPath: `/unitviews/nuggets/view/${n._id}` // ✅ NEW
+      }))
     ];
   } catch (error) {
     console.error("❌ Error fetching tagged units for leader:", error);
     return [];
   }
 }
+
 
 
 
@@ -141,7 +163,6 @@ async function buildLeaderAssignedUnits(leaderId) {
   const leaderAssignmentsCompleted = [];
 
   for (const tag of assignedTags) {
-    // Flat open/completed rows (optional, handy for counts/mini tables)
     for (const a of (tag.assignedTo || [])) {
       const row = {
         tagId: tag._id.toString(),
@@ -154,7 +175,6 @@ async function buildLeaderAssignedUnits(leaderId) {
       else leaderAssignmentsOpen.push(row);
     }
 
-    // Per-unit cards for the partial
     for (const { item, unitType } of tag.associatedUnits || []) {
       if (unitType === 'promptset' || unitType === 'prompt') continue;
 
@@ -168,34 +188,43 @@ async function buildLeaderAssignedUnits(leaderId) {
         const member = await GroupMember.findById(assignee.member).select('name').lean();
         if (!member) continue;
 
-leaderAssignedUnits.push({
-  _id: item,
-  unitType,
-  title:
-    unit.article_title ||
-    unit.video_title ||
-    unit.interview_title ||
-    unit.exercise_title ||
-    unit.template_title ||
-    "Untitled",
-  mainTopic: unit.main_topic || "No topic",
+        const title =
+          (unit.article_title ||
+           unit.video_title ||
+           unit.interview_title ||
+           unit.exercise_title ||
+           unit.template_title ||
+           unit.title /* nugget */ ||
+           "Untitled");
 
-  // ✅ add this line so the partial can delete the tag:
-  tagId: tag._id.toString(),
+        const mainTopic = unit.main_topic || unit.discipline || unit.client || unit.region || "No topic";
 
-  assignedTo: {
-    _id: assignee.member?.toString(),
-    name: member.name,
-    instructions: assignee.instructions || '',
-    completedAt: assignee.completedAt || null,
-  }
-});
+        const viewPath =
+          unitType === 'nugget'
+            ? `/unitviews/nuggets/view/${item}`
+            : `/unitviews/${unitType}s/view/${item}`;
+
+        leaderAssignedUnits.push({
+          _id: item,
+          unitType,
+          title,
+          mainTopic,
+          tagId: tag._id.toString(),
+          viewPath, // ✅ NEW
+          assignedTo: {
+            _id: assignee.member?.toString(),
+            name: member.name,
+            instructions: assignee.instructions || '',
+            completedAt: assignee.completedAt || null,
+          }
+        });
       }
     }
   }
 
   return { leaderAssignedUnits, leaderAssignmentsOpen, leaderAssignmentsCompleted };
 }
+
 
 
 const { Types } = require('mongoose');
@@ -904,6 +933,14 @@ const assignedPromptCards = await buildAssignedPromptCards(id);
 console.log('assignedPromptCards count:', assignedPromptCards.length);
 if (assignedPromptCards[0]) console.log('assignedPromptCards[0] sample:', assignedPromptCards[0]);
 
+
+// ✅ Arrays for the safe partial (no template-side filtering)
+const leaderAssignedNonNuggetUnits = leaderAssignedUnits.filter(u => u.unitType !== 'nugget');
+const leaderAssignedNuggets       = leaderAssignedUnits.filter(u => u.unitType === 'nugget');
+
+
+
+
 return res.render('leader_dashboard', {
   layout: 'dashboardlayout',
   title: 'Leader Dashboard',
@@ -936,7 +973,9 @@ leader: {
   leaderAccount,
   emailPreferenceLevel,
   leaderSelfTaggedUnits,
-
+  leaderSelfTaggedUnits,          // blended, with viewPath (includes nuggets)
+  leaderAssignedNonNuggetUnits,   // assigned, non-nuggets only
+  leaderAssignedNuggets,          // assigned nuggets only
   mfaStatus,
   leaderCounts,
   leaderBadges,
