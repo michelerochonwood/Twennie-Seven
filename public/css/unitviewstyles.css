@@ -3195,7 +3195,36 @@ label {
 }
 
 
-.single_nugget-sideheader { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-.single_nugget-icon-wrap { width: 32px; height: 32px; display: inline-flex; }
-.single_nugget-icon { width: 32px; height: 32px; object-fit: contain; }
-.single_nugget-side-title { font-size: 1rem; line-height: 1.2; margin: 0; }
+/* Stack and center header contents */
+.single_nugget-sideheader {
+  display: flex;
+  flex-direction: column;      /* icon above title */
+  align-items: center;         /* center horizontally */
+  text-align: center;          /* center long titles across lines */
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+/* Keep your 100x100, ensure it’s centered */
+.single_nugget-icon-wrap {
+  width: 100px;
+  height: 100px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;              /* center the wrapper in sidebar */
+}
+
+.single_nugget-icon {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+
+/* Your requested color */
+.single_nugget-side-title {
+  font-size: 1.2rem;
+  line-height: 1.2;
+  margin: 0;
+  color: #4a4ab2;
+}
