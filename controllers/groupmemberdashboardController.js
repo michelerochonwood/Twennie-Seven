@@ -20,6 +20,7 @@ const TopicSuggestion = require('../models/topic/topic_suggestion');
 const Upcoming = require('../models/unit_models/upcoming');
 const DashboardSeen = require('../models/dashboard_seen');
 const Nugget = require('../models/unit_models/nugget'); // ✅ NEW
+const GroupProfile = require('../models/profile_models/group_profile'); // ✅ NEW
 
 
 
@@ -387,6 +388,17 @@ const mfaStatus = {
     : null
 };
 
+const groupProfileDoc = await GroupProfile
+  .findOne({ groupId: userData.groupId?._id })
+  .select('groupImage')
+  .lean();
+
+if (groupProfileDoc?.groupImage) {
+  // mutate the populated groupId object so the HBS can read groupMember.groupId.groupImage
+  if (!userData.groupId) userData.groupId = {};
+  userData.groupId.groupImage = groupProfileDoc.groupImage;
+}
+
         
 console.log("🔍 Fetched user data:", JSON.stringify(userData, null, 2));
 if (!userData) {
@@ -439,13 +451,27 @@ console.log(
   JSON.stringify(userData.groupId?.members || [], null, 2)
 );
 
-const groupMembers = Array.isArray(userData.groupId?.members) && userData.groupId.members.length > 0
-  ? userData.groupId.members.map(member => ({
-      name: member.name,
-      profileImage: member.profileImage || '/images/default-avatar.png',
-      professionalTitle: member.professionalTitle || ''
-    }))
-  : [];
+// ✅ Resolve each member's avatar from GroupMemberProfile
+let groupMembers = [];
+if (Array.isArray(userData.groupId?.members) && userData.groupId.members.length > 0) {
+  groupMembers = await Promise.all(
+    userData.groupId.members.map(async (m) => {
+      // m is a GroupMember doc (from populate)
+      const prof = await GroupMemberProfile
+        .findOne({ groupMemberId: m._id })
+        .select('profileImage')
+        .lean();
+
+      return {
+        _id: m._id, // keep id for profile links
+        name: m.name,
+        professionalTitle: m.professionalTitle || '',
+        profileImage: prof?.profileImage || '/images/default-avatar.png'
+      };
+    })
+  );
+}
+
 
 /* ---------- PROMPTSET REGISTRATIONS / ASSIGNMENTS ---------- */
 const memberRegistrations = await PromptSetRegistration
