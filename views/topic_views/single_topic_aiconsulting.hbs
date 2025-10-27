@@ -17,33 +17,14 @@
     {{> topicpartials/aiconsulting_topic }}
 
     <!-- Bluey + CTA -->
-<!-- Bluey + CTA -->
-<!-- Bluey + CTA -->
-<div class="topic-resource-cta-wrapper">
-  <video
-    id="bluey-cta-video"
-    class="bluey-cta-img"
-    style="margin-bottom: 5px; max-width: 180px; width: 100%; height: auto; border-radius: 12px;"
-    poster="/images/blueydown.png"
-    muted
-    playsinline
-    webkit-playsinline
-    preload="auto"
-    autoplay
-  >
-    <source src="/videos/blueydown.mp4" type="video/mp4">
-    <!-- Optional fallback formats if you have them:
-    <source src="/videos/blueydown.webm" type="video/webm"> -->
-    Your browser does not support the video tag.
-  </video>
-</div>
-
-  <a href="/bytopic/AI in Consulting" class="single-topic-resource-btn">
-    <button class="topic-resource-btn" style="margin-bottom: 200px">
-      let me show you Twennie's units on this topic
-    </button>
-  </a>
-
+    <div class="topic-resource-cta-wrapper">
+      <img src="/images/blueydown.png" alt="Bluey pointing down" class="bluey-cta-img" style="margin-bottom: 5px;">
+      <a href="/bytopic/AI in Consulting" class="single-topic-resource-btn">
+        <button class="topic-resource-btn" style="margin-bottom: 200px">
+          let me show you Twennie's units on this topic
+        </button>
+      </a>
+    </div>
 
   </div>
 
@@ -57,34 +38,4 @@
     let arrow = element.querySelector('.bytopic-arrow-icon');
     arrow.classList.toggle('open');
   }
-
-(function() {
-  const v = document.getElementById('bluey-cta-video');
-  if (!v) return;
-
-  // Ensure muted for autoplay policies
-  v.muted = true;
-
-  // Try to play once we can
-  function tryPlay() { v.play().catch(()=>{}); }
-  v.addEventListener('canplay', tryPlay, { once: true });
-
-  // Stop after one loop
-  v.addEventListener('ended', () => v.pause(), { once: true });
-
-  // Visibility nudge for mobile
-  if ('IntersectionObserver' in window) {
-    const io = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) { tryPlay(); io.disconnect(); }
-    }, { threshold: 0.2 });
-    io.observe(v);
-  }
-
-  // User gesture fallback if autoplay is blocked
-  const kick = () => { tryPlay(); window.removeEventListener('pointerdown', kick); };
-  window.addEventListener('pointerdown', kick, { once: true });
-})();
-
-
-
 </script>
