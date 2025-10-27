@@ -385,6 +385,15 @@ app.use(async (req, res, next) => {
 
 
 
+// ✅ Ensure /public/videos exists and MP4s get correct headers
+app.use('/videos', express.static('public/videos', {
+  setHeaders(res, filePath) {
+    if (filePath.endsWith('.mp4')) {
+      res.setHeader('Content-Type', 'video/mp4');
+      // Byte-range support usually enabled by default; if behind a proxy/CDN make sure it's not stripped
+    }
+  }
+}));
 
 /* ------------------------------------------------------------------
    8) INACTIVE / CANCELED GUARD

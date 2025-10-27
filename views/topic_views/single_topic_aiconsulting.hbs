@@ -20,20 +20,18 @@
 <!-- Bluey + CTA -->
 <!-- Bluey + CTA -->
 <div class="topic-resource-cta-wrapper">
-  <video
-    id="bluey-cta-video"
-    class="bluey-cta-img"
-    style="margin-bottom: 5px; max-width: 180px; width: 100%; height: auto; border-radius: 12px;"
-    poster="/images/blueydown.png"
-    muted
-    playsinline
-    webkit-playsinline
-    preload="auto"
-    autoplay
-  >
-    <source src="/videos/blueydown.mp4" type="video/mp4"/>
-    Your browser does not support the video tag.
-  </video>
+<video
+  id="bluey-cta-video"
+  class="bluey-cta-img"
+  style="margin-bottom: 5px; max-width: 180px; width: 100%; height: auto; border-radius: 12px;"
+  src="/videos/blueydown.mp4"
+  poster="/images/blueydown.png"
+  controls
+  playsinline
+  webkit-playsinline
+  muted
+  preload="metadata"
+></video>
 
   <a href="/bytopic/AI in Consulting" class="single-topic-resource-btn">
     <button class="topic-resource-btn" style="margin-bottom: 200px">
@@ -87,6 +85,22 @@
 
   // Safety net: attempt again shortly after load
   setTimeout(tryPlay, 400);
+})();
+
+(() => {
+  const v = document.getElementById('bluey-cta-video');
+  if (!v) return;
+
+  const log = (...a) => console.log('[bluey video]', ...a);
+
+  ['loadedmetadata','canplay','playing','pause','ended','error','stalled','suspend'].forEach(ev =>
+    v.addEventListener(ev, () => log(ev, { readyState: v.readyState, networkState: v.networkState }))
+  );
+
+  v.addEventListener('error', () => {
+    const e = v.error;
+    log('error detail', e && { code: e.code, message: e.message });
+  });
 })();
 
 </script>
