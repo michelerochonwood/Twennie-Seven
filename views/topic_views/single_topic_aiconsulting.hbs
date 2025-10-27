@@ -51,4 +51,24 @@
     let arrow = element.querySelector('.bytopic-arrow-icon');
     arrow.classList.toggle('open');
   }
+
+  (function () {
+    const v = document.getElementById('bluey-cta-video');
+    if (!v) return;
+
+    // Play once only
+    v.addEventListener('ended', () => v.pause());
+
+    // If autoplay is blocked, try on first user interaction and when visible
+    const tryPlay = () => v.play().catch(() => {});
+    document.addEventListener('click', tryPlay, { once: true });
+
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(([e]) => {
+        if (e.isIntersecting) tryPlay();
+      }, { threshold: 0.4 });
+      io.observe(v);
+    }
+  })();
+
 </script>
