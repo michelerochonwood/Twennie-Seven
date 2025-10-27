@@ -386,11 +386,11 @@ app.use(async (req, res, next) => {
 
 
 // ✅ Ensure /public/videos exists and MP4s get correct headers
-app.use('/videos', express.static('public/videos', {
+app.use('/videos', express.static(path.join(__dirname, 'public', 'videos'), {
   setHeaders(res, filePath) {
     if (filePath.endsWith('.mp4')) {
-      res.setHeader('Content-Type', 'video/mp4');
-      // Byte-range support usually enabled by default; if behind a proxy/CDN make sure it's not stripped
+      res.type('video/mp4');            // sends Content-Type: video/mp4
+      res.setHeader('Accept-Ranges','bytes'); // enable seeking, not strictly required but nice
     }
   }
 }));

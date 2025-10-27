@@ -20,18 +20,23 @@
 <!-- Bluey + CTA -->
 <!-- Bluey + CTA -->
 <div class="topic-resource-cta-wrapper">
-<video
-  id="bluey-cta-video"
-  class="bluey-cta-img"
-  style="margin-bottom: 5px; max-width: 180px; width: 100%; height: auto; border-radius: 12px;"
-  src="/videos/blueydown.mp4"
-  poster="/images/blueydown.png"
-  controls
-  playsinline
-  webkit-playsinline
-  muted
-  preload="metadata"
-></video>
+  <video
+    id="bluey-cta-video"
+    class="bluey-cta-img"
+    style="margin-bottom: 5px; max-width: 180px; width: 100%; height: auto; border-radius: 12px;"
+    poster="/images/blueydown.png"
+    muted
+    playsinline
+    webkit-playsinline
+    preload="auto"
+    autoplay
+  >
+    <source src="/videos/blueydown.mp4" type="video/mp4">
+    <!-- Optional fallback formats if you have them:
+    <source src="/videos/blueydown.webm" type="video/webm"> -->
+    Your browser does not support the video tag.
+  </video>
+</div>
 
   <a href="/bytopic/AI in Consulting" class="single-topic-resource-btn">
     <button class="topic-resource-btn" style="margin-bottom: 200px">
@@ -53,25 +58,21 @@
     arrow.classList.toggle('open');
   }
 
-  (function() {
+(function() {
   const v = document.getElementById('bluey-cta-video');
   if (!v) return;
 
-  // Force muted + inline (some browsers ignore attribute order)
+  // Ensure muted for autoplay policies
   v.muted = true;
 
-  // Play once only
-  v.addEventListener('ended', () => v.pause(), { once: true });
-
-  // Try to play as soon as it can
-  const tryPlay = () => v.play().catch(err => {
-    // If autoplay is blocked, we’ll start on the first user gesture instead
-    // console.warn('Autoplay blocked:', err);
-  });
-
+  // Try to play once we can
+  function tryPlay() { v.play().catch(()=>{}); }
   v.addEventListener('canplay', tryPlay, { once: true });
 
-  // Start when visible (helps some mobile browsers)
+  // Stop after one loop
+  v.addEventListener('ended', () => v.pause(), { once: true });
+
+  // Visibility nudge for mobile
   if ('IntersectionObserver' in window) {
     const io = new IntersectionObserver(([e]) => {
       if (e.isIntersecting) { tryPlay(); io.disconnect(); }
@@ -79,28 +80,11 @@
     io.observe(v);
   }
 
-  // Fallback: first user interaction
+  // User gesture fallback if autoplay is blocked
   const kick = () => { tryPlay(); window.removeEventListener('pointerdown', kick); };
   window.addEventListener('pointerdown', kick, { once: true });
-
-  // Safety net: attempt again shortly after load
-  setTimeout(tryPlay, 400);
 })();
 
-(() => {
-  const v = document.getElementById('bluey-cta-video');
-  if (!v) return;
 
-  const log = (...a) => console.log('[bluey video]', ...a);
-
-  ['loadedmetadata','canplay','playing','pause','ended','error','stalled','suspend'].forEach(ev =>
-    v.addEventListener(ev, () => log(ev, { readyState: v.readyState, networkState: v.networkState }))
-  );
-
-  v.addEventListener('error', () => {
-    const e = v.error;
-    log('error detail', e && { code: e.code, message: e.message });
-  });
-})();
 
 </script>
