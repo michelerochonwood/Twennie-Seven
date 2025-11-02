@@ -15,6 +15,7 @@ const PromptSetCompletion = require('../models/prompt_models/promptsetcompletion
 const TopicSuggestion = require('../models/topic/topic_suggestion');
 const Upcoming = require('../models/unit_models/upcoming');
 const DashboardSeen = require('../models/dashboard_seen');
+const mongoose = require('mongoose');
 
  
 
@@ -250,6 +251,7 @@ module.exports = {
     try {
       // Resolve current member id (works with legacy session or Passport)
       const id = req.session?.user?.id || req.user?._id?.toString();
+      const memberOid = new mongoose.Types.ObjectId(String(id)); // <-- ADD
       if (!id) return res.redirect('/auth/login');
 
       const userData = await Member.findById(id)
@@ -296,7 +298,7 @@ let memberPromptSchedule = null;
 
 // ---------- PROMPT SETS (mirror group-member behavior) ----------
 const memberRegistrations = await PromptSetRegistration
-  .find({ memberId: id })
+  .find({ memberId: memberOid }) // <-- memberOid
   .populate('promptSetId');
 
 const TOTAL_PROMPTS = 21; // Prompt0 + 1..20
@@ -313,10 +315,10 @@ await Promise.all(
     if (!promptSetDoc) return;
 
     // Exclude completed
-    const completed = await PromptSetCompletion.findOne({ memberId: id, promptSetId: psId });
+    const completed = await PromptSetCompletion.findOne({ memberId: memberOid, promptSetId: psId });
     if (completed) return;
 
-    const progress = await PromptSetProgress.findOne({ memberId: id, promptSetId: psId });
+    const progress = await PromptSetProgress.findOne({ memberId: memberOid, promptSetId: psId });
     const currentPromptIndex = Number.isInteger(progress?.currentPromptIndex) ? progress.currentPromptIndex : 0;
 
     const headlineKey = `prompt_headline${currentPromptIndex}`;
@@ -341,7 +343,7 @@ await Promise.all(
 );
 
 const completedRecords = await PromptSetCompletion
-  .find({ memberId: id })
+  .find({ memberId: memberOid })   // <-- use memberOid
   .populate('promptSetId');
 
 const completedIds = new Set(
@@ -349,7 +351,8 @@ const completedIds = new Set(
 );
 
 // Completed sets (for the table)
-// ---------- CURRENT PROMPT SETS (registration-anchored, mirrors group-member) ----------
+// ------------- CURRENT sets (progress overview) -------------
+// Registration-anchored, like group-member; drives the PIE and caption
 {
   const currentByPsId = new Map();
 
@@ -358,7 +361,7 @@ const completedIds = new Set(
       const psId = toId(registration.promptSetId);
       if (!psId) return;
 
-      // Exclude completed sets
+      // Exclude sets already completed
       if (completedIds.has(String(psId))) return;
 
       // Use populated doc if available, otherwise fetch
@@ -368,16 +371,12 @@ const completedIds = new Set(
 
       if (!psDoc) return;
 
-      // Pull progress for THIS registration
-      const prog = await PromptSetProgress.findOne({ memberId: id, promptSetId: psId });
-
-      // ✅ Use completed count (what your SVGs expect)
-      const completedCount = Array.isArray(prog?.completedPrompts)
-        ? prog.completedPrompts.length
-        : 0;
-
+      // Progress row for THIS registration
+      const prog = await PromptSetProgress.findOne({ memberId: memberOid, promptSetId: psId });  // <-- memberOid
+      const completedCount = Array.isArray(prog?.completedPrompts) ? prog.completedPrompts.length : 0;
       const progressPct = Math.round((completedCount / TOTAL_PROMPTS) * 100);
 
+      // Insert once per prompt set
       if (!currentByPsId.has(String(psId))) {
         currentByPsId.set(String(psId), {
           promptSetId: String(psId),
@@ -385,7 +384,10 @@ const completedIds = new Set(
           frequency: psDoc.suggested_frequency,
           progress: `${progressPct}%`,
           targetCompletionDate: psDoc.target_completion_date || 'Not Set',
-          promptIndex: completedCount, // <- drives your pie & caption
+
+          // 🔑 This drives the filename /promptprogress/promptprogress{n}-{this.promptIndex}.svg
+          // and the caption "you have completed X prompts..."
+          promptIndex: completedCount
         });
       }
     })
@@ -395,6 +397,15 @@ const completedIds = new Set(
     .sort((a, b) => a.promptSetTitle.localeCompare(b.promptSetTitle));
 }
 
+// ------------- COMPLETED (mapped for view) -------------
+// (Needed for memberCounts.progress and the completed list)
+formattedCompletedSets = completedRecords.map(record => ({
+  promptSetTitle: record.promptSetId?.promptset_title || 'Unknown Title',
+  frequency: record.promptSetId?.suggested_frequency,
+  mainTopic: record.promptSetId?.main_topic || 'No Topic',
+  completedAt: record.completedAt ? new Date(record.completedAt).toDateString() : 'Unknown Date',
+  badge: record.earnedBadge
+}));
 
             // ✅ Fetch tagged and contributed units
 // ✅ Fetch tagged and contributed units
