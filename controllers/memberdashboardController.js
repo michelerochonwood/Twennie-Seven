@@ -342,6 +342,20 @@ await Promise.all(
   })
 );
 
+// ✅ Select the first active prompt set & schedule for the "registered prompt sets" tab
+promptSet = registeredPromptSets.length ? registeredPromptSets[0] : null;
+memberPromptSchedule = promptSchedules.length ? promptSchedules[0] : null;
+
+// 🧪 Optional sanity log (remove later)
+console.log('🧪 promptSet selected for tab:', promptSet && {
+  id: promptSet.promptSetId,
+  title: promptSet.promptSetTitle,
+  promptIndex: promptSet.promptIndex,
+  hasStarted: promptSet.hasStarted
+});
+console.log('🧪 memberPromptSchedule selected:', memberPromptSchedule);
+
+
 const completedRecords = await PromptSetCompletion
   .find({ memberId: memberOid })   // <-- use memberOid
   .populate('promptSetId');
