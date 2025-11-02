@@ -280,6 +280,13 @@ module.exports = {
           : null
       };
 
+const accessLevelLabels = {
+  free_individual: 'Free',
+  contributor_individual: 'Contributing',
+  paid_individual: 'Paid'
+};
+const accessLevelLabel = accessLevelLabels[userData.accessLevel] || 'Member';
+
 let registeredPromptSets = [];
 let promptSchedules = [];
 let currentPromptSets = [];
