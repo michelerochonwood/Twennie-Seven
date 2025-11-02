@@ -255,7 +255,7 @@ module.exports = {
       if (!id) return res.redirect('/auth/login');
 
       const userData = await Member.findById(id)
-        .select('username email emailPreferenceLevel profileImage professionalTitle organization topics accessLevel mfa.enabled mfa.method mfa.recoveryCodes mfa.updatedAt')
+        .select('name username email emailPreferenceLevel profileImage professionalTitle organization topics accessLevel mfa.enabled mfa.method mfa.recoveryCodes mfa.updatedAt')
         .lean();
 
       if (!userData) {
@@ -571,12 +571,18 @@ for (const [key, val] of Object.entries(memberCounts)) {
 
 console.log('Member currentPromptSets (for progress):', currentPromptSets);
 
+const displayName =
+  (userData?.name && userData.name.trim()) ? userData.name.trim() :
+  (memberProfile?.name && memberProfile.name.trim && memberProfile.name.trim()) ? memberProfile.name.trim() :
+  (userData?.username || 'Member');
+
 return res.render("member_dashboard", {
   layout: "dashboardlayout",
   title: "Member Dashboard",
   csrfToken: req.csrfToken(),
   member: {
     ...userData,
+      name: displayName, // <-- ensure sidebar {{member.name}} has a value
     profileImage: memberProfile?.profileImage || '/images/default-avatar.png',
     selectedTopics,
     accessLevel: userData.accessLevel,
