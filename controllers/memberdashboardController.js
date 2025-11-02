@@ -18,6 +18,7 @@ const DashboardSeen = require('../models/dashboard_seen');
 
  
 
+const toId = (x) => (x && x._id ? x._id : x);
 
 async function resolveAuthorById(authorId) {
     let author = await Member.findById(authorId).select('username profileImage professionalTitle topics');
@@ -294,98 +295,40 @@ module.exports = {
             console.log('Member data fetched:', userData);
 
 
-            let registeredPromptSets = [];
-            let promptSchedules = [];
+async function getPromptSchedule(memberId, promptSetId) {
+  const psId = toId(promptSetId); // <-- coerce doc → id
+  let targetDate = null;
 
-            const memberRegistrations = await PromptSetRegistration.find({ memberId: id }).populate('promptSetId');
+  const registration = await PromptSetRegistration.findOne({ memberId, promptSetId: psId });
+  if (registration) {
+    targetDate = registration.targetCompletionDate;
+  }
 
+  if (!targetDate) {
+    console.warn(`No target date found for member ${memberId} and promptSetId ${psId}`);
+    return null;
+  }
 
-            // ✅ Process each registered prompt set
-            await Promise.all(
-                memberRegistrations.map(async (registration) => {
-                    const promptSet = await PromptSet.findById(registration.promptSetId);
-                    if (!promptSet) 
-                        return;
+  const today = new Date();
+  targetDate = new Date(targetDate);
+  const remainingDays = Math.max(0, Math.ceil((targetDate - today) / (1000 * 60 * 60 * 24)));
 
-                    // ✅ Fetch progress
-                    const progress = await PromptSetProgress.findOne({ memberId: id, promptSetId: registration.promptSetId });
+  // 👇 match group-member math: Prompt0 + 1..20
+  const totalPrompts = 21;
 
-                    const currentPromptIndex = progress?.currentPromptIndex ?? 0; // ✅ Ensure first prompt is always 0
+  const progress = await PromptSetProgress.findOne({ memberId, promptSetId: psId });
+  const remainingPrompts = progress ? totalPrompts - (progress.completedPrompts?.length || 0) : totalPrompts;
 
-                    console.log(`Progress for promptSetId ${registration.promptSetId._id}: ${currentPromptIndex}`);
+  const spread = remainingPrompts > 0 ? Math.floor(remainingDays / remainingPrompts) : 0;
 
-                    const headlineKey = `prompt_headline${currentPromptIndex}`;
-                    const promptKey = `Prompt${currentPromptIndex}`;
-                    
-                    
-                    const promptHeadline = promptSet[headlineKey] || "No headline found";
-                    const promptText = promptSet[promptKey] || "No prompt text found";
-
-                    const isCompleted = progress?.completedPrompts?.length >= 20;
-
-                    if (!isCompleted) { 
-                        registeredPromptSets.push({
-                            registrationId: registration._id,
-                            promptSetId: registration.promptSetId._id.toString(),
-                            promptSetTitle: promptSet.promptset_title,
-                            frequency: registration.frequency,
-                            mainTopic: promptSet.main_topic,
-                            purpose: promptSet.purpose,
-                            promptHeadline,  // ✅ Ensure this is always Prompt0
-                            promptText,      // ✅ Ensure this is always Prompt0
-                            promptIndex: currentPromptIndex ?? 0,  // ✅ Use the dynamic prompt index
-                        });
-                        
-                    }
-
-console.log("🔍 Checking prompt retrieval...");
-console.log(`   Available Keys in promptSet:`, Object.keys(promptSet)); 
-console.log(`   headlineKey: prompt_headline0`);
-console.log(`   promptKey: Prompt0`);
-console.log(`   Retrieved Headline:`, promptSet["prompt_headline0"]);
-console.log(`   Retrieved Text:`, promptSet["Prompt0"]);
-                    
-
-                    // ✅ Get prompt schedule
-                    promptSchedules.push(await getPromptSchedule(id, registration.promptSetId));
-                })
-            );
-
-            // ✅ Fetch completed prompt sets
-// ✅ Fetch completed prompt sets
-// ✅ First fetch completed prompt sets
-const completedRecords = await PromptSetCompletion.find({ memberId: id }).populate('promptSetId');
-const completedIds = new Set(completedRecords.map(record => record.promptSetId._id.toString()));
-
-// ✅ Then fetch in-progress prompt records
-const progressRecords = await PromptSetProgress.find({ memberId: id }).populate('promptSetId');
-
-let currentPromptSets = [];
-
-if (progressRecords.length > 0) {
-    progressRecords.forEach(record => {
-        const promptSetId = record.promptSetId._id.toString();
-        if (!completedIds.has(promptSetId)) {
-            const progressPercentage = (record.completedPrompts?.length / 20) * 100 || 0;
-            currentPromptSets.push({
-                promptSetTitle: record.promptSetId.promptset_title,
-                frequency: record.promptSetId.suggested_frequency,
-                progress: `${progressPercentage}%`,
-                targetCompletionDate: record.promptSetId.target_completion_date || "Not Set",
-                promptIndex: record.currentPromptIndex || 0
-            });
-        }
-    });
+  return {
+    targetCompletionDate: targetDate.toDateString(),
+    recommendedCompletionDate: new Date(today.getTime() + spread * 24 * 60 * 60 * 1000).toDateString(),
+    remainingDays,
+    remainingPrompts,
+    spread
+  };
 }
-
-// ✅ Format completed sets for view
-const formattedCompletedSets = completedRecords.map(record => ({
-    promptSetTitle: record.promptSetId.promptset_title,
-    frequency: record.promptSetId.suggested_frequency,
-    mainTopic: record.promptSetId.main_topic,
-    completedAt: record.completedAt ? new Date(record.completedAt).toDateString() : "Unknown Date",
-    badge: record.earnedBadge
-}));
 
 
 
@@ -556,10 +499,11 @@ memberBadges,
   memberUnits,
   recentTaggedUnits: await fetchTaggedUnits(id),
   registeredPromptSets,
-  promptSet: registeredPromptSets[0] || null,
-  memberPromptSchedule: promptSchedules[0] || null,
-  promptSchedules,
-  currentPromptSets,
+promptSet,                   // was: registeredPromptSets[0] || null
+memberPromptSchedule,        // was: promptSchedules[0] || null
+promptSchedules,
+currentPromptSets,
+completedPromptSets: formattedCompletedSets,
   completedPromptSets: formattedCompletedSets,
   topicSuggestions,
   memberAccount,
