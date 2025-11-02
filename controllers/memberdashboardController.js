@@ -343,47 +343,54 @@ const completedIds = new Set(
 );
 
 // Current sets (progress overview)
-const progressRecords = await PromptSetProgress
-  .find({ memberId: id })
-  .populate('promptSetId');
-
-if (progressRecords.length > 0) {
+// ---------- CURRENT PROMPT SETS (registration-anchored, like group-member) ----------
+{
   const currentByPsId = new Map();
 
-  for (const record of progressRecords) {
-    const ps = record.promptSetId;
-    if (!ps) continue;
+  // Work from the user's registrations (same anchor the card tab uses)
+  await Promise.all(
+    memberRegistrations.map(async (registration) => {
+      const psId = toId(registration.promptSetId);
+      if (!psId) return;
 
-    const psId = ps._id.toString();
-    if (completedIds.has(psId)) continue; // exclude completed sets
+      // Exclude completed sets
+      if (completedIds.has(String(psId))) return;
 
-    // ✅ Use COMPLETED COUNT for progress visuals and copy
-    const completedCount = Array.isArray(record.completedPrompts)
-      ? record.completedPrompts.length
-      : 0;
+      // Load the PS doc (use populated if available)
+      const psDoc = registration.promptSetId && registration.promptSetId.promptset_title
+        ? registration.promptSetId
+        : await PromptSet.findById(psId);
 
-    // You can still keep currentPromptIndex if you need it elsewhere,
-    // but the UI should be driven by completedCount.
-    const progressPct = Math.round((completedCount / TOTAL_PROMPTS) * 100);
+      if (!psDoc) return;
 
-    if (!currentByPsId.has(psId)) {
-      currentByPsId.set(psId, {
-        promptSetId: psId,
-        promptSetTitle: ps.promptset_title,
-        frequency: ps.suggested_frequency,
-        progress: `${progressPct}%`,
-        targetCompletionDate: ps.target_completion_date || 'Not Set',
+      // Pull progress for THIS registration
+      const prog = await PromptSetProgress.findOne({ memberId: id, promptSetId: psId });
 
-        // 🔑 This is what your partial uses for the pie and caption:
-        // make it the completed count (3, in your case), not currentPromptIndex
-        promptIndex: completedCount
-      });
-    }
-  }
+      // ✅ Use COMPLETED COUNT for the pie and caption (this is what your assets expect)
+      const completedCount = Array.isArray(prog?.completedPrompts) ? prog.completedPrompts.length : 0;
+      const progressPct = Math.round((completedCount / TOTAL_PROMPTS) * 100);
+
+      if (!currentByPsId.has(String(psId))) {
+        currentByPsId.set(String(psId), {
+          promptSetId: String(psId),
+          promptSetTitle: psDoc.promptset_title,
+          frequency: psDoc.suggested_frequency,
+          progress: `${progressPct}%`,
+          targetCompletionDate: psDoc.target_completion_date || 'Not Set',
+
+          // 🔑 The member_progress partial uses {{this.promptIndex}} both
+          // for the caption and to build `/promptprogress/...-{{this.promptIndex}}.svg`.
+          // Set it to the COMPLETED COUNT (3 in your case).
+          promptIndex: completedCount
+        });
+      }
+    })
+  );
 
   currentPromptSets = Array.from(currentByPsId.values())
     .sort((a, b) => a.promptSetTitle.localeCompare(b.promptSetTitle));
 }
+
 
 formattedCompletedSets = completedRecords.map(record => ({
   promptSetTitle: record.promptSetId?.promptset_title || 'Unknown Title',
