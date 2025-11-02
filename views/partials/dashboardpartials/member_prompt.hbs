@@ -1,6 +1,6 @@
 {{!-- views/partials/dashboardpartials/member_prompt.hbs --}}
 
-{{!-- Free members see the upgrade message and nothing else --}}
+{{!-- Free members: show upgrade notice and stop --}}
 {{#if (eq @root.member.accessLevel "free_individual")}}
   <div class="member-prompt-upgrade" style="text-align:center;margin-top:2rem;font-style:italic;color:#4e50a2;">
     To register for prompts, you must upgrade your membership.
@@ -8,9 +8,33 @@
 {{else}}
   {{#with promptSet as |ps|}}
   <div class="member-prompt-container" data-psid="{{ps.promptSetId}}" data-regid="{{ps.registrationId}}">
+    <!-- Meta ABOVE the card -->
+    <h2 class="member-prompt-title">{{ps.frequency}} prompt</h2>
 
+    <h5 class="member-prompt-set-title" style="font-size:1rem;">
+      <strong>{{ps.promptSetTitle}}</strong> - {{ps.mainTopic}}
+    </h5>
+
+    <p class="member-prompt-purpose">
+      <strong>Purpose of this prompt set:</strong> {{ps.purpose}}
+    </p>
+
+    {{!-- Schedule: prefer root memberPromptSchedule; fallback to ps.promptSchedule if present --}}
+    {{#if (or ../memberPromptSchedule ps.promptSchedule)}}
+      <p class="member-prompt-schedule">
+        To stay on schedule with this prompt set, Twennie recommends you complete this prompt by:
+      </p>
+      <p class="member-prompt-schedule-date">
+        {{#if ../memberPromptSchedule}}
+          {{../memberPromptSchedule.recommendedCompletionDate}}
+        {{else}}
+          {{ps.promptSchedule.recommendedCompletionDate}}
+        {{/if}}
+      </p>
+    {{/if}}
+
+    <!-- CARD: only SVG banner + headline + prompt text -->
     <div class="member-prompt-card">
-      <!-- SVG header / wave (kept inside .member-prompt-border so your CSS positions it) -->
       <div class="member-prompt-border">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1224.99 153.32" aria-hidden="true" focusable="false">
           <defs><style>.cls-777{fill:#4e50a2;}</style></defs>
@@ -22,51 +46,22 @@
         </svg>
       </div>
 
-      <!-- Titles / meta -->
-      <h2 class="member-prompt-title">{{ps.frequency}} prompt</h2>
-      <h5 class="member-prompt-set-title">
-        <strong>{{ps.promptSetTitle}}</strong> - {{ps.mainTopic}}
-      </h5>
-      <p class="member-prompt-purpose">
-        <strong>Purpose of this prompt set:</strong> {{ps.purpose}}
-      </p>
-
-      {{!-- Schedule (prefer root memberPromptSchedule, else ps.promptSchedule if present) --}}
-      {{#if (or ../memberPromptSchedule ps.promptSchedule)}}
-        <p class="member-prompt-schedule">
-          To stay on schedule with this prompt set, Twennie recommends you complete this prompt by:
-        </p>
-        <p class="member-prompt-schedule-date">
-          {{#if ../memberPromptSchedule}}
-            {{../memberPromptSchedule.recommendedCompletionDate}}
-          {{else}}
-            {{ps.promptSchedule.recommendedCompletionDate}}
-          {{/if}}
-        </p>
-      {{/if}}
-
-      <!-- Prompt content -->
       <p class="member-prompt-headline">{{ps.promptHeadline}}</p>
       <p class="member-prompt-text">{{ps.promptText}}</p>
     </div>
 
-    {{!-- Interaction (use hasStarted so index 0 shows notes form) --}}
+    {{!-- Interaction BELOW the card (use hasStarted so index 0 shows notes form) --}}
     {{#if ps.hasStarted}}
       <form action="/promptsetnotes/submit-prompt-notes" method="POST" class="member-prompt-form">
         <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
         <input type="hidden" name="promptSetId" value="{{ps.promptSetId}}">
 
         <label for="notes-{{ps.promptSetId}}" class="member-prompt-notes-label">Record your notes here:</label>
-        <textarea name="notes"
-                  id="notes-{{ps.promptSetId}}"
-                  class="member-prompt-notes"
-                  placeholder="Write your notes here..."
-                  required></textarea>
+        <textarea name="notes" id="notes-{{ps.promptSetId}}" class="member-prompt-notes" placeholder="Write your notes here..." required></textarea>
 
         {{#if (eq ps.promptIndex 20)}}
           <p class="final-prompt-message">
-            <strong>Final Prompt!</strong>
-            This is the last prompt in the set. Make sure to complete the prompt and add your final thoughts about what you learned and discovered!
+            <strong>Final Prompt!</strong> This is the last prompt in the set. Make sure to complete the prompt and add your final thoughts about what you learned and discovered!
           </p>
         {{/if}}
 
@@ -86,6 +81,7 @@
   </div>
   {{/with}}
 {{/if}}
+
 
 
 
