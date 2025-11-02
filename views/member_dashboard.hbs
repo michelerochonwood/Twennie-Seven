@@ -66,21 +66,23 @@
       {{> dashboardpartials/member_topics }}
     </div>
 
-    <div class="dashboard-tab-content" id="prompts">
-      {{#if registeredPromptSets.length}}
-        {{#each registeredPromptSets}}
-          <section class="member-prompt-section">
-            {{> dashboardpartials/member_prompt promptSet=this }}
-          </section>
-        {{/each}}
-      {{else}}
-        {{#ifEquals @root.member.accessLevel "free_individual"}}
-          <div style="text-align: center; margin-top: 2rem; font-style: italic; color: #4e50a2;">
-            To register for prompts, you must upgrade your membership.
-          </div>
-        {{/ifEquals}}
-      {{/if}}
-    </div>
+<div class="dashboard-tab-content" id="prompts">
+  {{#if promptSet}}
+    <section class="member-prompt-section">
+      {{> dashboardpartials/member_prompt promptSet=promptSet }}
+    </section>
+  {{else}}
+    {{#ifEquals @root.member.accessLevel "free_individual"}}
+      <div style="text-align: center; margin-top: 2rem; font-style: italic; color: #4e50a2;">
+        To register for prompts, you must upgrade your membership.
+      </div>
+    {{else}}
+      <div style="text-align: center; margin-top: 2rem; color:#4e50a2;">
+        You don’t have an active prompt set yet. Visit the library to register your first set.
+      </div>
+    {{/ifEquals}}
+  {{/if}}
+</div>
 
     <div class="dashboard-tab-content" id="progress">
       {{> dashboardpartials/member_progress }}
