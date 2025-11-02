@@ -1,7 +1,6 @@
-<!-- DEBUG currentPromptSets len={{currentPromptSets.length}} -->
-{{#each currentPromptSets}}
-  <!-- DEBUG pie {{@index}}: /promptprogress/promptprogress{{increment @index}}-{{this.promptIndex}}.svg -->
-{{/each}}
+{{currentPromptSets.length}} {{completedPromptSets.length}}
+
+
 <div class="member-progress-container" style="overflow: hidden; padding-bottom: 2rem;">
 
   {{#ifEquals @root.member.accessLevel "free_individual"}}
@@ -9,18 +8,22 @@
       To register for prompts, you must upgrade your membership.
     </p>
   {{else}}
+
+    {{!-- CURRENT --}}
     {{#if currentPromptSets.length}}
       <h2 class="member-progress-current-title">current prompt sets</h2>
       <div class="member-progress-current">
         {{#each currentPromptSets}}
           <div class="member-progress-grid">
             <h2 class="member-progress-title">{{this.promptSetTitle}}</h2>
-            <img 
+
+            <img
               src="/promptprogress/promptprogress{{increment @index}}-{{this.promptIndex}}.svg"
-              alt="Progress Pie Chart" 
+              alt="Progress Pie Chart"
               class="member-progress-svg"
               data-progress="{{this.promptIndex}}"
             >
+
             <p class="member-progress-target">
               you have completed {{this.promptIndex}} prompts in this set
             </p>
@@ -29,6 +32,7 @@
       </div>
     {{/if}}
 
+    {{!-- COMPLETED --}}
     <div class="member-progress-completed">
       <h2 class="member-progress-completed-title">completed prompt sets</h2>
 
@@ -38,9 +42,7 @@
             <div class="member-progress-completed-card" style="padding: 1rem; min-height: auto;">
               <h3 class="member-progress-completed-title">{{this.promptSetTitle}}</h3>
               <p class="member-progress-completed-main-topic">{{this.mainTopic}}</p>
-              <p class="member-progress-completed-date">
-                completed: {{this.completedAt}}
-              </p>
+              <p class="member-progress-completed-date">completed: {{this.completedAt}}</p>
               <div class="member-progress-badge" style="text-align: center; margin-top: 1rem;">
                 {{#if this.badge}}
                   <img src="{{this.badge.image}}" alt="{{this.badge.name}}" class="member-progress-badge-img" style="max-width: 80px;">
@@ -64,11 +66,11 @@
         </a>
       </div>
     </div>
-  {{/ifEquals}}
 
+  {{/else}}
   <div style="height: 1px; clear: both;"></div>
-
 </div>
+
 
 
 

@@ -1,5 +1,7 @@
 {{#*inline "title"}}Member Dashboard | Twennie{{/inline}}
 
+
+
 <div class="dashboard-grid">
   <!-- Sidebar (Left) -->
   <div class="dashboard-sidebar">
@@ -84,9 +86,12 @@
   {{/if}}
 </div>
 
-    <div class="dashboard-tab-content" id="progress">
-      {{> dashboardpartials/member_progress }}
-    </div>
+<div class="dashboard-tab-content" id="progress">
+  {{> dashboardpartials/member_progress
+      currentPromptSets=currentPromptSets
+      completedPromptSets=completedPromptSets
+      csrfToken=csrfToken }}
+</div>
 
     <div class="dashboard-tab-content" id="contribute">
       {{> dashboardpartials/member_contribution }}
