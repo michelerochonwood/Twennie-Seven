@@ -30,11 +30,12 @@
         <div class="tab-arrow"></div>
       </button>
 
-      <button class="dashboard-tab" data-tab="progress" data-count="{{memberCounts.progress}}">
-        <span class="tab-title">prompt set progress</span>
-        {{#if memberBadges.progress}}<span class="tab-dot"></span>{{/if}}
-        <div class="tab-arrow"></div>
-      </button>
+<div class="dashboard-tab-content" id="progress">
+  {{> dashboardpartials/member_progress
+      currentPromptSets=currentPromptSets
+      completedPromptSets=completedPromptSets
+      csrfToken=csrfToken }}
+</div>
 
       <button class="dashboard-tab" data-tab="contribute">
         <span class="tab-title">contribute to the library</span>
