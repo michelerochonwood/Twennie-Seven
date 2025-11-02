@@ -324,7 +324,7 @@ await Promise.all(
       purpose: promptSetDoc.purpose,
       promptHeadline: promptSetDoc[headlineKey] || 'No headline found',
       promptText:     promptSetDoc[promptKey]   || 'No prompt text found',
-      promptIndex: completedCount,
+      promptIndex: currentPromptIndex,
       hasStarted: !!progress
     });
 
@@ -333,7 +333,6 @@ await Promise.all(
   })
 );
 
-// Completed sets (for the table)
 const completedRecords = await PromptSetCompletion
   .find({ memberId: id })
   .populate('promptSetId');
@@ -342,12 +341,11 @@ const completedIds = new Set(
   completedRecords.map(r => r.promptSetId?._id?.toString()).filter(Boolean)
 );
 
-// Current sets (progress overview)
-// ---------- CURRENT PROMPT SETS (registration-anchored, like group-member) ----------
+// Completed sets (for the table)
+// ---------- CURRENT PROMPT SETS (registration-anchored, mirrors group-member) ----------
 {
   const currentByPsId = new Map();
 
-  // Work from the user's registrations (same anchor the card tab uses)
   await Promise.all(
     memberRegistrations.map(async (registration) => {
       const psId = toId(registration.promptSetId);
@@ -356,7 +354,7 @@ const completedIds = new Set(
       // Exclude completed sets
       if (completedIds.has(String(psId))) return;
 
-      // Load the PS doc (use populated if available)
+      // Use populated doc if available, otherwise fetch
       const psDoc = registration.promptSetId && registration.promptSetId.promptset_title
         ? registration.promptSetId
         : await PromptSet.findById(psId);
@@ -366,8 +364,11 @@ const completedIds = new Set(
       // Pull progress for THIS registration
       const prog = await PromptSetProgress.findOne({ memberId: id, promptSetId: psId });
 
-      // ✅ Use COMPLETED COUNT for the pie and caption (this is what your assets expect)
-      const completedCount = Array.isArray(prog?.completedPrompts) ? prog.completedPrompts.length : 0;
+      // ✅ Use completed count (what your SVGs expect)
+      const completedCount = Array.isArray(prog?.completedPrompts)
+        ? prog.completedPrompts.length
+        : 0;
+
       const progressPct = Math.round((completedCount / TOTAL_PROMPTS) * 100);
 
       if (!currentByPsId.has(String(psId))) {
@@ -377,11 +378,7 @@ const completedIds = new Set(
           frequency: psDoc.suggested_frequency,
           progress: `${progressPct}%`,
           targetCompletionDate: psDoc.target_completion_date || 'Not Set',
-
-          // 🔑 The member_progress partial uses {{this.promptIndex}} both
-          // for the caption and to build `/promptprogress/...-{{this.promptIndex}}.svg`.
-          // Set it to the COMPLETED COUNT (3 in your case).
-          promptIndex: completedCount
+          promptIndex: completedCount, // <- drives your pie & caption
         });
       }
     })
@@ -391,39 +388,6 @@ const completedIds = new Set(
     .sort((a, b) => a.promptSetTitle.localeCompare(b.promptSetTitle));
 }
 
-
-formattedCompletedSets = completedRecords.map(record => ({
-  promptSetTitle: record.promptSetId?.promptset_title || 'Unknown Title',
-  frequency: record.promptSetId?.suggested_frequency,
-  mainTopic: record.promptSetId?.main_topic || 'No Topic',
-  completedAt: record.completedAt ? new Date(record.completedAt).toDateString() : 'Unknown Date',
-  badge: record.earnedBadge
-}));
-
-// First active card + schedule for the tab
-promptSet = registeredPromptSets[0] || null;
-memberPromptSchedule = promptSchedules[0] || null;
-
-
-            const accessLevelLabels = {
-                free_individual: 'Free',
-                contributor_individual: 'Contributing',
-                paid_individual: 'Paid'
-              };
-              
-              const accessLevelLabel = accessLevelLabels[userData.accessLevel] || 'Member';
-
-            if (!userData) {
-                throw new Error(`Member with ID ${id} not found.`);
-            }
-
-            console.log('Member data fetched:', userData);
-
-
-
-
-
-            console.log("Final session before rendering:", req.session);
 
             // ✅ Fetch tagged and contributed units
 // ✅ Fetch tagged and contributed units
