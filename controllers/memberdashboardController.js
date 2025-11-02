@@ -324,7 +324,7 @@ await Promise.all(
       purpose: promptSetDoc.purpose,
       promptHeadline: promptSetDoc[headlineKey] || 'No headline found',
       promptText:     promptSetDoc[promptKey]   || 'No prompt text found',
-      promptIndex: currentPromptIndex,
+      promptIndex: completedCount,
       hasStarted: !!progress
     });
 
