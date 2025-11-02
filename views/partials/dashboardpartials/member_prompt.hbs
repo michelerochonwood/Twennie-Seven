@@ -1,10 +1,7 @@
-<!-- DEBUG: promptSet JSON -->
-<pre style="font-size:.75rem;white-space:pre-wrap">{{json promptSet}}</pre>
+<p>STATIC-TEXT-CHECK</p>
+<p>HEADLINE: [{{promptSet.promptHeadline}}]</p>
+<p style="color:#000 !important; background:#ff0;">FORCED-VISIBLE: {{promptSet.promptText}}</p>
 
-<!-- DEBUG: first reg set JSON -->
-{{#if registeredPromptSets.length}}
-  <pre style="font-size:.75rem;white-space:pre-wrap">{{json (lookup registeredPromptSets 0)}}</pre>
-{{/if}}
 
 
 {{#if promptSet}}
