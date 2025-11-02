@@ -571,7 +571,7 @@ for (const [key, val] of Object.entries(memberCounts)) {
   memberBadges[key] = val > last;
 }
 
-
+console.log('Member currentPromptSets (for progress):', currentPromptSets);
 
 return res.render("member_dashboard", {
   layout: "dashboardlayout",
