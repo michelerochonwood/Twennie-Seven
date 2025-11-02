@@ -1,4 +1,11 @@
-{{#if promptSet}}YES{{else}}NO{{/if}} | regSets: {{registeredPromptSets.length}}
+<!-- DEBUG: promptSet JSON -->
+<pre style="font-size:.75rem;white-space:pre-wrap">{{json promptSet}}</pre>
+
+<!-- DEBUG: first reg set JSON -->
+{{#if registeredPromptSets.length}}
+  <pre style="font-size:.75rem;white-space:pre-wrap">{{json (lookup registeredPromptSets 0)}}</pre>
+{{/if}}
+
 
 {{#if promptSet}}
   {{#ifEquals @root.member.accessLevel "free_individual"}}
