@@ -122,65 +122,77 @@
 
     <!-- Column 2: Email preferences -->
     <div class="individual-membership-column">
-      <p class="individual-membership-access-title">email notifications</p>
+<p class="individual-membership-access-title">email notifications</p>
 
-      <form action="/dashboard/member/account/email-preferences" method="POST" novalidate>
-        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+<form action="/dashboard/member/account/email-preferences" method="POST" novalidate>
+  <input type="hidden" name="_csrf" value="{{csrfToken}}">
 
-        <ul class="individual-membership-access-list">
-          <!-- Level 1 -->
-          <li>
-            <div class="individual-membership-line" style="display:flex; gap:.5rem; align-items:flex-start;">
-              <input id="m_email_pref_1" type="radio" name="email_preference_level" value="1" {{#if (eq emailPreferenceLevel 1)}}checked{{/if}}>
-              <label for="m_email_pref_1">
-                <span class="individual-membership-label">Level 1</span>
-              </label>
-            </div>
-            <ul class="individual-preference-list">
-              <li>changes to account</li>
-              <li>password resets only</li>
-            </ul>
-          </li>
-
-          <!-- Level 2 -->
-          <li>
-            <div class="individual-membership-line" style="display:flex; gap:.5rem; align-items:flex-start;">
-              <input id="m_email_pref_2" type="radio" name="email_preference_level" value="2" {{#if (eq emailPreferenceLevel 2)}}checked{{/if}}>
-              <label for="m_email_pref_2">
-                <span class="individual-membership-label">Level 2</span>
-              </label>
-            </div>
-            <ul class="individual-preference-list">
-              <li>changes to account</li>
-              <li>password resets</li>
-              <li>new units in my favorite topics</li>
-              <li>changes to the Twennie platform</li>
-            </ul>
-          </li>
-
-          <!-- Level 3 -->
-          <li>
-            <div class="individual-membership-line" style="display:flex; gap:.5rem; align-items:flex-start;">
-              <input id="m_email_pref_3" type="radio" name="email_preference_level" value="3" {{#if (eq emailPreferenceLevel 3)}}checked{{/if}}>
-              <label for="m_email_pref_3">
-                <span class="individual-membership-label">Level 3</span>
-              </label>
-            </div>
-            <ul class="individual-preference-list">
-              <li>changes to account</li>
-              <li>password resets</li>
-              <li>new units in my favorite topics</li>
-              <li>changes to the Twennie platform</li>
-              <li>upcoming learning events on Twennie</li>
-              <li>promotional offers from Twennie</li>
-            </ul>
-          </li>
+  <div class="email-preference-cards">
+    <!-- Level 1 -->
+    <label class="email-pref-card">
+      <input
+        id="m_email_pref_1"
+        type="radio"
+        name="email_preference_level"
+        value="1"
+        {{#if (eq emailPreferenceLevel 1)}}checked{{/if}}
+      >
+      <div class="email-pref-content">
+        <h4>Level 1 <span>(Minimal)</span></h4>
+        <p>Only essential emails for account security and password resets.</p>
+        <ul>
+          <li>Account changes</li>
+          <li>Password resets only</li>
         </ul>
+      </div>
+    </label>
 
-        <div class="group-membership-button-container">
-          <button type="submit" class="group-membership-btn">save my email preferences</button>
-        </div>
-      </form>
+    <!-- Level 2 -->
+    <label class="email-pref-card">
+      <input
+        id="m_email_pref_2"
+        type="radio"
+        name="email_preference_level"
+        value="2"
+        {{#if (eq emailPreferenceLevel 2)}}checked{{/if}}
+      >
+      <div class="email-pref-content">
+        <h4>Level 2 <span>(Updates)</span></h4>
+        <p>Get updates about new content and platform improvements.</p>
+        <ul>
+          <li>Account & password updates</li>
+          <li>New units in favorite topics</li>
+          <li>Changes to the Twennie platform</li>
+        </ul>
+      </div>
+    </label>
+
+    <!-- Level 3 -->
+    <label class="email-pref-card">
+      <input
+        id="m_email_pref_3"
+        type="radio"
+        name="email_preference_level"
+        value="3"
+        {{#if (eq emailPreferenceLevel 3)}}checked{{/if}}
+      >
+      <div class="email-pref-content">
+        <h4>Level 3 <span>(All Access)</span></h4>
+        <p>Receive all Twennie updates, events, and exclusive offers.</p>
+        <ul>
+          <li>Everything in Levels 1 & 2</li>
+          <li>Upcoming learning events</li>
+          <li>Promotional offers from Twennie</li>
+        </ul>
+      </div>
+    </label>
+  </div>
+
+  <div class="group-membership-button-container">
+    <button type="submit" class="group-membership-btn">save my email preferences</button>
+  </div>
+</form>
+
     </div>
   </div>
 </section>
