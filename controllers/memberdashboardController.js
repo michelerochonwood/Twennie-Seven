@@ -355,11 +355,16 @@ if (progressRecords.length > 0) {
     if (!ps) continue;
 
     const psId = ps._id.toString();
-    if (completedIds.has(psId)) continue;
+    if (completedIds.has(psId)) continue; // exclude completed sets
 
-    const completedCount = Array.isArray(record.completedPrompts) ? record.completedPrompts.length : 0;
+    // ✅ Use COMPLETED COUNT for progress visuals and copy
+    const completedCount = Array.isArray(record.completedPrompts)
+      ? record.completedPrompts.length
+      : 0;
+
+    // You can still keep currentPromptIndex if you need it elsewhere,
+    // but the UI should be driven by completedCount.
     const progressPct = Math.round((completedCount / TOTAL_PROMPTS) * 100);
-    const currentIdx  = Number.isInteger(record.currentPromptIndex) ? record.currentPromptIndex : 0;
 
     if (!currentByPsId.has(psId)) {
       currentByPsId.set(psId, {
@@ -368,7 +373,10 @@ if (progressRecords.length > 0) {
         frequency: ps.suggested_frequency,
         progress: `${progressPct}%`,
         targetCompletionDate: ps.target_completion_date || 'Not Set',
-        promptIndex: currentIdx
+
+        // 🔑 This is what your partial uses for the pie and caption:
+        // make it the completed count (3, in your case), not currentPromptIndex
+        promptIndex: completedCount
       });
     }
   }
