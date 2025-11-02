@@ -395,6 +395,8 @@ const completedIds = new Set(
 
   currentPromptSets = Array.from(currentByPsId.values())
     .sort((a, b) => a.promptSetTitle.localeCompare(b.promptSetTitle));
+
+    console.log('🧪 EMIT currentPromptSets:', JSON.stringify(currentPromptSets, null, 2));
 }
 
 // ------------- COMPLETED (mapped for view) -------------
