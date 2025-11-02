@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');              // <-- add this
 const memberDashboardController = require('../../controllers/memberdashboardController');
+const DashboardSeen = require('../../models/dashboard_seen'); 
 
 // Middleware to check if user is authenticated
 const isAuthenticated = (req, res, next) => {
