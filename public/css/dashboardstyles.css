@@ -548,6 +548,72 @@ html, body {
 
 
 
+/* ==== Leader Dashboard: align tabs + content to the same left edge & width ==== */
+:root {
+  /* Tweak these two to taste */
+  --leader-left-gutter: 5rem;     /* how far from the left the column begins */
+  --leader-inner-width: 1080px;   /* exact width shared by tabs & panels */
+}
+
+/* Give the main area a controlled left gutter (does not affect the left sidebar) */
+.dashboard-grid .dashboard-main {
+  padding-left: var(--leader-left-gutter);
+  box-sizing: border-box;
+}
+
+/* One source of truth for both the tabs row and the panels */
+.dashboard-grid .dashboard-main .dashboard-tabs-container,
+.dashboard-grid .dashboard-main .dashboard-tab-content {
+  width: 100%;
+  max-width: var(--leader-inner-width);
+  margin-left: 0;            /* align to the left gutter */
+  margin-right: auto;        /* take remaining space on the right */
+  box-sizing: border-box;
+}
+
+/* Keep the tab buttons forming a tidy row starting at that same left edge */
+.dashboard-grid .dashboard-main .dashboard-tabs-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 10px;                 /* optional breathing room between tabs */
+}
+
+/* Ensure all panels obey the same column rules, including the active one */
+.dashboard-grid .dashboard-main .dashboard-tab-content.active {
+  max-width: var(--leader-inner-width);
+  margin-left: 0;
+  margin-right: auto;
+  text-align: left;
+}
+
+/* If any inner sections need to match, inherit the same width behavior */
+.leader-prompt-section,
+.leader-prompt-container,
+.leader-group-section {
+  width: 100%;
+  max-width: var(--leader-inner-width);
+  margin-left: 0;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+/* Responsiveness: when space is tight, let it flow full-width */
+@media (max-width: 1200px) {
+  .dashboard-grid .dashboard-main {
+    padding-left: 1.25rem;
+  }
+  .dashboard-grid .dashboard-main .dashboard-tabs-container,
+  .dashboard-grid .dashboard-main .dashboard-tab-content,
+  .dashboard-grid .dashboard-main .dashboard-tab-content.active,
+  .leader-prompt-section,
+  .leader-prompt-container,
+  .leader-group-section {
+    max-width: none;
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
 
 
 
