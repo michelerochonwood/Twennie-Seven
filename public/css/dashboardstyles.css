@@ -585,6 +585,31 @@ html, body {
   :root { --rail-gap: 24px; } /* a touch tighter on ultra-wide */
 }
 
+.dashboard-page {
+  /* don't create a box; lets the fixed child float above without shifting content */
+  display: contents; /* modern, safe for your layout */
+}
+
+/* If you prefer not to use display: contents, use this fallback instead:
+.dashboard-page { width: 0 !important; height: 0; overflow: visible; }
+*/
+
+/* Keep earlier rail padding logic so both tabs + content make room together */
+.dashboard-main.has-right-rail {
+  padding-right: calc(var(--rail-width) + var(--rail-gap));
+}
+
+/* When we hide the rail, also remove any padding and the phantom container */
+@media (max-width: 1280px) {
+  .dashboard-page { display: none; }
+  .dashboard-main.has-right-rail { padding-right: 0; }
+}
+
+/* Safety: kill any stray left margins that might keep content pushed right */
+.dashboard-main .dashboard-tab-content {
+  margin-left: 0 !important;
+}
+
 
 
 /* Container for the prompt card */
