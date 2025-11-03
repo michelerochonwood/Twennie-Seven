@@ -548,7 +548,45 @@ html, body {
 
 
 
+/* ==== Tighten the gap between sidebar and tabs/content (no markup changes) ==== */
 
+/* On wide screens, reduce the grid column gap so the main column shifts left */
+@media (min-width: 1200px) {
+  .dashboard-grid {
+    /* use clamp so it scales with screen size but never gets huge */
+    column-gap: clamp(12px, 2vw, 28px);
+    grid-column-gap: clamp(12px, 2vw, 28px); /* fallback */
+  }
+
+  /* Remove any left padding/margin that might keep content pushed right */
+  .dashboard-main {
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+  }
+
+  /* Make sure the tabs row and tab panels align to the same left edge */
+  .dashboard-main .dashboard-tabs-container,
+  .dashboard-main .dashboard-tab-content {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+  }
+}
+
+/* If your grid defines very generous outer padding, rein it in slightly */
+@media (min-width: 1200px) {
+  .dashboard-grid {
+    padding-left: clamp(16px, 2vw, 32px);
+    padding-right: clamp(16px, 2vw, 32px);
+  }
+}
+
+/* Optional (safer) cap on the sidebar width so the main can sit closer */
+@media (min-width: 1200px) {
+  .dashboard-grid {
+    /* keep sidebar reasonable; give the rest to content */
+    grid-template-columns: clamp(240px, 20vw, 300px) minmax(0, 1fr);
+  }
+}
 
 
 
