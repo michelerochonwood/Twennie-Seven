@@ -304,6 +304,7 @@ const memberRegistrations = await PromptSetRegistration
 const TOTAL_PROMPTS = 21; // Prompt0 + 1..20
 
 // Active prompt cards (exclude completed)
+// Active prompt cards (exclude completed)
 await Promise.all(
   memberRegistrations.map(async (registration) => {
     const psId = toId(registration.promptSetId);
@@ -334,13 +335,16 @@ await Promise.all(
       promptHeadline: promptSetDoc[headlineKey] || 'No headline found',
       promptText:     promptSetDoc[promptKey]   || 'No prompt text found',
       promptIndex: currentPromptIndex,
-      hasStarted: !!progress
+
+      // 🔑 Only consider “started” once Prompt 1 begins
+      hasStarted: currentPromptIndex > 0
     });
 
     // Schedule for this set
     promptSchedules.push(await getPromptSchedule(id, psId));
   })
 );
+
 
 // ✅ Select the first active prompt set & schedule for the "registered prompt sets" tab
 promptSet = registeredPromptSets.length ? registeredPromptSets[0] : null;
