@@ -610,6 +610,51 @@ html, body {
   margin-left: 0 !important;
 }
 
+/* ==== Center Tab Content under Tabs ==== */
+
+/* Create a centered column layout within the main area */
+.dashboard-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* centers children (tabs + content) horizontally */
+}
+
+/* Tabs stay full width but align content centrally */
+.dashboard-tabs-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* Constrain tab content to a readable centered width */
+.dashboard-tab-content {
+  width: 100%;
+  max-width: 1150px; /* adjust this to match your ideal line length */
+  margin: 0 auto;
+}
+
+/* Same constraint for leader sections that wrap multiple partials */
+.leader-prompt-section,
+.leader-prompt-container,
+.leader-group-section {
+  max-width: 1150px;
+  margin: 0 auto;
+}
+
+/* On narrower screens, let content fill the available space */
+@media (max-width: 1280px) {
+  .dashboard-main {
+    align-items: stretch;
+  }
+  .dashboard-tab-content,
+  .leader-prompt-section,
+  .leader-prompt-container,
+  .leader-group-section {
+    max-width: none;
+  }
+}
+
+
 
 
 /* Container for the prompt card */
