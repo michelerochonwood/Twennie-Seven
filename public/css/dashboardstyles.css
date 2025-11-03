@@ -548,6 +548,47 @@ html, body {
 
 
 
+/* ==== Leader dashboard: gently shift tabs + content left, in lockstep ==== */
+:root {
+  --dash-content-max: 980px;    /* readable line length for tab panels */
+  --dash-side-gutter: 6rem;     /* slightly tighter than current 8rem */
+}
+
+/* Pull the whole dashboard in a touch on wide screens */
+@media (min-width: 1201px) {
+  .dashboard-grid { padding: 0 var(--dash-side-gutter); } /* was 0 8rem */
+}
+
+/* Keep main column left-aligned so children can hug the left edge together */
+.dashboard-main { align-items: flex-start; }
+
+/* Tabs row: stop centering; align to the same left edge as content */
+.dashboard-tabs-container {
+  justify-content: flex-start;
+  max-width: var(--dash-content-max);
+  margin-left: 0;
+  margin-right: auto;   /* left-align inside the main column */
+}
+
+/* Tab panels: same left edge and width as the tabs row */
+.dashboard-tab-content,
+.dashboard-tab-content.active {
+  max-width: var(--dash-content-max);
+  margin-left: 0;
+  margin-right: auto;
+  text-align: left;     /* avoid right-aligned panel content */
+}
+
+/* On laptop/tablet (where you already adjust layout), let it flow full width */
+@media (max-width: 1200px) {
+  .dashboard-tabs-container,
+  .dashboard-tab-content,
+  .dashboard-tab-content.active {
+    max-width: none;
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
 
 
 
