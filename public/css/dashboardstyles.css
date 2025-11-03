@@ -547,6 +547,45 @@ html, body {
 }
 
 
+/* ==== Right Topics Rail: safe padding + wider cutoff ==== */
+/* shared vars */
+:root {
+  --rail-width: 200px;   /* matches .dashboard-page .topic-sidebar width */
+  --rail-gap: 28px;      /* breathing room between content and rail */
+}
+
+/* When the page includes the right rail, make room so nothing sits under it */
+.dashboard-main.has-right-rail {
+  padding-right: calc(var(--rail-width) + var(--rail-gap));
+}
+
+/* Slightly narrower rail on mid-wide screens to preserve space */
+@media (max-width: 1400px) {
+  .dashboard-page .topic-sidebar { width: 180px; }
+  :root { --rail-width: 180px; }
+}
+
+/* Hide the fixed rail a bit earlier to prevent any overlap on smaller laptops */
+@media (max-width: 1280px) {
+  .dashboard-page .topic-sidebar { display: none !important; visibility: hidden !important; }
+  .dashboard-main.has-right-rail { padding-right: 0; } /* no rail -> no extra padding */
+}
+
+/* ==== Tighten empty space between left sidebar and tabs on leader dashboard ==== */
+@media (min-width: 1180px) {
+  /* pull the whole grid in a bit on wide screens */
+  .dashboard-grid { padding: 0 5rem; }          /* was 0 8rem */
+  .dashboard-grid { grid-template-columns: 26% 74%; } /* slight shift toward content */
+  .dashboard-tabs-container { justify-content: flex-start; } /* stop centering big gap */
+}
+
+/* Optional: nudge the rail closer to the edge on very wide screens */
+@media (min-width: 1500px) {
+  .dashboard-page .topic-sidebar { right: 2.5rem; }
+  :root { --rail-gap: 24px; } /* a touch tighter on ultra-wide */
+}
+
+
 
 /* Container for the prompt card */
 .promptspartial-card-container {
