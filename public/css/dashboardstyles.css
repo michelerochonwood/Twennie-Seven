@@ -654,6 +654,46 @@ html, body {
   }
 }
 
+/* === Center tabs + content in the same column (and undo the flex shift) === */
+
+/* Roll back the flex alignment introduced earlier */
+.dashboard-grid .dashboard-main {
+  display: block;          /* instead of flex */
+  align-items: unset;      /* reset */
+}
+
+/* Constrain BOTH tabs and tab content to the same centered width */
+.dashboard-tabs-container,
+.dashboard-tab-content,
+.leader-prompt-section,
+.leader-prompt-container,
+.leader-group-section {
+  width: 100%;
+  max-width: 1150px;       /* match your preferred line length */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Keep the tab buttons starting at the left INSIDE the centered container */
+.dashboard-tabs-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start; /* prevents the row from drifting right */
+  gap: 10px;                   /* optional breathing room between tabs */
+}
+
+/* On smaller screens (rail hidden), let content flow naturally */
+@media (max-width: 1280px) {
+  .dashboard-tabs-container,
+  .dashboard-tab-content,
+  .leader-prompt-section,
+  .leader-prompt-container,
+  .leader-group-section {
+    max-width: none;
+  }
+}
+
+
 
 
 
