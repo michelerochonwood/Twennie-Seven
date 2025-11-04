@@ -300,6 +300,39 @@ html, body {
   }
 }
 
+/* Make sure the rail sits above main content; button above the rail */
+.topic-sidebar { z-index: 1100; }
+.topic-sidebar-toggle { z-index: 1200; }
+
+/* Put the toggle INSIDE the rail (top-right) to avoid clipping on dashboard) */
+.topic-sidebar-toggle {
+  position: absolute;
+  top: 8px;
+  right: 8px;       /* was left:-22px; this avoids being off-canvas or clipped */
+  left: auto;
+}
+
+/* Smooth collapse; use the real width if you centralized it as a CSS var */
+.topic-sidebar.collapsed {
+  transform: translateX(240px); /* or calc(var(--topics-rail-width, 200px) + 40px) */
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Reopen button placement */
+.topic-sidebar-reopen {
+  position: fixed;
+  top: 250px;
+  right: 1rem;
+}
+
+/* Hide the toggle/reopen under 1200px (rail is already hidden) */
+@media (max-width: 1200px) {
+  .topic-sidebar-toggle,
+  .topic-sidebar-reopen { display: none !important; }
+}
+
+
 
 
 
