@@ -186,75 +186,12 @@ html, body {
   background-color: #4a4ab2;
 }
  /* Responsive Design */
-@media screen and (max-width: 1200px) {
-  .topic-page-wrapper {
-    display: flex;
-    gap: 22.5px;
-    /* margin-top: 187.5px; */
-    /* padding: 0 22.5px; */
-    padding: 0 5rem;
-    /* max-width: 67.5%; */
-    max-width: 100%;
-    /* margin-left: 7.5%; */
-    margin: 7rem 0 5rem 0;
+@media (max-width: 1200px) {
+  .topic-sidebar,
+  .dashboard-page .topic-sidebar {
+    display: none !important;
+    visibility: hidden !important;
   }
-  .topic-main-area {
-    max-width: 100%;
-  }
-  .topic-sidebar {
-    height: calc(100vh - 310px);
-  }
-  @media screen and (max-width: 1080px) {
-    .topic-page-wrapper {
-      max-width: 100%;
-    }
-    .topic-main-area {
-      max-width: 100%;
-    }
-    .topic-sidebar {
-      visibility: hidden;
-      display: none;
-    }
-    .topic-header {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-    .topic-header > div:nth-of-type(1) {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-    @media (max-width: 1024px) {
-      .single-topic-subs-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      @media (max-width: 768px) {
-        .topic-page-wrapper {
-          grid-template-columns: 1fr;
-        }        
-        .single-topic-subs-grid {
-          grid-template-columns: 1fr;
-        }
-        .single-topic-resource-btn button {
-          width: 100%;
-        }
-        @media screen and (max-width: 500px) {
-          .topic-header .topic-title {
-            font-size: clamp(1.3rem, 5vw, 2.3rem);
-          }
-        }
-        @media screen and (max-width: 600px) {
-          .topic-page-wrapper {
-            padding: 0 3rem;
-          }
-          @media screen and (max-width: 380px) {
-            .topic-page-wrapper {
-              padding: 0 1.5rem;
-            }
-          }
-        }         
-      }
-    }  
-  }  
 }
 
 .topic-sidebar .sidebar-item.is-active,
