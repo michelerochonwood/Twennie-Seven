@@ -3,6 +3,10 @@
 
 <!-- Right sidebar -->
 <nav class="topic-sidebar" aria-label="topic navigation">
+  <!-- Collapse Button -->
+  <button class="topic-sidebar-toggle" aria-label="Hide topics column">
+    <ion-icon name="chevron-forward-outline"></ion-icon>
+  </button>
   <div class="sidebar-section">
     <div class="sidebar-heading topic-nav-label">topic navigation</div>
 
@@ -154,3 +158,21 @@
   </div>
 </aside> 
 
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const sidebar = document.querySelector('.topic-sidebar');
+    const toggle = document.querySelector('.topic-sidebar-toggle');
+    const reopen = document.querySelector('.topic-sidebar-reopen');
+    if (!sidebar || !toggle || !reopen) return;
+
+    toggle.addEventListener('click', () => {
+      sidebar.classList.add('collapsed');
+      reopen.classList.add('visible');
+    });
+
+    reopen.addEventListener('click', () => {
+      sidebar.classList.remove('collapsed');
+      reopen.classList.remove('visible');
+    });
+  });
+</script>
