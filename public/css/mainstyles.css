@@ -3047,21 +3047,26 @@ line-height: 1.5;
   position: fixed;
   top: 250px;
   right: 1rem;
-  width: 36px;
-  height: 36px;
+  /* pill look */
+  display: none;                 /* becomes flex when .visible is added */
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  height: auto;                  /* was 36px */
+  min-height: 36px;
   background: #262262;
   color: #fff;
   border: none;
-  border-radius: 50%;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
+  border-radius: 9999px;         /* pill */
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: lowercase;
   cursor: pointer;
   z-index: 950;
-  transition: background-color 0.3s ease, transform 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.3s ease, opacity 0.2s ease;
 }
-.topic-sidebar-reopen:hover { background: #4a4ab2; transform: scale(1.05); }
+.topic-sidebar-reopen .label { font-size: 0.95rem; line-height: 1; }
+.topic-sidebar-reopen:hover { background: #4a4ab2; transform: scale(1.02); }
 .topic-sidebar-reopen.visible { display: flex; }
 
 /* Disable toggle buttons under 1200px (already hidden) */
