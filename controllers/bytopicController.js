@@ -134,6 +134,7 @@ exports.getTopicView = async (req, res) => {
             'The Power of Purpose': 'thepowerofpurpose',
             'Tips and Tricks for Proposal Proofreading': 'tipsandtricksforproposalproofreading',
             'Team Building in Technical Consulting': 'teambuilding',
+            'When the Workload is Light': 'workloadlight'
         };
 
         const originalTopicTitle = Object.keys(topicMappings).find(

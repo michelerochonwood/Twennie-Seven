@@ -68,6 +68,8 @@ const articleSchema = new mongoose.Schema({
             'AI in Project Management',
             'AI in Learning',
               'Tips and Tricks for Proposal Proofreading',
+              'When the Workload is Light',
+              'Workplace Culture'
         ],
     },
     secondary_topics: [
@@ -120,6 +122,8 @@ const articleSchema = new mongoose.Schema({
                 'AI in Project Management',
                 'AI in Learning',
                   'Tips and Tricks for Proposal Proofreading',
+                  'When the Workload is Light',
+                  'Workplace Culture'
             ],
         },
     ],

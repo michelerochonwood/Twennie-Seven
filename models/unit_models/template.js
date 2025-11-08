@@ -47,7 +47,8 @@ const TOPIC_ENUM = [
   'AI in Consulting',
   'AI in Project Management',
   'AI in Learning',
-        'Tips and Tricks for Proposal Proofreading'
+        'Tips and Tricks for Proposal Proofreading',
+        'When the Workload is Light'
 ];
 
 const FILE_FORMAT_ENUM = ['pdf', 'word', 'excel', 'ppt', 'other'];

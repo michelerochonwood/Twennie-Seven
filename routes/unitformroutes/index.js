@@ -73,6 +73,7 @@ const mainTopics = [
   'Turning a Project into a Business Development Powerhouse',
   'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
   'Using Lean in Project Management',
+  'When the Workload is Light',
   'Workplace Culture',
 ];
 
@@ -359,6 +360,7 @@ router.get('/edit_video/:id', ensureAuthenticated, async (req, res) => {
   'Turning a Project into a Business Development Powerhouse',
   'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
   'Using Lean in Project Management',
+  'When the Workload is Light',
   'Workplace Culture',
 
       ];
@@ -489,6 +491,7 @@ router.get('/edit_interview/:id', ensureAuthenticated, async (req, res) => {
   'Turning a Project into a Business Development Powerhouse',
   'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
   'Using Lean in Project Management',
+  'When the Workload is Light',
   'Workplace Culture',
 
             ],
@@ -578,6 +581,7 @@ router.get('/edit_template/:id', ensureAuthenticated, async (req, res) => {
   'Turning a Project into a Business Development Powerhouse',
   'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
   'Using Lean in Project Management',
+  'When the Workload is Light',
   'Workplace Culture',
 
         ];
@@ -674,6 +678,7 @@ router.get('/edit_promptset/:id', ensureAuthenticated, async (req, res) => {
   'Turning a Project into a Business Development Powerhouse',
   'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
   'Using Lean in Project Management',
+  'When the Workload is Light',
   'Workplace Culture',
 
     ];
@@ -842,6 +847,7 @@ router.get('/edit_exercise/:id', ensureAuthenticated, csrfProtection, async (req
   'Turning a Project into a Business Development Powerhouse',
   'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
   'Using Lean in Project Management',
+  'When the Workload is Light',
   'Workplace Culture',
 
         ],

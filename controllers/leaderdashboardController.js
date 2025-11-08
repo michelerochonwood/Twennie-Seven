@@ -377,7 +377,8 @@ const topicMappings = {
     'The Power of Play in the Workplace': 'thepowerofplayintheworkplace',
     'Team Building in Technical Consulting': 'teambuildingintechnicalconsulting',
     'The Power of Purpose': 'thepowerofpurpose',
-    'Tips and Tricks for Proposal Proofreading': 'tipsandtricksforproposalproofreading'
+    'Tips and Tricks for Proposal Proofreading': 'tipsandtricksforproposalproofreading',
+    'When the Workload is Light': 'whentheworkloadislight'
 };
 
 // Mapping topic slugs to their corresponding view filenames
@@ -428,7 +429,8 @@ const topicViewMappings = {
     'teambuildingintechnicalconsulting': 'single_topic_teambuilding',
     'workplaceculture': 'single_topic_workplaceculture',
     'thepowerofpurpose': 'single_topic_purpose',
-    'tipsandtricksforproposalproofreading': 'single_topic_proofreading'
+    'tipsandtricksforproposalproofreading': 'single_topic_proofreading',
+    'whentheworkloadislight': 'single_topic_workloadlight'
 };
 
 // Function to resolve unit type

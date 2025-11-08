@@ -135,7 +135,8 @@ const topicMappings = {
     'The Power of Play in the Workplace': 'thepowerofplayintheworkplace',
     'The Power of Purpose': 'thepowerofpurpose',
     'Team Building in Technical Consulting': 'teambuildingintechnicalconsulting',
-    'Tips and Tricks for Proposal Proofreading': 'tipsandtricksforproposalproofreading'
+    'Tips and Tricks for Proposal Proofreading': 'tipsandtricksforproposalproofreading',
+    'When the Workload is Light': 'whentheworkloadislight'
 };
 
 // Mapping topic slugs to their corresponding view filenames
@@ -186,7 +187,8 @@ const topicViewMappings = {
     'teambuildinginconsulting': 'single_topic_teambuilding',
     'tipsandtricksforproposalproofreading': 'single_topic_proofreading',
     'thepowerofpurpose': 'single_topic_purpose',
-    'workplaceculture': 'single_topic_workplaceculture'
+    'workplaceculture': 'single_topic_workplaceculture',
+    'whentheworkloadislight': 'single_topic_workloadlight'
 };
 
 // Function to get subtopics from topics.json

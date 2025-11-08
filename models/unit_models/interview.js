@@ -67,6 +67,7 @@ const interviewSchema = new mongoose.Schema({
             'AI in Project Management',
             'AI in Learning',
               'Tips and Tricks for Proposal Proofreading',
+              'When the Workload is Light'
         ],
     },
     secondary_topics: [
@@ -117,6 +118,7 @@ const interviewSchema = new mongoose.Schema({
             'AI in Project Management',
             'AI in Learning',
               'Tips and Tricks for Proposal Proofreading',
+              'When the Workload is Light'
             ],
         },
     ],
