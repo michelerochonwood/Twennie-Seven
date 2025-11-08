@@ -7,6 +7,34 @@
   {{!-- Dynamic Page Title --}}
   <title>{{#if title}}{{title}} - Twennie Dashboard{{else}}Twennie Dashboard{{/if}}</title>
 
+  {{!-- Keep fonts as-is; just make sure they render immediately when ready --}}
+  {{!-- Replace /fonts/YourFont*.woff2 with your actual files (or remove this block if you use system fonts) --}}
+  <link rel="preconnect" href="https://www.twennie.com" crossorigin>
+  <link rel="preload" href="/fonts/YourFont-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/YourFont-Bold.woff2" as="font" type="font/woff2" crossorigin>
+  <style>
+    @font-face {
+      font-family: "YourFont";
+      src: url("/fonts/YourFont-Regular.woff2") format("woff2");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap; /* prevents invisible text while fonts load */
+    }
+    @font-face {
+      font-family: "YourFont";
+      src: url("/fonts/YourFont-Bold.woff2") format("woff2");
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+    /* Minimal paint so content isn't naked; no font or color opinion */
+    body { margin:0; }
+    /* Hide custom elements until defined (prevents icon pop-in) */
+    ion-icon:not(:defined){ visibility: hidden; }
+    /* Prevent janky fades/slides during first paint */
+    .no-transitions * { transition: none !important; }
+  </style>
+  
   {{!-- views/shared/consent_analytics.hbs --}}
 <script>
   window.dataLayer = window.dataLayer || [];
