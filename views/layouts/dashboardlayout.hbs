@@ -7,63 +7,49 @@
   {{!-- Dynamic Page Title --}}
   <title>{{#if title}}{{title}} - Twennie Dashboard{{else}}Twennie Dashboard{{/if}}</title>
 
-  {{!-- ↓↓↓ MINIMAL CRITICAL CSS TO PREVENT FOUC ON DASHBOARD ↓↓↓ --}}
-  <style>
-    /* Base paint so content never appears “naked” */
-    :root { --tw-bg:#ffffff; --tw-fg:#222; --tw-card: #f7f7fb; --tw-shadow: 0 1px 4px rgba(0,0,0,.06); }
-    html { -webkit-text-size-adjust:100%; }
-    body.dashboard-body { margin:0; background:var(--tw-bg); color:var(--tw-fg); font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; line-height:1.45; }
-    .main-content { min-height: 100vh; }
-    .topic-page-wrapper, .dashboard-wrapper { min-height: 100vh; }
-    .topic-header, .dashboard-header { display:flex; align-items:center; justify-content:space-between; padding:16px 12px; }
-    .topic-title, .dashboard-title { margin:0; font-size: clamp(1.25rem, 1.2rem + .5vw, 1.75rem); }
-    .more-topics { display:flex; align-items:center; gap:.4rem; }
-    .topic-item, .dashboard-card, .bytopic-library-unit-card { background:var(--tw-card); border-radius:12px; box-shadow:var(--tw-shadow); padding:16px; }
-    .topic-resource-btn, .dashboard-btn { padding:10px 14px; border:0; border-radius:10px; cursor:pointer; }
-    .dashboard-alert { margin:12px; padding:12px 14px; border-radius:10px; }
-    .dashboard-alert.error { background:#ffecec; color:#9b1c1c; }
-    .dashboard-alert.success { background:#ecfff2; color:#126b2e; }
-    /* Prevent icon flash before custom element is defined */
-    ion-icon:not(:defined){ visibility: hidden; }
-  </style>
+  {{!-- views/shared/consent_analytics.hbs --}}
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
 
-  {{!-- Consent / Analytics kept first so it doesn’t block CSS --}}
+  gtag('consent', 'default', {
+    security_storage: 'granted',
+    functionality_storage: {{#if consent.functional}}"granted"{{else}}"denied"{{/if}},
+    analytics_storage:    {{#if consent.analytics}}"granted"{{else}}"denied"{{/if}},
+    ad_storage:           "denied",
+    ad_user_data:         "denied",
+    ad_personalization:   "denied"
+  });
+</script>
+
+{{#if consent.analytics}}
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{GA_ID}}"></script>
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){ dataLayer.push(arguments); }
-    gtag('consent', 'default', {
-      security_storage: 'granted',
-      functionality_storage: {{#if consent.functional}}"granted"{{else}}"denied"{{/if}},
-      analytics_storage:    {{#if consent.analytics}}"granted"{{else}}"denied"{{/if}},
-      ad_storage:           "denied",
-      ad_user_data:         "denied",
-      ad_personalization:   "denied"
-    });
+    gtag('js', new Date());
+    gtag('config', '{{GA_ID}}');
   </script>
+{{/if}}
 
-  {{#if consent.analytics}}
-    <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
-    <script async src="https://www.googletagmanager.com/gtag/js?id={{GA_ID}}"></script>
-    <script>
-      gtag('js', new Date());
-      gtag('config', '{{GA_ID}}');
-    </script>
-  {{/if}}
 
-  {{!-- Preload + load dashboard CSS so styles win the race --}}
-  <link rel="preload" href="https://www.twennie.com/css/navigation.css?v={{timestamp}}" as="style">
-  <link rel="preload" href="https://www.twennie.com/css/dashboardstyles.css?v={{timestamp}}" as="style">
+  {{!-- Navigation Styles --}}
   <link rel="stylesheet" href="https://www.twennie.com/css/navigation.css?v={{timestamp}}">
+
+  <!-- Dashboard Styles -->
   <link rel="stylesheet" href="https://www.twennie.com/css/dashboardstyles.css?v={{timestamp}}">
 
-  {{!-- Defer all JS so CSS paints first --}}
+  {{!-- Mobile Navigation Script --}}
   <script src="/javascript/mobile-nav.js?v={{timestamp}}" defer></script>
+
+  <!-- Ionicons Library -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 </head>
 
 <body class="dashboard-body">
   {{> mainpartials/header}}
 
   <main class="main-content">
+    
     {{#if error}}
       <div class="dashboard-alert error">{{error}}</div>
     {{/if}}
@@ -75,39 +61,34 @@
     {{{body}}}
   </main>
 
-  {{!-- Dashboard Scripts (deferred) --}}
-  <script src="/javascript/animation/progresspies.js?v={{timestamp}}" defer></script>
-  <script src="/javascript/dashboard_cont.js?v={{timestamp}}" defer></script>
-  <script src="/javascript/prompts/unregister.js?v={{timestamp}}" defer></script>
-  <script src="/javascript/dashboard/dashboard_tabs.js?v={{timestamp}}" defer></script>
-  <script src="/javascript/dashboard/topicdashboard.js?v={{timestamp}}" defer></script>
+  <!-- Dashboard Scripts with Cache-Busting -->
+  <script src="/javascript/animation/progresspies.js?v={{timestamp}}"></script>
+  <script src="/javascript/dashboard_cont.js?v={{timestamp}}"></script>
+  <script src="/javascript/prompts/unregister.js?v={{timestamp}}"></script>
+  <script src="/javascript/dashboard/dashboard_tabs.js?v={{timestamp}}"></script>
+  <script src="/javascript/dashboard/topicdashboard.js?v={{timestamp}}"></script>
 
-  {{!-- External libraries (defer so they never block first paint) --}}
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+  <!-- External library (no cache busting needed) -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  {{!-- Ionicons (deferred to avoid icon FOUC) --}}
-  <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.esm.js" defer></script>
-  <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.js" defer></script>
+  <script>
+  (function () {
+    const rail = document.querySelector('.topic-sidebar');
+    if (!rail) return;
 
-  {{!-- Active link highlight (runs post-paint) --}}
-  <script defer>
-    (function () {
-      const rail = document.querySelector('.topic-sidebar');
-      if (!rail) return;
-      const path = location.pathname.replace(/\/+$/, '').toLowerCase();
-      rail.querySelectorAll('a[href]').forEach(a => {
-        let href = a.getAttribute('href');
-        if (!href) return;
-        href = href.replace(/\/+$/, '').toLowerCase();
-        if (href === path) {
-          a.setAttribute('aria-current', 'page');
-          a.querySelector('.sidebar-item')?.classList.add('is-active');
-        }
-      });
-    })();
-  </script>
+    const path = location.pathname.replace(/\/+$/, '').toLowerCase();
+    rail.querySelectorAll('a[href]').forEach(a => {
+      let href = a.getAttribute('href');
+      if (!href) return;
+      href = href.replace(/\/+$/, '').toLowerCase();
+      if (href === path) {
+        a.setAttribute('aria-current', 'page');
+        a.querySelector('.sidebar-item')?.classList.add('is-active');
+      }
+    });
+  })();
+</script>
 
   {{> mainpartials/footer}}
 </body>
 </html>
-
