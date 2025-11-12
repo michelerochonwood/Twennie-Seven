@@ -2833,6 +2833,67 @@ line-height: 1.5;
   line-height: 1.4;
 }
 
+/* ===== KPI section on topic page ===== */
+
+.topic-kpi-section {
+  margin-top: 2rem;
+  margin-bottom: 2.5rem;
+}
+
+.kpi-topic-title {
+  font-size: 1rem;
+  text-transform: lowercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.5rem;
+  color: #262262;
+}
+
+.kpi-topic-intro,
+.kpi-topic-footer {
+  font-size: 0.85rem;
+  color: #444;
+  margin-bottom: 0.75rem;
+}
+
+/* Reuse expandable styles, but allow 2 columns max here for readability */
+.kpi-expandable-container {
+  margin: 1rem 0 1.5rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.kpi-list {
+  padding-left: 1.1rem;
+  margin: 0.3rem 0;
+}
+
+.kpi-list li {
+  font-size: 0.85rem;
+  margin-bottom: 0.35rem;
+}
+
+/* Arrow rotation (you already do this on promo page) */
+.expandable-item.active .expand-arrow {
+  transform: rotate(180deg);
+}
+
+.expand-arrow {
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Make sure content is hidden by default on topic page too */
+.topic-kpi-section .expandable-content {
+  display: none;
+}
+
+/* Responsive: stack KPI dropdowns on smaller screens */
+@media screen and (max-width: 780px) {
+  .kpi-expandable-container {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+
+
 
 /* Topics Column */
 
