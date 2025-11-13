@@ -1,0 +1,122 @@
+<section class="topic-kpi-section" aria-labelledby="kpi-topic-heading">
+  <h2 id="kpi-topic-heading" class="kpi-topic-title">suggested KPIs for this topic</h2>
+
+  <p class="kpi-topic-intro">
+    These KPIs help you practice direct, respectful, and action-oriented communication —
+    the kind that moves projects forward, reduces delays, and strengthens professional trust.
+    Choose a few that matter most to you or your team.
+  </p>
+
+  <div class="expandable-container kpi-expandable-container">
+
+    <!-- 1. Timely & Transparent Communication -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-timely-communication">
+        timely &amp; transparent communication
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" 
+             viewBox="0 0 331.65 100.99" style="width: 24px">
+          <polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0" fill="#4e50a2"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-timely-communication">
+        <ul class="kpi-list">
+          <li>Reach out to clients proactively when a deliverable is at risk — before the deadline, not after.</li>
+          <li>Provide clear update frequency (daily, weekly) when timelines shift.</li>
+          <li>Never let more than one business day pass without acknowledging a missed commitment.</li>
+          <li>Use framing that emphasizes partnership (“here’s how I’ll support you”) instead of apology or avoidance.</li>
+          <li>Document all major timeline shifts in writing to ensure clarity and alignment.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 2. Team Communication & Accountability -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-team-accountability">
+        team communication &amp; accountability
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" 
+             viewBox="0 0 331.65 100.99" style="width: 24px">
+          <polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0" fill="#4e50a2"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-team-accountability">
+        <ul class="kpi-list">
+          <li>Address underperformance early — within 2 days of noticing a repeated issue.</li>
+          <li>Use partnership-based language in difficult conversations (“let’s fix this together”).</li>
+          <li>Practice the three-strike approach for missed internal deadlines before escalating.</li>
+          <li>Give positive reinforcement whenever someone recovers from a delay or challenge.</li>
+          <li>Use meeting openers that promote psychological safety (e.g., positivity rounds).</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 3. Managing External Relationships (Contractors, Public, Media) -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-external-relationships">
+        managing external relationships
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" 
+             viewBox="0 0 331.65 100.99" style="width: 24px">
+          <polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0" fill="#4e50a2"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-external-relationships">
+        <ul class="kpi-list">
+          <li>Address contractor non-compliance within 24 hours, using specific evidence (photos, specs).</li>
+          <li>Use fact-based, ego-free communication when conflicts arise with contractors.</li>
+          <li>Respond to members of the public with courtesy but without over-explaining or engaging in conflict.</li>
+          <li>Use prepared statements or client-approved messaging for public inquiries.</li>
+          <li>Refer media inquiries immediately to the designated communications office — with no improvisation.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 4. The Language of Urgency -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-language-urgency">
+        the language of urgency
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" 
+             viewBox="0 0 331.65 100.99" style="width: 24px">
+          <polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0" fill="#4e50a2"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-language-urgency">
+        <ul class="kpi-list">
+          <li>Craft urgent messages using clarity, optimism, support, and professional warmth.</li>
+          <li>Avoid caps lock, exclamation marks, and vague urgency terms (“ASAP”).</li>
+          <li>Use humor appropriately to reduce tension and keep teams engaged.</li>
+          <li>Negotiate internal deadlines collaboratively, not by issuing top-down demands.</li>
+          <li>Provide acknowledgement and praise whenever urgency actions are met or exceeded.</li>
+          <li>Escalate delays professionally, with written accountability and fairness.</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="kpi-topic-footer">
+    Choose one KPI from each category to strengthen your candid communication practice.
+    Small behavior changes build powerful, schedule-protecting habits.
+  </p>
+</section>
+
+<script>
+  // KPI dropdowns: reuse expandable behavior
+  document.addEventListener('DOMContentLoaded', function () {
+    const titles = document.querySelectorAll('.kpi-expandable-container .expandable-title');
+    titles.forEach(function (title) {
+      title.addEventListener('click', function () {
+        const parent = this.closest('.expandable-item');
+        const targetId = this.getAttribute('data-target');
+        const content = document.getElementById(targetId);
+        if (!parent || !content) return;
+
+        const isActive = parent.classList.contains('active');
+        parent.classList.toggle('active', !isActive);
+        content.style.display = !isActive ? 'block' : 'none';
+      });
+    });
+  });
+</script>
