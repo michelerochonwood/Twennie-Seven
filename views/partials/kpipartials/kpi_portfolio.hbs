@@ -1,0 +1,112 @@
+<section class="topic-kpi-section" aria-labelledby="kpi-topic-heading">
+  <h2 id="kpi-topic-heading" class="kpi-topic-title">suggested KPIs for this topic</h2>
+
+  <p class="kpi-topic-intro">
+    These KPIs help you connect portfolio decisions to real business outcomes — better
+    alignment with strategy, healthier risk and fee profiles, and a more intentional
+    mix of work. Choose a few to make portfolio reviews more concrete.
+  </p>
+
+  <div class="expandable-container kpi-expandable-container">
+
+    <!-- 1. Portfolio Mix & Balance -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-portfolio-mix">
+        portfolio mix &amp; balance
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2" points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+      <div class="expandable-content" id="kpi-portfolio-mix">
+        <ul class="kpi-list">
+          <li>Maintain a minimum target percentage of work in your highest-value sectors (e.g., 40–60%).</li>
+          <li>Track the share of strategic “stretch” projects vs. routine projects each quarter.</li>
+          <li>Monitor concentration risk so no single client represents more than a set % of portfolio revenue.</li>
+          <li>Review the split of short-term vs. long-term projects at least quarterly.</li>
+          <li>Ensure a healthy balance of high-margin vs. “anchor” projects that support client relationships.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 2. Strategic Alignment & Fit -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-portfolio-strategy">
+        strategic alignment &amp; fit
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2" points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+      <div class="expandable-content" id="kpi-portfolio-strategy">
+        <ul class="kpi-list">
+          <li>Score each major pursuit against strategic criteria before bid/no-bid decisions.</li>
+          <li>Ensure at least X% of active projects support named strategic priorities or focus sectors.</li>
+          <li>Track projects that drift out of strategic fit and trigger a review on renewal or scope change.</li>
+          <li>Measure how many new pursuits come from “ideal client” profiles vs. one-off opportunities.</li>
+          <li>Review lessons learned from misaligned projects and feed them into future bid/no-bid criteria.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 3. Capacity, Risk & Deliverability -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-portfolio-capacity">
+        capacity, risk &amp; deliverability
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2" points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+      <div class="expandable-content" id="kpi-portfolio-capacity">
+        <ul class="kpi-list">
+          <li>Assess delivery capacity before approving each major new pursuit or add-on.</li>
+          <li>Track the number of projects operating at “high risk” status and aim to reduce this over time.</li>
+          <li>Monitor staff over-allocation at the portfolio level, not just project-by-project.</li>
+          <li>Flag projects whose risk profile has changed significantly since award and review quarterly.</li>
+          <li>Ensure high-risk or complex projects have named owners for quality, safety, and client experience.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 4. Portfolio Performance & Learning -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-portfolio-learning">
+        portfolio performance &amp; learning
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2" points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+      <div class="expandable-content" id="kpi-portfolio-learning">
+        <ul class="kpi-list">
+          <li>Review win–loss results by sector and client type at least quarterly.</li>
+          <li>Track average margin, write-offs, and client satisfaction at the portfolio level, not just per project.</li>
+          <li>Conduct structured “portfolio review” conversations at a regular cadence (e.g., monthly or quarterly).</li>
+          <li>Capture 3–5 portfolio-level lessons learned each quarter and share them with project managers.</li>
+          <li>Monitor how often insights from proposals and projects influence future portfolio choices.</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="kpi-topic-footer">
+    Choose a KPI from each category to keep your portfolio intentional — not just a random collection of projects —
+    and to steer effort toward the work that really moves your firm forward.
+  </p>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const titles = document.querySelectorAll('.kpi-expandable-container .expandable-title');
+    titles.forEach(function (title) {
+      title.addEventListener('click', function () {
+        const parent = this.closest('.expandable-item');
+        const targetId = this.getAttribute('data-target');
+        const content = document.getElementById(targetId);
+        if (!parent || !content) return;
+
+        const isActive = parent.classList.contains('active');
+        parent.classList.toggle('active', !isActive);
+        content.style.display = !isActive ? 'block' : 'none';
+      });
+    });
+  });
+</script>

@@ -74,4 +74,41 @@
           <polygon fill="#4e50a2" points="0 0 161.57 100.99 331.65 0 0 0"/>
         </svg>
       </h3>
-      <div class="expandable-content"
+      <div class="expandable-content" id="kpi-revenue">
+        <ul class="kpi-list">
+          <li>Forecast monthly revenue for all active projects with at least 80% accuracy.</li>
+          <li>Review burn rate vs. planned revenue weekly.</li>
+          <li>Track the project multiplier monthly and adjust staffing as needed.</li>
+          <li>Ensure invoices reflect completed work each month — no late billing.</li>
+          <li>Identify revenue risks 30 days before month-end.</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="kpi-topic-footer">
+    Choose a KPI from each category to build predictable, healthy, profitable projects
+    — and give yourself fewer write-off meetings to survive.
+  </p>
+</section>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const titles = document.querySelectorAll('.kpi-expandable-container .expandable-title');
+    titles.forEach(function (title) {
+      title.addEventListener('click', function () {
+        const parent = this.closest('.expandable-item');
+        const targetId = this.getAttribute('data-target');
+        const content = document.getElementById(targetId);
+        if (!parent || !content) return;
+
+        const isActive = parent.classList.contains('active');
+        parent.classList.toggle('active', !isActive);
+        content.style.display = !isActive ? 'block' : 'none';
+      });
+    });
+  });
+</script>
+
