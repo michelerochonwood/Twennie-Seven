@@ -16,113 +16,8 @@
     <!-- Subtopics Partial -->
     {{> topicpartials/findingprojects_topic }}
 
-    <!-- KPIs Section -->
-    <section class="topic-kpi-section" aria-labelledby="kpi-topic-heading">
-      <h2 class="topic-title">suggested KPIs for this topic</h2>
-      <p class="kpi-topic-intro">
-        After you’ve completed the units and exercises in this topic, you can use these KPIs
-        to shape your own career development plan or your team’s BD habits.
-      </p>
-
-      <div class="expandable-container kpi-expandable-container">
-        <!-- 1. Culture & Awareness -->
-        <div class="expandable-item">
-          <h3 class="expandable-title" data-target="kpi-culture-awareness">
-            culture &amp; awareness
-            <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99" style="width: 24px">
-              <defs>
-                <style>.cls-1 { fill: #4e50a2; }</style>
-              </defs>
-              <g>
-                <polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/>
-              </g>
-            </svg>
-          </h3>
-          <div class="expandable-content" id="kpi-culture-awareness">
-            <ul class="kpi-list">
-              <li>Each team member can clearly explain the client’s pre-RFP process and why early contact matters.</li>
-              <li>Each person identifies at least three non-RFP sources for new project leads.</li>
-              <li>Completion of the prompt set <em>Pre-RFP Business Development Culture – What Does Your Team Believe About BD?</em></li>
-              <li>The team holds at least one discussion per quarter to review beliefs and misconceptions about BD.</li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- 2. Recording & Tracking -->
-        <div class="expandable-item">
-          <h3 class="expandable-title" data-target="kpi-recording-tracking">
-            recording &amp; tracking
-            <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99" style="width: 24px">
-              <defs>
-                <style>.cls-1 { fill: #4e50a2; }</style>
-              </defs>
-              <g>
-                <polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/>
-              </g>
-            </svg>
-          </h3>
-          <div class="expandable-content" id="kpi-recording-tracking">
-            <ul class="kpi-list">
-              <li>100% of “soft” leads heard in conversation are logged within 48 hours.</li>
-              <li>The team maintains a shared list of active pre-RFP opportunities, updated at least once a month.</li>
-              <li>Each person moves at least one lead per quarter from “heard about” to “documented and tracked.”</li>
-              <li>Lead log reviews appear as a recurring agenda item in relevant team or BD meetings.</li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- 3. Pull Marketing -->
-        <div class="expandable-item">
-          <h3 class="expandable-title" data-target="kpi-pull-marketing">
-            pull marketing
-            <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99" style="width: 24px">
-              <defs>
-                <style>.cls-1 { fill: #4e50a2; }</style>
-              </defs>
-              <g>
-                <polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/>
-              </g>
-            </svg>
-          </h3>
-          <div class="expandable-content" id="kpi-pull-marketing">
-            <ul class="kpi-list">
-              <li>Each professional participates in at least two visibility or outreach actions per quarter (events, talks, community initiatives, client coffees, etc.).</li>
-              <li>At least one new case study, nugget, or social-media story is created each quarter from project learnings.</li>
-              <li>The team records at least three “helpfully early” contacts with clients before RFPs in a given year.</li>
-              <li>Positive project stories and small wins are captured and stored where BD teams can reuse them.</li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- 4. Accountability & Reflection -->
-        <div class="expandable-item">
-          <h3 class="expandable-title" data-target="kpi-accountability">
-            accountability &amp; reflection
-            <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99" style="width: 24px">
-              <defs>
-                <style>.cls-1 { fill: #4e50a2; }</style>
-              </defs>
-              <g>
-                <polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/>
-              </g>
-            </svg>
-          </h3>
-          <div class="expandable-content" id="kpi-accountability">
-            <ul class="kpi-list">
-              <li>BD updates appear as a standing item on team meeting agendas.</li>
-              <li>Each member completes the prompt set <em>Pre-RFP Business Development Habits – Sources for Leads Other Than Purchasing Sites</em>.</li>
-              <li>After every major loss, the team records a short reflection on what the competitor likely saw or did earlier.</li>
-              <li>Desirable BD behaviors (logging leads, early outreach, sharing intel) are recognized publicly at least once a month.</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <p class="kpi-topic-footer">
-        Pick two or three KPIs from this list and add them to your own development path,
-        or use them as a starting point for your team’s BD playbook.
-      </p>
-    </section>
+    <!-- KPIs Partial -->
+    {{> kpipartials/kpi_findingprojects }}
 
     <!-- Bluey + CTA -->
     <div class="topic-resource-cta-wrapper">
@@ -148,22 +43,5 @@
       arrow.classList.toggle('open');
     }
   }
-
-  // KPI dropdowns: reuse expandable pattern
-  document.addEventListener('DOMContentLoaded', function () {
-    const titles = document.querySelectorAll('.kpi-expandable-container .expandable-title');
-
-    titles.forEach(function (title) {
-      title.addEventListener('click', function () {
-        const parent = this.closest('.expandable-item');
-        const targetId = this.getAttribute('data-target');
-        const content = document.getElementById(targetId);
-        if (!parent || !content) return;
-
-        const isActive = parent.classList.contains('active');
-        parent.classList.toggle('active', !isActive);
-        content.style.display = !isActive ? 'block' : 'none';
-      });
-    });
-  });
 </script>
+
