@@ -69,7 +69,12 @@ const articleSchema = new mongoose.Schema({
             'AI in Learning',
               'Tips and Tricks for Proposal Proofreading',
               'When the Workload is Light',
-              'Workplace Culture'
+              'Workplace Culture',
+                'The First 10 Days of a Project',
+  'Managing Scope So It Doesnt Manage You',
+  'Risk Management',
+  'Closing a Project Strategically',
+  'Rescuing a Project That Has Gone Off the Rails'
         ],
     },
     secondary_topics: [
@@ -123,7 +128,12 @@ const articleSchema = new mongoose.Schema({
                 'AI in Learning',
                   'Tips and Tricks for Proposal Proofreading',
                   'When the Workload is Light',
-                  'Workplace Culture'
+                  'Workplace Culture',
+                    'The First 10 Days of a Project',
+  'Managing Scope So It Doesnt Manage You',
+  'Risk Management',
+  'Closing a Project Strategically',
+  'Rescuing a Project That Has Gone Off the Rails'
             ],
         },
     ],

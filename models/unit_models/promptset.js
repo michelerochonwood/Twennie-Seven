@@ -68,7 +68,12 @@ const promptSetSchema = new mongoose.Schema({
       'AI in Project Management',
       'AI in Learning',
       'Tips and Tricks for Proposal Proofreading',
-      'When the Workload is Light'
+      'When the Workload is Light',
+        'The First 10 Days of a Project',
+  'Managing Scope So It Doesnt Manage You',
+  'Risk Management',
+  'Closing a Project Strategically',
+  'Rescuing a Project That Has Gone Off the Rails'
     ],
   },
   secondary_topics: [
@@ -121,7 +126,12 @@ const promptSetSchema = new mongoose.Schema({
         'AI in Project Management',
         'AI in Learning',
               'Tips and Tricks for Proposal Proofreading',
-              'When the Workload is Light'
+              'When the Workload is Light',
+                'The First 10 Days of a Project',
+  'Managing Scope So It Doesnt Manage You',
+  'Risk Management',
+  'Closing a Project Strategically',
+  'Rescuing a Project That Has Gone Off the Rails'
       ],
     },
   ],

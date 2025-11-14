@@ -103,6 +103,11 @@ const createGetFormHandler = (unitType, viewPath) => (req, res) => {
   'Using Lean in Project Management',
   'When the Workload is Light',
   'Workplace Culture',
+  'The First 10 Days of a Project',
+  'Managing Scope So It Doesnt Manage You',
+  'Risk Management',
+  'Closing a Project Strategically',
+  'Rescuing a Project That Has Gone Off the Rails'
         ];
 
         res.render(`unit_form_views/${viewPath}`, {
@@ -286,6 +291,11 @@ getUpcomingForm: (req, res) => {
   'Using Lean in Project Management',
   'When the Workload is Light',
   'Workplace Culture',
+    'The First 10 Days of a Project',
+  'Managing Scope So It Doesnt Manage You',
+  'Risk Management',
+  'Closing a Project Strategically',
+  'Rescuing a Project That Has Gone Off the Rails'
     ];
 
     const unitTypes = [
@@ -359,6 +369,11 @@ submitUpcoming: async (req, res) => {
   'Using Lean in Project Management',
   'When the Workload is Light',
   'Workplace Culture',
+    'The First 10 Days of a Project',
+  'Managing Scope So It Doesnt Manage You',
+  'Risk Management',
+  'Closing a Project Strategically',
+  'Rescuing a Project That Has Gone Off the Rails'
     ];
 
     if (!req.user && !req.session?.user) {
@@ -587,6 +602,11 @@ prefillFromUpcoming: async (req, res) => {
   'Using Lean in Project Management',
   'When the Workload is Light',
   'Workplace Culture',
+    'The First 10 Days of a Project',
+  'Managing Scope So It Doesnt Manage You',
+  'Risk Management',
+  'Closing a Project Strategically',
+  'Rescuing a Project That Has Gone Off the Rails'
     ];
 
     // Image fallback
@@ -864,6 +884,11 @@ submitArticle: async (req, res) => {
   'Using Lean in Project Management',
   'When the Workload is Light',
   'Workplace Culture',
+    'The First 10 Days of a Project',
+  'Managing Scope So It Doesnt Manage You',
+  'Risk Management',
+  'Closing a Project Strategically',
+  'Rescuing a Project That Has Gone Off the Rails'
     ];
 
     console.log('Incoming file:', req.file);
@@ -1308,6 +1333,11 @@ submitInterview: async (req, res) => {
   'Using Lean in Project Management',
   'When the Workload is Light',
   'Workplace Culture',
+    'The First 10 Days of a Project',
+  'Managing Scope So It Doesnt Manage You',
+  'Risk Management',
+  'Closing a Project Strategically',
+  'Rescuing a Project That Has Gone Off the Rails'
             ],
             secondaryTopics: [
   'AI in Consulting',
@@ -1357,6 +1387,11 @@ submitInterview: async (req, res) => {
   'Using Lean in Project Management',
   'When the Workload is Light',
   'Workplace Culture',
+    'The First 10 Days of a Project',
+  'Managing Scope So It Doesnt Manage You',
+  'Risk Management',
+  'Closing a Project Strategically',
+  'Rescuing a Project That Has Gone Off the Rails'
             ],
             characteristics: [
               'educational',
@@ -1588,6 +1623,11 @@ submitPromptSet: async (req, res) => {
   'Using Lean in Project Management',
   'When the Workload is Light',
   'Workplace Culture',
+    'The First 10 Days of a Project',
+  'Managing Scope So It Doesnt Manage You',
+  'Risk Management',
+  'Closing a Project Strategically',
+  'Rescuing a Project That Has Gone Off the Rails'
   ];
 
   try {

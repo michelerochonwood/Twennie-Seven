@@ -75,6 +75,11 @@ const mainTopics = [
   'Using Lean in Project Management',
   'When the Workload is Light',
   'Workplace Culture',
+    'The First 10 Days of a Project',
+  'Managing Scope So It Doesnt Manage You',
+  'Risk Management',
+  'Closing a Project Strategically',
+  'Rescuing a Project That Has Gone Off the Rails'
 ];
 
 router.get('/form_nugget', ensureAuthenticated, unitFormController.getNuggetForm);
@@ -362,6 +367,11 @@ router.get('/edit_video/:id', ensureAuthenticated, async (req, res) => {
   'Using Lean in Project Management',
   'When the Workload is Light',
   'Workplace Culture',
+    'The First 10 Days of a Project',
+  'Managing Scope So It Doesnt Manage You',
+  'Risk Management',
+  'Closing a Project Strategically',
+  'Rescuing a Project That Has Gone Off the Rails'
 
       ];
   
@@ -493,6 +503,11 @@ router.get('/edit_interview/:id', ensureAuthenticated, async (req, res) => {
   'Using Lean in Project Management',
   'When the Workload is Light',
   'Workplace Culture',
+    'The First 10 Days of a Project',
+  'Managing Scope So It Doesnt Manage You',
+  'Risk Management',
+  'Closing a Project Strategically',
+  'Rescuing a Project That Has Gone Off the Rails'
 
             ],
             csrfToken: isDevelopment ? null : req.csrfToken(),
@@ -583,6 +598,11 @@ router.get('/edit_template/:id', ensureAuthenticated, async (req, res) => {
   'Using Lean in Project Management',
   'When the Workload is Light',
   'Workplace Culture',
+    'The First 10 Days of a Project',
+  'Managing Scope So It Doesnt Manage You',
+  'Risk Management',
+  'Closing a Project Strategically',
+  'Rescuing a Project That Has Gone Off the Rails'
 
         ];
 
@@ -680,6 +700,11 @@ router.get('/edit_promptset/:id', ensureAuthenticated, async (req, res) => {
   'Using Lean in Project Management',
   'When the Workload is Light',
   'Workplace Culture',
+    'The First 10 Days of a Project',
+  'Managing Scope So It Doesnt Manage You',
+  'Risk Management',
+  'Closing a Project Strategically',
+  'Rescuing a Project That Has Gone Off the Rails'
 
     ];
 
@@ -849,6 +874,11 @@ router.get('/edit_exercise/:id', ensureAuthenticated, csrfProtection, async (req
   'Using Lean in Project Management',
   'When the Workload is Light',
   'Workplace Culture',
+    'The First 10 Days of a Project',
+  'Managing Scope So It Doesnt Manage You',
+  'Risk Management',
+  'Closing a Project Strategically',
+  'Rescuing a Project That Has Gone Off the Rails'
 
         ],
         csrfToken: req.csrfToken(), // ✅ always pass the token

@@ -134,7 +134,12 @@ exports.getTopicView = async (req, res) => {
             'The Power of Purpose': 'thepowerofpurpose',
             'Tips and Tricks for Proposal Proofreading': 'tipsandtricksforproposalproofreading',
             'Team Building in Technical Consulting': 'teambuilding',
-            'When the Workload is Light': 'whentheworkloadislight'
+            'When the Workload is Light': 'whentheworkloadislight',
+            'The First 10 Days of a Project': 'thefirst10daysofaproject',
+            'Managing Scope So It Doesnt Manage You': 'managingscopesoitdoesntmanageyou',
+            'Risk Management': 'riskmanagement',
+            'Closing a Project Strategically': 'closingaprojectstrategically',
+            'Rescuing a Project That Has Gone Off the Rails': 'rescuingaprojectthatsgoneofftherails'
         };
 
         const originalTopicTitle = Object.keys(topicMappings).find(

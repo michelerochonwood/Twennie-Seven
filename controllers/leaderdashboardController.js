@@ -378,7 +378,13 @@ const topicMappings = {
     'Team Building in Technical Consulting': 'teambuildingintechnicalconsulting',
     'The Power of Purpose': 'thepowerofpurpose',
     'Tips and Tricks for Proposal Proofreading': 'tipsandtricksforproposalproofreading',
-    'When the Workload is Light': 'whentheworkloadislight'
+    'When the Workload is Light': 'whentheworkloadislight',
+                'The First 10 Days of a Project': 'thefirst10daysofaproject',
+            'Managing Scope So It Doesnt Manage You': 'managingscopesoitdoesntmanageyou',
+            'Risk Management': 'riskmanagement',
+            'Closing a Project Strategically': 'closingaprojectstrategically',
+            'Rescuing a Project That Has Gone Off the Rails': 'rescuingaprojectthatsgoneofftherails'
+
 };
 
 // Mapping topic slugs to their corresponding view filenames
@@ -430,7 +436,13 @@ const topicViewMappings = {
     'workplaceculture': 'single_topic_workplaceculture',
     'thepowerofpurpose': 'single_topic_purpose',
     'tipsandtricksforproposalproofreading': 'single_topic_proofreading',
-    'whentheworkloadislight': 'single_topic_workloadlight'
+    'whentheworkloadislight': 'single_topic_workloadlight',
+        'thefirst10daysofaproject': 'single_topic_first10days',
+    'managingscopesoitdoesntmanageyou': 'single_topic_managingscope',
+    'riskmanagement':'single_topic_riskmanagement',
+    'closingaprojectstrategically':'single_topic_closing',
+    'rescuingaprojectthathasgoneofftherails':'single_topic_rescuing'
+
 };
 
 // Function to resolve unit type
