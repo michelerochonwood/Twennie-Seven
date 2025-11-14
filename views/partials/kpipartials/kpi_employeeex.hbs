@@ -1,0 +1,132 @@
+<section class="topic-kpi-section" aria-labelledby="kpi-topic-heading">
+  <h2 id="kpi-topic-heading" class="kpi-topic-title">suggested KPIs for this topic</h2>
+
+  <p class="kpi-topic-intro">
+    These KPIs help leaders strengthen employee experience across the full journey—
+    from onboarding to daily interactions to long-term career development. They focus
+    on workplace design, culture, communication, support systems, and continuous adaptation.
+  </p>
+
+  <div class="expandable-container kpi-expandable-container">
+
+
+    <!-- 1. Employee Journey Mapping & Experience Consistency -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-journey">
+        employee journey mapping &amp; experience consistency
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+              points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-journey">
+        <ul class="kpi-list">
+          <li>Document the full employee journey (recruitment → onboarding → development → advancement → exit) at least annually.</li>
+          <li>Ensure each stage has clearly defined expectations, support tools, and consistent experiences across teams.</li>
+          <li>Evaluate new hires at the 30-, 60-, and 90-day marks to identify onboarding friction points.</li>
+          <li>Audit cross-team consistency — employees in different departments should experience similar clarity and support.</li>
+          <li>Measure whether employees feel their daily work aligns with organizational values and purpose.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 2. Daily Experience, Satisfaction Drivers & “Micro-Moments” -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-micro">
+        daily experience, satisfaction drivers &amp; “micro-moments”
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+              points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-micro">
+        <ul class="kpi-list">
+          <li>Identify daily experience drivers: IT responsiveness, collaboration tools, meeting quality, workload clarity, psychological safety.</li>
+          <li>Track small friction points (slow systems, confusing processes, delayed access to tools) and reduce them systematically.</li>
+          <li>Conduct quarterly pulse surveys to understand day-to-day sentiment—not just annual engagement scores.</li>
+          <li>Improve cross-functional collaboration by aligning tools, workflows, and expectations.</li>
+          <li>Measure employee satisfaction with “micro-moments” — the small interactions that shape overall motivation and loyalty.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 3. Continuous Adaptation & Feedback Integration -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-feedback">
+        continuous adaptation &amp; feedback integration
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+              points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-feedback">
+        <ul class="kpi-list">
+          <li>Collect employee feedback through multiple channels (surveys, focus groups, informal check-ins) at least quarterly.</li>
+          <li>Close the loop by communicating what feedback was heard and what actions will follow.</li>
+          <li>Track responsiveness: measure how quickly and effectively issues raised by staff are addressed.</li>
+          <li>Review and adjust policies annually to reflect evolving workforce needs (remote work, flexibility, advancement opportunities).</li>
+          <li>Ensure improvements are documented and visible so employees see evidence of positive change.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 4. Leadership Presence, Transparency & Cultural Influence -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-leadership">
+        leadership presence, transparency &amp; cultural influence
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+              points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-leadership">
+        <ul class="kpi-list">
+          <li>Ensure leaders model the communication, behaviors, and values they expect from the team.</li>
+          <li>Increase leadership visibility: routine updates, open Q&A sessions, transparent decision-making processes.</li>
+          <li>Promote wellbeing through reasonable workloads, humane deadlines, and supportive management practices.</li>
+          <li>Assess cultural alignment by reviewing how leadership actions reflect stated organizational values.</li>
+          <li>Regularly measure trust levels between leadership and staff and take action where gaps appear.</li>
+        </ul>
+      </div>
+    </div>
+
+
+  </div>
+
+  <p class="kpi-topic-footer">
+    Choose a KPI from each category to shape an employee experience where people feel supported,
+    valued, and able to do their best work throughout every stage of their journey.
+  </p>
+</section>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const titles = document.querySelectorAll('.kpi-expandable-container .expandable-title');
+
+    titles.forEach(function (title) {
+      title.addEventListener('click', function () {
+        const parent = this.closest('.expandable-item');
+        const targetId = this.getAttribute('data-target');
+        const content = document.getElementById(targetId);
+
+        if (!parent || !content) return;
+
+        const isActive = parent.classList.contains('active');
+        parent.classList.toggle('active', !isActive);
+        content.style.display = !isActive ? 'block' : 'none';
+      });
+    });
+  });
+</script>

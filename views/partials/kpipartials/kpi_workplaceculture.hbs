@@ -1,0 +1,132 @@
+<section class="topic-kpi-section" aria-labelledby="kpi-topic-heading">
+  <h2 id="kpi-topic-heading" class="kpi-topic-title">suggested KPIs for this topic</h2>
+
+  <p class="kpi-topic-intro">
+    These KPIs help leaders strengthen workplace culture by aligning values, behaviors,
+    systems, and leadership practices. They focus on psychological safety, communication,
+    consistency, and how culture is reinforced in day-to-day operations.
+  </p>
+
+  <div class="expandable-container kpi-expandable-container">
+
+
+    <!-- 1. Values, Beliefs & Behavioral Alignment -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-values">
+        values, beliefs &amp; behavioral alignment
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2" 
+            points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-values">
+        <ul class="kpi-list">
+          <li>Define 3–5 core cultural values with clear behavioral examples (“what this looks like here”).</li>
+          <li>Ensure key decisions (hiring, promotions, recognition) reflect and reinforce these values.</li>
+          <li>Evaluate team discussions and daily practices for alignment between values and behaviors.</li>
+          <li>Integrate cultural values into onboarding, team meetings, and project kickoffs.</li>
+          <li>Track where values and daily practice diverge, and address misalignments promptly.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 2. Communication, Trust & Psychological Safety -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-safety">
+        communication, trust &amp; psychological safety
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2" 
+            points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-safety">
+        <ul class="kpi-list">
+          <li>Encourage open discussion in meetings; track how often quieter voices participate.</li>
+          <li>Respond to concerns without defensiveness and model calm problem-solving.</li>
+          <li>Ensure employees can raise issues anonymously through surveys or private channels.</li>
+          <li>Reduce negative behaviors (blame, avoidance, withholding information) through coaching and modeling.</li>
+          <li>Monitor trust indicators: turnover, internal mobility, candor in feedback, willingness to ask for help.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 3. Cultural Systems, Policies & Reinforcing Structures -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-systems">
+        cultural systems, policies &amp; reinforcing structures
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2" 
+            points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-systems">
+        <ul class="kpi-list">
+          <li>Review performance evaluations, incentives, and recognition programs to ensure they reinforce desired behaviors.</li>
+          <li>Align hiring practices with cultural expectations, screening for teamwork, communication, and adaptability.</li>
+          <li>Ensure conflict-management processes are fair, timely, and aligned with your stated values.</li>
+          <li>Track whether meetings are effective, inclusive, and respectful — culture is visible in the room.</li>
+          <li>Audit internal communication channels regularly to prevent misinformation, mixed signals, or accidental secrecy.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 4. Leadership Modeling & Maintaining Culture in Remote/Hybrid Work -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-leadership">
+        leadership modeling &amp; maintaining culture in remote/hybrid work
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2" 
+            points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-leadership">
+        <ul class="kpi-list">
+          <li>Leaders model cultural values consistently — especially during stress or uncertainty.</li>
+          <li>Create connection rituals for remote/hybrid work (check-ins, celebrations, shared updates).</li>
+          <li>Track engagement across remote, hybrid, and in-office staff to avoid cultural silos.</li>
+          <li>Address cultural misalignments immediately when behavior contradicts stated values.</li>
+          <li>Assess culture quarterly using short surveys or Twennie prompt sets to detect early shifts.</li>
+        </ul>
+      </div>
+    </div>
+
+
+  </div>
+
+  <p class="kpi-topic-footer">
+    Choose a KPI from each category to build a workplace culture where values are lived,
+    communication is open, systems reinforce the right behaviors, and leaders protect culture
+    across both physical and virtual spaces.
+  </p>
+</section>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const titles = document.querySelectorAll('.kpi-expandable-container .expandable-title');
+
+    titles.forEach(function (title) {
+      title.addEventListener('click', function () {
+        const parent = this.closest('.expandable-item');
+        const targetId = this.getAttribute('data-target');
+        const content = document.getElementById(targetId);
+        if (!parent || !content) return;
+
+        const isActive = parent.classList.contains('active');
+        parent.classList.toggle('active', !isActive);
+        content.style.display = !isActive ? 'block' : 'none';
+      });
+    });
+  });
+</script>

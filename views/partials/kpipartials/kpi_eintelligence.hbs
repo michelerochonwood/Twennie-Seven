@@ -1,0 +1,132 @@
+<section class="topic-kpi-section" aria-labelledby="kpi-topic-heading">
+  <h2 id="kpi-topic-heading" class="kpi-topic-title">suggested KPIs for this topic</h2>
+
+  <p class="kpi-topic-intro">
+    These KPIs help leaders strengthen emotional intelligence in technical teams by improving
+    self-awareness, emotional self-management, empathy, and relationship skills. They focus on
+    moving beyond personality labels and supporting conscious, thoughtful behavior.
+  </p>
+
+  <div class="expandable-container kpi-expandable-container">
+
+
+    <!-- 1. Self-Awareness & Emotional Self-Management -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-self-awareness">
+        self-awareness &amp; emotional self-management
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+                   points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-self-awareness">
+        <ul class="kpi-list">
+          <li>Encourage team members to identify emotional triggers during stressful moments (conflict, deadlines, rework, client pressure).</li>
+          <li>Build reflection habits: require short after-action notes on what emotions influenced behaviors during key interactions.</li>
+          <li>Coach individuals to pause before reacting — replacing automatic responses with intentional choices.</li>
+          <li>Normalize talking about professional emotions (stress, frustration, excitement) in a constructive way.</li>
+          <li>Monitor reductions in reactive behavior, miscommunication, or emotional escalation on projects.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 2. Moving Beyond Personality Labels (The Personality Trap) -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-personality-trap">
+        moving beyond personality labels (the personality trap)
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+                   points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-personality-trap">
+        <ul class="kpi-list">
+          <li>Discourage language like “that’s just who I am” or “I’m not the type of person who…” when it limits growth.</li>
+          <li>Use personality tools only for insight, never as excuses for unproductive behavior or avoidance.</li>
+          <li>Highlight examples where individuals chose new behaviors despite old habits — evidence that change is possible.</li>
+          <li>Integrate EI conversations into feedback sessions, avoiding personality “labels” and focusing on actions.</li>
+          <li>Track improvements in adaptability, flexibility, and willingness to try new interpersonal approaches.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 3. Empathy, Perspective-Taking & Relationship Skills -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-empathy">
+        empathy, perspective-taking &amp; relationship skills
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+                   points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-empathy">
+        <ul class="kpi-list">
+          <li>Coach team members to ask clarifying, curiosity-based questions in moments of tension or disagreement.</li>
+          <li>Promote perspective-taking: “What might this person be dealing with that I can’t see?”</li>
+          <li>Encourage empathy in client interactions by summarizing needs before offering solutions.</li>
+          <li>Use conflict as an opportunity to practice EI — focusing on needs, impacts, and shared outcomes.</li>
+          <li>Track relational improvements: fewer conflicts, smoother collaboration, higher quality conversations.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 4. Building EI Through Practice, Feedback & Micro-Shifts -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-practice-growth">
+        building ei through practice, feedback &amp; micro-shifts
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+                   points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-practice-growth">
+        <ul class="kpi-list">
+          <li>Incorporate EI practice into regular team routines — short discussions, reflections, or scenario-based prompts.</li>
+          <li>Provide specific, behavior-based feedback after interactions where EI plays a role.</li>
+          <li>Encourage documentation of “micro-shifts” — small new behaviors attempted during difficult interactions.</li>
+          <li>Measure progress in EI by observing improvements in communication, teamwork, resilience, and client rapport.</li>
+          <li>Assign Twennie units on emotional intelligence, soft skills, leadership, or psychology to reinforce structured learning.</li>
+        </ul>
+      </div>
+    </div>
+
+
+  </div>
+
+  <p class="kpi-topic-footer">
+    Choose a KPI from each category to build emotional intelligence into your team’s daily habits —
+    helping technical professionals grow beyond old patterns, communicate with clarity, and work
+    together with more awareness, empathy, and intention.
+  </p>
+</section>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const titles = document.querySelectorAll('.kpi-expandable-container .expandable-title');
+
+    titles.forEach(function (title) {
+      title.addEventListener('click', function () {
+        const parent = this.closest('.expandable-item');
+        const targetId = this.getAttribute('data-target');
+        const content = document.getElementById(targetId);
+        if (!parent || !content) return;
+
+        const isActive = parent.classList.contains('active');
+        parent.classList.toggle('active', !isActive);
+        content.style.display = !isActive ? 'block' : 'none';
+      });
+    });
+  });
+</script>

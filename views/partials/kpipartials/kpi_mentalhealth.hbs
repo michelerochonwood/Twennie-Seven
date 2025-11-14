@@ -1,0 +1,132 @@
+<section class="topic-kpi-section" aria-labelledby="kpi-topic-heading">
+  <h2 id="kpi-topic-heading" class="kpi-topic-title">suggested KPIs for this topic</h2>
+
+  <p class="kpi-topic-intro">
+    These KPIs help leaders support mental health in high-pressure, high-performance technical
+    environments. They focus on managing workload, reducing isolation, normalizing conversations,
+    and building systems that prevent burnout while maintaining excellence.
+  </p>
+
+  <div class="expandable-container kpi-expandable-container">
+
+
+    <!-- 1. Workload, Pressure & Burnout Prevention -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-workload">
+        workload, pressure &amp; burnout prevention
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+              points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-workload">
+        <ul class="kpi-list">
+          <li>Monitor workload distribution monthly to prevent chronic overutilization or persistent overtime.</li>
+          <li>Set realistic expectations for billability, especially during peak project phases or learning periods.</li>
+          <li>Require planned downtime after major deadlines or intense client pushes.</li>
+          <li>Track burnout indicators — shortened temper, declining quality, lateness, withdrawal — and intervene early.</li>
+          <li>Build buffer periods into scheduling to reduce panic-driven timelines.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 2. Reducing Isolation & Strengthening Connection -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-connection">
+        reducing isolation &amp; strengthening connection
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+              points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-connection">
+        <ul class="kpi-list">
+          <li>Hold consistent 1-on-1 check-ins focused not just on project updates but on wellbeing and support.</li>
+          <li>Create structured peer connection routines — buddy systems, project co-leads, skill-sharing sessions.</li>
+          <li>Encourage team-wide discussions about workload and stress so people feel less alone in pressure cycles.</li>
+          <li>Identify team members showing signs of isolation and proactively re-engage them.</li>
+          <li>Track participation in team meetings, collaborative tasks, and learning activities to detect disengagement.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 3. Normalizing Mental Health Conversations & Reducing Stigma -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-normalizing">
+        normalizing conversations &amp; reducing stigma
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+              points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-normalizing">
+        <ul class="kpi-list">
+          <li>Discuss mental health as a normal part of workload management, not as a crisis intervention.</li>
+          <li>Model openness: acknowledge stress honestly without dramatizing it.</li>
+          <li>Promote available support systems (counseling, EAPs, mental health days) without shame or caveats.</li>
+          <li>Provide psychological safety by responding to concerns calmly and without punishment.</li>
+          <li>Conduct short, anonymous wellbeing surveys quarterly to identify patterns early.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 4. Systemic Supports & Leadership Practices -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-systems">
+        systemic supports &amp; leadership practices
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+              points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-systems">
+        <ul class="kpi-list">
+          <li>Train managers to recognize stress signals and intervene before burnout escalates.</li>
+          <li>Ensure flexible work arrangements (remote options, adjusted hours, mental health days) are used without stigma.</li>
+          <li>Set clear boundaries between work and personal time (no evening emails unless critical, protected weekends).</li>
+          <li>Evaluate whether incentives unintentionally encourage chronic overwork and revise where needed.</li>
+          <li>Review support policies annually to ensure they evolve with team needs and consulting pressures.</li>
+        </ul>
+      </div>
+    </div>
+
+
+  </div>
+
+  <p class="kpi-topic-footer">
+    Choose a KPI from each category to build a consulting environment where people can do
+    demanding, high-quality work without sacrificing their wellbeing — an environment where
+    connection, openness, and sustainable performance are the norm.
+  </p>
+</section>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const titles = document.querySelectorAll('.kpi-expandable-container .expandable-title');
+
+    titles.forEach(function (title) {
+      title.addEventListener('click', function () {
+        const parent = this.closest('.expandable-item');
+        const targetId = this.getAttribute('data-target');
+        const content = document.getElementById(targetId);
+        if (!parent || !content) return;
+
+        const isActive = parent.classList.contains('active');
+        parent.classList.toggle('active', !isActive);
+        content.style.display = !isActive ? 'block' : 'none';
+      });
+    });
+  });
+</script>
