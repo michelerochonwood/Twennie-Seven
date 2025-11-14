@@ -1,0 +1,132 @@
+<section class="topic-kpi-section" aria-labelledby="kpi-topic-heading">
+  <h2 id="kpi-topic-heading" class="kpi-topic-title">suggested KPIs for this topic</h2>
+
+  <p class="kpi-topic-intro">
+    These KPIs help leaders support soft-skills development in technical teams — including communication,
+    teamwork, presence, and client interactions. They focus on structured practice, modeling, coaching,
+    and integrating soft skills into everyday project work.
+  </p>
+
+  <div class="expandable-container kpi-expandable-container">
+
+
+    <!-- 1. Communication, Presence & Client Interaction Skills -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-communication">
+        communication, presence &amp; client interaction skills
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+              points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-communication">
+        <ul class="kpi-list">
+          <li>Ensure every technical professional has at least one live client-facing experience per month (with support if needed).</li>
+          <li>Coach team members on meeting presence: clarity, tone, conciseness, and ability to “read the room.”</li>
+          <li>Assign Twennie units related to communication, client meetings, and relationship building, then review notes with the team.</li>
+          <li>Provide feedback within 48 hours after significant interactions (presentations, interviews, site meetings).</li>
+          <li>Track improvement through reduced misunderstandings, clearer messages, and stronger client rapport.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 2. Practicing Soft Skills Like a Discipline (Repetition, Muscle Memory) -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-practice">
+        practicing soft skills like a discipline (repetition &amp; muscle memory)
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+              points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-practice">
+        <ul class="kpi-list">
+          <li>Schedule short, repeatable soft-skills practice every month (role-plays, mock interviews, client-scenario prompts).</li>
+          <li>Use Twennie prompt sets to reinforce small, frequent skill-building behaviors — rather than one-off workshops.</li>
+          <li>Integrate soft-skills practice into existing project workflows (kickoffs, check-ins, client emails, updates).</li>
+          <li>Track each team member’s practice frequency and reflect on improvements quarterly.</li>
+          <li>Celebrate behavioral improvements the same way you celebrate technical wins.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 3. Teamwork Behaviors & Collaboration Habits -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-teamwork">
+        teamwork behaviors &amp; collaboration habits
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+              points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-teamwork">
+        <ul class="kpi-list">
+          <li>Run at least one teamwork-building exercise each quarter (Twennie prompts, shared discussions, mini-activities).</li>
+          <li>Assign cross-functional pairings or “micro-collaboration” tasks to build relationships across disciplines.</li>
+          <li>Reduce solo-performance bias by recognizing collaborative work publicly and consistently.</li>
+          <li>Evaluate team communication patterns and address behaviors that block collaboration (bottlenecks, silos, withholding info).</li>
+          <li>Measure improvements through project efficiency, fewer rework cycles, and higher morale during multi-person tasks.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 4. Manager Behaviors that Enable Soft-Skills Growth -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-manager">
+        manager behaviors that enable soft-skills growth
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+              points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-manager">
+        <ul class="kpi-list">
+          <li>Model the soft skills you want the team to develop: listening, clarity, calm, and professionalism.</li>
+          <li>Provide psychological safety for practicing new skills — emphasize learning over perfection.</li>
+          <li>Assign stretch opportunities based on readiness, not just seniority.</li>
+          <li>Give constructive feedback that is specific, timely, and tied to real behaviors.</li>
+          <li>Integrate soft-skills development into annual reviews, not as an afterthought but as a central metric of growth.</li>
+        </ul>
+      </div>
+    </div>
+
+
+  </div>
+
+  <p class="kpi-topic-footer">
+    Choose a KPI from each category to help your technical team build the human skills that
+    make complex work easier, relationships stronger, and success more sustainable — without
+    adding overwhelming time demands.
+  </p>
+</section>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const titles = document.querySelectorAll('.kpi-expandable-container .expandable-title');
+
+    titles.forEach(function (title) {
+      title.addEventListener('click', function () {
+        const parent = this.closest('.expandable-item');
+        const targetId = this.getAttribute('data-target');
+        const content = document.getElementById(targetId);
+        if (!parent || !content) return;
+
+        const isActive = parent.classList.contains('active');
+        parent.classList.toggle('active', !isActive);
+        content.style.display = !isActive ? 'block' : 'none';
+      });
+    });
+  });
+</script>
