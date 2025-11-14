@@ -139,7 +139,7 @@ exports.getTopicView = async (req, res) => {
             'Managing Scope So It Doesnt Manage You': 'managingscopesoitdoesntmanageyou',
             'Risk Management': 'riskmanagement',
             'Closing a Project Strategically': 'closingaprojectstrategically',
-            'Rescuing a Project That Has Gone Off the Rails': 'rescuingaprojectthatsgoneofftherails'
+            'Rescuing a Project That Has Gone Off the Rails': 'rescuingaprojectthathasgoneofftherails'
         };
 
         const originalTopicTitle = Object.keys(topicMappings).find(
