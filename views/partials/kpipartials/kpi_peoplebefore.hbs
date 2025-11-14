@@ -1,0 +1,133 @@
+<section class="topic-kpi-section" aria-labelledby="kpi-topic-heading">
+  <h2 id="kpi-topic-heading" class="kpi-topic-title">suggested KPIs for this topic</h2>
+
+  <p class="kpi-topic-intro">
+    These KPIs help leaders build organizations where people are treated as the engine of
+    performance—not a cost to be minimized. They focus on culture, integrity, wellbeing,
+    long-term thinking, and actions that demonstrate trust and care.
+  </p>
+
+  <div class="expandable-container kpi-expandable-container">
+
+
+    <!-- 1. Challenging Traditional Paradigms & Assumptions -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-paradigms">
+        challenging traditional paradigms &amp; assumptions
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+        <polygon fill="#4e50a2"
+                 points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-paradigms">
+        <ul class="kpi-list">
+          <li>Hold quarterly leadership reflections to examine outdated management assumptions and identify cultural blind spots.</li>
+          <li>Communicate transparently about upcoming changes, including the “why,” not just the “what.”</li>
+          <li>Review policies annually to ensure they reinforce trust, collaboration, and growth—not control or fear.</li>
+          <li>Encourage employees to challenge norms respectfully and propose people-centered improvements.</li>
+          <li>Track how many proposed culture improvements are actually implemented each year.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 2. Demonstrating People-First Actions (Not Just Slogans) -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-actions">
+        demonstrating people-first actions (not just slogans)
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+        <polygon fill="#4e50a2"
+                 points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-actions">
+        <ul class="kpi-list">
+          <li>Offer flexible work arrangements when feasible and track employee satisfaction with them.</li>
+          <li>Invest in professional development plans for all staff, not just emerging leaders.</li>
+          <li>Ensure ethical decision-making is modeled at all levels—review key decisions for fairness and transparency.</li>
+          <li>Monitor indicators of trust: retention, referral rates, internal promotions, and psychological safety.</li>
+          <li>Link people-first practices to measurable outcomes (engagement, client feedback, and revenue stability).</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 3. Wellbeing, Care & Reducing Burnout (People as the Engine of Performance) -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-wellbeing">
+        wellbeing, care &amp; reducing burnout (people as the engine of performance)
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+        <polygon fill="#4e50a2"
+                 points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-wellbeing">
+        <ul class="kpi-list">
+          <li>Assess workload distribution monthly to prevent chronic overextension and burnout.</li>
+          <li>Establish clear boundaries around work hours, communication norms, and time off.</li>
+          <li>Measure employee wellbeing through quarterly pulse checks and follow up on trends.</li>
+          <li>Provide access to mental health supports and track utilization without stigma.</li>
+          <li>Demonstrate care in practice: intervene when an employee is struggling, not just when performance drops.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 4. Long-Term Thinking, Integrity & Sustainable Success -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-longterm">
+        long-term thinking, integrity &amp; sustainable success
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+        <polygon fill="#4e50a2"
+                 points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-longterm">
+        <ul class="kpi-list">
+          <li>Make strategic decisions with a “5-year lens” rather than chasing short-term profitability.</li>
+          <li>Invest in stable client relationships, reliable supplier partnerships, and team continuity.</li>
+          <li>Model integrity even when it costs something in the short term.</li>
+          <li>Assess how major decisions affect employees’ futures, not just quarterly numbers.</li>
+          <li>Track organizational resilience indicators: turnover, customer loyalty, team stability, and culture strength.</li>
+        </ul>
+      </div>
+    </div>
+
+
+  </div>
+
+  <p class="kpi-topic-footer">
+    Choose a KPI from each category to build a workplace where people truly come before profit—
+    and where that investment pays off through resilience, loyalty, innovation, and sustainable
+    long-term success.
+  </p>
+</section>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const titles = document.querySelectorAll('.kpi-expandable-container .expandable-title');
+
+    titles.forEach(function (title) {
+      title.addEventListener('click', function () {
+        const parent = this.closest('.expandable-item');
+        const targetId = this.getAttribute('data-target');
+        const content = document.getElementById(targetId);
+
+        if (!parent || !content) return;
+
+        const isActive = parent.classList.contains('active');
+        parent.classList.toggle('active', !isActive);
+        content.style.display = !isActive ? 'block' : 'none';
+      });
+    });
+  });
+</script>

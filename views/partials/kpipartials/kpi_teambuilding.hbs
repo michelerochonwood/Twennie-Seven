@@ -1,0 +1,132 @@
+<section class="topic-kpi-section" aria-labelledby="kpi-topic-heading">
+  <h2 id="kpi-topic-heading" class="kpi-topic-title">suggested KPIs for this topic</h2>
+
+  <p class="kpi-topic-intro">
+    These KPIs help leaders build strong teams in technical consulting, where project teams form
+    and dissolve quickly and the billable hour dominates. They focus on integrating team building
+    into real work, balancing development with utilization, and using problem-solving as a bonding tool.
+  </p>
+
+  <div class="expandable-container kpi-expandable-container">
+
+
+    <!-- 1. Integrating Team Building into Project-Based Work -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-project-based">
+        integrating team building into project-based work
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+        <polygon fill="#4e50a2"
+                 points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-project-based">
+        <ul class="kpi-list">
+          <li>Include brief team-building elements in project lifecycle moments (kickoffs, milestones, close-outs).</li>
+          <li>Use every new project team as an opportunity for structured introductions and expectation-setting.</li>
+          <li>Design short, focused knowledge-sharing segments in regular meetings (e.g., “5-minute lessons learned”).</li>
+          <li>Track how many project teams use at least one deliberate team-building activity during their lifespan.</li>
+          <li>Measure effects on project outcomes (fewer conflicts, smoother collaboration, better client feedback).</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 2. Balancing Billable Hours with Team Development -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-billable-balance">
+        balancing billable hours with team development
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+        <polygon fill="#4e50a2"
+                 points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-billable-balance">
+        <ul class="kpi-list">
+          <li>Schedule recurring practice-area or discipline meetings that combine PD with relationship-building.</li>
+          <li>Implement mentoring or buddy programs that pair senior and junior staff across projects and disciplines.</li>
+          <li>Deliberately staff projects with a mix of experience levels to support knowledge transfer.</li>
+          <li>Allocate a small, explicit percentage of time to team development and track its use (not just billables).</li>
+          <li>Monitor whether teams with more intentional development show better retention and client outcomes.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 3. Problem-Solving as Team Building (“Problem-Solving Callisthenics”) -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-problem-solving">
+        problem-solving as team building (“problem-solving callisthenics”)
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+        <polygon fill="#4e50a2"
+                 points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-problem-solving">
+        <ul class="kpi-list">
+          <li>Use internal improvement projects or innovation challenges as “team-building through work.”</li>
+          <li>Rotate cross-functional groups through short-term initiatives that solve real operational problems.</li>
+          <li>Track participation in these efforts and the number of implemented ideas generated.</li>
+          <li>Recognize teams for contributions to both solutions and collaboration quality, not just technical output.</li>
+          <li>Collect quick reflections after each initiative on what strengthened teamwork and where friction appeared.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 4. Distributed, Hybrid & Ongoing Team Building -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-distributed">
+        distributed, hybrid &amp; ongoing team building
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+        <polygon fill="#4e50a2"
+                 points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-distributed">
+        <ul class="kpi-list">
+          <li>Offer regular virtual or hybrid team-building experiences that work across locations and schedules.</li>
+          <li>Use digital tools (Twennie units, prompt sets, online games or challenges) to keep distributed teams connected.</li>
+          <li>Ensure remote and hybrid staff are included, not peripheral, in relationship-building activities.</li>
+          <li>Treat team building as an ongoing process, not a one-time off-site — embed it into weekly or monthly rhythms.</li>
+          <li>Review team-building practices annually and refine them based on feedback, participation, and team outcomes.</li>
+        </ul>
+      </div>
+    </div>
+
+
+  </div>
+
+  <p class="kpi-topic-footer">
+    Choose a KPI from each category to build teams that don’t just share project codes, but
+    share knowledge, trust, and problem-solving habits — so “playing as a team” and
+    “working as a team” become the same thing.
+  </p>
+</section>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const titles = document.querySelectorAll('.kpi-expandable-container .expandable-title');
+
+    titles.forEach(function (title) {
+      title.addEventListener('click', function () {
+        const parent = this.closest('.expandable-item');
+        const targetId = this.getAttribute('data-target');
+        const content = document.getElementById(targetId);
+        if (!parent || !content) return;
+
+        const isActive = parent.classList.contains('active');
+        parent.classList.toggle('active', !isActive);
+        content.style.display = !isActive ? 'block' : 'none';
+      });
+    });
+  });
+</script>
