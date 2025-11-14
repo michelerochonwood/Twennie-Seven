@@ -1,0 +1,133 @@
+<section class="topic-kpi-section" aria-labelledby="kpi-topic-heading">
+  <h2 id="kpi-topic-heading" class="kpi-topic-title">suggested KPIs for this topic</h2>
+
+  <p class="kpi-topic-intro">
+    These KPIs help organizations use AI to create adaptive, personalized, and socially rich
+    learning environments for adult professionals. They focus on learning pathways, assessment
+    innovation, engagement, and balancing AI capability with human connection.
+  </p>
+
+  <div class="expandable-container kpi-expandable-container">
+
+
+    <!-- 1. Personalized & Adaptive Learning Pathways -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-adaptive">
+        personalized &amp; adaptive learning pathways
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+        <polygon fill="#4e50a2"
+            points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-adaptive">
+        <ul class="kpi-list">
+          <li>Track how often AI tools adjust learning content based on learner performance (difficulty up/down, targeted review).</li>
+          <li>Measure time-to-competency improvements for learners using adaptive pathways vs. static ones.</li>
+          <li>Use AI analytics to identify the most common knowledge gaps and address them with new resources or modules.</li>
+          <li>Monitor learner engagement patterns to refine pacing, format, and delivery of content.</li>
+          <li>Evaluate completion rates and knowledge retention before and after implementing adaptive learning paths.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 2. AI-Enhanced Assessment, Feedback & Skill Tracking -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-assessment">
+        ai-enhanced assessment, feedback &amp; skill tracking
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+        <polygon fill="#4e50a2"
+            points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-assessment">
+        <ul class="kpi-list">
+          <li>Leverage natural language processing for evaluating written or scenario-based responses and track consistency and accuracy.</li>
+          <li>Use AI to generate individualized feedback on exercises or simulations and measure how quickly learners improve afterward.</li>
+          <li>Monitor learning progress over time to assess long-term skill application and reinforcement.</li>
+          <li>Evaluate which AI-generated assessments correlate most strongly with real-world performance.</li>
+          <li>Track reduction in manual grading time to reallocate instructor effort to coaching and mentoring.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 3. Engagement, Interactivity & Motivation Through AI -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-engagement">
+        engagement, interactivity &amp; motivation through ai
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+        <polygon fill="#4e50a2"
+            points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-engagement">
+        <ul class="kpi-list">
+          <li>Use AI-driven interactive scenarios or virtual role-play and track increases in learner participation.</li>
+          <li>Measure motivation indicators such as return visits, time spent in modules, and voluntary exploration of extra resources.</li>
+          <li>Implement gamified learning elements (points, levels, challenges) and track their effect on completion rates.</li>
+          <li>Monitor which interactive formats produce the best learning outcomes and scale those practices.</li>
+          <li>Use AI analytics to detect disengagement early and trigger tailored interventions or nudges.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 4. AI-Supported Social Learning, Coaching & Ethical Balance -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-social">
+        ai-supported social learning, coaching &amp; ethical balance
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+        <polygon fill="#4e50a2"
+            points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-social">
+        <ul class="kpi-list">
+          <li>Use AI to match learners with peers or mentors based on complementary skills or objectives, and track collaboration outcomes.</li>
+          <li>Use AI-powered moderation tools to improve the depth and quality of online discussions.</li>
+          <li>Ensure AI-driven recommendations respect cultural sensitivity, accessibility, and human diversity.</li>
+          <li>Blend AI support with human facilitation and track which combination yields the best learner outcomes.</li>
+          <li>Evaluate learner satisfaction with AI coaching vs. human coaching and refine the balance.</li>
+        </ul>
+      </div>
+    </div>
+
+
+  </div>
+
+  <p class="kpi-topic-footer">
+    Choose a KPI from each category to build adult learning systems that are adaptive,
+    interactive, ethically sound, and deeply human — using AI to elevate learning
+    without replacing connection.
+  </p>
+</section>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const titles = document.querySelectorAll('.kpi-expandable-container .expandable-title');
+
+    titles.forEach(function (title) {
+      title.addEventListener('click', function () {
+        const parent = this.closest('.expandable-item');
+        const targetId = this.getAttribute('data-target');
+        const content = document.getElementById(targetId);
+
+        if (!parent || !content) return;
+
+        const isActive = parent.classList.contains('active');
+        parent.classList.toggle('active', !isActive);
+        content.style.display = !isActive ? 'block' : 'none';
+      });
+    });
+  });
+</script>

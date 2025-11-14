@@ -1,0 +1,129 @@
+<section class="topic-kpi-section" aria-labelledby="kpi-topic-heading">
+  <h2 id="kpi-topic-heading" class="kpi-topic-title">suggested KPIs for this topic</h2>
+
+  <p class="kpi-topic-intro">
+    These KPIs help project managers integrate AI effectively while maintaining the human
+    judgment, data discipline, and leadership qualities essential to successful delivery.
+    They focus on forecasting, data quality, skill development, and responsible use.
+  </p>
+
+  <div class="expandable-container kpi-expandable-container">
+
+
+    <!-- 1. AI-Assisted Forecasting, Scheduling & Risk Detection -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-forecast">
+        ai-assisted forecasting, scheduling &amp; risk detection
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+        <polygon fill="#4e50a2" 
+                 points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+      <div class="expandable-content" id="kpi-forecast">
+        <ul class="kpi-list">
+          <li>Use AI tools to generate timeline and cost forecasts at defined intervals and compare against actual performance.</li>
+          <li>Track reductions in schedule variance and budget variance after adopting AI-supported workflows.</li>
+          <li>Use AI to analyze historical project data and flag early-warning indicators before they escalate.</li>
+          <li>Run scenario simulations (best case, worst case, likely case) for complex tasks or milestones.</li>
+          <li>Document how often AI-generated insights influence PM decisions—and the resulting outcomes.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 2. Data Quality, Governance & Ethical Use of AI -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-data">
+        data quality, governance &amp; ethical use of ai
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+        <polygon fill="#4e50a2" 
+                 points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+      <div class="expandable-content" id="kpi-data">
+        <ul class="kpi-list">
+          <li>Establish project data standards (naming, status fields, time entries, change logs) to ensure AI-readiness.</li>
+          <li>Review accuracy and completeness of project data weekly before feeding it to AI tools.</li>
+          <li>Implement governance rules for confidentiality, acceptable AI inputs, and secure data handling.</li>
+          <li>Require PMs to validate AI-generated insights using human expertise before using them in decisions.</li>
+          <li>Track the number of errors, misinterpretations, or ethical concerns arising from AI misuse—and address root causes.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 3. PM Capability Building: AI Literacy & Human Oversight -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-literacy">
+        pm capability building: ai literacy &amp; human oversight
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+        <polygon fill="#4e50a2" 
+                 points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+      <div class="expandable-content" id="kpi-literacy">
+        <ul class="kpi-list">
+          <li>Train PMs to write effective prompts, review AI outputs critically, and detect hallucinations.</li>
+          <li>Provide regular AI training—quarterly or semi-annual—to keep PMs current with evolving tools.</li>
+          <li>Improve PM productivity by tracking time saved on reporting, documentation, and research tasks.</li>
+          <li>Assign junior PMs development tasks supported by AI to accelerate learning and confidence.</li>
+          <li>Review PM performance improvements linked to AI-supported decision-making and risk management.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 4. Collaboration, Communication & Client Transparency in AI-Enabled Projects -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-communication">
+        collaboration, communication &amp; client transparency in ai-enabled projects
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+        <polygon fill="#4e50a2" 
+                 points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+      <div class="expandable-content" id="kpi-communication">
+        <ul class="kpi-list">
+          <li>Use AI to draft client updates, reports, or meeting summaries—then refine tone and nuance manually.</li>
+          <li>Improve communication timeliness and clarity by tracking reductions in late or incomplete status updates.</li>
+          <li>Maintain transparency with clients: clarify when AI-assisted analysis or documentation was used.</li>
+          <li>Use AI-supported collaboration tools (task prioritization, workload balancing) to improve team coordination.</li>
+          <li>Monitor team feedback to ensure AI improves clarity, not confusion or communication overload.</li>
+        </ul>
+      </div>
+    </div>
+
+
+  </div>
+
+  <p class="kpi-topic-footer">
+    Choose a KPI from each category to help project managers combine the strengths of AI
+    with human judgment — creating more accurate forecasts, better communication, and
+    more resilient, future-ready project delivery.
+  </p>
+</section>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const titles = document.querySelectorAll('.kpi-expandable-container .expandable-title');
+
+    titles.forEach(function (title) {
+      title.addEventListener('click', function () {
+        const parent = this.closest('.expandable-item');
+        const targetId = this.getAttribute('data-target');
+        const content = document.getElementById(targetId);
+
+        if (!parent || !content) return;
+
+        const isActive = parent.classList.contains('active');
+        parent.classList.toggle('active', !isActive);
+        content.style.display = !isActive ? 'block' : 'none';
+      });
+    });
+  });
+</script>

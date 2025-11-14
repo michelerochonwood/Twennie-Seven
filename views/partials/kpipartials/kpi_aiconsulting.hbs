@@ -1,0 +1,133 @@
+<section class="topic-kpi-section" aria-labelledby="kpi-topic-heading">
+  <h2 id="kpi-topic-heading" class="kpi-topic-title">suggested KPIs for this topic</h2>
+
+  <p class="kpi-topic-intro">
+    These KPIs help consulting teams integrate AI responsibly and effectively — increasing
+    efficiency and insight while protecting data quality, ethics, and the human elements
+    that define strong consulting relationships.
+  </p>
+
+  <div class="expandable-container kpi-expandable-container">
+
+
+    <!-- 1. AI Adoption & High-Value Use Cases -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-adoption">
+        ai adoption &amp; high-value use cases
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+        <polygon fill="#4e50a2"
+          points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-adoption">
+        <ul class="kpi-list">
+          <li>Identify 3–5 consulting tasks where AI creates major leverage (research, analysis, summarization, scenario modeling).</li>
+          <li>Track how often teams use AI tools for routine work to free time for higher-value strategic tasks.</li>
+          <li>Measure efficiency gains (hours saved, faster turnaround times, reduced rework) after AI implementation.</li>
+          <li>Document AI use cases in proposals or project plans to demonstrate enhanced capabilities to clients.</li>
+          <li>Review AI usage quarterly to refine workflows and reassign consultant time to higher-impact work.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 2. Data Quality, Governance & Ethical Safeguards -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-data">
+        data quality, governance &amp; ethical safeguards
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+        <polygon fill="#4e50a2"
+          points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-data">
+        <ul class="kpi-list">
+          <li>Implement data-quality standards before feeding information into AI tools to reduce distortions and hallucinations.</li>
+          <li>Establish governance guidelines: acceptable data types, confidentiality rules, and client-safe workflows.</li>
+          <li>Train teams to verify AI-generated insights using traditional consulting judgment.</li>
+          <li>Track incidents of AI misuse, ethical concerns, or low-quality outputs — and create fixes immediately.</li>
+          <li>Ensure transparency: document when and how AI contributed to deliverables shown to clients.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 3. Training, Skills Development & Human–AI Integration -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-training">
+        training, skills development &amp; human–ai integration
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+        <polygon fill="#4e50a2"
+          points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-training">
+        <ul class="kpi-list">
+          <li>Provide ongoing training on AI tools (prompting, validation, ethical use, productivity habits).</li>
+          <li>Upskill consultants in interpreting AI outputs, not just generating them.</li>
+          <li>Blend AI insights with human judgment in client deliverables — AI supports the consultant; it doesn’t replace them.</li>
+          <li>Track skill development: number of staff proficient in core AI tools, certifications, or Twennie completions.</li>
+          <li>Periodically run “AI + human” comparison tests to evaluate how blended workflows improve work quality.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 4. Strategic Impact, Client Value & Future Readiness -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-strategy">
+        strategic impact, client value &amp; future readiness
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+        <polygon fill="#4e50a2"
+          points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-strategy">
+        <ul class="kpi-list">
+          <li>Evaluate how AI contributes to stronger client outcomes (insight depth, speed, accuracy, innovation).</li>
+          <li>Identify opportunities to integrate AI into service offerings while maintaining core consulting strengths.</li>
+          <li>Create frameworks for responsible AI use that align with firm values and client expectations.</li>
+          <li>Invest in scalable infrastructure — data systems, analytics platforms, model integrations — to prepare for future needs.</li>
+          <li>Assess annually how AI is reshaping industry expectations and adjust your strategy proactively.</li>
+        </ul>
+      </div>
+    </div>
+
+
+  </div>
+
+  <p class="kpi-topic-footer">
+    Choose a KPI from each category to embrace AI as a powerful ally in consulting —
+    enhancing insight, strengthening client value, and preparing your team for the future
+    without losing the human judgment that defines the profession.
+  </p>
+</section>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const titles = document.querySelectorAll('.kpi-expandable-container .expandable-title');
+
+    titles.forEach(function (title) {
+      title.addEventListener('click', function () {
+        const parent = this.closest('.expandable-item');
+        const targetId = this.getAttribute('data-target');
+        const content = document.getElementById(targetId);
+
+        if (!parent || !content) return;
+
+        const isActive = parent.classList.contains('active');
+        parent.classList.toggle('active', !isActive);
+        content.style.display = !isActive ? 'block' : 'none';
+      });
+    });
+  });
+</script>

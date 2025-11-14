@@ -1,0 +1,132 @@
+<section class="topic-kpi-section" aria-labelledby="kpi-topic-heading">
+  <h2 id="kpi-topic-heading" class="kpi-topic-title">suggested KPIs for this topic</h2>
+
+  <p class="kpi-topic-intro">
+    These KPIs help leaders and teams tap into purpose as a daily source of meaning,
+    engagement, and energy — not a poster on the wall. They focus on visibility,
+    contribution, ownership, and the stories behind the work.
+  </p>
+
+  <div class="expandable-container kpi-expandable-container">
+
+
+    <!-- 1. Making Meaning Visible (The Lego Effect) -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-visibility">
+        making meaning visible (the lego effect)
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+                   points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-visibility">
+        <ul class="kpi-list">
+          <li>Ensure every project team sees the visible outcome of their work (photos, stories, site visits, public interactions).</li>
+          <li>Share post-project visuals — completed sites, users benefiting, before/after comparisons — after every major project.</li>
+          <li>Run the Lego-style “visible vs. invisible work” experiment at least once to spark awareness of meaning.</li>
+          <li>Identify work that feels “dismantled” or invisible and redesign processes to preserve or showcase the contribution.</li>
+          <li>Measure increases in engagement, enthusiasm, and pride after visibility practices are introduced.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 2. Ownership, Contribution & the IKEA Effect -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-ownership">
+        ownership, contribution &amp; the ikea effect
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+                   points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-ownership">
+        <ul class="kpi-list">
+          <li>Invite teams to shape their own work environment: naming initiatives, designing processes, suggesting improvements.</li>
+          <li>Use the word “contribution” — not “accomplishment” — in performance discussions to reinforce shared purpose.</li>
+          <li>Involve staff in co-creating aspects of strategy, BD efforts, templates, and cultural practices.</li>
+          <li>Track participation in co-creation activities and measure perceived ownership afterward.</li>
+          <li>Review quarterly how much of the working environment is team-shaped vs. leader-imposed.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 3. Purpose Through End Users (Stories, Testimonials & Real-World Impact) -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-endusers">
+        purpose through end users (stories &amp; real-world impact)
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+                   points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-endusers">
+        <ul class="kpi-list">
+          <li>Collect testimonials, stories, or brief interviews from the people who use or benefit from your work.</li>
+          <li>Incorporate these stories into BD materials, team meetings, and onboarding to reinforce meaning.</li>
+          <li>Visit completed project sites annually to reconnect teams with real-world outcomes.</li>
+          <li>Create video project profiles highlighting lived experience — not just technical milestones.</li>
+          <li>Track how exposure to end-user stories affects morale, client empathy, and team pride.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 4. Purpose as Daily Practice (Not a Poster) -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-daily-purpose">
+        purpose as daily practice (not a poster)
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+                   points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-daily-purpose">
+        <ul class="kpi-list">
+          <li>Ask teams regularly what part of their work feels meaningful — and what feels invisible or disconnected.</li>
+          <li>Discuss purpose explicitly in project kickoffs: who benefits, why it matters, what the final experience will be.</li>
+          <li>Share quick weekly stories of impact, either internally or through Twennie prompt sets.</li>
+          <li>Ensure leaders articulate and model purpose through storytelling, clarity, and gratitude.</li>
+          <li>Assess purpose annually: do employees feel their work means something? Do they see the impact? If not, fix the gap.</li>
+        </ul>
+      </div>
+    </div>
+
+
+  </div>
+
+  <p class="kpi-topic-footer">
+    Choose a KPI from each category to help your team see, feel, and own the meaning behind
+    their work — because purpose isn’t an extra. It is the fuel that powers everything we build.
+  </p>
+</section>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const titles = document.querySelectorAll('.kpi-expandable-container .expandable-title');
+
+    titles.forEach(function (title) {
+      title.addEventListener('click', function () {
+        const parent = this.closest('.expandable-item');
+        const targetId = this.getAttribute('data-target');
+        const content = document.getElementById(targetId);
+
+        if (!parent || !content) return;
+
+        const isActive = parent.classList.contains('active');
+        parent.classList.toggle('active', !isActive);
+        content.style.display = !isActive ? 'block' : 'none';
+      });
+    });
+  });
+</script>
