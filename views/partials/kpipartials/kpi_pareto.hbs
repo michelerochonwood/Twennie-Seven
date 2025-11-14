@@ -1,0 +1,128 @@
+<section class="topic-kpi-section" aria-labelledby="kpi-topic-heading">
+  <h2 id="kpi-topic-heading" class="kpi-topic-title">suggested KPIs for this topic</h2>
+
+  <p class="kpi-topic-intro">
+    These KPIs help you apply the Pareto Principle (80/20) in your organization and as an
+    individual — identifying the “vital few” clients, projects, tasks, and habits that drive
+    most of your results.
+  </p>
+
+  <div class="expandable-container kpi-expandable-container">
+
+
+    <!-- 1. 80/20 in Clients, Projects & Revenue (Org-Level Focus) -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-org-8020">
+        80/20 in clients, projects &amp; revenue (org-level focus)
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+        <polygon fill="#4e50a2"
+                 points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+      <div class="expandable-content" id="kpi-org-8020">
+        <ul class="kpi-list">
+          <li>Identify which 20% of clients generate ~80% of revenue, profit, or strategic value.</li>
+          <li>Identify which 20% of projects cause ~80% of write-offs, stress, or reputational risk.</li>
+          <li>Prioritize relationship-building, service quality, and innovation for your highest-value clients.</li>
+          <li>Develop a clear strategy for low-value or high-drain work (improve, reprice, or decline).</li>
+          <li>Review 80/20 patterns at least annually to inform BD, staffing, and investment decisions.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 2. 80/20 in Processes, Problems & Quality (Operational Focus) -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-ops-8020">
+        80/20 in processes, problems &amp; quality (operational focus)
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+        <polygon fill="#4e50a2"
+                 points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+      <div class="expandable-content" id="kpi-ops-8020">
+        <ul class="kpi-list">
+          <li>Identify the 20% of process steps that create 80% of errors, rework, or delay.</li>
+          <li>Target those steps for redesign, automation, training, or clearer standards.</li>
+          <li>Track whether a small number of root causes drive most recurring issues — and address them first.</li>
+          <li>Use 80/20 analysis in proposals, project management, and QA/QC to focus improvement efforts.</li>
+          <li>Measure improvements in quality, schedule reliability, and team workload as bottlenecks are removed.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 3. 80/20 for Individuals: Time, Energy & Growth (Personal Focus) -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-individual-8020">
+        80/20 for individuals: time, energy &amp; growth (personal focus)
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+        <polygon fill="#4e50a2"
+                 points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+      <div class="expandable-content" id="kpi-individual-8020">
+        <ul class="kpi-list">
+          <li>Help team members identify the 20% of tasks that create 80% of their impact or results.</li>
+          <li>Do the same for stress: which 20% of tasks, habits, or relationships create 80% of their anxiety?</li>
+          <li>Encourage people to protect time for their high-impact work — and reduce or delegate low-value busywork.</li>
+          <li>Use Twennie units to focus learning on the 20% of skills that make most of the difference in their role.</li>
+          <li>Review individual 80/20 reflections in coaching or performance conversations at least twice a year.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 4. 80/20 in Learning, Change & Strategic Initiatives (Twennie Focus) -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-learning-8020">
+        80/20 in learning, change &amp; strategic initiatives (twennie focus)
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+        <polygon fill="#4e50a2"
+                 points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+      <div class="expandable-content" id="kpi-learning-8020">
+        <ul class="kpi-list">
+          <li>Choose a “vital few” Twennie topics for your team each quarter instead of scattering learning everywhere.</li>
+          <li>Assign only those units and prompt sets that directly support your top strategic priorities.</li>
+          <li>Limit major change initiatives to the 20% that will move the needle most on your five team KPIs.</li>
+          <li>Use Twennie’s report center to track which units produce the most noticeable behavior or performance shifts.</li>
+          <li>Refine your learning portfolio annually so your people spend their limited time on the most transformative work.</li>
+        </ul>
+      </div>
+    </div>
+
+
+  </div>
+
+  <p class="kpi-topic-footer">
+    Choose a KPI from each category to make 80/20 more than a theory — turn it into
+    a daily practice that focuses your clients, projects, processes, time, and learning
+    on what truly matters most.
+  </p>
+</section>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const titles = document.querySelectorAll('.kpi-expandable-container .expandable-title');
+
+    titles.forEach(function (title) {
+      title.addEventListener('click', function () {
+        const parent = this.closest('.expandable-item');
+        const targetId = this.getAttribute('data-target');
+        const content = document.getElementById(targetId);
+        if (!parent || !content) return;
+
+        const isActive = parent.classList.contains('active');
+        parent.classList.toggle('active', !isActive);
+        content.style.display = !isActive ? 'block' : 'none';
+      });
+    });
+  });
+</script>

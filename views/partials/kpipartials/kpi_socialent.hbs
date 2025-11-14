@@ -1,0 +1,132 @@
+<section class="topic-kpi-section" aria-labelledby="kpi-topic-heading">
+  <h2 id="kpi-topic-heading" class="kpi-topic-title">suggested KPIs for this topic</h2>
+
+  <p class="kpi-topic-intro">
+    These KPIs help leaders build and evaluate social enterprises using a double or triple
+    bottom line. They focus on impact, innovation, financial sustainability, and the cultural
+    balance needed to drive social good while remaining viable.
+  </p>
+
+  <div class="expandable-container kpi-expandable-container">
+
+
+    <!-- 1. Double/Triple Bottom Line & Impact Measurement -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-impact">
+        double/triple bottom line &amp; impact measurement
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+                   points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-impact">
+        <ul class="kpi-list">
+          <li>Define clear social impact metrics (e.g., people served, emissions avoided, jobs created, barriers reduced).</li>
+          <li>Track social/environmental outcomes with the same rigor as financial indicators.</li>
+          <li>Report impact results transparently to stakeholders (impact reports, dashboards, investor briefings).</li>
+          <li>Measure how effectively the enterprise improves lives, communities, or ecosystems — not just outputs but outcomes.</li>
+          <li>Review impact metrics annually to ensure relevance and alignment with mission.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 2. Innovation, Market Forces & Sustainable Growth -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-innovation">
+        innovation, market forces &amp; sustainable growth
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+                   points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-innovation">
+        <ul class="kpi-list">
+          <li>Develop revenue models that reinforce — not dilute — the social mission.</li>
+          <li>Experiment with new business models, products, or services that enhance both revenue and impact.</li>
+          <li>Track customer adoption, engagement, and satisfaction to ensure the solution meets real needs.</li>
+          <li>Build partnerships with impact investors, values-aligned suppliers, or mission-driven organizations.</li>
+          <li>Measure year-over-year growth in impact alongside growth in market reach.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 3. Mission–Financial Balance & Decision-Making Discipline -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-balance">
+        mission–financial balance &amp; decision-making discipline
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+                   points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-balance">
+        <ul class="kpi-list">
+          <li>Assess opportunities and investments using both mission criteria and financial viability screens.</li>
+          <li>Maintain financial sustainability ratios (e.g., earned revenue %, operating margin, cash runway).</li>
+          <li>Build reserves or buffers to weather instability in funding, markets, or demand.</li>
+          <li>Track how decisions affect vulnerable communities or ecosystems — mission drift indicators.</li>
+          <li>Revisit the mission–model balance quarterly to ensure the enterprise stays true to its core purpose.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 4. Culture, Ethics & Stakeholder Trust -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-culture">
+        culture, ethics &amp; stakeholder trust
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+                   points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-culture">
+        <ul class="kpi-list">
+          <li>Create a culture that places people and purpose ahead of profit — and evaluate if actions match the messaging.</li>
+          <li>Monitor employee motivation, retention, and alignment with mission.</li>
+          <li>Track stakeholder trust indicators: repeat customers, community partnerships, investor confidence, public reputation.</li>
+          <li>Ensure transparent communication about challenges, trade-offs, and impact limitations.</li>
+          <li>Implement ethical review guidelines so growth never undermines the people the enterprise intends to serve.</li>
+        </ul>
+      </div>
+    </div>
+
+
+  </div>
+
+  <p class="kpi-topic-footer">
+    Choose a KPI from each category to build a social enterprise that delivers meaningful impact,
+    financial sustainability, and long-term trust — proving that business can be a force for good.
+  </p>
+</section>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const titles = document.querySelectorAll('.kpi-expandable-container .expandable-title');
+
+    titles.forEach(function (title) {
+      title.addEventListener('click', function () {
+        const parent = this.closest('.expandable-item');
+        const targetId = this.getAttribute('data-target');
+        const content = document.getElementById(targetId);
+
+        if (!parent || !content) return;
+
+        const isActive = parent.classList.contains('active');
+        parent.classList.toggle('active', !isActive);
+        content.style.display = !isActive ? 'block' : 'none';
+      });
+    });
+  });
+</script>

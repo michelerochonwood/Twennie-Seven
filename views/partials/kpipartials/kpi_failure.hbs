@@ -1,0 +1,127 @@
+<section class="topic-kpi-section" aria-labelledby="kpi-topic-heading">
+  <h2 id="kpi-topic-heading" class="kpi-topic-title">suggested KPIs for this topic</h2>
+
+  <p class="kpi-topic-intro">
+    These KPIs help leaders turn failure into a strategic tool for innovation, analysis,
+    and growth. They focus on reframing failure, analyzing it systematically, and making
+    it part of a safe, creative organizational culture.
+  </p>
+
+  <div class="expandable-container kpi-expandable-container">
+
+
+    <!-- 1. Reframing Failure & Shifting Perspective -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-perspective">
+        reframing failure &amp; shifting perspective
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 331.65 100.99" style="width:24px">
+        <polygon fill="#4e50a2"
+                 points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+      <div class="expandable-content" id="kpi-perspective">
+        <ul class="kpi-list">
+          <li>Normalize conversations about failure by discussing at least one “learning miss” during monthly team meetings.</li>
+          <li>Use neutral, non-blaming language when describing setbacks (“what we learned,” “the insight gained,” not “who messed up”).</li>
+          <li>Celebrate lessons learned publicly and quietly correct the failure itself.</li>
+          <li>Differentiate clearly between acceptable experimental failure and negligent failure.</li>
+          <li>Track team sentiment: are people becoming more willing to raise concerns, admit missteps, and propose bold ideas?</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 2. Failure as Data: The Analytics of Setbacks -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-analytics">
+        failure as data: the analytics of setbacks
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 331.65 100.99" style="width:24px">
+        <polygon fill="#4e50a2"
+                 points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+      <div class="expandable-content" id="kpi-analytics">
+        <ul class="kpi-list">
+          <li>Apply the Extracting Little Successes from Big Failures worksheet for major setbacks.</li>
+          <li>Analyze root causes objectively: assumptions, constraints, processes, timing, communication breakdowns.</li>
+          <li>Ensure each identified failure leads to at least one specific process improvement.</li>
+          <li>Create a simple “failure-to-wisdom log” accessible to the whole team so insights are never lost.</li>
+          <li>Track reductions in repeat errors — the clearest indicator that lessons are being applied.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 3. Making Failure Part of the Creative Process -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-creative">
+        making failure part of the creative process
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 331.65 100.99" style="width:24px">
+        <polygon fill="#4e50a2"
+                 points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+      <div class="expandable-content" id="kpi-creative">
+        <ul class="kpi-list">
+          <li>Incorporate “rapid tests” or small experiments into regular workflows to encourage learning-by-trying.</li>
+          <li>Allocate explicit time for innovation and experimentation (e.g., 5–10% of working hours or periodic sprints).</li>
+          <li>Protect staff from blame when good-faith experiments fail; reinforce that trying is part of the job.</li>
+          <li>Share leadership stories of past failures and how they led to success to model vulnerability.</li>
+          <li>Monitor increases in idea generation, creative proposals, and cross-disciplinary problem-solving.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 4. Leadership Support, Safety & Cultural Reinforcement -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-leadership">
+        leadership support, safety &amp; cultural reinforcement
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 331.65 100.99" style="width:24px">
+        <polygon fill="#4e50a2"
+                 points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+      <div class="expandable-content" id="kpi-leadership">
+        <ul class="kpi-list">
+          <li>Model vulnerability by sharing one failure (and its lesson) per quarter with your team.</li>
+          <li>Reinforce psychological safety: respond calmly when failures surface, and thank people for bringing them up.</li>
+          <li>Create a defined boundary between safe experimentation and risky negligence so people understand expectations.</li>
+          <li>Integrate lessons learned into onboarding and team training so failures become collective intelligence.</li>
+          <li>Assess cultural shifts annually: are people experimenting more, hiding less, and adapting quicker?</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="kpi-topic-footer">
+    Choose a KPI from each category to build a team that sees failure not as a danger to avoid,
+    but as a wellspring of insight, creativity, and long-term innovation.
+  </p>
+</section>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const titles = document.querySelectorAll('.kpi-expandable-container .expandable-title');
+
+    titles.forEach(function (title) {
+      title.addEventListener('click', function () {
+        const parent = this.closest('.expandable-item');
+        const targetId = this.getAttribute('data-target');
+        const content = document.getElementById(targetId);
+
+        if (!parent || !content) return;
+
+        const isActive = parent.classList.contains('active');
+        parent.classList.toggle('active', !isActive);
+        content.style.display = !isActive ? 'block' : 'none';
+      });
+    });
+  });
+</script>
