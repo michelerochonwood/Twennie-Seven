@@ -975,3 +975,10 @@ label[for=short-summary] {
   padding: 4px 0;
 }
 
+.topic-selector-section {
+  background: #f2f2f7;
+  padding: 1.25rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+}
+

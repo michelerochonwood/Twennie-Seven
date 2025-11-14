@@ -635,7 +635,90 @@
     "linking downtime projects to future pursuits",
     "leader strategies for reframing slow work cycles"
   ]
+},
+{
+  "id": 213,
+  "title": "The First 10 Days of a Project",
+  "shortSummary": "The first 10 days shape everything. This topic helps project managers build the backbone, align the team, and establish clarity before execution begins.",
+  "longSummary": "The First 10 Days of a Project explores the early actions that determine whether a project runs smoothly—or struggles for months. It outlines how to build a solid project backbone, map stakeholders, define success criteria, surface assumptions, and set communication rhythms that prevent rework and confusion. By prioritizing early alignment, visibility, and quick wins, this topic helps technical professionals start strong, reduce downstream failures, and create immediate confidence with both the team and the client.",
+  "subtopics": [
+    "building the project backbone",
+    "documenting scope and assumptions early",
+    "establishing communication rhythms",
+    "early risk identification",
+    "securing quick wins",
+    "aligning roles and responsibilities",
+    "setting expectations for quality and decisions",
+    "baseline planning before execution"
+  ]
+},
+{
+  "id": 214,
+  "title": "Managing Scope So It Doesnt Manage You",
+  "shortSummary": "Scope rarely explodes—it creeps. This topic teaches teams to define, track, and communicate scope clearly so the project stays controlled, profitable, and predictable.",
+  "longSummary": "Managing Scope So It Doesnt Manage You reframes scope control as a proactive leadership skill. It teaches project managers how to make assumptions visible, log every change, clarify boundaries, and guide clients through structured decisions. Rather than absorbing extra work or negotiating from a place of panic, teams learn to communicate options professionally, protect schedules and budgets, and maintain trust. The goal is simple: make scope explicit, visible, and manageable from day one.",
+  "subtopics": [
+    "why scope drifts quietly",
+    "documenting assumptions, constraints, and dependencies",
+    "building a simple scope-change log",
+    "early detection of scope creep",
+    "structured client conversations about change",
+    "protecting schedule and budget",
+    "reducing write-offs linked to unmanaged scope",
+    "creating a culture of clear boundaries"
+  ]
+},
+{
+  "id": 215,
+  "title": "Risk Management",
+  "shortSummary": "Risk management is not predicting disasters—it’s noticing early signals. This topic helps teams detect, discuss, and act on risk before it becomes trouble.",
+  "longSummary": "Risk Management explores how technical teams can treat risk as a living, everyday practice. Instead of filling out a static risk register, professionals learn to identify early-warning signs, assign owners, hold rolling risk conversations, and make risk visible to clients. By stabilizing uncertainty early and communicating impacts calmly and clearly, teams reduce last-minute surprises and strengthen internal coordination and client trust. The emphasis is practical: simple tools, simple habits, better outcomes.",
+  "subtopics": [
+    "early-warning signs and soft signals",
+    "root-cause thinking",
+    "creating a living risk log",
+    "rolling risk review rhythms",
+    "assigning owners and next actions",
+    "transparent client communication",
+    "connecting risk to schedule and scope",
+    "preventing risks from becoming issues"
+  ]
+},
+
+{
+  "id": 216,
+  "title": "Closing a Project Strategically",
+  "shortSummary": "Projects shouldn’t fade out—they should finish strong. This topic shows how to close projects cleanly, confidently, and with strategic value.",
+  "longSummary": "Closing a Project Strategically teaches project managers how to wrap up work with intention instead of exhaustion. It covers validating deliverables, conducting structured debriefs, organizing artifacts for future proposals, completing administrative close-out tasks, and giving clients a smooth, confidence-building handoff. A strong close-out strengthens relationships, reduces future risk, and feeds lessons learned back into the organization. The end of the project becomes a strategic advantage, not an afterthought.",
+  "subtopics": [
+    "verifying final deliverables",
+    "structured, blameless debriefs",
+    "turning lessons learned into improvement actions",
+    "client training and handoff",
+    "clean administrative close-out",
+    "capturing reusable project knowledge",
+    "strengthening client relationships at the end",
+    "identifying follow-on opportunity signals"
+  ]
+},
+
+{
+  "id": 217,
+  "title": "Rescuing a Project That Has Gone Off the Rails",
+  "shortSummary": "When a project derails, speed alone won’t fix it. This topic teaches how to diagnose, stabilize, and rebuild trust with clarity and calm leadership.",
+  "longSummary": "Rescuing a Project That Has Gone Off the Rails helps teams respond to project distress with structure rather than panic. It guides project managers through diagnosing root causes, pausing nonessential work, clearing decision backlogs, re-establishing communication rhythms, and rebuilding client confidence through transparency. The emphasis is on stabilizing first, accelerating second. With the right steps, struggling projects can be recovered—and relationships can be repaired rather than damaged.",
+  "subtopics": [
+    "diagnosing root causes vs. symptoms",
+    "stopping the bleeding with stabilization plans",
+    "resetting priorities and approvals",
+    "daily coordination during crisis",
+    "transparent communication with clients",
+    "reducing recurring issues",
+    "re-baselining scope, schedule, and budget",
+    "documenting recovery lessons for future prevention"
+  ]
 }
+
 
 
 

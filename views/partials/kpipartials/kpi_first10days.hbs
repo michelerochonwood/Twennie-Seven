@@ -1,0 +1,130 @@
+<section class="topic-kpi-section" aria-labelledby="kpi-topic-heading">
+  <h2 id="kpi-topic-heading" class="kpi-topic-title">suggested KPIs for this topic</h2>
+
+  <p class="kpi-topic-intro">
+    These KPIs help project managers use the first 10 days of a project to build a solid backbone,
+    clarify scope, align the team, and surface risks early — so the next 10 months run smoother.
+  </p>
+
+  <div class="expandable-container kpi-expandable-container">
+
+    <!-- 1. Designing the Project Backbone -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-backbone">
+        designing the project backbone
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+                   points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-backbone">
+        <ul class="kpi-list">
+          <li>Create a draft project schedule with key milestones and internal deadlines within the first 3–5 days.</li>
+          <li>Define and document the high-level work breakdown structure (WBS) covering all major phases and workstreams.</li>
+          <li>Identify and record all key stakeholders (internal and external) and their roles by day 5.</li>
+          <li>Establish and share a simple RACI or responsibilities map for core activities by day 10.</li>
+          <li>Confirm at least one internal review of the backbone (schedule, WBS, roles) with your sponsor or lead.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 2. Clarifying Scope, Assumptions & Constraints -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-scope">
+        clarifying scope, assumptions &amp; constraints
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+                   points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-scope">
+        <ul class="kpi-list">
+          <li>Produce a written, one-page “Project on a Page” summary of scope, objectives, and success criteria by day 5.</li>
+          <li>Document a list of key assumptions, constraints, and dependencies and review them with the client by day 10.</li>
+          <li>Capture all open questions and scope clarifications in a log, with owners and due dates for answers.</li>
+          <li>Hold at least one dedicated “Candid Kickoff” conversation to test alignment on scope and success measures.</li>
+          <li>Track how many later scope changes tie back to undocumented assumptions — and aim to reduce this over time.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 3. Aligning the Team & Communication Rhythms -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-alignment">
+        aligning the team &amp; communication rhythms
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+                   points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-alignment">
+        <ul class="kpi-list">
+          <li>Hold a project kickoff meeting within the first 3–7 days with all core team members present.</li>
+          <li>Define and document communication rhythms: status meeting cadence, stand-ups, reporting cycles, and channels.</li>
+          <li>Agree on response-time expectations (e.g., email, chat, review turnarounds) and share them with the team.</li>
+          <li>Ensure every core team member can clearly describe their role, the project goals, and what “success” looks like.</li>
+          <li>Set up working tools and spaces (shared folders, trackers, issue logs) before major execution work begins.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 4. Quick Wins, Early Risks & Client Confidence -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-earlywins">
+        quick wins, early risks &amp; client confidence
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+                   points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-earlywins">
+        <ul class="kpi-list">
+          <li>Deliver one or two meaningful quick wins in the first 10 days (e.g., resolving a nagging issue, clarifying a key requirement).</li>
+          <li>Start a simple risk and issues log by day 3 and review it with the team at least once in the first 10 days.</li>
+          <li>Assign owners and due dates to all high-priority early risks or issues identified.</li>
+          <li>Schedule and complete an early client check-in to replay the plan, confirm understanding, and gauge confidence.</li>
+          <li>Capture initial client sentiment (e.g., “green / amber / red” or a quick rating) to baseline trust and alignment.</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="kpi-topic-footer">
+    Choose a KPI from each category to turn your first 10 days into a launchpad for the next
+    10 months — stabilizing the project, clarifying expectations, and building early trust
+    with both your team and your clients.
+  </p>
+</section>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const titles = document.querySelectorAll('.kpi-expandable-container .expandable-title');
+
+    titles.forEach(function (title) {
+      title.addEventListener('click', function () {
+        const parent = this.closest('.expandable-item');
+        const targetId = this.getAttribute('data-target');
+        const content = document.getElementById(targetId);
+
+        if (!parent || !content) return;
+
+        const isActive = parent.classList.contains('active');
+        parent.classList.toggle('active', !isActive);
+        content.style.display = !isActive ? 'block' : 'none';
+      });
+    });
+  });
+</script>

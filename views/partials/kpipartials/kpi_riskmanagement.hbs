@@ -1,0 +1,131 @@
+<section class="topic-kpi-section" aria-labelledby="kpi-topic-heading">
+  <h2 id="kpi-topic-heading" class="kpi-topic-title">suggested KPIs for this topic</h2>
+
+  <p class="kpi-topic-intro">
+    These KPIs help teams treat risk as a proactive, everyday practice — catching problems early,
+    structuring uncertainty, and building client trust through transparency and timely action.
+  </p>
+
+  <div class="expandable-container kpi-expandable-container">
+
+
+    <!-- 1. Early Identification & Visibility -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-risk-identify">
+        early identification &amp; visibility
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+            points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-risk-identify">
+        <ul class="kpi-list">
+          <li>Create or update a risk log within the first 3–5 days of project kickoff.</li>
+          <li>Log 100% of identified risks — technical, political, stakeholder, timeline, or resource-related.</li>
+          <li>Hold weekly internal risk scans to surface early warning signs before issues materialize.</li>
+          <li>Track how many risks are identified early vs. after they have already become issues.</li>
+          <li>Ensure everyone on the team knows how to raise a risk without fear or defensiveness.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 2. Structuring & Owning Risks -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-risk-own">
+        structuring &amp; owning risks
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+            points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-risk-own">
+        <ul class="kpi-list">
+          <li>Assign an owner and a next action to every active risk — no unassigned items.</li>
+          <li>Rate likelihood and consequence consistently using a simple scale or heat map.</li>
+          <li>Close or downgrade risks only after verifying that the underlying condition has changed.</li>
+          <li>Establish a “rolling risk review” rhythm so the log is updated weekly, not forgotten.</li>
+          <li>Track the percentage of active risks with overdue next steps and aim to reduce it steadily.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 3. Communicating Risks to Clients -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-risk-client">
+        communicating risks to clients
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+            points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-risk-client">
+        <ul class="kpi-list">
+          <li>Discuss top risks with the client at least once per reporting cycle (weekly or bi-weekly).</li>
+          <li>Use structured messages: what changed, why it matters, options, and your recommendation.</li>
+          <li>Track how often risks are communicated before they escalate — aiming to increase early alerts.</li>
+          <li>Document client decisions related to risks (accept, mitigate, monitor) to maintain clarity.</li>
+          <li>Gather informal client sentiment about risk transparency to improve trust and alignment.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 4. Preventing Issues & Protecting Project Health -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-risk-health">
+        preventing issues &amp; protecting project health
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+            points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-risk-health">
+        <ul class="kpi-list">
+          <li>Measure how many risks are resolved before they become issues — aim for steady improvement.</li>
+          <li>Track write-offs or overruns linked to unmanaged risks and reduce them quarter over quarter.</li>
+          <li>Connect risk changes to schedule updates — no silent timeline impacts.</li>
+          <li>Use retrospective reviews to evaluate which mitigation strategies worked best and why.</li>
+          <li>Ensure risk learnings feed into future scoping, planning, and kickoff sessions.</li>
+        </ul>
+      </div>
+    </div>
+
+
+  </div>
+
+  <p class="kpi-topic-footer">
+    Choose a KPI from each category to create a proactive, transparent, and trustworthy
+    approach to risk — protecting your schedule, budget, team health, and client confidence.
+  </p>
+</section>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const titles = document.querySelectorAll('.kpi-expandable-container .expandable-title');
+
+    titles.forEach(function (title) {
+      title.addEventListener('click', function () {
+        const parent = this.closest('.expandable-item');
+        const targetId = this.getAttribute('data-target');
+        const content = document.getElementById(targetId);
+
+        if (!parent || !content) return;
+
+        const isActive = parent.classList.contains('active');
+        parent.classList.toggle('active', !isActive);
+        content.style.display = !isActive ? 'block' : 'none';
+      });
+    });
+  });
+</script>

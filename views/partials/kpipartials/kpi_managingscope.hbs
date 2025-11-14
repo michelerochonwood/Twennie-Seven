@@ -1,0 +1,131 @@
+<section class="topic-kpi-section" aria-labelledby="kpi-topic-heading">
+  <h2 id="kpi-topic-heading" class="kpi-topic-title">suggested KPIs for this topic</h2>
+
+  <p class="kpi-topic-intro">
+    These KPIs help project managers keep scope under control from day one — making change visible,
+    having better client conversations, and protecting schedule, quality, and profit instead of
+    letting the project drift.
+  </p>
+
+  <div class="expandable-container kpi-expandable-container">
+
+    <!-- 1. Defining Scope, Assumptions & Boundaries Up Front -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-scope-define">
+        define scope, assumptions &amp; boundaries up front
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+        <polygon fill="#4e50a2"
+                 points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-scope-define">
+        <ul class="kpi-list">
+          <li>Create a one-page scope summary that clearly states what is in, what is out, and what is “to be confirmed.” Share it with the client within the first 10 days.</li>
+          <li>Document key assumptions, constraints, and dependencies in a dedicated section — not buried in email threads.</li>
+          <li>Review the scope and assumptions with both the client and internal team at least once before major design or development begins.</li>
+          <li>Ensure every team member can describe the project scope in a similar way when asked.</li>
+          <li>Track how many later changes tie back to assumptions that were never documented, and aim to reduce that number each project.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 2. Early Detection & Logging of Scope Creep -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-scope-detect">
+        early detection &amp; logging of scope creep
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+        <polygon fill="#4e50a2"
+                 points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-scope-detect">
+        <ul class="kpi-list">
+          <li>Maintain a simple scope-change log from day one, capturing requests, initiators, dates, and status.</li>
+          <li>Log 100% of requested changes — even “small tweaks” and “quick favors” — before any work is done.</li>
+          <li>Review new scope items in weekly internal meetings: impact, options, and recommendation.</li>
+          <li>Track lead time from scope request to decision (approved / deferred / declined) and reduce delays over time.</li>
+          <li>Monitor which clients or workstreams generate the most scope creep and use that data to improve future scoping.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 3. Client Conversations, Change Orders & Boundaries -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-scope-client">
+        client conversations, change orders &amp; boundaries
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+        <polygon fill="#4e50a2"
+                 points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-scope-client">
+        <ul class="kpi-list">
+          <li>Respond to scope-change requests with a structured message: what’s changing, impact on time/cost, and your recommended option.</li>
+          <li>Issue formal change-order requests for all material changes within 3–5 business days of the client’s ask.</li>
+          <li>Track the ratio of approved vs. unapproved changes being worked on — aim to eliminate “ghost scope” (unapproved work).</li>
+          <li>Use agreed language to push back politely when scope grows without budget or schedule adjustment.</li>
+          <li>Review a sample of scope emails or meeting notes each quarter to ensure messages are clear, respectful, and firm on boundaries.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 4. Protecting Schedule, Budget & Team Capacity -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-scope-impact">
+        protecting schedule, budget &amp; team capacity
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+        <polygon fill="#4e50a2"
+                 points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-scope-impact">
+        <ul class="kpi-list">
+          <li>Estimate the time and cost impact of each significant scope change before committing resources.</li>
+          <li>Track incremental hours spent on changes vs. the additional budget approved for them.</li>
+          <li>Update the project schedule and risk register whenever scope changes are approved — no invisible impacts.</li>
+          <li>Monitor write-offs linked to unmanaged scope creep and aim to reduce them project over project.</li>
+          <li>Review at close-out how scope management affected profitability, team stress, and client satisfaction—and feed lessons into the next scoping cycle.</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="kpi-topic-footer">
+    Choose a KPI from each category to make scope explicit, visible, and manageable — so your
+    projects stay profitable and sustainable, and your team spends more time delivering value
+    and less time firefighting surprises.
+  </p>
+</section>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const titles = document.querySelectorAll('.kpi-expandable-container .expandable-title');
+
+    titles.forEach(function (title) {
+      title.addEventListener('click', function () {
+        const parent = this.closest('.expandable-item');
+        const targetId = this.getAttribute('data-target');
+        const content = document.getElementById(targetId);
+
+        if (!parent || !content) return;
+
+        const isActive = parent.classList.contains('active');
+        parent.classList.toggle('active', !isActive);
+        content.style.display = !isActive ? 'block' : 'none';
+      });
+    });
+  });
+</script>

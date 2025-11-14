@@ -1,0 +1,131 @@
+<section class="topic-kpi-section" aria-labelledby="kpi-topic-heading">
+  <h2 id="kpi-topic-heading" class="kpi-topic-title">suggested KPIs for this topic</h2>
+
+  <p class="kpi-topic-intro">
+    These KPIs help teams close projects with clarity, professionalism, and strategic intent —
+    capturing lessons learned, reinforcing client trust, and preventing loose ends from becoming
+    future risks or rework.
+  </p>
+
+  <div class="expandable-container kpi-expandable-container">
+
+    <!-- 1. Deliverables, Requirements & Final Quality -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-closeout-quality">
+        final deliverables, requirements &amp; quality assurance
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+                   points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-closeout-quality">
+        <ul class="kpi-list">
+          <li>Verify 100% of client requirements against final deliverables prior to close-out.</li>
+          <li>Track the number of post-delivery fixes requested — aim for steady reduction project to project.</li>
+          <li>Complete a final internal QA review before materials are handed off to the client.</li>
+          <li>Ensure all technical files, reference material, and supporting documentation are organized and accessible.</li>
+          <li>Measure client satisfaction with final deliverables (quick score, color rating, or short survey).</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 2. Debriefs, Lessons Learned & Team Maturity -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-closeout-debrief">
+        debriefs, lessons learned &amp; team maturity
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+                   points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-closeout-debrief">
+        <ul class="kpi-list">
+          <li>Hold a structured, blameless debrief session within two weeks of project completion.</li>
+          <li>Capture and document at least five actionable lessons — technical, interpersonal, or operational.</li>
+          <li>Assign owners and timelines to each improvement action identified during the debrief.</li>
+          <li>Measure how many learnings are actually implemented on future projects.</li>
+          <li>Track stakeholder sentiment about the debrief process to refine how sessions are run.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 3. Client Handoff, Training & Final Communication -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-closeout-client">
+        client handoff, training &amp; final communication
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+                   points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-closeout-client">
+        <ul class="kpi-list">
+          <li>Complete a final client walkthrough or review session to confirm understanding and acceptance.</li>
+          <li>Provide training, documentation, or “quickstart” guides based on the client’s needs and capabilities.</li>
+          <li>Issue a clear, concise project close-out email summarizing key decisions, deliverables, and next steps.</li>
+          <li>Measure client confidence at project end through a simple rating or brief survey.</li>
+          <li>Identify follow-on opportunities or future phases naturally revealed during the close-out process.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 4. Internal Wrap-Up & Future Readiness -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-closeout-internal">
+        internal wrap-up &amp; future readiness
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+                   points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-closeout-internal">
+        <ul class="kpi-list">
+          <li>Update project artifacts (files, notes, decisions) so they are reusable and searchable for future proposals.</li>
+          <li>Record a short “project snapshot” capturing scope, complexity, innovations, and key outcomes.</li>
+          <li>Ensure all administrative close-out tasks (billing, documentation, archiving) are completed within 30 days.</li>
+          <li>Track how long it takes to fully close a project — aim to reduce cycle time each quarter.</li>
+          <li>Store lessons, learnings, and metrics in a central repository accessible to future teams.</li>
+        </ul>
+      </div>
+    </div>
+
+
+  </div>
+
+  <p class="kpi-topic-footer">
+    Choose a KPI from each category to transform your close-out process into a strategic advantage —
+    strengthening client relationships, improving team capability, and setting the stage for your next win.
+  </p>
+</section>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const titles = document.querySelectorAll('.kpi-expandable-container .expandable-title');
+
+    titles.forEach(function (title) {
+      title.addEventListener('click', function () {
+        const parent = this.closest('.expandable-item');
+        const targetId = this.getAttribute('data-target');
+        const content = document.getElementById(targetId);
+
+        if (!parent || !content) return;
+
+        const isActive = parent.classList.contains('active');
+        parent.classList.toggle('active', !isActive);
+        content.style.display = !isActive ? 'block' : 'none';
+      });
+    });
+  });
+</script>

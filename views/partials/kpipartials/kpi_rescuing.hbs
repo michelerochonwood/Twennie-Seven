@@ -1,0 +1,131 @@
+<section class="topic-kpi-section" aria-labelledby="kpi-topic-heading">
+  <h2 id="kpi-topic-heading" class="kpi-topic-title">suggested KPIs for this topic</h2>
+
+  <p class="kpi-topic-intro">
+    These KPIs help project managers rescue a troubled project by diagnosing accurately,
+    stabilizing quickly, and rebuilding client trust through clear communication and
+    decisive corrective action.
+  </p>
+
+  <div class="expandable-container kpi-expandable-container">
+
+
+    <!-- 1. Diagnosis & Root-Cause Identification -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-rescue-diagnosis">
+        diagnosis &amp; root-cause identification
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+                   points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-rescue-diagnosis">
+        <ul class="kpi-list">
+          <li>Perform a structured diagnosis within the first 3–5 days of recognizing project distress.</li>
+          <li>Identify the top 3–5 root causes rather than working from symptoms.</li>
+          <li>Interview key team members and stakeholders to collect missing context and uncover hidden issues.</li>
+          <li>Create a before/after map that shows how assumptions drifted from reality.</li>
+          <li>Document a clear “problem statement” that guides the rescue plan.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 2. Stabilization & Corrective Action -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-rescue-stabilize">
+        stabilization &amp; corrective action
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+                   points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-rescue-stabilize">
+        <ul class="kpi-list">
+          <li>Define a 10–14 day stabilization plan with actions, owners, and deadlines.</li>
+          <li>Track overdue decisions and approvals — aim to clear the backlog by at least 50% in the first stabilization window.</li>
+          <li>Prioritize tasks ruthlessly: stop or pause non-essential work until stability is regained.</li>
+          <li>Hold brief daily check-ins until core issues are under control.</li>
+          <li>Track reduction in active risks and issues as a measure of regained stability.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 3. Client Communication & Trust Repair -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-rescue-client">
+        client communication &amp; trust repair
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+                   points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-rescue-client">
+        <ul class="kpi-list">
+          <li>Hold a transparent reset meeting with the client within the first week of the rescue effort.</li>
+          <li>Provide structured updates: what changed, why, your options, and your recommendation.</li>
+          <li>Track client sentiment (quick survey, check-in rating, or verbal indicators) throughout the rescue.</li>
+          <li>Document all commitments made to the client and verify they are met on time.</li>
+          <li>Measure how long it takes for the client to return to “green” confidence status.</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <!-- 4. Recovery, Prevention & Long-Term Health -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-rescue-prevention">
+        recovery, prevention &amp; long-term project health
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2"
+                   points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+
+      <div class="expandable-content" id="kpi-rescue-prevention">
+        <ul class="kpi-list">
+          <li>Re-baseline the schedule, scope, and budget after stabilization — with client approval.</li>
+          <li>Measure reduction in recurring issues week-over-week.</li>
+          <li>Implement at least three preventative measures that reduce the chance of relapse.</li>
+          <li>Track team morale and workload during recovery to avoid burnout or quality erosion.</li>
+          <li>Document final rescue outcomes and lessons to prevent similar failures in future projects.</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="kpi-topic-footer">
+    Choose a KPI from each category to rescue projects with clarity, steadiness, and strategic
+    leadership — protecting your team, your client relationship, and your organization’s reputation.
+  </p>
+</section>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const titles = document.querySelectorAll('.kpi-expandable-container .expandable-title');
+
+    titles.forEach(function (title) {
+      title.addEventListener('click', function () {
+        const parent = this.closest('.expandable-item');
+        const targetId = this.getAttribute('data-target');
+        const content = document.getElementById(targetId);
+
+        if (!parent || !content) return;
+
+        const isActive = parent.classList.contains('active');
+        parent.classList.toggle('active', !isActive);
+        content.style.display = !isActive ? 'block' : 'none';
+      });
+    });
+  });
+</script>
