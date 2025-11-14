@@ -936,3 +936,42 @@ label[for=short-summary] {
     flex: 1 1 100%;
   }
 }
+
+/* ========== Topic Selection Sections ========== */
+
+.topic-section {
+  background: #f7f7f7;            /* light grey */
+  border: 1px solid #e0e0e0;       /* subtle outline */
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 25px;
+}
+
+/* make the label look like a section header */
+.topic-section > label {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #262262;
+  margin-bottom: 12px;
+  display: block;
+}
+
+/* reduce visual clutter inside the grey block */
+.topic-section .topic-label {
+  font-size: 0.8rem;
+  color: #4a4ab2;
+  margin-bottom: 4px;
+}
+
+/* make dropdown spacing consistent */
+.topic-section select {
+  background-color: #ffffff;
+  border-radius: 10px;
+  font-size: 0.85rem;
+}
+
+/* extra clarity between columns */
+.topic-column {
+  padding: 4px 0;
+}
+
