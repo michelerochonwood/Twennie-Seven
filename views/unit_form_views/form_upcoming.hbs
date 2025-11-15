@@ -49,16 +49,7 @@
         </select>
       </div>
 
-      <!-- Main Topic -->
-      <div class="form-field">
-        <label for="main-topic">Main Topic</label>
-        <select id="main-topic" name="main_topic" class="form-select" required>
-          <option value="">Please select a main topic</option>
-          {{#each mainTopics}}
-            <option value="{{this}}" {{#ifEquals this ../data.main_topic}}selected{{/ifEquals}}>{{this}}</option>
-          {{/each}}
-        </select>
-      </div>
+{{> unitformpartials/topicdropdown }}
 
 
 

@@ -37,28 +37,7 @@
         <input type="text" id="exercise-title" name="exercise_title" value="{{data.exercise_title}}" required>
       </div>
 
-      <!-- Main Topic -->
-<!-- Main Topic -->
-<div class="form-field">
-  <label for="main-topic">Main Topic</label>
-  <select id="main-topic" name="main_topic" required>
-    <option value="">Please select a main topic</option>
-    {{#each mainTopics}}
-      <option value="{{this}}" {{#ifEquals this ../data.main_topic}}selected{{/ifEquals}}>{{this}}</option>
-    {{/each}}
-  </select>
-</div>
-
-<!-- Secondary Topic -->
-<div class="form-field">
-  <label for="secondary-topics">Secondary Topic (Optional)</label>
-  <select id="secondary-topics" name="secondary_topics">
-    <option value="">None</option>
-    {{#each mainTopics}}
-      <option value="{{this}}" {{#ifIncludes ../data.secondary_topics this}}selected{{/ifIncludes}}>{{this}}</option>
-    {{/each}}
-  </select>
-</div>
+{{> unitformpartials/topicdropdown }}
 
 
 

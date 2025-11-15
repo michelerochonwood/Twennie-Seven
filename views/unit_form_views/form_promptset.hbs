@@ -47,30 +47,7 @@
         <input type="text" id="promptset-title" name="promptset_title" value="{{data.promptset_title}}">
       </div>
 
-      <!-- Topic Dropdown -->
-<!-- Main Topic -->
-<div class="form-field">
-  <label for="main_topic">Main Topic</label>
-  <select id="main_topic" name="main_topic" required style="border-radius: 55px;">
-    <option value="">Please select a main topic</option>
-    {{#each mainTopics}}
-      <option value="{{this}}" {{#ifEquals this ../data.main_topic}}selected{{/ifEquals}}>{{this}}</option>
-    {{/each}}
-  </select>
-</div>
-
-
-<!-- Secondary Topic (Optional) -->
-<div class="form-field">
-  <label for="secondary_topic">Secondary Topic (Optional)</label>
-  <select id="secondary_topic" name="secondary_topic" style="border-radius: 55px;">
-    <option value="">None</option>
-    {{#each secondaryTopics}}
-      <option value="{{this}}" {{#ifEquals this ../data.secondary_topic}}selected{{/ifEquals}}>{{this}}</option>
-    {{/each}}
-  </select>
-</div>
-
+{{> unitformpartials/topicdropdown }}
 
 
 <!-- Target Audience Section -->
