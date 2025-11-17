@@ -17,7 +17,7 @@
 <article class="bytopic-library-unit-card" data-unit-id="{{_id}}">
   {{#if (eq this.type "upcoming")}}
     <!-- Upcoming corner badge -->
-    <img src="/icons/upcoming.svg" alt="" aria-hidden="true" class="bytopic-upcoming-badge">
+    <img src="/icons/upcomingsvg.svg" alt="" aria-hidden="true" class="bytopic-upcoming-badge">
   {{/if}}
 
   <!-- Inner wrapper preserves rounded-corner clipping -->
@@ -25,16 +25,17 @@
     <!-- SVG Header -->
     <div class="bytopic-card-svg-header">
       {{#if (eq this.type "upcoming")}}
-        <!-- Orange wave for upcoming -->
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 198.89 17.83" aria-hidden="true" focusable="false">
-          <path fill="#f7941d" d="M0,9.74s30.57,13.88,92.83,1.88c0,0,68.2-13.17,106.06,6.21V0H0v9.74Z"/>
-        </svg>
+        <!-- Upcoming header SVG -->
+        <img src="/images/upcomingsvg.svg"
+             alt=""
+             aria-hidden="true"
+             class="bytopic-card-svg-image">
       {{else}}
-        <!-- Default purple wave -->
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 198.89 17.83" aria-hidden="true" focusable="false">
-          <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
-          <path class="cls-1" d="M0,9.74s30.57,13.88,92.83,1.88c0,0,68.2-13.17,106.06,6.21V0H0v9.74Z"/>
-        </svg>
+        <!-- Regular unit header SVG -->
+        <img src="/images/unitsvg.svg"
+             alt=""
+             aria-hidden="true"
+             class="bytopic-card-svg-image">
       {{/if}}
     </div>
 
@@ -161,6 +162,7 @@
     content.style.display = isOpen ? 'none' : 'flex';
   }
 </script>
+
 
 
 
