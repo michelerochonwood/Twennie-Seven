@@ -449,6 +449,8 @@ if (process.env.MONGO_URI) {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 });
 
+
+
 /* ------------------------------------------------------------------
    11) ROUTES
 ------------------------------------------------------------------- */
@@ -482,6 +484,9 @@ app.use('/change_membership', require('./routes/changemembershiproutes'));
 app.use('/badges', require('./routes/badgesroutes'));
 app.use('/dashboard', require('./routes/preferenceroutes'));
 app.use('/ui', require('./routes/uiroutes'));
+app.use('/', require('./routes/missionroutes'));
+
+
 
 // Billing
 try {
