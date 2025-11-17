@@ -426,7 +426,7 @@ html, body {
 /* ---- Card (outer) ---- */
 .bytopic-library-unit-card {
   background-color: #d0cfcf;
-  border-radius: 15px;
+  border-radius: 20px;
   height: 350px;
   transition: height 0.3s ease;
   display: flex;
