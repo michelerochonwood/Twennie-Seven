@@ -25,7 +25,7 @@ function makeSectionedMissions(missions, sectionTitle, emptyMessage) {
 async function renderMissionList(req, res, options) {
   const {
     category,    // schema category: 'learning', 'research', 'business_development', etc.
-    viewName,    // e.g. 'mission_views/missions_learning'
+    viewName,    // e.g. 'unit_views/missions_learning'
     pageTitle,   // {{title}} in the view
     shortSummary,
     longSummary,
@@ -70,12 +70,6 @@ async function renderMissionList(req, res, options) {
 
 module.exports = {
   // ------------------------------------
-  // Mission categories landing page
-  // (your main categories view)
-  // ------------------------------------
-
-
-  // ------------------------------------
   // Mission Control (header square)
   // ------------------------------------
   missionControl: async (req, res) => {
@@ -88,7 +82,6 @@ module.exports = {
         });
       }
 
-      // Simple placeholder for now
       return res.render('unit_views/missioncontrol_category', {
         layout: 'unitviewlayout',
         title: 'Mission Control',
@@ -109,14 +102,14 @@ module.exports = {
   },
 
   // ------------------------------------
-  // Category lists (matching your view names)
+  // Category lists (matching your view names in /views/unit_views)
   // ------------------------------------
 
-  // learning → missions_learning.hbs
+  // learning → /views/unit_views/missions_learning.hbs
   learningMissions: (req, res) =>
     renderMissionList(req, res, {
       category: 'learning',
-      viewName: 'mission_views/missions_learning',
+      viewName: 'unit_views/missions_learning',
       pageTitle: 'Learning Missions',
       shortSummary: 'Missions that turn slow periods into focused learning sprints.',
       longSummary:
@@ -124,11 +117,11 @@ module.exports = {
         'through Twennie units with a specific purpose while the workload is light.',
     }),
 
-  // research → missions_research.hbs
+  // research → /views/unit_views/missions_research.hbs
   researchMissions: (req, res) =>
     renderMissionList(req, res, {
       category: 'research',
-      viewName: 'mission_views/missions_research',
+      viewName: 'unit_views/missions_research',
       pageTitle: 'Research Missions',
       shortSummary: 'Missions focused on market, client, and opportunity research.',
       longSummary:
@@ -136,11 +129,11 @@ module.exports = {
         'before committing resources. These missions often feed directly into Nuggets and strategy work.',
     }),
 
-  // business_development → missions_businessdevelopment.hbs
+  // business_development → /views/unit_views/missions_businessdevelopment.hbs
   businessDevelopmentMissions: (req, res) =>
     renderMissionList(req, res, {
       category: 'business_development',
-      viewName: 'mission_views/missions_businessdevelopment',
+      viewName: 'unit_views/missions_businessdevelopment',
       pageTitle: 'Business Development Missions',
       shortSummary: 'Missions that generate and advance opportunities.',
       longSummary:
@@ -148,11 +141,11 @@ module.exports = {
         'opportunities from early curiosity toward real pursuits.',
     }),
 
-  // internal_improvement → missions_internal_improvements.hbs
+  // internal_improvement → /views/unit_views/missions_internal_improvements.hbs
   internalImprovementMissions: (req, res) =>
     renderMissionList(req, res, {
       category: 'internal_improvement',
-      viewName: 'mission_views/missions_internal_improvements',
+      viewName: 'unit_views/missions_internal_improvements',
       pageTitle: 'Internal Improvement Missions',
       shortSummary: 'Missions that improve internal systems, tools, and workflows.',
       longSummary:
@@ -160,11 +153,11 @@ module.exports = {
         'easier and more effective for your team.',
     }),
 
-  // client_experience → missions_clientexperience.hbs
+  // client_experience → /views/unit_views/missions_clientexperience.hbs
   clientExperienceMissions: (req, res) =>
     renderMissionList(req, res, {
       category: 'client_experience',
-      viewName: 'mission_views/missions_clientexperience',
+      viewName: 'unit_views/missions_clientexperience',
       pageTitle: 'Client Experience Missions',
       shortSummary: 'Missions that elevate the client’s day-to-day experience.',
       longSummary:
@@ -172,11 +165,11 @@ module.exports = {
         'These missions help un-commoditize your services and make clients feel genuinely looked after.',
     }),
 
-  // culture_play → missions_cultureandplay.hbs
+  // culture_play → /views/unit_views/missions_cultureandplay.hbs
   cultureAndPlayMissions: (req, res) =>
     renderMissionList(req, res, {
       category: 'culture_play',
-      viewName: 'mission_views/missions_cultureandplay',
+      viewName: 'unit_views/missions_cultureandplay',
       pageTitle: 'Culture & Play Missions',
       shortSummary: 'Missions that build culture, play, and human connection.',
       longSummary:
@@ -184,11 +177,11 @@ module.exports = {
         'feel more human — and projects easier to deliver.',
     }),
 
-  // administrative → missions_administrative.hbs
+  // administrative → /views/unit_views/missions_administrative.hbs
   administrativeMissions: (req, res) =>
     renderMissionList(req, res, {
       category: 'administrative',
-      viewName: 'mission_views/missions_administrative',
+      viewName: 'unit_views/missions_administrative',
       pageTitle: 'Administrative Missions',
       shortSummary: 'Missions that handle the necessary operational and admin work.',
       longSummary:
@@ -196,11 +189,11 @@ module.exports = {
         'organized, compliant, and prepared when things get busy again.',
     }),
 
-  // other → missions_rogue.hbs
+  // other → /views/unit_views/missions_rogue.hbs
   rogueMissions: (req, res) =>
     renderMissionList(req, res, {
       category: 'other',
-      viewName: 'mission_views/missions_rogue',
+      viewName: 'unit_views/missions_rogue',
       pageTitle: 'Rogue Missions',
       shortSummary: 'Wild-card missions that don’t fit any one category.',
       longSummary:
@@ -237,7 +230,7 @@ module.exports = {
       //  - resolve created_by and assigned_to to profiles
       //  - add visibility / access checks if needed
       //  - expose completions in a nicer structure
-      return res.render('mission_views/single_mission', {
+      return res.render('unit_views/single_mission', {
         layout: 'unitviewlayout',
         title: mission.mission_title,
         mission,          // all schema fields available as mission.*
