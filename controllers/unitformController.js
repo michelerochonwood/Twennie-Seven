@@ -4,8 +4,7 @@ const Interview = require('../models/unit_models/interview');
 const PromptSet = require('../models/unit_models/promptset');
 const Template = require('../models/unit_models/template');
 const Exercise = require('../models/unit_models/exercise');
-const MicroStudy = require('../models/unit_models/microstudy');
-const MicroCourse = require('../models/unit_models/microcourse');
+
 const { uploader } = require('../utils/cloudinary');
 const { Readable } = require('stream');
 const sanitizeHtml = require('sanitize-html');
@@ -13,6 +12,7 @@ const Upcoming = require('../models/unit_models/upcoming'); // ← add this
 const Tag = require('../models/tag'); 
 console.log('unitFormController loaded');
 const Nugget = require('../models/unit_models/nugget');
+const Mission = require('../models/unit_models/mission'); // 👈 ADD THIS
 
 
 
@@ -131,8 +131,81 @@ const unitFormController = {
     getPromptForm: createGetFormHandler('promptset', 'form_promptset'),
     getExerciseForm: createGetFormHandler('exercise', 'form_exercise'),
     getTemplateForm: createGetFormHandler('template', 'form_template'),
-    getMicroCourseForm: createGetFormHandler('microcourse', 'form_microcourse'),
-    getMicroStudyForm: createGetFormHandler('microstudy', 'form_microstudy'),
+    getMissionForm: (req, res) => {
+      console.log('🛡 Rendering mission form. CSRF available:', typeof req.csrfToken === 'function');
+
+      try {
+        const mainTopics = [
+          'AI in Consulting',
+          'AI in Learning',
+          'AI in Project Management',
+          'Analytics in Project Management',
+          'Business Development in Technical Services',
+          'Business Development Metrics',
+          'Candid Communication',
+          'Career Development in Technical Services',
+          'Client Experience',
+          'Client Feedback Software',
+          'Client Interactions',
+          'Conducting Color Reviews of Proposals',
+          'Cross Selling in Multi-Disciplinary Firms',
+          'CRM Platforms',
+          'Designing a Proposal Process',
+          'Employee Experience',
+          'Emotional Intelligence',
+          'Finding Projects Before they Become RFPs',
+          'Leadership in Technical Consulting',
+          'Leading Change',
+          'Leading Groups on Twennie',
+          'Making a Proposal Easy to Read, Skim, and Evaluate',
+          'Mental Health in Consulting Environments',
+          'Non-Technical Roles in Technical Environments',
+          'People Before Profit',
+          'Portfolio and Program Management',
+          'Project Management',
+          'Project Management Software',
+          'Proposal Management',
+          'Proposal Strategy',
+          'Pull Marketing',
+          'Remote and Hybrid Work',
+          'Social Entrepreneurship',
+          'Social Media, Advertising, and Other Mysteries',
+          'Soft Skills in Technical Environments',
+          'Storytelling in Technical Marketing',
+          'Team Building in Consulting',
+          'The Advantage of Failure',
+          'The Pareto Principle',
+          'The Power of Play in the Workplace',
+          'The Power of Purpose',
+          'Tips and Tricks for Proposal Proofreading',
+          'Turning a Project into a Business Development Powerhouse',
+          'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
+          'Using Lean in Project Management',
+          'When the Workload is Light',
+          'Workplace Culture',
+          'The First 10 Days of a Project',
+          'Managing Scope So It Doesnt Manage You',
+          'Risk Management',
+          'Closing a Project Strategically',
+          'Rescuing a Project That Has Gone Off the Rails'
+        ];
+
+        const fromUpcomingId = req.query.fromUpcomingId || '';
+
+        return res.render('unit_form_views/form_mission', {
+          layout: 'unitformlayout',
+          unitType: 'mission',
+          data: {},
+          mainTopics,
+          fromUpcomingId,
+          csrfToken: getCsrfToken(req),
+        });
+      } catch (error) {
+        console.error('Error rendering mission form:', error);
+        return res.status(500).send('Error rendering form for mission.');
+      }
+    },
+
         getNuggetForm: (req, res) => {
       try {
         res.render('unit_form_views/form_nugget', {
@@ -201,23 +274,26 @@ const unitFormController = {
         const { unitType, id, error } = req.query;
 
         try {
-            let unit = null;
-            if (id) {
-                const Model = {
-                    article: Article,
-                    video: Video,
-                    interview: Interview,
-                    promptset: PromptSet,
-                    template: Template,
-                    exercise: Exercise,
-                    microstudy: MicroStudy,
-                    microcourse: MicroCourse,
-                    nugget: Nugget, // 👈 add this
-                }[unitType];
+let unit = null;
+if (id) {
+  const Model = {
+    article: Article,
+    video: Video,
+    interview: Interview,
+    promptset: PromptSet,
+    template: Template,
+    exercise: Exercise,
+    nugget: Nugget,
+    mission: Mission,
+  }[unitType];
 
-                unit = await Model.findById(id);
-                console.log(`Fetched ${unitType} for success page:`, unit);
-            }
+  if (!Model) {
+    console.warn(`Unknown unitType in success page: ${unitType}`);
+  } else {
+    unit = await Model.findById(id);
+    console.log(`Fetched ${unitType} for success page:`, unit);
+  }
+}
 
             res.render('unit_form_views/unit_success', {
                 layout: 'unitformlayout',
@@ -300,7 +376,7 @@ getUpcomingForm: (req, res) => {
 
     const unitTypes = [
       'article','video','interview','exercise','template',
-      'promptset','micro_course','micro_study','peer_coaching'
+      'promptset', 'nugget', 'mission'
     ];
 
     return res.render('unit_form_views/form_upcoming', {
@@ -417,7 +493,7 @@ submitUpcoming: async (req, res) => {
         mainTopics,
         unitTypes: [
           'article','video','interview','exercise','template',
-          'promptset','micro_course','micro_study','peer_coaching'
+          'promptset', 'mission', 'nugget'
         ],
         csrfToken: getCsrfToken(req),
       });
@@ -1938,7 +2014,265 @@ submitPromptSet: async (req, res) => {
       errorMessage: 'An error occurred while submitting the template.',
     });
   }
-}
+},
+
+  submitMission: async (req, res) => {
+    const mainTopics = [
+      'AI in Consulting',
+      'AI in Learning',
+      'AI in Project Management',
+      'Analytics in Project Management',
+      'Business Development in Technical Services',
+      'Business Development Metrics',
+      'Candid Communication',
+      'Career Development in Technical Services',
+      'Client Experience',
+      'Client Feedback Software',
+      'Client Interactions',
+      'Conducting Color Reviews of Proposals',
+      'Cross Selling in Multi-Disciplinary Firms',
+      'CRM Platforms',
+      'Designing a Proposal Process',
+      'Employee Experience',
+      'Emotional Intelligence',
+      'Finding Projects Before they Become RFPs',
+      'Leadership in Technical Consulting',
+      'Leading Change',
+      'Leading Groups on Twennie',
+      'Making a Proposal Easy to Read, Skim, and Evaluate',
+      'Mental Health in Consulting Environments',
+      'Non-Technical Roles in Technical Environments',
+      'People Before Profit',
+      'Portfolio and Program Management',
+      'Project Management',
+      'Project Management Software',
+      'Proposal Management',
+      'Proposal Strategy',
+      'Pull Marketing',
+      'Remote and Hybrid Work',
+      'Social Entrepreneurship',
+      'Social Media, Advertising, and Other Mysteries',
+      'Soft Skills in Technical Environments',
+      'Storytelling in Technical Marketing',
+      'Team Building in Consulting',
+      'The Advantage of Failure',
+      'The Pareto Principle',
+      'The Power of Play in the Workplace',
+      'The Power of Purpose',
+      'Tips and Tricks for Proposal Proofreading',
+      'Turning a Project into a Business Development Powerhouse',
+      'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
+      'Using Lean in Project Management',
+      'When the Workload is Light',
+      'Workplace Culture',
+      'The First 10 Days of a Project',
+      'Managing Scope So It Doesnt Manage You',
+      'Risk Management',
+      'Closing a Project Strategically',
+      'Rescuing a Project That Has Gone Off the Rails'
+    ];
+
+    try {
+      // CSRF guard (match your existing pattern)
+      if (!isDevelopment && !req.body._csrf) {
+        throw new Error('CSRF token is missing or invalid.');
+      }
+
+      if (!req.user || !req.user._id) {
+        throw new Error('User is not authenticated or missing user ID.');
+      }
+
+      const isEdit = !!req.body._id;
+      const userId = req.user._id;
+      const { fromUpcomingId } = req.body; // present in the form, not used yet
+
+      const {
+        mission_title,
+        status,
+        visibility,
+        main_topic,
+        category,
+        purpose,
+        why_it_matters,
+        background,
+        department_requesting,
+        open_to,
+        timeframe,
+        estimated_effort_hours,
+        job_number,
+        budget_amount,
+        due_date,
+      } = req.body;
+
+      // Basic validations
+      const errors = [];
+      if (!mission_title?.trim()) errors.push('Mission title is required.');
+      if (!purpose?.trim()) errors.push('Mission purpose is required.');
+      if (!why_it_matters?.trim()) errors.push('Please explain why this mission matters.');
+
+      if (errors.length) {
+        return res.status(400).render('unit_form_views/form_mission', {
+          layout: 'unitformlayout',
+          unitType: 'mission',
+          data: req.body,
+          errors,
+          mainTopics,
+          csrfToken: getCsrfToken(req),
+        });
+      }
+
+      // ---- approvals_required ----
+      let approvalsRequired = [];
+      if (req.body.approvals_required) {
+        const rawApprovals = Array.isArray(req.body.approvals_required)
+          ? req.body.approvals_required
+          : Object.values(req.body.approvals_required);
+
+        approvalsRequired = rawApprovals
+          .map((a) => ({
+            role: (a.role || '').trim(),
+            name: (a.name || '').trim(),
+            email: (a.email || '').trim(),
+          }))
+          .filter((a) => a.role || a.name || a.email);
+      }
+
+      // ---- task_instructions ----
+      let taskInstructions = [];
+      if (req.body.task_instructions) {
+        const rawTasks = Array.isArray(req.body.task_instructions)
+          ? req.body.task_instructions
+          : Object.values(req.body.task_instructions);
+
+        taskInstructions = rawTasks
+          .map((t) => {
+            const heading = (t.heading || '').trim();
+            const instructionsText = t.instructions || '';
+            const instructionsArray = instructionsText
+              .split(/\r?\n/)
+              .map((s) => s.trim())
+              .filter(Boolean);
+
+            return {
+              heading,
+              instructions: instructionsArray,
+            };
+          })
+          .filter((t) => t.heading || t.instructions.length);
+      }
+
+      // ---- contacts ----
+      let contacts = [];
+      if (req.body.contacts) {
+        const rawContacts = Array.isArray(req.body.contacts)
+          ? req.body.contacts
+          : Object.values(req.body.contacts);
+
+        contacts = rawContacts
+          .map((c) => ({
+            role: (c.role || '').trim(),
+            name: (c.name || '').trim(),
+            email: (c.email || '').trim(),
+            phone: (c.phone || '').trim(),
+          }))
+          .filter((c) => c.role || c.name || c.email || c.phone);
+      }
+
+      // ---- deliverables_checklist ----
+      let deliverablesChecklist = [];
+      if (req.body.deliverables_checklist) {
+        deliverablesChecklist = req.body.deliverables_checklist
+          .split(/\r?\n/)
+          .map((s) => s.trim())
+          .filter(Boolean);
+      }
+
+      const baseData = {
+        mission_title: (mission_title || '').trim(),
+        status: status || 'available',
+        visibility: visibility || 'organization_only',
+        main_topic: main_topic || 'When the Workload is Light',
+        category: category || 'internal_improvement',
+        purpose: (purpose || '').trim(),
+        why_it_matters: (why_it_matters || '').trim(),
+        background: (background || '').trim(),
+        department_requesting: (department_requesting || '').trim(),
+        open_to: (open_to || '').trim(),
+        timeframe: (timeframe || '').trim(),
+        estimated_effort_hours: estimated_effort_hours
+          ? Number(estimated_effort_hours)
+          : undefined,
+        job_number: (job_number || '').trim(),
+        budget_amount: (budget_amount || '').trim(),
+        approvals_required: approvalsRequired,
+        task_instructions: taskInstructions,
+        contacts,
+        deliverables_checklist: deliverablesChecklist,
+        due_date: due_date ? new Date(due_date) : undefined,
+      };
+
+      let mission;
+
+      if (isEdit) {
+        mission = await Mission.findById(req.body._id);
+        if (!mission) {
+          return res.status(404).render('unit_form_views/error', {
+            layout: 'unitformlayout',
+            title: 'Mission Not Found',
+            errorMessage: 'The mission you tried to edit could not be found.',
+          });
+        }
+
+        Object.assign(mission, baseData);
+      } else {
+        mission = new Mission({
+          ...baseData,
+          created_by: userId,
+        });
+      }
+
+      await mission.save();
+
+      // (Optional later) if you want: migrateAndDeleteUpcoming({ fromUpcomingId, toItemId: mission._id, toUnitType: 'mission' });
+
+      return res.render('unit_form_views/unit_success', {
+        layout: 'unitformlayout',
+        unitType: 'mission',
+        unit: mission,
+        csrfToken: getCsrfToken(req),
+      });
+    } catch (error) {
+      console.error('Error submitting mission:', error);
+
+      const isCsrfError = error.code === 'EBADCSRFTOKEN';
+      if (isCsrfError) {
+        return res.status(403).render('unit_form_views/error', {
+          layout: 'unitformlayout',
+          title: 'Session Expired',
+          errorMessage:
+            'Your session has expired or the form took too long to submit. Please refresh and try again.',
+        });
+      }
+
+      if (error.name === 'ValidationError') {
+        return res.status(400).render('unit_form_views/form_mission', {
+          layout: 'unitformlayout',
+          unitType: 'mission',
+          data: req.body,
+          errorMessage: error.message,
+          mainTopics,
+          csrfToken: getCsrfToken(req),
+        });
+      }
+
+      return res.status(500).render('unit_form_views/error', {
+        layout: 'unitformlayout',
+        title: 'Error',
+        errorMessage: error.message || 'An error occurred while submitting the mission.',
+      });
+    }
+  }
+
 
 
     };

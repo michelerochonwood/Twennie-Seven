@@ -8,6 +8,7 @@ const Interview = require('../../models/unit_models/interview');
 const PromptSet = require('../../models/unit_models/promptset');
 const Exercise = require('../../models/unit_models/exercise');
 const Template = require('../../models/unit_models/template');
+const Mission = require('../../models/unit_models/mission');
 
 // ✨ NEW: Upcoming model
 const Upcoming = require('../../models/unit_models/upcoming');
@@ -237,10 +238,10 @@ router.get('/edit_upcoming/:id', ensureAuthenticated, async (req, res) => {
       : { public_id: null, url: '/images/default-upcoming.png' };
 
     // Unit types for select
-    const unitTypes = [
-      'article','video','interview','exercise','template',
-      'promptset','micro_course','micro_study','peer_coaching'
-    ];
+const unitTypes = [
+  'article','video','interview','exercise','template',
+  'promptset','nugget','mission'
+];
 
     res.render('unit_form_views/form_upcoming', {
       layout: 'unitformlayout',
@@ -901,6 +902,59 @@ router.get('/edit_exercise/:id', ensureAuthenticated, csrfProtection, async (req
     csrfProtection,                          // ✅ csrf AFTER multer
     unitFormController.submitExercise
   );
+
+  // =========================
+// Mission Form Routes
+// =========================
+
+// GET: create mission
+router.get(
+  '/form_mission',
+  ensureAuthenticated,
+  csrfProtection,
+  unitFormController.getMissionForm
+);
+
+// GET: edit mission
+router.get('/edit_mission/:id', ensureAuthenticated, csrfProtection, async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log(`Edit form requested for mission ID: ${id}`);
+
+    const mission = await Mission.findById(id);
+    if (!mission) {
+      console.warn(`Mission with ID ${id} not found.`);
+      return res.status(404).render('unit_form_views/error', {
+        layout: 'unitformlayout',
+        title: 'Mission Not Found',
+        errorMessage: `The mission with ID ${id} does not exist.`,
+      });
+    }
+
+    res.render('unit_form_views/form_mission', {
+      layout: 'unitformlayout',
+      data: mission.toObject(),
+      mainTopics,
+      csrfToken: isDevelopment ? null : req.csrfToken(),
+    });
+  } catch (error) {
+    console.error(`Error loading edit form for mission ID ${req.params.id}:`, error);
+    res.status(500).render('unit_form_views/error', {
+      layout: 'unitformlayout',
+      title: 'Error',
+      errorMessage: 'An error occurred while loading the mission edit form.',
+    });
+  }
+});
+
+// POST: create/update mission
+router.post(
+  '/submit_mission',
+  ensureAuthenticated,
+  csrfProtection,
+  unitFormController.submitMission
+);
+
 
 
 

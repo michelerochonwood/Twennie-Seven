@@ -1,0 +1,530 @@
+{{!-- views/unitform_views/form_mission.hbs --}}
+{{#*inline "title"}}Create a Mission | Twennie{{/inline}}
+
+{{!-- If you later create mission instructions, you can add:
+{{> mainpartials/missioninstructions_partial}}
+--}}
+
+<!-- near the top of every form_* file -->
+<input type="hidden" name="fromUpcomingId" value="{{fromUpcomingId}}">
+
+<div class="contribute-wave-divider">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 160">
+    <path fill="#939598" fill-opacity="1"
+      d="M0,64L80,58.7C160,53,320,43,480,58.7C640,75,800,117,960,122.7C1120,128,1280,96,1360,80L1440,64L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z">
+    </path>
+  </svg>
+</div>
+
+<div class="form-mission-background">
+  <div class="form-mission-container">
+    <form
+      id="mission-form"
+      class="mission-form"
+      action="/unitform/submit_mission"
+      method="POST"
+      enctype="application/x-www-form-urlencoded"
+    >
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+      <input type="hidden" name="_id" value="{{data._id}}">
+
+      <!-- BASIC INFO -->
+      <div class="form-field">
+        <label for="mission-title">Mission Title</label>
+        <input
+          type="text"
+          id="mission-title"
+          name="mission_title"
+          value="{{data.mission_title}}"
+          required
+        >
+      </div>
+
+      {{!-- TOPIC: missions still sit inside a topic, so reuse the topic dropdown --}}
+      {{> unitformpartials/topicdropdown }}
+
+      <!-- CATEGORY -->
+      <div class="form-field">
+        <label for="category">Mission Category</label>
+        <select id="category" name="category" required>
+          <option value="">-- Select a category --</option>
+          <option value="learning" {{#ifEquals data.category "learning"}}selected{{/ifEquals}}>Learning</option>
+          <option value="research" {{#ifEquals data.category "research"}}selected{{/ifEquals}}>Research</option>
+          <option value="business_development" {{#ifEquals data.category "business_development"}}selected{{/ifEquals}}>Business Development</option>
+          <option value="internal_improvement" {{#ifEquals data.category "internal_improvement"}}selected{{/ifEquals}}>Internal Improvement</option>
+          <option value="culture_play" {{#ifEquals data.category "culture_play"}}selected{{/ifEquals}}>Culture &amp; Play</option>
+          <option value="client_experience" {{#ifEquals data.category "client_experience"}}selected{{/ifEquals}}>Client Experience</option>
+          <option value="community" {{#ifEquals data.category "community"}}selected{{/ifEquals}}>Community</option>
+          <option value="administrative" {{#ifEquals data.category "administrative"}}selected{{/ifEquals}}>Administrative</option>
+          <option value="other" {{#ifEquals data.category "other"}}selected{{/ifEquals}}>Rogue / Other</option>
+        </select>
+      </div>
+
+      <!-- STATUS -->
+      <div class="form-field">
+        <label for="status">Mission Status</label>
+        <select id="status" name="status" required>
+          <option value="available" {{#ifEquals data.status "available"}}selected{{/ifEquals}}>Available</option>
+          <option value="in_progress" {{#ifEquals data.status "in_progress"}}selected{{/ifEquals}}>In Progress</option>
+          <option value="completed" {{#ifEquals data.status "completed"}}selected{{/ifEquals}}>Completed</option>
+          <option value="archived" {{#ifEquals data.status "archived"}}selected{{/ifEquals}}>Archived</option>
+        </select>
+      </div>
+
+      <!-- PURPOSE / WHY / BACKGROUND -->
+      <div class="form-field">
+        <label for="purpose">Mission Purpose</label>
+        <textarea
+          id="purpose"
+          name="purpose"
+          rows="4"
+          required
+        >{{data.purpose}}</textarea>
+        <p class="form-hint">Describe what this mission is intended to achieve.</p>
+      </div>
+
+      <div class="form-field">
+        <label for="why-it-matters">Why This Mission Matters</label>
+        <textarea
+          id="why-it-matters"
+          name="why_it_matters"
+          rows="4"
+          required
+        >{{data.why_it_matters}}</textarea>
+        <p class="form-hint">Explain the impact of this mission on your team, organization, or clients.</p>
+      </div>
+
+      <div class="form-field">
+        <label for="background">Background (optional)</label>
+        <textarea
+          id="background"
+          name="background"
+          rows="4"
+        >{{data.background}}</textarea>
+        <p class="form-hint">Provide any context, history, or drivers behind this mission.</p>
+      </div>
+
+      <!-- DETAILS -->
+      <div class="form-field">
+        <label for="department_requesting">Requesting Department (optional)</label>
+        <input
+          type="text"
+          id="department_requesting"
+          name="department_requesting"
+          value="{{data.department_requesting}}"
+        >
+      </div>
+
+      <div class="form-field">
+        <label for="open_to">Who Is This Mission Open To? (optional)</label>
+        <input
+          type="text"
+          id="open_to"
+          name="open_to"
+          value="{{data.open_to}}"
+          placeholder="e.g., All project managers, Marketing team, Any BD leads"
+        >
+      </div>
+
+      <div class="form-field">
+        <label for="timeframe">Timeframe (optional)</label>
+        <input
+          type="text"
+          id="timeframe"
+          name="timeframe"
+          value="{{data.timeframe}}"
+          placeholder="e.g., 8 weeks, 3 months"
+        >
+      </div>
+
+      <div class="form-field">
+        <label for="estimated_effort_hours">Estimated Effort (hours, optional)</label>
+        <input
+          type="number"
+          id="estimated_effort_hours"
+          name="estimated_effort_hours"
+          min="0"
+          step="0.5"
+          value="{{data.estimated_effort_hours}}"
+        >
+      </div>
+
+      <div class="form-field">
+        <label for="job_number">Job Number (optional)</label>
+        <input
+          type="text"
+          id="job_number"
+          name="job_number"
+          value="{{data.job_number}}"
+        >
+      </div>
+
+      <div class="form-field">
+        <label for="budget_amount">Budget Amount (optional)</label>
+        <input
+          type="text"
+          id="budget_amount"
+          name="budget_amount"
+          value="{{data.budget_amount}}"
+          placeholder="e.g., $50,000"
+        >
+      </div>
+
+      <div class="form-field">
+        <label for="due_date">Due Date (optional)</label>
+        <input
+          type="date"
+          id="due_date"
+          name="due_date"
+          value="{{data.due_date}}"
+        >
+      </div>
+
+      <!-- VISIBILITY -->
+      <div class="form-field">
+        <label>Who can access this mission?</label>
+        <div class="visibility-toggle-row">
+          <label class="visibility-option">
+            <input
+              type="radio"
+              name="visibility"
+              value="team_only"
+              {{#ifEquals data.visibility "team_only"}}checked{{/ifEquals}}
+              required
+            >
+            share with my team only
+          </label>
+          <label class="visibility-option">
+            <input
+              type="radio"
+              name="visibility"
+              value="organization_only"
+              {{#ifEquals data.visibility "organization_only"}}checked{{/ifEquals}}
+              required
+            >
+            share with my organization only
+          </label>
+          <label class="visibility-option">
+            <input
+              type="radio"
+              name="visibility"
+              value="all_members"
+              {{#ifEquals data.visibility "all_members"}}checked{{/ifEquals}}
+              required
+            >
+            share with all Twennie members
+          </label>
+        </div>
+      </div>
+
+      <!-- APPROVALS REQUIRED -->
+      <div class="form-field">
+        <label>Approvals Required (optional)</label>
+        <p class="form-hint">List any roles/people who must approve this mission before or after work begins.</p>
+
+        <div id="approvals-container">
+          {{#if data.approvals_required.length}}
+            {{#each data.approvals_required}}
+              <div class="dynamic-row approval-row">
+                <input
+                  type="text"
+                  name="approvals_required[{{@index}}][role]"
+                  placeholder="Role (e.g., Department Head)"
+                  value="{{role}}"
+                >
+                <input
+                  type="text"
+                  name="approvals_required[{{@index}}][name]"
+                  placeholder="Name"
+                  value="{{name}}"
+                >
+                <input
+                  type="email"
+                  name="approvals_required[{{@index}}][email]"
+                  placeholder="Email"
+                  value="{{email}}"
+                >
+                <button type="button" class="form-button small-button remove-approval">remove</button>
+              </div>
+            {{/each}}
+          {{else}}
+            <div class="dynamic-row approval-row">
+              <input
+                type="text"
+                name="approvals_required[0][role]"
+                placeholder="Role (e.g., Department Head)"
+              >
+              <input
+                type="text"
+                name="approvals_required[0][name]"
+                placeholder="Name"
+              >
+              <input
+                type="email"
+                name="approvals_required[0][email]"
+                placeholder="Email"
+              >
+              <button type="button" class="form-button small-button remove-approval">remove</button>
+            </div>
+          {{/if}}
+        </div>
+
+        <button type="button" id="add-approval" class="form-button secondary-button">add another approval</button>
+      </div>
+
+      <!-- TASK INSTRUCTIONS -->
+      <div class="form-field">
+        <label>Task Instructions (optional)</label>
+        <p class="form-hint">
+          Break the mission into sections. Use each “Heading” to label a part of the work (e.g., “Scheduling”, “Interview Guide”) and put the instructions as bullet-style lines.
+        </p>
+
+        <div id="tasks-container">
+          {{#if data.task_instructions.length}}
+            {{#each data.task_instructions}}
+              <div class="dynamic-block task-block">
+                <input
+                  type="text"
+                  name="task_instructions[{{@index}}][heading]"
+                  placeholder="Heading (e.g., Scheduling)"
+                  value="{{heading}}"
+                >
+                <textarea
+                  name="task_instructions[{{@index}}][instructions]"
+                  rows="4"
+                  placeholder="Put each instruction on a new line."
+                >{{#each instructions}}{{this}}
+{{/each}}</textarea>
+                <button type="button" class="form-button small-button remove-task">remove section</button>
+              </div>
+            {{/each}}
+          {{else}}
+            <div class="dynamic-block task-block">
+              <input
+                type="text"
+                name="task_instructions[0][heading]"
+                placeholder="Heading (e.g., Scheduling)"
+              >
+              <textarea
+                name="task_instructions[0][instructions]"
+                rows="4"
+                placeholder="Put each instruction on a new line."
+              ></textarea>
+              <button type="button" class="form-button small-button remove-task">remove section</button>
+            </div>
+          {{/if}}
+        </div>
+
+        <button type="button" id="add-task" class="form-button secondary-button">add another section</button>
+      </div>
+
+      <!-- CONTACTS -->
+      <div class="form-field">
+        <label>Contacts (optional)</label>
+        <p class="form-hint">Who can people contact with questions while working on this mission?</p>
+
+        <div id="contacts-container">
+          {{#if data.contacts.length}}
+            {{#each data.contacts}}
+              <div class="dynamic-row contact-row">
+                <input
+                  type="text"
+                  name="contacts[{{@index}}][role]"
+                  placeholder="Role (e.g., Mission Lead)"
+                  value="{{role}}"
+                >
+                <input
+                  type="text"
+                  name="contacts[{{@index}}][name]"
+                  placeholder="Name"
+                  value="{{name}}"
+                >
+                <input
+                  type="email"
+                  name="contacts[{{@index}}][email]"
+                  placeholder="Email"
+                  value="{{email}}"
+                >
+                <input
+                  type="text"
+                  name="contacts[{{@index}}][phone]"
+                  placeholder="Phone"
+                  value="{{phone}}"
+                >
+                <button type="button" class="form-button small-button remove-contact">remove</button>
+              </div>
+            {{/each}}
+          {{else}}
+            <div class="dynamic-row contact-row">
+              <input
+                type="text"
+                name="contacts[0][role]"
+                placeholder="Role (e.g., Mission Lead)"
+              >
+              <input
+                type="text"
+                name="contacts[0][name]"
+                placeholder="Name"
+              >
+              <input
+                type="email"
+                name="contacts[0][email]"
+                placeholder="Email"
+              >
+              <input
+                type="text"
+                name="contacts[0][phone]"
+                placeholder="Phone"
+              >
+              <button type="button" class="form-button small-button remove-contact">remove</button>
+            </div>
+          {{/if}}
+        </div>
+
+        <button type="button" id="add-contact" class="form-button secondary-button">add another contact</button>
+      </div>
+
+      <!-- DELIVERABLES CHECKLIST -->
+      <div class="form-field">
+        <label for="deliverables_checklist">
+          Deliverables Checklist (optional)
+        </label>
+        <p class="form-hint">
+          List the deliverables people should produce. Put each deliverable on a new line (e.g., “Draft interview guide”, “Summary memo”, “Updated client list”).
+        </p>
+        <textarea
+          id="deliverables_checklist"
+          name="deliverables_checklist"
+          rows="5"
+        >{{#each data.deliverables_checklist}}{{this}}
+{{/each}}</textarea>
+      </div>
+
+      <!-- CONSENT (PROMO PERMISSION) -->
+      <div class="form-toggle">
+        <label>
+          <input
+            type="checkbox"
+            name="permission"
+            {{#if data.permission}}checked{{/if}}
+            required
+          >
+          Do you provide consent for this mission to be used for Twennie promotional purposes?
+        </label>
+      </div>
+
+      <!-- BUTTONS -->
+      <div class="form-buttons">
+        {{#if data._id}}
+          <button
+            type="submit"
+            name="submit"
+            value="edit"
+            class="form-button submit-button"
+          >
+            save edited mission
+          </button>
+        {{else}}
+          <button
+            type="submit"
+            name="submit"
+            value="submit"
+            class="form-button submit-button"
+          >
+            submit mission
+          </button>
+        {{/if}}
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // ---- APPROVALS ----
+    const approvalsContainer = document.getElementById('approvals-container');
+    const addApprovalBtn = document.getElementById('add-approval');
+
+    function getApprovalIndex() {
+      return approvalsContainer.querySelectorAll('.approval-row').length;
+    }
+
+    addApprovalBtn.addEventListener('click', function () {
+      const idx = getApprovalIndex();
+      const row = document.createElement('div');
+      row.className = 'dynamic-row approval-row';
+      row.innerHTML = `
+        <input type="text" name="approvals_required[${idx}][role]" placeholder="Role (e.g., Department Head)">
+        <input type="text" name="approvals_required[${idx}][name]" placeholder="Name">
+        <input type="email" name="approvals_required[${idx}][email]" placeholder="Email">
+        <button type="button" class="form-button small-button remove-approval">remove</button>
+      `;
+      approvalsContainer.appendChild(row);
+    });
+
+    approvalsContainer.addEventListener('click', function (e) {
+      if (e.target.classList.contains('remove-approval')) {
+        const row = e.target.closest('.approval-row');
+        if (row) row.remove();
+      }
+    });
+
+    // ---- TASK INSTRUCTIONS ----
+    const tasksContainer = document.getElementById('tasks-container');
+    const addTaskBtn = document.getElementById('add-task');
+
+    function getTaskIndex() {
+      return tasksContainer.querySelectorAll('.task-block').length;
+    }
+
+    addTaskBtn.addEventListener('click', function () {
+      const idx = getTaskIndex();
+      const block = document.createElement('div');
+      block.className = 'dynamic-block task-block';
+      block.innerHTML = `
+        <input type="text" name="task_instructions[${idx}][heading]" placeholder="Heading (e.g., Scheduling)">
+        <textarea name="task_instructions[${idx}][instructions]" rows="4" placeholder="Put each instruction on a new line."></textarea>
+        <button type="button" class="form-button small-button remove-task">remove section</button>
+      `;
+      tasksContainer.appendChild(block);
+    });
+
+    tasksContainer.addEventListener('click', function (e) {
+      if (e.target.classList.contains('remove-task')) {
+        const block = e.target.closest('.task-block');
+        if (block) block.remove();
+      }
+    });
+
+    // ---- CONTACTS ----
+    const contactsContainer = document.getElementById('contacts-container');
+    const addContactBtn = document.getElementById('add-contact');
+
+    function getContactIndex() {
+      return contactsContainer.querySelectorAll('.contact-row').length;
+    }
+
+    addContactBtn.addEventListener('click', function () {
+      const idx = getContactIndex();
+      const row = document.createElement('div');
+      row.className = 'dynamic-row contact-row';
+      row.innerHTML = `
+        <input type="text" name="contacts[${idx}][role]" placeholder="Role (e.g., Mission Lead)">
+        <input type="text" name="contacts[${idx}][name]" placeholder="Name">
+        <input type="email" name="contacts[${idx}][email]" placeholder="Email">
+        <input type="text" name="contacts[${idx}][phone]" placeholder="Phone">
+        <button type="button" class="form-button small-button remove-contact">remove</button>
+      `;
+      contactsContainer.appendChild(row);
+    });
+
+    contactsContainer.addEventListener('click', function (e) {
+      if (e.target.classList.contains('remove-contact')) {
+        const row = e.target.closest('.contact-row');
+        if (row) row.remove();
+      }
+    });
+  });
+</script>
+
+{{> mainpartials/footer}}
