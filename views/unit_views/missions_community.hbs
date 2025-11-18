@@ -1,129 +1,157 @@
-{{#*inline "title"}}Community Missions | Twennie{{/inline}}
+{{!-- views/unit_views/missions_community.hbs (or whatever filename you choose) --}}
+{{#*inline "title"}}{{title}} | Twennie{{/inline}}
 
-<div class="mission-container">
+<div class="bytopic-container">
   <!-- Main content column -->
-  <div class="mission-content has-right-rail">
-    <h1 class="mission-title">{{title}}</h1>
-    <p class="mission-short-summary">{{shortSummary}}</p>
-    <p class="mission-long-summary">{{longSummary}}</p>
+  <div class="bytopic-content has-right-rail">
+    <h1 class="bytopic-title">{{title}}</h1>
+
+    {{#if shortSummary}}
+      <p class="bytopic-short-summary">{{shortSummary}}</p>
+    {{/if}}
+
+    {{#if longSummary}}
+      <p class="bytopic-long-summary">{{longSummary}}</p>
+    {{/if}}
 
     {{!-- sectionedMissions is an array of { sectionTitle, missions, emptyMessage } --}}
     {{#each sectionedMissions}}
-      <h2 class="mission-section-title">{{this.sectionTitle}}</h2>
-      <hr class="mission-section-divider">
+      <h2 class="bytopic-section-title">{{this.sectionTitle}}</h2>
+      <hr class="bytopic-section-divider">
 
       {{#if this.missions.length}}
-        <div class="mission-card-grid">
+        <div class="bytopic-library-units-grid">
           {{#each this.missions}}
-          <article class="mission-card" data-mission-id="{{_id}}">
+            <article class="bytopic-library-unit-card" data-mission-id="{{_id}}">
+              <!-- Inner wrapper preserves rounded-corner clipping -->
+              <div class="bytopic-card-inner">
 
-            <!-- Inner wrapper preserves rounded-corner clipping -->
-            <div class="mission-card-inner">
-              <!-- Mission SVG Header -->
-              <div class="mission-card-svg-header">
-                <img src="/images/missionsvg.svg"
-                     alt=""
-                     aria-hidden="true"
-                     class="mission-card-svg-image">
-              </div>
-
-              <!-- Card Content -->
-              <div class="mission-card-content">
-                <!-- Always-visible content -->
-                <div class="mission-visible-content">
-                  <div class="mission-type-icon-container">
-                    <!-- Community mission icon -->
-                    <img src="/images/mission_community.png"
-                         alt="Community mission icon"
-                         class="mission-type-icon">
-                  </div>
-                  <div class="mission-title-container">
-                    <h2 class="mission-card-title">{{mission_title}}</h2>
-                  </div>
+                <!-- Mission SVG Header -->
+                <div class="bytopic-card-svg-header">
+                  <img src="/images/missionsvg.svg"
+                       alt=""
+                       aria-hidden="true"
+                       class="mission-card-svg-image">
                 </div>
 
-                <!-- Expand Toggle -->
-                <button
-                  class="mission-expand-toggle"
-                  type="button"
-                  onclick="toggleMissionCard(this)"
-                  aria-expanded="false"
-                  aria-label="Toggle mission details">
-                  <svg class="mission-expand-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99" aria-hidden="true" focusable="false">
-                    <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
-                    <polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/>
-                  </svg>
-                </button>
-
-                <!-- Expandable content -->
-                <div class="mission-hidden-content" style="display:none;">
-                  <div class="mission-creator-label">
-                    CREATED BY
-                  </div>
-
-                  <div class="mission-creator-image-container">
-                    <img src="{{creatorImage}}" alt="Creator Image" class="mission-creator-image">
-                  </div>
-
-                  <div class="mission-creator-name-container">
-                    <span class="mission-creator-name">
-                      {{creatorName}}
-                    </span>
-                  </div>
-
-                  {{!-- Mission summary / purpose / why it matters --}}
-                  <div class="mission-summary-container">
-                    <p class="mission-summary">
-                      {{short_purpose}}
-                    </p>
-                  </div>
-
-                  <div class="mission-detail-block">
-                    <strong>Purpose:</strong><br>
-                    {{purpose}}
-                  </div>
-
-                  {{#if why_it_matters}}
-                    <div class="mission-detail-block">
-                      <strong>Why this mission matters:</strong><br>
-                      {{why_it_matters}}
+                <!-- Card Content -->
+                <div class="bytopic-card-content">
+                  <!-- Always-visible content -->
+                  <div class="bytopic-visible-content">
+                    <div class="bytopic-unit-type-icon-container">
+                      <!-- Community mission icon -->
+                      <img src="/images/mission_community.png"
+                           alt="Community mission icon"
+                           class="bytopic-unit-type-icon">
                     </div>
-                  {{/if}}
 
-                  {{#if timeframe}}
-                    <div class="mission-detail-inline">
-                      <strong>Timeframe:</strong> {{timeframe}}
+                    <div class="bytopic-unit-title-container">
+                      <h2 class="bytopic-unit-title">
+                        {{mission_title}}
+                      </h2>
                     </div>
-                  {{/if}}
 
-                  {{#if estimated_effort_hours}}
-                    <div class="mission-detail-inline">
-                      <strong>Estimated effort:</strong> {{estimated_effort_hours}} hours
-                    </div>
-                  {{/if}}
-
-                  {{#if department_requesting}}
-                    <div class="mission-detail-inline">
-                      <strong>Requested by:</strong> {{department_requesting}}
-                    </div>
-                  {{/if}}
-
-                  <!-- CTA -->
-                  <div class="mission-cta-container">
-                    {{#if loggedIn}}
-                      <a href="/unitviews/missions/view/{{_id}}" class="mission-cta-btn">
-                        view mission
-                      </a>
-                    {{else}}
-                      <div class="mission-cta-btn mission-cta-disabled">
-                        login required
-                      </div>
+                    {{#if short_purpose}}
+                      <p class="bytopic-detail-value-purpose">
+                        {{short_purpose}}
+                      </p>
                     {{/if}}
+
+                    <!-- Expand Toggle (bytopic-style) -->
+                    <button
+                      class="bytopic-expand-toggle"
+                      type="button"
+                      aria-expanded="false"
+                      aria-label="Toggle mission details">
+                      <svg class="expand-arrow"
+                           xmlns="http://www.w3.org/2000/svg"
+                           viewBox="0 0 331.65 100.99"
+                           aria-hidden="true"
+                           focusable="false">
+                        <defs>
+                          <style>.cls-1 { fill: #4e50a2; }</style>
+                        </defs>
+                        <polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/>
+                      </svg>
+                    </button>
                   </div>
-                </div>
-              </div>
-            </div> <!-- /.mission-card-inner -->
-          </article>
+
+                  <!-- Expandable content -->
+                  <div class="bytopic-hidden-content">
+                    {{!-- Creator block --}}
+                    <div class="mission-creator-block">
+                      <div class="mission-creator-label">
+                        CREATED BY
+                      </div>
+
+                      <div class="mission-creator-image-container">
+                        <img src="{{creatorImage}}"
+                             alt="Creator image"
+                             class="mission-creator-image">
+                      </div>
+
+                      <div class="mission-creator-name-container">
+                        <span class="mission-creator-name">
+                          {{creatorName}}
+                        </span>
+                      </div>
+                    </div>
+
+                    {{!-- Mission summary / purpose / why it matters --}}
+                    <div class="mission-summary-container">
+                      {{#if purpose}}
+                        <div class="mission-detail-block">
+                          <strong>Purpose:</strong><br>
+                          {{purpose}}
+                        </div>
+                      {{/if}}
+
+                      {{#if why_it_matters}}
+                        <div class="mission-detail-block">
+                          <strong>Why this mission matters:</strong><br>
+                          {{why_it_matters}}
+                        </div>
+                      {{/if}}
+                    </div>
+
+                    {{!-- Inline details --}}
+                    <div class="mission-detail-inline-container">
+                      {{#if timeframe}}
+                        <div class="mission-detail-inline">
+                          <strong>Timeframe:</strong> {{timeframe}}
+                        </div>
+                      {{/if}}
+
+                      {{#if estimated_effort_hours}}
+                        <div class="mission-detail-inline">
+                          <strong>Estimated effort:</strong> {{estimated_effort_hours}} hours
+                        </div>
+                      {{/if}}
+
+                      {{#if department_requesting}}
+                        <div class="mission-detail-inline">
+                          <strong>Requested by:</strong> {{department_requesting}}
+                        </div>
+                      {{/if}}
+                    </div>
+
+                    <!-- CTA -->
+                    <div class="bytopic-unit-review-container mission-cta-container">
+                      {{#if ../loggedIn}}
+                        <a href="/unitviews/missions/view/{{_id}}"
+                           class="bytopic-unit-review-btn">
+                          view mission
+                        </a>
+                      {{else}}
+                        <div class="bytopic-unit-review-btn mission-cta-disabled">
+                          login required
+                        </div>
+                      {{/if}}
+                    </div>
+                  </div> <!-- /.bytopic-hidden-content -->
+                </div> <!-- /.bytopic-card-content -->
+              </div> <!-- /.bytopic-card-inner -->
+            </article>
           {{/each}}
         </div>
       {{else}}
@@ -135,13 +163,3 @@
   </div>
 </div>
 
-<script>
-  function toggleMissionCard(el) {
-    const card = el.closest('.mission-card');
-    const content = card.querySelector('.mission-hidden-content');
-    const isOpen = card.classList.contains('active');
-    card.classList.toggle('active', !isOpen);
-    el.setAttribute('aria-expanded', String(!isOpen));
-    content.style.display = isOpen ? 'none' : 'flex';
-  }
-</script>
