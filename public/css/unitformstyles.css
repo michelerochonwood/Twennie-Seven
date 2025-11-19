@@ -131,8 +131,7 @@ html, body {
 .whatistemplate-image,
 .whatispromptset-image,
 .whatisexercise-image,
-.whatismicrostudy-image,
-.whatismicrocourse-image {
+.whatismission-image {
   margin: 7rem auto 4rem auto;
   display: flex;
   justify-content: center;
@@ -143,16 +142,16 @@ html, body {
 .howtointerview-image > img,
 .howtotemplate-image > img,
 .howtoexercise-image > img,
-.howtoprompt-image > img,
-.howtomicrostudy-image > img,
-.howtomicrocourse-image > img {
+.howtoprompt-image > img
+.howtomission-image > img
+ {
     /* text-align: center; */
     /* margin-top: 190px; */
     max-width: 400px;
     height: auto;
 }
 
-.howtoarticle-video, .howtovideo-video, .howtointerview-video, .howtoprompt-video, .howtoexercise-video, .howtotemplate-video {
+.howtoarticle-video, .howtovideo-video, .howtointerview-video, .howtoprompt-video, .howtoexercise-video, .howtotemplate-video, .howtomission-video {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -166,9 +165,8 @@ html, body {
 .form-interview-background,
 .form-template-background,
 .form-exercise-background,
-.form-microstudy-background,
-.form-microcourse-background,
-.form-promptset-background {
+.form-promptset-background,
+.form-mission-background {
   /* position: absolute;
   top: 0;
   left: 0; */
@@ -209,8 +207,7 @@ html, body {
   .form-template-container, 
   .form-exercise-container, 
   .form-promptset-container, 
-  .form-microstudy-container, 
-  .form-microcourse-container {
+  .form-mission-container {
     padding: 2rem 5rem;
     /* max-width: 600px; */
     width: 50%;
@@ -798,7 +795,8 @@ label[for=short-summary] {
     .form-promptset-container, 
     .form-microstudy-container, 
     .form-microcourse-container,
-    .form-nugget-container {
+    .form-nugget-container,
+    .form-mission-container {
       padding: 2rem 5rem;
       width: 80%;
     }
@@ -812,7 +810,8 @@ label[for=short-summary] {
       .form-promptset-container, 
       .form-microstudy-container, 
       .form-microcourse-container,
-      .form-nugget-container {
+      .form-nugget-container,
+      .form-mission-container {
         padding: 2rem 3rem;
         width: 90%;
       }
@@ -844,9 +843,9 @@ label[for=short-summary] {
         .form-template-container, 
         .form-exercise-container, 
         .form-promptset-container, 
-        .form-microstudy-container, 
-        .form-microcourse-container,
-        .form-nugget-container {
+        .form-nugget-container,
+        .form-mission-container
+         {
           padding: 2rem 1.5rem;
           width: 90%;
         }
