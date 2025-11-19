@@ -3324,20 +3324,17 @@ label {
 /* ==== Mission list views – reuse bytopic card layout with Twennie colors ==== */
 
 .bytopic-container {
-  --unit-icon-size: 60px; /* keep in sync with bytopic styles */
+  max-width: 80vw !important;   /* 80% of viewport width */
+  margin: 7rem auto 3rem auto !important;
+  padding: 0 2rem !important;   /* light padding so cards breathe */
   display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  gap: 2rem;
-  padding: 0 8%;              /* match bytopic left/right spacing */
-  box-sizing: border-box;
-  margin: 7rem auto 3rem auto; /* match bytopic top spacing under header */
-  min-height: 100vh;
+  flex-direction: column;        /* no right rail for missions */
 }
 
 .bytopic-content.has-right-rail {
-  flex: 1;
-  max-width: 960px;
+  max-width: 100% !important;
+  width: 100% !important;
+  padding-right: 0 !important;  /* remove phantom right-column space */
 }
 
 /* ---- Titles / Headings ---- */
@@ -3382,6 +3379,7 @@ label {
   grid-template-columns: repeat(5, 1fr);
   gap: 1.25rem;
   margin-bottom: 2rem;
+  width: 100%;
 }
 
 .bytopic-library-unit-card {
