@@ -79,7 +79,9 @@
           rows="4"
           required
         >{{data.purpose}}</textarea>
-        <p class="form-hint">Describe what this mission is intended to achieve.</p>
+        <p class="form-hint">
+          Describe what this mission is intended to achieve. Aim for about <strong>80–150 words</strong>.
+        </p>
       </div>
 
       <div class="form-field">
@@ -90,22 +92,58 @@
           rows="4"
           required
         >{{data.why_it_matters}}</textarea>
-        <p class="form-hint">Explain the impact of this mission on your team, organization, or clients.</p>
+        <p class="form-hint">
+          Explain the impact of this mission on your team, organization, or clients. Aim for <strong>100–180 words</strong>.
+        </p>
       </div>
 
       <div class="form-field">
-        <label for="background">Background (optional)</label>
+        <label for="background">Background <span style="font-weight: normal; font-size: 0.85em;">(optional)</span></label>
         <textarea
           id="background"
           name="background"
           rows="4"
         >{{data.background}}</textarea>
-        <p class="form-hint">Provide any context, history, or drivers behind this mission.</p>
+        <p class="form-hint">
+          Provide any context, history, or drivers behind this mission. Aim for up to <strong>200 words</strong>.
+        </p>
+      </div>
+
+      <!-- SUMMARIES FOR CARDS / LIST VIEWS -->
+      <div class="form-field">
+        <label for="short-purpose">
+          Short Mission Summary
+          <span style="font-weight: normal; font-size: 0.85em;">(appears under the title in mission cards)</span>
+        </label>
+        <textarea
+          id="short-purpose"
+          name="short_purpose"
+          rows="3"
+        >{{data.short_purpose}}</textarea>
+        <p class="form-hint">
+          A brief mission summary in plain language. Aim for about <strong>25–35 words</strong>.
+        </p>
+      </div>
+
+      <div class="form-field">
+        <label for="full-summary">
+          Full Mission Summary
+          <span style="font-weight: normal; font-size: 0.85em;">(shown when a mission card is expanded)</span>
+        </label>
+        <textarea
+          id="full-summary"
+          name="full_summary"
+          rows="4"
+        >{{data.full_summary}}</textarea>
+        <p class="form-hint">
+          A clear, complete description that helps someone quickly decide whether to take on this mission.
+          Aim for <strong>80–120 words</strong>.
+        </p>
       </div>
 
       <!-- DETAILS -->
       <div class="form-field">
-        <label for="department_requesting">Requesting Department (optional)</label>
+        <label for="department_requesting">Requesting Department <span style="font-weight: normal; font-size: 0.85em;">(optional)</span></label>
         <input
           type="text"
           id="department_requesting"
@@ -115,7 +153,7 @@
       </div>
 
       <div class="form-field">
-        <label for="open_to">Who Is This Mission Open To? (optional)</label>
+        <label for="open_to">Who Is This Mission Open To? <span style="font-weight: normal; font-size: 0.85em;">(optional)</span></label>
         <input
           type="text"
           id="open_to"
@@ -126,7 +164,7 @@
       </div>
 
       <div class="form-field">
-        <label for="timeframe">Timeframe (optional)</label>
+        <label for="timeframe">Timeframe <span style="font-weight: normal; font-size: 0.85em;">(optional)</span></label>
         <input
           type="text"
           id="timeframe"
@@ -137,7 +175,7 @@
       </div>
 
       <div class="form-field">
-        <label for="estimated_effort_hours">Estimated Effort (hours, optional)</label>
+        <label for="estimated_effort_hours">Estimated Effort (hours) <span style="font-weight: normal; font-size: 0.85em;">(optional)</span></label>
         <input
           type="number"
           id="estimated_effort_hours"
@@ -146,10 +184,13 @@
           step="0.5"
           value="{{data.estimated_effort_hours}}"
         >
+        <p class="form-hint">
+          Provide your best estimate. It doesn’t have to be perfect.
+        </p>
       </div>
 
       <div class="form-field">
-        <label for="job_number">Job Number (optional)</label>
+        <label for="job_number">Job Number <span style="font-weight: normal; font-size: 0.85em;">(optional)</span></label>
         <input
           type="text"
           id="job_number"
@@ -159,7 +200,7 @@
       </div>
 
       <div class="form-field">
-        <label for="budget_amount">Budget Amount (optional)</label>
+        <label for="budget_amount">Budget Amount <span style="font-weight: normal; font-size: 0.85em;">(optional)</span></label>
         <input
           type="text"
           id="budget_amount"
@@ -170,7 +211,7 @@
       </div>
 
       <div class="form-field">
-        <label for="due_date">Due Date (optional)</label>
+        <label for="due_date">Due Date <span style="font-weight: normal; font-size: 0.85em;">(optional)</span></label>
         <input
           type="date"
           id="due_date"
@@ -218,7 +259,7 @@
 
       <!-- APPROVALS REQUIRED -->
       <div class="form-field">
-        <label>Approvals Required (optional)</label>
+        <label>Approvals Required <span style="font-weight: normal; font-size: 0.85em;">(optional)</span></label>
         <p class="form-hint">List any roles/people who must approve this mission before or after work begins.</p>
 
         <div id="approvals-container">
@@ -273,9 +314,10 @@
 
       <!-- TASK INSTRUCTIONS -->
       <div class="form-field">
-        <label>Task Instructions (optional)</label>
+        <label>Task Instructions <span style="font-weight: normal; font-size: 0.85em;">(optional)</span></label>
         <p class="form-hint">
-          Break the mission into sections. Use each “Heading” to label a part of the work (e.g., “Scheduling”, “Interview Guide”) and put the instructions as bullet-style lines.
+          Break the mission into sections. Use each “Heading” to label a part of the work (e.g., “Scheduling”, “Interview Guide”)
+          and put the instructions as bullet-style lines. Each section can be <strong>2–8 bullet-style lines</strong>.
         </p>
 
         <div id="tasks-container">
@@ -319,7 +361,7 @@
 
       <!-- CONTACTS -->
       <div class="form-field">
-        <label>Contacts (optional)</label>
+        <label>Contacts <span style="font-weight: normal; font-size: 0.85em;">(optional)</span></label>
         <p class="form-hint">Who can people contact with questions while working on this mission?</p>
 
         <div id="contacts-container">
@@ -386,10 +428,11 @@
       <!-- DELIVERABLES CHECKLIST -->
       <div class="form-field">
         <label for="deliverables_checklist">
-          Deliverables Checklist (optional)
+          Deliverables Checklist <span style="font-weight: normal; font-size: 0.85em;">(optional)</span>
         </label>
         <p class="form-hint">
-          List the deliverables people should produce. Put each deliverable on a new line (e.g., “Draft interview guide”, “Summary memo”, “Updated client list”).
+          List the deliverables people should produce. Put each deliverable on a new line
+          (e.g., “Draft interview guide”, “Summary memo”, “Updated client list”). Aim for <strong>3–10 items</strong>.
         </p>
         <textarea
           id="deliverables_checklist"
@@ -441,88 +484,97 @@
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     // ---- APPROVALS ----
-    const approvalsContainer = document.getElementById('approvals-container');
-    const addApprovalBtn = document.getElementById('add-approval');
+    var approvalsContainer = document.getElementById('approvals-container');
+    var addApprovalBtn = document.getElementById('add-approval');
 
     function getApprovalIndex() {
       return approvalsContainer.querySelectorAll('.approval-row').length;
     }
 
-    addApprovalBtn.addEventListener('click', function () {
-      const idx = getApprovalIndex();
-      const row = document.createElement('div');
-      row.className = 'dynamic-row approval-row';
-      row.innerHTML = `
-        <input type="text" name="approvals_required[${idx}][role]" placeholder="Role (e.g., Department Head)">
-        <input type="text" name="approvals_required[${idx}][name]" placeholder="Name">
-        <input type="email" name="approvals_required[${idx}][email]" placeholder="Email">
-        <button type="button" class="form-button small-button remove-approval">remove</button>
-      `;
-      approvalsContainer.appendChild(row);
-    });
+    if (addApprovalBtn) {
+      addApprovalBtn.addEventListener('click', function () {
+        var idx = getApprovalIndex();
+        var row = document.createElement('div');
+        row.className = 'dynamic-row approval-row';
+        row.innerHTML =
+          '<input type="text" name="approvals_required[' + idx + '][role]" placeholder="Role (e.g., Department Head)">' +
+          '<input type="text" name="approvals_required[' + idx + '][name]" placeholder="Name">' +
+          '<input type="email" name="approvals_required[' + idx + '][email]" placeholder="Email">' +
+          '<button type="button" class="form-button small-button remove-approval">remove</button>';
+        approvalsContainer.appendChild(row);
+      });
+    }
 
-    approvalsContainer.addEventListener('click', function (e) {
-      if (e.target.classList.contains('remove-approval')) {
-        const row = e.target.closest('.approval-row');
-        if (row) row.remove();
-      }
-    });
+    if (approvalsContainer) {
+      approvalsContainer.addEventListener('click', function (e) {
+        if (e.target.classList.contains('remove-approval')) {
+          var row = e.target.closest('.approval-row');
+          if (row) row.remove();
+        }
+      });
+    }
 
     // ---- TASK INSTRUCTIONS ----
-    const tasksContainer = document.getElementById('tasks-container');
-    const addTaskBtn = document.getElementById('add-task');
+    var tasksContainer = document.getElementById('tasks-container');
+    var addTaskBtn = document.getElementById('add-task');
 
     function getTaskIndex() {
       return tasksContainer.querySelectorAll('.task-block').length;
     }
 
-    addTaskBtn.addEventListener('click', function () {
-      const idx = getTaskIndex();
-      const block = document.createElement('div');
-      block.className = 'dynamic-block task-block';
-      block.innerHTML = `
-        <input type="text" name="task_instructions[${idx}][heading]" placeholder="Heading (e.g., Scheduling)">
-        <textarea name="task_instructions[${idx}][instructions]" rows="4" placeholder="Put each instruction on a new line."></textarea>
-        <button type="button" class="form-button small-button remove-task">remove section</button>
-      `;
-      tasksContainer.appendChild(block);
-    });
+    if (addTaskBtn) {
+      addTaskBtn.addEventListener('click', function () {
+        var idx = getTaskIndex();
+        var block = document.createElement('div');
+        block.className = 'dynamic-block task-block';
+        block.innerHTML =
+          '<input type="text" name="task_instructions[' + idx + '][heading]" placeholder="Heading (e.g., Scheduling)">' +
+          '<textarea name="task_instructions[' + idx + '][instructions]" rows="4" placeholder="Put each instruction on a new line."></textarea>' +
+          '<button type="button" class="form-button small-button remove-task">remove section</button>';
+        tasksContainer.appendChild(block);
+      });
+    }
 
-    tasksContainer.addEventListener('click', function (e) {
-      if (e.target.classList.contains('remove-task')) {
-        const block = e.target.closest('.task-block');
-        if (block) block.remove();
-      }
-    });
+    if (tasksContainer) {
+      tasksContainer.addEventListener('click', function (e) {
+        if (e.target.classList.contains('remove-task')) {
+          var block = e.target.closest('.task-block');
+          if (block) block.remove();
+        }
+      });
+    }
 
     // ---- CONTACTS ----
-    const contactsContainer = document.getElementById('contacts-container');
-    const addContactBtn = document.getElementById('add-contact');
+    var contactsContainer = document.getElementById('contacts-container');
+    var addContactBtn = document.getElementById('add-contact');
 
     function getContactIndex() {
       return contactsContainer.querySelectorAll('.contact-row').length;
     }
 
-    addContactBtn.addEventListener('click', function () {
-      const idx = getContactIndex();
-      const row = document.createElement('div');
-      row.className = 'dynamic-row contact-row';
-      row.innerHTML = `
-        <input type="text" name="contacts[${idx}][role]" placeholder="Role (e.g., Mission Lead)">
-        <input type="text" name="contacts[${idx}][name]" placeholder="Name">
-        <input type="email" name="contacts[${idx}][email]" placeholder="Email">
-        <input type="text" name="contacts[${idx}][phone]" placeholder="Phone">
-        <button type="button" class="form-button small-button remove-contact">remove</button>
-      `;
-      contactsContainer.appendChild(row);
-    });
+    if (addContactBtn) {
+      addContactBtn.addEventListener('click', function () {
+        var idx = getContactIndex();
+        var row = document.createElement('div');
+        row.className = 'dynamic-row contact-row';
+        row.innerHTML =
+          '<input type="text" name="contacts[' + idx + '][role]" placeholder="Role (e.g., Mission Lead)">' +
+          '<input type="text" name="contacts[' + idx + '][name]" placeholder="Name">' +
+          '<input type="email" name="contacts[' + idx + '][email]" placeholder="Email">' +
+          '<input type="text" name="contacts[' + idx + '][phone]" placeholder="Phone">' +
+          '<button type="button" class="form-button small-button remove-contact">remove</button>';
+        contactsContainer.appendChild(row);
+      });
+    }
 
-    contactsContainer.addEventListener('click', function (e) {
-      if (e.target.classList.contains('remove-contact')) {
-        const row = e.target.closest('.contact-row');
-        if (row) row.remove();
-      }
-    });
+    if (contactsContainer) {
+      contactsContainer.addEventListener('click', function (e) {
+        if (e.target.classList.contains('remove-contact')) {
+          var row = e.target.closest('.contact-row');
+          if (row) row.remove();
+        }
+      });
+    }
   });
 </script>
 
