@@ -3321,6 +3321,8 @@ label {
 
 /* ==== Mission list views – reuse bytopic card layout ==== */
 
+/* ==== Mission list views – reuse bytopic card layout with Twennie colors ==== */
+
 .bytopic-container {
   display: flex;
   flex-direction: row;
@@ -3334,10 +3336,13 @@ label {
   max-width: 960px;
 }
 
+/* ---- Titles / Headings ---- */
+
 .bytopic-title {
   font-size: 2rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
+  color: #4a4ab2; /* Twennie purple */
 }
 
 .bytopic-short-summary {
@@ -3356,15 +3361,16 @@ label {
   font-weight: 600;
   margin-top: 2rem;
   margin-bottom: 0.25rem;
+  color: #4a4ab2; /* Twennie purple */
 }
 
 .bytopic-section-divider {
   border: none;
-  border-top: 1px solid #e5e7eb;
+  border-top: 2px dotted #dc176a; /* Twennie pink dotted */
   margin-bottom: 1rem;
 }
 
-/* Grid + card shell */
+/* ---- Grid + card shell ---- */
 
 .bytopic-library-units-grid {
   display: grid;
@@ -3393,7 +3399,7 @@ label {
   height: 100%;
 }
 
-/* Header SVG */
+/* ---- Header SVG ---- */
 
 .bytopic-card-svg-header {
   width: 100%;
@@ -3406,7 +3412,7 @@ label {
   height: auto;
 }
 
-/* Card content */
+/* ---- Card content ---- */
 
 .bytopic-card-content {
   display: flex;
@@ -3445,6 +3451,7 @@ label {
   font-size: 1rem;
   font-weight: 600;
   margin: 0;
+  color: #4a4ab2; /* Twennie purple */
 }
 
 .bytopic-detail-value-purpose {
@@ -3453,7 +3460,7 @@ label {
   color: #4b5563;
 }
 
-/* Expand toggle */
+/* ---- Expand toggle ---- */
 
 .bytopic-expand-toggle {
   border: none;
@@ -3474,18 +3481,18 @@ label {
   height: auto;
 }
 
-/* Hidden content */
+/* ---- Hidden content ---- */
 
 .bytopic-hidden-content {
   margin-top: 0.75rem;
   padding-top: 0.75rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 2px dotted #dc176a; /* Twennie pink dotted */
   display: none;          /* JS toggles between none / flex */
   flex-direction: column;
   gap: 0.75rem;
 }
 
-/* CTA */
+/* ---- CTA ---- */
 
 .bytopic-unit-review-container {
   margin-top: 0.75rem;
@@ -3510,7 +3517,7 @@ label {
   cursor: default;
 }
 
-/* Empty sections */
+/* ---- Empty sections ---- */
 
 .bytopic-empty-section-message {
   font-size: 0.95rem;
@@ -3518,7 +3525,7 @@ label {
   margin-bottom: 2rem;
 }
 
-/* Mission-specific minor bits (creator etc.) */
+/* ---- Mission-specific blocks ---- */
 
 .mission-creator-block {
   display: flex;
@@ -3544,6 +3551,7 @@ label {
 
 .mission-creator-name {
   font-weight: 600;
+  color: #4a4ab2; /* purple for consistency */
 }
 
 .mission-summary-container {
@@ -3559,7 +3567,7 @@ label {
   color: #4b5563;
 }
 
-/* Responsive tweaks */
+/* ---- Responsive tweaks ---- */
 
 @media (max-width: 900px) {
   .bytopic-container {
@@ -3570,5 +3578,6 @@ label {
     max-width: 100%;
   }
 }
+
 
 
