@@ -3386,7 +3386,7 @@ label {
   position: relative;
   border-radius: 16px;
   overflow: hidden;
-  background: #858484; /* grey background for the full card */
+  background: #c7c7c7; /* grey background for the full card */
   box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
@@ -3439,7 +3439,6 @@ label {
   width: 110px;
   height: 110px;
   border-radius: 999px;
-  background: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
