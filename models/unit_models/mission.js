@@ -37,6 +37,19 @@ const missionSchema = new mongoose.Schema({
     required: false,
   },
 
+  // --- SUMMARIES FOR CARDS / LIST VIEWS ---
+  // Short summary shown under the title in the mission cards
+  short_purpose: {
+    type: String,
+    trim: true,
+  },
+
+  // Full summary shown when the card is expanded
+  full_summary: {
+    type: String,
+    trim: true,
+  },
+
   // --- DETAILS ---
   department_requesting: String,
 
@@ -45,7 +58,7 @@ const missionSchema = new mongoose.Schema({
     required: false,
   },
 
-  timeframe: String, // e.g. "8 weeks"
+  timeframe: String,            // e.g. "8 weeks"
   estimated_effort_hours: Number, // optional conversion to hours
   job_number: String,
   budget_amount: String,
@@ -131,3 +144,4 @@ missionSchema.pre('save', function (next) {
 });
 
 module.exports = mongoose.model('Mission', missionSchema);
+
