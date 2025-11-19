@@ -128,7 +128,7 @@
       <div class="form-field">
         <label for="full-summary">
           Full Mission Summary
-          <span style="font-weight: normal; font-size: 0.85em;">(shown when a mission card is expanded)</span>
+          <span style="font-weight: normal; font-size: 0.85em;">(Finish this sentence: Your mission, should you choose to accept it, is to...)</span>
         </label>
         <textarea
           id="full-summary"
@@ -442,18 +442,7 @@
 {{/each}}</textarea>
       </div>
 
-      <!-- CONSENT (PROMO PERMISSION) -->
-      <div class="form-toggle">
-        <label>
-          <input
-            type="checkbox"
-            name="permission"
-            {{#if data.permission}}checked{{/if}}
-            required
-          >
-          Do you provide consent for this mission to be used for Twennie promotional purposes?
-        </label>
-      </div>
+
 
       <!-- BUTTONS -->
       <div class="form-buttons">
