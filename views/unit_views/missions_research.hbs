@@ -105,30 +105,31 @@
                     {{/if}}
 
                     <!-- CTA – mirror bytopic logic where possible -->
-                    <div class="bytopic-unit-review-container mission-cta-container">
-                      {{#if ../loggedIn}}
-                        {{!-- treat missions as gated units: leaders + paid can review --}}
-                        {{#if ../isLeaderOrGroupMember}}
-                          <a href="/unitviews/missions/view/{{_id}}"
-                             class="bytopic-unit-review-btn">
-                            review this unit
-                          </a>
-                        {{else if ../isPaid}}
-                          <a href="/unitviews/missions/view/{{_id}}"
-                             class="bytopic-unit-review-btn">
-                            review this unit
-                          </a>
-                        {{else}}
-                          <div class="bytopic-unit-review-btn mission-cta-disabled">
-                            membership upgrade required
-                          </div>
-                        {{/if}}
-                      {{else}}
-                        <div class="bytopic-unit-review-btn mission-cta-disabled">
-                          login required
-                        </div>
-                      {{/if}}
-                    </div>
+{{!-- inside each mission --}}
+<div class="bytopic-unit-review-container mission-cta-container">
+  {{#if loggedIn}}
+    {{#if isLeaderOrGroupMember}}
+      <a href="/unitviews/missions/view/{{_id}}"
+         class="bytopic-unit-review-btn">
+        review this unit
+      </a>
+    {{else if isPaid}}
+      <a href="/unitviews/missions/view/{{_id}}"
+         class="bytopic-unit-review-btn">
+        review this unit
+      </a>
+    {{else}}
+      <div class="bytopic-unit-review-btn mission-cta-disabled">
+        membership upgrade required
+      </div>
+    {{/if}}
+  {{else}}
+    <div class="bytopic-unit-review-btn mission-cta-disabled">
+      login required
+    </div>
+  {{/if}}
+</div>
+
                   </div> <!-- /.bytopic-hidden-content -->
                 </div> <!-- /.bytopic-card-content -->
               </div> <!-- /.bytopic-card-inner -->

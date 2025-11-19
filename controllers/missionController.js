@@ -5,6 +5,10 @@ const Member = require('../models/member_models/member');
 const Leader = require('../models/member_models/leader');
 const GroupMember = require('../models/member_models/group_member');
 
+const MemberProfile = require('../models/profile_models/member_profile');
+const GroupMemberProfile = require('../models/profile_models/groupmember_profile');
+const LeaderProfile = require('../models/profile_models/leader_profile');
+
 function isPaidMember(req) {
   const t = req.user?.accessLevel || req.user?.membershipType;
   return ['paid_individual', 'leader', 'group_member'].includes(t);
@@ -13,6 +17,54 @@ function isPaidMember(req) {
 function isLeaderOrGroupMember(req) {
   const t = req.user?.accessLevel || req.user?.membershipType;
   return ['leader', 'group_member'].includes(t);
+}
+
+function normalizeImg(img) {
+  if (!img) return '/images/default-avatar.png';
+  if (/^https?:\/\//i.test(img)) return img;
+  return img.startsWith('/') ? img : '/' + img;
+}
+
+// Mirror topic controller: resolve author/creator from *profile* models
+async function resolveCreatorById(authorId) {
+  try {
+    // Leader profile by leaderId
+    let profile = await LeaderProfile.findOne({ leaderId: authorId })
+      .select('profileImage name')
+      .lean();
+    if (profile) {
+      return {
+        name: profile.name || 'Leader',
+        image: normalizeImg(profile.profileImage),
+      };
+    }
+
+    // Group Member profile by groupMemberId
+    profile = await GroupMemberProfile.findOne({ groupMemberId: authorId })
+      .select('profileImage name')
+      .lean();
+    if (profile) {
+      return {
+        name: profile.name || 'Group Member',
+        image: normalizeImg(profile.profileImage),
+      };
+    }
+
+    // Individual Member profile by memberId
+    profile = await MemberProfile.findOne({ memberId: authorId })
+      .select('profileImage name')
+      .lean();
+    if (profile) {
+      return {
+        name: profile.name || 'Member',
+        image: normalizeImg(profile.profileImage),
+      };
+    }
+  } catch (err) {
+    console.error('Error resolving mission creator profile:', err);
+  }
+
+  return { name: 'Unknown Creator', image: '/images/default-avatar.png' };
 }
 
 // Generic helper for category pages
@@ -34,6 +86,25 @@ async function renderMissionList(req, res, options) {
       });
     }
 
+    // ----- BASIC USER / MEMBERSHIP CONTEXT -----
+    const user = req.user || null;
+    const loggedIn = !!user;
+    const membershipType = user?.membershipType || null;
+    const accessLevel = user?.accessLevel || null;
+
+    // Same logic you use elsewhere for bytopic views
+    const leaderOrGroup =
+      membershipType === 'leader' || membershipType === 'group_member';
+    const paidIndividual =
+      membershipType === 'member' &&
+      (accessLevel === 'paid_individual' ||
+        accessLevel === 'contributor_individual');
+    const freeIndividual =
+      membershipType === 'member' && accessLevel === 'free_individual';
+
+    const isPaid = leaderOrGroup || paidIndividual;
+    const isFree = freeIndividual;
+
     // 1) Fetch all missions in this category
     let missions = await Mission.find({ category })
       .sort({ created_at: -1 }) // from schema
@@ -44,6 +115,8 @@ async function renderMissionList(req, res, options) {
       ...m,
       authorId:
         m.authorId ||
+        m.author?.id ||
+        m.author ||
         m.createdBy ||
         m.created_by ||
         null,
@@ -52,7 +125,7 @@ async function renderMissionList(req, res, options) {
 
     // ---- BEGIN: smarter segmentation by authorship + visibility ----
 
-    const userId = req.user?.id || req.session?.user?.id || null;
+    const userId = user?.id || req.session?.user?.id || null;
 
     const normalize = (s) => (s || '').toString().trim().toLowerCase();
     const emailDomain = (e) => {
@@ -209,62 +282,27 @@ async function renderMissionList(req, res, options) {
 
     // ---- END: segmentation ----
 
-    // ---- BEGIN: author display meta (creatorName, creatorImage) ----
+    // ---- BEGIN: enrich missions with creator + membership flags ----
 
-    const authorMetaCache = new Map();
+    const creatorMetaCache = new Map();
 
-    async function getAuthorMeta(authorId) {
+    async function getCreatorMeta(authorId) {
       const key = String(authorId);
-      if (authorMetaCache.has(key)) return authorMetaCache.get(key);
+      if (creatorMetaCache.has(key)) return creatorMetaCache.get(key);
 
-      let doc = null;
-
-      try {
-        doc = await Leader.findById(authorId)
-          .select('name firstName lastName profileImage image email')
-          .lean();
-        if (!doc) {
-          doc = await GroupMember.findById(authorId)
-            .select('name firstName lastName profileImage image email')
-            .lean();
-        }
-        if (!doc) {
-          doc = await Member.findById(authorId)
-            .select('name firstName lastName profileImage image email')
-            .lean();
-        }
-      } catch (_) {
-        // ignore errors, fall through to defaults
-      }
-
-      let displayName = 'Twennie';
-      if (doc) {
-        const first = (doc.firstName || '').trim();
-        const last = (doc.lastName || '').trim();
-        if (doc.name && doc.name.trim()) {
-          displayName = doc.name.trim();
-        } else if (first || last) {
-          displayName = (first + ' ' + last).trim();
-        }
-      }
-
-      const image =
-        (doc && (doc.profileImage || doc.image)) ||
-        '/images/default-avatar.png';
-
-      const meta = { name: displayName, image };
-      authorMetaCache.set(key, meta);
+      const meta = await resolveCreatorById(authorId);
+      creatorMetaCache.set(key, meta);
       return meta;
     }
 
-    async function enrichMissions(list) {
+    async function enrichList(list) {
       const result = [];
       for (const m of list) {
-        let creatorName = 'Twennie';
+        let creatorName = 'Unknown Creator';
         let creatorImage = '/images/default-avatar.png';
 
         if (m.authorId) {
-          const meta = await getAuthorMeta(m.authorId);
+          const meta = await getCreatorMeta(m.authorId);
           creatorName = meta.name;
           creatorImage = meta.image;
         }
@@ -273,17 +311,22 @@ async function renderMissionList(req, res, options) {
           ...m,
           creatorName,
           creatorImage,
+          // membership flags for views (mirroring bytopic injection)
+          loggedIn,
+          isLeaderOrGroupMember: leaderOrGroup,
+          isPaid,
+          isFree,
         });
       }
       return result;
     }
 
-    const myMissionsEnriched = await enrichMissions(myMissions);
-    const groupMissionsEnriched = await enrichMissions(groupMissions);
-    const orgMissionsEnriched = await enrichMissions(orgMissions);
-    const twennieMissionsEnriched = await enrichMissions(twennieMissions);
+    const myMissionsEnriched = await enrichList(myMissions);
+    const groupMissionsEnriched = await enrichList(groupMissions);
+    const orgMissionsEnriched = await enrichList(orgMissions);
+    const twennieMissionsEnriched = await enrichList(twennieMissions);
 
-    // ---- END: author display meta ----
+    // ---- END: enrich missions ----
 
     const sectionedMissions = [
       {
@@ -318,12 +361,14 @@ async function renderMissionList(req, res, options) {
       shortSummary,
       longSummary,
       sectionedMissions,
-      loggedIn: !!req.user,
-      isLeaderOrGroupMember: isLeaderOrGroupMember(req),
-      isPaid: isPaidMember(req),
+      // root-level flags if you ever want @root.loggedIn etc.
+      loggedIn,
+      isLeaderOrGroupMember: leaderOrGroup,
+      isPaid,
+      isFree,
     });
   } catch (err) {
-    console.error(`[${category} missions] error:`, err.stack || err.message);
+    console.error('[' + category + ' missions] error:', err.stack || err.message);
     return res.status(500).render('unit_views/error', {
       layout: 'unitviewlayout',
       title: 'Error',
@@ -333,9 +378,7 @@ async function renderMissionList(req, res, options) {
 }
 
 module.exports = {
-  // ------------------------------------
-  // Mission Control (header square)
-  // ------------------------------------
+  // Mission Control unchanged...
   missionControl: async (req, res) => {
     try {
       if (!isPaidMember(req)) {
@@ -365,9 +408,7 @@ module.exports = {
     }
   },
 
-  // ------------------------------------
-  // Category lists (matching your view names in /views/unit_views)
-  // ------------------------------------
+  // Category lists
   learningMissions: (req, res) =>
     renderMissionList(req, res, {
       category: 'learning',
@@ -462,9 +503,7 @@ module.exports = {
         'the “this doesn’t fit anywhere, but it matters” missions.',
     }),
 
-  // ------------------------------------
-  // Single mission view (draft)
-  // ------------------------------------
+  // Single mission view (unchanged)
   viewMission: async (req, res) => {
     try {
       const { id } = req.params;
@@ -502,4 +541,5 @@ module.exports = {
     }
   },
 };
+
 
