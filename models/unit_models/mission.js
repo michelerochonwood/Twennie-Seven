@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 const missionSchema = new mongoose.Schema({
   status: {
     type: String,
-    enum: ['available', 'in_progress', 'completed', 'archived'],
-    default: 'available',
+    enum: ['one time mission', 'on-going', 'intermittent'],
+    default: 'one time mission',
     required: true,
   },
 

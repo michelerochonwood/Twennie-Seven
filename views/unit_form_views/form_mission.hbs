@@ -64,10 +64,9 @@
       <div class="form-field">
         <label for="status">Mission Status</label>
         <select id="status" name="status" required>
-          <option value="available" {{#ifEquals data.status "available"}}selected{{/ifEquals}}>Available</option>
-          <option value="in_progress" {{#ifEquals data.status "in_progress"}}selected{{/ifEquals}}>In Progress</option>
-          <option value="completed" {{#ifEquals data.status "completed"}}selected{{/ifEquals}}>Completed</option>
-          <option value="archived" {{#ifEquals data.status "archived"}}selected{{/ifEquals}}>Archived</option>
+          <option value="one time mission" {{#ifEquals data.status "one time mission"}}selected{{/ifEquals}}>One Time Mission</option>
+          <option value="on-going" {{#ifEquals data.status "on-going"}}selected{{/ifEquals}}>On-Going</option>
+          <option value="intermittent" {{#ifEquals data.status "intermittent"}}selected{{/ifEquals}}>Intermittent</option>
         </select>
       </div>
 
