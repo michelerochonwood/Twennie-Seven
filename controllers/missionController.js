@@ -10,6 +10,11 @@ function isPaidMember(req) {
   return ['paid_individual', 'leader', 'group_member'].includes(t);
 }
 
+function isLeaderOrGroupMember(req) {
+  const t = req.user?.accessLevel || req.user?.membershipType;
+  return ['leader', 'group_member'].includes(t);
+}
+
 // Generic helper for category pages
 async function renderMissionList(req, res, options) {
   const {
@@ -204,28 +209,104 @@ async function renderMissionList(req, res, options) {
 
     // ---- END: segmentation ----
 
+    // ---- BEGIN: author display meta (creatorName, creatorImage) ----
+
+    const authorMetaCache = new Map();
+
+    async function getAuthorMeta(authorId) {
+      const key = String(authorId);
+      if (authorMetaCache.has(key)) return authorMetaCache.get(key);
+
+      let doc = null;
+
+      try {
+        doc = await Leader.findById(authorId)
+          .select('name firstName lastName profileImage image email')
+          .lean();
+        if (!doc) {
+          doc = await GroupMember.findById(authorId)
+            .select('name firstName lastName profileImage image email')
+            .lean();
+        }
+        if (!doc) {
+          doc = await Member.findById(authorId)
+            .select('name firstName lastName profileImage image email')
+            .lean();
+        }
+      } catch (_) {
+        // ignore errors, fall through to defaults
+      }
+
+      let displayName = 'Twennie';
+      if (doc) {
+        const first = (doc.firstName || '').trim();
+        const last = (doc.lastName || '').trim();
+        if (doc.name && doc.name.trim()) {
+          displayName = doc.name.trim();
+        } else if (first || last) {
+          displayName = (first + ' ' + last).trim();
+        }
+      }
+
+      const image =
+        (doc && (doc.profileImage || doc.image)) ||
+        '/images/default-avatar.png';
+
+      const meta = { name: displayName, image };
+      authorMetaCache.set(key, meta);
+      return meta;
+    }
+
+    async function enrichMissions(list) {
+      const result = [];
+      for (const m of list) {
+        let creatorName = 'Twennie';
+        let creatorImage = '/images/default-avatar.png';
+
+        if (m.authorId) {
+          const meta = await getAuthorMeta(m.authorId);
+          creatorName = meta.name;
+          creatorImage = meta.image;
+        }
+
+        result.push({
+          ...m,
+          creatorName,
+          creatorImage,
+        });
+      }
+      return result;
+    }
+
+    const myMissionsEnriched = await enrichMissions(myMissions);
+    const groupMissionsEnriched = await enrichMissions(groupMissions);
+    const orgMissionsEnriched = await enrichMissions(orgMissions);
+    const twennieMissionsEnriched = await enrichMissions(twennieMissions);
+
+    // ---- END: author display meta ----
+
     const sectionedMissions = [
       {
         sectionTitle: 'missions I created',
-        missions: myMissions,
+        missions: myMissionsEnriched,
         emptyMessage:
           'When you create missions, the ones you authored will show here. Use your missions to guide your own focus during light workloads.',
       },
       {
         sectionTitle: 'missions created by my team',
-        missions: groupMissions,
+        missions: groupMissionsEnriched,
         emptyMessage:
           "Once your group starts creating missions, you'll see them here. Use team missions to coordinate how your group spends slow periods.",
       },
       {
         sectionTitle: "missions created by my organization",
-        missions: orgMissions,
+        missions: orgMissionsEnriched,
         emptyMessage:
           'As people across your organization create missions and share them with the broader firm, they will appear here.',
       },
       {
         sectionTitle: "Twennie's missions",
-        missions: twennieMissions,
+        missions: twennieMissionsEnriched,
         emptyMessage:
           'Twennie will be publishing missions for this category soon. Check back to see new ideas for how to spend slow periods strategically.',
       },
@@ -238,6 +319,8 @@ async function renderMissionList(req, res, options) {
       longSummary,
       sectionedMissions,
       loggedIn: !!req.user,
+      isLeaderOrGroupMember: isLeaderOrGroupMember(req),
+      isPaid: isPaidMember(req),
     });
   } catch (err) {
     console.error(`[${category} missions] error:`, err.stack || err.message);
@@ -419,3 +502,4 @@ module.exports = {
     }
   },
 };
+
