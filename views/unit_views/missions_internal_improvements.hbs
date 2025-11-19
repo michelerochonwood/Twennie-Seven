@@ -31,7 +31,7 @@
                   <img src="/images/missionsvg.svg"
                        alt=""
                        aria-hidden="true"
-                       class="mission-card-svg-image">
+                       class="bytopic-card-svg-image">
                 </div>
 
                 <!-- Card Content -->
@@ -50,34 +50,35 @@
                         {{mission_title}}
                       </h2>
                     </div>
-
-                    {{#if short_purpose}}
-                      <p class="bytopic-detail-value-purpose">
-                        {{short_purpose}}
-                      </p>
-                    {{/if}}
-
-                    <!-- Expand Toggle (bytopic-style) -->
-                    <button
-                      class="bytopic-expand-toggle"
-                      type="button"
-                      aria-expanded="false"
-                      aria-label="Toggle mission details">
-                      <svg class="expand-arrow"
-                           xmlns="http://www.w3.org/2000/svg"
-                           viewBox="0 0 331.65 100.99"
-                           aria-hidden="true"
-                           focusable="false">
-                        <defs>
-                          <style>.cls-1 { fill: #4e50a2; }</style>
-                        </defs>
-                        <polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/>
-                      </svg>
-                    </button>
                   </div>
 
+                  {{#if short_purpose}}
+                    <p class="bytopic-detail-value-purpose">
+                      {{short_purpose}}
+                    </p>
+                  {{/if}}
+
+                  <!-- Expand Toggle (bytopic-style) -->
+                  <button
+                    class="bytopic-expand-toggle"
+                    type="button"
+                    onclick="toggleCard(this)"
+                    aria-expanded="false"
+                    aria-label="Toggle mission details">
+                    <svg class="expand-arrow"
+                         xmlns="http://www.w3.org/2000/svg"
+                         viewBox="0 0 331.65 100.99"
+                         aria-hidden="true"
+                         focusable="false">
+                      <defs>
+                        <style>.cls-1 { fill: #4e50a2; }</style>
+                      </defs>
+                      <polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/>
+                    </svg>
+                  </button>
+
                   <!-- Expandable content -->
-                  <div class="bytopic-hidden-content">
+                  <div class="bytopic-hidden-content" style="display:none;">
                     {{!-- Creator block --}}
                     <div class="mission-creator-block">
                       <div class="mission-creator-label">
@@ -155,10 +156,26 @@
           {{/each}}
         </div>
       {{else}}
-        <div class="mission-empty-section-message">
+        <div class="bytopic-empty-section-message">
           {{#if this.emptyMessage}}<p>{{this.emptyMessage}}</p>{{/if}}
         </div>
       {{/if}}
     {{/each}}
   </div>
 </div>
+
+<script>
+  function toggleCard(el) {
+    var card = el.closest('.bytopic-library-unit-card');
+    if (!card) return;
+
+    var content = card.querySelector('.bytopic-hidden-content');
+    if (!content) return;
+
+    var isOpen = card.classList.contains('active');
+    card.classList.toggle('active', !isOpen);
+    el.setAttribute('aria-expanded', String(!isOpen));
+    content.style.display = isOpen ? 'none' : 'flex';
+  }
+</script>
+
