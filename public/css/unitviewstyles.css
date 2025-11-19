@@ -3324,11 +3324,15 @@ label {
 /* ==== Mission list views – reuse bytopic card layout with Twennie colors ==== */
 
 .bytopic-container {
+  --unit-icon-size: 60px; /* keep in sync with bytopic styles */
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   gap: 2rem;
-  padding: 2rem 4vw;
+  padding: 0 8%;              /* match bytopic left/right spacing */
+  box-sizing: border-box;
+  margin: 7rem auto 3rem auto; /* match bytopic top spacing under header */
+  min-height: 100vh;
 }
 
 .bytopic-content.has-right-rail {
@@ -3344,6 +3348,7 @@ label {
   margin-bottom: 0.5rem;
   color: #4a4ab2; /* Twennie purple */
 }
+
 
 .bytopic-short-summary {
   font-size: 1rem;
@@ -3366,7 +3371,7 @@ label {
 
 .bytopic-section-divider {
   border: none;
-  border-top: 2px dotted #dc176a; /* Twennie pink dotted */
+  border-top: 4px dotted #dc176a; /* Twennie pink dotted */
   margin-bottom: 1rem;
 }
 
@@ -3374,8 +3379,8 @@ label {
 
 .bytopic-library-units-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1.25rem;
   margin-bottom: 2rem;
 }
 
@@ -3576,6 +3581,35 @@ label {
 
   .bytopic-content.has-right-rail {
     max-width: 100%;
+  }
+}
+
+
+/* 4 across */
+@media (max-width: 1400px) {
+  .bytopic-library-units-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* 3 across */
+@media (max-width: 1100px) {
+  .bytopic-library-units-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* 2 across */
+@media (max-width: 800px) {
+  .bytopic-library-units-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 1 across */
+@media (max-width: 500px) {
+  .bytopic-library-units-grid {
+    grid-template-columns: 1fr;
   }
 }
 
