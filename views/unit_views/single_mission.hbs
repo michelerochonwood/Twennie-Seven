@@ -3,358 +3,408 @@
 <div class="single_mission-container">
   <!-- Main Column -->
   <div class="single_mission-main">
-    <!-- Title + status/category chips -->
+    <!-- Title -->
     <h1 class="single_mission-main-title">{{mission_title}}</h1>
 
-    <div class="single_mission-meta-row">
-      <span class="mission-chip mission-status mission-status-{{status}}">
-        {{#ifEquals status "available"}}available{{/ifEquals}}
-        {{#ifEquals status "in_progress"}}in progress{{/ifEquals}}
-        {{#ifEquals status "completed"}}completed{{/ifEquals}}
-        {{#ifEquals status "archived"}}archived{{/ifEquals}}
-      </span>
-
-      <span class="mission-chip mission-category mission-category-{{category}}">
-        {{#ifEquals category "learning"}}learning{{/ifEquals}}
-        {{#ifEquals category "research"}}research{{/ifEquals}}
-        {{#ifEquals category "business_development"}}business development{{/ifEquals}}
-        {{#ifEquals category "internal_improvement"}}internal improvement{{/ifEquals}}
-        {{#ifEquals category "culture_play"}}culture &amp; play{{/ifEquals}}
-        {{#ifEquals category "client_experience"}}client experience{{/ifEquals}}
-        {{#ifEquals category "community"}}community{{/ifEquals}}
-        {{#ifEquals category "administrative"}}administrative{{/ifEquals}}
-        {{#ifEquals category "other"}}rogue / other{{/ifEquals}}
-      </span>
-
-      {{#if timeframe}}
-        <span class="mission-chip mission-timeframe">{{timeframe}}</span>
-      {{/if}}
-      {{#if estimated_effort_hours}}
-        <span class="mission-chip mission-effort">
-          approx. {{estimated_effort_hours}} hours
-        </span>
-      {{/if}}
-    </div>
-
-    {{#if open_to}}
-      <p class="single_mission-open-to">
-        <strong>Open to:</strong> {{open_to}}
+    <!-- Intro: tagline + summaries + toggle -->
+    <section class="white-container single_mission-intro">
+      <p class="single_mission-tagline">
+        Your mission, should you choose to accept it, is to…
       </p>
-    {{/if}}
 
-    <!-- PURPOSE / WHY / BACKGROUND -->
-    <section class="white-container single_mission-section">
-      <h2 class="single_mission-section-title">mission purpose</h2>
-      <p class="single_mission-text">{{nl2br purpose}}</p>
-    </section>
-
-    <section class="white-container single_mission-section">
-      <h2 class="single_mission-section-title">why this mission matters</h2>
-      <p class="single_mission-text">{{nl2br why_it_matters}}</p>
-    </section>
-
-    {{#if background}}
-      <section class="white-container single_mission-section">
-        <h2 class="single_mission-section-title">background</h2>
-        <p class="single_mission-text">{{nl2br background}}</p>
-      </section>
-    {{/if}}
-
-    <!-- DETAILS -->
-    <section class="white-container single_mission-section">
-      <h2 class="single_mission-section-title">mission details</h2>
-      <dl class="single_mission-details-list">
-        {{#if department_requesting}}
-          <div class="details-row">
-            <dt>Requesting department</dt>
-            <dd>{{department_requesting}}</dd>
-          </div>
-        {{/if}}
-
-        {{#if job_number}}
-          <div class="details-row">
-            <dt>Job number</dt>
-            <dd>{{job_number}}</dd>
-          </div>
-        {{/if}}
-
-        {{#if budget_amount}}
-          <div class="details-row">
-            <dt>Budget amount</dt>
-            <dd>{{budget_amount}}</dd>
-          </div>
-        {{/if}}
-
-        {{#if due_date}}
-          <div class="details-row">
-            <dt>Due date</dt>
-            <dd>{{due_date}}</dd>
-          </div>
-        {{/if}}
-
-        {{#if visibility}}
-          <div class="details-row">
-            <dt>Visibility</dt>
-            <dd>
-              {{#ifEquals visibility "team_only"}}team only{{/ifEquals}}
-              {{#ifEquals visibility "organization_only"}}organization only{{/ifEquals}}
-              {{#ifEquals visibility "all_members"}}all Twennie members{{/ifEquals}}
-            </dd>
-          </div>
-        {{/if}}
-
-        {{#if main_topic}}
-          <div class="details-row">
-            <dt>Main topic</dt>
-            <dd>{{main_topic}}</dd>
-          </div>
-        {{/if}}
-      </dl>
-    </section>
-
-    <!-- APPROVALS REQUIRED -->
-    {{#if approvals_required.length}}
-      <section class="white-container single_mission-section">
-        <h2 class="single_mission-section-title">approvals required</h2>
-        <p class="form-hint">
-          These people / roles need to review or approve this mission or its outputs.
+      {{#if short_summary}}
+        <p class="single_mission-short-summary">
+          {{short_summary}}
         </p>
-        <ul class="single_mission-approvals-list">
-          {{#each approvals_required}}
-            <li class="approval-row">
-              <strong>{{role}}</strong>
-              {{#if name}} – {{name}}{{/if}}
-              {{#if email}}
-                <span class="approval-email">&lt;{{email}}&gt;</span>
+      {{/if}}
+
+      {{#if long_summary}}
+        <p class="single_mission-long-summary">
+          {{nl2br long_summary}}
+        </p>
+      {{/if}}
+
+      <button
+        type="button"
+        class="single_mission-toggle-btn"
+        onclick="toggleMissionDetails(this)"
+        aria-expanded="false"
+      >
+        review full mission details
+      </button>
+    </section>
+
+    <!-- MAIN BODY: hidden until user opens it -->
+    <div class="single_mission-main-body hidden" id="singleMissionBody">
+      {{#if open_to}}
+        <p class="single_mission-open-to">
+          <strong>Open to:</strong> {{open_to}}
+        </p>
+      {{/if}}
+
+      <!-- PURPOSE / WHY / BACKGROUND -->
+      <section class="white-container single_mission-section">
+        <h2 class="single_mission-section-title">mission purpose</h2>
+        <p class="single_mission-text">{{nl2br purpose}}</p>
+      </section>
+
+      <section class="white-container single_mission-section">
+        <h2 class="single_mission-section-title">why this mission matters</h2>
+        <p class="single_mission-text">{{nl2br why_it_matters}}</p>
+      </section>
+
+      {{#if background}}
+        <section class="white-container single_mission-section">
+          <h2 class="single_mission-section-title">background</h2>
+          <p class="single_mission-text">{{nl2br background}}</p>
+        </section>
+      {{/if}}
+
+      <!-- DETAILS -->
+      <section class="white-container single_mission-section">
+        <h2 class="single_mission-section-title">mission details</h2>
+        <dl class="single_mission-details-list">
+          {{#if department_requesting}}
+            <div class="details-row">
+              <dt>Requesting department</dt>
+              <dd>{{department_requesting}}</dd>
+            </div>
+          {{/if}}
+
+          {{#if job_number}}
+            <div class="details-row">
+              <dt>Job number</dt>
+              <dd>{{job_number}}</dd>
+            </div>
+          {{/if}}
+
+          {{#if budget_amount}}
+            <div class="details-row">
+              <dt>Budget amount</dt>
+              <dd>{{budget_amount}}</dd>
+            </div>
+          {{/if}}
+
+          {{#if due_date}}
+            <div class="details-row">
+              <dt>Due date</dt>
+              <dd>{{due_date}}</dd>
+            </div>
+          {{/if}}
+
+          {{#if visibility}}
+            <div class="details-row">
+              <dt>Visibility</dt>
+              <dd>
+                {{#ifEquals visibility "team_only"}}team only{{/ifEquals}}
+                {{#ifEquals visibility "organization_only"}}organization only{{/ifEquals}}
+                {{#ifEquals visibility "all_members"}}all Twennie members{{/ifEquals}}
+              </dd>
+            </div>
+          {{/if}}
+
+          {{#if main_topic}}
+            <div class="details-row">
+              <dt>Main topic</dt>
+              <dd>{{main_topic}}</dd>
+            </div>
+          {{/if}}
+        </dl>
+      </section>
+
+      <!-- APPROVALS REQUIRED -->
+      {{#if approvals_required.length}}
+        <section class="white-container single_mission-section">
+          <h2 class="single_mission-section-title">approvals required</h2>
+          <p class="form-hint">
+            These people / roles need to review or approve this mission or its outputs.
+          </p>
+          <ul class="single_mission-approvals-list">
+            {{#each approvals_required}}
+              <li class="approval-row">
+                <strong>{{role}}</strong>
+                {{#if name}} – {{name}}{{/if}}
+                {{#if email}}
+                  <span class="approval-email">&lt;{{email}}&gt;</span>
+                {{/if}}
+              </li>
+            {{/each}}
+          </ul>
+        </section>
+      {{/if}}
+
+      <!-- TASK INSTRUCTIONS -->
+      {{#if task_instructions.length}}
+        <section class="white-container single_mission-section">
+          <h2 class="single_mission-section-title">task instructions</h2>
+          {{#each task_instructions}}
+            <div class="single_mission-task-block">
+              {{#if heading}}
+                <h3 class="single_mission-task-heading">{{heading}}</h3>
               {{/if}}
-            </li>
+
+              {{#if instructions.length}}
+                <ul class="single_mission-task-list">
+                  {{#each instructions}}
+                    <li>{{this}}</li>
+                  {{/each}}
+                </ul>
+              {{/if}}
+            </div>
           {{/each}}
-        </ul>
-      </section>
-    {{/if}}
+        </section>
+      {{/if}}
 
-    <!-- TASK INSTRUCTIONS -->
-    {{#if task_instructions.length}}
-      <section class="white-container single_mission-section">
-        <h2 class="single_mission-section-title">task instructions</h2>
-        {{#each task_instructions}}
-          <div class="single_mission-task-block">
-            {{#if heading}}
-              <h3 class="single_mission-task-heading">{{heading}}</h3>
-            {{/if}}
+      <!-- DELIVERABLES -->
+      {{#if deliverables_checklist.length}}
+        <section class="white-container single_mission-section">
+          <h2 class="single_mission-section-title">deliverables checklist</h2>
+          <ul class="single_mission-deliverables-list">
+            {{#each deliverables_checklist}}
+              <li>{{this}}</li>
+            {{/each}}
+          </ul>
+        </section>
+      {{/if}}
 
-            {{#if instructions.length}}
-              <ul class="single_mission-task-list">
-                {{#each instructions}}
-                  <li>{{this}}</li>
-                {{/each}}
-              </ul>
-            {{/if}}
-          </div>
-        {{/each}}
-      </section>
-    {{/if}}
+      <!-- CONTACTS -->
+      {{#if contacts.length}}
+        <section class="white-container single_mission-section">
+          <h2 class="single_mission-section-title">contacts</h2>
+          <p class="form-hint">These people can answer questions or help unblock progress on this mission.</p>
+          <ul class="single_mission-contacts-list">
+            {{#each contacts}}
+              <li class="contact-row">
+                <strong>{{role}}</strong>
+                {{#if name}} – {{name}}{{/if}}
+                {{#if email}} · <a href="mailto:{{email}}">{{email}}</a>{{/if}}
+                {{#if phone}} · {{phone}}{{/if}}
+              </li>
+            {{/each}}
+          </ul>
+        </section>
+      {{/if}}
 
-    <!-- DELIVERABLES -->
-    {{#if deliverables_checklist.length}}
-      <section class="white-container single_mission-section">
-        <h2 class="single_mission-section-title">deliverables checklist</h2>
-        <ul class="single_mission-deliverables-list">
-          {{#each deliverables_checklist}}
-            <li>{{this}}</li>
-          {{/each}}
-        </ul>
-      </section>
-    {{/if}}
+      <!-- LEADER: assign mission via tags -->
+      {{#if isLeader}}
+        <div class="assign-tag-form white-container">
+          <h4 class="assign-tag-title">Assign this mission to yourself or your group</h4>
 
-    <!-- CONTACTS -->
-    {{#if contacts.length}}
-      <section class="white-container single_mission-section">
-        <h2 class="single_mission-section-title">contacts</h2>
-        <p class="form-hint">These people can answer questions or help unblock progress on this mission.</p>
-        <ul class="single_mission-contacts-list">
-          {{#each contacts}}
-            <li class="contact-row">
-              <strong>{{role}}</strong>
-              {{#if name}} – {{name}}{{/if}}
-              {{#if email}} · <a href="mailto:{{email}}">{{email}}</a>{{/if}}
-              {{#if phone}} · {{phone}}{{/if}}
-            </li>
-          {{/each}}
-        </ul>
-      </section>
-    {{/if}}
+          <form id="assignMissionTagForm" action="/tags/create" method="POST">
+            <input type="hidden" name="_csrf" value="{{csrfToken}}">
+            <input type="hidden" name="itemId" value="{{_id}}">
+            <input type="hidden" name="itemType" value="mission">
 
-    <!-- LEADER: assign mission via tags -->
-    {{#if isLeader}}
-      <div class="assign-tag-form white-container">
-        <h4 class="assign-tag-title">Assign this mission to yourself or your group</h4>
-
-        <form id="assignMissionTagForm" action="/tags/create" method="POST">
-          <input type="hidden" name="_csrf" value="{{csrfToken}}">
-          <input type="hidden" name="itemId" value="{{_id}}">
-          <input type="hidden" name="itemType" value="mission">
-
-          <div class="form-field">
-            <label for="missionTagName">Give the tag a name</label>
-            <input type="text" id="missionTagName" name="tagName" required>
-          </div>
-
-          <fieldset class="assign-tag-members">
-            <legend class="assign-tag-legend">Select recipients and enter instructions:</legend>
-
-            <!-- Leader self-assignment -->
-            <div class="assign-tag-member-block">
-              <label class="assign-tag-member-label">
-                <input
-                  type="checkbox"
-                  name="assignedTo[{{leaderId}}][member]"
-                  value="{{leaderId}}"
-                  onchange="toggleInstructionField(this)">
-                {{leaderName}} (you)
-              </label>
-              <textarea
-                class="assign-tag-instructions"
-                name="assignedTo[{{leaderId}}][instructions]"
-                placeholder="Instructions for yourself"
-                style="display:none;"></textarea>
+            <div class="form-field">
+              <label for="missionTagName">Give the tag a name</label>
+              <input type="text" id="missionTagName" name="tagName" required>
             </div>
 
-            <hr class="assign-tag-divider">
+            <fieldset class="assign-tag-members">
+              <legend class="assign-tag-legend">Select recipients and enter instructions:</legend>
 
-            <!-- Group members -->
-            {{#each groupMembers}}
+              <!-- Leader self-assignment -->
               <div class="assign-tag-member-block">
                 <label class="assign-tag-member-label">
                   <input
                     type="checkbox"
-                    name="assignedTo[{{_id}}][member]"
-                    value="{{_id}}"
+                    name="assignedTo[{{leaderId}}][member]"
+                    value="{{leaderId}}"
                     onchange="toggleInstructionField(this)">
-                  {{name}}
+                  {{leaderName}} (you)
                 </label>
                 <textarea
                   class="assign-tag-instructions"
-                  name="assignedTo[{{_id}}][instructions]"
-                  placeholder="Instructions for {{name}}"
+                  name="assignedTo[{{leaderId}}][instructions]"
+                  placeholder="Instructions for yourself"
                   style="display:none;"></textarea>
               </div>
-            {{/each}}
-          </fieldset>
 
-          <button type="submit" class="form-button submit-button">assign mission</button>
-        </form>
-      </div>
-    {{/if}}
+              <hr class="assign-tag-divider">
 
-    <!-- MEMBER / GROUP MEMBER: quick 'tag this mission' -->
-    {{#if isGroupMemberOrMember}}
-      <div class="single_unit-tag-container" style="margin-bottom:200px;">
-        <form action="/tags/create" method="POST" class="inline" id="missionTagForm">
-          <input type="hidden" name="_csrf" value="{{csrfToken}}">
-          <input type="hidden" name="itemId" value="{{_id}}">
-          <input type="hidden" name="itemType" value="mission">
-          <input type="hidden" name="tagName" value="Work on this mission">
-          <button type="button"
-                  class="tag-this-unit-link"
-                  onclick="promptAndSubmitTag('missionTagForm')"
-                  style="background:none;border:none;padding:0;cursor:pointer;">
-            tag this mission
-            <svg class="tag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 39.48 36.66">
-              <path class="cls-1" d="M38.77,21.12L16.05.56C15.65.19,15.13,0,14.59,0L2.12.16c-1.18.01-2.12.97-2.12,2.15v11.2c0,.63.28,1.24.77,1.64l24.95,21c.9.76,2.24.65,3.01-.24l10.23-11.8c.77-.88.69-2.22-.18-3ZM6.28,8.87c-1.57,0-2.84-1.27-2.84-2.84s1.27-2.84,2.84-2.84,2.84,1.27,2.84,2.84-1.27,2.84-2.84,2.84Z"/>
-            </svg>
-          </button>
-        </form>
-      </div>
-    {{/if}}
+              <!-- Group members -->
+              {{#each groupMembers}}
+                <div class="assign-tag-member-block">
+                  <label class="assign-tag-member-label">
+                    <input
+                      type="checkbox"
+                      name="assignedTo[{{_id}}][member]"
+                      value="{{_id}}"
+                      onchange="toggleInstructionField(this)">
+                    {{name}}
+                  </label>
+                  <textarea
+                    class="assign-tag-instructions"
+                    name="assignedTo[{{_id}}][instructions]"
+                    placeholder="Instructions for {{name}}"
+                    style="display:none;"></textarea>
+                </div>
+              {{/each}}
+            </fieldset>
 
-    <!-- TAGS FOR THIS MISSION -->
-    <div class="single_unit-tags white-container" style="margin-top:24px; margin-bottom:24px;">
-      <h4 class="assign-tag-title" style="margin-bottom:10px;">tags for this mission</h4>
+            <button type="submit" class="form-button submit-button">assign mission</button>
+          </form>
+        </div>
+      {{/if}}
 
-      {{#if tagsForUnit.length}}
-        <ul class="unit-tag-list" style="list-style:none; padding:0; margin:0; display:flex; flex-wrap:wrap; gap:10px;">
-          {{#each tagsForUnit}}
-            <li class="tag-pill" style="display:flex; align-items:center; gap:8px; background:#f4f5ff; color:#4e50a2; border-radius:999px; padding:6px 10px;">
-              <span class="tag-name" style="font-weight:600;">{{name}}</span>
+      <!-- MEMBER / GROUP MEMBER: quick 'tag this mission' -->
+      {{#if isGroupMemberOrMember}}
+        <div class="single_unit-tag-container" style="margin-bottom:200px;">
+          <form action="/tags/create" method="POST" class="inline" id="missionTagForm">
+            <input type="hidden" name="_csrf" value="{{csrfToken}}">
+            <input type="hidden" name="itemId" value="{{_id}}">
+            <input type="hidden" name="itemType" value="mission">
+            <input type="hidden" name="tagName" value="Work on this mission">
+            <button type="button"
+                    class="tag-this-unit-link"
+                    onclick="promptAndSubmitTag('missionTagForm')"
+                    style="background:none;border:none;padding:0;cursor:pointer;">
+              tag this mission
+              <svg class="tag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 39.48 36.66">
+                <path class="cls-1" d="M38.77,21.12L16.05.56C15.65.19,15.13,0,14.59,0L2.12.16c-1.18.01-2.12.97-2.12,2.15v11.2c0,.63.28,1.24.77,1.64l24.95,21c.9.76,2.24.65,3.01-.24l10.23-11.8c.77-.88.69-2.22-.18-3ZM6.28,8.87c-1.57,0-2.84-1.27-2.84-2.84s1.27-2.84,2.84-2.84,2.84,1.27,2.84,2.84-1.27,2.84-2.84,2.84Z"/>
+              </svg>
+            </button>
+          </form>
+        </div>
+      {{/if}}
 
-              {{#if assignedToMe}}
-                {{#if completedAt}}
-                  <span class="tag-status" style="font-size:12px; color:#0ea75a;">completed</span>
-                {{else}}
+      <!-- TAGS FOR THIS MISSION -->
+      <div class="single_unit-tags white-container" style="margin-top:24px; margin-bottom:24px;">
+        <h4 class="assign-tag-title" style="margin-bottom:10px;">tags for this mission</h4>
+
+        {{#if tagsForUnit.length}}
+          <ul class="unit-tag-list" style="list-style:none; padding:0; margin:0; display:flex; flex-wrap:wrap; gap:10px;">
+            {{#each tagsForUnit}}
+              <li class="tag-pill" style="display:flex; align-items:center; gap:8px; background:#f4f5ff; color:#4e50a2; border-radius:999px; padding:6px 10px;">
+                <span class="tag-name" style="font-weight:600;">{{name}}</span>
+
+                {{#if assignedToMe}}
+                  {{#if completedAt}}
+                    <span class="tag-status" style="font-size:12px; color:#0ea75a;">completed</span>
+                  {{else}}
+                    <button
+                      type="button"
+                      class="tag-action"
+                      data-action="complete"
+                      data-tag="{{_id}}"
+                      style="border:none; background:#0ea75a; color:#fff; border-radius:999px; padding:4px 8px; cursor:pointer; font-size:12px;">
+                      mark complete
+                    </button>
+                    {{#if instructions}}
+                      <span class="tag-instructions" style="font-size:12px; color:#6b7280;">“{{instructions}}”</span>
+                    {{/if}}
+                  {{/if}}
+                {{/if}}
+
+                {{#if createdByMe}}
                   <button
                     type="button"
                     class="tag-action"
-                    data-action="complete"
+                    data-action="remove"
                     data-tag="{{_id}}"
-                    style="border:none; background:#0ea75a; color:#fff; border-radius:999px; padding:4px 8px; cursor:pointer; font-size:12px;">
-                    mark complete
+                    data-item="{{@root._id}}"
+                    data-type="mission"
+                    style="border:none; background:#e11d48; color:#fff; border-radius:999px; padding:4px 8px; cursor:pointer; font-size:12px;">
+                    remove from this unit
                   </button>
-                  {{#if instructions}}
-                    <span class="tag-instructions" style="font-size:12px; color:#6b7280;">“{{instructions}}”</span>
-                  {{/if}}
                 {{/if}}
-              {{/if}}
-
-              {{#if createdByMe}}
-                <button
-                  type="button"
-                  class="tag-action"
-                  data-action="remove"
-                  data-tag="{{_id}}"
-                  data-item="{{@root._id}}"
-                  data-type="mission"
-                  style="border:none; background:#e11d48; color:#fff; border-radius:999px; padding:4px 8px; cursor:pointer; font-size:12px;">
-                  remove from this unit
-                </button>
-              {{/if}}
-            </li>
-          {{/each}}
-        </ul>
-      {{else}}
-        <p style="margin:0; color:#6b7280;">No tags yet. Leaders can assign this mission; members can “tag this mission” to add one.</p>
-      {{/if}}
-    </div>
-
-    <!-- NOTES (same pattern as articles but unitType=mission) -->
-    {{#if isGroupMemberOrLeader}}
-      <div class="single_mission-notes-container">
-        <h3 class="single_mission-notes-title">record notes</h3>
-        <p class="single_mission-notes-instructions">
-          Capture your observations as you work on this mission: what you learned, what surprised you, and ideas for next steps.
-          These notes will be part of your Twennie learning record.
-        </p>
-
-        <form action="/notes/submit" method="POST" class="single_mission-notes-form">
-          <input type="hidden" name="_csrf" value="{{csrfToken}}">
-          <input type="hidden" name="unitId" value="{{_id}}">
-          <input type="hidden" name="unitType" value="mission">
-          <input type="hidden" name="main_topic" value="{{main_topic}}">
-          <input type="hidden" name="secondary_topic" value="{{sub_topic}}">
-
-          <textarea
-            name="note_content"
-            class="single_mission-notes-textarea"
-            rows="5"
-            maxlength="1000"
-            placeholder="Write your notes here..."
-          ></textarea>
-
-          <button type="submit" class="single_mission-notes-submit">submit notes</button>
-        </form>
+              </li>
+            {{/each}}
+          </ul>
+        {{else}}
+          <p style="margin:0; color:#6b7280;">No tags yet. Leaders can assign this mission; members can “tag this mission” to add one.</p>
+        {{/if}}
       </div>
-    {{/if}}
+
+      <!-- NOTES -->
+      {{#if isGroupMemberOrLeader}}
+        <div class="single_mission-notes-container">
+          <h3 class="single_mission-notes-title">record notes</h3>
+          <p class="single_mission-notes-instructions">
+            Capture your observations as you work on this mission: what you learned, what surprised you, and ideas for next steps.
+            These notes will be part of your Twennie learning record.
+          </p>
+
+          <form action="/notes/submit" method="POST" class="single_mission-notes-form">
+            <input type="hidden" name="_csrf" value="{{csrfToken}}">
+            <input type="hidden" name="unitId" value="{{_id}}">
+            <input type="hidden" name="unitType" value="mission">
+            <input type="hidden" name="main_topic" value="{{main_topic}}">
+            <input type="hidden" name="secondary_topic" value="{{sub_topic}}">
+
+            <textarea
+              name="note_content"
+              class="single_mission-notes-textarea"
+              rows="5"
+              maxlength="1000"
+              placeholder="Write your notes here..."
+            ></textarea>
+
+            <button type="submit" class="single_mission-notes-submit">submit notes</button>
+          </form>
+        </div>
+      {{/if}}
+    </div> <!-- /.single_mission-main-body -->
   </div>
 
   <!-- Sidebar -->
   <aside class="single_mission-sidebar">
-    <div class="single_mission-icon-container" style="text-align:center; margin-bottom:10px; width:100px; height:auto; display:inline-block">
+    <div class="single_mission-icon-container">
       <img src="/icons/mission.svg" alt="Mission icon" class="single_mission-icon">
     </div>
 
-    <div class="single_mission-sidebar-card white-container">
-      <p class="single_mission-title-sidebar">{{mission_title}}</p>
+    <div class="single_mission-sidebar-card">
+      <!-- Creator -->
+      {{#if creator}}
+        <div class="single_mission-creator-block">
+          <img src="{{creator.image}}" alt="{{creator.name}}" class="single_mission-creator-image">
+          <p class="single_mission-creator-name">{{creator.name}}</p>
+        </div>
+      {{/if}}
 
+      <!-- Chips: status, category, timeframe, effort, open_to -->
+      <div class="single_mission-sidebar-chips">
+        {{#if status}}
+          <span class="mission-chip mission-status mission-status-{{status}}">
+            {{#ifEquals status "available"}}available{{/ifEquals}}
+            {{#ifEquals status "in_progress"}}in progress{{/ifEquals}}
+            {{#ifEquals status "completed"}}completed{{/ifEquals}}
+            {{#ifEquals status "archived"}}archived{{/ifEquals}}
+          </span>
+        {{/if}}
+
+        {{#if category}}
+          <span class="mission-chip mission-category mission-category-{{category}}">
+            {{#ifEquals category "learning"}}learning{{/ifEquals}}
+            {{#ifEquals category "research"}}research{{/ifEquals}}
+            {{#ifEquals category "business_development"}}business development{{/ifEquals}}
+            {{#ifEquals category "internal_improvement"}}internal improvement{{/ifEquals}}
+            {{#ifEquals category "culture_play"}}culture &amp; play{{/ifEquals}}
+            {{#ifEquals category "client_experience"}}client experience{{/ifEquals}}
+            {{#ifEquals category "community"}}community{{/ifEquals}}
+            {{#ifEquals category "administrative"}}administrative{{/ifEquals}}
+            {{#ifEquals category "other"}}rogue / other{{/ifEquals}}
+          </span>
+        {{/if}}
+
+        {{#if timeframe}}
+          <span class="mission-chip mission-timeframe">{{timeframe}}</span>
+        {{/if}}
+
+        {{#if estimated_effort_hours}}
+          <span class="mission-chip mission-effort">
+            approx. {{estimated_effort_hours}} hours
+          </span>
+        {{/if}}
+
+        {{#if open_to}}
+          <span class="mission-chip mission-open-to">
+            open to: {{open_to}}
+          </span>
+        {{/if}}
+      </div>
+
+      <!-- Collapsible sidebar details -->
       <div class="single_mission-sidebar-toggle" onclick="toggleSidebarContent(this)">
         <svg class="single_mission-sidebar-arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99">
           <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
@@ -411,6 +461,22 @@
     if (!input.value) return;
     if (btn) btn.disabled = true;
     form.submit();
+  }
+
+  function toggleMissionDetails(button) {
+    var body = document.getElementById('singleMissionBody');
+    if (!body) return;
+
+    var isHidden = body.classList.contains('hidden');
+    if (isHidden) {
+      body.classList.remove('hidden');
+      button.setAttribute('aria-expanded', 'true');
+      button.textContent = 'hide mission details';
+    } else {
+      body.classList.add('hidden');
+      button.setAttribute('aria-expanded', 'false');
+      button.textContent = 'review full mission details';
+    }
   }
 
   async function markTagComplete(tagId) {
@@ -475,4 +541,3 @@
     }
   });
 </script>
-

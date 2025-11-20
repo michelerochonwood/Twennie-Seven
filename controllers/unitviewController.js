@@ -1574,36 +1574,22 @@ viewMission: async (req, res) => {
 
     const mission = await Mission.findById(id).lean();
     if (!mission) {
-      console.warn(`[viewMission] Mission with ID ${id} not found.`);
-      return res.status(404).render('unit_views/error', {
-        layout: 'unitviewlayout',
-        title: 'Mission Not Found',
-        errorMessage: `The mission with ID ${id} does not exist.`,
-      });
+      // ... your existing 404 code ...
     }
 
-    // --- Basic membership gate (mirrors category CTA logic) ---
-    const membershipType = req.user?.membershipType || null;   // leader, group_member, member, etc.
-    const accessLevel    = req.user?.accessLevel || null;      // free_individual, paid_individual, contributor_individual
+    const membershipType = req.user?.membershipType || null;
+    const accessLevel    = req.user?.accessLevel || null;
 
     const isLeader       = membershipType === 'leader';
     const isGroupMember  = membershipType === 'group_member';
     const isMember       = membershipType === 'member';
     const isPaidIndividual = accessLevel === 'paid_individual';
 
-    // Allow leaders, group members, and paid individuals to open the mission
     const canViewMission = isLeader || isGroupMember || isPaidIndividual;
-
     if (!req.user || !canViewMission) {
-      console.log('[viewMission] Access denied for mission view. membershipType:', membershipType, 'accessLevel:', accessLevel);
-      return res.status(403).render('unit_views/error', {
-        layout: 'unitviewlayout',
-        title: 'Access Restricted',
-        errorMessage: 'Missions are available to leaders, group members, and paid individual members.',
-      });
+      // ... your existing 403 code ...
     }
 
-    // --- Owner check (used only for "edit this mission" link) ---
     const currentUserId = (req.user?._id || req.user?.id)?.toString();
     const ownerId =
       (mission.createdBy && mission.createdBy.toString()) ||
@@ -1613,7 +1599,13 @@ viewMission: async (req, res) => {
 
     const isOwner = !!(currentUserId && ownerId && currentUserId === ownerId);
 
-    // --- Leader assign context (uses your helper) ---
+    // ✅ NEW: resolve creator for sidebar
+    let creator = null;
+    if (ownerId) {
+      creator = await resolveAuthorById(ownerId);
+    }
+
+    // Leader assign context (unchanged)
     const {
       isLeader: assignIsLeader,
       groupMembers,
@@ -1621,15 +1613,18 @@ viewMission: async (req, res) => {
       leaderName,
     } = await getLeaderAssignContext(req);
 
-    // --- Render single_mission view ---
     return res.render('unit_views/single_mission', {
       layout: 'unitviewlayout',
 
       // identity
       _id: mission._id.toString(),
 
-      // main title + meta
+      // title + summaries
       mission_title: mission.mission_title,
+      short_summary: mission.short_summary || '',
+      long_summary: mission.long_summary || '',
+
+      // meta
       status: mission.status,
       category: mission.category,
       timeframe: mission.timeframe,
@@ -1656,36 +1651,38 @@ viewMission: async (req, res) => {
       deliverables_checklist: mission.deliverables_checklist || [],
       contacts: mission.contacts || [],
 
-      // tags list for this mission – placeholder for now
-      // (template will just show "No tags yet" when this is empty)
+      // tags
       tagsForUnit: mission.tagsForUnit || [],
 
-      // flags for template conditionals
+      // creator for sidebar
+      creator: creator
+        ? {
+            name: creator.name || 'Unknown Author',
+            image: creator.image || '/images/default-avatar.png',
+          }
+        : null,
+
+      // flags
       isOwner,
       isLeader: assignIsLeader,
       isGroupMemberOrLeader: isLeader || isGroupMember,
       isGroupMemberOrMember: isGroupMember || isMember,
-      isGroupMemberOrLeaderOrMember:
-        isLeader || isGroupMember || isMember,
+      isGroupMemberOrLeaderOrMember: isLeader || isGroupMember || isMember,
 
       // leader assignment UI
       groupMembers,
       leaderId,
       leaderName: leaderName || req.user?.username || 'You',
 
-      // CSRF for tag + notes forms
       csrfToken: req.csrfToken(),
     });
 
   } catch (err) {
     console.error('💥 Error fetching mission:', err.stack || err.message);
-    return res.status(500).render('unit_views/error', {
-      layout: 'unitviewlayout',
-      title: 'Error',
-      errorMessage: 'An error occurred while fetching the mission.',
-    });
+    // ... existing error render ...
   }
 },
+
 
 
 
