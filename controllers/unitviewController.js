@@ -1582,13 +1582,13 @@ viewMission: async (req, res) => {
       });
     }
 
-    // --- Basic membership gate (same logic as before) ---
+    // --- Basic membership gate ---
     const membershipType = req.user?.membershipType || null;
     const accessLevel    = req.user?.accessLevel || null;
 
-    const isLeader        = membershipType === 'leader';
-    const isGroupMember   = membershipType === 'group_member';
-    const isMember        = membershipType === 'member';
+    const isLeader         = membershipType === 'leader';
+    const isGroupMember    = membershipType === 'group_member';
+    const isMember         = membershipType === 'member';
     const isPaidIndividual = accessLevel === 'paid_individual';
 
     const canViewMission = isLeader || isGroupMember || isPaidIndividual;
@@ -1604,12 +1604,26 @@ viewMission: async (req, res) => {
 
     // --- Owner + creator (for sidebar) ---
     const currentUserId = (req.user?._id || req.user?.id)?.toString();
-    const ownerId =
-      (mission.createdBy && mission.createdBy.toString()) ||
-      (mission.owner && mission.owner.toString()) ||
-      (mission.author && mission.author.toString()) ||
+
+    // Try a variety of possible fields for the creator id
+    let rawOwnerId =
+      mission.createdBy ||
+      mission.created_by ||
+      mission.creatorId ||
+      mission.creator ||
+      (mission.author && (mission.author.id || mission.author._id || mission.author)) ||
+      mission.owner ||
       null;
 
+    if (rawOwnerId && typeof rawOwnerId === 'object' && rawOwnerId.toString) {
+      rawOwnerId = rawOwnerId.toString();
+    } else if (typeof rawOwnerId === 'string') {
+      rawOwnerId = rawOwnerId;
+    } else {
+      rawOwnerId = null;
+    }
+
+    const ownerId = rawOwnerId;
     const isOwner = !!(currentUserId && ownerId && currentUserId === ownerId);
 
     let creator = null;
@@ -1699,6 +1713,7 @@ viewMission: async (req, res) => {
     });
   }
 },
+
 
 
 
