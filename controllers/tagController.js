@@ -19,7 +19,7 @@ function isHtmlForm(req) {
 // ---- Unit type normalization + allow list (top of file)
 const ALLOWED_UNIT_TYPES = new Set([
   'article', 'video', 'interview', 'exercise', 'template',
-  'promptset', 'upcoming', 'nugget', 'topic' // topic is handled separately
+  'promptset', 'upcoming', 'nugget', 'mission', 'topic'  // topic is handled separately
 ]);
 
 function canonicalUnitType(t) {
@@ -27,6 +27,7 @@ function canonicalUnitType(t) {
   if (n === 'promptset' || n === 'promptsets') return 'promptset';
   if (n === 'upcoming' || n === 'upcomings')   return 'upcoming';
   if (n === 'nugget'  || n === 'nuggets')      return 'nugget';
+  if (n === 'mission' || n === 'missions')     return 'mission';
   if (n === 'article' || n === 'articles')     return 'article';
   if (n === 'video'   || n === 'videos')       return 'video';
   if (n === 'interview' || n === 'interviews') return 'interview';

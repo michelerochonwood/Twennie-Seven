@@ -21,6 +21,7 @@ const Upcoming = require('../models/unit_models/upcoming');
 const DashboardSeen = require('../models/dashboard_seen');
 const GroupProfile = require('../models/profile_models/group_profile');
 const Nugget = require('../models/unit_models/nugget'); // ✅ NEW
+const Mission = require('../models/unit_models/mission'); // ✅ NEW
 
 
 function getModelByUnitType(type) {
@@ -31,7 +32,8 @@ function getModelByUnitType(type) {
     case 'exercise':  return Exercise;
     case 'template':  return Template;
     case 'upcoming':  return Upcoming;
-    case 'nugget':    return Nugget;  // ✅ NEW
+    case 'nugget':    return Nugget;
+    case 'mission':   return Mission;  // ✅ NEW
     default:          return null;
   }
 }
@@ -66,7 +68,7 @@ async function fetchTaggedUnits(userId) {
     const tags = await Tag.find({ createdBy: userId }).lean();
     if (!tags.length) return [];
 
-    // include nugget
+    // include nugget + mission
     const unitMap = {
       article:   [],
       video:     [],
@@ -75,23 +77,36 @@ async function fetchTaggedUnits(userId) {
       exercise:  [],
       template:  [],
       upcoming:  [],
-      nugget:    []   // ✅ NEW
+      nugget:    [],
+      mission:   []   // ✅ NEW
     };
 
-    const tagByKey = new Map(); // `${itemId}-${unitType}` → tag doc
+    // key: `${itemId}-${unitType}` → tag doc
+    const tagByKey = new Map();
 
     for (const tag of tags) {
-      for (const { item, unitType } of tag.associatedUnits || []) {
-        if (unitMap[unitType]) {
-          const key = `${item.toString()}-${unitType}`;
-          unitMap[unitType].push(item.toString());
-          tagByKey.set(key, tag);
-        }
+      for (const entry of tag.associatedUnits || []) {
+        const itemId = entry.item;
+        const unitType = entry.unitType;
+        if (!unitMap[unitType]) continue;
+
+        const key = `${itemId.toString()}-${unitType}`;
+        unitMap[unitType].push(itemId.toString());
+
+        // last tag wins if multiple tags point to same unit
+        tagByKey.set(key, tag);
       }
     }
 
     const [
-      articles, videos, promptSets, interviews, exercises, templates, nuggets
+      articles,
+      videos,
+      promptSets,
+      interviews,
+      exercises,
+      templates,
+      nuggets,
+      missions   // ✅ NEW
     ] = await Promise.all([
       Article.find({ _id: { $in: unitMap.article } }).lean(),
       Video.find({ _id: { $in: unitMap.video } }).lean(),
@@ -99,55 +114,83 @@ async function fetchTaggedUnits(userId) {
       Interview.find({ _id: { $in: unitMap.interview } }).lean(),
       Exercise.find({ _id: { $in: unitMap.exercise } }).lean(),
       Template.find({ _id: { $in: unitMap.template } }).lean(),
-      Nugget.find({ _id: { $in: unitMap.nugget } }).lean() // ✅ NEW
+      Nugget.find({ _id: { $in: unitMap.nugget } }).lean(),
+      Mission.find({ _id: { $in: unitMap.mission } }).lean()
     ]);
 
-    const viewPathFor = (type, id) =>
-      type === 'nugget'
-        ? `/unitviews/nuggets/view/${id}`
-        : `/unitviews/${type}s/view/${id}`;
+    const viewPathFor = (type, id) => {
+      if (type === 'nugget')  return `/unitviews/nuggets/view/${id}`;
+      if (type === 'mission') return `/unitviews/missions/view/${id}`;
+      return `/unitviews/${type}s/view/${id}`;
+    };
 
     const tagResult = (units, type, titleField, topicField = 'main_topic') =>
       units.map(unit => {
         const key = `${unit._id.toString()}-${type}`;
-        const tag = tagByKey.get(key);
-        const assignedCount = Array.isArray(tag?.assignedTo) ? tag.assignedTo.length : 0;
+        const tag = tagByKey.get(key) || {};
+        const assignedCount = Array.isArray(tag.assignedTo) ? tag.assignedTo.length : 0;
+
         return {
           unitType: type,
           title: unit[titleField] || `Untitled ${type}`,
-          mainTopic: unit[topicField] || "No topic",
+          mainTopic: unit[topicField] || 'No topic',
           _id: unit._id,
-          tagId: tag?._id?.toString() || null,
+          tagId: tag._id ? tag._id.toString() : null,
           assignedCount,
-          viewPath: viewPathFor(type, unit._id) // ✅ NEW
+          viewPath: viewPathFor(type, unit._id)
         };
       });
 
-    return [
+    const results = [
       ...tagResult(articles,   'article',   'article_title'),
       ...tagResult(videos,     'video',     'video_title'),
       ...tagResult(promptSets, 'promptset', 'promptset_title'),
       ...tagResult(interviews, 'interview', 'interview_title'),
       ...tagResult(exercises,  'exercise',  'exercise_title'),
       ...tagResult(templates,  'template',  'template_title'),
-      // Nuggets: title is `title`, and show something useful in “topic”
-      ...nuggets.map(n => ({
+    ];
+
+    // Nuggets: title is `title`, "topic" uses discipline/client/region
+    nuggets.forEach(n => {
+      const key = `${n._id.toString()}-nugget`;
+      const tag = tagByKey.get(key) || {};
+      const assignedCount = Array.isArray(tag.assignedTo) ? tag.assignedTo.length : 0;
+
+      results.push({
         unitType: 'nugget',
         title: n.title || 'Untitled nugget',
         mainTopic: n.discipline || n.client || n.region || 'No classification',
         _id: n._id,
-        tagId: (tagByKey.get(`${n._id.toString()}-nugget`) || {})._id?.toString() || null,
-        assignedCount: Array.isArray((tagByKey.get(`${n._id.toString()}-nugget`) || {}).assignedTo)
-          ? (tagByKey.get(`${n._id.toString()}-nugget`).assignedTo.length)
-          : 0,
-        viewPath: `/unitviews/nuggets/view/${n._id}` // ✅ NEW
-      }))
-    ];
+        tagId: tag._id ? tag._id.toString() : null,
+        assignedCount,
+        viewPath: `/unitviews/nuggets/view/${n._id}`
+      });
+    });
+
+    // Missions: title is `mission_title`, topic is `main_topic`
+    missions.forEach(m => {
+      const key = `${m._id.toString()}-mission`;
+      const tag = tagByKey.get(key) || {};
+      const assignedCount = Array.isArray(tag.assignedTo) ? tag.assignedTo.length : 0;
+
+      results.push({
+        unitType: 'mission',
+        title: m.mission_title || 'Untitled mission',
+        mainTopic: m.main_topic || 'No topic',
+        _id: m._id,
+        tagId: tag._id ? tag._id.toString() : null,
+        assignedCount,
+        viewPath: `/unitviews/missions/view/${m._id}`
+      });
+    });
+
+    return results;
   } catch (error) {
     console.error("❌ Error fetching tagged units for leader:", error);
     return [];
   }
 }
+
 
 
 
@@ -829,6 +872,11 @@ const allLeaderTaggedUnits = await fetchTaggedUnits(id);
 const leaderSelfTaggedUnits = allLeaderTaggedUnits.filter(u => u.assignedCount === 0);
 const leaderTaggedCountAll = allLeaderTaggedUnits.length;
 
+// ✅ Split self-tagged units into missions vs non-missions
+const leaderSelfTaggedMissions = leaderSelfTaggedUnits.filter(u => u.unitType === 'mission');
+const leaderSelfTaggedNonMissionUnits = leaderSelfTaggedUnits.filter(u => u.unitType !== 'mission');
+
+
 const [
   leaderArticles,
   leaderVideos,
@@ -917,14 +965,6 @@ leaderUnits = [...leaderUnits, ...leaderNuggetRows, ...leaderUpcomingRows];
 
 
 // Map the completion records to a formatted array
-const formattedCompletedSets = completedRecords.map(record => ({
-    promptSetTitle: record.promptSetId.promptset_title,
-    frequency: record.promptSetId.suggested_frequency,
-    mainTopic: record.promptSetId.main_topic,
-    completedAt: record.completedAt ? new Date(record.completedAt).toDateString() : "Unknown Date",
-    badge: record.earnedBadge // This should now contain an object with { image, name }
-}));
-
 const { leaderAssignedUnits, leaderAssignmentsOpen, leaderAssignmentsCompleted } = await buildLeaderAssignedUnits(id);
 // --- Membership tab: derive view flags & user fields for template ---
 
@@ -937,14 +977,20 @@ const mapAssigned = (u) => ({
   assignedCompletedAtFormatted: u.assignedTo?.completedAt ? fmtDate(u.assignedTo.completedAt) : ''
 });
 
-// ✅ Arrays for the safe partial (flattened; no template-side logic needed)
-const leaderAssignedNonNuggetUnits = leaderAssignedUnits
-  .filter(u => u.unitType !== 'nugget')
-  .map(mapAssigned);
+// ✅ First, separate nuggets vs non-nuggets
+const leaderAssignedNonNuggetUnitsRaw = leaderAssignedUnits.filter(u => u.unitType !== 'nugget');
+const leaderAssignedNuggetsRaw      = leaderAssignedUnits.filter(u => u.unitType === 'nugget');
 
-const leaderAssignedNuggets = leaderAssignedUnits
-  .filter(u => u.unitType === 'nugget')
-  .map(mapAssigned);
+// ✅ Then split missions out of the non-nugget set
+const leaderAssignedMissionsRaw        = leaderAssignedNonNuggetUnitsRaw.filter(u => u.unitType === 'mission');
+const leaderAssignedNonMissionUnitsRaw = leaderAssignedNonNuggetUnitsRaw.filter(u => u.unitType !== 'mission');
+
+// ✅ Flatten for the template
+const leaderAssignedNonNuggetUnits  = leaderAssignedNonNuggetUnitsRaw.map(mapAssigned);   // existing blended non-nuggets
+const leaderAssignedNuggets         = leaderAssignedNuggetsRaw.map(mapAssigned);          // existing assigned nuggets
+const leaderAssignedMissions        = leaderAssignedMissionsRaw.map(mapAssigned);         // NEW: missions only
+const leaderAssignedNonMissionUnits = leaderAssignedNonMissionUnitsRaw.map(mapAssigned);  // NEW: non-mission, non-nugget
+
 
 // 1) Email preference flags (defaults to Level 1 if unset/invalid)
 // --- Membership tab: prepare leader account & email preference flags ---
@@ -1016,40 +1062,61 @@ return res.render('leader_dashboard', {
   layout: 'dashboardlayout',
   title: 'Leader Dashboard',
   csrfToken: req.csrfToken(),
-leader: {
-  ...userData,
-  members: resolvedGroupMembers,
-  // existing leader avatar (person)
-  profileImage: leaderProfile?.profileImage || '/images/default-avatar.png',
-  // NEW: actual group image (circle under the group name)
-  groupImage: groupProfile?.groupImage || '/images/defaultgroupavatar.jpg'
-},
+
+  leader: {
+    ...userData,
+    members: resolvedGroupMembers,
+    // existing leader avatar (person)
+    profileImage: leaderProfile?.profileImage || '/images/default-avatar.png',
+    // NEW: actual group image (circle under the group name)
+    groupImage: groupProfile?.groupImage || '/images/defaultgroupavatar.jpg'
+  },
 
   leaderGroupMembers: resolvedGroupMembers,
   maxGroupSize: userData.maxGroupSize,
+
+  // Library + group units
   leaderUnits,
   groupMemberUnits,
-  leaderAssignedUnits,
-  assignedPromptCards,
+
+  // Assignment data
+  leaderAssignedUnits,         // raw assigned units, if you still need them
   leaderAssignmentsOpen,
   leaderAssignmentsCompleted,
+  assignedPromptCards,
+
+  // Prompt set data
   registeredPromptSets: leaderPrompts,
   promptSchedules,
   currentPromptSets,
   completedPromptSets: formattedCompletedSets,
 
-  selectedTopics,   // 👈 add this
-  topicsEmpty,      // 👈 and this
+  // Topics / suggestions
+  selectedTopics,
+  topicsEmpty,
   topicSuggestions,
+
+  // Account / email prefs
   leaderAccount,
   emailPreferenceLevel,
-  leaderSelfTaggedUnits,          // blended, with viewPath (includes nuggets)
-  leaderAssignedNonNuggetUnits,   // assigned, non-nuggets only
-  leaderAssignedNuggets,          // assigned nuggets only
+
+  // ✅ TAGGED / ASSIGNED UNITS (new + existing)
+  leaderSelfTaggedUnits,              // blended, all self-tagged (for backwards compat)
+  leaderSelfTaggedNonMissionUnits,    // NEW: self-tagged non-mission units
+  leaderSelfTaggedMissions,           // NEW: self-tagged missions
+
+  leaderAssignedNonNuggetUnits,       // existing blended non-nuggets
+  leaderAssignedNonMissionUnits,      // NEW: assigned non-mission, non-nugget
+  leaderAssignedMissions,             // NEW: assigned missions
+  leaderAssignedNuggets,              // existing assigned nuggets
+
+  // MFA + tab badges
   mfaStatus,
   leaderCounts,
   leaderBadges,
 });
+
+
 
 
 

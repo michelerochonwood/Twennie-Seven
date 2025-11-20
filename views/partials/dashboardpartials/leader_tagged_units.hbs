@@ -2,14 +2,14 @@
 <meta name="csrf-token" content="{{csrfToken}}">
 
 {{!-- =========================
-     1) SELF-TAGGED (BLENDED)
-     expects: leaderSelfTaggedUnits = [{ _id, title, mainTopic, unitType, tagId, viewPath }]
+     1) SELF-TAGGED (NON-MISSION)
+     expects: leaderSelfTaggedNonMissionUnits = [{ _id, title, mainTopic, unitType, tagId, viewPath }]
      ========================= --}}
 <section class="tagged-units-section">
   <h2 class="tagged-units-title">tagged library units</h2>
   <div class="tagged-units-grid">
-    {{#if leaderSelfTaggedUnits.length}}
-      {{#each leaderSelfTaggedUnits}}
+    {{#if leaderSelfTaggedNonMissionUnits.length}}
+      {{#each leaderSelfTaggedNonMissionUnits}}
         <div class="tagged-unit-card">
           <div class="tagged-unit-icon">
             <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
@@ -36,7 +36,7 @@
         </div>
       {{/each}}
     {{else}}
-      <p class="tagged-no-units">You have no self-tagged units.</p>
+      <p class="tagged-no-units">You have no self-tagged non-mission units.</p>
     {{/if}}
   </div>
 </section>
@@ -44,14 +44,58 @@
 <div class="tagged-section-divider" aria-hidden="true"></div>
 
 {{!-- =========================
-     3) ASSIGNED UNITS (NON-NUGGETS ONLY)
-     expects: leaderAssignedNonNuggetUnits = [{ _id, title, mainTopic, unitType, tagId, assignedToName, assignedCompletedAtFormatted, assignedInstructions, viewPath }]
+     2) SELF-TAGGED MISSIONS
+     expects: leaderSelfTaggedMissions = [{ _id, title, mainTopic, unitType="mission", tagId, viewPath }]
+     ========================= --}}
+<section class="tagged-units-section">
+  <h2 class="tagged-units-title">my missions</h2>
+  <div class="tagged-units-grid">
+    {{#if leaderSelfTaggedMissions.length}}
+      {{#each leaderSelfTaggedMissions}}
+        <div class="tagged-unit-card">
+          <div class="tagged-unit-icon">
+            <img src="/icons/mission.svg" alt="mission icon">
+          </div>
+
+          <div class="tagged-unit-info">
+            <h3 class="tagged-unit-title">{{title}}</h3>
+            {{#if mainTopic}}<p class="tagged-unit-topic">{{mainTopic}}</p>{{/if}}
+          </div>
+
+          <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
+            <a href="{{viewPath}}" class="tagged-unit-link">view mission</a>
+
+            <button class="tagged-unit-link"
+              onclick="removeTagFromUnit('{{tagId}}','{{_id}}','mission')">
+              remove from this mission
+            </button>
+
+            <button class="tagged-unit-link"
+              onclick="deleteTag('{{tagId}}')">
+              delete tag
+            </button>
+          </div>
+        </div>
+      {{/each}}
+    {{else}}
+      <p class="tagged-no-units">You have no self-tagged missions.</p>
+    {{/if}}
+  </div>
+</section>
+
+<div class="tagged-section-divider" aria-hidden="true"></div>
+
+
+
+{{!-- =========================
+     3) ASSIGNED UNITS (NON-MISSION, NON-NUGGET)
+     expects: leaderAssignedNonMissionUnits = [...]
      ========================= --}}
 <section class="leader-assigned-units-section" style="margin-top:20px">
   <h2 class="tagged-units-title">assigned units</h2>
   <div class="tagged-units-grid">
-    {{#if leaderAssignedNonNuggetUnits.length}}
-      {{#each leaderAssignedNonNuggetUnits}}
+    {{#if leaderAssignedNonMissionUnits.length}}
+      {{#each leaderAssignedNonMissionUnits}}
         <div class="leader-assigned-unit-card">
           <div class="tagged-unit-icon">
             <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
@@ -90,12 +134,15 @@
         </div>
       {{/each}}
     {{else}}
-      <p class="tagged-no-units">You have no assigned non-nugget units.</p>
+      <p class="tagged-no-units">You have no assigned non-mission units.</p>
     {{/if}}
   </div>
 </section>
 
 <div class="tagged-section-divider" aria-hidden="true"></div>
+
+
+
 
 {{!-- =========================
      4) ASSIGNED NUGGETS (NUGGETS ONLY)
@@ -150,6 +197,62 @@
     {{/if}}
   </div>
 </section>
+
+
+{{!-- =========================
+     4) ASSIGNED MISSIONS
+     expects: leaderAssignedMissions = [{ _id, title, mainTopic, unitType="mission", tagId, assignedToName, assignedCompletedAtFormatted, assignedInstructions, viewPath }]
+     ========================= --}}
+<section class="leader-assigned-units-section" style="margin-top:20px">
+  <h2 class="tagged-units-title">my assigned missions</h2>
+  <div class="tagged-units-grid">
+    {{#if leaderAssignedMissions.length}}
+      {{#each leaderAssignedMissions}}
+        <div class="leader-assigned-unit-card">
+          <div class="tagged-unit-icon">
+            <img src="/icons/mission.svg" alt="mission icon">
+          </div>
+
+          <div class="tagged-unit-info">
+            <h3 class="tagged-unit-title">{{title}}</h3>
+            {{#if mainTopic}}<p class="tagged-unit-topic">{{mainTopic}}</p>{{/if}}
+
+            <p class="leader-assigned-to">assigned to: {{assignedToName}}</p>
+
+            {{#if assignedCompletedAtFormatted}}
+              <p class="leader-assigned-status">✅ completed <span class="muted">({{assignedCompletedAtFormatted}})</span></p>
+            {{else}}
+              <p class="leader-assigned-status">⏳ pending</p>
+            {{/if}}
+
+            {{#if assignedInstructions}}
+              <p class="leader-assigned-instructions"><em>{{assignedInstructions}}</em></p>
+            {{/if}}
+          </div>
+
+          <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
+            <a href="{{viewPath}}" class="tagged-unit-link">view mission</a>
+
+            <button class="tagged-unit-link"
+              onclick="unassignMember('{{tagId}}','{{assignedToId}}')">
+              unassign
+            </button>
+
+            <button class="tagged-unit-link"
+              onclick="deleteTag('{{tagId}}')">
+              delete tag
+            </button>
+          </div>
+        </div>
+      {{/each}}
+    {{else}}
+      <p class="tagged-no-units">You have no assigned missions.</p>
+    {{/if}}
+  </div>
+</section>
+
+<div class="tagged-section-divider" aria-hidden="true"></div>
+
 
 <script>
   function getCsrfToken() {

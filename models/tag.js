@@ -15,10 +15,7 @@ const UNIT_TYPES = [
   'promptset',
   'exercise',
   'template',
-  'microcourse',   // legacy
-  'microstudy',    // legacy
-  'micro_course',  // optional underscored variant
-  'micro_study',   // optional underscored variant
+  'mission',
   'nugget'         // ✅ NEW
   // 'peercoaching' // add when ready
 ];
