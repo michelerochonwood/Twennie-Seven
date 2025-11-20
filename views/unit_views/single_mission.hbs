@@ -6,21 +6,21 @@
     <!-- Title -->
     <h1 class="single_mission-main-title">{{mission_title}}</h1>
 
-    <!-- Intro: tagline + summaries + toggle -->
+    <!-- Intro: tagline + short/long purpose + toggle -->
     <section class="white-container single_mission-intro">
       <p class="single_mission-tagline">
         Your mission, should you choose to accept it, is to…
       </p>
 
-      {{#if short_summary}}
+      {{#if short_purpose}}
         <p class="single_mission-short-summary">
-          {{short_summary}}
+          {{short_purpose}}
         </p>
       {{/if}}
 
-      {{#if long_summary}}
+      {{#if full_summary}}
         <p class="single_mission-long-summary">
-          {{nl2br long_summary}}
+          {{nl2br full_summary}}
         </p>
       {{/if}}
 
@@ -29,18 +29,17 @@
         class="single_mission-toggle-btn"
         onclick="toggleMissionDetails(this)"
         aria-expanded="false"
+        aria-label="Toggle mission details"
       >
-        review full mission details
+        <svg class="single_mission-main-arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99">
+          <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
+          <g><polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/></g>
+        </svg>
       </button>
     </section>
 
     <!-- MAIN BODY: hidden until user opens it -->
     <div class="single_mission-main-body hidden" id="singleMissionBody">
-      {{#if open_to}}
-        <p class="single_mission-open-to">
-          <strong>Open to:</strong> {{open_to}}
-        </p>
-      {{/if}}
 
       <!-- PURPOSE / WHY / BACKGROUND -->
       <section class="white-container single_mission-section">
@@ -471,11 +470,11 @@
     if (isHidden) {
       body.classList.remove('hidden');
       button.setAttribute('aria-expanded', 'true');
-      button.textContent = 'hide mission details';
+      button.classList.add('open');
     } else {
       body.classList.add('hidden');
       button.setAttribute('aria-expanded', 'false');
-      button.textContent = 'review full mission details';
+      button.classList.remove('open');
     }
   }
 
@@ -541,3 +540,4 @@
     }
   });
 </script>
+

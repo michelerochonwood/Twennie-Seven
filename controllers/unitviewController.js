@@ -1613,16 +1613,16 @@ viewMission: async (req, res) => {
       leaderName,
     } = await getLeaderAssignContext(req);
 
-    return res.render('unit_views/single_mission', {
-      layout: 'unitviewlayout',
+return res.render('unit_views/single_mission', {
+  layout: 'unitviewlayout',
 
-      // identity
-      _id: mission._id.toString(),
+  // identity
+  _id: mission._id.toString(),
 
-      // title + summaries
-      mission_title: mission.mission_title,
-      short_summary: mission.short_summary || '',
-      long_summary: mission.long_summary || '',
+  // title + summaries
+  mission_title: mission.mission_title,
+  short_purpose: mission.short_purpose || '',
+  full_summary: mission.full_summary || '',
 
       // meta
       status: mission.status,

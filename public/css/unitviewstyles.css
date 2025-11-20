@@ -3643,6 +3643,10 @@ label {
    SINGLE MISSION – LAYOUT
    ========================= */
 
+/* =========================
+   SINGLE MISSION – LAYOUT
+   ========================= */
+
 .single_mission-container {
   display: flex;
   gap: 5rem;
@@ -3700,24 +3704,31 @@ label {
   margin: 0 0 0.75rem 0;
 }
 
+/* Arrow toggle (matches sidebar style, but used for main body) */
+
 .single_mission-toggle-btn {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  width: 40px;
+  height: 40px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 6px 14px;
-  border-radius: 999px;
-  border: none;
-  background-color: #262262;
-  color: #ffffff;
-  font-size: 0.8rem;
-  font-weight: 800;
   cursor: pointer;
-  font-family: "Figtree", sans-serif;
-  transition: background-color 0.25s ease-in-out;
+  border-radius: 50%;
+  line-height: 0;
 }
 
-.single_mission-toggle-btn:hover {
-  background-color: #4a4ab2;
+.single_mission-main-arrow-icon {
+  width: 36px;
+  height: 36px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.single_mission-toggle-btn.open .single_mission-main-arrow-icon {
+  transform: rotate(180deg);
 }
 
 /* Main body (hidden until toggle) */
@@ -3726,20 +3737,16 @@ label {
   margin-top: 1rem;
 }
 
-.single_mission-open-to {
-  font-size: 0.85rem;
-  color: #444;
-  text-align: left;
-  margin: 0 0 1rem 0;
-}
+/* White cards for sections
+   (inspired by bytopic pink panel but neutral) */
 
-/* White cards for sections */
-
-.single_mission-main .white-container {
-  background: #ffffff;
-  border: 1px solid #e6e6e6;
+.single_mission-main .white-container,
+.single_unit-tags.white-container {
+  background: #f7f7f7;                 /* very light grey */
   border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2e2e2;
+  border-left: 4px solid #000000;      /* black left border */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   padding: 16px 18px;
   width: 80%;
   margin: 12px auto;
@@ -3849,7 +3856,7 @@ label {
   margin-bottom: 0.35rem;
 }
 
-/* Notes (reusing existing pattern) */
+/* Notes (same style as before) */
 
 .single_mission-notes-container {
   background-color: #f9f9f9;
@@ -3944,13 +3951,13 @@ label {
 }
 
 .single_mission-sidebar-card {
-  /* No white card background inside sidebar */
+  /* no white background */
   background: transparent;
   border: none;
   padding: 0;
 }
 
-/* Creator block */
+/* Creator in sidebar */
 
 .single_mission-creator-block {
   display: flex;
@@ -4118,7 +4125,8 @@ label {
     margin: 0 auto;
   }
 
-  .single_mission-main .white-container {
+  .single_mission-main .white-container,
+  .single_unit-tags.white-container {
     width: 100%;
   }
 
