@@ -3684,17 +3684,19 @@ label {
 }
 
 .single_mission-tagline {
-  font-size: 1rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: black;
   margin: 0 0 0.35rem 0;
+  font-style:italic;
 }
 
 .single_mission-short-summary {
   font-size: 1rem;
   font-weight: 800;
-  color: #262262;
-  margin: 0 0 0.35rem 0;
+  color: #4a4ab2;
+  margin: 1rem 1rem 0.35rem 0;
+  
 }
 
 .single_mission-long-summary {
@@ -3940,14 +3942,21 @@ label {
   width: 30%;
 }
 
+.single_mission-title-sidebar {
+  font-weight: 800;
+  color:#4a4ab2;
+  font-size: 1rem;
+}
+
 .single_mission-icon-container {
   text-align: center;
   margin-bottom: 10px;
 }
 
 .single_mission-icon {
-  width: 100px;
+  width: 85px;
   height: auto;
+  margin-top: 30px;
 }
 
 .single_mission-sidebar-card {

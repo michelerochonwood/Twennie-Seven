@@ -343,75 +343,86 @@
     </div> <!-- /.single_mission-main-body -->
   </div>
 
-  <!-- Sidebar -->
-  <aside class="single_mission-sidebar">
-    <!-- Icon -->
-    <div class="single_mission-icon-container">
-      <img src="/icons/mission.svg" alt="Mission icon" class="single_mission-icon">
+<!-- Sidebar -->
+<aside class="single_mission-sidebar">
+  <!-- Icon -->
+  <div class="single_mission-icon-container">
+    <img src="/icons/mission.svg" alt="Mission icon" class="single_mission-icon">
+  </div>
+
+  <div class="single_mission-sidebar-card">
+    <!-- Title always visible -->
+    <p class="single_mission-title-sidebar">{{mission_title}}</p>
+
+    <!-- Toggle arrow -->
+    <div class="single_mission-sidebar-toggle" onclick="toggleSidebarContent(this)">
+      <svg class="single_mission-sidebar-arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99">
+        <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
+        <g><polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/></g>
+      </svg>
     </div>
 
-    <div class="single_mission-sidebar-card">
-      <!-- Title always visible -->
-      <p class="single_mission-title-sidebar">{{mission_title}}</p>
-
-      <!-- Toggle arrow -->
-      <div class="single_mission-sidebar-toggle" onclick="toggleSidebarContent(this)">
-        <svg class="single_mission-sidebar-arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99">
-          <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
-          <g><polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/></g>
-        </svg>
-      </div>
-
-      <!-- Hidden content -->
-      <div class="single_mission-sidebar-content hidden">
-        <!-- Creator -->
-        {{#if creator}}
-          <div class="single_mission-creator-block">
-            <img src="{{creator.image}}" alt="{{creator.name}}" class="single_mission-creator-image">
-            <p class="single_mission-creator-name">{{creator.name}}</p>
-          </div>
-        {{/if}}
-
-        <!-- Category / timeframe / hours -->
-        <div class="single_mission-sidebar-meta">
-          {{#if category}}
-            <p class="single_mission-sidebar-row">
-              <span class="single_mission-sidebar-label">category</span>
-              <span class="single_mission-sidebar-value">
-                {{#ifEquals category "learning"}}learning{{/ifEquals}}
-                {{#ifEquals category "research"}}research{{/ifEquals}}
-                {{#ifEquals category "business_development"}}business development{{/ifEquals}}
-                {{#ifEquals category "internal_improvement"}}internal improvement{{/ifEquals}}
-                {{#ifEquals category "culture_play"}}culture &amp; play{{/ifEquals}}
-                {{#ifEquals category "client_experience"}}client experience{{/ifEquals}}
-                {{#ifEquals category "community"}}community{{/ifEquals}}
-                {{#ifEquals category "administrative"}}administrative{{/ifEquals}}
-                {{#ifEquals category "other"}}rogue / other{{/ifEquals}}
-              </span>
-            </p>
-          {{/if}}
-
-          {{#if timeframe}}
-            <p class="single_mission-sidebar-row">
-              <span class="single_mission-sidebar-label">timeframe</span>
-              <span class="single_mission-sidebar-value">{{timeframe}}</span>
-            </p>
-          {{/if}}
-
-          {{#if estimated_effort_hours}}
-            <p class="single_mission-sidebar-row">
-              <span class="single_mission-sidebar-label">approx. hours</span>
-              <span class="single_mission-sidebar-value">{{estimated_effort_hours}}</span>
-            </p>
-          {{/if}}
+    <!-- Hidden content -->
+    <div class="single_mission-sidebar-content hidden">
+      <!-- Creator -->
+      {{#if creator}}
+        <div class="single_mission-creator-block">
+          <img src="{{creator.image}}" alt="{{creator.name}}" class="single_mission-creator-image">
+          <p class="single_mission-creator-name">{{creator.name}}</p>
         </div>
+      {{/if}}
 
-        {{#if isOwner}}
-          <a href="/unitform/edit_mission/{{_id}}" class="single_mission-edit-btn">edit this mission</a>
+      <!-- Chips: status, category, timeframe, hours, open_to -->
+      <div class="single_mission-sidebar-chips">
+        {{#if status}}
+          <span class="mission-chip mission-status mission-status-{{status}}">
+            {{#ifEquals status "available"}}available{{/ifEquals}}
+            {{#ifEquals status "in_progress"}}in progress{{/ifEquals}}
+            {{#ifEquals status "completed"}}completed{{/ifEquals}}
+            {{#ifEquals status "archived"}}archived{{/ifEquals}}
+          </span>
+        {{/if}}
+
+        {{#if category}}
+          <span class="mission-chip mission-category mission-category-{{category}}">
+            {{#ifEquals category "learning"}}learning{{/ifEquals}}
+            {{#ifEquals category "research"}}research{{/ifEquals}}
+            {{#ifEquals category "business_development"}}business development{{/ifEquals}}
+            {{#ifEquals category "internal_improvement"}}internal improvement{{/ifEquals}}
+            {{#ifEquals category "culture_play"}}culture &amp; play{{/ifEquals}}
+            {{#ifEquals category "client_experience"}}client experience{{/ifEquals}}
+            {{#ifEquals category "community"}}community{{/ifEquals}}
+            {{#ifEquals category "administrative"}}administrative{{/ifEquals}}
+            {{#ifEquals category "other"}}rogue / other{{/ifEquals}}
+          </span>
+        {{/if}}
+
+        {{#if timeframe}}
+          <span class="mission-chip mission-timeframe">
+            {{timeframe}}
+          </span>
+        {{/if}}
+
+        {{#if estimated_effort_hours}}
+          <span class="mission-chip mission-effort">
+            approx. {{estimated_effort_hours}} hours
+          </span>
+        {{/if}}
+
+        {{#if open_to}}
+          <span class="mission-chip mission-open-to">
+            open to: {{open_to}}
+          </span>
         {{/if}}
       </div>
+
+      {{#if isOwner}}
+        <a href="/unitform/edit_mission/{{_id}}" class="single_mission-edit-btn">edit this mission</a>
+      {{/if}}
     </div>
-  </aside>
+  </div>
+</aside>
+
 </div>
 
 <script>
