@@ -231,14 +231,15 @@ async function buildLeaderAssignedUnits(leaderId) {
         const member = await GroupMember.findById(assignee.member).select('name').lean();
         if (!member) continue;
 
-        const title =
-          (unit.article_title ||
-           unit.video_title ||
-           unit.interview_title ||
-           unit.exercise_title ||
-           unit.template_title ||
-           unit.title /* nugget */ ||
-           "Untitled");
+const title =
+  unit.article_title   ||
+  unit.video_title     ||
+  unit.interview_title ||
+  unit.exercise_title  ||
+  unit.template_title  ||
+  unit.mission_title   ||   // ✅ NEW: missions
+  unit.title           ||   // nuggets (and any other models that use `title`)
+  "Untitled";
 
         const mainTopic = unit.main_topic || unit.discipline || unit.client || unit.region || "No topic";
 

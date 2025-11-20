@@ -27,11 +27,6 @@
               onclick="removeTagFromUnit('{{tagId}}','{{_id}}','{{unitType}}')">
               remove from this unit
             </button>
-
-            <button class="tagged-unit-link"
-              onclick="deleteTag('{{tagId}}')">
-              delete tag
-            </button>
           </div>
         </div>
       {{/each}}
@@ -68,11 +63,6 @@
             <button class="tagged-unit-link"
               onclick="removeTagFromUnit('{{tagId}}','{{_id}}','mission')">
               remove from this mission
-            </button>
-
-            <button class="tagged-unit-link"
-              onclick="deleteTag('{{tagId}}')">
-              delete tag
             </button>
           </div>
         </div>
@@ -124,11 +114,6 @@
             <button class="tagged-unit-link"
               onclick="unassignMember('{{tagId}}','{{assignedToId}}')">
               unassign
-            </button>
-
-            <button class="tagged-unit-link"
-              onclick="deleteTag('{{tagId}}')">
-              delete tag
             </button>
           </div>
         </div>
@@ -184,11 +169,6 @@
               onclick="unassignMember('{{tagId}}','{{assignedToId}}')">
               unassign
             </button>
-
-            <button class="tagged-unit-link"
-              onclick="deleteTag('{{tagId}}')">
-              delete tag
-            </button>
           </div>
         </div>
       {{/each}}
@@ -200,7 +180,7 @@
 
 
 {{!-- =========================
-     4) ASSIGNED MISSIONS
+     5) ASSIGNED MISSIONS
      expects: leaderAssignedMissions = [{ _id, title, mainTopic, unitType="mission", tagId, assignedToName, assignedCompletedAtFormatted, assignedInstructions, viewPath }]
      ========================= --}}
 <section class="leader-assigned-units-section" style="margin-top:20px">
@@ -236,11 +216,6 @@
             <button class="tagged-unit-link"
               onclick="unassignMember('{{tagId}}','{{assignedToId}}')">
               unassign
-            </button>
-
-            <button class="tagged-unit-link"
-              onclick="deleteTag('{{tagId}}')">
-              delete tag
             </button>
           </div>
         </div>
