@@ -2189,27 +2189,42 @@ submitPromptSet: async (req, res) => {
 
       const baseData = {
         mission_title: (mission_title || '').trim(),
-        status: status || 'available',
+
+        // ✅ status enum in schema: 'one time mission', 'on-going', 'intermittent'
+        // so don't default to "available"
+        status: status || 'one time mission',
+
         visibility: visibility || 'organization_only',
         main_topic: main_topic || 'When the Workload is Light',
         category: category || 'internal_improvement',
+
         purpose: (purpose || '').trim(),
         why_it_matters: (why_it_matters || '').trim(),
         background: (background || '').trim(),
+
+        // ✅ NEW: summaries for mission cards
+        short_purpose: (req.body.short_purpose || '').trim(),
+        full_summary: (req.body.full_summary || '').trim(),
+
         department_requesting: (department_requesting || '').trim(),
         open_to: (open_to || '').trim(),
         timeframe: (timeframe || '').trim(),
+
         estimated_effort_hours: estimated_effort_hours
           ? Number(estimated_effort_hours)
           : undefined,
+
         job_number: (job_number || '').trim(),
         budget_amount: (budget_amount || '').trim(),
+
         approvals_required: approvalsRequired,
         task_instructions: taskInstructions,
         contacts,
         deliverables_checklist: deliverablesChecklist,
+
         due_date: due_date ? new Date(due_date) : undefined,
       };
+
 
       let mission;
 

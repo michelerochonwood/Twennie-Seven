@@ -73,4 +73,10 @@ router.get(
   missionController.viewMission
 );
 
+router.post(
+  '/submit_mission',
+  ensureAuthenticated,
+  missionController.submitMission  // 👈 new handler
+);
+
 module.exports = router;
