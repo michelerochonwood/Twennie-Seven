@@ -2658,7 +2658,7 @@ label {
   .mine-grid{
     display:grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 18px;
+    gap: 8px;
     justify-items:center;
     align-items:stretch;
     margin: 0 auto;
@@ -2691,7 +2691,7 @@ label {
 
   .mine-card-icon{
     font-size: 34px;
-    margin-bottom: 14px;
+    margin: auto;
   }
 
   .mine-card-label{
