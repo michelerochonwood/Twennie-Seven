@@ -3392,7 +3392,7 @@ label {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 1.25rem;
-  margin-bottom: 2rem;
+  margin: 2.5rem 0 200px 0;
   width: 100%;
 }
 
