@@ -28,7 +28,7 @@
 
                 <!-- Mission SVG Header -->
                 <div class="bytopic-card-svg-header">
-                  <img src="/images/missionsvg.svg"
+                  <img src="/icons/onyxsvg.svg"
                        alt=""
                        aria-hidden="true"
                        class="bytopic-card-svg-image">
@@ -36,7 +36,7 @@
 
                 <!-- Card Content -->
                 <div class="bytopic-card-content">
-                  <!-- Always-visible content -->
+                  <!-- Always-visible content: icon, title, fun label, toggle -->
                   <div class="bytopic-visible-content">
                     <div class="bytopic-unit-type-icon-container">
                       <!-- Culture & Play mission icon -->
@@ -50,39 +50,37 @@
                         {{mission_title}}
                       </h2>
                     </div>
-                  </div>
 
-                  {{#if short_purpose}}
-                    <p class="bytopic-detail-value-purpose">
-                      {{short_purpose}}
+                    <p class="mission-label">
+                      Your mission, should you choose to accept it, is to…
                     </p>
-                  {{/if}}
 
-                  <!-- Expand Toggle (bytopic-style) -->
-                  <button
-                    class="bytopic-expand-toggle"
-                    type="button"
-                    onclick="toggleCard(this)"
-                    aria-expanded="false"
-                    aria-label="Toggle mission details">
-                    <svg class="expand-arrow"
-                         xmlns="http://www.w3.org/2000/svg"
-                         viewBox="0 0 331.65 100.99"
-                         aria-hidden="true"
-                         focusable="false">
-                      <defs>
-                        <style>.cls-1 { fill: #4e50a2; }</style>
-                      </defs>
-                      <polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/>
-                    </svg>
-                  </button>
+                    <!-- Expand Toggle -->
+                    <button
+                      class="bytopic-expand-toggle"
+                      type="button"
+                      onclick="toggleCard(this)"
+                      aria-expanded="false"
+                      aria-label="Toggle mission details">
+                      <svg class="expand-arrow"
+                           xmlns="http://www.w3.org/2000/svg"
+                           viewBox="0 0 331.65 100.99"
+                           aria-hidden="true"
+                           focusable="false">
+                        <defs>
+                          <style>.cls-1 { fill: #4e50a2; }</style>
+                        </defs>
+                        <polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/>
+                      </svg>
+                    </button>
+                  </div>
 
                   <!-- Expandable content -->
                   <div class="bytopic-hidden-content" style="display:none;">
                     {{!-- Creator block --}}
                     <div class="mission-creator-block">
                       <div class="mission-creator-label">
-                        CREATED BY
+                        CREATOR
                       </div>
 
                       <div class="mission-creator-image-container">
@@ -98,51 +96,31 @@
                       </div>
                     </div>
 
-                    {{!-- Mission summary / purpose / why it matters --}}
-                    <div class="mission-summary-container">
-                      {{#if purpose}}
-                        <div class="mission-detail-block">
-                          <strong>Purpose:</strong><br>
-                          {{purpose}}
-                        </div>
-                      {{/if}}
+                    {{!-- Mission full summary --}}
+                    {{#if full_summary}}
+                      <p class="mission-full-summary">
+                        {{full_summary}}
+                      </p>
+                    {{/if}}
 
-                      {{#if why_it_matters}}
-                        <div class="mission-detail-block">
-                          <strong>Why this mission matters:</strong><br>
-                          {{why_it_matters}}
-                        </div>
-                      {{/if}}
-                    </div>
-
-                    {{!-- Inline details --}}
-                    <div class="mission-detail-inline-container">
-                      {{#if timeframe}}
-                        <div class="mission-detail-inline">
-                          <strong>Timeframe:</strong> {{timeframe}}
-                        </div>
-                      {{/if}}
-
-                      {{#if estimated_effort_hours}}
-                        <div class="mission-detail-inline">
-                          <strong>Estimated effort:</strong> {{estimated_effort_hours}} hours
-                        </div>
-                      {{/if}}
-
-                      {{#if department_requesting}}
-                        <div class="mission-detail-inline">
-                          <strong>Requested by:</strong> {{department_requesting}}
-                        </div>
-                      {{/if}}
-                    </div>
-
-                    <!-- CTA -->
+                    <!-- CTA – membership-aware -->
                     <div class="bytopic-unit-review-container mission-cta-container">
-                      {{#if ../loggedIn}}
-                        <a href="/unitviews/missions/view/{{_id}}"
-                           class="bytopic-unit-review-btn">
-                          view mission
-                        </a>
+                      {{#if loggedIn}}
+                        {{#if isLeaderOrGroupMember}}
+                          <a href="/unitviews/missions/view/{{_id}}"
+                             class="bytopic-unit-review-btn">
+                            review this unit
+                          </a>
+                        {{else if isPaid}}
+                          <a href="/unitviews/missions/view/{{_id}}"
+                             class="bytopic-unit-review-btn">
+                            review this unit
+                          </a>
+                        {{else}}
+                          <div class="bytopic-unit-review-btn mission-cta-disabled">
+                            membership upgrade required
+                          </div>
+                        {{/if}}
                       {{else}}
                         <div class="bytopic-unit-review-btn mission-cta-disabled">
                           login required

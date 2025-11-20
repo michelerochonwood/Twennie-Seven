@@ -5,8 +5,14 @@
   <!-- Main content column -->
   <div class="bytopic-content has-right-rail">
     <h1 class="bytopic-title">{{title}}</h1>
-    <p class="bytopic-short-summary">{{shortSummary}}</p>
-    <p class="bytopic-long-summary">{{longSummary}}</p>
+
+    {{#if shortSummary}}
+      <p class="bytopic-short-summary">{{shortSummary}}</p>
+    {{/if}}
+
+    {{#if longSummary}}
+      <p class="bytopic-long-summary">{{longSummary}}</p>
+    {{/if}}
 
     {{!-- sectionedMissions is an array of { sectionTitle, missions, emptyMessage } --}}
     {{#each sectionedMissions}}
@@ -15,13 +21,14 @@
 
       {{#if this.missions.length}}
         <div class="bytopic-library-units-grid">
+
           {{#each this.missions}}
             <article class="bytopic-library-unit-card" data-mission-id="{{_id}}">
-              <!-- Inner wrapper preserves rounded-corner clipping -->
               <div class="bytopic-card-inner">
+
                 <!-- Mission SVG Header -->
                 <div class="bytopic-card-svg-header">
-                  <img src="/images/missionsvg.svg"
+                  <img src="/icons/onyxsvg.svg"
                        alt=""
                        aria-hidden="true"
                        class="bytopic-card-svg-image">
@@ -29,7 +36,7 @@
 
                 <!-- Card Content -->
                 <div class="bytopic-card-content">
-                  <!-- Always-visible content -->
+                  <!-- Always-visible content: icon, title, fun label, toggle -->
                   <div class="bytopic-visible-content">
                     <div class="bytopic-unit-type-icon-container">
                       <!-- Rogue mission icon -->
@@ -37,43 +44,49 @@
                            alt="Rogue mission icon"
                            class="bytopic-unit-type-icon">
                     </div>
+
                     <div class="bytopic-unit-title-container">
-                      <h2 class="bytopic-unit-title">{{mission_title}}</h2>
+                      <h2 class="bytopic-unit-title">
+                        {{mission_title}}
+                      </h2>
                     </div>
-                  </div>
 
-                  {{#if short_purpose}}
-                    <p class="bytopic-detail-value-purpose">
-                      {{short_purpose}}
+                    <p class="mission-label">
+                      Your mission, should you choose to accept it, is to…
                     </p>
-                  {{/if}}
 
-                  <!-- Expand Toggle -->
-                  <button
-                    class="bytopic-expand-toggle"
-                    type="button"
-                    onclick="toggleCard(this)"
-                    aria-expanded="false"
-                    aria-label="Toggle mission details">
-                    <svg class="expand-arrow"
-                         xmlns="http://www.w3.org/2000/svg"
-                         viewBox="0 0 331.65 100.99"
-                         aria-hidden="true"
-                         focusable="false">
-                      <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
-                      <polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/>
-                    </svg>
-                  </button>
+                    <!-- Expand Toggle -->
+                    <button
+                      class="bytopic-expand-toggle"
+                      type="button"
+                      onclick="toggleCard(this)"
+                      aria-expanded="false"
+                      aria-label="Toggle mission details">
+                      <svg class="expand-arrow"
+                           xmlns="http://www.w3.org/2000/svg"
+                           viewBox="0 0 331.65 100.99"
+                           aria-hidden="true"
+                           focusable="false">
+                        <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
+                        <polygon class="cls-1"
+                                 points="0 0 161.57 100.99 331.65 0 0 0"/>
+                      </svg>
+                    </button>
+                  </div>
 
                   <!-- Expandable content -->
                   <div class="bytopic-hidden-content" style="display:none;">
+
+                    <!-- Creator block -->
                     <div class="mission-creator-block">
                       <div class="mission-creator-label">
-                        CREATED BY
+                        CREATOR
                       </div>
 
                       <div class="mission-creator-image-container">
-                        <img src="{{creatorImage}}" alt="Creator Image" class="mission-creator-image">
+                        <img src="{{creatorImage}}"
+                             alt="Creator Image"
+                             class="mission-creator-image">
                       </div>
 
                       <div class="mission-creator-name-container">
@@ -83,65 +96,45 @@
                       </div>
                     </div>
 
-                    {{!-- Mission summary / purpose / why it matters --}}
-                    <div class="mission-summary-container">
-                      {{#if short_purpose}}
-                        <p class="mission-summary">
-                          {{short_purpose}}
-                        </p>
-                      {{/if}}
+                    <!-- Mission full summary -->
+                    {{#if full_summary}}
+                      <p class="mission-full-summary">
+                        {{full_summary}}
+                      </p>
+                    {{/if}}
 
-                      <div class="mission-detail-block">
-                        <strong>Purpose:</strong><br>
-                        {{purpose}}
-                      </div>
-
-                      {{#if why_it_matters}}
-                        <div class="mission-detail-block">
-                          <strong>Why this mission matters:</strong><br>
-                          {{why_it_matters}}
-                        </div>
-                      {{/if}}
-                    </div>
-
-                    {{!-- Inline details --}}
-                    <div class="mission-detail-inline-container">
-                      {{#if timeframe}}
-                        <div class="mission-detail-inline">
-                          <strong>Timeframe:</strong> {{timeframe}}
-                        </div>
-                      {{/if}}
-
-                      {{#if estimated_effort_hours}}
-                        <div class="mission-detail-inline">
-                          <strong>Estimated effort:</strong> {{estimated_effort_hours}} hours
-                        </div>
-                      {{/if}}
-
-                      {{#if department_requesting}}
-                        <div class="mission-detail-inline">
-                          <strong>Requested by:</strong> {{department_requesting}}
-                        </div>
-                      {{/if}}
-                    </div>
-
-                    <!-- CTA -->
+                    <!-- CTA – membership-aware -->
                     <div class="bytopic-unit-review-container mission-cta-container">
-                      {{#if ../loggedIn}}
-                        <a href="/unitviews/missions/view/{{_id}}" class="bytopic-unit-review-btn">
-                          view mission
-                        </a>
+                      {{#if loggedIn}}
+                        {{#if isLeaderOrGroupMember}}
+                          <a href="/unitviews/missions/view/{{_id}}"
+                             class="bytopic-unit-review-btn">
+                            review this unit
+                          </a>
+                        {{else if isPaid}}
+                          <a href="/unitviews/missions/view/{{_id}}"
+                             class="bytopic-unit-review-btn">
+                            review this unit
+                          </a>
+                        {{else}}
+                          <div class="bytopic-unit-review-btn mission-cta-disabled">
+                            membership upgrade required
+                          </div>
+                        {{/if}}
                       {{else}}
                         <div class="bytopic-unit-review-btn mission-cta-disabled">
                           login required
                         </div>
                       {{/if}}
                     </div>
+
                   </div> <!-- /.bytopic-hidden-content -->
                 </div> <!-- /.bytopic-card-content -->
+
               </div> <!-- /.bytopic-card-inner -->
             </article>
           {{/each}}
+
         </div>
       {{else}}
         <div class="bytopic-empty-section-message">
@@ -166,5 +159,4 @@
     content.style.display = isOpen ? 'none' : 'flex';
   }
 </script>
-
 
