@@ -12,6 +12,7 @@ const passport = require('passport');
 const MongoStore = require('connect-mongo');
 const cors = require('cors');
 const csrf = require('csurf');
+const Handlebars = require('handlebars');
 
 // Profiles (for userProfileImage lookup)
 const MemberProfile = require('./models/profile_models/member_profile');
@@ -62,7 +63,8 @@ const hbs = create({
     allowProtoMethodsByDefault: true,
   },
   helpers: {
-    replace: (string, find, rep) => (typeof string === 'string' ? string.split(find).join(rep) : ''),
+    replace: (string, find, rep) =>
+      (typeof string === 'string' ? string.split(find).join(rep) : ''),
     formatContent: (c) => (c ? c.replace(/\n/g, '<br>') : ''),
     ifEquals: (a, b, opts) => (a === b ? opts.fn(this) : opts.inverse(this)),
     toLowerCase: (s) => (typeof s === 'string' ? s.toLowerCase() : ''),
@@ -72,7 +74,8 @@ const hbs = create({
     and: (v1, v2) => v1 && v2,
     or: (v1, v2) => v1 || v2,
     includes: (arr, val) => Array.isArray(arr) && arr.includes(val),
-    ifIncludes: (arr, val, opts) => (Array.isArray(arr) && arr.includes(val) ? opts.fn(this) : opts.inverse(this)),
+    ifIncludes: (arr, val, opts) =>
+      (Array.isArray(arr) && arr.includes(val) ? opts.fn(this) : opts.inverse(this)),
     range: (start, end) => Array.from({ length: end - start }, (_, i) => start + i),
     concat: (a, b) => `${a}${b}`,
     lt: (a, b) => a < b,
@@ -100,21 +103,35 @@ const hbs = create({
       };
       return base + (map[unitType] || '5mins.svg');
     },
-    capitalize: (s) => (typeof s === 'string' ? s.charAt(0).toUpperCase() + s.slice(1) : ''),
+    capitalize: (s) =>
+      (typeof s === 'string' ? s.charAt(0).toUpperCase() + s.slice(1) : ''),
     json: (ctx) => JSON.stringify(ctx, null, 2),
     increment: (v) => parseInt(v) + 1,
     timestamp: () => Date.now(),
     getYouTubeEmbedUrl: (url) => {
       if (!url) return '';
-      if (url.includes('watch?v=')) return `https://www.youtube.com/embed/${url.split('watch?v=')[1].split('&')[0]}`;
-      if (url.includes('youtu.be/')) return `https://www.youtube.com/embed/${url.split('youtu.be/')[1].split('?')[0]}`;
+      if (url.includes('watch?v=')) {
+        return `https://www.youtube.com/embed/${url.split('watch?v=')[1].split('&')[0]}`;
+      }
+      if (url.includes('youtu.be/')) {
+        return `https://www.youtube.com/embed/${url.split('youtu.be/')[1].split('?')[0]}`;
+      }
       return url;
     },
     split: (str, d) => (typeof str === 'string' ? str.split(d) : []),
     last: (arr) => (Array.isArray(arr) ? arr[arr.length - 1] : ''),
     decode: (s) => decodeURIComponent(s),
+
+    // ✅ NEW helper
+    nl2br: function (text) {
+      if (!text) return '';
+      const escaped = Handlebars.escapeExpression(text);
+      const withBreaks = escaped.replace(/(?:\r\n|\r|\n)/g, '<br>');
+      return new Handlebars.SafeString(withBreaks);
+    },
   },
 });
+
 
 hbs.getPartials().then((partials) => console.log('🧩 Registered Partials:', Object.keys(partials)));
 app.engine('hbs', hbs.engine);
