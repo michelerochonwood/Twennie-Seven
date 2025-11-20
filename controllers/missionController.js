@@ -419,66 +419,7 @@ function buildMissionDataFromBody(req) {
   };
 }
 
-// 🔹 Handler to create or update a mission from the form
-async function submitMission(req, res) {
-  try {
-    if (!req.user) {
-      return res.status(401).render('unit_views/error', {
-        layout: 'unitviewlayout',
-        title: 'Not Authorized',
-        errorMessage: 'You must be logged in to submit a mission.',
-      });
-    }
 
-    const missionId = req.body._id;
-    const missionData = buildMissionDataFromBody(req);
-
-    if (!missionData.mission_title || !missionData.purpose || !missionData.why_it_matters) {
-      return res.status(400).render('unit_views/error', {
-        layout: 'unitviewlayout',
-        title: 'Missing Fields',
-        errorMessage: 'Mission title, purpose, and why it matters are required.',
-      });
-    }
-
-    if (missionId) {
-      // EDIT EXISTING MISSION
-      const existing = await Mission.findById(missionId);
-      if (!existing) {
-        return res.status(404).render('unit_views/error', {
-          layout: 'unitviewlayout',
-          title: 'Mission Not Found',
-          errorMessage: 'The mission you tried to edit could not be found.',
-        });
-      }
-
-      Object.assign(existing, missionData);
-      existing.updated_at = Date.now();
-      await existing.save();
-
-      return res.redirect('/unitviews/missions/view/' + existing._id.toString());
-    } else {
-      // CREATE NEW MISSION
-      const newMission = new Mission({
-        ...missionData,
-        created_by: req.user.id,
-        created_at: Date.now(),
-        updated_at: Date.now(),
-      });
-
-      await newMission.save();
-
-      return res.redirect('/unitviews/missions/view/' + newMission._id.toString());
-    }
-  } catch (err) {
-    console.error('submitMission error:', err.stack || err.message);
-    return res.status(500).render('unit_views/error', {
-      layout: 'unitviewlayout',
-      title: 'Error',
-      errorMessage: 'An error occurred while saving this mission.',
-    });
-  }
-}
 
 module.exports = {
   // Mission Control unchanged...
@@ -511,7 +452,7 @@ module.exports = {
     }
   },
 
-  submitMission,
+
 
   // Category lists
   learningMissions: (req, res) =>
