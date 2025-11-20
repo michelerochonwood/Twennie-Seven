@@ -2662,6 +2662,7 @@ label {
   gap: 8px; /* space between squares */
   max-width: 700px;
   margin: 0 auto;
+  margin-bottom: 200px;
 }
 
 /* Individual square tiles */
