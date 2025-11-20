@@ -2697,8 +2697,8 @@ label {
 
   /* Smaller padding keeps the tiles feeling smaller */
   padding: 18px 10px;
-  width: 250px;
-  height: 250px;
+  width: 200px;
+  height: 200px;
 }
 
 .mine-card-icon {
