@@ -2668,7 +2668,7 @@ label {
   .mine-card{
     text-decoration:none;
     width:80%;
-    height: 170px;
+    height: 200px;
     background:#eeeeef;
     border-radius: 22px;
     box-shadow: 0 2px 0 rgba(0,0,0,0.06);
@@ -2691,7 +2691,7 @@ label {
 
   .mine-card-icon{
     font-size: 34px;
-    margin-bottom: 20px;
+    margin: 20px;
   }
 
   .mine-card-label{
