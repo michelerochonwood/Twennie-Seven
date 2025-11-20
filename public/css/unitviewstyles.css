@@ -2655,61 +2655,74 @@ label {
   }
 
   /* Tic-tac-toe style grid (mirrors the look of your contribute tiles) */
-  .mine-grid{
-    display:grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    justify-items:center;
-    align-items:stretch;
-    margin: 0 auto;
-    max-width: 700px;
-  }
+/* Tic-tac-toe style grid */
+.mine-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px; /* space between squares */
+  max-width: 700px;
+  margin: 0 auto;
+}
 
-  .mine-card{
-    text-decoration:none;
-    width:80%;
-    height: 200px;
-    background:#eeeeef;
-    border-radius: 22px;
-    box-shadow: 0 2px 0 rgba(0,0,0,0.06);
-    transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
-  }
-  .mine-card:hover{
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(38,34,98,0.18);
-    background:#f5f6ff;
-  }
+/* Individual square tiles */
+.mine-card {
+  text-decoration: none;
+  background: #eeeeef;
+  border-radius: 18px;
+  box-shadow: 0 2px 0 rgba(0,0,0,0.06);
 
-  .mine-card-inner{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    padding: 28px 14px 30px;
-    height:100%;
-  }
+  /* The fix: perfect squares, natural sizing */
+  aspect-ratio: 1 / 1;
+  width: 100%;
 
-  .mine-card-icon{
-    font-size: 34px;
-    margin: 20px;
-  }
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  .mine-card-label{
-    color:#4e50a2;
-    font-weight:800;
-    font-size:1.1rem;
-    text-transform: lowercase;
-    letter-spacing: .2px;
-  }
+  transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+}
 
-  /* Responsive */
-  @media (max-width: 900px){
-    .mine-grid{ grid-template-columns: 1fr; max-width: 520px; }
-  }
-  @media (max-width: 520px){
-    .mine-wrapper{ margin: 140px auto 80px; }
-    .mine-card-label{ font-size:1rem; }
-  }
+.mine-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(38,34,98,0.18);
+  background: #f5f6ff;
+}
+
+/* Inner content */
+.mine-card-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  /* Smaller padding keeps the tiles feeling smaller */
+  padding: 18px 10px;
+  width: 100%;
+  height: 100%;
+}
+
+.mine-card-icon {
+  font-size: 30px;
+  margin: 12px;
+}
+
+.mine-card-label {
+  color: #4e50a2;
+  font-weight: 800;
+  font-size: 1.05rem;
+  text-transform: lowercase;
+}
+
+/* Responsive */
+@media (max-width: 900px){
+  .mine-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 520px){
+  .mine-grid { grid-template-columns: 1fr; }
+  .mine-card-label { font-size: 1rem; }
+}
+
 
   
 /* ================================
