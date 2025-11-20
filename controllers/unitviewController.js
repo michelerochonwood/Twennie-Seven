@@ -1574,22 +1574,35 @@ viewMission: async (req, res) => {
 
     const mission = await Mission.findById(id).lean();
     if (!mission) {
-      // ... your existing 404 code ...
+      console.warn(`[viewMission] Mission with ID ${id} not found.`);
+      return res.status(404).render('unit_views/error', {
+        layout: 'unitviewlayout',
+        title: 'Mission Not Found',
+        errorMessage: `The mission with ID ${id} does not exist.`,
+      });
     }
 
+    // --- Basic membership gate (same logic as before) ---
     const membershipType = req.user?.membershipType || null;
     const accessLevel    = req.user?.accessLevel || null;
 
-    const isLeader       = membershipType === 'leader';
-    const isGroupMember  = membershipType === 'group_member';
-    const isMember       = membershipType === 'member';
+    const isLeader        = membershipType === 'leader';
+    const isGroupMember   = membershipType === 'group_member';
+    const isMember        = membershipType === 'member';
     const isPaidIndividual = accessLevel === 'paid_individual';
 
     const canViewMission = isLeader || isGroupMember || isPaidIndividual;
+
     if (!req.user || !canViewMission) {
-      // ... your existing 403 code ...
+      console.log('[viewMission] Access denied for mission view. membershipType:', membershipType, 'accessLevel:', accessLevel);
+      return res.status(403).render('unit_views/error', {
+        layout: 'unitviewlayout',
+        title: 'Access Restricted',
+        errorMessage: 'Missions are available to leaders, group members, and paid individual members.',
+      });
     }
 
+    // --- Owner + creator (for sidebar) ---
     const currentUserId = (req.user?._id || req.user?.id)?.toString();
     const ownerId =
       (mission.createdBy && mission.createdBy.toString()) ||
@@ -1599,13 +1612,12 @@ viewMission: async (req, res) => {
 
     const isOwner = !!(currentUserId && ownerId && currentUserId === ownerId);
 
-    // ✅ NEW: resolve creator for sidebar
     let creator = null;
     if (ownerId) {
       creator = await resolveAuthorById(ownerId);
     }
 
-    // Leader assign context (unchanged)
+    // --- Leader assign context (shared helper) ---
     const {
       isLeader: assignIsLeader,
       groupMembers,
@@ -1613,16 +1625,17 @@ viewMission: async (req, res) => {
       leaderName,
     } = await getLeaderAssignContext(req);
 
-return res.render('unit_views/single_mission', {
-  layout: 'unitviewlayout',
+    // --- Render single_mission view ---
+    return res.render('unit_views/single_mission', {
+      layout: 'unitviewlayout',
 
-  // identity
-  _id: mission._id.toString(),
+      // identity
+      _id: mission._id.toString(),
 
-  // title + summaries
-  mission_title: mission.mission_title,
-  short_purpose: mission.short_purpose || '',
-  full_summary: mission.full_summary || '',
+      // title + summaries
+      mission_title: mission.mission_title,
+      short_purpose: mission.short_purpose || '',
+      full_summary: mission.full_summary || '',
 
       // meta
       status: mission.status,
@@ -1679,9 +1692,14 @@ return res.render('unit_views/single_mission', {
 
   } catch (err) {
     console.error('💥 Error fetching mission:', err.stack || err.message);
-    // ... existing error render ...
+    return res.status(500).render('unit_views/error', {
+      layout: 'unitviewlayout',
+      title: 'Error',
+      errorMessage: 'An error occurred while fetching the mission.',
+    });
   }
 },
+
 
 
 
