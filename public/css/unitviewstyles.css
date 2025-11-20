@@ -3635,5 +3635,430 @@ label {
   font-style: italic;
 }
 
+/* =========================
+   SINGLE MISSION – LAYOUT
+   ========================= */
+
+.single_mission-container {
+  display: flex;
+  gap: 5rem;
+  padding: 0 10%;
+  align-items: flex-start;
+  text-align: center;
+  min-height: 120vh;
+  margin: 7rem auto 3rem auto;
+  max-width: 1600px;
+  font-family: "Figtree", sans-serif;
+}
+
+.single_mission-main {
+  flex: 70%;
+  display: flex;
+  flex-direction: column;
+  width: 70%;
+  margin: 0 auto 7rem auto;
+}
+
+/* Title + meta chips */
+
+.single_mission-main-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #262262;
+  margin: 0 auto 20px auto;
+  text-align: left;
+}
+
+.single_mission-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.mission-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: lowercase;
+  border: 1px solid transparent;
+}
+
+/* Status colors */
+
+.mission-status-available {
+  background-color: #e0f7ec;
+  color: #0ea75a;
+  border-color: #a2e4c0;
+}
+
+.mission-status-in_progress {
+  background-color: #e0ecff;
+  color: #4a4ab2;
+  border-color: #b8c5ff;
+}
+
+.mission-status-completed {
+  background-color: #f0fdf4;
+  color: #15803d;
+  border-color: #bbf7d0;
+}
+
+.mission-status-archived {
+  background-color: #f5f5f5;
+  color: #6b7280;
+  border-color: #d4d4d4;
+}
+
+/* Category chip */
+
+.mission-category {
+  background-color: #f3e8ff;
+  color: #4a4ab2;
+  border-color: #e9d5ff;
+}
+
+/* Timeframe / effort chips */
+
+.mission-timeframe,
+.mission-effort {
+  background-color: #f9fafb;
+  color: #4b5563;
+  border-color: #e5e7eb;
+}
+
+.single_mission-open-to {
+  font-size: 0.85rem;
+  color: #444;
+  text-align: left;
+  margin: 0 0 1rem 0;
+}
+
+/* White cards for sections */
+
+.single_mission-main .white-container {
+  background: #ffffff;
+  border: 1px solid #e6e6e6;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  padding: 16px 18px;
+  width: 80%;
+  margin: 12px auto;
+  text-align: left;
+}
+
+.single_mission-section-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #262262;
+  margin: 0 0 0.5rem 0;
+}
+
+.single_mission-text {
+  font-size: 0.9rem;
+  color: #333;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Details list */
+
+.single_mission-details-list {
+  margin: 0;
+  padding: 0;
+}
+
+.single_mission-details-list .details-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 0.35rem;
+}
+
+.single_mission-details-list .details-row dt {
+  flex: 0 0 160px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #4a4ab2;
+}
+
+.single_mission-details-list .details-row dd {
+  margin: 0;
+  flex: 1 1 auto;
+  font-size: 0.85rem;
+  color: #374151;
+}
+
+/* Approvals */
+
+.single_mission-approvals-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0 0;
+}
+
+.approval-row {
+  font-size: 0.85rem;
+  color: #333;
+  margin-bottom: 0.35rem;
+}
+
+.approval-email {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+/* Task instructions */
+
+.single_mission-task-block {
+  margin-bottom: 1rem;
+}
+
+.single_mission-task-heading {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #262262;
+  margin: 0 0 0.35rem 0;
+}
+
+.single_mission-task-list {
+  margin: 0;
+  padding-left: 1.2rem;
+  font-size: 0.85rem;
+  color: #333;
+}
+
+/* Deliverables */
+
+.single_mission-deliverables-list {
+  margin: 0.25rem 0 0 0;
+  padding-left: 1.2rem;
+  font-size: 0.85rem;
+  color: #333;
+}
+
+/* Contacts */
+
+.single_mission-contacts-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0 0;
+}
+
+.contact-row {
+  font-size: 0.85rem;
+  color: #333;
+  margin-bottom: 0.35rem;
+}
+
+/* Notes – reuse pattern from other units */
+
+.single_mission-notes-container {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  padding: 20px;
+  margin-top: 20px;
+  border-radius: 8px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+  margin-bottom: 30px;
+}
+
+.single_mission-notes-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #262262;
+  margin-bottom: 10px;
+}
+
+.single_mission-notes-instructions {
+  font-size: 0.7rem;
+  color: #444;
+  margin-bottom: 15px;
+  line-height: 1.2;
+}
+
+.single_mission-notes-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.single_mission-notes-textarea {
+  width: 95%;
+  min-height: 120px;
+  font-size: 0.8rem;
+  font-family: "Figtree", sans-serif;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  resize: vertical;
+}
+
+.single_mission-notes-textarea:focus {
+  border-color: #262262;
+  outline: none;
+}
+
+.single_mission-notes-submit {
+  display: block;
+  font-size: 0.8rem;
+  padding: 8px 14px;
+  border-radius: 99px;
+  background-color: #262262;
+  color: white;
+  font-family: "Figtree", sans-serif;
+  font-weight: 800;
+  border: none;
+  text-align: center;
+  cursor: pointer;
+  width: fit-content;
+  max-width: 250px;
+  margin: 10px auto;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.single_mission-notes-submit:hover {
+  background-color: #4a4ab2;
+}
+
+/* =========================
+   SINGLE MISSION – SIDEBAR
+   ========================= */
+
+.single_mission-sidebar {
+  background: rgb(188, 188, 188);
+  border-radius: 8px;
+  padding: 20px;
+  position: sticky;
+  top: 200px;
+  height: fit-content;
+  width: 30%;
+}
+
+.single_mission-icon {
+  width: 100px;
+  height: auto;
+}
+
+.single_mission-sidebar-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 16px 14px 18px 14px;
+}
+
+.single_mission-title-sidebar {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #262262;
+  text-align: center;
+  margin: 0 0 0.5rem 0;
+}
+
+.single_mission-sidebar-toggle {
+  width: 50px;
+  margin: 0.25rem auto 0.5rem auto;
+  cursor: pointer;
+}
+
+.single_mission-sidebar-arrow-icon {
+  width: 40px;
+  height: 40px;
+  animation: bounceArrow 1.8s ease-in-out infinite;
+  transition: transform 0.3s ease;
+}
+
+.single_mission-sidebar-toggle.open .single_mission-sidebar-arrow-icon {
+  transform: rotate(180deg);
+}
+
+.single_mission-sidebar-content.hidden {
+  display: none;
+}
+
+.single_mission-sidebar-content {
+  margin-top: 0.5rem;
+}
+
+.single_mission-details {
+  text-align: center;
+}
+
+.single_mission-unit-type {
+  color: #4a4ab2;
+  margin-bottom: 10px;
+  font-weight: 800;
+  font-size: 1rem;
+}
+
+.single_mission-main-topic,
+.single_mission-secondary-topics {
+  font-size: 0.8rem;
+  color: #444;
+}
+
+.single_mission-secondary-topics {
+  margin-top: 0.25rem;
+}
+
+.single_mission-edit-btn {
+  display: block;
+  margin: 16px auto 0 auto;
+  padding: 10px 18px;
+  background: #262262;
+  color: white;
+  border: none;
+  border-radius: 99px;
+  font-weight: 800;
+  text-align: center;
+  text-decoration: none;
+  font-family: "Figtree";
+}
+
+.single_mission-edit-btn:hover {
+  background-color: #4a4ab2;
+}
+
+/* =========================
+   SINGLE MISSION – RESPONSIVE
+   ========================= */
+
+@media screen and (max-width: 1200px) {
+  .single_mission-container {
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  .single_mission-main,
+  .single_mission-sidebar {
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .single_mission-main .white-container {
+    width: 100%;
+  }
+
+  .single_mission-sidebar {
+    top: 0;
+    position: static;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .single_mission-container {
+    padding: 0 2rem;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .single_mission-container {
+    padding: 0 1.5rem;
+  }
+}
+
+
 
 
