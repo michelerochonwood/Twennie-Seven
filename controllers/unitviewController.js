@@ -4,6 +4,7 @@ const Interview = require('../models/unit_models/interview'); // Import Intervie
 const PromptSet = require('../models/unit_models/promptset');
 const Template = require('../models/unit_models/template');
 const Exercise = require('../models/unit_models/exercise');
+const Mission = require('../models/unit_models/mission'); // ✅ ADD THIS
 
 const Leader = require('../models/member_models/leader'); // Import Leader model
 const GroupMember = require('../models/member_models/group_member'); // Import Group Member model
@@ -1566,6 +1567,125 @@ viewUpcoming: async (req, res) => {
 },
 
 
+viewMission: async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log(`[viewMission] Fetching mission with ID: ${id}`);
+
+    const mission = await Mission.findById(id).lean();
+    if (!mission) {
+      console.warn(`[viewMission] Mission with ID ${id} not found.`);
+      return res.status(404).render('unit_views/error', {
+        layout: 'unitviewlayout',
+        title: 'Mission Not Found',
+        errorMessage: `The mission with ID ${id} does not exist.`,
+      });
+    }
+
+    // --- Basic membership gate (mirrors category CTA logic) ---
+    const membershipType = req.user?.membershipType || null;   // leader, group_member, member, etc.
+    const accessLevel    = req.user?.accessLevel || null;      // free_individual, paid_individual, contributor_individual
+
+    const isLeader       = membershipType === 'leader';
+    const isGroupMember  = membershipType === 'group_member';
+    const isMember       = membershipType === 'member';
+    const isPaidIndividual = accessLevel === 'paid_individual';
+
+    // Allow leaders, group members, and paid individuals to open the mission
+    const canViewMission = isLeader || isGroupMember || isPaidIndividual;
+
+    if (!req.user || !canViewMission) {
+      console.log('[viewMission] Access denied for mission view. membershipType:', membershipType, 'accessLevel:', accessLevel);
+      return res.status(403).render('unit_views/error', {
+        layout: 'unitviewlayout',
+        title: 'Access Restricted',
+        errorMessage: 'Missions are available to leaders, group members, and paid individual members.',
+      });
+    }
+
+    // --- Owner check (used only for "edit this mission" link) ---
+    const currentUserId = (req.user?._id || req.user?.id)?.toString();
+    const ownerId =
+      (mission.createdBy && mission.createdBy.toString()) ||
+      (mission.owner && mission.owner.toString()) ||
+      (mission.author && mission.author.toString()) ||
+      null;
+
+    const isOwner = !!(currentUserId && ownerId && currentUserId === ownerId);
+
+    // --- Leader assign context (uses your helper) ---
+    const {
+      isLeader: assignIsLeader,
+      groupMembers,
+      leaderId,
+      leaderName,
+    } = await getLeaderAssignContext(req);
+
+    // --- Render single_mission view ---
+    return res.render('unit_views/single_mission', {
+      layout: 'unitviewlayout',
+
+      // identity
+      _id: mission._id.toString(),
+
+      // main title + meta
+      mission_title: mission.mission_title,
+      status: mission.status,
+      category: mission.category,
+      timeframe: mission.timeframe,
+      estimated_effort_hours: mission.estimated_effort_hours,
+      open_to: mission.open_to,
+
+      // purpose / why / background
+      purpose: mission.purpose,
+      why_it_matters: mission.why_it_matters,
+      background: mission.background,
+
+      // details
+      department_requesting: mission.department_requesting,
+      job_number: mission.job_number,
+      budget_amount: mission.budget_amount,
+      due_date: mission.due_date,
+      visibility: mission.visibility,
+      main_topic: mission.main_topic,
+      secondary_topics: mission.secondary_topics || [],
+
+      // approvals / instructions / deliverables / contacts
+      approvals_required: mission.approvals_required || [],
+      task_instructions: mission.task_instructions || [],
+      deliverables_checklist: mission.deliverables_checklist || [],
+      contacts: mission.contacts || [],
+
+      // tags list for this mission – placeholder for now
+      // (template will just show "No tags yet" when this is empty)
+      tagsForUnit: mission.tagsForUnit || [],
+
+      // flags for template conditionals
+      isOwner,
+      isLeader: assignIsLeader,
+      isGroupMemberOrLeader: isLeader || isGroupMember,
+      isGroupMemberOrMember: isGroupMember || isMember,
+      isGroupMemberOrLeaderOrMember:
+        isLeader || isGroupMember || isMember,
+
+      // leader assignment UI
+      groupMembers,
+      leaderId,
+      leaderName: leaderName || req.user?.username || 'You',
+
+      // CSRF for tag + notes forms
+      csrfToken: req.csrfToken(),
+    });
+
+  } catch (err) {
+    console.error('💥 Error fetching mission:', err.stack || err.message);
+    return res.status(500).render('unit_views/error', {
+      layout: 'unitviewlayout',
+      title: 'Error',
+      errorMessage: 'An error occurred while fetching the mission.',
+    });
+  }
+},
 
 
 

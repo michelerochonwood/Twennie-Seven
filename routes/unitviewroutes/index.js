@@ -2,6 +2,8 @@
 const express = require('express');
 const router = express.Router();
 const unitviewController = require('../../controllers/unitviewController');
+const missionController = require('../../controllers/missionController');
+
 
 // Lightweight auth gate for JSON POSTs (views themselves remain open;
 // controller enforces visibility rules)
@@ -17,6 +19,7 @@ router.get('/interviews/view/:id', unitviewController.viewInterview);
 router.get('/promptsets/view/:id', unitviewController.viewPromptset);
 router.get('/exercises/view/:id', unitviewController.viewExercise);
 router.get('/templates/view/:id', unitviewController.viewTemplate);
+router.get('/missions/view/:id', unitviewController.viewMission);
 
 // ----- The Mine (section root and landing) -----
 // Visiting /unitviews will bounce to the Mine landing for convenience
