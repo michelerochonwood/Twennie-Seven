@@ -21,6 +21,7 @@ const Upcoming = require('../models/unit_models/upcoming');
 const DashboardSeen = require('../models/dashboard_seen');
 const Nugget = require('../models/unit_models/nugget'); // ✅ NEW
 const GroupProfile = require('../models/profile_models/group_profile'); // ✅ NEW
+const Mission = require('../models/unit_models/mission'); // ✅ NEW
 
 
 
@@ -183,6 +184,8 @@ const topicViewMappings = {
 
 //we have used lean here and it doesn't appear to have caused problems, but lean caused problems elsewhere, so don't use it
 //we have used lean here and it doesn't appear to have caused problems, but lean caused problems elsewhere, so don't use it
+//we have used lean here and it doesn't appear to have caused problems, but lean caused problems elsewhere, so don't use it
+//we have used lean here and it doesn't appear to have caused problems, but lean caused problems elsewhere, so don't use it
 async function fetchTaggedUnits(userId) {
   try {
     // Tags I created (self-tags) OR tags assigned to me
@@ -192,10 +195,17 @@ async function fetchTaggedUnits(userId) {
 
     if (!tags.length) return [];
 
-    // include upcoming + nugget
+    // include upcoming + nugget + mission
     const unitMap = {
-      article: [], video: [], promptset: [], interview: [], exercise: [], template: [],
-      upcoming: [], nugget: [] // ✅ NEW
+      article:   [],
+      video:     [],
+      promptset: [],
+      interview: [],
+      exercise:  [],
+      template:  [],
+      upcoming:  [],
+      nugget:    [],
+      mission:   []   // ✅ NEW
     };
 
     const tagLookup = new Map(); // `${itemId}-${unitType}` → tag
@@ -211,7 +221,15 @@ async function fetchTaggedUnits(userId) {
     }
 
     const [
-      articles, videos, promptSets, interviews, exercises, templates, upcomings, nuggets
+      articles,
+      videos,
+      promptSets,
+      interviews,
+      exercises,
+      templates,
+      upcomings,
+      nuggets,
+      missions   // ✅ NEW
     ] = await Promise.all([
       Article.find({ _id: { $in: unitMap.article } }),
       Video.find({ _id: { $in: unitMap.video } }),
@@ -219,14 +237,17 @@ async function fetchTaggedUnits(userId) {
       Interview.find({ _id: { $in: unitMap.interview } }),
       Exercise.find({ _id: { $in: unitMap.exercise } }),
       Template.find({ _id: { $in: unitMap.template } }),
-      Upcoming.find({ _id: { $in: unitMap.upcoming } }), // ✅ NEW
-      Nugget.find({ _id: { $in: unitMap.nugget } })      // ✅ NEW
+      Upcoming.find({ _id: { $in: unitMap.upcoming } }),
+      Nugget.find({ _id: { $in: unitMap.nugget } }),
+      Mission.find({ _id: { $in: unitMap.mission } })
     ]);
 
     const viewPathFor = (type, id) =>
       type === 'nugget'
         ? `/unitviews/nuggets/view/${id}`
-        : `/unitviews/${type}s/view/${id}`; // (keeps consistency with leader tab)
+        : type === 'mission'
+          ? `/unitviews/missions/view/${id}`
+          : `/unitviews/${type}s/view/${id}`; // generic fallback
 
     const tagResult = (units, type, titleField, topicField = 'main_topic') =>
       units.map(unit => {
@@ -246,57 +267,76 @@ async function fetchTaggedUnits(userId) {
         };
       });
 
-    return [
+    const results = [
       ...tagResult(articles,   'article',   'article_title'),
       ...tagResult(videos,     'video',     'video_title'),
       ...tagResult(promptSets, 'promptset', 'promptset_title'),
       ...tagResult(interviews, 'interview', 'interview_title'),
       ...tagResult(exercises,  'exercise',  'exercise_title'),
       ...tagResult(templates,  'template',  'template_title'),
-      // upcoming (title field is `title`)
-      ...upcomings.map(u => ({
+    ];
+
+    // upcoming (title field is `title`)
+    upcomings.forEach(u => {
+      const key = `${u._id.toString()}-upcoming`;
+      const tag = tagLookup.get(key);
+      const assignment = (tag?.assignedTo || []).find(a => String(a.member) === String(userId));
+      results.push({
         unitType: 'upcoming',
         title: u.title || 'Untitled upcoming',
         mainTopic: u.main_topic || 'No topic',
         _id: u._id,
-        ...(() => {
-          const key = `${u._id.toString()}-upcoming`;
-          const tag = tagLookup.get(key);
-          const assignment = (tag?.assignedTo || []).find(a => String(a.member) === String(userId));
-          return {
-            tagId: tag?._id?.toString() || null,
-            tagIdCreator: tag?.createdBy?.toString() || null,
-            instructions: assignment?.instructions || '',
-            completedAt: assignment?.completedAt || null
-          };
-        })(),
+        tagId: tag?._id?.toString() || null,
+        tagIdCreator: tag?.createdBy?.toString() || null,
+        instructions: assignment?.instructions || '',
+        completedAt: assignment?.completedAt || null,
         viewPath: viewPathFor('upcoming', u._id)
-      })),
-      // nugget (title field is `title`, topic fallback: discipline/client/region)
-      ...nuggets.map(n => ({
+      });
+    });
+
+    // nugget (title = `title`, topic fallback: discipline/client/region)
+    nuggets.forEach(n => {
+      const key = `${n._id.toString()}-nugget`;
+      const tag = tagLookup.get(key);
+      const assignment = (tag?.assignedTo || []).find(a => String(a.member) === String(userId));
+      results.push({
         unitType: 'nugget',
         title: n.title || 'Untitled nugget',
         mainTopic: n.discipline || n.client || n.region || 'No classification',
         _id: n._id,
-        ...(() => {
-          const key = `${n._id.toString()}-nugget`;
-          const tag = tagLookup.get(key);
-          const assignment = (tag?.assignedTo || []).find(a => String(a.member) === String(userId));
-          return {
-            tagId: tag?._id?.toString() || null,
-            tagIdCreator: tag?.createdBy?.toString() || null,
-            instructions: assignment?.instructions || '',
-            completedAt: assignment?.completedAt || null
-          };
-        })(),
+        tagId: tag?._id?.toString() || null,
+        tagIdCreator: tag?.createdBy?.toString() || null,
+        instructions: assignment?.instructions || '',
+        completedAt: assignment?.completedAt || null,
         viewPath: viewPathFor('nugget', n._id)
-      }))
-    ];
+      });
+    });
+
+    // mission (title = `mission_title`, topic = `main_topic`)
+    missions.forEach(m => {
+      const key = `${m._id.toString()}-mission`;
+      const tag = tagLookup.get(key);
+      const assignment = (tag?.assignedTo || []).find(a => String(a.member) === String(userId));
+      results.push({
+        unitType: 'mission',
+        title: m.mission_title || 'Untitled mission',
+        mainTopic: m.main_topic || 'No topic',
+        _id: m._id,
+        tagId: tag?._id?.toString() || null,
+        tagIdCreator: tag?.createdBy?.toString() || null,
+        instructions: assignment?.instructions || '',
+        completedAt: assignment?.completedAt || null,
+        viewPath: viewPathFor('mission', m._id)
+      });
+    });
+
+    return results;
   } catch (error) {
     console.error('❌ Error fetching tagged units for group member:', error);
     return [];
   }
 }
+
 
 
 
@@ -591,6 +631,12 @@ const groupMemberAssignedUnits = assignedRaw.map(u => ({
 }));
 
 
+// ✅ Split self-tagged / assigned into nuggets & missions
+const groupMemberTaggedNuggets = groupMemberSelfTaggedUnits.filter(u => u.unitType === 'nugget');
+const groupMemberTaggedMissions = groupMemberSelfTaggedUnits.filter(u => u.unitType === 'mission');
+
+const groupMemberAssignedNuggets = groupMemberAssignedUnits.filter(u => u.unitType === 'nugget');
+const groupMemberAssignedMissions = groupMemberAssignedUnits.filter(u => u.unitType === 'mission');
 
 
 const topicSuggestions = await TopicSuggestion.find({
@@ -900,12 +946,22 @@ maxGroupSize: userData.groupId.groupSize,
   groupMemberAccount,
   emailPreferenceLevel,
   groupLibraryUnits,
-  groupMemberSelfTaggedUnits,  // ✅ new self-tagged (blended all types)
-  groupMemberAssignedUnits,    // ✅ new leader-assigned (blended all types)
-  // 👇 NEW: pass counts + badges for green dots
+
+  // tagged / assigned unit buckets
+  groupMemberSelfTaggedUnits,    // blended self-tagged, all types
+  groupMemberAssignedUnits,      // blended leader-assigned, all types
+
+  groupMemberTaggedNuggets,      // ✅ tagged nuggets
+  groupMemberAssignedNuggets,    // ✅ assigned nuggets
+
+  groupMemberTaggedMissions,     // ✅ tagged missions
+  groupMemberAssignedMissions,   // ✅ assigned missions
+
+  // counts + badges for green dots
   gmCounts,
   gmBadges
 });
+
 
 
         
