@@ -963,6 +963,17 @@ leaderUnits = [...leaderUnits, ...leaderNuggetRows, ...leaderUpcomingRows];
 
 // Now fetch completed prompt set records directly from the PromptSetCompletion collection
 
+// Map the completion records to a formatted array
+const formattedCompletedSets = completedRecords.map(record => ({
+  promptSetTitle: record.promptSetId.promptset_title,
+  frequency: record.promptSetId.suggested_frequency,
+  mainTopic: record.promptSetId.main_topic,
+  completedAt: record.completedAt
+    ? new Date(record.completedAt).toDateString()
+    : 'Unknown Date',
+  badge: record.earnedBadge // object with { image, name } if present
+}));
+
 
 // Map the completion records to a formatted array
 const { leaderAssignedUnits, leaderAssignmentsOpen, leaderAssignmentsCompleted } = await buildLeaderAssignedUnits(id);
