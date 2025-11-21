@@ -60,6 +60,37 @@
         </select>
       </div>
 
+<section class="mission-learning-units">
+  <h2 class="mission-learning-units-title">Twennie learning units (optional)</h2>
+  <p class="mission-learning-units-help">
+    Attach up to six Twennie learning units that support this mission.
+    Start typing a keyword (like "proposal" or "portfolio") and choose from the list.
+  </p>
+
+  <div class="mission-learning-units-search">
+    <label for="twennie-unit-search">Search for a unit</label>
+    <input
+      id="twennie-unit-search"
+      type="text"
+      name="twennie_unit_search"
+      autocomplete="off"
+      placeholder="Type a keyword to find units..."
+    >
+    <div id="twennie-unit-search-results"
+         class="mission-learning-units-results"
+         aria-live="polite"></div>
+  </div>
+
+  <div class="mission-learning-units-selected">
+    <h3>Selected units (max 6)</h3>
+    <div id="twennie-selected-units" class="mission-learning-units-chips"></div>
+  </div>
+
+  {{!-- Hidden inputs for the selected units will be inserted here by JS --}}
+  <div id="twennie-units-hidden-inputs"></div>
+</section>
+
+
       <!-- STATUS -->
       <div class="form-field">
         <label for="status">Mission Status</label>
@@ -565,6 +596,134 @@
       });
     }
   });
+
+
+  (function () {
+    const searchInput = document.getElementById('twennie-unit-search');
+    const resultsContainer = document.getElementById('twennie-unit-search-results');
+    const selectedContainer = document.getElementById('twennie-selected-units');
+    const hiddenInputsContainer = document.getElementById('twennie-units-hidden-inputs');
+
+    if (!searchInput || !resultsContainer || !selectedContainer || !hiddenInputsContainer) {
+      return;
+    }
+
+    const MAX_UNITS = 6;
+    let selectedUnits = []; // { value, label, unit_type, unit_id }
+    let searchTimeout = null;
+
+    function renderSelectedUnits() {
+      // Clear chips + hidden inputs
+      selectedContainer.innerHTML = '';
+      hiddenInputsContainer.innerHTML = '';
+
+      selectedUnits.forEach((u) => {
+        // Chip UI
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'mission-unit-chip';
+        chip.textContent = u.label + ' ✕';
+        chip.dataset.value = u.value;
+
+        chip.addEventListener('click', () => {
+          selectedUnits = selectedUnits.filter(su => su.value !== u.value);
+          renderSelectedUnits();
+        });
+
+        selectedContainer.appendChild(chip);
+
+        // Hidden input for form submission
+        const hidden = document.createElement('input');
+        hidden.type = 'hidden';
+        hidden.name = 'twennie_units[]';
+        hidden.value = u.value; // e.g. "article:65f..."
+        hiddenInputsContainer.appendChild(hidden);
+      });
+    }
+
+    function renderResults(results) {
+      resultsContainer.innerHTML = '';
+
+      if (!results || !results.length) {
+        resultsContainer.style.display = 'none';
+        return;
+      }
+
+      results.forEach(result => {
+        const item = document.createElement('div');
+        item.className = 'mission-learning-units-result-item';
+        item.textContent = result.label;
+        item.dataset.value = result.value;
+
+        item.addEventListener('click', () => {
+          const alreadySelected = selectedUnits.some(u => u.value === result.value);
+
+          if (alreadySelected || selectedUnits.length >= MAX_UNITS) {
+            resultsContainer.innerHTML = '';
+            resultsContainer.style.display = 'none';
+            searchInput.value = '';
+            return;
+          }
+
+          selectedUnits.push({
+            value: result.value,
+            label: result.label,
+            unit_type: result.unit_type,
+            unit_id: result.unit_id
+          });
+
+          renderSelectedUnits();
+          resultsContainer.innerHTML = '';
+          resultsContainer.style.display = 'none';
+          searchInput.value = '';
+        });
+
+        resultsContainer.appendChild(item);
+      });
+
+      resultsContainer.style.display = 'block';
+    }
+
+    async function performSearch(query) {
+      if (query.length < 2) {
+        renderResults([]);
+        return;
+      }
+
+      try {
+        const res = await fetch('/search/library-units?q=' + encodeURIComponent(query));
+        if (!res.ok) {
+          console.error('Search error:', res.statusText);
+          return;
+        }
+        const data = await res.json();
+        renderResults(data);
+      } catch (err) {
+        console.error('Error performing search:', err);
+      }
+    }
+
+    searchInput.addEventListener('input', function () {
+      const query = this.value.trim();
+
+      if (searchTimeout) {
+        clearTimeout(searchTimeout);
+      }
+
+      searchTimeout = setTimeout(() => {
+        performSearch(query);
+      }, 250); // simple debounce
+    });
+
+    // Hide results if user clicks outside the results or input
+    document.addEventListener('click', (evt) => {
+      if (!resultsContainer.contains(evt.target) && evt.target !== searchInput) {
+        resultsContainer.style.display = 'none';
+      }
+    });
+  })();
 </script>
+
+
 
 {{> mainpartials/footer}}

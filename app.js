@@ -502,6 +502,7 @@ app.use('/badges', require('./routes/badgesroutes'));
 app.use('/dashboard', require('./routes/preferenceroutes'));
 app.use('/ui', require('./routes/uiroutes'));
 app.use('/', require('./routes/missionroutes'));
+app.use('/search', require('./routes/searchroutes'));
 
 
 

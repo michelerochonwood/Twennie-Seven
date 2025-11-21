@@ -1594,7 +1594,12 @@ viewMission: async (req, res) => {
     const canViewMission = isLeader || isGroupMember || isPaidIndividual;
 
     if (!req.user || !canViewMission) {
-      console.log('[viewMission] Access denied for mission view. membershipType:', membershipType, 'accessLevel:', accessLevel);
+      console.log(
+        '[viewMission] Access denied for mission view. membershipType:',
+        membershipType,
+        'accessLevel:',
+        accessLevel
+      );
       return res.status(403).render('unit_views/error', {
         layout: 'unitviewlayout',
         title: 'Access Restricted',
@@ -1629,6 +1634,92 @@ viewMission: async (req, res) => {
     let creator = null;
     if (ownerId) {
       creator = await resolveAuthorById(ownerId);
+    }
+
+    // --- Build linked Twennie learning units for display ---
+    let learningUnits = [];
+    if (Array.isArray(mission.twennie_learning_units) && mission.twennie_learning_units.length) {
+      const lookups = mission.twennie_learning_units.map(async (lu) => {
+        if (!lu || !lu.unit_type || !lu.unit_id) return null;
+
+        let Model = null;
+        let titleField = null;
+        let basePath = null;
+        let displayType = null;
+
+        switch (lu.unit_type) {
+          case 'article':
+            Model = Article;
+            titleField = 'article_title';
+            basePath = '/unitviews/articles/view';
+            displayType = 'Article';
+            break;
+          case 'video':
+            Model = Video;
+            titleField = 'video_title';
+            basePath = '/unitviews/videos/view';
+            displayType = 'Video';
+            break;
+          case 'interview':
+            Model = Interview;
+            titleField = 'interview_title';
+            basePath = '/unitviews/interviews/view';
+            displayType = 'Interview';
+            break;
+          case 'promptset':
+            Model = PromptSet;
+            titleField = 'promptset_title';
+            basePath = '/unitviews/promptsets/view';
+            displayType = 'Prompt Set';
+            break;
+          case 'exercise':
+            Model = Exercise;
+            titleField = 'exercise_title';
+            basePath = '/unitviews/exercises/view';
+            displayType = 'Exercise';
+            break;
+          case 'template':
+            Model = Template;
+            titleField = 'template_title';
+            basePath = '/unitviews/templates/view';
+            displayType = 'Template';
+            break;
+          case 'nugget':
+            Model = Nugget;
+            titleField = 'title';
+            basePath = '/unitviews/nuggets/view';
+            displayType = 'Nugget';
+            break;
+          case 'mission':
+            Model = Mission;
+            titleField = 'mission_title';
+            basePath = '/unitviews/missions/view';
+            displayType = 'Mission';
+            break;
+          default:
+            return null;
+        }
+
+        try {
+          const doc = await Model.findById(lu.unit_id).lean();
+          if (!doc) return null;
+
+          const title = doc[titleField] || doc.title || '(untitled)';
+
+          return {
+            unit_type: lu.unit_type,
+            title,
+            displayType,
+            url: `${basePath}/${doc._id}`,
+          };
+        } catch (e) {
+          console.error('[viewMission] Error loading linked unit:', e.message || e);
+          return null;
+        }
+      });
+
+      const resolved = await Promise.all(lookups);
+      learningUnits = resolved.filter(Boolean);
     }
 
     // --- Leader assign context (shared helper) ---
@@ -1678,6 +1769,9 @@ viewMission: async (req, res) => {
       deliverables_checklist: mission.deliverables_checklist || [],
       contacts: mission.contacts || [],
 
+      // linked Twennie learning units (NEW)
+      learningUnits,
+
       // tags
       tagsForUnit: mission.tagsForUnit || [],
 
@@ -1713,6 +1807,7 @@ viewMission: async (req, res) => {
     });
   }
 },
+
 
 
 

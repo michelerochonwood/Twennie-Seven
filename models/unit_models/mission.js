@@ -121,6 +121,15 @@ const missionSchema = new mongoose.Schema({
     completed_at: { type: Date, default: Date.now }
   }],
 
+  twennie_learning_units: [{
+  unit_id: { type: mongoose.Schema.Types.ObjectId, required: true },
+  unit_type: {
+    type: String,
+    enum: ['article', 'video', 'interview', 'promptset', 'exercise', 'template', 'nugget', 'mission'],
+    required: true
+  }
+}],
+
   created_by: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Member',
