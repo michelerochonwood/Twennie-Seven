@@ -981,3 +981,134 @@ label[for=short-summary] {
   margin-bottom: 1.5rem;
 }
 
+/* -----------------------------------------------------------
+   TWENNIE MISSION LEARNING UNITS SECTION
+----------------------------------------------------------- */
+
+.mission-learning-units {
+  margin-top: 2rem;
+  padding: 1.75rem;
+  border-radius: 16px;
+  background: #f8f7ff; /* Twennie pale-lavender */
+  border: 2px solid #e6e4ff;
+}
+
+.mission-learning-units-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #4e50a2;
+  margin-bottom: 0.5rem;
+}
+
+.mission-learning-units-help {
+  margin: 0 0 1rem 0;
+  color: #5b5c96;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+/* -----------------------------------------------------------
+   Search Input
+----------------------------------------------------------- */
+
+.mission-learning-units-search label {
+  font-weight: 600;
+  color: #4e50a2;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+#twennie-unit-search {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  font-size: 1rem;
+  border-radius: 12px;
+  border: 2px solid #d9d8ff;
+  outline: none;
+  background: #ffffff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#twennie-unit-search:focus {
+  border-color: #4e50a2;
+  box-shadow: 0 0 0 3px rgba(78, 80, 162, 0.25);
+}
+
+/* -----------------------------------------------------------
+   Search Results Dropdown
+----------------------------------------------------------- */
+
+.mission-learning-units-results {
+  margin-top: 0.5rem;
+  border-radius: 12px;
+  background: white;
+  border: 2px solid #d9d8ff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  max-height: 240px;
+  overflow-y: auto;
+  display: none; /* shown by JS */
+  position: relative;
+  z-index: 20;
+}
+
+.mission-learning-units-result-item {
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  color: #2f2f4f;
+  font-size: 0.95rem;
+  border-bottom: 1px solid #efeeff;
+  transition: background 0.15s ease;
+}
+
+.mission-learning-units-result-item:last-child {
+  border-bottom: none;
+}
+
+.mission-learning-units-result-item:hover {
+  background: #f0efff;
+}
+
+/* -----------------------------------------------------------
+   Selected Units (chips)
+----------------------------------------------------------- */
+
+.mission-learning-units-selected {
+  margin-top: 1.5rem;
+}
+
+.mission-learning-units-selected h3 {
+  font-size: 1.1rem;
+  color: #4e50a2;
+  margin-bottom: 0.5rem;
+}
+
+.mission-learning-units-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.mission-unit-chip {
+  background: #ffffff;
+  border: 2px solid #c3c1ff;
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.9rem;
+  color: #4e50a2;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.mission-unit-chip:hover {
+  background: #f0efff;
+  border-color: #4e50a2;
+}
+
+/* -----------------------------------------------------------
+   Hidden inputs wrapper (no visual changes)
+----------------------------------------------------------- */
+#twennie-units-hidden-inputs {
+  display: none;
+}
+
+
