@@ -1019,10 +1019,10 @@ label[for=short-summary] {
 }
 
 #twennie-unit-search {
-  width: 100%;
+  width: 80%;
   padding: 0.7rem 1rem;
   font-size: 1rem;
-  border-radius: 12px;
+  border-radius: 55px;
   border: 2px solid #d9d8ff;
   outline: none;
   background: #ffffff;
