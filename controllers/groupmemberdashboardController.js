@@ -24,7 +24,24 @@ const GroupProfile = require('../models/profile_models/group_profile'); // ✅ N
 const Mission = require('../models/unit_models/mission'); // ✅ NEW
 
 
+const missionBadgeMap = {
+  learning:             'learningbadge',
+  research:             'researchbadge',
+  business_development: 'bdbadge',
+  internal_improvement: 'improvementbadge',
+  culture_play:         'cultureplaybadge',
+  client_experience:    'clientexbadge',
+  community:            'communitybadge',
+  administrative:       'adminbadge',
+  other:                'roguebadge',
+};
 
+function getMissionBadgePath(category) {
+  const key = category || 'other';
+  const filename = missionBadgeMap[key] || missionBadgeMap.other;
+  // 🔁 change extension if your files are not .png
+  return `/badges/missions/${filename}.png`;
+}
 
 
 //resolveAuthorById is necessary for showing library units in the library unit table. We have no author property in the unit models, so the resolve function allows the library units to show the author. Don't delete any code in the library units meant to resolve the author by id.
@@ -874,7 +891,30 @@ const gmUpcomingRows2 = await Promise.all(
 
 groupLibraryUnits = [...groupLibraryUnits, ...gmUpcomingRows2];
 
-// ---------- NEW: tab counts + baseline + badges (group member) ----------
+
+// ---------- Completed missions → mission badges ----------
+const completedMissionsRaw = await Mission.find({
+  'completions.member': id
+})
+  .select('mission_title category completions')
+  .lean();
+
+const missionBadges = completedMissionsRaw.map((missionDoc) => {
+  const myCompletion = (missionDoc.completions || []).find(c =>
+    c.member && c.member.toString() === id.toString()
+  );
+
+  return {
+    missionId: missionDoc._id.toString(),
+    title: missionDoc.mission_title || 'Untitled mission',
+    completed_at: myCompletion?.completed_at || null,
+    badgePath: getMissionBadgePath(missionDoc.category)
+  };
+});
+
+
+
+
 
 // Build current counts from arrays you already computed above
 const gmCounts = {
@@ -957,6 +997,7 @@ maxGroupSize: userData.groupId.groupSize,
   groupMemberTaggedMissions,     // ✅ tagged missions
   groupMemberAssignedMissions,   // ✅ assigned missions
 
+    missionBadges,
   // counts + badges for green dots
   gmCounts,
   gmBadges
