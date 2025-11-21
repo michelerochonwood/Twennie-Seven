@@ -26,7 +26,6 @@ const Mission = require('../models/unit_models/mission'); // ✅ NEW
 
 
 
-
 //resolveAuthorById is necessary for showing library units in the library unit table. We have no author property in the unit models, so the resolve function allows the library units to show the author. Don't delete any code in the library units meant to resolve the author by id.
 
 async function resolveAuthorById(authorId) {
@@ -875,64 +874,6 @@ const gmUpcomingRows2 = await Promise.all(
 groupLibraryUnits = [...groupLibraryUnits, ...gmUpcomingRows2];
 
 
-// ---------- Completed missions → mission badges ----------
-// ---------- Completed missions → mission badges ----------
-// ---------- Completed missions → mission badges ----------
-const completedMissionsRaw = await Mission.find({
-  'completions.member': id
-})
-  .select('mission_title category completions')
-  .lean();
-
-const missionBadges = completedMissionsRaw.map((missionDoc) => {
-  const myCompletion = (missionDoc.completions || []).find(c =>
-    c.member && c.member.toString() === id.toString()
-  );
-
-  // Inline category → badge filename mapping
-  let badgeFile = 'roguebadge'; // default fallback
-
-  switch (missionDoc.category) {
-    case 'learning':
-      badgeFile = 'learningbadge';
-      break;
-    case 'research':
-      badgeFile = 'researchbadge';
-      break;
-    case 'business_development':
-      badgeFile = 'bdbadge';
-      break;
-    case 'internal_improvement':
-      badgeFile = 'improvementbadge';
-      break;
-    case 'culture_play':
-      badgeFile = 'cultureplaybadge';
-      break;
-    case 'client_experience':
-      badgeFile = 'clientexbadge';
-      break;
-    case 'community':
-      badgeFile = 'communitybadge';
-      break;
-    case 'administrative':
-      badgeFile = 'adminbadge';
-      break;
-    case 'other':
-    default:
-      badgeFile = 'roguebadge';
-      break;
-  }
-
-  return {
-    missionId: missionDoc._id.toString(),
-    title: missionDoc.mission_title || 'Untitled mission',
-    completed_at: myCompletion?.completed_at || null,
-    badgePath: `/badges/missions/${badgeFile}.png`
-  };
-});
-
-
-
 
 
 
@@ -1018,7 +959,6 @@ maxGroupSize: userData.groupId.groupSize,
   groupMemberTaggedMissions,     // ✅ tagged missions
   groupMemberAssignedMissions,   // ✅ assigned missions
 
-    missionBadges,
   // counts + badges for green dots
   gmCounts,
   gmBadges
