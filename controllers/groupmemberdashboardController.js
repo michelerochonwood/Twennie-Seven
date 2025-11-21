@@ -24,24 +24,7 @@ const GroupProfile = require('../models/profile_models/group_profile'); // ✅ N
 const Mission = require('../models/unit_models/mission'); // ✅ NEW
 
 
-const missionBadgeMap = {
-  learning:             'learningbadge',
-  research:             'researchbadge',
-  business_development: 'bdbadge',
-  internal_improvement: 'improvementbadge',
-  culture_play:         'cultureplaybadge',
-  client_experience:    'clientexbadge',
-  community:            'communitybadge',
-  administrative:       'adminbadge',
-  other:                'roguebadge',
-};
 
-function getMissionBadgePath(category) {
-  const key = category || 'other';
-  const filename = missionBadgeMap[key] || missionBadgeMap.other;
-  // 🔁 change extension if your files are not .png
-  return `/badges/missions/${filename}.png`;
-}
 
 
 //resolveAuthorById is necessary for showing library units in the library unit table. We have no author property in the unit models, so the resolve function allows the library units to show the author. Don't delete any code in the library units meant to resolve the author by id.
@@ -893,6 +876,8 @@ groupLibraryUnits = [...groupLibraryUnits, ...gmUpcomingRows2];
 
 
 // ---------- Completed missions → mission badges ----------
+// ---------- Completed missions → mission badges ----------
+// ---------- Completed missions → mission badges ----------
 const completedMissionsRaw = await Mission.find({
   'completions.member': id
 })
@@ -904,13 +889,49 @@ const missionBadges = completedMissionsRaw.map((missionDoc) => {
     c.member && c.member.toString() === id.toString()
   );
 
+  // Inline category → badge filename mapping
+  let badgeFile = 'roguebadge'; // default fallback
+
+  switch (missionDoc.category) {
+    case 'learning':
+      badgeFile = 'learningbadge';
+      break;
+    case 'research':
+      badgeFile = 'researchbadge';
+      break;
+    case 'business_development':
+      badgeFile = 'bdbadge';
+      break;
+    case 'internal_improvement':
+      badgeFile = 'improvementbadge';
+      break;
+    case 'culture_play':
+      badgeFile = 'cultureplaybadge';
+      break;
+    case 'client_experience':
+      badgeFile = 'clientexbadge';
+      break;
+    case 'community':
+      badgeFile = 'communitybadge';
+      break;
+    case 'administrative':
+      badgeFile = 'adminbadge';
+      break;
+    case 'other':
+    default:
+      badgeFile = 'roguebadge';
+      break;
+  }
+
   return {
     missionId: missionDoc._id.toString(),
     title: missionDoc.mission_title || 'Untitled mission',
     completed_at: myCompletion?.completed_at || null,
-    badgePath: getMissionBadgePath(missionDoc.category)
+    badgePath: `/badges/missions/${badgeFile}.png`
   };
 });
+
+
 
 
 
