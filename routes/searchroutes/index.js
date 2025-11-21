@@ -2,24 +2,22 @@
 const express = require('express');
 const router = express.Router();
 
-const Article = require('../../models/unit_models/article');
-const Video = require('../../models/unit_models/video');
+const Article   = require('../../models/unit_models/article');
+const Video     = require('../../models/unit_models/video');
 const Interview = require('../../models/unit_models/interview');
 const PromptSet = require('../../models/unit_models/promptset');
-const Exercise = require('../../models/unit_models/exercise');
-const Template = require('../../models/unit_models/template');
-const Nugget = require('../../models/unit_models/nugget');
-const Mission = require('../../models/unit_models/mission');
+const Exercise  = require('../../models/unit_models/exercise');
+const Template  = require('../../models/unit_models/template');
+const Nugget    = require('../../models/unit_models/nugget');
+const Mission   = require('../../models/unit_models/mission');
 
 const ensureAuthenticated = require('../../middleware/ensureAuthenticated');
 
 // Helper: build a visibility filter based on the logged-in user.
-// 🚨 IMPORTANT: adjust this to match your real visibility logic.
+// 🔴 TODO: adjust this to match your real visibility rules.
 function buildVisibilityFilter(user) {
-  // Start with global units everyone can see
   const orConditions = [{ visibility: 'all_members' }];
 
-  // Example: organization-only units
   if (user && user.organization) {
     orConditions.push({
       visibility: 'organization_only',
@@ -27,7 +25,6 @@ function buildVisibilityFilter(user) {
     });
   }
 
-  // Example: team-only units (adjust field names to your schema)
   if (user && Array.isArray(user.teams) && user.teams.length > 0) {
     orConditions.push({
       visibility: 'team_only',
@@ -60,33 +57,41 @@ router.get('/library-units', ensureAuthenticated, async (req, res) => {
       nuggets,
       missions
     ] = await Promise.all([
-      Article.find({ title: regex, ...visibilityFilter }).limit(10).lean(),
-      Video.find({ title: regex, ...visibilityFilter }).limit(10).lean(),
-      Interview.find({ title: regex, ...visibilityFilter }).limit(10).lean(),
+      // ✅ use article_title
+      Article.find({ article_title: regex,    ...visibilityFilter }).limit(10).lean(),
+      // ✅ use video_title
+      Video.find({ video_title: regex,        ...visibilityFilter }).limit(10).lean(),
+      // ✅ use interview_title
+      Interview.find({ interview_title: regex, ...visibilityFilter }).limit(10).lean(),
+      // ✅ still promptset_title
       PromptSet.find({ promptset_title: regex, ...visibilityFilter }).limit(10).lean(),
-      Exercise.find({ title: regex, ...visibilityFilter }).limit(10).lean(),
-      Template.find({ title: regex, ...visibilityFilter }).limit(10).lean(),
-      Nugget.find({ title: regex, ...visibilityFilter }).limit(10).lean(),
-      Mission.find({ mission_title: regex, ...visibilityFilter }).limit(10).lean()
+      // ✅ use exercise_title
+      Exercise.find({ exercise_title: regex,  ...visibilityFilter }).limit(10).lean(),
+      // ✅ use template_title
+      Template.find({ template_title: regex,  ...visibilityFilter }).limit(10).lean(),
+      // ✅ nuggets use plain title
+      Nugget.find({ title: regex,             ...visibilityFilter }).limit(10).lean(),
+      // ✅ missions use mission_title
+      Mission.find({ mission_title: regex,    ...visibilityFilter }).limit(10).lean()
     ]);
 
     const results = [
       ...articles.map(u => ({
         unit_type: 'article',
         unit_id: u._id,
-        label: `Article – ${u.title}`,
+        label: `Article – ${u.article_title}`,
         value: `article:${u._id}`
       })),
       ...videos.map(u => ({
         unit_type: 'video',
         unit_id: u._id,
-        label: `Video – ${u.title}`,
+        label: `Video – ${u.video_title}`,
         value: `video:${u._id}`
       })),
       ...interviews.map(u => ({
         unit_type: 'interview',
         unit_id: u._id,
-        label: `Interview – ${u.title}`,
+        label: `Interview – ${u.interview_title}`,
         value: `interview:${u._id}`
       })),
       ...promptsets.map(u => ({
@@ -98,13 +103,13 @@ router.get('/library-units', ensureAuthenticated, async (req, res) => {
       ...exercises.map(u => ({
         unit_type: 'exercise',
         unit_id: u._id,
-        label: `Exercise – ${u.title}`,
+        label: `Exercise – ${u.exercise_title}`,
         value: `exercise:${u._id}`
       })),
       ...templates.map(u => ({
         unit_type: 'template',
         unit_id: u._id,
-        label: `Template – ${u.title}`,
+        label: `Template – ${u.template_title}`,
         value: `template:${u._id}`
       })),
       ...nuggets.map(u => ({
@@ -130,3 +135,4 @@ router.get('/library-units', ensureAuthenticated, async (req, res) => {
 });
 
 module.exports = router;
+
