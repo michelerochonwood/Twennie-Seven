@@ -2,30 +2,32 @@
 const mongoose = require('mongoose');
 const Note = require('../models/notes/notes');
 
-const Article = require('../models/unit_models/article');
-const Video = require('../models/unit_models/video');
+const Article   = require('../models/unit_models/article');
+const Video     = require('../models/unit_models/video');
 const Interview = require('../models/unit_models/interview');
-const Exercise = require('../models/unit_models/exercise');
-const Template = require('../models/unit_models/template');
+const Exercise  = require('../models/unit_models/exercise');
+const Template  = require('../models/unit_models/template');
+const Mission   = require('../models/unit_models/mission');
 
 const GroupMember = require('../models/member_models/group_member');
-const Leader = require('../models/member_models/leader');
+const Leader      = require('../models/member_models/leader');
 
 const Tag = require('../models/tag');
 
 /**
  * Resolve unit by id across known unit collections.
- * Returns { unit, type } where type ∈ 'article' | 'video' | 'interview' | 'exercise' | 'template' | null
+ * Returns { unit, type } where type ∈ 'article' | 'video' | 'interview' | 'exercise' | 'template' | 'mission' | null
  */
 async function resolveUnitAndType(unitId) {
   const id = new mongoose.Types.ObjectId(unitId);
 
-  const [a, v, i, e, t] = await Promise.all([
-    Article.findById(id).select('main_topic secondary_topics').lean(),
-    Video.findById(id).select('main_topic secondary_topics').lean(),
-    Interview.findById(id).select('main_topic secondary_topics').lean(),
-    Exercise.findById(id).select('main_topic secondary_topics').lean(),
-    Template.findById(id).select('main_topic secondary_topics').lean()
+  const [a, v, i, e, t, m] = await Promise.all([
+    Article.findById(id).select('main_topic secondary_topics secondary_topic').lean(),
+    Video.findById(id).select('main_topic secondary_topics secondary_topic').lean(),
+    Interview.findById(id).select('main_topic secondary_topics secondary_topic').lean(),
+    Exercise.findById(id).select('main_topic secondary_topics secondary_topic').lean(),
+    Template.findById(id).select('main_topic secondary_topics secondary_topic').lean(),
+    Mission.findById(id).select('main_topic secondary_topics secondary_topic').lean()
   ]);
 
   if (a) return { unit: a, type: 'article' };
@@ -33,6 +35,7 @@ async function resolveUnitAndType(unitId) {
   if (i) return { unit: i, type: 'interview' };
   if (e) return { unit: e, type: 'exercise' };
   if (t) return { unit: t, type: 'template' };
+  if (m) return { unit: m, type: 'mission' };
   return { unit: null, type: null };
 }
 
@@ -44,7 +47,7 @@ exports.createNote = async (req, res) => {
 
     const {
       unitId,
-      unitType,         // optional but preferred; your views pass this
+      unitType,         // preferred; your views pass this
       main_topic,       // optional; view often supplies
       secondary_topic,  // optional; view often supplies
       note_content
@@ -63,21 +66,19 @@ exports.createNote = async (req, res) => {
     }
 
     // Resolve topics/unit type if the form didn't provide them
-    let effectiveUnitType = unitType || null;
-    let effectiveMainTopic = main_topic || null;
-    let effectiveSecondary = secondary_topic || null;
+    let effectiveUnitType   = unitType || null;
+    let effectiveMainTopic  = main_topic || null;
+    let effectiveSecondary  = secondary_topic || null;
 
     if (!effectiveUnitType || !effectiveMainTopic || !effectiveSecondary) {
       const { unit, type } = await resolveUnitAndType(unitId);
       if (!unit) return res.status(404).send('Unit not found.');
 
-      if (!effectiveUnitType) effectiveUnitType = type;
+      if (!effectiveUnitType)  effectiveUnitType  = type;
       if (!effectiveMainTopic) effectiveMainTopic = unit.main_topic ?? null;
 
-      // Your schemas vary between `secondary_topic` (single) and `secondary_topics` (array).
       // Preserve the single-field behavior used in your note forms.
       if (!effectiveSecondary) {
-        // prefer a single secondary_topic from the unit if present
         if (typeof unit.secondary_topic === 'string') {
           effectiveSecondary = unit.secondary_topic;
         } else if (Array.isArray(unit.secondary_topics) && unit.secondary_topics.length) {
@@ -88,18 +89,18 @@ exports.createNote = async (req, res) => {
       }
     }
 
-    // Upsert the note (one note per user+unit)
     const content = (note_content || '').trim();
 
+    // Upsert the note (one note per user+unit)
     await Note.findOneAndUpdate(
       { unitID: unitId, memberID: userId },
       {
         $set: {
-          unitType: effectiveUnitType || undefined,
-          main_topic: effectiveMainTopic,
+          unitType:        effectiveUnitType || undefined,
+          main_topic:      effectiveMainTopic,
           secondary_topic: effectiveSecondary,
-          note_content: content,
-          updatedAt: new Date()
+          note_content:    content,
+          updatedAt:       new Date()
         }
       },
       { upsert: true, new: true, setDefaultsOnInsert: true }
@@ -109,9 +110,6 @@ exports.createNote = async (req, res) => {
      * ✅ Mark the corresponding leader assignment as completed for THIS member and THIS unit.
      * We mark completion immediately after saving the note, which preserves your rule:
      * "The unit shows as completed only once the group member has submitted notes."
-     *
-     * - Only the assignee's row is updated (arrayFilters on assignedTo.member).
-     * - We match tags that are attached to this unit via associatedUnits.
      */
     await Tag.updateMany(
       {
@@ -130,6 +128,31 @@ exports.createNote = async (req, res) => {
         arrayFilters: [{ 'ass.member': new mongoose.Types.ObjectId(userId) }]
       }
     );
+
+    /**
+     * ✅ If this note belongs to a mission, mark that mission as completed for this user.
+     * Completion is on the honor system: "submit notes only once you've finished the mission."
+     */
+    if (effectiveUnitType === 'mission') {
+      const mission = await Mission.findById(unitId);
+      if (mission) {
+        const alreadyCompleted = Array.isArray(mission.completions)
+          ? mission.completions.some(c =>
+              c.member && c.member.toString() === userId.toString()
+            )
+          : false;
+
+        if (!alreadyCompleted) {
+          mission.completions = mission.completions || [];
+          mission.completions.push({
+            member:      userId,
+            notes:       content || undefined,
+            completed_at: new Date()
+          });
+          await mission.save();
+        }
+      }
+    }
 
     const dashboardLink = isGroupMember ? '/dashboard/groupmember' : '/dashboard/leader';
 
@@ -162,7 +185,10 @@ exports.getNotesByLeader = async (req, res) => {
 
     // Fetch notes submitted by these group members
     const notes = await Note.find({ memberID: { $in: groupMemberIds } })
-      .populate('unitID', 'article_title video_title interview_title exercise_title template_title')
+      .populate(
+        'unitID',
+        'article_title video_title interview_title exercise_title template_title mission_title'
+      )
       .sort({ createdAt: -1 });
 
     return res.render('leader_notes_view', { layout: 'leaderlayout', notes });
@@ -187,7 +213,10 @@ exports.getNotesByGroupMember = async (req, res) => {
 
     // Fetch all notes submitted by this group member
     const notes = await Note.find({ memberID: memberId })
-      .populate('unitID', 'article_title video_title interview_title exercise_title template_title')
+      .populate(
+        'unitID',
+        'article_title video_title interview_title exercise_title template_title mission_title'
+      )
       .sort({ createdAt: -1 });
 
     return res.render('group_member_notes_view', { layout: 'memberlayout', notes });
@@ -197,5 +226,6 @@ exports.getNotesByGroupMember = async (req, res) => {
     return res.status(500).send('Error retrieving notes.');
   }
 };
+
 
 

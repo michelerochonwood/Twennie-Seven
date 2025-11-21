@@ -24,6 +24,28 @@ const Nugget = require('../models/unit_models/nugget'); // ✅ NEW
 const Mission = require('../models/unit_models/mission'); // ✅ NEW
 
 
+
+
+// Map mission categories to badge image filenames (without extension)
+const missionBadgeMap = {
+  learning:             'learningbadge',
+  research:             'researchbadge',
+  business_development: 'bdbadge',
+  internal_improvement: 'improvementbadge',
+  culture_play:         'cultureplaybadge',
+  client_experience:    'clientexbadge',
+  community:            'communitybadge',
+  administrative:       'adminbadge',
+  other:                'roguebadge',
+};
+
+function getMissionBadgePath(category) {
+  const key = category || 'other';
+  const filename = missionBadgeMap[key] || missionBadgeMap.other;
+  // Adjust extension if your files are .svg or .webp instead of .png
+  return `/badges/missions/${filename}.png`;
+}
+
 function getModelByUnitType(type) {
   switch (type) {
     case 'article':   return Article;

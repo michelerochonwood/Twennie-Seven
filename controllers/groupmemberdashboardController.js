@@ -25,7 +25,25 @@ const Mission = require('../models/unit_models/mission'); // ✅ NEW
 
 
 
+// Map mission categories to badge image filenames (without extension)
+const missionBadgeMap = {
+  learning:             'learningbadge',
+  research:             'researchbadge',
+  business_development: 'bdbadge',
+  internal_improvement: 'improvementbadge',
+  culture_play:         'cultureplaybadge',
+  client_experience:    'clientexbadge',
+  community:            'communitybadge',
+  administrative:       'adminbadge',
+  other:                'roguebadge',
+};
 
+function getMissionBadgePath(category) {
+  const key = category || 'other';
+  const filename = missionBadgeMap[key] || missionBadgeMap.other;
+  // Adjust extension if your files are .svg or .webp instead of .png
+  return `/badges/missions/${filename}.png`;
+}
 
 //resolveAuthorById is necessary for showing library units in the library unit table. We have no author property in the unit models, so the resolve function allows the library units to show the author. Don't delete any code in the library units meant to resolve the author by id.
 
@@ -874,6 +892,27 @@ const gmUpcomingRows2 = await Promise.all(
 
 groupLibraryUnits = [...groupLibraryUnits, ...gmUpcomingRows2];
 
+// ---------- Completed missions → mission badges ----------
+const completedMissionsRaw = await Mission.find({
+  'completions.member': id
+})
+  .select('mission_title category completions')
+  .lean();
+
+const missionBadges = completedMissionsRaw.map((mission) => {
+  const myCompletion = (mission.completions || []).find(c =>
+    c.member && c.member.toString() === id.toString()
+  );
+
+  return {
+    missionId: mission._id.toString(),
+    title: mission.mission_title || 'Untitled mission',
+    completed_at: myCompletion?.completed_at || null,
+    badgePath: getMissionBadgePath(mission.category)
+  };
+});
+
+
 // ---------- NEW: tab counts + baseline + badges (group member) ----------
 
 // Build current counts from arrays you already computed above
@@ -956,6 +995,8 @@ maxGroupSize: userData.groupId.groupSize,
 
   groupMemberTaggedMissions,     // ✅ tagged missions
   groupMemberAssignedMissions,   // ✅ assigned missions
+
+    missionBadges,
 
   // counts + badges for green dots
   gmCounts,

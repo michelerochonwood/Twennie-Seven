@@ -4735,3 +4735,61 @@ box-shadow: none !important;
 
 
 
+
+.mission-badges-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1rem;
+}
+
+.mission-badge-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 14px;
+  background: #f8f7ff;
+  border: 1px solid #e0dfff;
+}
+
+.mission-badge-icon {
+  flex: 0 0 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mission-badge-icon img {
+  max-width: 56px;
+  max-height: 56px;
+  display: block;
+}
+
+.mission-badge-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.mission-badge-title {
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: #2f2f4f;
+  margin: 0 0 0.15rem 0;
+}
+
+.mission-badge-date {
+  font-size: 0.85rem;
+  color: #6b6c9f;
+  margin: 0 0 0.25rem 0;
+}
+
+.mission-badge-link {
+  font-size: 0.85rem;
+  color: #4e50a2;
+  text-decoration: underline;
+}
+
+
+
+
