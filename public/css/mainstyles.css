@@ -6262,7 +6262,7 @@ margin-right: 5px; /* Space between icon and text */
   background: #f8f7ff;
   border: 2px solid #e6e4ff;
   border-radius: 16px;
-  max-width: 600px;
+  max-width: 900px;
 }
 
 .topics-search-title {
@@ -6274,9 +6274,9 @@ margin-right: 5px; /* Space between icon and text */
 }
 
 .topics-search-input {
-  width: 100%;
+  width: 80%;
   padding: 0.75rem 1rem;
-  border-radius: 12px;
+  border-radius: 52px;
   border: 2px solid #d5d3ff;
   font-size: 1rem;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
