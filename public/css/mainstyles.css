@@ -2142,12 +2142,8 @@ img[alt="Free"] {
   object-fit: contain;
   display: block;
   margin: 0 auto;
-  transition: transform 0.3s ease-in-out;
 }
 
-.membership-character-image:hover {
-  transform: scale(1.05);
-}
 
 .membership-benefits-list li {
   margin-bottom: 0.5rem; /* Adjust spacing as needed */
