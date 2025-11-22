@@ -98,22 +98,7 @@
       <div class="form-field">
         <div class="white-container">
           <div class="toggle-group">
-            <label>
-              <input type="checkbox" name="clarify_topic" {{#if data.clarify_topic}}checked{{/if}}>
-              Does your exercise further clarify the topic?
-            </label>
-            <label>
-              <input type="checkbox" name="topics_and_enlightenment" {{#if data.topics_and_enlightenment}}checked{{/if}}>
-              Does your exercise expand on Twennie topics and provide enlightening experiences?
-            </label>
-            <label>
-              <input type="checkbox" name="challenge" {{#if data.challenge}}checked{{/if}}>
-              Does your exercise challenge participants to complete it creatively?
-            </label>
-            <label>
-              <input type="checkbox" name="instructions" {{#if data.instructions}}checked{{/if}}>
-              Are the exercise instructions clear, step-by-step, and easy to follow?
-            </label>
+
             <label>
               <input type="checkbox" name="permission" {{#if data.permission}}checked{{/if}} required>
               Do you provide consent for this library unit to be used for Twennie promotional purposes?
@@ -124,7 +109,7 @@
 
       <!-- Short Summary -->
       <div class="form-field">
-        <label for="short-summary">Short Summary (30 words)</label>
+        <label for="short-summary">Short Summary (aim for ~30 words)</label>
         <textarea id="short-summary" name="short_summary" maxlength="300" required>{{data.short_summary}}</textarea>
       </div>
 
@@ -132,7 +117,7 @@
 <!-- Full Summary -->
 <div class="form-field">
   <label for="full-summary">
-    Full Summary <span style="font-weight: normal; font-size: 0.85em;">(Optional, 90 words)</span>
+    Full Summary <span style="font-weight: normal; font-size: 0.85em;">(Optional, aim for ~90 words)</span>
   </label>
   <p class="form-help-text" style="font-size: 0.85rem; color: #555; margin-top: 4px;">
     The full summary gives further context about your exercise and helps other members decide if it fits their needs. Including both summaries is recommended.

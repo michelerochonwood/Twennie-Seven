@@ -71,28 +71,30 @@
       </div>
 
       <!-- Attributes (checkboxes) - file_format removed from here -->
-      <div class="form-field">
-        <div class="white-container">
-          <div class="toggle-group">
-            <label><input type="checkbox" name="clarify_topic" {{#if data.clarify_topic}}checked{{/if}}> Clarifies topic?</label>
-            <label><input type="checkbox" name="produce_deliverables" {{#if data.produce_deliverables}}checked{{/if}}> Produces deliverables?</label>
-            <label><input type="checkbox" name="new_ideas" {{#if data.new_ideas}}checked{{/if}}> Encourages creativity?</label>
-            <label><input type="checkbox" name="engaging" {{#if data.engaging}}checked{{/if}}> Insightful and engaging?</label>
-            <label><input type="checkbox" name="permission" {{#if data.permission}}checked{{/if}} required> Consent for promotional use?</label>
-          </div>
-        </div>
-      </div>
+<div class="form-toggle">
+  <label>
+    <input
+      type="checkbox"
+      name="permission"
+      {{#if data.permission}}checked{{/if}}
+    >
+    I consent to Twennie using this library unit (with attribution) for promotional purposes.
+  </label>
+  <p class="form-field-help">
+    This consent is optional and does not affect your membership or access.
+  </p>
+</div>
 
       <!-- Short Summary -->
       <div class="form-field">
-        <label for="short-summary">Short Summary (30 words)</label>
+        <label for="short-summary">Short Summary (~30 words)</label>
         <textarea id="short-summary" name="short_summary" maxlength="300" required>{{data.short_summary}}</textarea>
       </div>
 
       <!-- Full Summary -->
       <div class="form-field">
         <label for="full-summary">
-          Full Summary <span style="font-weight: normal; font-size: 0.85em;">(Optional, 90 words)</span>
+          Full Summary <span style="font-weight: normal; font-size: 0.85em;">(Optional, ~90 words)</span>
         </label>
         <p class="form-help-text" style="font-size: 0.85rem; color: #555; margin-top: 4px;">
           The full summary gives further context about your template and helps other members decide if it fits their needs. Including both summaries is recommended.

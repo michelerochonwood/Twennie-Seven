@@ -44,40 +44,23 @@
 </div>
 
       <!-- Toggles -->
-      <div class="form-toggle">
-        <label>
-          <input type="checkbox" name="clarify_topic" {{#if data.clarify_topic}}checked{{/if}}>
-          Does your video further clarify the topic?
-        </label>
-      </div>
-      <div class="form-toggle">
-        <label>
-          <input type="checkbox" name="produce_deliverables" {{#if data.produce_deliverables}}checked{{/if}}>
-          Does it suggest tasks that produce deliverables?
-        </label>
-      </div>
-      <div class="form-toggle">
-        <label>
-          <input type="checkbox" name="new_ideas" {{#if data.new_ideas}}checked{{/if}}>
-          Does it include some new ideas and creative suggestions?
-        </label>
-      </div>
-      <div class="form-toggle">
-        <label>
-          <input type="checkbox" name="engaging" {{#if data.engaging}}checked{{/if}}>
-          Is the video easy to follow and engaging?
-        </label>
-      </div>
-      <div class="form-toggle">
-        <label>
-          <input type="checkbox" name="permission" {{#if data.permission}}checked{{/if}} required>
-          Do you provide consent for this library unit to be used for Twennie promotional purposes?
-        </label>
-      </div>
+<div class="form-toggle">
+  <label>
+    <input
+      type="checkbox"
+      name="permission"
+      {{#if data.permission}}checked{{/if}}
+    >
+    I consent to Twennie using this library unit (with attribution) for promotional purposes.
+  </label>
+  <p class="form-field-help">
+    This consent is optional and does not affect your membership or access.
+  </p>
+</div>
 
       <!-- Short Summary -->
       <div class="form-field">
-        <label for="short-summary">Short Summary (30 words)</label>
+        <label for="short-summary">Short Summary (~30 words)</label>
         <textarea id="short-summary" name="short_summary" maxlength="300" required>{{data.short_summary}}</textarea>
       </div>
 
@@ -85,7 +68,7 @@
 <!-- Full Summary -->
 <div class="form-field">
   <label for="full-summary">
-    Full Summary <span style="font-weight: normal; font-size: 0.85em;">(Optional, 90 words)</span>
+    Full Summary <span style="font-weight: normal; font-size: 0.85em;">(Optional, ~90 words)</span>
   </label>
   <p class="form-help-text" style="font-size: 0.85rem; color: #555; margin-top: 4px;">
     The full summary provides additional context about your video and helps other members understand its focus and value. While optional, including both summaries is encouraged.

@@ -47,37 +47,19 @@
         <textarea id="transcript" name="transcript" rows="25" maxlength="8000" placeholder="Paste the interview transcript here">{{{formatContent data.transcript}}}</textarea>
       </div>
 
-      <!-- Toggles -->
-      <div class="form-toggle">
-        <label>
-          <input type="checkbox" name="clarify_topic" {{#if data.clarify_topic}}checked{{/if}}>
-          Does your interview further clarify the topic?
-        </label>
-      </div>
-      <div class="form-toggle">
-        <label>
-          <input type="checkbox" name="produce_deliverables" {{#if data.produce_deliverables}}checked{{/if}}>
-          Does your interview subject have expertise relevant to Twennie topics?
-        </label>
-      </div>
-      <div class="form-toggle">
-        <label>
-          <input type="checkbox" name="new_ideas" {{#if data.new_ideas}}checked{{/if}}>
-          Does your interview challenge the interviewee to answer creatively?
-        </label>
-      </div>
-      <div class="form-toggle">
-        <label>
-          <input type="checkbox" name="engaging" {{#if data.engaging}}checked{{/if}}>
-          Is the interview insightful and engaging?
-        </label>
-      </div>
-      <div class="form-toggle">
-        <label>
-          <input type="checkbox" name="permission" {{#if data.permission}}checked{{/if}} required>
-          Do you provide consent for this library unit to be used for Twennie promotional purposes?
-        </label>
-      </div>
+<div class="form-toggle">
+  <label>
+    <input
+      type="checkbox"
+      name="permission"
+      {{#if data.permission}}checked{{/if}}
+    >
+    I consent to Twennie using this library unit (with attribution) for promotional purposes.
+  </label>
+  <p class="form-field-help">
+    This consent is optional and does not affect your membership or access.
+  </p>
+</div>
 
       <!-- Short Summary -->
       <div class="form-field">

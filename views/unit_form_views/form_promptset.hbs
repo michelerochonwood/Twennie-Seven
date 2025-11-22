@@ -171,7 +171,7 @@ Example: to improve our communication skills
 
       <!-- Short Summary -->
       <div class="form-field">
-        <label for="short-summary">Short Summary (30 words)</label>
+        <label for="short-summary">Short Summary (~30 words)</label>
         <textarea id="short-summary" name="short_summary">{{data.short_summary}}</textarea>
       </div>
 
@@ -179,12 +179,26 @@ Example: to improve our communication skills
 <!-- Full Summary -->
 <div class="form-field">
   <label for="full-summary">
-    Full Summary <span style="font-weight: normal; font-size: 0.85em;">(Optional, 90 words)</span>
+    Full Summary <span style="font-weight: normal; font-size: 0.85em;">(Optional, ~90 words)</span>
   </label>
   <p class="form-help-text" style="font-size: 0.85rem; color: #555; margin-top: 4px;">
     The full summary offers further context about your prompt set. This helps members decide if it aligns with their goals. Including both summaries is encouraged.
   </p>
   <textarea id="full-summary" name="full_summary" maxlength="1000">{{data.full_summary}}</textarea>
+</div>
+
+<div class="form-toggle">
+  <label>
+    <input
+      type="checkbox"
+      name="permission"
+      {{#if data.permission}}checked{{/if}}
+    >
+    I consent to Twennie using this library unit (with attribution) for promotional purposes.
+  </label>
+  <p class="form-field-help">
+    This consent is optional and does not affect your membership or access.
+  </p>
 </div>
 
 
