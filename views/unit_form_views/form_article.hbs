@@ -60,7 +60,7 @@
       <!-- Rich Text Editor -->
 <!-- Rich Text Editor -->
 <div class="form-field">
-  <label for="articleBody">Articles should be a maximum of 1200 words, minimum 800. If your word count does not meet the minimum or exceeds the maximum, your article will not post, and you will be redirected back to this form.</label>
+  <label for="articleBody">Articles should be a minimum of 800 words, maximum 1200. If your word count does not meet the minimum or exceeds the maximum, your article will not post, and you will be redirected back to this form.</label>
 
   {{#if word_count}}
     <p style="font-size: 0.9rem; color: #777; margin-top: 0.25rem;">
@@ -77,35 +77,21 @@
   <input type="hidden" name="articleBody" id="articleBody">
 </div>
 
-      <div class="form-toggle">
-        <label><input type="checkbox" name="clarify_topic" {{#if data.clarify_topic}}checked{{/if}}> Does your article further clarify the topic?</label>
-      </div>
 
-      <div class="form-toggle">
-        <label><input type="checkbox" name="produce_deliverables" {{#if data.produce_deliverables}}checked{{/if}}> Does it suggest tasks that produce deliverables?</label>
-      </div>
-
-      <div class="form-toggle">
-        <label><input type="checkbox" name="new_ideas" {{#if data.new_ideas}}checked{{/if}}> Does it include some new ideas and creative suggestions?</label>
-      </div>
-
-      <div class="form-toggle">
-        <label><input type="checkbox" name="include_results" {{#if data.include_results}}checked{{/if}}> Does it include results and/or testimonials?</label>
-      </div>
 
       <div class="form-toggle">
         <label><input type="checkbox" name="permission" {{#if data.permission}}checked{{/if}} required> Do you provide consent for this library unit to be used for Twennie promotional purposes?</label>
       </div>
 
       <div class="form-field">
-        <label for="short-summary">Short Summary (30 words)</label>
+        <label for="short-summary">Short Summary (aim for ~30 words)</label>
         <textarea id="short-summary" name="short_summary" maxlength="300" required>{{data.short_summary}}</textarea>
       </div>
 
 <!-- Full Summary -->
 <div class="form-field">
   <label for="full-summary">
-    Full Summary <span style="font-weight: normal; font-size: 0.85em;">(Optional, 90 words)</span>
+    Full Summary <span style="font-weight: normal; font-size: 0.85em;">(Optional, aim for ~90 words)</span>
   </label>
   <p class="form-help-text" style="font-size: 0.85rem; color: #555; margin-top: 4px;">
     The full summary helps other members further understand the context and purpose of your article. Including both summaries is recommended, but not required.
