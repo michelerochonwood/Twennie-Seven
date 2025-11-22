@@ -997,6 +997,31 @@ const formattedCompletedSets = completedRecords.map(record => ({
   badge: record.earnedBadge // object with { image, name } if present
 }));
 
+// ---------- GROUP COMPLETED PROMPT SETS (for group badges) ----------
+
+// map memberId → name using the resolvedGroupMembers we already built
+const memberNameById = new Map(
+  (resolvedGroupMembers || []).map(m => [m._id.toString(), m.name])
+);
+
+// all completions for any member in this leader's group
+const groupCompletedRecords = await PromptSetCompletion
+  .find({ memberId: { $in: leaderGroupMemberIds } })
+  .populate('promptSetId')
+  .lean();
+
+const groupCompletedPromptSets = groupCompletedRecords.map(record => ({
+  promptSetTitle: record.promptSetId?.promptset_title || 'Unknown Title',
+  frequency: record.promptSetId?.suggested_frequency,
+  mainTopic: record.promptSetId?.main_topic || 'No Topic',
+  completedAt: record.completedAt
+    ? new Date(record.completedAt).toDateString()
+    : 'Unknown Date',
+  badge: record.earnedBadge,
+  memberName: memberNameById.get(record.memberId?.toString()) || 'Group Member'
+}));
+
+
 
 // Map the completion records to a formatted array
 const { leaderAssignedUnits, leaderAssignmentsOpen, leaderAssignmentsCompleted } = await buildLeaderAssignedUnits(id);
@@ -1124,6 +1149,7 @@ return res.render('leader_dashboard', {
   promptSchedules,
   currentPromptSets,
   completedPromptSets: formattedCompletedSets,
+    groupCompletedPromptSets,
 
   // Topics / suggestions
   selectedTopics,

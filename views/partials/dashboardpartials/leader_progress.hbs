@@ -1,5 +1,6 @@
 <div class="leader-progress-container" style="overflow: hidden; padding-bottom: 2rem;">
 
+  {{!-- CURRENT PROMPT SETS --}}
   {{#if currentPromptSets.length}}
     <h2 class="leader-progress-current-title">current prompt sets</h2>
     <div class="leader-progress-current">
@@ -20,6 +21,7 @@
     </div>
   {{/if}}
 
+  {{!-- COMPLETED PROMPT SETS --}}
   <div class="leader-progress-completed">
     <h2 class="leader-progress-completed-title">completed prompt sets</h2>
 
@@ -62,13 +64,120 @@
         >
       </a>
     </div>
-
   </div>
+
+  {{!-- SEPARATOR BETWEEN PROGRESS/COMPLETIONS AND ASSIGNED SECTION --}}
+  <hr class="leader-prompts-divider">
+
+  {{!-- ASSIGNED PROMPT SETS (MOVED HERE FROM REGISTERED TAB) --}}
+  <section class="leader-prompt-section">
+    <h2 class="leader-assigned-title">assigned prompt sets</h2>
+    <p class="leader-assigned-subtitle">Each card is one member’s assignment.</p>
+
+    <div class="leader-assigned-grid">
+      {{#if assignedPromptCards.length}}
+        {{#each assignedPromptCards}}
+          <div class="leader-assigned-card">
+            <div class="leader-assigned-card-top">
+              <span class="leader-assigned-status leader-assigned-status--{{status}}">{{statusLabel}}</span>
+              <span class="leader-assigned-due">due {{targetCompletionDate}}</span>
+            </div>
+
+            <h3 class="leader-assigned-ps-title">{{promptSetTitle}}</h3>
+            <p class="leader-assigned-meta">
+              <span class="leader-assigned-pill">{{frequency}} prompt</span>
+              <span class="leader-assigned-sep">•</span>
+              <span class="leader-assigned-topic">{{mainTopic}}</span>
+            </p>
+
+            <div class="leader-assigned-member">
+              <img
+                src="{{#if memberImage}}{{memberImage}}{{else}}/images/default-avatar.png{{/if}}"
+                alt="{{memberName}}"
+                class="leader-assigned-avatar"
+              >
+              <div class="leader-assigned-member-info">
+                <p class="leader-assigned-member-name">{{memberName}}</p>
+                <div class="leader-assigned-progress-wrap">
+                  <div class="leader-progress-bar">
+                    <div class="leader-progress-bar-fill" style="width: {{progressPercent}}%;"></div>
+                  </div>
+                  <p class="leader-assigned-progress-text">
+                    prompt {{currentPromptIndex}}/20
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="leader-assigned-actions">
+              <form
+                action="/promptsetassign/unassign/{{assignmentId}}"
+                method="POST"
+                class="leader-unassign-form"
+                onsubmit="return confirm('Unassign this prompt set from {{memberName}}?');"
+              >
+                <input type="hidden" name="_csrf" value="{{../csrfToken}}">
+                <input type="hidden" name="_method" value="DELETE">
+                <button type="submit" class="leader-assigned-unassign">unassign</button>
+              </form>
+            </div>
+          </div>
+        {{/each}}
+      {{else}}
+        <p class="leader-assigned-empty">No assigned prompt sets yet.</p>
+      {{/if}}
+    </div>
+ <hr class="leader-prompts-divider">
+
+      {{!-- GROUP BADGES (all badges earned by the leader's group) --}}
+  <div class="leader-group-badges">
+    <h2 class="leader-progress-completed-title">group badges</h2>
+    <p class="leader-group-badges-subtitle">
+      Badges earned by you and members of your group for completing prompt sets.
+    </p>
+
+    {{#if groupCompletedPromptSets.length}}
+      <div class="leader-progress-completed-grid" style="overflow: hidden;">
+        {{#each groupCompletedPromptSets}}
+          <div class="leader-progress-completed-card leader-group-badge-card">
+            <h3 class="leader-progress-completed-title">{{this.promptSetTitle}}</h3>
+            <p class="leader-progress-completed-main-topic">{{this.mainTopic}}</p>
+
+            {{#if this.memberName}}
+              <p class="leader-group-badge-member">
+                earned by <strong>{{this.memberName}}</strong>
+              </p>
+            {{/if}}
+
+            <p class="leader-progress-completed-date">
+              completed: {{this.completedAt}}
+            </p>
+
+            <div class="leader-progress-badge">
+              {{#if this.badge}}
+                <img src="{{this.badge.image}}" alt="{{this.badge.name}}" class="leader-progress-badge-img">
+                <p class="leader-progress-badge-name">{{this.badge.name}}</p>
+              {{else}}
+                <p class="leader-progress-badge-name">No badge data for this completion</p>
+              {{/if}}
+            </div>
+          </div>
+        {{/each}}
+      </div>
+    {{else}}
+      <p class="no-data" style="text-align: center; margin-top: 1rem;">
+        No badges have been earned by your group yet.
+      </p>
+    {{/if}}
+  </div>
+
+  </section>
 
   <!-- Layout reset to prevent overflow on next tabs -->
   <div style="height: 1px; clear: both;"></div>
 
 </div>
+
 
 
 
