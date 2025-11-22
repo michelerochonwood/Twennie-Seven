@@ -6238,3 +6238,102 @@ margin-right: 5px; /* Space between icon and text */
 
 
 
+/* -----------------------------------------------------------
+   Bluey Image
+----------------------------------------------------------- */
+
+.topics-bluey-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.topics-bluey-image {
+  max-width: 240px;
+  width: 100%;
+  height: auto;
+}
+
+/* -----------------------------------------------------------
+   Search Section
+----------------------------------------------------------- */
+.topics-search-section {
+  margin: 0 auto 2rem auto;
+  padding: 1.5rem;
+  background: #f8f7ff;
+  border: 2px solid #e6e4ff;
+  border-radius: 16px;
+  max-width: 600px;
+}
+
+.topics-search-title {
+  text-align: center;
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  color: #4e50a2;
+  font-weight: 700;
+}
+
+.topics-search-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  border: 2px solid #d5d3ff;
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.topics-search-input:focus {
+  outline: none;
+  border-color: #4e50a2;
+  box-shadow: 0 0 0 3px rgba(78, 80, 162, 0.25);
+}
+
+/* -----------------------------------------------------------
+   Search Results
+----------------------------------------------------------- */
+
+.topics-search-results {
+  display: none;
+  margin-top: 0.75rem;
+  border: 2px solid #d9d8ff;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  max-height: 260px;
+  overflow-y: auto;
+  padding: 0.25rem 0;
+}
+
+.topics-search-result-item {
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid #efeeff;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.topics-search-result-item:last-child {
+  border-bottom: none;
+}
+
+.topics-search-result-item:hover {
+  background: #f0efff;
+}
+
+.topics-search-type {
+  font-size: 0.75rem;
+  color: #6b6c9f;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.topics-search-link {
+  color: #4e50a2;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.topics-search-link:hover {
+  text-decoration: underline;
+}

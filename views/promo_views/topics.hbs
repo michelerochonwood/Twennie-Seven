@@ -1,5 +1,93 @@
 {{#*inline "title"}}All Topics | Twennie{{/inline}}
 <div class="topics-main">
+
+  <!-- Bluey Image -->
+<div class="topics-bluey-header">
+  <img src="/images/learningbluey.png" alt="Twennie Learning Bluey" class="topics-bluey-image">
+</div>
+
+<!-- Universal Library Search -->
+<section class="topics-search-section">
+  <h2 class="topics-search-title">Search Twennie units</h2>
+
+  <input
+    id="topics-search-input"
+    type="text"
+    autocomplete="off"
+    placeholder="Search videos, articles, prompt sets, missions…"
+    class="topics-search-input"
+  >
+
+  <div id="topics-search-results" class="topics-search-results" aria-live="polite"></div>
+</section>
+
+<script>
+  (function () {
+    const input = document.getElementById("topics-search-input");
+    const results = document.getElementById("topics-search-results");
+    let timeoutId = null;
+
+    function hideResults() {
+      results.style.display = "none";
+      results.innerHTML = "";
+    }
+
+    function renderResults(items) {
+      if (!items || !items.length) {
+        hideResults();
+        return;
+      }
+
+      results.innerHTML = "";
+      items.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "topics-search-result-item";
+
+        div.innerHTML = `
+          <span class="topics-search-type">${item.unit_type}</span>
+          <a href="/unitviews/${item.unit_type}s/view/${item.unit_id}" class="topics-search-link">
+            ${item.label}
+          </a>
+        `;
+
+        results.appendChild(div);
+      });
+
+      results.style.display = "block";
+    }
+
+    async function search(q) {
+      if (q.length < 2) {
+        hideResults();
+        return;
+      }
+
+      try {
+        const res = await fetch("/search/library-units?q=" + encodeURIComponent(q));
+        if (!res.ok) return hideResults();
+
+        const data = await res.json();
+        renderResults(data);
+      } catch (err) {
+        console.error("Search error:", err);
+      }
+    }
+
+    input.addEventListener("input", function () {
+      const val = this.value.trim();
+
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => search(val), 250);
+    });
+
+    document.addEventListener("click", (evt) => {
+      if (!results.contains(evt.target) && evt.target !== input) {
+        hideResults();
+      }
+    });
+  })();
+</script>
+
   <h1 class="topics-title">Twennie topics</h1>
 
 
