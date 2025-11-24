@@ -143,6 +143,11 @@ router.get('/teach_me', (req, res) => {
     });
 });
 
+router.get('/training_bingo', (req, res) => {
+    res.render('promo_views/training_bingo', {
+        layout: 'mainlayout'
+    });
+});
 
 // Export the router
 module.exports = router;

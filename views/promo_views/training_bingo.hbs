@@ -1,0 +1,218 @@
+{{!-- views/training_bingo.hbs --}}
+
+{{#*inline "title"}}Problems with Training Bingo | Twennie{{/inline}}
+
+<div class="bingo-page">
+  <h1 class="bingo-title">Problems with Training – Bingo</h1>
+  <p class="bingo-subtitle">
+    Click a square to reveal the problem. Use this during demos when teams call out their complaints.
+  </p>
+
+  <div class="bingo-column-headers">
+    <div class="bingo-column-header">Time</div>
+    <div class="bingo-column-header">Availability</div>
+    <div class="bingo-column-header">Specific / Applicable<br>to Our Work</div>
+    <div class="bingo-column-header">Retention / After /<br>Practical Application</div>
+    <div class="bingo-column-header">Other</div>
+  </div>
+
+  <div class="bingo-grid">
+
+    {{!-- ROW 1 --}}
+    <button type="button" class="bingo-cell" data-text="Not enough of it...ever">
+      <span class="bingo-cell-text">click to reveal</span>
+    </button>
+    <button type="button" class="bingo-cell" data-text="Very few qualified trainers/organizations">
+      <span class="bingo-cell-text">click to reveal</span>
+    </button>
+    <button type="button" class="bingo-cell" data-text="Great course — except none of it applies to engineering, consulting, or reality">
+      <span class="bingo-cell-text">click to reveal</span>
+    </button>
+    <button type="button" class="bingo-cell" data-text="Great workshop! Two weeks later: zero recollection, full panic">
+      <span class="bingo-cell-text">click to reveal</span>
+    </button>
+    <button type="button" class="bingo-cell" data-text="Expensive, requires time and travel">
+      <span class="bingo-cell-text">click to reveal</span>
+    </button>
+
+    {{!-- ROW 2 --}}
+    <button type="button" class="bingo-cell" data-text="Training costs billable hours; not training costs competence. Pick your pain.">
+      <span class="bingo-cell-text">click to reveal</span>
+    </button>
+    <button type="button" class="bingo-cell" data-text="No post-secondary programming – not even continuing education">
+      <span class="bingo-cell-text">click to reveal</span>
+    </button>
+    <button type="button" class="bingo-cell" data-text="We don’t need theory. We need: ‘Here’s what actually works on your next project.’">
+      <span class="bingo-cell-text">click to reveal</span>
+    </button>
+    <button type="button" class="bingo-cell" data-text="The takeaways all became putaways and forgetabouts.">
+      <span class="bingo-cell-text">click to reveal</span>
+    </button>
+    <button type="button" class="bingo-cell" data-text="Highly skilled business developers don’t give that knowledge to anyone">
+      <span class="bingo-cell-text">click to reveal</span>
+    </button>
+
+    {{!-- ROW 3 --}}
+    <button type="button" class="bingo-cell" data-text="Training sounds great… until someone asks, ‘What deadline should we miss to attend?’">
+      <span class="bingo-cell-text">click to reveal</span>
+    </button>
+    <button type="button" class="bingo-cell" data-text="Training is available, but only on Tuesdays at 6am or during fiscal year-end">
+      <span class="bingo-cell-text">click to reveal</span>
+    </button>
+    <button type="button" class="bingo-cell" data-text="Training examples: marketing agencies, cosmetics. Our work: wastewater">
+      <span class="bingo-cell-text">click to reveal</span>
+    </button>
+    <button type="button" class="bingo-cell" data-text="Training is great at telling us what to do. It’s terrible at helping us do it… again">
+      <span class="bingo-cell-text">click to reveal</span>
+    </button>
+    <button type="button" class="bingo-cell" data-text="Budget approved! Except not for training. For snacks">
+      <span class="bingo-cell-text">click to reveal</span>
+    </button>
+
+    {{!-- ROW 4 --}}
+    <button type="button" class="bingo-cell" data-text="We’ll do training right after the project rush… which is every day forever">
+      <span class="bingo-cell-text">click to reveal</span>
+    </button>
+    <button type="button" class="bingo-cell" data-text="Training is available, but only on Tuesdays at 6AM or during fiscal year-end chaos">
+      <span class="bingo-cell-text">click to reveal</span>
+    </button>
+    <button type="button" class="bingo-cell" data-text="Spending money learning skills we will never use">
+      <span class="bingo-cell-text">click to reveal</span>
+    </button>
+    <button type="button" class="bingo-cell" data-text="Training plants seeds. Habits need watering — and nobody waters after the workshop">
+      <span class="bingo-cell-text">click to reveal</span>
+    </button>
+    <button type="button" class="bingo-cell" data-text="Training has been letting us down for so long we arrive pre-disillusioned">
+      <span class="bingo-cell-text">click to reveal</span>
+    </button>
+
+    {{!-- ROW 5 --}}
+    <button type="button" class="bingo-cell" data-text="Training requires time we don’t have, to fix problems caused by… not training">
+      <span class="bingo-cell-text">click to reveal</span>
+    </button>
+    <button type="button" class="bingo-cell" data-text="We found the right course… taught by someone who retired two years ago">
+      <span class="bingo-cell-text">click to reveal</span>
+    </button>
+    <button type="button" class="bingo-cell" data-text="Wagon wheels of pain – models that make no sense in real scenarios">
+      <span class="bingo-cell-text">click to reveal</span>
+    </button>
+    <button type="button" class="bingo-cell" data-text="We learned so much! None of it survived Monday">
+      <span class="bingo-cell-text">click to reveal</span>
+    </button>
+    <button type="button" class="bingo-cell" data-text="Training is the only place where morale starts low and still somehow drops">
+      <span class="bingo-cell-text">click to reveal</span>
+    </button>
+
+  </div>
+</div>
+
+<script>
+  (function () {
+    const cells = document.querySelectorAll('.bingo-cell');
+
+    cells.forEach(cell => {
+      const span = cell.querySelector('.bingo-cell-text');
+
+      cell.addEventListener('click', () => {
+        if (!cell.classList.contains('bingo-cell--revealed')) {
+          span.textContent = cell.dataset.text;
+          cell.classList.add('bingo-cell--revealed');
+        }
+      });
+    });
+  })();
+</script>
+
+<style>
+  .bingo-page {
+    max-width: 1080px;
+    margin: 0 auto 3rem auto;
+    padding: 2rem 1rem 3rem;
+  }
+
+  .bingo-title {
+    text-align: center;
+    font-size: 2rem;
+    color: #4e50a2;
+    margin-bottom: 0.5rem;
+  }
+
+  .bingo-subtitle {
+    text-align: center;
+    color: #4b5563;
+    margin-bottom: 1.5rem;
+    font-size: 0.98rem;
+  }
+
+  .bingo-column-headers {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .bingo-column-header {
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #4e50a2;
+  }
+
+  .bingo-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  .bingo-cell {
+    border: 2px solid #d9d8ff;
+    border-radius: 14px;
+    padding: 0.75rem;
+    background: #f8f7ff;
+    min-height: 96px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+  }
+
+  .bingo-cell:hover {
+    border-color: #4e50a2;
+    background: #f0efff;
+    transform: translateY(-1px);
+  }
+
+  .bingo-cell-text {
+    font-size: 0.9rem;
+    color: #6b6c9f;
+  }
+
+  .bingo-cell--revealed .bingo-cell-text {
+    color: #111827;
+    font-weight: 500;
+  }
+
+  @media (max-width: 900px) {
+    .bingo-column-headers {
+      font-size: 0.8rem;
+    }
+    .bingo-cell {
+      min-height: 88px;
+      padding: 0.6rem;
+    }
+    .bingo-cell-text {
+      font-size: 0.8rem;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .bingo-page {
+      padding: 1rem 0.5rem 2rem;
+    }
+    .bingo-title {
+      font-size: 1.5rem;
+    }
+  }
+</style>
