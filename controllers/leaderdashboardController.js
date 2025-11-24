@@ -906,14 +906,16 @@ const [
   leaderPromptSets,
   leaderInterviews,
   leaderExercises,
-  leaderTemplates
+  leaderTemplates,
+    leaderMissions          // ← ADD THIS
 ] = await Promise.all([
   Article.find({ 'author.id': id }),
   Video.find({ 'author.id': id }),
   PromptSet.find({ 'author.id': id }),
   Interview.find({ 'author.id': id }),
   Exercise.find({ 'author.id': id }),
-  Template.find({ 'author.id': id })
+  Template.find({ 'author.id': id }),
+    Mission.find({ created_by: id })  // ← FETCH LEADER MISSIONS
 ]);
 
 const [leaderUpcomings, leaderNuggets] = await Promise.all([
@@ -922,7 +924,7 @@ const [leaderUpcomings, leaderNuggets] = await Promise.all([
 ]);
 
 let leaderUnits = await Promise.all(
-  [...leaderArticles, ...leaderVideos, ...leaderPromptSets, ...leaderInterviews, ...leaderExercises, ...leaderTemplates].map(async (unit) => {
+  [...leaderArticles, ...leaderVideos, ...leaderPromptSets, ...leaderInterviews, ...leaderExercises, ...leaderTemplates,...leaderMissions].map(async (unit) => {
     const author = await resolveAuthorById(pickAuthorId(unit));
     return {
       unitType: unit.unitType || unit.constructor?.modelName || 'Unknown',
