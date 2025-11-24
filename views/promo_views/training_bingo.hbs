@@ -5,7 +5,7 @@
 <div class="bingo-page">
   <h1 class="bingo-title">Problems with Training – Bingo</h1>
   <p class="bingo-subtitle">
-    Click a square to reveal the problem. Use this during demos when teams call out their complaints.
+    First click reveals the problem. Second click reveals how Twennie solves it.
   </p>
 
   <div class="bingo-column-headers">
@@ -108,16 +108,88 @@
 
 <script>
   (function () {
+    // Problem -> Twennie solution map
+    const twennieSolutions = {
+      "Not enough of it...ever":
+        "Only what you need when you need it – sort of like just-in-time training.",
+      "Very few qualified trainers/organizations":
+        "Twennie combines the knowledge of multiple veterans.",
+      "Great course — except none of it applies to engineering, consulting, or reality":
+        "Designed specifically for technical professional services.",
+      "Great workshop! Two weeks later: zero recollection, full panic":
+        "The content is accessible after the session – right here on Twennie.",
+      "Expensive, requires time and travel":
+        "Minimal time, no travel – bite-sized online units you can take from anywhere.",
+
+      "Training costs billable hours; not training costs competence. Pick your pain.":
+        "Requires minimum time for maximum learning and retention.",
+      "No post-secondary programming – not even continuing education":
+        "This is better – practical, quick, linked to KPIs, and explained in familiar terms.",
+      "We don’t need theory. We need: ‘Here’s what actually works on your next project.’":
+        "Written for direct application to your work and your next project.",
+      "The takeaways all became putaways and forgetabouts.":
+        "Twennie units don’t get put away – you can watch and revisit as often as you need.",
+      "Highly skilled business developers don’t give that knowledge to anyone":
+        "We’re in the business of giving this knowledge to you and protecting what you’ve created.",
+
+      "Training sounds great… until someone asks, ‘What deadline should we miss to attend?’":
+        "Flexibility on Twennie means you don’t have to put learning on hold – and you still meet milestones.",
+      "Training is available, but only on Tuesdays at 6am or during fiscal year-end":
+        "Twennie training is available any time, anywhere – even at 2am on a Sunday.",
+      "Training examples: marketing agencies, cosmetics. Our work: wastewater":
+        "All examples and case studies are drawn from familiar disciplines.",
+      "Training is great at telling us what to do. It’s terrible at helping us do it… again":
+        "Twennie learning is built for habit formation – small actions, repeated.",
+      "Budget approved! Except not for training. For snacks":
+        "Twennie is affordable – no choosing between training and snacks.",
+
+      "We’ll do training right after the project rush… which is every day forever":
+        "No need to wait until rushes are over – training can happen in a focused 5 minutes.",
+      "They charge per person, so only one of us can go. That person keeps the knowledge under lock and #$%*ing key.":
+        "Twennie is designed so your whole group can learn the same content together.",
+      "Spending money learning skills we will never use":
+        "These skills live on Twennie BECAUSE they are needed in real work.",
+      "Training plants seeds. Habits need watering — and nobody waters after the workshop":
+        "Prompt sets let you integrate learning into daily work life so the ‘watering’ actually happens.",
+      "Training has been letting us down for so long we arrive pre-disillusioned":
+        "Twennie changes how PM, BD, and soft-skills training is done – you won’t be disappointed this time.",
+
+      "Training requires time we don’t have, to fix problems caused by… not training":
+        "Training no longer requires huge blocks of time – it fits into the natural gaps in your day.",
+      "We found the right course… taught by someone who retired two years ago":
+        "As long as there are professional services providers, Twennie will be here for them.",
+      "Wagon wheels of pain – models that make no sense in real scenarios":
+        "All models on Twennie are tested and proven with teams like yours.",
+      "We learned so much! None of it survived Monday":
+        "Prompt sets are available every Monday (and every other day) so lessons keep resurfacing.",
+      "Training is the only place where morale starts low and still somehow drops":
+        "Twennie integrates fun and play so you don’t have to bolt it on at the end."
+    };
+
     const cells = document.querySelectorAll('.bingo-cell');
 
     cells.forEach(cell => {
       const span = cell.querySelector('.bingo-cell-text');
+      const problemText = cell.dataset.text;
+      const solutionText = twennieSolutions[problemText];
+
+      // 0 = hidden, 1 = problem shown, 2 = solution shown
+      let state = 0;
 
       cell.addEventListener('click', () => {
-        if (!cell.classList.contains('bingo-cell--revealed')) {
-          span.textContent = cell.dataset.text;
-          cell.classList.add('bingo-cell--revealed');
+        if (state === 0) {
+          // First click → show problem
+          span.textContent = problemText;
+          cell.classList.add('bingo-cell--problem');
+          state = 1;
+        } else if (state === 1 && solutionText) {
+          // Second click → show Twennie solution
+          span.textContent = solutionText;
+          cell.classList.remove('bingo-cell--problem');
+          cell.classList.add('bingo-cell--solution');
+          state = 2;
         }
+        // state === 2 → do nothing on further clicks (or change if you want a reset)
       });
     });
   })();
@@ -175,7 +247,10 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    transition: background 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease,
+      transform 0.1s ease;
   }
 
   .bingo-cell:hover {
@@ -189,9 +264,21 @@
     color: #6b6c9f;
   }
 
-  .bingo-cell--revealed .bingo-cell-text {
+  /* Problem state */
+  .bingo-cell--problem .bingo-cell-text {
     color: #111827;
     font-weight: 500;
+  }
+
+  /* Solution state */
+  .bingo-cell--solution {
+    background: #ecfdf3;
+    border-color: #16a34a;
+  }
+
+  .bingo-cell--solution .bingo-cell-text {
+    color: #14532d;
+    font-weight: 600;
   }
 
   @media (max-width: 900px) {
