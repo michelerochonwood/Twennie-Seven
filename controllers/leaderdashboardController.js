@@ -924,24 +924,28 @@ const [leaderUpcomings, leaderNuggets] = await Promise.all([
 ]);
 
 let leaderUnits = await Promise.all(
-  [...leaderArticles, ...leaderVideos, ...leaderPromptSets, ...leaderInterviews, ...leaderExercises, ...leaderTemplates,...leaderMissions].map(async (unit) => {
+  [...leaderArticles, ...leaderVideos, ...leaderPromptSets, ...leaderInterviews, ...leaderExercises, ...leaderTemplates, ...leaderUpcomings, ...leaderNuggets, ...leaderMissions].map(async (unit) => {
     const author = await resolveAuthorById(pickAuthorId(unit));
     return {
       unitType: unit.unitType || unit.constructor?.modelName || 'Unknown',
       title:
+        unit.mission_title ||
         unit.article_title ||
         unit.video_title ||
         unit.promptset_title ||
         unit.interview_title ||
         unit.exercise_title ||
-        unit.template_title,
-      status: unit.status,
-      mainTopic: unit.main_topic,
+        unit.template_title ||
+        unit.title ||
+        "Untitled Unit",
+      status: unit.status || "Unknown",
+      mainTopic: unit.main_topic || unit.discipline || unit.client || unit.region || "No topic",
       _id: unit._id,
       author: author.name
     };
   })
 );
+
 
 // Now build rows to append
 const leaderUpcomingRows = (leaderUpcomings || []).map((u) => ({
