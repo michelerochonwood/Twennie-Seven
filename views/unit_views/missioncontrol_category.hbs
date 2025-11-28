@@ -131,6 +131,7 @@
 
 <!-- ⭐️ Centered Video Frame Below -->
 <!-- ⭐️ Centered Video Frame Below -->
+<!-- ⭐️ Centered Video Frame Below -->
 <div style="display: flex; justify-content: center; margin: 40px 0;">
   <div
     class="youtube-poster-wrapper"
@@ -138,8 +139,7 @@
       position: relative;
       width: 100%;
       max-width: 800px;
-      padding-bottom: 56.25%;
-      height: 900px;
+      aspect-ratio: 16 / 9;
       overflow: hidden;
       border-radius: 12px;
       cursor: pointer;
@@ -151,21 +151,21 @@
       if (iframe) iframe.style.display = 'block';
     "
   >
-    <!-- Poster Image -->
+    <!-- Poster -->
     <img
       src="/images/workloadposter_1.png"
       alt="video poster"
       class="youtube-poster"
       style="
         position: absolute;
-        top: 0; left: 0;
+        inset: 0;
         width: 100%;
         height: 100%;
         object-fit: cover;
       "
     />
 
-    <!-- Play Button Overlay -->
+    <!-- Play Button -->
     <div 
       style="
         position: absolute;
@@ -192,7 +192,7 @@
       ></div>
     </div>
 
-    <!-- Hidden YouTube iframe (shown after click) -->
+    <!-- YouTube iframe -->
     <iframe
       src="https://www.youtube.com/embed/tUnOLnUaV5o?autoplay=1"
       title="Mission Control intro video"
@@ -201,7 +201,7 @@
       allowfullscreen
       style="
         position: absolute;
-        top: 0; left: 0;
+        inset: 0;
         width: 100%;
         height: 100%;
         display: none;
@@ -209,5 +209,6 @@
     ></iframe>
   </div>
 </div>
+
 
 
