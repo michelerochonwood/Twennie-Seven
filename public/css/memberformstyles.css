@@ -1607,9 +1607,9 @@ html, body {
 }
 
 .group-avatar {
-  width: 90px;
-  height: 90px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #4e50a2; /* optional: Twennie purple ring */
+  border: 3px solid #262262; /* optional: Twennie purple ring */
 }
