@@ -6336,16 +6336,3 @@ margin-right: 5px; /* Space between icon and text */
 
 
 
-.group-image-wrapper {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1rem;
-}
-
-.group-avatar {
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid #4e50a2; /* optional: Twennie purple ring */
-}
