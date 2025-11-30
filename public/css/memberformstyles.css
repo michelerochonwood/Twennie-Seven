@@ -1613,3 +1613,12 @@ html, body {
   object-fit: cover;
   border: 3px solid #262262; /* optional: Twennie purple ring */
 }
+
+.group-leader-name {
+  font-size: 0.9rem;
+  color: #555;
+  margin-top: -5px;
+  margin-bottom: 10px;
+  text-align: center;
+  font-weight: 500;
+}

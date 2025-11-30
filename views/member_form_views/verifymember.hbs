@@ -16,6 +16,20 @@
 
       <div class="group-header">
         <h3>{{this.groupName}}</h3>
+
+        {{!-- ⭐ NEW: Show leader name before code entry --}}
+        <p class="group-leader-name">Leader: {{this.groupLeaderName}}</p>
+
+        <button class="dropdown-btn" data-group="{{this._id}}">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99" class="dropdown-arrow">
+            <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
+            <g><polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/></g>
+          </svg>
+        </button>
+      </div>
+
+      <div class="group-header">
+        <h3>{{this.groupName}}</h3>
         <button class="dropdown-btn" data-group="{{this._id}}">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99" class="dropdown-arrow">
             <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
