@@ -16,11 +16,10 @@ function renderError(res, message, status = 500) {
 
 module.exports = {
   // --- GET /member/group/verify ---
-  showVerifyMemberForm: async (req, res) => {
+   showVerifyMemberForm: async (req, res) => {
     try {
       const csrfToken = req.csrfToken ? req.csrfToken() : null;
 
-      // Join Leaders with their GroupMembers (idempotent; view decides how to present)
       const groups = await Leader.aggregate([
         {
           $lookup: {
@@ -28,6 +27,24 @@ module.exports = {
             localField: '_id',
             foreignField: 'groupId',
             as: 'members'
+          }
+        },
+        {
+          $lookup: {
+            from: 'groupprofiles',          // 👈 matches GroupProfile collection
+            localField: '_id',
+            foreignField: 'groupId',
+            as: 'profile'
+          }
+        },
+        {
+          $addFields: {
+            groupImage: {
+              $ifNull: [
+                { $first: '$profile.groupImage' },
+                '/images/default-group.png'   // fallback
+              ]
+            }
           }
         }
       ]);
@@ -44,25 +61,6 @@ module.exports = {
     }
   },
 
-  // --- POST /member/group/verify-member (optional AJAX) ---
-  verifyMember: async (req, res) => {
-    try {
-      const { memberName, memberEmail, groupId } = req.body;
-      const gm = await GroupMember.findOne({
-        groupId,
-        name: memberName,
-        email: memberEmail
-      });
-      if (!gm) {
-        return res.status(400).json({ valid: false, error: "Member not found in the group." });
-      }
-      return res.json({ valid: true, member: { name: gm.name, email: gm.email } });
-    } catch (err) {
-      console.error("❌ Error verifying group member:", err.message);
-      return res.status(500).json({ valid: false, error: "Server error during verification." });
-    }
-  },
-
   // --- POST /member/group/verify-registration-code ---
   verifyRegistrationCode: async (req, res) => {
     try {
@@ -76,6 +74,24 @@ module.exports = {
             localField: '_id',
             foreignField: 'groupId',
             as: 'members'
+          }
+        },
+        {
+          $lookup: {
+            from: 'groupprofiles',
+            localField: '_id',
+            foreignField: 'groupId',
+            as: 'profile'
+          }
+        },
+        {
+          $addFields: {
+            groupImage: {
+              $ifNull: [
+                { $first: '$profile.groupImage' },
+                '/images/default-group.png'
+              ]
+            }
           }
         }
       ]);
@@ -99,6 +115,27 @@ module.exports = {
       return renderError(res, "An error occurred while verifying the registration code.");
     }
   },
+
+  // --- POST /member/group/verify-member (optional AJAX) ---
+  verifyMember: async (req, res) => {
+    try {
+      const { memberName, memberEmail, groupId } = req.body;
+      const gm = await GroupMember.findOne({
+        groupId,
+        name: memberName,
+        email: memberEmail
+      });
+      if (!gm) {
+        return res.status(400).json({ valid: false, error: "Member not found in the group." });
+      }
+      return res.json({ valid: true, member: { name: gm.name, email: gm.email } });
+    } catch (err) {
+      console.error("❌ Error verifying group member:", err.message);
+      return res.status(500).json({ valid: false, error: "Server error during verification." });
+    }
+  },
+
+
 
   // --- GET /member/group/complete-registration ---
   // Accepts either:

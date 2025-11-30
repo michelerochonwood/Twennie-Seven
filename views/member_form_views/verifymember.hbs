@@ -4,6 +4,16 @@
   <div class="groups-list">
     {{#each groups}}
     <div class="group-card">
+
+      {{!-- ⭐ Group image at the top, centered and round --}}
+      <div class="group-image-wrapper">
+        <img
+          src="{{#if this.groupImage}}{{this.groupImage}}{{else}}/images/default-group.png{{/if}}"
+          alt="{{this.groupName}} group image"
+          class="group-avatar"
+        >
+      </div>
+
       <div class="group-header">
         <h3>{{this.groupName}}</h3>
         <button class="dropdown-btn" data-group="{{this._id}}">
@@ -60,7 +70,6 @@
     {{/each}}
   </div>
 </div>
-
 
 
 
