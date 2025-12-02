@@ -5793,8 +5793,8 @@ margin-right: 5px; /* Space between icon and text */
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
   padding: 1.5rem 1.5rem 1.75rem;
   text-align: left;
-  max-width: 400px;
-  flex: 1 1 220px;
+  max-width: 500px;
+  flex: 1 1 300px;
 }
 
 .teach-me-feature-image {
@@ -5806,10 +5806,10 @@ margin-right: 5px; /* Space between icon and text */
 
 .teach-me-feature-label {
   text-align: center;
+  font-family: "Figtree";
   font-size: 1rem;
   font-weight: 700;
   text-transform: lowercase;
-  letter-spacing: 0.06em;
   color: #262262;
   margin-bottom: 1.6rem;
 }
