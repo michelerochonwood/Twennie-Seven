@@ -5839,14 +5839,17 @@ margin-right: 5px; /* Space between icon and text */
 }
 
 /* Arrow uses the same class / behavior as KPI section */
-.expand-arrow {
+/* Support both .expand-arrow and the old .teach-me-toggle-arrow name */
+.expand-arrow,
+.teach-me-toggle-arrow {
   transition: transform 0.3s ease-in-out;
   display: inline-block;
   font-size: 0.9rem;
 }
 
-/* Match KPI rotation behaviour: arrow flips when open */
-.teach-me-feature-toggle.is-open .expand-arrow {
+/* Match KPI-style rotation when open */
+.teach-me-feature-toggle.is-open .expand-arrow,
+.teach-me-feature-toggle.is-open .teach-me-toggle-arrow {
   transform: rotate(180deg);
 }
 
@@ -5957,6 +5960,7 @@ margin-right: 5px; /* Space between icon and text */
     max-width: 100%;
   }
 }
+
 
 
 
