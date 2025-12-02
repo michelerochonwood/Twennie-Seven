@@ -5968,6 +5968,50 @@ margin-right: 5px; /* Space between icon and text */
   transform: rotate(0deg);
 }
 
+/* --- Teach Me: make dropdown headers look like KPIs --- */
+
+/* 1. Kill the KPI ::after dotted rule inside Teach Me cards */
+.teach-me-feature-card .expandable-header::after {
+  content: none !important;
+}
+
+/* 2. Draw a single dotted line using border-bottom */
+.teach-me-feature-card .expandable-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px dotted #4e50a2;
+  padding-bottom: 0.4rem;
+  margin-bottom: 0.4rem;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* 3. Title styling (same feel as KPI labels) */
+.teach-me-feature-card .expandable-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #262262;
+}
+
+/* 4. KPI-style blue triangle arrow (no text) */
+.teach-me-feature-card .expand-arrow {
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 7px solid #4e50a2;  /* blue arrow */
+  display: inline-block;
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Arrow flips when open */
+.teach-me-expandable-item.active .expand-arrow {
+  transform: rotate(180deg);
+}
+
+
 
 /* ---------------------------------------------------
    Responsive behaviour
