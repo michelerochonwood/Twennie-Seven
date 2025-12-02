@@ -5793,7 +5793,7 @@ margin-right: 5px; /* Space between icon and text */
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
   padding: 1.5rem 1.5rem 1.75rem;
   text-align: left;
-  max-width: 260px;
+  max-width: 400px;
   flex: 1 1 220px;
 }
 
