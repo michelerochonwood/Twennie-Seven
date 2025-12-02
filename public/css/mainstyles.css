@@ -5942,6 +5942,93 @@ margin-right: 5px; /* Space between icon and text */
 }
 
 /* ---------------------------------------------------
+   Teach Me – Orientation Blocks
+--------------------------------------------------- */
+
+.teach-me-orientation {
+  margin: 2.5rem 0 3rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2rem;
+}
+
+/* Each big text block (individual, group member, leader) */
+.orientation-block {
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  padding: 1.75rem 1.9rem;
+}
+
+/* Section headings inside orientation blocks */
+.orientation-heading {
+  font-family: "Figtree", sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #4e50a2;
+  margin-bottom: 0.75rem;
+}
+
+/* Intro paragraph at top of each block */
+.orientation-intro {
+  font-family: "Figtree", sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #444;
+  margin-bottom: 0.9rem;
+}
+
+/* Bullet list of key points */
+.orientation-list {
+  list-style: disc;
+  padding-left: 1.3rem;
+  margin: 0;
+}
+
+.orientation-list li {
+  font-family: "Figtree", sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #333;
+  margin-bottom: 0.45rem;
+}
+
+/* Emphasize the label inside each bullet */
+.orientation-list li strong {
+  font-weight: 700;
+  color: #262262;
+}
+
+/* Slight visual separation between blocks on large screens */
+@media (min-width: 992px) {
+  .teach-me-orientation {
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* Tighter padding on smaller screens */
+@media (max-width: 600px) {
+  .orientation-block {
+    padding: 1.4rem 1.3rem;
+  }
+
+  .orientation-heading {
+    font-size: 1.2rem;
+  }
+
+  .orientation-intro {
+    font-size: 0.9rem;
+  }
+
+  .orientation-list li {
+    font-size: 0.88rem;
+  }
+}
+
+
+/* ---------------------------------------------------
    Responsive behaviour
 --------------------------------------------------- */
 
