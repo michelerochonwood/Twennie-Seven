@@ -5807,13 +5807,15 @@ margin-right: 5px; /* Space between icon and text */
 .teach-me-feature-label {
   font-size: 1rem;
   font-weight: 700;
-  text-transform: uppercase;
+  text-transform: lowercase;
   letter-spacing: 0.06em;
   color: #262262;
   margin-bottom: 1rem;
 }
 
-/* Toggle button under each Bluey */
+/* ▼▼ Dropdown – styled to match KPI expandables ▼▼ */
+
+/* Button under each Bluey – visually like KPI dropdown headers */
 .teach-me-feature-toggle {
   width: 100%;
   display: flex;
@@ -5827,6 +5829,7 @@ margin-right: 5px; /* Space between icon and text */
   font-weight: 500;
   cursor: pointer;
   color: #333;
+  text-align: left;
   transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -5835,25 +5838,29 @@ margin-right: 5px; /* Space between icon and text */
   box-shadow: 0 2px 6px rgba(0,0,0,0.06);
 }
 
-.teach-me-toggle-arrow {
+/* Arrow uses the same class / behavior as KPI section */
+.expand-arrow {
+  transition: transform 0.3s ease-in-out;
   display: inline-block;
   font-size: 0.9rem;
-  transform: rotate(0deg);
-  transition: transform 0.2s ease;
 }
 
-/* Rotate arrow when open */
-.teach-me-feature-toggle.is-open .teach-me-toggle-arrow {
+/* Match KPI rotation behaviour: arrow flips when open */
+.teach-me-feature-toggle.is-open .expand-arrow {
   transform: rotate(180deg);
 }
 
-/* Feature bullet list */
+/* Dropdown content – same text scale / spacing as KPI lists */
 .teach-me-feature-list {
   margin-top: 0.75rem;
   text-align: left;
-  padding-left: 1.25rem;
-  font-size: 0.87rem;
+  padding-left: 1.1rem;
+  font-size: 0.85rem;
   line-height: 1.4;
+}
+
+.teach-me-feature-list li {
+  margin-bottom: 0.35rem;
 }
 
 /* ---------------------------------------------------
@@ -5950,6 +5957,7 @@ margin-right: 5px; /* Space between icon and text */
     max-width: 100%;
   }
 }
+
 
 
 
