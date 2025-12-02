@@ -5779,107 +5779,98 @@ margin-right: 5px; /* Space between icon and text */
    Feature strip: Learning / Missions / Nuggets
 --------------------------------------------------- */
 
+/* ---------------------------------------------------
+   Teach Me – Bluey feature strip + columns
+--------------------------------------------------- */
+
+/* Feature strip layout */
 .teach-me-feature-strip {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 1.5rem;
+  gap: 1.75rem;
   margin-bottom: 3rem;
 }
 
+/* Individual Bluey card */
 .teach-me-feature-card {
   background-color: #ffffff;
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  padding: 1.5rem 1.5rem 1.75rem;
-  text-align: left;
-  max-width: 500px;
-  flex: 1 1 300px;
+  padding: 1.75rem 1.75rem 2rem;
+  text-align: center;
+  max-width: 340px;
+  flex: 1 1 260px;
 }
 
+/* Bluey image */
 .teach-me-feature-image {
-  width: 120px;
+  width: 130px;
   height: auto;
   display: block;
-  margin: 0 auto 0.75rem auto;
+  margin: 0 auto 1rem auto;
 }
 
-.teach-me-feature-label {
-  text-align: center;
-  font-family: "Figtree";
-  font-size: 1rem;
-  font-weight: 700;
-  text-transform: lowercase;
-  color: #262262;
-  margin-bottom: 1.6rem;
-}
-
-/* ---------------------------------------------------
-   KPI-style expandable inside each card
-   (matches topic KPI row with dotted rule + arrow)
---------------------------------------------------- */
-
-.teach-me-expandable-item {
-  margin-top: 0.25rem;
-}
-
-/* Override any global expandable-header styling */
-.teach-me-feature-card .expandable-header {
-  width: 100%;
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 0 0 0.4rem 0;
-  margin: 0;
+/* Dropdown button */
+.teach-me-toggle {
+  margin: 0 auto;
+  margin-bottom: 0.9rem;
+  padding: 0.5rem 1.1rem;
+  border-radius: 999px;
+  border: 1px solid #e0e0f0;
+  background-color: #f1f1fb;
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: flex-start;
-  position: relative;
-  color: #262262;
+  gap: 0.4rem;
+  font-family: "Figtree", sans-serif;
   font-size: 0.9rem;
   font-weight: 700;
+  color: #262262;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Text on the left */
-.teach-me-feature-card .expandable-title {
-  margin-right: auto;
-  white-space: nowrap;
+.teach-me-toggle:hover {
+  background-color: #e5e5fa;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
 }
 
-/* Dotted line across, like the KPI row */
-.teach-me-feature-card .expandable-header::after {
-  content: "";
-  border-bottom: 2px dotted #4e50a2;
-  flex-grow: 1;
-  margin-left: 0.6rem;
-  margin-right: 1.2rem;
+/* Label text */
+.teach-me-toggle-label {
+  text-transform: lowercase;
 }
 
-/* Arrow on the right, same behavior as KPI */
-.teach-me-feature-card .expand-arrow {
+/* Arrow: blue triangle, flips on open */
+.teach-me-toggle-arrow {
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 7px solid #4e50a2; /* blue */
   display: inline-block;
-  font-size: 0.8rem;
-  transition: transform 0.3s ease-in-out;
+  transition: transform 0.2s ease-in-out;
 }
 
-/* Rotate arrow when item is active (open) */
-.teach-me-expandable-item.active .expand-arrow {
+/* Rotate arrow when open */
+.teach-me-toggle.is-open .teach-me-toggle-arrow {
   transform: rotate(180deg);
 }
 
-/* Content spacing + bullets, matching KPI text scale */
-.teach-me-expandable-item .expandable-content {
-  margin-top: 0.9rem;
+/* Dropdown body */
+.teach-me-feature-body {
+  margin-top: 0.25rem;
 }
 
-.teach-me-expandable-item .kpi-list {
+/* Bullets under each Bluey dropdown */
+.teach-me-feature-list {
+  text-align: left;
   padding-left: 1.1rem;
-  margin: 0.3rem 0;
+  margin: 0.25rem 0 0;
+  font-size: 0.85rem;
+  line-height: 1.4;
 }
 
-.teach-me-expandable-item .kpi-list li {
-  font-size: 0.85rem;
+.teach-me-feature-list li {
   margin-bottom: 0.35rem;
 }
 
@@ -5948,71 +5939,6 @@ margin-right: 5px; /* Space between icon and text */
   margin-bottom: 0.4rem;
 }
 
-/* TEACH ME VIEW – use KPI arrow style inside cards */
-
-/* Draw the blue triangle arrow like the KPI one */
-.teach-me-feature-card .expand-arrow {
-  width: 0;
-  height: 0;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-top: 7px solid #4e50a2; /* blue arrow */
-  display: inline-block;
-  /* Start rotated so it points DOWN when closed */
-  transform: rotate(180deg);
-  transition: transform 0.3s ease-in-out;
-}
-
-/* When the item is active/open, flip it so it points UP */
-.teach-me-expandable-item.active .expand-arrow {
-  transform: rotate(0deg);
-}
-
-/* --- Teach Me: make dropdown headers look like KPIs --- */
-
-/* 1. Kill the KPI ::after dotted rule inside Teach Me cards */
-.teach-me-feature-card .expandable-header::after {
-  content: none !important;
-}
-
-/* 2. Draw a single dotted line using border-bottom */
-.teach-me-feature-card .expandable-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 2px dotted #4e50a2;
-  padding-bottom: 0.4rem;
-  margin-bottom: 0.4rem;
-  background: transparent;
-  border-radius: 0;
-  box-shadow: none;
-}
-
-/* 3. Title styling (same feel as KPI labels) */
-.teach-me-feature-card .expandable-title {
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: #262262;
-}
-
-/* 4. KPI-style blue triangle arrow (no text) */
-.teach-me-feature-card .expand-arrow {
-  width: 0;
-  height: 0;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-top: 7px solid #4e50a2;  /* blue arrow */
-  display: inline-block;
-  transition: transform 0.3s ease-in-out;
-}
-
-/* Arrow flips when open */
-.teach-me-expandable-item.active .expand-arrow {
-  transform: rotate(180deg);
-}
-
-
-
 /* ---------------------------------------------------
    Responsive behaviour
 --------------------------------------------------- */
@@ -6042,6 +5968,7 @@ margin-right: 5px; /* Space between icon and text */
     max-width: 100%;
   }
 }
+
 
 
 

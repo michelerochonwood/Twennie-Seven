@@ -1,16 +1,3 @@
-<title>Teach Me | How Twennie Works</title>
-
-<div class="teach-me-page">
-
-  <!-- Pareto Principle Image -->
-  <div class="pareto-visual">
-    <img 
-      src="/images/pareto3d2.png" 
-      alt="Pareto Principle Illustration">
-  </div>
-
-  <h1 class="teach-me-main-heading">Twennie – where the 20% means more</h1>
-
   <!-- Core Features Strip: Learning / Missions / Nuggets -->
   <section class="teach-me-feature-strip" aria-label="Twennie core features">
 
@@ -20,26 +7,23 @@
         src="/images/bluey1.png" 
         alt="Learner Bluey" 
         class="teach-me-feature-image">
-      
 
-<div class="expandable-item teach-me-expandable-item">
-  <button 
-    class="expandable-header"
-    type="button"
-    aria-expanded="false">
-    <span class="expandable-title">learning</span>
-    <span class="expand-arrow" aria-hidden="true"></span>
-  </button>
+      <button 
+        class="teach-me-toggle"
+        type="button"
+        aria-expanded="false">
+        <span class="teach-me-toggle-label">learning</span>
+        <span class="teach-me-toggle-arrow" aria-hidden="true"></span>
+      </button>
 
-  <div class="expandable-content">
-    <ul class="kpi-list">
-      <li>Explore short, focused units in the Twennie library.</li>
-      <li>Follow topic paths that match your role and goals.</li>
-      <li>Use prompt sets to turn insights into daily habits.</li>
-      <li>Tag units you want to revisit or share with your team.</li>
-    </ul>
-  </div>
-</div>
+      <div class="teach-me-feature-body" hidden>
+        <ul class="teach-me-feature-list">
+          <li>Explore short, focused units in the Twennie library.</li>
+          <li>Follow topic paths that match your role and goals.</li>
+          <li>Use prompt sets to turn insights into daily habits.</li>
+          <li>Tag units you want to revisit or share with your team.</li>
+        </ul>
+      </div>
     </article>
 
     <!-- Missions / Spy Bluey -->
@@ -49,24 +33,21 @@
         alt="Spy Bluey" 
         class="teach-me-feature-image">
 
+      <button 
+        class="teach-me-toggle"
+        type="button"
+        aria-expanded="false">
+        <span class="teach-me-toggle-label">missions</span>
+        <span class="teach-me-toggle-arrow" aria-hidden="true"></span>
+      </button>
 
-      <div class="expandable-item teach-me-expandable-item">
-        <button 
-          class="expandable-header"
-          type="button"
-          aria-expanded="false">
-          <span class="expandable-title">missions</span>
-          <span class="expand-arrow" aria-hidden="true"></span>
-        </button>
-
-        <div class="expandable-content">
-          <ul class="kpi-list">
-            <li>Structured, time-bound tasks to put learning into action.</li>
-            <li>Pick missions by category: learning, research, BD, culture, and more.</li>
-            <li>Use missions to move real projects and internal priorities forward.</li>
-            <li>Leaders can point teams at key missions to align everyone’s focus.</li>
-          </ul>
-        </div>
+      <div class="teach-me-feature-body" hidden>
+        <ul class="teach-me-feature-list">
+          <li>Structured, time-bound tasks to put learning into action.</li>
+          <li>Pick missions by category: learning, research, BD, culture, and more.</li>
+          <li>Use missions to move real projects and internal priorities forward.</li>
+          <li>Leaders can point teams at key missions to align everyone’s focus.</li>
+        </ul>
       </div>
     </article>
 
@@ -77,28 +58,26 @@
         alt="Miner Bluey" 
         class="teach-me-feature-image">
 
+      <button 
+        class="teach-me-toggle"
+        type="button"
+        aria-expanded="false">
+        <span class="teach-me-toggle-label">nuggets</span>
+        <span class="teach-me-toggle-arrow" aria-hidden="true"></span>
+      </button>
 
-      <div class="expandable-item teach-me-expandable-item">
-        <button 
-          class="expandable-header"
-          type="button"
-          aria-expanded="false">
-          <span class="expandable-title">nuggets</span>
-          <span class="expand-arrow" aria-hidden="true"></span>
-        </button>
-
-        <div class="expandable-content">
-          <ul class="kpi-list">
-            <li>Capture early-stage intel before it enters any pipeline.</li>
-            <li>Organize insights into overview, golden bits, crunch points, and watch list.</li>
-            <li>Link Nuggets to prompt sets to drive action from what you’re seeing.</li>
-            <li>Keep your team’s “market radar” sharp without turning Twennie into a CRM.</li>
-          </ul>
-        </div>
+      <div class="teach-me-feature-body" hidden>
+        <ul class="teach-me-feature-list">
+          <li>Capture early-stage intel before it enters any pipeline.</li>
+          <li>Organize insights into overview, golden bits, crunch points, and watch list.</li>
+          <li>Link Nuggets to prompt sets to drive action from what you’re seeing.</li>
+          <li>Keep your team’s “market radar” sharp without turning Twennie into a CRM.</li>
+        </ul>
       </div>
     </article>
 
   </section>
+
 
   <!-- Three Membership Columns -->
   <section class="teach-me-container">
@@ -196,24 +175,21 @@
 </div>
 
 <script>
-  // Local toggle so Teach Me behaves like KPI expandables
+  // Simple toggle for the feature dropdowns (Learning / Missions / Nuggets)
   document.addEventListener('DOMContentLoaded', function () {
-    const items = document.querySelectorAll('.teach-me-expandable-item');
+    const toggles = document.querySelectorAll('.teach-me-toggle');
 
-    items.forEach(function (item) {
-      const header = item.querySelector('.expandable-header');
-      const content = item.querySelector('.expandable-content');
+    toggles.forEach(function (button) {
+      button.addEventListener('click', function () {
+        const body = this.nextElementSibling;
+        const isOpen = this.classList.contains('is-open');
 
-      if (!header || !content) return;
+        this.classList.toggle('is-open', !isOpen);
+        this.setAttribute('aria-expanded', String(!isOpen));
 
-      // Hide by default
-      content.style.display = 'none';
-
-      header.addEventListener('click', function () {
-        const isActive = item.classList.contains('active');
-        item.classList.toggle('active', !isActive);
-        header.setAttribute('aria-expanded', String(!isActive));
-        content.style.display = isActive ? 'none' : 'block';
+        if (body) {
+          body.hidden = isOpen;
+        }
       });
     });
   });
