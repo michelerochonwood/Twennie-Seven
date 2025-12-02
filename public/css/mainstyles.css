@@ -5933,10 +5933,12 @@ margin-right: 5px; /* Space between icon and text */
   padding-left: 1.25rem;
   font-size: 0.87rem;
   line-height: 1.45;
+  font-family: "Figtree";
 }
 
 .teach-me-column-list li {
   margin-bottom: 0.4rem;
+  font-family: "Figtree";
 }
 
 /* ---------------------------------------------------
