@@ -5948,6 +5948,27 @@ margin-right: 5px; /* Space between icon and text */
   margin-bottom: 0.4rem;
 }
 
+/* TEACH ME VIEW – use KPI arrow style inside cards */
+
+/* Draw the blue triangle arrow like the KPI one */
+.teach-me-feature-card .expand-arrow {
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 7px solid #4e50a2; /* blue arrow */
+  display: inline-block;
+  /* Start rotated so it points DOWN when closed */
+  transform: rotate(180deg);
+  transition: transform 0.3s ease-in-out;
+}
+
+/* When the item is active/open, flip it so it points UP */
+.teach-me-expandable-item.active .expand-arrow {
+  transform: rotate(0deg);
+}
+
+
 /* ---------------------------------------------------
    Responsive behaviour
 --------------------------------------------------- */
