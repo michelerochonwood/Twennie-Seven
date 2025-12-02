@@ -5791,7 +5791,7 @@ margin-right: 5px; /* Space between icon and text */
   background-color: #ffffff;
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  padding: 1.5rem;
+  padding: 1.5rem 1.5rem 1.75rem;
   text-align: left;
   max-width: 260px;
   flex: 1 1 220px;
@@ -5811,16 +5811,76 @@ margin-right: 5px; /* Space between icon and text */
   text-transform: lowercase;
   letter-spacing: 0.06em;
   color: #262262;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.6rem;
 }
 
-/* Space for KPI-style header + content inside card */
+/* ---------------------------------------------------
+   KPI-style expandable inside each card
+   (matches topic KPI row with dotted rule + arrow)
+--------------------------------------------------- */
+
 .teach-me-expandable-item {
   margin-top: 0.25rem;
 }
 
+/* Override any global expandable-header styling */
+.teach-me-feature-card .expandable-header {
+  width: 100%;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 0 0.4rem 0;
+  margin: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+  color: #262262;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+/* Text on the left */
+.teach-me-feature-card .expandable-title {
+  margin-right: auto;
+  white-space: nowrap;
+}
+
+/* Dotted line across, like the KPI row */
+.teach-me-feature-card .expandable-header::after {
+  content: "";
+  border-bottom: 2px dotted #4e50a2;
+  flex-grow: 1;
+  margin-left: 0.6rem;
+  margin-right: 1.2rem;
+}
+
+/* Arrow on the right, same behavior as KPI */
+.teach-me-feature-card .expand-arrow {
+  display: inline-block;
+  font-size: 0.8rem;
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Rotate arrow when item is active (open) */
+.teach-me-expandable-item.active .expand-arrow {
+  transform: rotate(180deg);
+}
+
+/* Content spacing + bullets, matching KPI text scale */
 .teach-me-expandable-item .expandable-content {
-  margin-top: 0.75rem;
+  margin-top: 0.9rem;
+}
+
+.teach-me-expandable-item .kpi-list {
+  padding-left: 1.1rem;
+  margin: 0.3rem 0;
+}
+
+.teach-me-expandable-item .kpi-list li {
+  font-size: 0.85rem;
+  margin-bottom: 0.35rem;
 }
 
 /* ---------------------------------------------------
@@ -5917,6 +5977,7 @@ margin-right: 5px; /* Space between icon and text */
     max-width: 100%;
   }
 }
+
 
 
 
