@@ -5792,7 +5792,7 @@ margin-right: 5px; /* Space between icon and text */
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
   padding: 1.5rem;
-  text-align: center;
+  text-align: left;
   max-width: 260px;
   flex: 1 1 220px;
 }
@@ -5805,65 +5805,22 @@ margin-right: 5px; /* Space between icon and text */
 }
 
 .teach-me-feature-label {
+  text-align: center;
   font-size: 1rem;
   font-weight: 700;
   text-transform: lowercase;
   letter-spacing: 0.06em;
   color: #262262;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 }
 
-/* ▼▼ Dropdown – styled to match KPI expandables ▼▼ */
-
-/* Button under each Bluey – visually like KPI dropdown headers */
-.teach-me-feature-toggle {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-radius: 999px;
-  border: 1px solid #e0e0f0;
-  background-color: #f1f1fb;
-  padding: 0.5rem 0.9rem;
-  font-size: 0.85rem;
-  font-weight: 500;
-  cursor: pointer;
-  color: #333;
-  text-align: left;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+/* Space for KPI-style header + content inside card */
+.teach-me-expandable-item {
+  margin-top: 0.25rem;
 }
 
-.teach-me-feature-toggle:hover {
-  background-color: #e5e5fa;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-}
-
-/* Arrow uses the same class / behavior as KPI section */
-/* Support both .expand-arrow and the old .teach-me-toggle-arrow name */
-.expand-arrow,
-.teach-me-toggle-arrow {
-  transition: transform 0.3s ease-in-out;
-  display: inline-block;
-  font-size: 0.9rem;
-}
-
-/* Match KPI-style rotation when open */
-.teach-me-feature-toggle.is-open .expand-arrow,
-.teach-me-feature-toggle.is-open .teach-me-toggle-arrow {
-  transform: rotate(180deg);
-}
-
-/* Dropdown content – same text scale / spacing as KPI lists */
-.teach-me-feature-list {
+.teach-me-expandable-item .expandable-content {
   margin-top: 0.75rem;
-  text-align: left;
-  padding-left: 1.1rem;
-  font-size: 0.85rem;
-  line-height: 1.4;
-}
-
-.teach-me-feature-list li {
-  margin-bottom: 0.35rem;
 }
 
 /* ---------------------------------------------------
@@ -5960,6 +5917,7 @@ margin-right: 5px; /* Space between icon and text */
     max-width: 100%;
   }
 }
+
 
 
 

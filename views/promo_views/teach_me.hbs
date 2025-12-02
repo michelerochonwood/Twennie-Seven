@@ -22,20 +22,24 @@
         class="teach-me-feature-image">
       <p class="teach-me-feature-label">learning</p>
 
-      <button 
-        class="teach-me-feature-toggle" 
-        type="button" 
-        aria-expanded="false">
-        <span>What happens in Learning?</span>
-        <span class="teach-me-toggle-arrow" aria-hidden="true">⌃</span>
-      </button>
+      <div class="expandable-item teach-me-expandable-item">
+        <button 
+          class="expandable-header"
+          type="button"
+          aria-expanded="false">
+          <span class="expandable-title">What happens in Learning?</span>
+          <span class="expand-arrow" aria-hidden="true">⌄</span>
+        </button>
 
-      <ul class="teach-me-feature-list" hidden>
-        <li>Explore short, focused units in the Twennie library.</li>
-        <li>Follow topic paths that match your role and goals.</li>
-        <li>Use prompt sets to turn insights into daily habits.</li>
-        <li>Tag units you want to revisit or share with your team.</li>
-      </ul>
+        <div class="expandable-content">
+          <ul class="kpi-list">
+            <li>Explore short, focused units in the Twennie library.</li>
+            <li>Follow topic paths that match your role and goals.</li>
+            <li>Use prompt sets to turn insights into daily habits.</li>
+            <li>Tag units you want to revisit or share with your team.</li>
+          </ul>
+        </div>
+      </div>
     </article>
 
     <!-- Missions / Spy Bluey -->
@@ -46,20 +50,24 @@
         class="teach-me-feature-image">
       <p class="teach-me-feature-label">missions</p>
 
-      <button 
-        class="teach-me-feature-toggle" 
-        type="button" 
-        aria-expanded="false">
-        <span>What are Missions?</span>
-        <span class="teach-me-toggle-arrow" aria-hidden="true">⌃</span>
-      </button>
+      <div class="expandable-item teach-me-expandable-item">
+        <button 
+          class="expandable-header"
+          type="button"
+          aria-expanded="false">
+          <span class="expandable-title">What are Missions?</span>
+          <span class="expand-arrow" aria-hidden="true">⌄</span>
+        </button>
 
-      <ul class="teach-me-feature-list" hidden>
-        <li>Structured, time-bound tasks to put learning into action.</li>
-        <li>Pick missions by category: learning, research, BD, culture, and more.</li>
-        <li>Use missions to move real projects and internal priorities forward.</li>
-        <li>Leaders can point teams at key missions to align everyone’s focus.</li>
-      </ul>
+        <div class="expandable-content">
+          <ul class="kpi-list">
+            <li>Structured, time-bound tasks to put learning into action.</li>
+            <li>Pick missions by category: learning, research, BD, culture, and more.</li>
+            <li>Use missions to move real projects and internal priorities forward.</li>
+            <li>Leaders can point teams at key missions to align everyone’s focus.</li>
+          </ul>
+        </div>
+      </div>
     </article>
 
     <!-- Nuggets / Miner Bluey -->
@@ -70,20 +78,24 @@
         class="teach-me-feature-image">
       <p class="teach-me-feature-label">nuggets</p>
 
-      <button 
-        class="teach-me-feature-toggle" 
-        type="button" 
-        aria-expanded="false">
-        <span>What are Nuggets?</span>
-        <span class="teach-me-toggle-arrow" aria-hidden="true">⌃</span>
-      </button>
+      <div class="expandable-item teach-me-expandable-item">
+        <button 
+          class="expandable-header"
+          type="button"
+          aria-expanded="false">
+          <span class="expandable-title">What are Nuggets?</span>
+          <span class="expand-arrow" aria-hidden="true">⌄</span>
+        </button>
 
-      <ul class="teach-me-feature-list" hidden>
-        <li>Capture early-stage intel before it enters any pipeline.</li>
-        <li>Organize insights into overview, golden bits, crunch points, and watch list.</li>
-        <li>Link Nuggets to prompt sets to drive action from what you’re seeing.</li>
-        <li>Keep your team’s “market radar” sharp without turning Twennie into a CRM.</li>
-      </ul>
+        <div class="expandable-content">
+          <ul class="kpi-list">
+            <li>Capture early-stage intel before it enters any pipeline.</li>
+            <li>Organize insights into overview, golden bits, crunch points, and watch list.</li>
+            <li>Link Nuggets to prompt sets to drive action from what you’re seeing.</li>
+            <li>Keep your team’s “market radar” sharp without turning Twennie into a CRM.</li>
+          </ul>
+        </div>
+      </div>
     </article>
 
   </section>
@@ -96,7 +108,6 @@
       <div class="teach-me-column teach-me-column--individual">
         <h2 class="column-heading">I am an individual member</h2>
 
-        <!-- Individual Video -->
         <div class="video-frame">
           <video 
             controls 
@@ -123,12 +134,11 @@
       <div class="teach-me-column teach-me-column--group-member">
         <h2 class="column-heading">I am a group member</h2>
 
-        <!-- Group Member Video (placeholder – swap src/poster when ready) -->
         <div class="video-frame">
           <video 
             controls 
             poster="/images/groupmemberposter.png">
-            <source src="https://youtu.be/i6m52F1xaV8" type="video/mp4">
+            <source src="https://res.cloudinary.com/dgeszflt3/video/upload/v1760000000/Group_Member_Orientation_placeholder.mp4" type="video/mp4">
             Your browser does not support the video tag.
           </video>
         </div>
@@ -150,7 +160,6 @@
       <div class="teach-me-column teach-me-column--leader">
         <h2 class="column-heading">I am a leader</h2>
 
-        <!-- Leader Video 1: Leader Orientation -->
         <div class="video-frame">
           <video 
             controls 
@@ -160,7 +169,6 @@
           </video>
         </div>
 
-        <!-- Leader Video 2: Report Center -->
         <div class="video-frame">
           <video 
             controls 
@@ -188,21 +196,24 @@
 </div>
 
 <script>
-  // Simple toggle for the feature dropdowns (Learning / Missions / Nuggets)
+  // Local toggle so Teach Me behaves like KPI expandables
   document.addEventListener('DOMContentLoaded', function () {
-    const toggles = document.querySelectorAll('.teach-me-feature-toggle');
+    const items = document.querySelectorAll('.teach-me-expandable-item');
 
-    toggles.forEach(function (button) {
-      button.addEventListener('click', function () {
-        const expanded = this.getAttribute('aria-expanded') === 'true';
-        const list = this.nextElementSibling;
+    items.forEach(function (item) {
+      const header = item.querySelector('.expandable-header');
+      const content = item.querySelector('.expandable-content');
 
-        this.setAttribute('aria-expanded', String(!expanded));
-        this.classList.toggle('is-open', !expanded);
+      if (!header || !content) return;
 
-        if (list) {
-          list.hidden = expanded;
-        }
+      // Hide by default
+      content.style.display = 'none';
+
+      header.addEventListener('click', function () {
+        const isActive = item.classList.contains('active');
+        item.classList.toggle('active', !isActive);
+        header.setAttribute('aria-expanded', String(!isActive));
+        content.style.display = isActive ? 'none' : 'block';
       });
     });
   });
