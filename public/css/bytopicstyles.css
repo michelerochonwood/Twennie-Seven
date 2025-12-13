@@ -1030,7 +1030,7 @@ html, body {
 }
 
 .bytopic-unit-key-svg{
-  width: 100px;
+  width: 200px;
   height: auto;
   display: block;
 }
@@ -1038,6 +1038,7 @@ html, body {
 .bytopic-unit-key-label{
   font-size: 0.95rem;
   line-height: 1.2;
-  font-weight: 600;
+  font-weight: 400;
   text-transform: lowercase;
+  color:#4a4a4a;
 }
