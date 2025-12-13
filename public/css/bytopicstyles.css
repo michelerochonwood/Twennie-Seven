@@ -1013,3 +1013,31 @@ html, body {
 }
 
 
+/* --- Unit Card SVG Key --- */
+.bytopic-unit-key{
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  justify-content: flex-start; /* left aligned */
+  margin: 12px 0 18px;         /* sits under long summary, before first section */
+  flex-wrap: wrap;             /* safe on small screens */
+}
+
+.bytopic-unit-key-item{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bytopic-unit-key-svg{
+  width: 100px;
+  height: auto;
+  display: block;
+}
+
+.bytopic-unit-key-label{
+  font-size: 0.95rem;
+  line-height: 1.2;
+  font-weight: 600;
+  text-transform: lowercase;
+}

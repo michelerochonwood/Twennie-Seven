@@ -7,6 +7,26 @@
     <p class="bytopic-short-summary">{{shortSummary}}</p>
     <p class="bytopic-long-summary">{{longSummary}}</p>
 
+    <!-- Unit Card SVG Key -->
+<div class="bytopic-unit-key" aria-label="Unit card key">
+  <div class="bytopic-unit-key-item">
+    <img src="/images/unitsvg.svg"
+         alt=""
+         aria-hidden="true"
+         class="bytopic-unit-key-svg">
+    <span class="bytopic-unit-key-label">ready to go</span>
+  </div>
+
+  <div class="bytopic-unit-key-item">
+    <img src="/images/newupcomingsvg.svg"
+         alt=""
+         aria-hidden="true"
+         class="bytopic-unit-key-svg">
+    <span class="bytopic-unit-key-label">upcoming unit</span>
+  </div>
+</div>
+
+
     {{#each sectionedUnits}}
       <h2 class="bytopic-section-title">{{this.sectionTitle}}</h2>
       <hr class="bytopic-section-divider">
