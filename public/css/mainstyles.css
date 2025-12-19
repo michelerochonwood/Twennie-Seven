@@ -6123,7 +6123,6 @@ margin-right: 5px; /* Space between icon and text */
 
 .mfa-title {
   margin: 0 0 12px 0;
-  margin-top: 160px;             /* echo success-title spacing, a bit tighter */
   color: #262262;
   font-size: 24px;
   font-weight: 800;
