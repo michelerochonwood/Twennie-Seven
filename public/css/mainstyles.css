@@ -6367,6 +6367,18 @@ margin-right: 5px; /* Space between icon and text */
 }
 
 
+.mfa-bluey {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.mfa-bluey-image {
+  max-width: 140px;
+  height: auto;
+}
+
+
 /* ===== Cookie Banner ===== */
 .cookie-banner {
   position: fixed;
