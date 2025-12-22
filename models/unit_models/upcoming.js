@@ -19,7 +19,7 @@ const TOPIC_ENUM = [
   'Business Development Metrics',
   'Using Lean in Project Management',
   'Turning a Project into a Business Development Powerhouse',
-  'Portfolio and Program Management',
+  'Program Management',
   'Making a Proposal Easy to Read, Skim, and Evaluate',
   'Storytelling in Technical Marketing',
   'Client Experience',

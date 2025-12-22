@@ -110,7 +110,7 @@ exports.getTopicView = async (req, res) => {
             'Business Development Metrics': 'businessdevelopmentmetrics',
             'Using Lean in Project Management': 'usingleaninprojectmanagement',
             'Turning a Project into a Business Development Powerhouse': 'turningaprojectintoabusinessdevelopmentpowerhouse',
-            'Portfolio and Program Management': 'portfolioandprogrammanagement',
+            'Program Management': 'programmanagement',
             'Making a Proposal Easy to Read, Skim, and Evaluate': 'makingaproposaleasytoreadskimandevaluate',
             'Storytelling in Technical Marketing': 'storytellingintechnicalmarketing',
             'Client Experience': 'clientexperience',

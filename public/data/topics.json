@@ -558,16 +558,16 @@
 },
 {
   "id": 208,
-  "title": "Portfolio and Program Management",
+  "title": "Program Management",
   "shortSummary": "Look beyond individual projects. Balance risk, capacity, and priorities across portfolios while coordinating related projects to deliver benefits at scale.",
   "longSummary": "Portfolio and program management operate at different but complementary levels. Portfolio management ensures the organization invests in the right mix of projects and programs aligned to strategy, balancing risk, capacity, and timing. Program management coordinates interdependent projects to deliver a larger, integrated outcome and realize benefits—not just complete tasks. In this topic, you’ll learn selection frameworks, governance patterns, and benefits tracking, plus how to make resource tradeoffs across portfolios while sequencing program work sensibly. The focus is enterprise impact: choosing what to do and coordinating how related efforts come together to deliver value.",
   "subtopics": [
-    "aligning portfolios with organizational strategy",
+    "aligning programs with organizational strategy",
     "portfolio selection and prioritization frameworks",
-    "resource and capacity balancing across portfolios",
+    "resource and capacity balancing across programs",
     "program coordination and dependency management",
     "benefits realization vs. outputs",
-    "governance models for portfolios and programs",
+    "governance models for programs",
     "sequencing and timing across interdependent work",
     "adjusting investments as priorities evolve"
   ]
