@@ -1053,7 +1053,7 @@ html, body {
 }
 
 .bytopic-unit-type-key-item {
-  width: 175px;
+  width: 150px;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -1061,8 +1061,6 @@ html, body {
 }
 
 .bytopic-unit-type-key-item img {
-  width: 150px;
-  height: auto;
   margin-bottom: 0.5rem;
 }
 
