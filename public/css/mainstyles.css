@@ -2231,6 +2231,48 @@ img[alt="Free"] {
   line-height: 1.4;
 }
 
+/* ===========================
+   ENTERPRISE PROMO OVERRIDES
+   =========================== */
+
+.membership-container--enterprise {
+  padding-top: 60px; /* slightly tighter for a promo page */
+}
+
+.membership-enterprise-intro {
+  max-width: 900px;
+  margin: 0 auto 30px auto;
+  text-align: center;
+}
+
+/* Make this page 3 columns instead of 5 */
+.membership-grid--enterprise {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* Better scaling for smaller screens */
+@media (max-width: 1100px) {
+  .membership-grid--enterprise {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .membership-grid--enterprise {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Optional: avoid overly tall icon blocks if you want a tighter promo layout */
+.membership-container--enterprise .membership-image-container {
+  height: 170px;
+}
+
+.membership-container--enterprise .membership-character-image {
+  max-height: 170px;
+}
+
+
 
 
 /* Volume discounts link */

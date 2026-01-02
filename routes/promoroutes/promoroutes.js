@@ -149,5 +149,11 @@ router.get('/training_bingo', (req, res) => {
     });
 });
 
+router.get('/enterprise_members', (req, res) => {
+    res.render('promo_views/enterprise_members', {
+        layout: 'mainlayout'
+    });
+});
+
 // Export the router
 module.exports = router;
