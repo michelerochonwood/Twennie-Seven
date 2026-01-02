@@ -1078,3 +1078,11 @@ html, body {
   line-height: 1.4;
   color: #555;
 }
+
+.bytopic-key-divider {
+  border: none;
+  height: 2px;
+  width: 100%;
+  background: linear-gradient(to right, transparent, #cfcfe8, transparent);
+  margin: 2.5rem 0;
+}
