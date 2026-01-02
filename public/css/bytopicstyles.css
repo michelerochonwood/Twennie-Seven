@@ -1053,7 +1053,7 @@ html, body {
 }
 
 .bytopic-unit-type-key-item {
-  width: 150px;
+  width: 130px;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -1072,8 +1072,8 @@ html, body {
 }
 
 .bytopic-unit-type-desc {
-  font-size: 0.8rem;
-  line-height: 1.4;
+  font-size: 0.7rem;
+  line-height: 1.3;
   color: #555;
 }
 
