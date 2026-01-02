@@ -36,6 +36,40 @@
       </button>
     </section>
 
+    <!-- LEARNING UNITS -->
+<section class="white-container single_mission-section">
+  <h2 class="single_mission-section-title">learning units</h2>
+  <p class="form-hint">
+    These are the Twennie units and assignments that make up this mission.
+  </p>
+
+  {{#if learningUnits.length}}
+    <ul class="single_mission-learning-units">
+      {{#each learningUnits}}
+        <li class="single_mission-learning-unit">
+          <a href="{{url}}" class="single_mission-learning-unit-link">
+            <img
+              src="{{icon}}"
+              alt=""
+              aria-hidden="true"
+              class="single_mission-learning-unit-icon"
+            >
+            <div class="single_mission-learning-unit-text">
+              <div class="single_mission-learning-unit-type">{{displayType}}</div>
+              <div class="single_mission-learning-unit-title">{{title}}</div>
+            </div>
+          </a>
+        </li>
+      {{/each}}
+    </ul>
+  {{else}}
+    <p class="single_mission-text" style="margin:0; color:#6b7280;">
+      No learning units have been added to this mission yet.
+    </p>
+  {{/if}}
+</section>
+
+
     <!-- MAIN BODY: hidden until user opens it -->
     <div class="single_mission-main-body hidden" id="singleMissionBody">
       <!-- PURPOSE / WHY / BACKGROUND -->

@@ -4158,6 +4158,56 @@ label {
   margin: 0 auto;
 }
 
+.single_mission-learning-units {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.single_mission-learning-unit {
+  margin: 0;
+}
+
+.single_mission-learning-unit-link {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  text-decoration: none;
+  background: #f4f5ff;
+  border-radius: 14px;
+  padding: 10px 12px;
+}
+
+.single_mission-learning-unit-link:hover {
+  filter: brightness(0.98);
+}
+
+.single_mission-learning-unit-icon {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  flex: 0 0 44px;
+}
+
+.single_mission-learning-unit-type {
+  font-size: 12px;
+  font-weight: 700;
+  color: #4e50a2;
+  text-transform: lowercase;
+  margin-bottom: 2px;
+}
+
+.single_mission-learning-unit-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.3;
+}
+
+
 /* =========================
    SINGLE MISSION – RESPONSIVE
    ========================= */
