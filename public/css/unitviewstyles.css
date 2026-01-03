@@ -2730,6 +2730,10 @@ label {
    The Mine — CLIENT VIEW (clean)
    ================================ */
 
+.mineclients-card-content {
+  box-sizing: border-box;
+}
+
 
 
 .mineclients-container {
