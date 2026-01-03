@@ -45,25 +45,17 @@
     <!-- LEARNING UNITS -->
 <section class="white-container single_mission-section">
   <h2 class="single_mission-section-title">learning units</h2>
+
   <p class="form-hint">
     These are the Twennie units and assignments that make up this mission.
   </p>
 
   {{#if learningUnits.length}}
-    <ul class="single_mission-learning-units">
+    <ul class="single_mission-learning-units" style="margin:0; padding-left:18px;">
       {{#each learningUnits}}
-        <li class="single_mission-learning-unit">
-          <a href="{{url}}" class="single_mission-learning-unit-link">
-            <img
-              src="{{icon}}"
-              alt=""
-              aria-hidden="true"
-              class="single_mission-learning-unit-icon"
-            >
-            <div class="single_mission-learning-unit-text">
-              <div class="single_mission-learning-unit-type">{{displayType}}</div>
-              <div class="single_mission-learning-unit-title">{{title}}</div>
-            </div>
+        <li style="margin:6px 0;">
+          <a href="{{url}}" style="color:#4e50a2; font-weight:600; text-decoration:none;">
+            {{displayType}}: {{title}}
           </a>
         </li>
       {{/each}}
@@ -74,6 +66,7 @@
     </p>
   {{/if}}
 </section>
+
 
 
       <!-- PURPOSE / WHY / BACKGROUND -->
