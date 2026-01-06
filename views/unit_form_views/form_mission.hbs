@@ -40,6 +40,23 @@
         >
       </div>
 
+<div class="form-field">
+  <label for="badge-name">Give your mission badge a name</label>
+  <input
+    type="text"
+    id="badge-name"
+    name="badge_name"
+    value="{{data.badge_name}}"
+    required
+    maxlength="60"
+    placeholder="e.g., Client Whisperer 1, Scope Guardian, Research Runner"
+  >
+  <p class="form-hint">
+    This name appears on the badge when someone completes the mission. 
+  </p>
+</div>
+
+
       {{!-- TOPIC: missions still sit inside a topic, so reuse the topic dropdown --}}
       {{> unitformpartials/topicdropdown }}
 

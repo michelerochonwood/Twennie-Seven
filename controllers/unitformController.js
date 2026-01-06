@@ -2088,6 +2088,7 @@ submitPromptSet: async (req, res) => {
 
     const {
       mission_title,
+      badge_name,
       status,
       visibility,
       main_topic,
@@ -2105,6 +2106,8 @@ submitPromptSet: async (req, res) => {
     } = req.body;
 
     // --- Twennie learning units from hidden inputs (autocomplete chips) ---
+
+    
     let rawTwennieUnits = req.body.twennie_units || [];
 
     // ensure it's always an array
@@ -2122,10 +2125,13 @@ submitPromptSet: async (req, res) => {
       .slice(0, 6); // hard cap at 6
 
     // Basic validations
-    const errors = [];
-    if (!mission_title?.trim()) errors.push('Mission title is required.');
-    if (!purpose?.trim()) errors.push('Mission purpose is required.');
-    if (!why_it_matters?.trim()) errors.push('Please explain why this mission matters.');
+
+const errors = [];
+if (!mission_title?.trim()) errors.push('Mission title is required.');
+if (!badge_name?.trim()) errors.push('Mission badge name is required.');
+if (!purpose?.trim()) errors.push('Mission purpose is required.');
+if (!why_it_matters?.trim()) errors.push('Please explain why this mission matters.');
+
 
     if (errors.length) {
       return res.status(400).render('unit_form_views/form_mission', {
@@ -2206,6 +2212,7 @@ submitPromptSet: async (req, res) => {
 
     const baseData = {
       mission_title: (mission_title || '').trim(),
+        badge_name: (badge_name || '').trim(), // ✅ NEW
 
       // status enum in schema: 'one time mission', 'on-going', 'intermittent'
       status: status || 'one time mission',

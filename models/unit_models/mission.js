@@ -21,6 +21,13 @@ const missionSchema = new mongoose.Schema({
     trim: true,
   },
 
+  badge_name: {
+  type: String,
+  required: true,
+  trim: true,
+  maxlength: 60
+},
+
   // --- CORE NARRATIVE FIELDS ---
   purpose: {
     type: String,

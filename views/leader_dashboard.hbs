@@ -52,6 +52,13 @@
         <div class="tab-arrow"></div>
       </button>
 
+      <!-- ✅ NEW: Missions -->
+      <button class="dashboard-tab" data-tab="missions" data-count="{{leaderCounts.missions}}">
+        <span class="tab-title">missions</span>
+        {{#if leaderBadges.missions}}<span class="tab-dot"></span>{{/if}}
+        <div class="tab-arrow"></div>
+      </button>
+
       <!-- 7) Contribute to the library -->
       <button class="dashboard-tab" data-tab="contribute">
         <span class="tab-title">contribute to my library</span>
@@ -106,9 +113,14 @@
       {{> dashboardpartials/leader_progress }}
     </div>
 
-    <!-- my tags and assignments -->
+    <!-- my tags and assignments (NOW: no mission content in this partial) -->
     <div class="dashboard-tab-content" id="tagged">
       {{> dashboardpartials/leader_tagged_units }}
+    </div>
+
+    <!-- ✅ NEW: missions tab content -->
+    <div class="dashboard-tab-content" id="missions">
+      {{> dashboardpartials/leader_missions }}
     </div>
 
     <!-- contribute to the library -->
@@ -142,7 +154,9 @@
     btn.addEventListener('click', () => {
       const tab = btn.dataset.tab;
       const count = btn.dataset.count || 0;
-      if (['group','topics','prompts','progress','library','tagged'].includes(tab)) {
+
+      // ✅ include missions
+      if (['group','topics','prompts','progress','library','tagged','missions'].includes(tab)) {
         markSeenLeader(tab, count);
         const dot = btn.querySelector('.tab-dot');
         if (dot) dot.style.display = 'none';
@@ -150,6 +164,7 @@
     });
   });
 </script>
+
 
 
 
