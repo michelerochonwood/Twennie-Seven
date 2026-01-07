@@ -121,42 +121,48 @@
 <div class="group-member-tagged-subsection" style="margin-top:20px;">
   <h3 class="group-member-tagged-subtitle">mission badges</h3>
 
-  <div class="mission-badges-grid mission-badges-grid--celebration">
-    {{#if @root.missionBadges.length}}
+  {{#if @root.missionBadges.length}}
+    <div class="gm-mission-badges-grid">
       {{#each @root.missionBadges}}
-        <div class="mission-badge-card mission-badge-card--celebration">
-          <img
-            src="{{badgePath}}"
-            alt="{{badgeName}} badge"
-            class="mission-badge-icon mission-badge-icon--large"
-          >
+        <article class="gm-mission-badge-card">
+          <div class="gm-mission-badge-inner">
 
-          <p class="mission-badge-congrats">
-            🎉 <strong>Congratulations!</strong><br>
-            You earned the <strong>{{badgeName}}</strong> badge!
-          </p>
+            <div class="gm-mission-badge-top">
+              <img
+                src="{{badgePath}}"
+                alt="{{badgeName}} badge"
+                class="gm-mission-badge-img"
+              >
+            </div>
 
-          {{#if completed_at}}
-            <p class="mission-badge-date">
-              completed {{formatDate completed_at "MMM D, YYYY"}}
-            </p>
-          {{/if}}
+            <div class="gm-mission-badge-body">
+              <p class="gm-mission-badge-congrats">
+                🎉 <strong>Congratulations!</strong><br>
+                You earned the <strong>{{badgeName}}</strong> badge!
+              </p>
 
-          <a
-            href="/unitviews/missions/view/{{missionId}}"
-            class="mission-badge-link"
-          >
-            view mission
-          </a>
-        </div>
+              {{#if completed_at}}
+                <p class="gm-mission-badge-date">
+                  completed {{formatDate completed_at "MMM D, YYYY"}}
+                </p>
+              {{/if}}
+
+              <a href="/unitviews/missions/view/{{missionId}}" class="gm-mission-badge-link">
+                view mission
+              </a>
+            </div>
+
+          </div>
+        </article>
       {{/each}}
-    {{else}}
-      <p class="tagged-no-units" style="text-align:center;">
-        You haven’t completed any missions yet. Once you finish a mission and submit notes, your badge will appear here.
-      </p>
-    {{/if}}
-  </div>
+    </div>
+  {{else}}
+    <p class="tagged-no-units" style="text-align:center;">
+      You haven’t completed any missions yet. Once you finish a mission and submit notes, your badge will appear here.
+    </p>
+  {{/if}}
 </div>
+
 
 
 </section>

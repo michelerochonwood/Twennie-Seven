@@ -2202,69 +2202,74 @@ html, body {
 }
 
 
-.mission-badge-row {
-  display: flex;
-  flex-direction: column;
-  align-items: center;   /* ✅ centers the badge */
-  justify-content: center;
-  text-align: center;
-  gap: 6px;
-  margin-top: 10px;
+
+
+
+/* ================================
+   Group Member — Mission Badge Congratulations Cards
+   ================================ */
+
+.gm-mission-badges-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-top: 14px;
 }
 
-.mission-badge-icon {
-  width: 56px;
-  height: 56px;
-  object-fit: contain;
-  display: block;
+.gm-mission-badge-card {
+  background: #f8f7ff;
+  border: 1px solid #e0dfff;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 2px 0 rgba(0,0,0,0.06);
 }
 
-.mission-badge-name {
-  margin: 0;
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: #4e50a2;
-}
-
-.group-member-tagged-units-section .mission-badge-row {
+.gm-mission-badge-inner {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 18px 16px 16px;
   text-align: center;
 }
 
-/* Mission badge celebration (group member) */
-.mission-badges-grid--celebration {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.5rem;
-  margin-top: 1rem;
-}
-
-.mission-badge-card--celebration {
-  background: #f8f7ff;
-  border: 2px solid #e0dfff;
-  border-radius: 18px;
-  padding: 1.75rem 1.25rem;
-  text-align: center;
-}
-
-.mission-badge-icon--large {
+.gm-mission-badge-img {
   width: 96px;
   height: 96px;
   object-fit: contain;
-  margin-bottom: 0.75rem;
+  display: block;
+  margin: 0 auto 10px;
 }
 
-.mission-badge-congrats {
+.gm-mission-badge-congrats {
+  margin: 6px 0 10px;
   font-size: 0.95rem;
+  line-height: 1.35;
   color: #2f2f4f;
-  margin: 0.5rem 0 0.75rem;
-  line-height: 1.4;
 }
 
-.mission-badge-congrats strong {
+.gm-mission-badge-congrats strong {
   color: #4e50a2;
+}
+
+.gm-mission-badge-date {
+  margin: 0 0 12px;
+  font-size: 0.85rem;
+  color: #6b6c9f;
+}
+
+.gm-mission-badge-link {
+  display: inline-block;
+  padding: 10px 16px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #ffffff;
+  background: #262262;
+}
+
+.gm-mission-badge-link:hover {
+  background: #4a4ab2;
 }
 
 /*------------------------------------------------------------------------------*/
