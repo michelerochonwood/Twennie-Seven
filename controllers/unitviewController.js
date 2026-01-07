@@ -115,7 +115,23 @@ function makeAssignProps(itemId, itemType) {
 }
 
 
+const missionBadgeMap = {
+  learning:             'learningbadge',
+  research:             'researchbadge',
+  business_development: 'bdbadge',
+  internal_improvement: 'improvebadge',
+  culture_play:         'culturebadge',
+  client_experience:    'clientxbadge',
+  community:            'communitybadge',
+  administrative:       'adminbadge',
+  other:                'roguebadge',
+};
 
+function getMissionBadgePath(category) {
+  const key = category || 'other';
+  const filename = missionBadgeMap[key] || missionBadgeMap.other;
+  return `/badges/missions/${filename}.png`;
+}
 
 
 
@@ -1607,6 +1623,19 @@ viewMission: async (req, res) => {
       });
     }
 
+    // --- Badge fields (NEW) ---
+    const category = mission.category || 'other';
+    const badge_name = (mission.badge_name && String(mission.badge_name).trim())
+      ? String(mission.badge_name).trim()
+      : ''; // you said you'll fill these in Mongo
+
+    // Prefer a stored unique badge path if you ever add it later; otherwise use category defaults
+    const badgeImagePath =
+      mission.badgeImagePath ||
+      mission.badge_image ||
+      mission.badgeImage ||
+      getMissionBadgePath(category);
+
     // --- Owner + creator (for sidebar) ---
     const currentUserId = (req.user?._id || req.user?.id)?.toString();
 
@@ -1744,10 +1773,14 @@ viewMission: async (req, res) => {
 
       // meta
       status: mission.status,
-      category: mission.category,
+      category, // ✅ uses normalized category above
       timeframe: mission.timeframe,
       estimated_effort_hours: mission.estimated_effort_hours,
       open_to: mission.open_to,
+
+      // ✅ NEW: badge display
+      badge_name,
+      badgeImagePath,
 
       // purpose / why / background
       purpose: mission.purpose,
@@ -1769,7 +1802,7 @@ viewMission: async (req, res) => {
       deliverables_checklist: mission.deliverables_checklist || [],
       contacts: mission.contacts || [],
 
-      // linked Twennie learning units (NEW)
+      // linked Twennie learning units
       learningUnits,
 
       // tags
@@ -1807,6 +1840,7 @@ viewMission: async (req, res) => {
     });
   }
 },
+
 
 
 
