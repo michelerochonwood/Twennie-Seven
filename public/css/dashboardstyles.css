@@ -2202,7 +2202,36 @@ html, body {
 }
 
 
+.mission-badge-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;   /* ✅ centers the badge */
+  justify-content: center;
+  text-align: center;
+  gap: 6px;
+  margin-top: 10px;
+}
 
+.mission-badge-icon {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  display: block;
+}
+
+.mission-badge-name {
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #4e50a2;
+}
+
+.group-member-tagged-units-section .mission-badge-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
 
 /*------------------------------------------------------------------------------*/
 
