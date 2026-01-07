@@ -666,6 +666,40 @@ const groupMemberTaggedMissions = groupMemberSelfTaggedUnits.filter(u => u.unitT
 const groupMemberAssignedNuggets = groupMemberAssignedUnits.filter(u => u.unitType === 'nugget');
 const groupMemberAssignedMissions = groupMemberAssignedUnits.filter(u => u.unitType === 'mission');
 
+// ✅ Build missionBadges from completed assigned missions (uses Tag.assignedTo.completedAt)
+const completedAssignedMissionIds = (groupMemberAssignedMissions || [])
+  .filter(m => !!m.completedAt) // completedAt comes from Tag.assignedTo.completedAt
+  .map(m => m._id?.toString())
+  .filter(Boolean);
+
+// Fetch mission docs for those completions so we can show badge name + image
+const completedMissionDocs = completedAssignedMissionIds.length
+  ? await Mission.find({ _id: { $in: completedAssignedMissionIds } })
+      .select('mission_title badge_name category badgeImagePath badge_image badgeImage')
+      .lean()
+  : [];
+
+const missionBadges = completedMissionDocs.map(doc => {
+  const category = doc.category || 'other';
+  const badgePath =
+    doc.badgeImagePath ||
+    doc.badge_image ||
+    doc.badgeImage ||
+    getMissionBadgePath(category);
+
+  return {
+    missionId: doc._id.toString(),
+    title: doc.mission_title || 'Untitled mission',
+    badgePath,
+    badgeName: doc.badge_name || 'Mission Badge',
+
+    // We want the completion date from the tag assignment record.
+    // Find it by matching mission id back to the assigned missions array.
+    completed_at: (groupMemberAssignedMissions.find(m => String(m._id) === String(doc._id))?.completedAt) || null
+  };
+});
+
+
 // ✅ NEW: non-mission non-nugget buckets for the tagged tab partial
 const groupMemberSelfTaggedNonMissionUnits =
   groupMemberSelfTaggedUnits.filter(u => u.unitType !== 'mission' && u.unitType !== 'nugget');
@@ -993,6 +1027,7 @@ maxGroupSize: userData.groupId.groupSize,
   groupMemberAccount,
   emailPreferenceLevel,
   groupLibraryUnits,
+    missionBadges,
 
   // tagged / assigned unit buckets
   groupMemberSelfTaggedUnits,    // blended self-tagged, all types
