@@ -14,7 +14,7 @@ module.exports = (passport) => {
       passwordField: 'password',
       passReqToCallback: true
     },
-    async (req, email, password, done) => {
+    async (req, email, password, done) => { 
       try {
         const normalizedEmail = email.toLowerCase();
         const { membershipType } = req.body;

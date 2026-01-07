@@ -359,6 +359,9 @@ app.use(async (req, res, next) => {
     const userForView = hydrated || null;
     res.locals.user = userForView;
 
+
+
+
     const typeNorm = asString(userForView?.membershipType).replace(/[_\-]/g, '').toLowerCase(); // leader | groupmember | member
     let dashboardLink = '/dashboard/member';
     if (typeNorm === 'leader') dashboardLink = '/dashboard/leader';

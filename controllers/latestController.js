@@ -114,10 +114,17 @@ exports.getLatestLibraryItems = async (req, res) => {
     }
 
     // MFA-safe root flags
-    const sessionUser     = req.user || req.session?.user || null;
-    const isAuthenticated = res.locals.isAuthenticated === true;
-    const membershipType  = sessionUser?.membershipType || null;  // 'leader' | 'group_member' | 'member'
-    const accessLevel     = sessionUser?.accessLevel || null;     // 'free_individual' | 'contributor_individual' | 'paid_individual'
+const sessionUser = req.user || req.session?.user || null;
+
+const isAuthenticated =
+  (typeof req.isAuthenticated === 'function' && req.isAuthenticated()) ||
+  !!req.user ||
+  !!req.session?.user;
+
+// Prefer session.user for membershipType/accessLevel (it’s your canonical auth metadata)
+const membershipType = req.session?.user?.membershipType || sessionUser?.membershipType || null;
+const accessLevel    = req.session?.user?.accessLevel    || sessionUser?.accessLevel    || null;
+
 
     const isLeaderOrGroupMember = membershipType === 'leader' || membershipType === 'group_member';
     const isPaid = accessLevel === 'paid_individual' || accessLevel === 'contributor_individual';
