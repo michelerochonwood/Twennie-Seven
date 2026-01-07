@@ -68,7 +68,7 @@ function normalizeUnitType(unit) {
   if (unit.exercise_title)  return 'exercise';
   if (unit.template_title)  return 'template';
   if (unit.mission_title)   return 'mission';
-  if (unit.title && unit.discipline) return 'nugget'; // nuggets
+if (unit.title && (unit.discipline || unit.client || unit.region)) return 'nugget';
   return 'unknown';
 }
 
@@ -162,22 +162,15 @@ async function fetchTaggedUnits(userId) {
         const assignedCount = Array.isArray(tag.assignedTo) ? tag.assignedTo.length : 0;
 
 return {
-  unitType: normalizeUnitType(unit),
-  title:
-    unit.article_title ||
-    unit.video_title ||
-    unit.promptset_title ||
-    unit.interview_title ||
-    unit.exercise_title ||
-    unit.template_title ||
-    unit.mission_title ||
-    unit.title ||
-    'Untitled Unit',
-  status: unit.status || 'Unknown',
-  mainTopic: unit.main_topic || 'No topic',
+  unitType: type,
+  title: unit[titleField] || `Untitled ${type}`,
+  mainTopic: unit[topicField] || 'No topic',
   _id: unit._id,
-  author: author.name
+  tagId: tag._id ? tag._id.toString() : null,
+  assignedCount,
+  viewPath: viewPathFor(type, unit._id)
 };
+
 
       });
 
@@ -974,23 +967,23 @@ const [leaderUpcomings, leaderNuggets] = await Promise.all([
 let leaderUnits = await Promise.all(
   [...leaderArticles, ...leaderVideos, ...leaderPromptSets, ...leaderInterviews, ...leaderExercises, ...leaderTemplates, ...leaderUpcomings, ...leaderNuggets, ...leaderMissions].map(async (unit) => {
     const author = await resolveAuthorById(pickAuthorId(unit));
-    return {
-      unitType: unit.unitType || unit.constructor?.modelName || 'Unknown',
-      title:
-        unit.mission_title ||
-        unit.article_title ||
-        unit.video_title ||
-        unit.promptset_title ||
-        unit.interview_title ||
-        unit.exercise_title ||
-        unit.template_title ||
-        unit.title ||
-        "Untitled Unit",
-      status: unit.status || "Unknown",
-      mainTopic: unit.main_topic || unit.discipline || unit.client || unit.region || "No topic",
-      _id: unit._id,
-      author: author.name
-    };
+return {
+  unitType: normalizeUnitType(unit),
+  title:
+    unit.mission_title ||
+    unit.article_title ||
+    unit.video_title ||
+    unit.promptset_title ||
+    unit.interview_title ||
+    unit.exercise_title ||
+    unit.template_title ||
+    unit.title ||
+    "Untitled Unit",
+  status: unit.status || "Unknown",
+  mainTopic: unit.main_topic || unit.discipline || unit.client || unit.region || "No topic",
+  _id: unit._id,
+  author: author.name
+};
   })
 );
 
