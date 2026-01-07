@@ -41,6 +41,22 @@
 
     <!-- MAIN BODY: hidden until user opens it -->
     <div class="single_mission-main-body hidden" id="singleMissionBody">
+      {{!-- MISSION BADGE (image + name) --}}
+{{#if badgeImagePath}}
+  <section class="white-container single_mission-badge">
+    <div class="single_mission-badge-inner">
+      <img
+        src="{{badgeImagePath}}"
+        alt="{{badge_name}}"
+        class="single_mission-badge-image"
+      />
+      {{#if badge_name}}
+        <p class="single_mission-badge-name">{{badge_name}}</p>
+      {{/if}}
+    </div>
+  </section>
+{{/if}}
+
 
     <!-- LEARNING UNITS -->
 <section class="white-container single_mission-section">

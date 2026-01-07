@@ -31,9 +31,9 @@ const missionBadgeMap = {
   learning:             'learningbadge',
   research:             'researchbadge',
   business_development: 'bdbadge',
-  internal_improvement: 'improvementbadge',
-  culture_play:         'cultureplaybadge',
-  client_experience:    'clientexbadge',
+  internal_improvement: 'improvebadge',
+  culture_play:         'culturebadge',
+  client_experience:    'clientxbadge',
   community:            'communitybadge',
   administrative:       'adminbadge',
   other:                'roguebadge',
@@ -42,7 +42,6 @@ const missionBadgeMap = {
 function getMissionBadgePath(category) {
   const key = category || 'other';
   const filename = missionBadgeMap[key] || missionBadgeMap.other;
-  // Adjust extension if your files are .svg or .webp instead of .png
   return `/badges/missions/${filename}.png`;
 }
 
@@ -190,21 +189,38 @@ async function fetchTaggedUnits(userId) {
     });
 
     // Missions: title is `mission_title`, topic is `main_topic`
-    missions.forEach(m => {
-      const key = `${m._id.toString()}-mission`;
-      const tag = tagByKey.get(key) || {};
-      const assignedCount = Array.isArray(tag.assignedTo) ? tag.assignedTo.length : 0;
+// Missions: title is `mission_title`, topic is `main_topic`
+missions.forEach(m => {
+  const key = `${m._id.toString()}-mission`;
+  const tag = tagByKey.get(key) || {};
+  const assignedCount = Array.isArray(tag.assignedTo) ? tag.assignedTo.length : 0;
 
-      results.push({
-        unitType: 'mission',
-        title: m.mission_title || 'Untitled mission',
-        mainTopic: m.main_topic || 'No topic',
-        _id: m._id,
-        tagId: tag._id ? tag._id.toString() : null,
-        assignedCount,
-        viewPath: `/unitviews/missions/view/${m._id}`
-      });
-    });
+  const category = m.category || 'other';
+
+  // Prefer a mission-specific stored badge path if you have one.
+  // Otherwise, fall back to the category default image.
+  const badgeImagePath =
+    m.badgeImagePath ||
+    m.badge_image ||
+    m.badgeImage ||
+    getMissionBadgePath(category);
+
+  results.push({
+    unitType: 'mission',
+    title: m.mission_title || 'Untitled mission',
+    mainTopic: m.main_topic || 'No topic',
+    _id: m._id,
+    tagId: tag._id ? tag._id.toString() : null,
+    assignedCount,
+    viewPath: `/unitviews/missions/view/${m._id}`,
+
+    // ✅ NEW: badge display fields for the partial
+    category,
+    badge_name: m.badge_name || '',
+    badgeImagePath
+  });
+});
+
 
     return results;
   } catch (error) {
@@ -270,20 +286,33 @@ const title =
             ? `/unitviews/nuggets/view/${item}`
             : `/unitviews/${unitType}s/view/${item}`;
 
-        leaderAssignedUnits.push({
-          _id: item,
-          unitType,
-          title,
-          mainTopic,
-          tagId: tag._id.toString(),
-          viewPath, // ✅ NEW
-          assignedTo: {
-            _id: assignee.member?.toString(),
-            name: member.name,
-            instructions: assignee.instructions || '',
-            completedAt: assignee.completedAt || null,
-          }
-        });
+const category = (unitType === 'mission') ? (unit.category || 'other') : null;
+
+const badgeImagePath =
+  (unitType === 'mission')
+    ? (unit.badgeImagePath || unit.badge_image || unit.badgeImage || getMissionBadgePath(category))
+    : null;
+
+leaderAssignedUnits.push({
+  _id: item,
+  unitType,
+  title,
+  mainTopic,
+  tagId: tag._id.toString(),
+  viewPath,
+
+  // ✅ NEW: badge display fields (missions only)
+  category,
+  badge_name: (unitType === 'mission') ? (unit.badge_name || '') : '',
+  badgeImagePath,
+
+  assignedTo: {
+    _id: assignee.member?.toString(),
+    name: member.name,
+    instructions: assignee.instructions || '',
+    completedAt: assignee.completedAt || null,
+  }
+});
       }
     }
   }

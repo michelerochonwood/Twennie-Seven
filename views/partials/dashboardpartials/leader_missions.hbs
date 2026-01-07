@@ -5,7 +5,10 @@
 
 {{!-- =========================
      1) SELF-TAGGED MISSIONS
-     expects: leaderSelfTaggedMissions = [{ _id, title, mainTopic, unitType="mission", tagId, viewPath }]
+     expects: leaderSelfTaggedMissions = [{
+       _id, title, mainTopic, unitType="mission", tagId, viewPath,
+       badge_name, badgeImagePath, category
+     }]
      ========================= --}}
 <section class="tagged-units-section">
   <h2 class="tagged-units-title">my missions</h2>
@@ -21,6 +24,28 @@
           <div class="tagged-unit-info">
             <h3 class="tagged-unit-title">{{title}}</h3>
             {{#if mainTopic}}<p class="tagged-unit-topic">{{mainTopic}}</p>{{/if}}
+
+            {{!-- ⭐ Badge block (shows for in-progress or completed) --}}
+            <div class="mission-badge-row">
+              <div class="mission-badge-img">
+{{#if badgeImagePath}}
+  <div class="mission-badge-row">
+    <img src="{{badgeImagePath}}" alt="{{badge_name}}" class="mission-badge-icon">
+    {{#if badge_name}}
+      <p class="mission-badge-name">{{badge_name}}</p>
+    {{/if}}
+  </div>
+{{/if}}
+              </div>
+
+              <div class="mission-badge-text">
+                {{#if badge_name}}
+                  <p class="mission-badge-name">{{badge_name}}</p>
+                {{else}}
+                  <p class="mission-badge-name mission-badge-name--muted">badge pending</p>
+                {{/if}}
+              </div>
+            </div>
           </div>
 
           <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
@@ -45,7 +70,12 @@
 
 {{!-- =========================
      2) ASSIGNED MISSIONS
-     expects: leaderAssignedMissions = [{ _id, title, mainTopic, unitType="mission", tagId, assignedToName, assignedCompletedAtFormatted, assignedInstructions, viewPath, assignedToId }]
+     expects: leaderAssignedMissions = [{
+       _id, title, mainTopic, unitType="mission", tagId,
+       assignedToName, assignedCompletedAtFormatted, assignedInstructions,
+       viewPath, assignedToId,
+       badge_name, badgeImagePath, category
+     }]
      ========================= --}}
 <section class="leader-assigned-units-section" style="margin-top:20px">
   <h2 class="tagged-units-title">my assigned missions</h2>
@@ -73,6 +103,39 @@
             {{#if assignedInstructions}}
               <p class="leader-assigned-instructions"><em>{{assignedInstructions}}</em></p>
             {{/if}}
+
+            {{!-- ⭐ Badge block --}}
+            <div class="mission-badge-row">
+              <div class="mission-badge-img">
+                {{#if badgeImagePath}}
+                  <img src="{{badgeImagePath}}" alt="{{badge_name}}" class="mission-badge-icon">
+                {{else}}
+                  <img
+                    src="/badges/missions/
+                      {{#if (eq category 'learning')}}learningbadge.png{{/if}}
+                      {{#if (eq category 'research')}}researchbadge.png{{/if}}
+                      {{#if (eq category 'business_development')}}bdbadge.png{{/if}}
+                      {{#if (eq category 'internal_improvement')}}improvebadge.png{{/if}}
+                      {{#if (eq category 'culture_play')}}culturebadge.png{{/if}}
+                      {{#if (eq category 'client_experience')}}clientxbadge.png{{/if}}
+                      {{#if (eq category 'community')}}communitybadge.png{{/if}}
+                      {{#if (eq category 'administrative')}}adminbadge.png{{/if}}
+                      {{#if (eq category 'other')}}roguebadge.png{{/if}}
+                    "
+                    alt="{{#if badge_name}}{{badge_name}}{{else}}mission badge{{/if}}"
+                    class="mission-badge-icon"
+                  >
+                {{/if}}
+              </div>
+
+              <div class="mission-badge-text">
+                {{#if badge_name}}
+                  <p class="mission-badge-name">{{badge_name}}</p>
+                {{else}}
+                  <p class="mission-badge-name mission-badge-name--muted">badge pending</p>
+                {{/if}}
+              </div>
+            </div>
           </div>
 
           <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
