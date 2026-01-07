@@ -97,7 +97,7 @@
             <!-- Header SVG -->
 <div class="latest-card-svg-header">
   <img
-    src="/images/newupcomingsvg.svg"
+    src="/images/unitsvg.svg"
     alt=""
     aria-hidden="true"
     class="latest-card-svg-image"
@@ -169,55 +169,58 @@
   <h2 class="latest-section-title">upcoming units</h2>
 
   <div class="latest-library-units-grid">
-    {{#each upcomingItems}}
-      <div class="latest-library-unit-card">
-        <!-- Corner badge (sits half off the card) -->
+{{#each upcomingItems}}
+  <div class="latest-library-unit-card">
 
+    <!-- Inner wrapper handles rounded-corner clipping -->
+    <div class="latest-card-inner">
 
-        <!-- Inner wrapper handles rounded-corner clipping -->
-<div class="latest-card-svg-header">
-  <img
-    src="/images/newupcomingsvg.svg"
-    alt=""
-    aria-hidden="true"
-    class="latest-card-svg-image"
-  >
-</div>
+      <!-- Header wave -->
+      <div class="latest-card-svg-header">
+        <img
+          src="/images/newupcomingsvg.svg"
+          alt=""
+          aria-hidden="true"
+          class="latest-card-svg-image"
+        >
+      </div>
 
-          <!-- Card Content -->
-          <div class="latest-card-content">
-            <img src="{{getUnitTypeIcon unit_type}}" alt="Unit Type Icon" class="latest-unit-type-icon">
-            <h2 class="latest-unit-title">{{title}}</h2>
+      <!-- Card Content -->
+      <div class="latest-card-content">
+        <img src="{{getUnitTypeIcon unit_type}}" alt="Unit Type Icon" class="latest-unit-type-icon">
+        <h2 class="latest-unit-title">{{title}}</h2>
 
-            <!-- Expand Toggle -->
-            <div class="latest-expand-toggle" onclick="toggleLatestCard(this)">
-              <svg class="latest-arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99">
-                <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
-                <polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/>
-              </svg>
-            </div>
+        <!-- Expand Toggle -->
+        <div class="latest-expand-toggle" onclick="toggleLatestCard(this)">
+          <svg class="latest-arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99">
+            <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
+            <polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/>
+          </svg>
+        </div>
 
-            <!-- Expandable Content -->
-            <div class="latest-hidden-content">
-              <div class="latest-author-label">PROJECTED</div>
-              <img src="{{image.url}}" alt="{{#if image.alt}}{{image.alt}}{{else}}Upcoming image{{/if}}" class="latest-author-image">
+        <!-- Expandable Content -->
+        <div class="latest-hidden-content">
+          <div class="latest-author-label">PROJECTED</div>
+          <img src="{{image.url}}" alt="{{#if image.alt}}{{image.alt}}{{else}}Upcoming image{{/if}}" class="latest-author-image">
 
-              <div class="latest-author-name">
-                {{#if projected_release_at}}{{formatDate projected_release_at}}{{else}}TBD{{/if}}
-              </div>
+          <div class="latest-author-name">
+            {{#if projected_release_at}}{{formatDate projected_release_at}}{{else}}TBD{{/if}}
+          </div>
 
-              <p class="latest-unit-long-summary">{{long_teaser}}</p>
+          <p class="latest-unit-long-summary">{{long_teaser}}</p>
 
-              <div class="latest-unit-review-btn-container">
-                <a href="/unitviews/upcoming/view/{{_id}}" class="latest-unit-review-btn">view upcoming</a>
-              </div>
-            </div>
-          </div> <!-- /.latest-card-content -->
-        </div>   <!-- /.latest-card-inner -->
-      </div>     <!-- /.latest-library-unit-card -->
-    {{else}}
-      <p>No upcoming units yet.</p>
-    {{/each}}
+          <div class="latest-unit-review-btn-container">
+            <a href="/unitviews/upcoming/view/{{_id}}" class="latest-unit-review-btn">view upcoming</a>
+          </div>
+        </div>
+      </div> <!-- /.latest-card-content -->
+
+    </div>   <!-- /.latest-card-inner -->
+  </div>     <!-- /.latest-library-unit-card -->
+{{else}}
+  <p>No upcoming units yet.</p>
+{{/each}}
+
   </div>
 </div>
 
