@@ -95,41 +95,59 @@
   <h2 class="tagged-units-title">assigned nuggets</h2>
   <div class="tagged-units-grid">
     {{#if leaderAssignedNuggets.length}}
-      {{#each leaderAssignedNuggets}}
-        <div class="leader-assigned-unit-card">
-          <div class="tagged-unit-icon">
-            <img src="/icons/nuggeticon.svg" alt="nugget icon">
-          </div>
+{{#each leaderAssignedNuggets}}
+  <div class="leader-assigned-unit-card leader-nugget-card">
+    <div class="leader-nugget-card-inner">
+      <!-- Header wave -->
+      <div class="leader-nugget-card-svg-header">
+        <img
+          src="/icons/goldsvg.svg"
+          alt=""
+          aria-hidden="true"
+          class="leader-nugget-card-svg-image"
+        >
+      </div>
 
-          <div class="tagged-unit-info">
-            <h3 class="tagged-unit-title">{{title}}</h3>
-            {{#if client}}<p class="tagged-unit-topic">client: {{client}}</p>{{/if}}
-            {{#if region}}<p class="tagged-unit-topic">region: {{region}}</p>{{/if}}
-            {{#if discipline}}<p class="tagged-unit-topic">discipline: {{discipline}}</p>{{/if}}
-
-            <p class="leader-assigned-to">assigned to: {{assignedToName}}</p>
-
-            {{#if assignedCompletedAtFormatted}}
-              <p class="leader-assigned-status">✅ completed <span class="muted">({{assignedCompletedAtFormatted}})</span></p>
-            {{else}}
-              <p class="leader-assigned-status">⏳ pending</p>
-            {{/if}}
-
-            {{#if assignedInstructions}}
-              <p class="leader-assigned-instructions"><em>{{assignedInstructions}}</em></p>
-            {{/if}}
-          </div>
-
-          <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
-            <a href="/unitviews/nuggets/view/{{_id}}" class="tagged-unit-link">view nugget</a>
-
-            <button class="tagged-unit-link"
-              onclick="unassignMember('{{tagId}}','{{assignedToId}}')">
-              unassign
-            </button>
-          </div>
+      <!-- Card content -->
+      <div class="leader-nugget-card-content">
+        <div class="tagged-unit-icon">
+          <img src="/icons/nuggeticon.svg" alt="nugget icon">
         </div>
-      {{/each}}
+
+        <div class="tagged-unit-info">
+          <h3 class="tagged-unit-title">{{title}}</h3>
+          {{#if client}}<p class="tagged-unit-topic">client: {{client}}</p>{{/if}}
+          {{#if region}}<p class="tagged-unit-topic">region: {{region}}</p>{{/if}}
+          {{#if discipline}}<p class="tagged-unit-topic">discipline: {{discipline}}</p>{{/if}}
+
+          <p class="leader-assigned-to">assigned to: {{assignedToName}}</p>
+
+          {{#if assignedCompletedAtFormatted}}
+            <p class="leader-assigned-status">✅ completed <span class="muted">({{assignedCompletedAtFormatted}})</span></p>
+          {{else}}
+            <p class="leader-assigned-status">⏳ pending</p>
+          {{/if}}
+
+          {{#if assignedInstructions}}
+            <p class="leader-assigned-instructions"><em>{{assignedInstructions}}</em></p>
+          {{/if}}
+        </div>
+
+        <div class="tagged-unit-actions leader-nugget-actions">
+          <a href="/unitviews/nuggets/view/{{_id}}" class="tagged-unit-link">view nugget</a>
+
+          <button
+            class="tagged-unit-link"
+            onclick="unassignMember('{{tagId}}','{{assignedToId}}')"
+          >
+            unassign
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+{{/each}}
+
     {{else}}
       <p class="tagged-no-units">You have no assigned nuggets.</p>
     {{/if}}
