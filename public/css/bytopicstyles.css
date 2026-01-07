@@ -691,7 +691,7 @@ html, body {
 
 .latest-library-unit-card {
   background-color: #d0cfcf;
-  border-radius: 10px;
+  border-radius: 20px;
   height: 350px;
   /* overflow: hidden;  <-- remove this */
   overflow: visible;      /* allow the badge to show */
