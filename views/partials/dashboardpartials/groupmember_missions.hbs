@@ -114,44 +114,50 @@
 
   <div class="tagged-section-divider" aria-hidden="true"></div>
 
-  {{!-- =========================
-       3) MISSION BADGES (COMPLETED MISSIONS)
-       expects: @root.missionBadges = [{ missionId, title, completed_at, badgePath }]
-       ========================= --}}
-  <div class="group-member-tagged-subsection" style="margin-top:20px;">
-    <h3 class="group-member-tagged-subtitle">mission badges</h3>
-    <p class="tagged-units-help-text">
-      These badges represent missions you’ve completed on Twennie.
-    </p>
+{{!-- =========================
+     3) MISSION BADGES (COMPLETED MISSIONS)
+     expects: @root.missionBadges = [{ missionId, title, completed_at, badgePath, badgeName }]
+     ========================= --}}
+<div class="group-member-tagged-subsection" style="margin-top:20px;">
+  <h3 class="group-member-tagged-subtitle">mission badges</h3>
 
-    <div class="tagged-units-grid mission-badges-grid">
-      {{#if @root.missionBadges.length}}
-        {{#each @root.missionBadges}}
-          <div class="mission-badge-card">
-            <div class="mission-badge-icon">
-              <img src="{{badgePath}}" alt="mission badge">
-            </div>
+  <div class="mission-badges-grid mission-badges-grid--celebration">
+    {{#if @root.missionBadges.length}}
+      {{#each @root.missionBadges}}
+        <div class="mission-badge-card mission-badge-card--celebration">
+          <img
+            src="{{badgePath}}"
+            alt="{{badgeName}} badge"
+            class="mission-badge-icon mission-badge-icon--large"
+          >
 
-            <div class="mission-badge-info">
-              <h3 class="mission-badge-title">{{title}}</h3>
-              {{#if completed_at}}
-                <p class="mission-badge-date">
-                  completed {{formatDate completed_at "MMM D, YYYY"}}
-                </p>
-              {{/if}}
-              <a href="/unitviews/missions/view/{{missionId}}" class="mission-badge-link">
-                view mission
-              </a>
-            </div>
-          </div>
-        {{/each}}
-      {{else}}
-        <p class="tagged-no-units">
-          You haven’t completed any missions yet. Once you finish a mission and submit notes, your badge will appear here.
-        </p>
-      {{/if}}
-    </div>
+          <p class="mission-badge-congrats">
+            🎉 <strong>Congratulations!</strong><br>
+            You earned the <strong>{{badgeName}}</strong> badge!
+          </p>
+
+          {{#if completed_at}}
+            <p class="mission-badge-date">
+              completed {{formatDate completed_at "MMM D, YYYY"}}
+            </p>
+          {{/if}}
+
+          <a
+            href="/unitviews/missions/view/{{missionId}}"
+            class="mission-badge-link"
+          >
+            view mission
+          </a>
+        </div>
+      {{/each}}
+    {{else}}
+      <p class="tagged-no-units" style="text-align:center;">
+        You haven’t completed any missions yet. Once you finish a mission and submit notes, your badge will appear here.
+      </p>
+    {{/if}}
   </div>
+</div>
+
 
 </section>
 

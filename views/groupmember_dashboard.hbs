@@ -40,15 +40,21 @@
         <div class="tab-arrow"></div>
       </button>
 
+            <button class="dashboard-tab" data-tab="tagged" data-count="{{gmCounts.tagged}}">
+        <span class="tab-title">my learning and assignments</span>
+        {{#if gmBadges.tagged}}<span class="tab-dot"></span>{{/if}}
+        <div class="tab-arrow"></div>
+      </button>
+
       {{!-- ✅ NEW: Missions tab --}}
       <button class="dashboard-tab" data-tab="missions" data-count="{{gmCounts.missions}}">
-        <span class="tab-title">missions</span>
+        <span class="tab-title">my missions</span>
         {{#if gmBadges.missions}}<span class="tab-dot"></span>{{/if}}
         <div class="tab-arrow"></div>
       </button>
 
       <button class="dashboard-tab" data-tab="contribute">
-        <span class="tab-title">contribute to the library</span>
+        <span class="tab-title">contribute to my library</span>
         <div class="tab-arrow"></div>
       </button>
 
@@ -58,11 +64,7 @@
         <div class="tab-arrow"></div>
       </button>
 
-      <button class="dashboard-tab" data-tab="tagged" data-count="{{gmCounts.tagged}}">
-        <span class="tab-title">my tags and assignments</span>
-        {{#if gmBadges.tagged}}<span class="tab-dot"></span>{{/if}}
-        <div class="tab-arrow"></div>
-      </button>
+
     </div>
 
     <!-- Right Topics Column (fixed; reused partial) -->
@@ -95,6 +97,10 @@
       {{> dashboardpartials/groupmember_progress }}
     </div>
 
+        <div class="dashboard-tab-content" id="tagged">
+      {{> dashboardpartials/groupmember_tagged_units }}
+    </div>
+
     {{!-- ✅ NEW: Missions content --}}
     <div class="dashboard-tab-content" id="missions">
       {{> dashboardpartials/groupmember_missions }}
@@ -108,9 +114,7 @@
       {{> dashboardpartials/groupmember_mylibraryunits }}
     </div>
 
-    <div class="dashboard-tab-content" id="tagged">
-      {{> dashboardpartials/groupmember_tagged_units }}
-    </div>
+
 
   </div>
 </div>
