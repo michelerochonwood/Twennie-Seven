@@ -60,7 +60,17 @@ function getModelByUnitType(type) {
 }
 
 
-
+function normalizeUnitType(unit) {
+  if (unit.article_title)   return 'article';
+  if (unit.video_title)     return 'video';
+  if (unit.promptset_title) return 'promptset';
+  if (unit.interview_title) return 'interview';
+  if (unit.exercise_title)  return 'exercise';
+  if (unit.template_title)  return 'template';
+  if (unit.mission_title)   return 'mission';
+  if (unit.title && unit.discipline) return 'nugget'; // nuggets
+  return 'unknown';
+}
 
 async function resolveAuthorById(authorId) {
     try {
@@ -151,15 +161,24 @@ async function fetchTaggedUnits(userId) {
         const tag = tagByKey.get(key) || {};
         const assignedCount = Array.isArray(tag.assignedTo) ? tag.assignedTo.length : 0;
 
-        return {
-          unitType: type,
-          title: unit[titleField] || `Untitled ${type}`,
-          mainTopic: unit[topicField] || 'No topic',
-          _id: unit._id,
-          tagId: tag._id ? tag._id.toString() : null,
-          assignedCount,
-          viewPath: viewPathFor(type, unit._id)
-        };
+return {
+  unitType: normalizeUnitType(unit),
+  title:
+    unit.article_title ||
+    unit.video_title ||
+    unit.promptset_title ||
+    unit.interview_title ||
+    unit.exercise_title ||
+    unit.template_title ||
+    unit.mission_title ||
+    unit.title ||
+    'Untitled Unit',
+  status: unit.status || 'Unknown',
+  mainTopic: unit.main_topic || 'No topic',
+  _id: unit._id,
+  author: author.name
+};
+
       });
 
     const results = [
