@@ -3,36 +3,37 @@
 <section class="group-member-tagged-units-section">
   <h2 class="tagged-units-title">tagged library units</h2>
 
-  {{!-- =========================
-       1) MY TAGGED UNITS (SELF)
-       expects: groupMemberSelfTaggedUnits = [{ _id, title, mainTopic, unitType, tagId, viewPath }]
-       ========================= --}}
+  {{!-- =====================================================
+       1) MY TAGGED UNITS (NON-NUGGET, NON-MISSION)
+       ===================================================== --}}
   <div class="group-member-tagged-subsection">
     <h3 class="group-member-tagged-subtitle">my tagged units</h3>
 
     <div class="tagged-units-grid">
       {{#if groupMemberSelfTaggedUnits.length}}
         {{#each groupMemberSelfTaggedUnits}}
-          <div class="tagged-unit-card">
-            <div class="tagged-unit-icon">
-              <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
-            </div>
+          {{#unless (eq unitType "nugget")}}
+            {{#unless (eq unitType "mission")}}
+              <div class="tagged-unit-card">
+                <div class="tagged-unit-icon">
+                  <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
+                </div>
 
-            <div class="tagged-unit-info">
-              <h3 class="tagged-unit-title">{{title}}</h3>
-              {{#if mainTopic}}<p class="tagged-unit-topic">{{mainTopic}}</p>{{/if}}
-            </div>
+                <div class="tagged-unit-info">
+                  <h3 class="tagged-unit-title">{{title}}</h3>
+                  {{#if mainTopic}}<p class="tagged-unit-topic">{{mainTopic}}</p>{{/if}}
+                </div>
 
-            <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
-              <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
-
-              <button
-                class="tagged-unit-link"
-                onclick="removeSelfTag('{{tagId}}','{{_id}}','{{unitType}}')">
-                remove tag
-              </button>
-            </div>
-          </div>
+                <div class="tagged-unit-actions">
+                  <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
+                  <button class="tagged-unit-link"
+                          onclick="removeSelfTag('{{tagId}}','{{_id}}','{{unitType}}')">
+                    remove tag
+                  </button>
+                </div>
+              </div>
+            {{/unless}}
+          {{/unless}}
         {{/each}}
       {{else}}
         <p class="tagged-no-units">You have not tagged any units.</p>
@@ -42,18 +43,15 @@
 
   <div class="tagged-section-divider" aria-hidden="true"></div>
 
-  {{!-- =========================
-       2) MY ASSIGNED UNITS (ALL NON-NUGGET, NON-MISSION)
-       expects: groupMemberAssignedUnits = [{ _id, title, mainTopic, unitType, tagId, viewPath, assignedInstructions, assignedCompletedAtFormatted, leaderName }]
-       We will later have dedicated sections for nuggets & missions.
-       ========================= --}}
-  <div class="group-member-tagged-subsection" style="margin-top:20px;">
+  {{!-- =====================================================
+       2) MY ASSIGNED UNITS (NON-NUGGET, NON-MISSION)
+       ===================================================== --}}
+  <div class="group-member-tagged-subsection">
     <h3 class="group-member-tagged-subtitle">my assigned units</h3>
 
     <div class="tagged-units-grid">
       {{#if groupMemberAssignedUnits.length}}
         {{#each groupMemberAssignedUnits}}
-          {{!-- Show only non-nugget, non-mission here --}}
           {{#unless (eq unitType "nugget")}}
             {{#unless (eq unitType "mission")}}
               <div class="tagged-unit-card">
@@ -65,6 +63,7 @@
                   <h3 class="tagged-unit-title">{{title}}</h3>
                   {{#if mainTopic}}<p class="tagged-unit-topic">{{mainTopic}}</p>{{/if}}
                   {{#if leaderName}}<p class="tagged-unit-meta">assigned by: {{leaderName}}</p>{{/if}}
+
                   {{#if assignedInstructions}}
                     <p class="tagged-unit-instructions"><em>instructions:</em> {{assignedInstructions}}</p>
                   {{/if}}
@@ -76,9 +75,8 @@
                   {{/if}}
                 </div>
 
-                <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
+                <div class="tagged-unit-actions">
                   <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
-                  {{!-- completion can be handled from unit view / notes --}}
                 </div>
               </div>
             {{/unless}}
@@ -92,34 +90,42 @@
 
   <div class="tagged-section-divider" aria-hidden="true"></div>
 
-  {{!-- =========================
-       3) MY TAGGED NUGGETS
-       expects: groupMemberTaggedNuggets = [{ _id, title, mainTopic, tagId, viewPath }]
-       ========================= --}}
-  <div class="group-member-tagged-subsection" style="margin-top:20px;">
+  {{!-- =====================================================
+       3) MY TAGGED NUGGETS (WITH SVG WAVE)
+       ===================================================== --}}
+  <div class="group-member-tagged-subsection">
     <h3 class="group-member-tagged-subtitle">my tagged nuggets</h3>
 
     <div class="tagged-units-grid">
       {{#if groupMemberTaggedNuggets.length}}
         {{#each groupMemberTaggedNuggets}}
-          <div class="tagged-unit-card">
-            <div class="tagged-unit-icon">
-              <img src="/icons/nuggeticon.svg" alt="nugget icon">
-            </div>
+          <div class="leader-assigned-unit-card leader-nugget-card">
+            <div class="leader-nugget-card-inner">
 
-            <div class="tagged-unit-info">
-              <h3 class="tagged-unit-title">{{title}}</h3>
-              {{#if mainTopic}}<p class="tagged-unit-topic">{{mainTopic}}</p>{{/if}}
-            </div>
+              <!-- SVG wave -->
+              <div class="leader-nugget-card-svg-header">
+                <img src="/icons/goldsvg.svg" alt="" aria-hidden="true">
+              </div>
 
-            <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
-              <a href="{{viewPath}}" class="tagged-unit-link">view nugget</a>
+              <div class="leader-nugget-card-content">
+                <div class="tagged-unit-icon">
+                  <img src="/icons/nuggeticon.svg" alt="nugget icon">
+                </div>
 
-              <button
-                class="tagged-unit-link"
-                onclick="removeSelfTag('{{tagId}}','{{_id}}','nugget')">
-                remove tag
-              </button>
+                <div class="tagged-unit-info">
+                  <h3 class="tagged-unit-title">{{title}}</h3>
+                  {{#if mainTopic}}<p class="tagged-unit-topic">{{mainTopic}}</p>{{/if}}
+                </div>
+
+                <div class="tagged-unit-actions">
+                  <a href="{{viewPath}}" class="tagged-unit-link">view nugget</a>
+                  <button class="tagged-unit-link"
+                          onclick="removeSelfTag('{{tagId}}','{{_id}}','nugget')">
+                    remove tag
+                  </button>
+                </div>
+              </div>
+
             </div>
           </div>
         {{/each}}
@@ -131,40 +137,51 @@
 
   <div class="tagged-section-divider" aria-hidden="true"></div>
 
-  {{!-- =========================
-       4) MY ASSIGNED NUGGETS
-       expects: groupMemberAssignedNuggets = [{ _id, title, client, region, discipline, tagId, leaderName, assignedInstructions, assignedCompletedAtFormatted, viewPath }]
-       ========================= --}}
-  <div class="group-member-tagged-subsection" style="margin-top:20px;">
+  {{!-- =====================================================
+       4) MY ASSIGNED NUGGETS (WITH SVG WAVE)
+       ===================================================== --}}
+  <div class="group-member-tagged-subsection">
     <h3 class="group-member-tagged-subtitle">my assigned nuggets</h3>
 
     <div class="tagged-units-grid">
       {{#if groupMemberAssignedNuggets.length}}
         {{#each groupMemberAssignedNuggets}}
-          <div class="leader-assigned-unit-card">
-            <div class="tagged-unit-icon">
-              <img src="/icons/nuggeticon.svg" alt="nugget icon">
-            </div>
+          <div class="leader-assigned-unit-card leader-nugget-card">
+            <div class="leader-nugget-card-inner">
 
-            <div class="tagged-unit-info">
-              <h3 class="tagged-unit-title">{{title}}</h3>
-              {{#if client}}<p class="tagged-unit-topic">client: {{client}}</p>{{/if}}
-              {{#if region}}<p class="tagged-unit-topic">region: {{region}}</p>{{/if}}
-              {{#if discipline}}<p class="tagged-unit-topic">discipline: {{discipline}}</p>{{/if}}
-              {{#if leaderName}}<p class="tagged-unit-meta">assigned by: {{leaderName}}</p>{{/if}}
-              {{#if assignedInstructions}}
-                <p class="tagged-unit-instructions"><em>instructions:</em> {{assignedInstructions}}</p>
-              {{/if}}
+              <!-- SVG wave -->
+              <div class="leader-nugget-card-svg-header">
+                <img src="/icons/goldsvg.svg" alt="" aria-hidden="true">
+              </div>
 
-              {{#if assignedCompletedAtFormatted}}
-                <p class="leader-assigned-status">✅ completed <span class="muted">({{assignedCompletedAtFormatted}})</span></p>
-              {{else}}
-                <p class="leader-assigned-status">⏳ pending</p>
-              {{/if}}
-            </div>
+              <div class="leader-nugget-card-content">
+                <div class="tagged-unit-icon">
+                  <img src="/icons/nuggeticon.svg" alt="nugget icon">
+                </div>
 
-            <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
-              <a href="{{viewPath}}" class="tagged-unit-link">view nugget</a>
+                <div class="tagged-unit-info">
+                  <h3 class="tagged-unit-title">{{title}}</h3>
+                  {{#if client}}<p class="tagged-unit-topic">client: {{client}}</p>{{/if}}
+                  {{#if region}}<p class="tagged-unit-topic">region: {{region}}</p>{{/if}}
+                  {{#if discipline}}<p class="tagged-unit-topic">discipline: {{discipline}}</p>{{/if}}
+                  {{#if leaderName}}<p class="tagged-unit-meta">assigned by: {{leaderName}}</p>{{/if}}
+
+                  {{#if assignedInstructions}}
+                    <p class="tagged-unit-instructions"><em>instructions:</em> {{assignedInstructions}}</p>
+                  {{/if}}
+
+                  {{#if assignedCompletedAtFormatted}}
+                    <p class="leader-assigned-status">✅ completed <span class="muted">({{assignedCompletedAtFormatted}})</span></p>
+                  {{else}}
+                    <p class="leader-assigned-status">⏳ pending</p>
+                  {{/if}}
+                </div>
+
+                <div class="tagged-unit-actions">
+                  <a href="{{viewPath}}" class="tagged-unit-link">view nugget</a>
+                </div>
+              </div>
+
             </div>
           </div>
         {{/each}}
@@ -174,172 +191,4 @@
     </div>
   </div>
 
-  <div class="tagged-section-divider" aria-hidden="true"></div>
-
-  {{!-- =========================
-       5) MY TAGGED MISSIONS
-       expects: groupMemberTaggedMissions = [{ _id, title, mainTopic, tagId, viewPath }]
-       ========================= --}}
-  <div class="group-member-tagged-subsection" style="margin-top:20px;">
-    <h3 class="group-member-tagged-subtitle">my tagged missions</h3>
-
-    <div class="tagged-units-grid">
-      {{#if groupMemberTaggedMissions.length}}
-        {{#each groupMemberTaggedMissions}}
-          <div class="tagged-unit-card">
-            <div class="tagged-unit-icon">
-              <img src="/icons/mission.svg" alt="mission icon">
-            </div>
-
-            <div class="tagged-unit-info">
-              <h3 class="tagged-unit-title">{{title}}</h3>
-              {{#if mainTopic}}<p class="tagged-unit-topic">{{mainTopic}}</p>{{/if}}
-            </div>
-
-            <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
-              <a href="{{viewPath}}" class="tagged-unit-link">view mission</a>
-
-              <button
-                class="tagged-unit-link"
-                onclick="removeSelfTag('{{tagId}}','{{_id}}','mission')">
-                remove tag
-              </button>
-            </div>
-          </div>
-        {{/each}}
-      {{else}}
-        <p class="tagged-no-units">You have not tagged any missions.</p>
-      {{/if}}
-    </div>
-  </div>
-
-  <div class="tagged-section-divider" aria-hidden="true"></div>
-
-  {{!-- =========================
-       6) MY ASSIGNED MISSIONS
-       expects: groupMemberAssignedMissions = [{ _id, title, mainTopic, tagId, leaderName, assignedInstructions, assignedCompletedAtFormatted, viewPath }]
-       ========================= --}}
-  <div class="group-member-tagged-subsection" style="margin-top:20px;">
-    <h3 class="group-member-tagged-subtitle">my assigned missions</h3>
-
-    <div class="tagged-units-grid">
-      {{#if groupMemberAssignedMissions.length}}
-        {{#each groupMemberAssignedMissions}}
-          <div class="leader-assigned-unit-card">
-            <div class="tagged-unit-icon">
-              <img src="/icons/mission.svg" alt="mission icon">
-            </div>
-
-            <div class="tagged-unit-info">
-              <h3 class="tagged-unit-title">{{title}}</h3>
-              {{#if mainTopic}}<p class="tagged-unit-topic">{{mainTopic}}</p>{{/if}}
-              {{#if leaderName}}<p class="tagged-unit-meta">assigned by: {{leaderName}}</p>{{/if}}
-              {{#if assignedInstructions}}
-                <p class="tagged-unit-instructions"><em>instructions:</em> {{assignedInstructions}}</p>
-              {{/if}}
-
-              {{#if assignedCompletedAtFormatted}}
-                <p class="leader-assigned-status">✅ completed <span class="muted">({{assignedCompletedAtFormatted}})</span></p>
-              {{else}}
-                <p class="leader-assigned-status">⏳ pending</p>
-              {{/if}}
-            </div>
-
-            <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
-              <a href="{{viewPath}}" class="tagged-unit-link">view mission</a>
-            </div>
-          </div>
-        {{/each}}
-      {{else}}
-        <p class="tagged-no-units">You have no missions assigned by your leader.</p>
-      {{/if}}
-    </div>
-  </div>
-
-    <div class="tagged-section-divider" aria-hidden="true"></div>
-
-
-  {{!-- =========================
-       7) MISSION BADGES (COMPLETED MISSIONS)
-       expects: @root.missionBadges = [{ missionId, title, completed_at, badgePath }]
-       ========================= --}}
-  <div class="group-member-tagged-subsection" style="margin-top:20px;">
-    <h3 class="group-member-tagged-subtitle">mission badges</h3>
-    <p class="tagged-units-help-text">
-      These badges represent missions you’ve completed on Twennie.
-    </p>
-
-    <div class="tagged-units-grid mission-badges-grid">
-      {{#if @root.missionBadges.length}}
-        {{#each @root.missionBadges}}
-          <div class="mission-badge-card">
-            <div class="mission-badge-icon">
-              <img src="{{badgePath}}" alt="mission badge">
-            </div>
-
-            <div class="mission-badge-info">
-              <h3 class="mission-badge-title">{{title}}</h3>
-              {{#if completed_at}}
-                <p class="mission-badge-date">
-                  completed {{formatDate completed_at "MMM D, YYYY"}}
-                </p>
-              {{/if}}
-              <a href="/unitviews/missions/view/{{missionId}}" class="mission-badge-link">
-                view mission
-              </a>
-            </div>
-          </div>
-        {{/each}}
-      {{else}}
-        <p class="tagged-no-units">
-          You haven’t completed any missions yet. Once you finish a mission and submit notes, your badge will appear here.
-        </p>
-      {{/if}}
-    </div>
-  </div>
-
 </section>
-
-<script>
-  function getCsrfGM() {
-    return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-  }
-
-  async function removeSelfTag(tagId, unitId, unitType) {
-    if (!confirm('Remove this tag from the unit?')) return;
-    try {
-      const res = await fetch(`/tags/remove/${tagId}/${unitId}/${unitType}`, {
-        method: 'DELETE',
-        headers: { 'X-CSRF-Token': getCsrfGM() }
-      });
-      const data = await res.json().catch(() => ({}));
-      if (res.ok) location.reload();
-      else alert(data.message || 'Failed to remove tag.');
-    } catch (e) {
-      console.error('removeSelfTag error', e);
-      alert('An error occurred while removing the tag.');
-    }
-  }
-
-  // 🔵 Auto-mark the "tagged" tab as seen when this partial loads
-  (async function markTaggedSeenOnce() {
-    try {
-      const count = Number('{{@root.gmCounts.tagged}}') || 0;
-      await fetch('/dashboard/groupmember/mark-seen', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': getCsrfGM()
-        },
-        body: JSON.stringify({ tabKey: 'tagged', currentCount: count })
-      });
-      const dot = document.querySelector('.dashboard-tab[data-tab="tagged"] .tab-dot');
-      if (dot) dot.remove();
-    } catch (e) {
-      /* no-op */
-    }
-  })();
-</script>
-
-
-

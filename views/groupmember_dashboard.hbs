@@ -40,6 +40,13 @@
         <div class="tab-arrow"></div>
       </button>
 
+      {{!-- ✅ NEW: Missions tab --}}
+      <button class="dashboard-tab" data-tab="missions" data-count="{{gmCounts.missions}}">
+        <span class="tab-title">missions</span>
+        {{#if gmBadges.missions}}<span class="tab-dot"></span>{{/if}}
+        <div class="tab-arrow"></div>
+      </button>
+
       <button class="dashboard-tab" data-tab="contribute">
         <span class="tab-title">contribute to the library</span>
         <div class="tab-arrow"></div>
@@ -58,7 +65,7 @@
       </button>
     </div>
 
-        <!-- Right Topics Column (fixed; reused partial) -->
+    <!-- Right Topics Column (fixed; reused partial) -->
     <div class="dashboard-page">
       {{> topicpartials/topics_column_partial}}
     </div>
@@ -86,6 +93,11 @@
 
     <div class="dashboard-tab-content" id="progress">
       {{> dashboardpartials/groupmember_progress }}
+    </div>
+
+    {{!-- ✅ NEW: Missions content --}}
+    <div class="dashboard-tab-content" id="missions">
+      {{> dashboardpartials/groupmember_missions }}
     </div>
 
     <div class="dashboard-tab-content" id="contribute">
@@ -122,9 +134,11 @@
     btn.addEventListener('click', () => {
       const tab = btn.dataset.tab;
       const count = btn.dataset.count || 0;
-      // Only track tabs that can have "new"
-      if (['group','topics','prompts','progress','library','tagged'].includes(tab)) {
+
+      // ✅ Add 'missions' to the tracked list
+      if (['group','topics','prompts','progress','missions','library','tagged'].includes(tab)) {
         markSeenGroupMember(tab, count);
+
         // Optimistic UI: hide the dot immediately
         const dot = btn.querySelector('.tab-dot');
         if (dot) dot.style.display = 'none';

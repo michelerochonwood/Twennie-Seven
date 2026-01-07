@@ -181,10 +181,7 @@ const topicViewMappings = {
 
 };
 
-//we have used lean here and it doesn't appear to have caused problems, but lean caused problems elsewhere, so don't use it
-//we have used lean here and it doesn't appear to have caused problems, but lean caused problems elsewhere, so don't use it
-//we have used lean here and it doesn't appear to have caused problems, but lean caused problems elsewhere, so don't use it
-//we have used lean here and it doesn't appear to have caused problems, but lean caused problems elsewhere, so don't use it
+
 async function fetchTaggedUnits(userId) {
   try {
     // Tags I created (self-tags) OR tags assigned to me
@@ -312,23 +309,38 @@ async function fetchTaggedUnits(userId) {
     });
 
     // mission (title = `mission_title`, topic = `main_topic`)
-    missions.forEach(m => {
-      const key = `${m._id.toString()}-mission`;
-      const tag = tagLookup.get(key);
-      const assignment = (tag?.assignedTo || []).find(a => String(a.member) === String(userId));
-      results.push({
-        unitType: 'mission',
-        title: m.mission_title || 'Untitled mission',
-        mainTopic: m.main_topic || 'No topic',
-        _id: m._id,
-        tagId: tag?._id?.toString() || null,
-        tagIdCreator: tag?.createdBy?.toString() || null,
-        instructions: assignment?.instructions || '',
-        completedAt: assignment?.completedAt || null,
-        viewPath: viewPathFor('mission', m._id)
-      });
-    });
+// mission (title = `mission_title`, topic = `main_topic`) + ✅ badge fields
+missions.forEach(m => {
+  const key = `${m._id.toString()}-mission`;
+  const tag = tagLookup.get(key);
+  const assignment = (tag?.assignedTo || []).find(a => String(a.member) === String(userId));
 
+  const category = m.category || 'other';
+
+  // Prefer a mission-specific stored badge path if you ever add it later; otherwise category default
+  const badgeImagePath =
+    m.badgeImagePath ||
+    m.badge_image ||
+    m.badgeImage ||
+    getMissionBadgePath(category);
+
+  results.push({
+    unitType: 'mission',
+    title: m.mission_title || 'Untitled mission',
+    mainTopic: m.main_topic || 'No topic',
+    _id: m._id,
+    tagId: tag?._id?.toString() || null,
+    tagIdCreator: tag?.createdBy?.toString() || null,
+    instructions: assignment?.instructions || '',
+    completedAt: assignment?.completedAt || null,
+    viewPath: viewPathFor('mission', m._id),
+
+    // ✅ NEW: for mission cards
+    category,
+    badge_name: m.badge_name || '',
+    badgeImagePath
+  });
+});
     return results;
   } catch (error) {
     console.error('❌ Error fetching tagged units for group member:', error);
@@ -405,6 +417,23 @@ function getSubtopics(topicTitle) {
 }
 
 
+const missionBadgeMap = {
+  learning:             'learningbadge',
+  research:             'researchbadge',
+  business_development: 'bdbadge',
+  internal_improvement: 'improvebadge',
+  culture_play:         'culturebadge',
+  client_experience:    'clientxbadge',
+  community:            'communitybadge',
+  administrative:       'adminbadge',
+  other:                'roguebadge',
+};
+
+function getMissionBadgePath(category) {
+  const key = category || 'other';
+  const filename = missionBadgeMap[key] || missionBadgeMap.other;
+  return `/badges/missions/${filename}.png`;
+}
 
 module.exports = {
     renderGroupMemberDashboard: async (req, res) => {
@@ -636,6 +665,14 @@ const groupMemberTaggedMissions = groupMemberSelfTaggedUnits.filter(u => u.unitT
 
 const groupMemberAssignedNuggets = groupMemberAssignedUnits.filter(u => u.unitType === 'nugget');
 const groupMemberAssignedMissions = groupMemberAssignedUnits.filter(u => u.unitType === 'mission');
+
+// ✅ NEW: non-mission non-nugget buckets for the tagged tab partial
+const groupMemberSelfTaggedNonMissionUnits =
+  groupMemberSelfTaggedUnits.filter(u => u.unitType !== 'mission' && u.unitType !== 'nugget');
+
+const groupMemberAssignedNonMissionUnits =
+  groupMemberAssignedUnits.filter(u => u.unitType !== 'mission' && u.unitType !== 'nugget');
+
 
 
 const topicSuggestions = await TopicSuggestion.find({
@@ -880,17 +917,25 @@ groupLibraryUnits = [...groupLibraryUnits, ...gmUpcomingRows2];
 
 // Build current counts from arrays you already computed above
 const gmCounts = {
-  group:   (userData.groupId?.members || []).length, // my group members
-  topics:  (topicSuggestions || []).length,          // my suggested topics
+  group:    (userData.groupId?.members || []).length, // my group members
+  topics:   (topicSuggestions || []).length,          // my suggested topics
+
   // prompts: both self-registered + assigned to me
-  prompts: (memberRegistrations || []).length + (assignedPromptSets || []).length,
-  // progress: simple monotonic signal (completed sets count)
+  prompts:  (memberRegistrations || []).length + (assignedPromptSets || []).length,
+
+  // progress: completed sets count
   progress: (formattedCompletedSets || []).length,
-  // library: my contributions (incl. upcoming after patches)
-  library: (groupMemberUnits || []).length,
-  // tagged: self-tagged + leader-assigned (pending + completed)
-  tagged:  (groupMemberSelfTaggedUnits || []).length
-         + (groupMemberAssignedUnits || []).length
+
+  // library: my contributions (incl. upcoming)
+  library:  (groupMemberUnits || []).length,
+
+  // tagged: self-tagged + leader-assigned (all types, incl nuggets + missions)
+  tagged:   (groupMemberSelfTaggedUnits || []).length
+          + (groupMemberAssignedUnits || []).length,
+
+  // ✅ NEW: missions tab count (self-tagged + assigned missions)
+  missions: (groupMemberTaggedMissions || []).length
+          + (groupMemberAssignedMissions || []).length
 };
 
 // Load/create seen doc for this group member
@@ -958,6 +1003,9 @@ maxGroupSize: userData.groupId.groupSize,
 
   groupMemberTaggedMissions,     // ✅ tagged missions
   groupMemberAssignedMissions,   // ✅ assigned missions
+
+  groupMemberSelfTaggedNonMissionUnits,
+  groupMemberAssignedNonMissionUnits,
 
   // counts + badges for green dots
   gmCounts,
