@@ -3348,8 +3348,8 @@ label {
 }
 
 .single_mission-badge-image {
-  width: 72px;
-  height: 72px;
+  width: 125px;
+  height: auto;
   object-fit: contain;
 }
 
