@@ -1366,6 +1366,13 @@ html, body {
   margin-top: 5px;
 }
 
+.leader-group-badges-subtitle {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 720px; /* optional: keeps it readable */
+}
+
 
 
 
