@@ -2211,9 +2211,10 @@ html, body {
 
 .gm-mission-badges-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(4, minmax(220px, 1fr)); /* ✅ four cards per row */
   gap: 16px;
   margin-top: 14px;
+  justify-items: center; /* keeps cards visually centered */
 }
 
 .gm-mission-badge-card {
@@ -2222,6 +2223,8 @@ html, body {
   border-radius: 18px;
   overflow: hidden;
   box-shadow: 0 2px 0 rgba(0,0,0,0.06);
+    max-width: 260px;
+  width: 100%;
 }
 
 .gm-mission-badge-inner {
@@ -2270,6 +2273,24 @@ html, body {
 
 .gm-mission-badge-link:hover {
   background: #4a4ab2;
+}
+
+@media (max-width: 1200px) {
+  .gm-mission-badges-grid {
+    grid-template-columns: repeat(3, minmax(220px, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .gm-mission-badges-grid {
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .gm-mission-badges-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /*------------------------------------------------------------------------------*/
