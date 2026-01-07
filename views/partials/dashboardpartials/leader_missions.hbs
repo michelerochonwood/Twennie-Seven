@@ -25,12 +25,14 @@
             <h3 class="tagged-unit-title">{{title}}</h3>
             {{#if mainTopic}}<p class="tagged-unit-topic">{{mainTopic}}</p>{{/if}}
 
-            {{!-- ⭐ Badge block (shows for in-progress or completed) --}}
-            <div class="mission-badge-row">
-              <div class="mission-badge-img">
+           {{!-- ⭐ Mission badge --}}
 {{#if badgeImagePath}}
   <div class="mission-badge-row">
-    <img src="{{badgeImagePath}}" alt="{{badge_name}}" class="mission-badge-icon">
+    <img
+      src="{{badgeImagePath}}"
+      alt="{{badge_name}}"
+      class="mission-badge-icon"
+    />
     {{#if badge_name}}
       <p class="mission-badge-name">{{badge_name}}</p>
     {{/if}}
