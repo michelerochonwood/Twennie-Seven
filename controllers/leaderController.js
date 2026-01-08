@@ -5,7 +5,7 @@ const { validateLeaderData } = require('../utils/validateLeader');
 const { validateGroupMemberData } = require('../utils/validateGroupMember');
 const LeaderProfile = require('../models/profile_models/leader_profile');
 const GroupProfile = require('../models/profile_models/group_profile');
-const Organization = require('../models/org_models/organization');
+const Organization = require('../models/member_models/organization');
 
 const bcrypt = require('bcrypt');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
