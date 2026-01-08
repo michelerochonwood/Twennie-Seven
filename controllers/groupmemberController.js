@@ -268,6 +268,16 @@ module.exports = {
           topic3: topics.topic3 || gm.topics?.topic3
         };
       }
+
+      const leader = await Leader.findById(groupId).select('organization organizationName organizationOptOut').lean();
+
+if (leader && !leader.organizationOptOut && leader.organization) {
+  gm.organization = leader.organization;
+  gm.organizationName = leader.organizationName || '';
+} else {
+  gm.organization = null;
+  gm.organizationName = '';
+}
       await gm.save();
       console.log("✅ Group member registered successfully:", gm._id.toString());
 

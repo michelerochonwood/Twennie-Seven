@@ -5,9 +5,56 @@ const { validateLeaderData } = require('../utils/validateLeader');
 const { validateGroupMemberData } = require('../utils/validateGroupMember');
 const LeaderProfile = require('../models/profile_models/leader_profile');
 const GroupProfile = require('../models/profile_models/group_profile');
+const Organization = require('../models/org_models/organization');
 
 const bcrypt = require('bcrypt');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
+function slugifyOrgName(name = '') {
+  return name
+    .toString()
+    .trim()
+    .toLowerCase()
+    .replace(/&/g, 'and')
+    .replace(/[^a-z0-9]+/g, '-')  // collapse non-alphanum to hyphen
+    .replace(/^-+|-+$/g, '')      // trim leading/trailing hyphens
+    .slice(0, 140);
+}
+
+function parseDomains(raw) {
+  if (!raw) return [];
+  // accept comma-separated string
+  if (typeof raw === 'string') {
+    return raw
+      .split(',')
+      .map(s => s.trim().toLowerCase())
+      .filter(Boolean)
+      .filter(d => d.includes('.') && !d.includes(' '));
+  }
+  // accept array if you ever switch the form
+  if (Array.isArray(raw)) {
+    return raw
+      .map(s => String(s).trim().toLowerCase())
+      .filter(Boolean)
+      .filter(d => d.includes('.') && !d.includes(' '));
+  }
+  return [];
+}
+
+async function buildUniqueSlug(baseSlug) {
+  if (!baseSlug) baseSlug = 'organization';
+  let slug = baseSlug;
+  let n = 2;
+
+  // Try base first, then base-2, base-3...
+  // Using countDocuments keeps it fast and simple.
+  while (await Organization.countDocuments({ slug }) > 0) {
+    slug = `${baseSlug}-${n}`;
+    n += 1;
+  }
+  return slug;
+}
+
 
 // Prefer configured BASE_URL; otherwise derive from request (proxy aware)
 function getSuccessBase(req) {
@@ -53,22 +100,22 @@ module.exports = {
   // Handle leader form submission
   createLeader: async (req, res) => {
     try {
-      const {
-        groupName,
-        groupLeaderName,
-        professionalTitle,
-        organization,
-        industry,
-        username,
-        groupLeaderEmail,
-        password,
-        line1, line2, city, province, postalCode, country,
-        groupSize,
-        topic1, topic2, topic3,
-        members,                   // may be array or JSON string
-        registration_code,
-        redirectTarget
-      } = req.body;
+const {
+  groupName,
+  groupLeaderName,
+  professionalTitle,
+  industry,
+  username,
+  groupLeaderEmail,
+  password,
+  line1, line2, city, province, postalCode, country,
+  groupSize,
+  topic1, topic2, topic3,
+  members,
+  registration_code,
+  redirectTarget
+} = req.body;
+
 
       // 1) Validate leader payload
       const leaderErrors = validateLeaderData(req.body);
@@ -86,22 +133,27 @@ module.exports = {
       const hashedPassword = await bcrypt.hash(password, 10);
 
       // 3) Create Leader (keeps topics because your schema currently has them)
-      const leader = new Leader({
-        groupName,
-        groupLeaderName,
-        professionalTitle,
-        organization,
-        industry,
-        username,
-        groupLeaderEmail,
-        password: hashedPassword,
-        groupSize,
-        topics: { topic1, topic2, topic3 },
-        members: [],
-        registration_code,
-        // do NOT set accessLevel here — your Leader schema doesn’t require it now
-        billingAddress: { line1, line2, city, province, postalCode, country }
-      });
+const leader = new Leader({
+  groupName,
+  groupLeaderName,
+  professionalTitle,
+
+  // Organization is created later via success-page flow
+  organization: null,
+  organizationOptOut: false,
+  organizationName: '',
+
+  industry,
+  username,
+  groupLeaderEmail,
+  password: hashedPassword,
+  groupSize,
+  topics: { topic1, topic2, topic3 },
+  members: [],
+  registration_code,
+  billingAddress: { line1, line2, city, province, postalCode, country }
+});
+
 
       const savedLeader = await leader.save();
       console.log('✅ Leader saved successfully:', savedLeader._id.toString());
@@ -256,13 +308,15 @@ module.exports = {
       }
 
       // Fallback (non-payment path)
-      return res.render('member_form_views/register_success', {
-        layout: 'memberformlayout',
-        title: 'Registration Successful',
-        username: savedLeader.username,
-        user: savedLeader,
-        dashboardLink: "/dashboard/leader"
-      });
+return res.render('member_form_views/register_success', {
+  layout: 'memberformlayout',
+  title: 'Registration Successful',
+  username: savedLeader.username,
+  user: savedLeader,
+  dashboardLink: "/dashboard/leader",
+  csrfToken: req.csrfToken ? req.csrfToken() : null
+});
+
     } catch (err) {
       console.error('Error creating leader or group members:', err.message);
       return res.status(500).render('member_form_views/error', {
@@ -503,6 +557,217 @@ deleteGroupMember: async (req, res) => {
     });
   }
 },
+
+// Create Organization + attach to logged-in leader
+createOrganization: async (req, res) => {
+  try {
+    // You’re storing a lightweight session snapshot in createLeader
+    const leaderId = req.session?.user?.id;
+    if (!leaderId) {
+      return res.status(401).render('member_form_views/error', {
+        layout: 'memberformlayout',
+        title: 'Not Authorized',
+        errorMessage: 'You must be logged in as a leader to create an organization.'
+      });
+    }
+
+    const leader = await Leader.findById(leaderId);
+    if (!leader) {
+      return res.status(404).render('member_form_views/error', {
+        layout: 'memberformlayout',
+        title: 'Not Found',
+        errorMessage: 'Leader not found.'
+      });
+    }
+
+    // Guard: leaders who already have an org shouldn’t create a second one accidentally
+    if (leader.organization && !leader.organizationOptOut) {
+      return res.status(400).render('member_form_views/error', {
+        layout: 'memberformlayout',
+        title: 'Organization Exists',
+        errorMessage: 'You already have an organization set up.'
+      });
+    }
+
+    const { name, industry, domains } = req.body;
+
+    if (!name || !String(name).trim()) {
+      return res.status(400).render('member_form_views/register_success', {
+        layout: 'memberformlayout',
+        title: 'Registration Successful',
+        username: leader.username,
+        user: leader,
+        dashboardLink: "/dashboard/leader",
+        csrfToken: req.csrfToken ? req.csrfToken() : null,
+        orgErrorMessage: 'Organization name is required.'
+      });
+    }
+
+    const cleanName = String(name).trim();
+    const baseSlug = slugifyOrgName(cleanName);
+    const slug = await buildUniqueSlug(baseSlug);
+    const domainList = parseDomains(domains);
+
+    const org = await Organization.create({
+      name: cleanName,
+      slug,
+      industry: industry ? String(industry).trim() : undefined,
+      domains: domainList
+    });
+
+    // Attach to leader
+    leader.organization = org._id;
+    leader.organizationName = org.name; // cache
+    leader.organizationOptOut = false;
+    await leader.save();
+
+    // Optional: keep group profile consistent
+    await GroupProfile.updateOne(
+      { groupId: leader._id },
+      { $set: { organization: org._id } }
+    );
+
+    return res.redirect('/dashboard/leader');
+  } catch (err) {
+    console.error('Error creating organization:', err);
+
+    // Best-effort: show success page with an inline error so they don’t feel “kicked out”
+    try {
+      const leaderId = req.session?.user?.id;
+      const leader = leaderId ? await Leader.findById(leaderId).lean() : null;
+
+      return res.status(500).render('member_form_views/register_success', {
+        layout: 'memberformlayout',
+        title: 'Registration Successful',
+        username: leader?.username || '',
+        user: leader,
+        dashboardLink: "/dashboard/leader",
+        csrfToken: req.csrfToken ? req.csrfToken() : null,
+        orgErrorMessage: 'An error occurred while creating your organization. Please try again.'
+      });
+    } catch {
+      return res.status(500).render('member_form_views/error', {
+        layout: 'memberformlayout',
+        title: 'Error',
+        errorMessage: 'An unexpected error occurred while creating your organization.'
+      });
+    }
+  }
+},
+
+showEditOrganizationForm: async (req, res) => {
+  try {
+    const leaderId = req.session?.user?.id;
+    if (!leaderId) {
+      return res.status(401).render('member_form_views/error', {
+        layout: 'memberformlayout',
+        title: 'Not Authorized',
+        errorMessage: 'You must be logged in as a leader to edit an organization.'
+      });
+    }
+
+    const leader = await Leader.findById(leaderId).populate('organization').lean();
+    if (!leader || !leader.organization) {
+      return res.status(404).render('member_form_views/error', {
+        layout: 'memberformlayout',
+        title: 'Not Found',
+        errorMessage: 'No organization found to edit.'
+      });
+    }
+
+    return res.render('member_form_views/edit_organization', {
+      layout: 'memberformlayout',
+      title: 'Edit Organization',
+      user: leader,
+      organization: leader.organization,
+      csrfToken: req.csrfToken ? req.csrfToken() : null
+    });
+  } catch (err) {
+    console.error('Error rendering edit organization form:', err);
+    return res.status(500).render('member_form_views/error', {
+      layout: 'memberformlayout',
+      title: 'Error',
+      errorMessage: 'An unexpected error occurred while loading the organization.'
+    });
+  }
+},
+
+updateOrganization: async (req, res) => {
+  try {
+    const leaderId = req.session?.user?.id;
+    if (!leaderId) {
+      return res.status(401).render('member_form_views/error', {
+        layout: 'memberformlayout',
+        title: 'Not Authorized',
+        errorMessage: 'You must be logged in as a leader to update an organization.'
+      });
+    }
+
+    const leader = await Leader.findById(leaderId);
+    if (!leader || !leader.organization) {
+      return res.status(404).render('member_form_views/error', {
+        layout: 'memberformlayout',
+        title: 'Not Found',
+        errorMessage: 'No organization found to update.'
+      });
+    }
+
+    const { name, industry, domains } = req.body;
+
+    if (!name || !String(name).trim()) {
+      return res.status(400).render('member_form_views/error', {
+        layout: 'memberformlayout',
+        title: 'Validation Error',
+        errorMessage: 'Organization name is required.'
+      });
+    }
+
+    const cleanName = String(name).trim();
+    const domainList = parseDomains(domains);
+
+    const org = await Organization.findById(leader.organization);
+    if (!org) {
+      return res.status(404).render('member_form_views/error', {
+        layout: 'memberformlayout',
+        title: 'Not Found',
+        errorMessage: 'Organization not found.'
+      });
+    }
+
+    // If name changes, update slug too (unique)
+    if (org.name !== cleanName) {
+      const baseSlug = slugifyOrgName(cleanName);
+      org.slug = await buildUniqueSlug(baseSlug);
+    }
+
+    org.name = cleanName;
+    org.industry = industry ? String(industry).trim() : undefined;
+    org.domains = domainList;
+
+    await org.save();
+
+    // Keep leader cache in sync
+    leader.organizationName = org.name;
+    leader.organizationOptOut = false;
+    await leader.save();
+
+    // Keep group profile consistent too
+    await GroupProfile.updateOne(
+      { groupId: leader._id },
+      { $set: { organization: org._id } }
+    );
+
+    return res.redirect('/dashboard/leader');
+  } catch (err) {
+    console.error('Error updating organization:', err);
+    return res.status(500).render('member_form_views/error', {
+      layout: 'memberformlayout',
+      title: 'Error',
+      errorMessage: 'An unexpected error occurred while updating the organization.'
+    });
+  }
+},
+
 
 
 };

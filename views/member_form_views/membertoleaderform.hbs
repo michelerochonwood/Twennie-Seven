@@ -22,10 +22,14 @@
     </div>
 
     <!-- Organization -->
-    <div class="form-field">
-      <label for="organization">Organization</label>
-      <input type="text" id="organization" name="organization" placeholder="Your company or organization name" required>
-    </div>
+<div class="checkbox-wrapper">
+  <input type="checkbox" id="organizationOptOut" name="organizationOptOut" value="true">
+  <label for="organizationOptOut">keep my organization anonymous</label>
+</div>
+
+<p class="form-instructions" style="width: 80%; margin: 0 auto;">
+  You can set up your organization as a Twennie member organization after registration.
+</p>
 
     <!-- Industry -->
     <div class="form-field">
@@ -39,17 +43,11 @@
         <option value="Web Design">Web Design</option>
         <option value="Construction">Construction</option>
         <option value="Technology">Technology</option>
-        <option value="AI and Robotics">AI and Robotics</option>
         <option value="Social Media/Digital Advertising">Social Media / Digital Advertising</option>
         <option value="Community Planning/Landscape Architecture">Community Planning / Landscape Architecture</option>
         <option value="Land Development">Land Development</option>
-        <option value="Telecommunications">Telecommunications</option>
-        <option value="E-Commerce">E-Commerce</option>
-        <option value="Cybersecurity">Cybersecurity</option>
-        <option value="Fintech">Fintech</option>
         <option value="Edtech">Edtech</option>
         <option value="Energy and Utilities">Energy and Utilities</option>
-        <option value="Manufacturing">Manufacturing</option>
         <option value="Other">Other</option>
       </select>
     </div>

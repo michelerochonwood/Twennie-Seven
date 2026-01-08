@@ -1,0 +1,64 @@
+<div id="org-create-panel" class="leader-form-container" hidden>
+
+  <h2 class="form-title" style="margin-top: 2rem;">create your organization</h2>
+
+  {{#if orgErrorMessage}}
+    <div class="alert alert-error">{{orgErrorMessage}}</div>
+  {{/if}}
+
+  <form action="/leader/organization" method="POST" class="individual-membership-form" novalidate>
+    {{#if csrfToken}}
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    {{/if}}
+
+    
+
+    <div class="form-field">
+      <label for="orgName">organization name</label>
+      <input
+        id="orgName"
+        name="name"
+        type="text"
+        required
+        maxlength="120"
+        autocomplete="organization"
+        placeholder="e.g., TOMA Engineering"
+      >
+    </div>
+
+    <div class="form-field-industry">
+      <label for="orgIndustry">industry (optional)</label>
+      <select id="orgIndustry" name="industry">
+        <option value="">select (optional)</option>
+        <option value="Engineering">Engineering</option>
+        <option value="Architecture">Architecture</option>
+        <option value="Project Management">Project Management</option>
+        <option value="Information Technology(IT)">Information Technology (IT)</option>
+        <option value="Web Design">Web Design</option>
+        <option value="Construction">Construction</option>
+        <option value="Social Media/Digital Advertising">Social Media/Digital Advertising</option>
+        <option value="Community Planning/Landscape Architecture">Community Planning/Landscape Architecture</option>
+        <option value="Land Development">Land Development</option>
+        <option value="Fintech">Fintech</option>
+        <option value="Edtech">Edtech</option>
+        <option value="Energy and Utilities">Energy and Utilities</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="orgDomains">company email domains (optional)</label>
+      <input
+        id="orgDomains"
+        name="domains"
+        type="text"
+        placeholder="e.g., toma.com, tomaengineering.ca"
+      >
+      <p class="form-instructions">
+        Optional. Comma-separated. You can add or change these later.
+      </p>
+    </div>
+
+    <button type="submit" class="make-member-button">create organization</button>
+  </form>
+</div>

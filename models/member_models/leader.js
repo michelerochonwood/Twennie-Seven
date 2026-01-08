@@ -37,11 +37,23 @@ const leaderSchema = new mongoose.Schema({
     required: [true, 'Professional title is required'],
     trim: true
   },
-  organization: {
-    type: String,
-    required: [true, 'Organization is required'],
-    trim: true
-  },
+organization: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: 'Organization',
+  default: null
+},
+
+organizationOptOut: {
+  type: Boolean,
+  default: false
+},
+
+organizationName: {
+  type: String,
+  trim: true,
+  maxlength: 120,
+  default: ''
+},
   industry: {
     type: String,
     required: [true, 'Industry is required'],
@@ -215,6 +227,7 @@ leaderSchema.methods.getSeatQuantity = function () {
 leaderSchema.index({ username: 1 }, { unique: true });
 leaderSchema.index({ groupLeaderEmail: 1 }, { unique: true });
 leaderSchema.index({ registration_code: 1 }, { unique: true });
+leaderSchema.index({ organization: 1 });
 
 const Leader = mongoose.model('Leader', leaderSchema);
 module.exports = Leader;

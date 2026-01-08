@@ -1,8 +1,47 @@
 {{#*inline "title"}}Registered! | Twennie{{/inline}}
 
 <div class="success-container">
-    <h1 class="registration-complete">registration complete!</h1>
-    <p>Welcome to Twennie, {{username}}!</p>
-<a href="{{dashboardLink}}" class="dashboard-button">access my dashboard</a>
+  <h1 class="registration-complete">registration complete!</h1>
+  <p>Welcome to Twennie, {{username}}!</p>
 
+  <a href="{{dashboardLink}}" class="dashboard-button">access my dashboard</a>
+
+  {{#if user}}
+    {{#if (eq user.membershipType "leader")}}
+      <div class="group-member-instructions">
+        <h3>set up your organization?</h3>
+        <p>
+          As a group leader, you have the option to set up your organization
+          as a Twennie member organization. This gives you the option to post library content for other Twennie groups within your organization! Even if you're not planning this in the immediate future, you might want to add it later. Setting up your organization now will make that easier. Would you like to do this?
+        </p>
+
+        <div class="membership-buttons">
+          <button type="button" class="membership-button" id="show-org-form">
+            yes, set up my organization
+          </button>
+          <a href="{{dashboardLink}}" class="membership-button">
+            skip for now
+          </a>
+        </div>
+      </div>
+
+      {{> memberformpartials/organization_form}}
+    {{/if}}
+  {{/if}}
 </div>
+
+<script>
+  (function () {
+    const btn = document.getElementById('show-org-form');
+    const panel = document.getElementById('org-create-panel');
+    if (!btn || !panel) return;
+
+    btn.addEventListener('click', function () {
+      const isHidden = panel.hasAttribute('hidden');
+      if (isHidden) panel.removeAttribute('hidden');
+      else panel.setAttribute('hidden', '');
+
+      if (isHidden) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  })();
+</script>

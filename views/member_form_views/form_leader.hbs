@@ -28,10 +28,14 @@
       <input type="text" id="professional-title" name="professionalTitle" placeholder="This should be the title by which your organization knows you." required>
     </div>
 
-    <div class="form-field">
-      <label for="organization">Organization</label>
-      <input type="text" id="organization" name="organization" placeholder="If you prefer not to name your organization, write 'anonymous'.">
-    </div>
+<div class="checkbox-wrapper">
+  <input type="checkbox" id="organizationOptOut" name="organizationOptOut" value="true">
+  <label for="organizationOptOut">keep my organization anonymous</label>
+</div>
+
+<p class="form-instructions" style="width: 80%; margin: 0 auto;">
+  You can set up your organization as a Twennie member organization after registration.
+</p>
 
     <!-- Billing Address (optional, saved if provided) -->
 <div class="form-field">

@@ -645,10 +645,16 @@ const userData = await Leader.findById(id)
     'emailPreferenceLevel',
     'profileImage',
     'professionalTitle',
+
+    // ✅ org fields
     'organization',
+    'organizationOptOut',
+    'organizationName',
+
     'topics',
     'members',
-    // 👇 add MFA fields
+
+    // 👇 MFA
     'mfa.enabled',
     'mfa.method',
     'mfa.recoveryCodes',
@@ -660,6 +666,7 @@ const userData = await Leader.findById(id)
     select: 'name profileImage professionalTitle isVerified'
   })
   .lean();
+
   
   
 const mfa = userData?.mfa || {};
@@ -685,6 +692,43 @@ const groupProfile = await GroupProfile
   .lean();
 
 
+// ------------------------------------------------------------
+// ✅ Organization: "groups in my organization"
+// ------------------------------------------------------------
+let orgGroups = [];
+
+const hasOrg =
+  !!userData?.organization &&
+  userData?.organizationOptOut !== true;
+
+if (hasOrg) {
+  // other leaders in same org (each Leader is a group)
+  const otherLeaders = await Leader.find({
+    organization: userData.organization,
+    organizationOptOut: { $ne: true },
+    isActive: true,
+    _id: { $ne: userData._id }
+  })
+    .select('groupName groupLeaderName members groupSize')
+    .lean();
+
+  if (otherLeaders.length) {
+    // attach group images from GroupProfile
+    const ids = otherLeaders.map(l => l._id);
+    const profiles = await GroupProfile.find({ groupId: { $in: ids } })
+      .select('groupId groupImage')
+      .lean();
+
+    const imgByGroupId = new Map(
+      profiles.map(p => [p.groupId.toString(), p.groupImage])
+    );
+
+    orgGroups = otherLeaders.map(l => ({
+      ...l,
+      groupImage: imgByGroupId.get(l._id.toString()) || '/images/default-group.png'
+    }));
+  }
+}
 
             // ---- Safe topics (leaders may not have topics on account doc) ----
 function buildTopicObj(title) {
@@ -1167,8 +1211,7 @@ if (assignedPromptCards[0]) console.log('assignedPromptCards[0] sample:', assign
 return res.render('leader_dashboard', {
   layout: 'dashboardlayout',
   title: 'Leader Dashboard',
-  csrfToken: req.csrfToken(),
-
+csrfToken: req.csrfToken ? req.csrfToken() : null,
   leader: {
     ...userData,
     members: resolvedGroupMembers,
@@ -1180,7 +1223,7 @@ return res.render('leader_dashboard', {
 
   leaderGroupMembers: resolvedGroupMembers,
   maxGroupSize: userData.maxGroupSize,
-
+orgGroups,
   // Library + group units
   leaderUnits,
   groupMemberUnits,

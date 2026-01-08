@@ -1,17 +1,48 @@
 const mongoose = require('mongoose');
 
+const mfaSchema = new mongoose.Schema({
+  enabled: { type: Boolean, default: false },
+  method: { type: String, enum: ['totp'], default: undefined },
+  // Encrypted at rest (AES-256-GCM). Never store raw.
+  secretEnc: { type: String },
+  secretIv: { type: String },
+  secretTag: { type: String },
+  recoveryCodes: [{ type: String }], // bcrypt-hashed codes
+  updatedAt: { type: Date }
+}, { _id: false });
+
 const groupMemberSchema = new mongoose.Schema({
-  groupId: {
+  // Relationship to the leader who owns the group
+  leader: {
     type: mongoose.Schema.Types.ObjectId,
-    required: [true, 'Group ID is required'],
-    ref: 'Leader'
+    ref: 'Leader',
+    required: [true, 'Leader ID is required'],
+    index: true
   },
-  
+
+  // The display name for the group they joined (works even if you later add multiple groups per leader)
   groupName: {
     type: String,
     required: [true, 'Group name is required'],
     trim: true
   },
+
+  // Org link (copied from leader at creation time). Null allowed for anonymous/opt-out.
+  organization: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Organization',
+    default: null,
+    index: true
+  },
+
+  // Optional cache for display/search; keep in sync if you set it.
+  organizationName: {
+    type: String,
+    trim: true,
+    maxlength: 120,
+    default: ''
+  },
+
   name: {
     type: String,
     required: [true, 'Member name is required'],
@@ -36,6 +67,7 @@ const groupMemberSchema = new mongoose.Schema({
     required: [true, 'Password is required'],
     minlength: [6, 'Password must be at least 6 characters']
   },
+
   membershipType: {
     type: String,
     default: 'group_member',
@@ -46,46 +78,26 @@ const groupMemberSchema = new mongoose.Schema({
     default: 'group_member',
     enum: ['group_member']
   },
-  isVerified: {
-    type: Boolean,
-    default: false
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  isActive: {
-    type: Boolean,
-    default: true
-  },
 
-  // --- New fields for account & email preferences ---
+  isVerified: { type: Boolean, default: false },
+  isActive: { type: Boolean, default: true },
+
+  // Email preferences
   emailPreferenceLevel: {
     type: Number,
-    enum: [1, 2, 3],  // 1=minimal, 2=updates, 3=all including promos/events
+    enum: [1, 2, 3],
     default: 1
   },
-  emailPreferencesUpdatedAt: {
-    type: Date
-  },
-  mfa: {
-  enabled: { type: Boolean, default: false },
-  method: { type: String, enum: ['totp'], default: undefined },
-  // Encrypted at rest (AES-256-GCM). Never store raw.
-  secretEnc: { type: String },       // base64 of ciphertext
-  secretIv: { type: String },        // base64 of IV
-  secretTag: { type: String },       // base64 of auth tag
-  recoveryCodes: [{ type: String }], // bcrypt-hashed codes
-  updatedAt: { type: Date }
-},
+  emailPreferencesUpdatedAt: { type: Date },
 
+  // MFA
+  mfa: mfaSchema
 }, {
   timestamps: true
 });
 
-const GroupMember = mongoose.model('GroupMember', groupMemberSchema);
+// Helpful indexes for reporting
+groupMemberSchema.index({ organization: 1, isActive: 1 });
+groupMemberSchema.index({ leader: 1, isActive: 1 });
 
-module.exports = GroupMember;
-
-
-
+module.exports = mongoose.model('GroupMember', groupMemberSchema);
