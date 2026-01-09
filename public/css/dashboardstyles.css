@@ -1243,7 +1243,7 @@ html, body {
   font-size: 0.95rem;
   font-weight: 800;
   color: #262262;
-  text-align: left;
+  text-align: center;
 }
 
 /* Small helper text under the title */
@@ -1252,6 +1252,7 @@ html, body {
   font-size: 0.8rem;
   color: #555;
   line-height: 1.35;
+  text-align: center;
 }
 
 /* Empty-state text (no other org groups) */
@@ -1284,6 +1285,7 @@ html, body {
   cursor: pointer;
   text-align: center;
   text-decoration: none;
+  margin: 0 auto;
 }
 
 .groupsection-org-addbtn:hover {
