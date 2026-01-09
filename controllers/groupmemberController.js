@@ -16,118 +16,122 @@ function renderError(res, message, status = 500) {
 
 module.exports = {
   // --- GET /member/group/verify ---
-   showVerifyMemberForm: async (req, res) => {
-    try {
-      const csrfToken = req.csrfToken ? req.csrfToken() : null;
+// --- GET /member/group/verify ---
+showVerifyMemberForm: async (req, res) => {
+  try {
+    const csrfToken = req.csrfToken ? req.csrfToken() : null;
 
-      const groups = await Leader.aggregate([
-{
-  $lookup: {
-    from: 'groupmembers',
-    let: { leaderId: '$_id' },
-    pipeline: [
-      {
-        $match: {
-          $expr: {
-            $or: [
-              { $eq: ['$leader', '$$leaderId'] },  // ✅ new schema
-              { $eq: ['$groupId', '$$leaderId'] }  // ✅ legacy support
-            ]
-          }
-        }
-      },
-      { $project: { name: 1, email: 1, isVerified: 1, professionalTitle: 1 } }
-    ],
-    as: 'members'
+    // 1) Load leaders (groups)
+    const leaders = await Leader.find({})
+      .select('groupName groupLeaderName registration_code') // add anything you display
+      .lean();
+
+    // 2) Load group images in one query
+    const leaderIds = leaders.map(l => l._id);
+    const profiles = await require("../models/profile_models/group_profile")
+      .find({ groupId: { $in: leaderIds } })
+      .select('groupId groupImage')
+      .lean();
+
+    const imageByLeaderId = new Map(
+      profiles.map(p => [p.groupId.toString(), p.groupImage])
+    );
+
+    // 3) Load members for each leader (support BOTH schemas: leader OR groupId)
+    const groups = await Promise.all(
+      leaders.map(async (l) => {
+        const members = await GroupMember.find({
+          $or: [
+            { leader: l._id },   // ✅ current schema
+            { groupId: l._id }   // ✅ legacy schema
+          ]
+        })
+          .select('name email isVerified professionalTitle')
+          .lean();
+
+        return {
+          ...l,
+          members,
+          profile: [], // keep shape stable if your view expects it
+          groupImage: imageByLeaderId.get(l._id.toString()) || '/images/default-group.png'
+        };
+      })
+    );
+
+    return res.render('member_form_views/verifymember', {
+      layout: 'memberformlayout',
+      title: 'Verify Group Membership',
+      csrfToken,
+      groups
+    });
+  } catch (err) {
+    console.error('Error rendering verify member form:', err);
+    return renderError(res, 'An error occurred while loading the verification form.');
   }
 },
 
-        {
-          $lookup: {
-            from: 'groupprofiles',          // 👈 matches GroupProfile collection
-            localField: '_id',
-            foreignField: 'groupId',
-            as: 'profile'
-          }
-        },
-        {
-          $addFields: {
-            groupImage: {
-              $ifNull: [
-                { $first: '$profile.groupImage' },
-                '/images/default-group.png'   // fallback
-              ]
-            }
-          }
-        }
-      ]);
-
-      return res.render('member_form_views/verifymember', {
-        layout: 'memberformlayout',
-        title: 'Verify Group Membership',
-        csrfToken,
-        groups
-      });
-    } catch (err) {
-      console.error('Error rendering verify member form:', err.message);
-      return renderError(res, 'An error occurred while loading the verification form.');
-    }
-  },
 
   // --- POST /member/group/verify-registration-code ---
-  verifyRegistrationCode: async (req, res) => {
-    try {
-      const csrfToken = req.csrfToken ? req.csrfToken() : null;
-      const { groupId, registration_code } = req.body;
+// --- POST /member/group/verify-registration-code ---
+verifyRegistrationCode: async (req, res) => {
+  try {
+    const csrfToken = req.csrfToken ? req.csrfToken() : null;
+    const { groupId, registration_code } = req.body;
 
-      const groups = await Leader.aggregate([
-        {
-          $lookup: {
-            from: 'groupmembers',
-            localField: '_id',
-            foreignField: 'groupId',
-            as: 'members'
-          }
-        },
-        {
-          $lookup: {
-            from: 'groupprofiles',
-            localField: '_id',
-            foreignField: 'groupId',
-            as: 'profile'
-          }
-        },
-        {
-          $addFields: {
-            groupImage: {
-              $ifNull: [
-                { $first: '$profile.groupImage' },
-                '/images/default-group.png'
-              ]
-            }
-          }
-        }
-      ]);
+    // 1) Load leaders
+    const leaders = await Leader.find({})
+      .select('groupName groupLeaderName registration_code')
+      .lean();
 
-      const leader = await Leader.findById(groupId);
+    const leaderIds = leaders.map(l => l._id);
 
-      groups.forEach(group => {
-        const isMatch = group._id.toString() === groupId;
-        group.verified = Boolean(isMatch && leader && leader.registration_code === registration_code);
-        group.error = Boolean(isMatch && !group.verified);
-      });
+    // 2) Group images
+    const GroupProfile = require("../models/profile_models/group_profile");
+    const profiles = await GroupProfile.find({ groupId: { $in: leaderIds } })
+      .select('groupId groupImage')
+      .lean();
 
-      return res.status(200).render("member_form_views/verifymember", {
-        layout: "memberformlayout",
-        title: "Verify Group Membership",
-        csrfToken,
-        groups
-      });
-    } catch (err) {
-      console.error("❌ Error verifying registration code:", err.message);
-      return renderError(res, "An error occurred while verifying the registration code.");
-    }
-  },
+    const imageByLeaderId = new Map(
+      profiles.map(p => [p.groupId.toString(), p.groupImage])
+    );
+
+    // 3) Build groups with members
+    const groups = await Promise.all(
+      leaders.map(async (l) => {
+        const members = await GroupMember.find({
+          $or: [
+            { leader: l._id },   // ✅ current schema
+            { groupId: l._id }   // ✅ legacy schema
+          ]
+        })
+          .select('name email isVerified professionalTitle')
+          .lean();
+
+        const isMatch = l._id.toString() === String(groupId);
+        const verified = Boolean(isMatch && l.registration_code === registration_code);
+
+        return {
+          ...l,
+          members,
+          groupImage: imageByLeaderId.get(l._id.toString()) || '/images/default-group.png',
+          verified,
+          error: Boolean(isMatch && !verified)
+        };
+      })
+    );
+
+    return res.status(200).render('member_form_views/verifymember', {
+      layout: 'memberformlayout',
+      title: 'Verify Group Membership',
+      csrfToken,
+      groups
+    });
+  } catch (err) {
+    console.error("❌ Error verifying registration code:", err);
+    return renderError(res, "An error occurred while verifying the registration code.");
+  }
+},
+
 
   // --- POST /member/group/verify-member (optional AJAX) ---
   verifyMember: async (req, res) => {
