@@ -638,138 +638,148 @@ const editLeaderProfile = async (req, res) => {
 
 
 const viewGroupMemberProfile = async (req, res) => {
+  try {
+    const profile = await GroupMemberProfile.findOne({ groupMemberId: req.params.id }).lean();
+    const groupMember = await GroupMember.findById(req.params.id).lean();
 
-    try {
-      const profile = await GroupMemberProfile.findOne({ groupMemberId: req.params.id });
-      const groupMember = await GroupMember.findOne({ _id: req.params.id });
-      const group = await GroupProfile.findOne({ groupId: groupMember?.groupId }).populate("members");
-      const leader = await Leader.findOne({ _id: group?.groupId });
+    if (!profile || !groupMember) {
+      return res.status(404).send("Profile not found.");
+    }
+
+    // ✅ New canonical group anchor: groupMember.leader
+    // ✅ Legacy fallback: groupMember.groupId (if still present on older docs)
+    const leaderId = groupMember.leader || groupMember.groupId;
+    if (!leaderId) {
+      return res.status(404).send("Profile not found.");
+    }
+
+    // Group profile is keyed by leader id (groupId = leader _id)
+    const group = await GroupProfile.findOne({ groupId: leaderId }).populate("members").lean();
+    const leader = await Leader.findById(leaderId).lean();
+
+    if (!leader) {
+      return res.status(404).send("Profile not found.");
+    }
+
+    // ✅ Handle Cloudinary vs fallback profile image
+    const safeProfileImage = profile.profileImage?.startsWith("http")
+      ? profile.profileImage
+      : "https://www.twennie.com/images/default-avatar.png";
+
+    const leaderTopics = leader.topics || {};
+
+    const profileData = {
+      profileImage: safeProfileImage,
+      name: profile.name || "No Name Provided",
+      professionalTitle: profile.professionalTitle || "No Title Provided",
+      biography: profile.biography || "No biography available.",
+      goals: profile.goals || "No goals set.",
+      topics: leaderTopics,
+      groupMemberId: String(profile.groupMemberId)
+    };
+
+    // ✅ Build selected topics with mapping info
+    const selectedTopics = ["topic1", "topic2", "topic3"].reduce((acc, key) => {
+      const topicTitle = leaderTopics[key];
+      acc[key] = topicTitle
+        ? {
+            title: topicTitle,
+            subtopics: getSubtopics(topicTitle) || [],
+            slug: topicMappings[topicTitle] || "unknown-topic",
+            viewName: topicMappings[topicTitle]
+              ? topicViewMappings[topicMappings[topicTitle]]
+              : "not_found"
+          }
+        : null;
+      return acc;
+    }, {});
+
+    // ✅ Fetch badge records (used for both badges and completions)
+    const badgeRecords = await Badge.find({ memberId: groupMember._id })
+      .populate("promptSetId")
+      .lean();
+
+    const memberBadges = badgeRecords.map((record) => ({
+      earnedBadge: {
+        image: record.earnedBadge?.image || "https://www.twennie.com/images/default-badge.png",
+        name: record.earnedBadge?.name || "Unknown Badge"
+      },
+      promptSetTitle: record.promptSetId?.promptset_title || "Unknown Prompt Set",
+      mainTopic: record.promptSetId?.main_topic || "No topic"
+    }));
+
+    const completedPromptSets = badgeRecords.map((record) => ({
+      promptSetTitle: record.promptSetId?.promptset_title || "Unknown Prompt Set",
+      completionDate: record.completedAt ? new Date(record.completedAt).toDateString() : "Unknown Date",
+      badgeEarned: record.earnedBadge?.name || "No Badge Earned"
+    }));
+
+    return res.render("profile_views/groupmember_profile", {
+      layout: "profilelayout",
+      groupMember: {
+        ...profileData,
+        selectedTopics
+      },
+      memberBadges,
+      completedPromptSets,
+      group: group || {},
+      groupMembers: group?.members || []
+    });
+  } catch (error) {
+    console.error("❌ Error fetching group member profile:", error);
+    return res.status(500).send("Internal Server Error");
+  }
+};
+
   
-      if (!profile || !groupMember || !leader) {
-        return res.status(404).send("Profile not found.");
-      }
-  
-      // ✅ Handle Cloudinary vs fallback profile image
-      const safeProfileImage = profile.profileImage?.startsWith("http")
-        ? profile.profileImage
-        : "https://www.twennie.com/images/default-avatar.png";
-  
-      const leaderTopics = leader.topics || {};
-  
-      const profileData = {
+
+
+
+
+
+const editGroupMemberProfile = async (req, res) => {
+  try {
+    const profile = await GroupMemberProfile.findOne({ groupMemberId: req.params.id }).lean();
+    const groupMember = await GroupMember.findById(req.params.id).lean();
+
+    if (!profile || !groupMember) {
+      return res.status(404).send("Profile not found.");
+    }
+
+    const leaderId = groupMember.leader || groupMember.groupId;
+    const leader = leaderId ? await Leader.findById(leaderId).lean() : null;
+
+    if (!leader || !checkProfileOwnership(req, profile.groupMemberId)) {
+      return res.status(403).send("Unauthorized");
+    }
+
+    const allTopics = getAllTopics();
+
+    const safeProfileImage = profile.profileImage?.startsWith("http")
+      ? profile.profileImage
+      : "https://www.twennie.com/images/default-avatar.png";
+
+    return res.render("profile_views/groupmemberprofileForm", {
+      layout: "profilelayout",
+      profile: {
         profileImage: safeProfileImage,
         name: profile.name || "No Name Provided",
         professionalTitle: profile.professionalTitle || "No Title Provided",
-        biography: profile.biography || "No biography available.",
-        goals: profile.goals || "No goals set.",
-        topics: leaderTopics,
-        groupMemberId: profile.groupMemberId.toString()
-      };
-  
-      // ✅ Build selected topics with mapping info
-      const selectedTopics = ["topic1", "topic2", "topic3"].reduce((acc, key) => {
-        const topicTitle = leaderTopics[key];
-        acc[key] = topicTitle
-          ? {
-              title: topicTitle,
-              subtopics: getSubtopics(topicTitle) || [],
-              slug: topicMappings[topicTitle] || "unknown-topic",
-              viewName: topicMappings[topicTitle]
-                ? topicViewMappings[topicMappings[topicTitle]]
-                : "not_found"
-            }
-          : null;
-        return acc;
-      }, {});
-  
-      console.log("✅ Selected Topics Sent to Group Member Profile View:", selectedTopics);
-      console.log("✅ Group Member Data Sent to Profile View:", profileData);
-  
-      // ✅ Fetch badge records (used for both badges and completions)
-      const badgeRecords = await Badge.find({ memberId: groupMember._id })
-        .populate("promptSetId")
-        .lean();
-  
-      const memberBadges = badgeRecords.map((record) => ({
-        earnedBadge: {
-          image: record.earnedBadge?.image || "https://www.twennie.com/images/default-badge.png",
-          name: record.earnedBadge?.name || "Unknown Badge"
-        },
-        promptSetTitle: record.promptSetId?.promptset_title || "Unknown Prompt Set",
-        mainTopic: record.promptSetId?.main_topic || "No topic"
-      }));
-  
-      const completedPromptSets = badgeRecords.map((record) => ({
-        promptSetTitle: record.promptSetId?.promptset_title || "Unknown Prompt Set",
-        completionDate: record.completedAt ? new Date(record.completedAt).toDateString() : "Unknown Date",
-        badgeEarned: record.earnedBadge?.name || "No Badge Earned"
-      }));
-  
-      console.log("✅ Group Member Earned Badges:", JSON.stringify(memberBadges, null, 2));
-      console.log("✅ Group Member Completed Prompt Sets:", JSON.stringify(completedPromptSets, null, 2));
-  
-      // ✅ Render the group member profile view
-      res.render("profile_views/groupmember_profile", {
-        layout: "profilelayout",
-        groupMember: {
-          ...profileData,
-          selectedTopics
-        },
-        memberBadges,
-        completedPromptSets,
-        group: group || {},
-        groupMembers: group?.members || []
-      });
-    } catch (error) {
-      console.error("❌ Error fetching group member profile:", error);
-      res.status(500).send("Internal Server Error");
-    }
-  };
-  
+        biography: profile.biography || "",
+        goals: profile.goals || "",
+        topics: profile.topics || {},
+        groupMemberId: profile.groupMemberId
+      },
+      groupTopics: leader.topics || {},
+      allTopics,
+      csrfToken: req.csrfToken ? req.csrfToken() : null
+    });
+  } catch (error) {
+    console.error("Error loading group member edit form:", error);
+    return res.status(500).send("Internal Server Error");
+  }
+};
 
-
-
-
-
-  const editGroupMemberProfile = async (req, res) => {
-
-    try {
-      const profile = await GroupMemberProfile.findOne({ groupMemberId: req.params.id });
-      const groupMember = await GroupMember.findOne({ _id: req.params.id });
-      const group = await GroupProfile.findOne({ groupId: groupMember?.groupId }).populate("members");
-      const leader = await Leader.findOne({ _id: group?.groupId });
-  
-      if (!profile || !groupMember || !leader || !checkProfileOwnership(req, profile.groupMemberId)) {
-        return res.status(403).send("Unauthorized");
-      }
-  
-      const allTopics = getAllTopics();
-      console.log("✅ Available Topics:", allTopics);
-  
-      const safeProfileImage = profile.profileImage?.startsWith("http")
-        ? profile.profileImage
-        : "https://www.twennie.com/images/default-avatar.png";
-  
-      res.render("profile_views/groupmemberprofileForm", {
-        layout: "profilelayout",
-        profile: {
-          profileImage: safeProfileImage,
-          name: profile.name || "No Name Provided",
-          professionalTitle: profile.professionalTitle || "No Title Provided",
-          biography: profile.biography || "",
-          goals: profile.goals || "",
-          topics: profile.topics || {},
-          groupMemberId: profile.groupMemberId
-        },
-        groupTopics: leader.topics || {},
-        allTopics,
-        csrfToken: req.csrfToken ? req.csrfToken() : null
-      });
-    } catch (error) {
-      console.error("Error loading group member edit form:", error);
-      res.status(500).send("Internal Server Error");
-    }
-  };
   
 
 
