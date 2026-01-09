@@ -113,4 +113,32 @@ router.post('/mark-seen', isAuthenticated, async (req, res) => {
   }
 });
 
+
+// ------------------------------------------------------------
+// ✅ POST /dashboard/leader/organization/join
+// Join an existing organization (domain verified)
+// ------------------------------------------------------------
+router.post('/organization/join', isAuthenticated, async (req, res, next) => {
+  try {
+    return await leaderDashboardController.joinOrganizationByDomain(req, res);
+  } catch (err) {
+    console.error('Error joining organization:', err);
+    next(err);
+  }
+});
+
+// ------------------------------------------------------------
+// ✅ POST /dashboard/leader/organization/request-join
+// Request to join an organization (approval flow)
+// ------------------------------------------------------------
+router.post('/organization/request-join', isAuthenticated, async (req, res, next) => {
+  try {
+    return await leaderDashboardController.requestJoinOrganization(req, res);
+  } catch (err) {
+    console.error('Error requesting org join:', err);
+    next(err);
+  }
+});
+
+
 module.exports = router;

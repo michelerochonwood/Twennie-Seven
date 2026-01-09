@@ -24,6 +24,30 @@ const Nugget = require('../models/unit_models/nugget'); // ✅ NEW
 const Mission = require('../models/unit_models/mission'); // ✅ NEW
 
 
+const Organization = require('../models/member_models/organization');
+
+function emailDomain(email = '') {
+  const at = String(email).toLowerCase().split('@')[1];
+  return at ? at.trim() : '';
+}
+
+// If leader has no org and didn’t opt out, try to suggest one
+let suggestedOrg = null;
+
+const canSuggestOrg =
+  !userData.organization &&
+  userData.organizationOptOut !== true &&
+  userData.groupLeaderEmail;
+
+if (canSuggestOrg) {
+  const domain = emailDomain(userData.groupLeaderEmail);
+  if (domain) {
+    suggestedOrg = await Organization.findOne({
+      isActive: true,
+      domains: domain
+    }).select('name slug industry').lean();
+  }
+}
 
 
 // Map mission categories to badge image filenames (without extension)
@@ -1223,6 +1247,7 @@ leader: {
   profileImage: leaderProfile?.profileImage || '/images/default-avatar.png',
   groupImage: groupProfile?.groupImage || '/images/defaultgroupavatar.jpg'
 },
+suggestedOrg,
 orgGroups,
 
   leaderGroupMembers: resolvedGroupMembers,
@@ -1389,7 +1414,98 @@ updateAccountDetails: async (req, res) => {
       errorMessage: 'Could not update account details. Please try again.'
     });
   }
+},
+
+// controllers/leaderController.js (or leaderdashboardController — your call)
+joinOrganizationByDomain: async (req, res) => {
+  try {
+    const leaderId = req.session?.user?.id;
+    if (!leaderId) return res.redirect('/auth/login');
+
+    const leader = await Leader.findById(leaderId);
+    if (!leader) return res.status(404).render('member_form_views/error', { /* ... */ });
+
+    // already joined?
+    if (leader.organization && leader.organizationOptOut !== true) {
+      return res.redirect('/dashboard/leader');
+    }
+
+    const orgId = req.body.orgId;
+    const org = await Organization.findById(orgId).lean();
+    if (!org || !org.isActive) {
+      return res.status(400).render('member_form_views/error', { /* ... */ });
+    }
+
+    const domain = emailDomain(leader.groupLeaderEmail);
+    const ok = domain && Array.isArray(org.domains) && org.domains.includes(domain);
+
+    if (!ok) {
+      return res.status(403).render('member_form_views/error', {
+        layout: 'memberformlayout',
+        title: 'Not Allowed',
+        errorMessage: 'Your email domain does not match this organization.'
+      });
+    }
+
+    leader.organization = org._id;
+    leader.organizationName = org.name;
+    leader.organizationOptOut = false;
+    await leader.save();
+
+    await GroupProfile.updateOne(
+      { groupId: leader._id },
+      { $set: { organization: org._id } }
+    );
+
+    req.session.organizationJustCreatedName = org.name; // reuse your success page text
+    return res.redirect('/dashboard/leader/organization/success');
+  } catch (err) {
+    console.error('joinOrganizationByDomain error:', err);
+    return res.status(500).render('member_form_views/error', { /* ... */ });
+  }
+},
+
+requestJoinOrganization: async (req, res) => {
+  try {
+    const leaderId = req.session?.user?.id;
+    if (!leaderId) return res.redirect('/auth/login');
+
+    const { orgSlugOrName } = req.body;
+    const q = String(orgSlugOrName || '').trim().toLowerCase();
+    if (!q) return res.redirect('/dashboard/leader');
+
+    const org = await Organization.findOne({
+      isActive: true,
+      $or: [
+        { slug: q },
+        { name: new RegExp(`^${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') }
+      ]
+    }).select('_id name').lean();
+
+    if (!org) {
+      // render dashboard with a “no org found” message (or your error view)
+      return res.status(404).render('member_form_views/error', {
+        layout: 'memberformlayout',
+        title: 'Not Found',
+        errorMessage: 'No organization found by that name.'
+      });
+    }
+
+    await OrganizationJoinRequest.findOneAndUpdate(
+      { organization: org._id, leader: leaderId },
+      { $setOnInsert: { organization: org._id, leader: leaderId, status: 'pending' } },
+      { upsert: true, new: true }
+    );
+
+    // show a success notice (or redirect back with a flash msg)
+    return res.redirect('/dashboard/leader');
+  } catch (err) {
+    console.error('requestJoinOrganization error:', err);
+    return res.status(500).render('member_form_views/error', { /* ... */ });
+  }
 }
+
+
 }; // ← CLOSES module.exports
 
 
