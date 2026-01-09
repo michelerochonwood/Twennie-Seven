@@ -1784,23 +1784,25 @@ html, body {
 }
 
 
+/* Prevent membership buttons from stretching to container height */
 .group-membership-button-container {
   display: flex;
   justify-content: center;
+  align-items: center; /* ✅ not stretch */
 }
 
+/* Force the button to size like a normal pill CTA */
 .group-membership-btn {
-  font-family: "Figtree";
-  background-color: #262262;
-  color: white;
-  font-weight: 700;
-  font-size: 0.85rem;
-  border: none;
-  border-radius: 99px;
-  padding: 10px 24px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  height: auto;
+  align-self: center;
+  padding: 0.8rem 1.4rem;
+  line-height: 1;
 }
+
 
 .group-membership-btn:hover {
   background-color: #4a4ab2;

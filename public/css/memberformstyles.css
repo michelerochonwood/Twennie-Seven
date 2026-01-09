@@ -156,10 +156,11 @@ html, body {
     border-radius: 12px;
     padding: 20px;
     margin-top: 2rem;
-    width: 60%;
+    width: 100%;
     margin-left: auto;
     margin-right: auto;
     font-family: 'Figtree', sans-serif;
+    margin-bottom: 200px;
   }
 
   .group-member-instructions h3 {
