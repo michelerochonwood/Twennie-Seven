@@ -221,15 +221,21 @@ const leader = new Leader({
       }
 
       const groupMemberPromises = memberList.map(async (m, index) => {
-        const gm = new GroupMember({
-          groupId: savedLeader._id,
-          groupName,
-          name: m.name,
-          email: m.email,
-          username: `member_${index}_${groupName.toLowerCase().replace(/\s+/g, '_')}`,
-          password: await bcrypt.hash('defaultPassword123', 10),
-          topics: { topic1, topic2, topic3 }
-        });
+const gm = new GroupMember({
+  // ✅ required leader reference (if your schema uses it)
+  leader: savedLeader._id,
+
+  // ✅ keep your existing group linkage
+  groupId: savedLeader._id,
+  groupName,
+
+  name: m.name,
+  email: m.email,
+  username: `member_${index}_${groupName.toLowerCase().replace(/\s+/g, '_')}`,
+  password: await bcrypt.hash('defaultPassword123', 10),
+  topics: { topic1, topic2, topic3 }
+});
+
         const savedMember = await gm.save();
         savedLeader.members.push(savedMember._id);
         return savedMember;
