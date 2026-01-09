@@ -725,39 +725,29 @@ updateOrganization: async (req, res) => {
     const cleanName = String(name).trim();
     const domainList = parseDomains(domains);
 
-    const org = await Organization.findById(leader.organization);
-    if (!org) {
-      return res.status(404).render('member_form_views/error', {
-        layout: 'memberformlayout',
-        title: 'Not Found',
-        errorMessage: 'Organization not found.'
-      });
-    }
+const org = await Organization.create({
+  name: cleanName,
+  slug,
+  industry: industry ? String(industry).trim() : undefined,
+  domains: domainList
+});
 
-    // If name changes, update slug too (unique)
-    if (org.name !== cleanName) {
-      const baseSlug = slugifyOrgName(cleanName);
-      org.slug = await buildUniqueSlug(baseSlug);
-    }
+// Attach to leader
+leader.organization = org._id;
+leader.organizationName = org.name; // cache
+leader.organizationOptOut = false;
+await leader.save();
 
-    org.name = cleanName;
-    org.industry = industry ? String(industry).trim() : undefined;
-    org.domains = domainList;
+// Optional: keep group profile consistent
+await GroupProfile.updateOne(
+  { groupId: leader._id },
+  { $set: { organization: org._id } }
+);
 
-    await org.save();
+// ✅ store for success view + redirect to success notification
+req.session.organizationJustCreatedName = org.name;
+return res.redirect('/dashboard/leader/organization/success');
 
-    // Keep leader cache in sync
-    leader.organizationName = org.name;
-    leader.organizationOptOut = false;
-    await leader.save();
-
-    // Keep group profile consistent too
-    await GroupProfile.updateOne(
-      { groupId: leader._id },
-      { $set: { organization: org._id } }
-    );
-
-    return res.redirect('/dashboard/leader');
   } catch (err) {
     console.error('Error updating organization:', err);
     return res.status(500).render('member_form_views/error', {

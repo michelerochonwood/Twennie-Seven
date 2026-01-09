@@ -1,0 +1,27 @@
+{{#*inline "title"}}Organization Created | Twennie{{/inline}}
+
+<section class="success-container payment-success">
+  <h1 class="registration-complete payment">organization created</h1>
+
+  {{#if organizationName}}
+    <p style="margin-top: 1rem; font-family: 'Figtree'; color: #262262; font-weight: 700;">
+      {{organizationName}}
+    </p>
+  {{/if}}
+
+  <p style="margin-top: 1.25rem; font-family: 'Figtree'; color: #262262; line-height: 1.5;">
+    Your organization unlocks team-based learning features designed for technical consulting firms.
+  </p>
+
+  <div style="text-align: left; margin: 1.5rem auto 0 auto; max-width: 520px; font-family: 'Figtree'; color: #262262;">
+    <ul style="margin: 0; padding-left: 1.25rem; line-height: 1.7;">
+      <li><strong>sharing learning across teams</strong> so momentum doesn’t rely on one person.</li>
+      <li><strong>collaborating on exercises</strong> in business development, team building, and project management.</li>
+      <li><strong>staging friendly learning competitions</strong> to keep engagement high (and fun).</li>
+      <li><strong>organizational reporting</strong> on learning activity and participation.</li>
+      <li><strong>developing custom organizational content</strong> and sharing it with your organization only.</li>
+    </ul>
+  </div>
+
+  <a class="dashboard-button" href="{{dashboardUrl}}">back to dashboard</a>
+</section>

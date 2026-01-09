@@ -723,10 +723,13 @@ if (hasOrg) {
       profiles.map(p => [p.groupId.toString(), p.groupImage])
     );
 
-    orgGroups = otherLeaders.map(l => ({
-      ...l,
-      groupImage: imgByGroupId.get(l._id.toString()) || '/images/default-group.png'
-    }));
+orgGroups = otherLeaders.map(l => ({
+  _id: l._id,
+  groupName: l.groupName,
+  groupLeaderName: l.groupLeaderName,
+  groupImage: imgByGroupId.get(l._id.toString()) || '/images/default-group.png',
+  memberCount: Array.isArray(l.members) ? l.members.length : (l.groupSize || 0)
+}));
   }
 }
 
@@ -1212,14 +1215,15 @@ return res.render('leader_dashboard', {
   layout: 'dashboardlayout',
   title: 'Leader Dashboard',
 csrfToken: req.csrfToken ? req.csrfToken() : null,
-  leader: {
-    ...userData,
-    members: resolvedGroupMembers,
-    // existing leader avatar (person)
-    profileImage: leaderProfile?.profileImage || '/images/default-avatar.png',
-    // NEW: actual group image (circle under the group name)
-    groupImage: groupProfile?.groupImage || '/images/defaultgroupavatar.jpg'
-  },
+leader: {
+  ...userData,
+  hasOrg,
+  organizationName: userData.organizationName || '',
+  members: resolvedGroupMembers,
+  profileImage: leaderProfile?.profileImage || '/images/default-avatar.png',
+  groupImage: groupProfile?.groupImage || '/images/defaultgroupavatar.jpg'
+},
+orgGroups,
 
   leaderGroupMembers: resolvedGroupMembers,
   maxGroupSize: userData.maxGroupSize,
@@ -1280,6 +1284,39 @@ orgGroups,
       });
     }
   }, // ← end of renderLeaderDashboard, KEEP THE COMMA
+
+  // ------------------------------------------------------------
+// ✅ GET /leader/organization/success
+// Renders /views/organization-success.hbs (root views folder)
+// ------------------------------------------------------------
+organizationSuccess: (req, res) => {
+  try {
+    // Optional: show the org name once, then clear it
+    const organizationName = req.session?.organizationJustCreatedName || null;
+
+    // TODO: set this to your actual leader dashboard route
+    const dashboardUrl = '/leader/dashboard';
+
+    // Clear the one-time name so refresh doesn't keep showing it
+    if (req.session?.organizationJustCreatedName) {
+      delete req.session.organizationJustCreatedName;
+    }
+
+    return res.render('organization-success', {
+      layout: 'dashboardlayout',
+      title: 'Organization Created',
+      organizationName,
+      dashboardUrl
+    });
+  } catch (err) {
+    console.error('organizationSuccess render error:', err);
+    return res.status(500).render('member_form_views/error', {
+      layout: 'mainlayout',
+      title: 'Error',
+      errorMessage: 'Could not load the organization success page. Please try again.'
+    });
+  }
+},
 
   // --- POST /leader-dashboard/account/email-preferences ---
 updateEmailPreferences: async (req, res) => {

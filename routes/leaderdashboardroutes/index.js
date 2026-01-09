@@ -15,6 +15,18 @@ const isAuthenticated = (req, res, next) => {
   return res.redirect('/auth/login');
 };
 
+// ------------------------------------------------------------
+// ✅ GET /dashboard/leader/organization/success
+// ------------------------------------------------------------
+router.get('/organization/success', isAuthenticated, async (req, res, next) => {
+  try {
+    return leaderDashboardController.organizationSuccess(req, res);
+  } catch (err) {
+    console.error('Error in organization success route:', err);
+    next(err);
+  }
+});
+
 // --- GET /dashboard/leader ---
 router.get('/', isAuthenticated, async (req, res, next) => {
   try {

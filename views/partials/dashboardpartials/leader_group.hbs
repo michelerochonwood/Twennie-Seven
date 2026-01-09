@@ -81,19 +81,26 @@
     </button>
   </div>
 
-  {{!-- ------------------------------------------------------------
-       Groups in my organization (or “Add my organization” CTA)
-       Expects: orgGroups (array) passed in from controller
-       ------------------------------------------------------------ --}}
 
-{{!-- ------------------------------------------------------------
-     Groups in my organization (or “Add my organization” CTA)
-     Expects: orgGroups (array) passed in from controller
-     ------------------------------------------------------------ --}}
 
-{{#if leader.organization}}
+{{!-- ============================================================
+     ORGANIZATION BLOCK
+     Shows "groups in my organization" IF leader has org AND not opted out
+     Expects:
+       leader.hasOrg (boolean)
+       leader.organizationName (string optional)
+       orgGroups (array) with: _id, groupName, groupLeaderName, groupImage, memberCount
+   ============================================================ --}}
+
+{{#if leader.hasOrg}}
   <div class="group-member-instructions groupsection-org">
     <h3 class="groupsection-org-title">groups in my organization</h3>
+
+    {{#if leader.organizationName}}
+      <p class="groupsection-org-text">
+        Organization: <strong>{{leader.organizationName}}</strong>
+      </p>
+    {{/if}}
 
     {{#if orgGroups.length}}
       <p class="groupsection-org-text">
@@ -113,10 +120,16 @@
             <div class="groupsection-org-card-info">
               <h3 class="groupsection-org-card-name">{{groupName}}</h3>
               <p class="groupsection-org-card-meta">Leader: {{groupLeaderName}}</p>
-              <p class="groupsection-org-card-meta">Members: {{members.length}}</p>
+
+              {{!-- Prefer precomputed memberCount; fall back to members.length if present --}}
+              <p class="groupsection-org-card-meta">
+                Members:
+                {{#if memberCount}}{{memberCount}}{{else}}{{#if members.length}}{{members.length}}{{else}}—{{/if}}{{/if}}
+              </p>
             </div>
 
-            {{!-- If you don’t have a “view group” route yet, remove this button. --}}
+            {{!-- remove/adjust until you actually have this route --}}
+            {{!--
             <button
               type="button"
               class="groupsection-org-card-button"
@@ -124,6 +137,7 @@
             >
               view group
             </button>
+            --}}
           </div>
         {{/each}}
       </div>
@@ -159,6 +173,8 @@
     </div>
   </div>
 {{/if}}
+
+
 
 </section>
 

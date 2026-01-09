@@ -28,6 +28,10 @@ router.post('/organization', leaderController.createOrganization);
 router.get('/organization/edit', leaderController.showEditOrganizationForm);
 router.post('/organization/edit', leaderController.updateOrganization);
 
+router.get('/organization/success', (req, res) => {
+  return res.redirect('/dashboard/leader/organization/success');
+});
+
 
 // ------------------------------------------------------------
 // Group member management (specific leader)
