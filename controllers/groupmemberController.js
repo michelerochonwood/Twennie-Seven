@@ -21,14 +21,27 @@ module.exports = {
       const csrfToken = req.csrfToken ? req.csrfToken() : null;
 
       const groups = await Leader.aggregate([
-        {
-          $lookup: {
-            from: 'groupmembers',
-            localField: '_id',
-            foreignField: 'groupId',
-            as: 'members'
+{
+  $lookup: {
+    from: 'groupmembers',
+    let: { leaderId: '$_id' },
+    pipeline: [
+      {
+        $match: {
+          $expr: {
+            $or: [
+              { $eq: ['$leader', '$$leaderId'] },  // ✅ new schema
+              { $eq: ['$groupId', '$$leaderId'] }  // ✅ legacy support
+            ]
           }
-        },
+        }
+      },
+      { $project: { name: 1, email: 1, isVerified: 1, professionalTitle: 1 } }
+    ],
+    as: 'members'
+  }
+},
+
         {
           $lookup: {
             from: 'groupprofiles',          // 👈 matches GroupProfile collection
@@ -120,11 +133,11 @@ module.exports = {
   verifyMember: async (req, res) => {
     try {
       const { memberName, memberEmail, groupId } = req.body;
-      const gm = await GroupMember.findOne({
-        groupId,
-        name: memberName,
-        email: memberEmail
-      });
+const gm = await GroupMember.findOne({
+  $or: [{ leader: groupId }, { groupId }],
+  name: memberName,
+  email: memberEmail
+});
       if (!gm) {
         return res.status(400).json({ valid: false, error: "Member not found in the group." });
       }
@@ -159,7 +172,10 @@ module.exports = {
         return renderError(res, 'Leader/group not found.', 404);
       }
 
-      const member = await GroupMember.findOne({ groupId: leader._id, email }).lean();
+const member = await GroupMember.findOne({
+  $or: [{ leader: leader._id }, { groupId: leader._id }],
+  email
+}).lean();
       if (!member) {
         return renderError(res, 'No matching group member found for that email.', 404);
       }
@@ -229,7 +245,11 @@ module.exports = {
       }
 
       // Load invited doc
-      const gm = await GroupMember.findOne({ groupId, name, email });
+const gm = await GroupMember.findOne({
+  $or: [{ leader: groupId }, { groupId }],
+  name,
+  email
+});
       if (!gm) {
         return res.status(404).render('member_form_views/completemember', {
           layout: 'memberformlayout',
