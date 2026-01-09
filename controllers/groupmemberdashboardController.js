@@ -40,7 +40,8 @@ async function resolveAuthorById(authorId) {
         }
 
         // Group Member profile
-        profile = await GroupMemberProfile.findOne({ memberId: authorId }).select('profileImage name');
+        profile = await GroupMemberProfile.findOne({ groupMemberId: authorId }).select('profileImage name');
+
         if (profile) {
             return {
                 name: profile.name || 'Group Member',
@@ -453,22 +454,40 @@ let completedPromptSets = [];
             //members of a group are meant to show in the group member dashboard as cards - it is important that none of this changed because the group members are located based on the leader of the group - if you are rewriting anything in this renderdashboard, make sure to rewrite it exactly as you see it here. 
     
 const userData = await GroupMember.findById(id)
-  .select('name email username profileImage professionalTitle organization groupId emailPreferenceLevel mfa.enabled mfa.method mfa.recoveryCodes mfa.updatedAt')
-  .populate({
-    path: 'groupId',
-    populate: { path: 'members', model: 'GroupMember', select: 'name profileImage professionalTitle' }
-  });
+  .select('name email username profileImage professionalTitle organization leader emailPreferenceLevel mfa.enabled mfa.method mfa.recoveryCodes mfa.updatedAt')
+  .lean();
 
-  // ✅ Pull the group's image from GroupProfile and attach it to the populated groupId
+if (!userData) {
+  console.error(`Group Member with ID ${id} not found.`);
+  return res.status(404).render('error', {
+    title: 'Error',
+    errorMessage: `Group Member with ID ${id} not found.`
+  });
+}
+
+// ✅ Load the leader (this is the "group")
+const leaderDoc = await Leader.findById(userData.leader)
+  .select('groupName groupLeaderName groupSize topics members organization organizationName organizationOptOut')
+  .populate({ path: 'members', model: 'GroupMember', select: 'name professionalTitle' })
+  .lean();
+
+if (!leaderDoc) {
+  return res.status(404).render('error', {
+    title: 'Error',
+    errorMessage: 'Leader/group not found for this group member.'
+  });
+}
+
+
+// Guard: groupId or groupId.topics may be missing...
 const groupProfileDoc = await GroupProfile
-  .findOne({ groupId: userData.groupId?._id })
+  .findOne({ groupId: leaderDoc._id })
   .select('groupImage')
   .lean();
 
 // We will build a plain object for groupMember to guarantee the extra field is present
-const groupMemberObj = userData.toObject();
-if (!groupMemberObj.groupId) groupMemberObj.groupId = {};
-groupMemberObj.groupId.groupImage = groupProfileDoc?.groupImage || groupMemberObj.groupId.groupImage || '/images/defaultgroupavatar.jpg';
+const groupMemberObj = { ...userData };
+// Keep group image on the separate `group` object (recommended)
 
 
   const mfa = userData?.mfa || {};
@@ -485,13 +504,7 @@ const mfaStatus = {
 
         
 console.log("🔍 Fetched user data:", JSON.stringify(userData, null, 2));
-if (!userData) {
-  console.error(`Group Member with ID ${id} not found.`);
-  return res.status(404).render('error', {
-    title: 'Error',
-    errorMessage: `Group Member with ID ${id} not found.`
-  });
-}
+
 
 /* ---------- SAFE TOPICS (based on leader's group) ---------- */
 function gmBuildTopicObj(title) {
@@ -516,8 +529,8 @@ function gmBuildTopicObj(title) {
 
 // Guard: groupId or groupId.topics may be missing for new setups
 const leaderTopics =
-  (userData.groupId && typeof userData.groupId.topics === 'object')
-    ? userData.groupId.topics
+  (leaderDoc && typeof leaderDoc.topics === 'object')
+    ? leaderDoc.topics
     : {};
 
 const selectedTopics = {
@@ -532,15 +545,15 @@ console.log("Selected Topics with View Names:", selectedTopics);
 console.log("Fetched user data (object):", userData);
 console.log(
   "Group members before processing:",
-  JSON.stringify(userData.groupId?.members || [], null, 2)
+  JSON.stringify(leaderDoc.members || [], null, 2)
 );
 
 // ✅ Resolve each member's avatar from GroupMemberProfile
 // ✅ Resolve avatars from GroupMemberProfile to ensure pictures show up
 let groupMembers = [];
-if (Array.isArray(userData.groupId?.members) && userData.groupId.members.length > 0) {
+if (Array.isArray(leaderDoc?.members) && leaderDoc.members.length > 0) {
   groupMembers = await Promise.all(
-    userData.groupId.members.map(async (m) => {
+    leaderDoc.members.map(async (m) => {
       const prof = await GroupMemberProfile
         .findOne({ groupMemberId: m._id })
         .select('profileImage')
@@ -555,6 +568,7 @@ if (Array.isArray(userData.groupId?.members) && userData.groupId.members.length 
     })
   );
 }
+
 
 
 
@@ -604,11 +618,11 @@ console.log(`Total prompt sets found for member ${id}: ${memberRegistrations.len
                         const headlineKey = `prompt_headline${currentPromptIndex}`;
                         const promptKey = `Prompt${currentPromptIndex}`;
                         // ✅ Fetch the leader first, before using it
-                        const leader = await Leader.findOne({ _id: userData.groupId._id }).select('groupLeaderName organization');
+                        const leader = leaderDoc;
 
 
                         if (!leader) {
-                            console.error("❌ ERROR: Leader not found for groupId:", userData.groupId);
+                            console.error("❌ ERROR: Leader not found for leaderDoc:", leaderDoc?._id);
                         } else {
                             console.log("✅ Leader Found:", leader.groupLeaderName);
                         }
@@ -862,13 +876,16 @@ console.log("Group Member Prompts Data:", JSON.stringify(groupmemberPrompts, nul
 console.log("All session keys before rendering:", Object.keys(req.session));
 
 
-console.log("Group Data for Leader Lookup:", JSON.stringify(userData.groupId, null, 2));
-
-const leader = await Leader.findOne({ _id: userData.groupId._id }).select('groupLeaderName');
+console.log("Group Data for Leader Lookup:", JSON.stringify(leaderDoc, null, 2));
+const leader = leaderDoc;
 
 console.log("✅ Final Leader Name Before Rendering:", leader ? leader.groupLeaderName : "Not Found");
 
-const groupMemberProfile = await GroupMemberProfile.findOne({ groupMemberId: id }).select('profileImage');
+const groupMemberProfile = await GroupMemberProfile
+  .findOne({ groupMemberId: id })
+  .select('profileImage')
+  .lean();
+
 
 
 const emailPreferenceLevel = [1, 2, 3].includes(Number(userData?.emailPreferenceLevel))
@@ -882,7 +899,7 @@ const groupMemberAccount = {
 };
 
 // 👇 build "my group's library units" (other members in my group)
-const otherMemberIds = (userData.groupId?.members || [])
+const otherMemberIds = (leaderDoc?.members || [])
   .map(m => m._id)
   .filter(mid => String(mid) !== String(id));
 
@@ -951,7 +968,7 @@ groupLibraryUnits = [...groupLibraryUnits, ...gmUpcomingRows2];
 
 // Build current counts from arrays you already computed above
 const gmCounts = {
-  group:    (userData.groupId?.members || []).length, // my group members
+group: (leaderDoc?.members || []).length,
   topics:   (topicSuggestions || []).length,          // my suggested topics
 
   // prompts: both self-registered + assigned to me
@@ -1001,6 +1018,11 @@ for (const [key, val] of Object.entries(gmCounts)) {
   gmBadges[key] = val > last;
 }
 
+const group = {
+  ...leaderDoc,
+  groupImage: groupProfileDoc?.groupImage || '/images/defaultgroupavatar.jpg'
+};
+
 // ✅ Final render
 return res.render('groupmember_dashboard', {
   layout: 'dashboardlayout',
@@ -1010,11 +1032,12 @@ return res.render('groupmember_dashboard', {
   mfaStatus,
 
 groupMember: {
-  ...groupMemberObj, // ✅ use the object we augmented with groupId.groupImage
+  ...groupMemberObj, // ✅ plain group member data (group image is on `group`)
   profileImage: groupMemberProfile?.profileImage || '/images/default-avatar.png'
 },
+  group,              // ✅ NEW: use this in templates instead of groupId
 groupMembers,
-maxGroupSize: userData.groupId.groupSize,
+maxGroupSize: leaderDoc.groupSize,
   groupMemberUnits,
   registeredPromptSets: groupmemberPrompts,
   promptSchedules,
