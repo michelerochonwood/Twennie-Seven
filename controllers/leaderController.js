@@ -627,7 +627,7 @@ createOrganization: async (req, res) => {
       { $set: { organization: org._id } }
     );
 
-    return res.redirect('/dashboard/leader');
+return res.redirect('/dashboard/leader/organization/success');
   } catch (err) {
     console.error('Error creating organization:', err);
 
