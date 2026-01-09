@@ -1226,6 +1226,164 @@ html, body {
   background-color:#4a4ab2;
 }
 
+/* ==============================
+   GROUPSECTION — ORGANIZATION AREA
+   (new content in the tab)
+   ============================== */
+
+/* Wrapper for the org section (replaces inline margin-top styles) */
+.groupsection-org {
+  margin-top: 1.75rem;
+  width: 100%;
+}
+
+/* Title inside the org block */
+.groupsection-org-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #262262;
+  text-align: left;
+}
+
+/* Small helper text under the title */
+.groupsection-org-text {
+  margin: 0 0 1rem 0;
+  font-size: 0.8rem;
+  color: #555;
+  line-height: 1.35;
+}
+
+/* Empty-state text (no other org groups) */
+.groupsection-org-empty {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #555;
+}
+
+/* Button row under the CTA */
+.groupsection-org-actions {
+  display: flex;
+  justify-content: flex-start;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Make the "add my organization" button visually consistent in dashboard context */
+.groupsection-org-addbtn {
+  display: inline-block;
+  font-family: "Figtree";
+  padding: 10px 18px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #fff;
+  background-color: #262262;
+  border: none;
+  border-radius: 99px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+}
+
+.groupsection-org-addbtn:hover {
+  background-color: #4a4ab2;
+}
+
+/* Org groups grid: slightly different than member grid (can be tighter on wide screens) */
+.groupsection-org-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-top: 0.5rem;
+}
+
+/* If you want org cards to look slightly “secondary” */
+.groupsection-org-card {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  text-align: center;
+  padding: 8px;
+  box-shadow: 0 1.6px 3.2px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Org group image (same size as your member cards) */
+.groupsection-org-card-image img {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 1px solid #262262;
+  object-fit: cover;
+  margin-bottom: 8px;
+}
+
+/* Org card info */
+.groupsection-org-card-info {
+  font-size: 11px;
+  color: #555;
+}
+
+.groupsection-org-card-name {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #333;
+  margin: 0;
+}
+
+.groupsection-org-card-meta {
+  font-size: 0.75rem;
+  color: #777;
+  margin: 2px 0;
+}
+
+/* Button for org cards (reuse your look but tighter) */
+.groupsection-org-card-button {
+  display: inline-block;
+  font-family: "Figtree";
+  padding: 6px 10px;
+  font-size: 10px;
+  font-weight: 800;
+  color: #fff;
+  background-color: #262262;
+  border: none;
+  border-radius: 99px;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.groupsection-org-card-button:hover {
+  background-color: #4a4ab2;
+}
+
+/* Embedded org create form spacing inside the dashboard tab */
+.groupsection-org-formwrap {
+  margin-top: 1rem;
+}
+
+/* Optional: reduce the big margins coming from member-form CSS when embedded in dashboard */
+.groupsection .leader-form-container {
+  margin: 1rem auto 2rem auto; /* overrides the huge 7rem margins from member forms if they apply */
+  width: 60%;
+}
+
+/* Responsive: org grid collapses nicely like your other grids */
+@media (max-width: 1200px) {
+  .groupsection-org-grid { grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 900px) {
+  .groupsection-org-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 700px) {
+  .groupsection-org-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .groupsection-org-grid { grid-template-columns: 1fr; }
+  .groupsection .leader-form-container { width: 100%; }
+}
+
+
 
 
 /* Leader Tagged & Assigned Units Section */

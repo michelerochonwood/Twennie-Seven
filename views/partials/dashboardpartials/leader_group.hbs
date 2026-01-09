@@ -86,71 +86,80 @@
        Expects: orgGroups (array) passed in from controller
        ------------------------------------------------------------ --}}
 
-  {{#if leader.organization}}
-    <div class="group-member-instructions" style="margin-top: 1.75rem;">
-      <h3>groups in my organization</h3>
+{{!-- ------------------------------------------------------------
+     Groups in my organization (or “Add my organization” CTA)
+     Expects: orgGroups (array) passed in from controller
+     ------------------------------------------------------------ --}}
 
-      {{#if orgGroups.length}}
-        <p class="form-instructions" style="margin: 0 0 1rem 0;">
-          Here are other Twennie groups connected to your organization.
-        </p>
+{{#if leader.organization}}
+  <div class="group-member-instructions groupsection-org">
+    <h3 class="groupsection-org-title">groups in my organization</h3>
 
-        <div class="groupsection-grid" style="margin-top: 0;">
-          {{#each orgGroups}}
-            <div class="groupsection-card">
-              <div class="groupsection-card-image">
-                <img
-                  src="{{#if groupImage}}{{groupImage}}{{else}}/images/default-group.png{{/if}}"
-                  alt="{{groupName}} group image"
-                >
-              </div>
-
-              <div class="groupsection-card-info">
-                <h3 class="groupsection-card-name">{{groupName}}</h3>
-                <p class="groupsection-card-title">Leader: {{groupLeaderName}}</p>
-                <p class="groupsection-card-title">Members: {{members.length}}</p>
-              </div>
-
-              {{!-- If you don’t have a “view group” route yet, remove this button. --}}
-              <button
-                type="button"
-                class="groupsection-card-button"
-                onclick="window.location.href='/leader/{{_id}}/group_overview'"
-              >
-                view group
-              </button>
-            </div>
-          {{/each}}
-        </div>
-      {{else}}
-        <p style="margin: 0;">
-          No other groups in your organization have been added to Twennie yet.
-        </p>
-      {{/if}}
-    </div>
-
-  {{else}}
-    <div class="group-member-instructions" style="margin-top: 1.75rem;">
-      <h3>groups in my organization</h3>
-      <p style="margin: 0 0 0.75rem 0;">
-        Add your organization to unlock organization features — including the ability to see the group profiles
-        of other Twennie groups inside your organization.
+    {{#if orgGroups.length}}
+      <p class="groupsection-org-text">
+        Here are other Twennie groups connected to your organization.
       </p>
 
-      <div class="membership-buttons" style="margin-top: 1rem;">
-        <button
-          type="button"
-          class="membership-button"
-          id="show-org-form-dashboard"
-        >
-          add my organization
-        </button>
+      <div class="groupsection-org-grid">
+        {{#each orgGroups}}
+          <div class="groupsection-org-card">
+            <div class="groupsection-org-card-image">
+              <img
+                src="{{#if groupImage}}{{groupImage}}{{else}}/images/default-group.png{{/if}}"
+                alt="{{groupName}} group image"
+              >
+            </div>
+
+            <div class="groupsection-org-card-info">
+              <h3 class="groupsection-org-card-name">{{groupName}}</h3>
+              <p class="groupsection-org-card-meta">Leader: {{groupLeaderName}}</p>
+              <p class="groupsection-org-card-meta">Members: {{members.length}}</p>
+            </div>
+
+            {{!-- If you don’t have a “view group” route yet, remove this button. --}}
+            <button
+              type="button"
+              class="groupsection-org-card-button"
+              onclick="window.location.href='/leader/{{_id}}/group_overview'"
+            >
+              view group
+            </button>
+          </div>
+        {{/each}}
       </div>
+
+    {{else}}
+      <p class="groupsection-org-empty">
+        No other groups in your organization have been added to Twennie yet.
+      </p>
+    {{/if}}
+  </div>
+
+{{else}}
+  <div class="group-member-instructions groupsection-org">
+    <h3 class="groupsection-org-title">groups in my organization</h3>
+
+    <p class="groupsection-org-text">
+      Add your organization to unlock organization features — including the ability to see the group profiles
+      of other Twennie groups inside your organization.
+    </p>
+
+    <div class="groupsection-org-actions">
+      <button
+        type="button"
+        class="groupsection-org-addbtn"
+        id="show-org-form-dashboard"
+      >
+        add my organization
+      </button>
     </div>
 
-    {{!-- Embedded org form (same partial you already built) --}}
-    {{> memberformpartials/organization_form}}
-  {{/if}}
+    <div class="groupsection-org-formwrap">
+      {{> memberformpartials/organization_form}}
+    </div>
+  </div>
+{{/if}}
+
 </section>
 
 <script>
