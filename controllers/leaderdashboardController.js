@@ -22,32 +22,20 @@ const DashboardSeen = require('../models/dashboard_seen');
 const GroupProfile = require('../models/profile_models/group_profile');
 const Nugget = require('../models/unit_models/nugget'); // ✅ NEW
 const Mission = require('../models/unit_models/mission'); // ✅ NEW
+const OrganizationJoinRequest = require('../models/member_models/organization_join_request');
+
 
 
 const Organization = require('../models/member_models/organization');
+
+
 
 function emailDomain(email = '') {
   const at = String(email).toLowerCase().split('@')[1];
   return at ? at.trim() : '';
 }
 
-// If leader has no org and didn’t opt out, try to suggest one
-let suggestedOrg = null;
 
-const canSuggestOrg =
-  !userData.organization &&
-  userData.organizationOptOut !== true &&
-  userData.groupLeaderEmail;
-
-if (canSuggestOrg) {
-  const domain = emailDomain(userData.groupLeaderEmail);
-  if (domain) {
-    suggestedOrg = await Organization.findOne({
-      isActive: true,
-      domains: domain
-    }).select('name slug industry').lean();
-  }
-}
 
 
 // Map mission categories to badge image filenames (without extension)
@@ -691,7 +679,29 @@ const userData = await Leader.findById(id)
   })
   .lean();
 
-  
+  // ------------------------------------------------------------
+// ✅ Suggest an existing organization by email domain
+// Only when leader has no org and has not opted out
+// ------------------------------------------------------------
+let suggestedOrg = null;
+
+const canSuggestOrg =
+  !userData?.organization &&
+  userData?.organizationOptOut !== true &&
+  !!userData?.groupLeaderEmail;
+
+if (canSuggestOrg) {
+  const domain = emailDomain(userData.groupLeaderEmail);
+  if (domain) {
+    suggestedOrg = await Organization.findOne({
+      isActive: true,
+      domains: domain
+    })
+      .select('name slug industry')
+      .lean();
+  }
+}
+
   
 const mfa = userData?.mfa || {};
 const mfaStatus = {
@@ -1252,7 +1262,6 @@ orgGroups,
 
   leaderGroupMembers: resolvedGroupMembers,
   maxGroupSize: userData.maxGroupSize,
-orgGroups,
   // Library + group units
   leaderUnits,
   groupMemberUnits,
@@ -1320,7 +1329,7 @@ organizationSuccess: (req, res) => {
     const organizationName = req.session?.organizationJustCreatedName || null;
 
     // TODO: set this to your actual leader dashboard route
-    const dashboardUrl = '/leader/dashboard';
+const dashboardUrl = '/dashboard/leader';
 
     // Clear the one-time name so refresh doesn't keep showing it
     if (req.session?.organizationJustCreatedName) {
