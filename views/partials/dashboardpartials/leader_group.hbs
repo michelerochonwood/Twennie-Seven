@@ -155,9 +155,9 @@
         Not correct? You can create a new organization instead.
       </p>
 
-      <div class="groupsection-org-formwrap">
-        {{> memberformpartials/organization_form}}
-      </div>
+<div class="groupsection-org-formwrap" id="org-formwrap-dashboard" hidden>
+  {{> memberformpartials/organization_form}}
+</div>
     </div>
 
   {{else}}
@@ -179,9 +179,10 @@
         </button>
       </div>
 
-      <div class="groupsection-org-formwrap">
-        {{> memberformpartials/organization_form}}
-      </div>
+<div class="groupsection-org-formwrap" id="org-formwrap-dashboard" hidden>
+  {{> memberformpartials/organization_form}}
+</div>
+
 
       {{!-- Optional: request to join an existing org (approval flow) --}}
       <form method="POST" action="/dashboard/leader/organization/request-join" class="groupsection-org-request" style="margin-top: 1.5rem;">
@@ -211,18 +212,19 @@
 <script>
   (function () {
     const btn = document.getElementById('show-org-form-dashboard');
-    const panel = document.getElementById('org-create-panel');
-    if (!btn || !panel) return;
+    const wrap = document.getElementById('org-formwrap-dashboard');
+    if (!btn || !wrap) return;
 
     btn.addEventListener('click', function () {
-      const isHidden = panel.hasAttribute('hidden');
-      if (isHidden) panel.removeAttribute('hidden');
-      else panel.setAttribute('hidden', '');
+      const isHidden = wrap.hasAttribute('hidden');
+      if (isHidden) wrap.removeAttribute('hidden');
+      else wrap.setAttribute('hidden', '');
 
-      if (isHidden) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (isHidden) wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   })();
 </script>
+
 
 
 
