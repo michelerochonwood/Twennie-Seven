@@ -15,10 +15,14 @@
         {{/each}}
       </p>
 
-      <p class="leader-membership-line">
-        <span class="leader-membership-label">Organization:</span> {{leader.organization}}
-      </p>
-    </div>
+<p class="leader-membership-line">
+  <span class="leader-membership-label">Organization:</span>
+  {{#if leader.hasOrg}}
+    {{#if leader.organizationName}}{{leader.organizationName}}{{else}}(organization){{/if}}
+  {{else}}
+    none
+  {{/if}}
+</p>
 
     <!-- Column 2 -->
     <div class="leader-membership-column">
@@ -26,7 +30,15 @@
       <ul class="leader-membership-access-list">
         <li>all Twennie-generated library units</li>
         <li><em>{{leader.groupName}}</em>-generated library units</li>
-        <li><em>{{leader.organization}}</em>-generated library units</li>
+<li>
+  <em>
+    {{#if leader.hasOrg}}
+      {{#if leader.organizationName}}{{leader.organizationName}}{{else}}my organization{{/if}}
+    {{else}}
+      my organization
+    {{/if}}
+  </em>-generated library units
+</li>
         <li>profiles and content of your group members</li>
         <li>your chosen topics</li>
         <li>your registered prompt sets and notes forms</li>

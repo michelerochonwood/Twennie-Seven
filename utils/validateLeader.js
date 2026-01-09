@@ -2,13 +2,39 @@
 module.exports.validateLeaderData = (data) => {
   const errors = [];
 
+  // ------------------------------------------------------------
   // Required text fields
-  if (!data.groupName || data.groupName.trim() === "") errors.push("Group name is required.");
-  if (!data.groupLeaderName || data.groupLeaderName.trim() === "") errors.push("Group leader name is required.");
-  if (!data.professionalTitle || data.professionalTitle.trim() === "") errors.push("Professional title is required.");
-  if (!data.organization || data.organization.trim() === "") errors.push("Organization is required.");
+  // ------------------------------------------------------------
+  if (!data.groupName || data.groupName.trim() === "") {
+    errors.push("Group name is required.");
+  }
 
-  // Industry (schema-required; mirror enum for early feedback)
+  if (!data.groupLeaderName || data.groupLeaderName.trim() === "") {
+    errors.push("Group leader name is required.");
+  }
+
+  if (!data.professionalTitle || data.professionalTitle.trim() === "") {
+    errors.push("Professional title is required.");
+  }
+
+  // ------------------------------------------------------------
+  // Organization
+  // ------------------------------------------------------------
+  // IMPORTANT:
+  // Organization is OPTIONAL at leader signup.
+  // Leaders may create or join an organization later from the dashboard.
+  //
+  // If organization is provided (future-proofing), validate it lightly.
+  if (data.organization) {
+    const orgVal = String(data.organization).trim();
+    if (!orgVal) {
+      errors.push("Organization value is invalid.");
+    }
+  }
+
+  // ------------------------------------------------------------
+  // Industry (still required; mirror enum for early feedback)
+  // ------------------------------------------------------------
   const allowedIndustries = new Set([
     'Engineering',
     'Architecture',
@@ -16,28 +42,27 @@ module.exports.validateLeaderData = (data) => {
     'Information Technology(IT)',
     'Web Design',
     'Construction',
-    'Technology',
-    'AI and Robotics',
     'Social Media/Digital Advertising',
     'Community Planning/Landscape Architecture',
     'Land Development',
-    'Telecommunications',
-    'E-Commerce',
-    'Cybersecurity',
     'Fintech',
     'Edtech',
     'Energy and Utilities',
-    'Manufacturing',
     'Other'
   ]);
+
   if (!data.industry || data.industry.trim() === "") {
     errors.push("Industry is required.");
   } else if (!allowedIndustries.has(data.industry)) {
     errors.push("Please select a valid industry.");
   }
 
+  // ------------------------------------------------------------
   // Username / email / password
-  if (!data.username || data.username.trim() === "") errors.push("Username is required.");
+  // ------------------------------------------------------------
+  if (!data.username || data.username.trim() === "") {
+    errors.push("Username is required.");
+  }
 
   if (!data.groupLeaderEmail || data.groupLeaderEmail.trim() === "") {
     errors.push("Email is required.");
@@ -51,16 +76,21 @@ module.exports.validateLeaderData = (data) => {
     errors.push("Password must be at least 6 characters.");
   }
 
+  // ------------------------------------------------------------
   // Group size (2–10)
+  // ------------------------------------------------------------
   const size = Number(data.groupSize);
   if (!Number.isFinite(size) || size < 2 || size > 10) {
     errors.push("Group size must be between 2 and 10 members.");
   }
 
-  // Topics are now OPTIONAL — do NOT require topic1/2/3.
-  // If your frontend still sends empty strings, it’s harmless.
+  // ------------------------------------------------------------
+  // Topics are OPTIONAL (do nothing)
+  // ------------------------------------------------------------
 
+  // ------------------------------------------------------------
   // Registration code
+  // ------------------------------------------------------------
   if (!data.registration_code || data.registration_code.trim() === "") {
     errors.push("Registration code is required.");
   } else if (data.registration_code.length < 8) {
@@ -69,4 +99,3 @@ module.exports.validateLeaderData = (data) => {
 
   return errors;
 };
-
