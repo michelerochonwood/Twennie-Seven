@@ -1794,14 +1794,18 @@ html, body {
 /* Force the button to size like a normal pill CTA */
 .group-membership-btn {
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: auto;
-  height: auto;
-  align-self: center;
-  padding: 0.8rem 1.4rem;
-  line-height: 1;
+  margin-top: 15px;
+  color: #fff;
+  background: #262262;
+  padding: 10px 15px;
+  border-radius: 30px;
+  text-transform: lowercase;
+  text-decoration: none;
+  font-size: 0.7rem;
+  font-weight: 800;
+  transition: background 0.3s ease-in-out;
 }
+
 
 
 .group-membership-btn:hover {
