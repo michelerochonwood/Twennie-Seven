@@ -17,11 +17,11 @@ const groupProfileSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
-    organization: {
-        type: String,
-        required: true,
-        trim: true
-    },
+organization: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: 'Organization',
+  default: null
+},
     groupSize: {
         type: Number,
         required: true,
