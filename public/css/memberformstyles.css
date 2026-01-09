@@ -1016,7 +1016,7 @@ html, body {
 .success-container.payment-success {
   border: 2px solid #4e50a2;
   border-radius: 16px;
-  background-color: #f5f5fc;
+  background-color: #f5f5fc; 
   padding: 3rem;
   margin-top: 150px;
 }

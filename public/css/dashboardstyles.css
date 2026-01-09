@@ -1385,6 +1385,117 @@ html, body {
   .groupsection .leader-form-container { width: 100%; }
 }
 
+/* ================================
+   DASHBOARD — ORG CREATE FORM
+   Duplicated from memberformstyles
+   ================================ */
+
+/* Container */
+.leader-form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  border-radius: 8px;
+  width: 60%;
+  margin: 7rem auto 8rem auto;
+}
+
+/* Title */
+.form-title {
+  font-size: clamp(1.5rem, 5vw, 2.3rem);
+  font-weight: 800;
+  color: #262262;
+  margin-bottom: 1.45rem;
+  text-align: center;
+}
+
+/* Form */
+.individual-membership-form {
+  display: grid;
+  gap: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Shared input + select base */
+.individual-membership-form input,
+.individual-membership-form select {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  padding: 0.5rem 1rem;
+  font-size: 1em;
+  border-radius: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: "Figtree";
+}
+
+/* Custom select arrow */
+.individual-membership-form select {
+  appearance: none;
+  background: #fff
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath fill='%234e50a2' d='M0 0 L10 0 L5 5 Z'/%3E%3C/svg%3E")
+    no-repeat right 20px center;
+  background-size: 10px;
+}
+
+/* Form fields */
+.form-field,
+.form-field-industry {
+  display: flex;
+  flex-direction: column;
+  width: 80%;
+  text-align: left;
+}
+
+.form-field label,
+.form-field-industry label {
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #4e50a2;
+}
+
+/* Instructions text */
+.form-instructions {
+  margin-top: 0.65rem;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* Submit button */
+.make-member-button {
+  font-family: "Figtree";
+  padding: 10px 20px;
+  background-color: #262262;
+  color: white;
+  font-weight: 800;
+  font-size: 1em;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.make-member-button:hover {
+  background-color: #4e50a2;
+}
+
+/* Alerts */
+.alert {
+  padding: 10px 20px;
+  border-radius: 99px;
+  width: 60%;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.alert-error {
+  background-color: #ffebee;
+  color: #c62828;
+  border: 1px solid #ef9a9a;
+}
+
 
 
 
