@@ -23,6 +23,7 @@ const GroupProfile = require('../models/profile_models/group_profile');
 const Nugget = require('../models/unit_models/nugget'); // ✅ NEW
 const Mission = require('../models/unit_models/mission'); // ✅ NEW
 const OrganizationJoinRequest = require('../models/member_models/organization_join_request');
+const Organization = require('../models/member_models/organization');
 
 
 
@@ -1386,6 +1387,33 @@ updateEmailPreferences: async (req, res) => {
   }
 },
 
+searchOrganizations: async (req, res) => {
+  try {
+    const q = String(req.query.q || '').trim();
+    if (q.length < 2) {
+      return res.json({ organizations: [] });
+    }
+
+    // Escape regex specials
+    const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const rx = new RegExp(escaped, 'i');
+
+    const organizations = await Organization.find({
+      isActive: true,
+      $or: [{ name: rx }, { slug: rx }]
+    })
+      .select('_id name slug')
+      .limit(8)
+      .lean();
+
+    return res.json({ organizations });
+  } catch (err) {
+    console.error('searchOrganizations error:', err);
+    return res.status(500).json({ organizations: [] });
+  }
+},
+
+
 updateAccountDetails: async (req, res) => {
   try {
     const leaderId = req.session?.user?.id;
@@ -1424,6 +1452,8 @@ updateAccountDetails: async (req, res) => {
     });
   }
 },
+
+
 
 // controllers/leaderController.js (or leaderdashboardController — your call)
 joinOrganizationByDomain: async (req, res) => {
@@ -1479,20 +1509,32 @@ requestJoinOrganization: async (req, res) => {
     const leaderId = req.session?.user?.id;
     if (!leaderId) return res.redirect('/auth/login');
 
-    const { orgSlugOrName } = req.body;
-    const q = String(orgSlugOrName || '').trim().toLowerCase();
-    if (!q) return res.redirect('/dashboard/leader');
+    const { organizationId, orgSlugOrName } = req.body || {};
 
-    const org = await Organization.findOne({
-      isActive: true,
-      $or: [
-        { slug: q },
-        { name: new RegExp(`^${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') }
-      ]
-    }).select('_id name').lean();
+    let org = null;
+
+    // ✅ Preferred: ID from autocomplete selection
+    if (organizationId && mongoose.Types.ObjectId.isValid(organizationId)) {
+      org = await Organization.findOne({ _id: organizationId, isActive: true })
+        .select('_id name')
+        .lean();
+    }
+
+    // Fallback: typed name/slug (your original behavior)
+    if (!org) {
+      const q = String(orgSlugOrName || '').trim().toLowerCase();
+      if (!q) return res.redirect('/dashboard/leader');
+
+      org = await Organization.findOne({
+        isActive: true,
+        $or: [
+          { slug: q },
+          { name: new RegExp(`^${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') }
+        ]
+      }).select('_id name').lean();
+    }
 
     if (!org) {
-      // render dashboard with a “no org found” message (or your error view)
       return res.status(404).render('member_form_views/error', {
         layout: 'memberformlayout',
         title: 'Not Found',
@@ -1506,13 +1548,17 @@ requestJoinOrganization: async (req, res) => {
       { upsert: true, new: true }
     );
 
-    // show a success notice (or redirect back with a flash msg)
     return res.redirect('/dashboard/leader');
   } catch (err) {
     console.error('requestJoinOrganization error:', err);
-    return res.status(500).render('member_form_views/error', { /* ... */ });
+    return res.status(500).render('member_form_views/error', {
+      layout: 'memberformlayout',
+      title: 'Error',
+      errorMessage: 'Could not send join request. Please try again.'
+    });
   }
 }
+
 
 
 }; // ← CLOSES module.exports

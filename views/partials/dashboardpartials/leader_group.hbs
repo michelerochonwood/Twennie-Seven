@@ -184,46 +184,165 @@
 </div>
 
 
-      {{!-- Optional: request to join an existing org (approval flow) --}}
-      <form method="POST" action="/dashboard/leader/organization/request-join" class="groupsection-org-request" style="margin-top: 1.5rem;">
-        {{#if csrfToken}}<input type="hidden" name="_csrf" value="{{csrfToken}}">{{/if}}
+{{!-- Optional: request to join an existing org (approval flow) --}}
+<form method="POST" action="/dashboard/leader/organization/request-join" class="groupsection-org-request" style="margin-top: 1.5rem;" autocomplete="off">
+  {{#if csrfToken}}<input type="hidden" name="_csrf" value="{{csrfToken}}">{{/if}}
 
-        <p class="groupsection-org-text" style="text-align:center;">
-          Looking for an organization that already exists on Twennie?
-        </p>
+  <p class="groupsection-org-text" style="text-align:center;">
+    Looking for an organization that already exists on Twennie?
+  </p>
 
-        <div style="display:flex; gap: 0.75rem; justify-content:center; flex-wrap: wrap;">
-          <input
-            type="text"
-            name="orgSlugOrName"
-            placeholder="organization name"
-            class="groupsection-org-request-input"
-            style="max-width: 360px; width: 100%;"
-          >
-          <button type="submit" class="groupsection-org-request-btn">
-            request to join
-          </button>
-        </div>
-      </form>
+  <div style="display:flex; gap: 0.75rem; justify-content:center; flex-wrap: wrap; position:relative; max-width: 520px; margin: 0 auto;">
+    <input
+      type="text"
+      id="orgSearchInput"
+      name="orgSlugOrName"
+      placeholder="organization name"
+      class="groupsection-org-request-input"
+      style="max-width: 360px; width: 100%;"
+    >
+
+    {{!-- this is what we actually submit --}}
+    <input type="hidden" id="orgIdInput" name="organizationId" value="">
+
+    <button type="submit" class="groupsection-org-request-btn" id="orgJoinBtn" disabled>
+      request to join
+    </button>
+
+    {{!-- dropdown results --}}
+    <div id="orgSearchResults"
+         style="display:none; position:absolute; left:0; right:0; top: 44px; z-index: 50; background: #fff; border: 1px solid rgba(0,0,0,0.12); border-radius: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.12); overflow:hidden;">
     </div>
-  {{/if}}
-</section>
+  </div>
+</form>
 
 <script>
-  (function () {
-    const btn = document.getElementById('show-org-form-dashboard');
-    const wrap = document.getElementById('org-formwrap-dashboard');
-    if (!btn || !wrap) return;
+(() => {
+  const input = document.getElementById('orgSearchInput');
+  const results = document.getElementById('orgSearchResults');
+  const orgIdInput = document.getElementById('orgIdInput');
+  const joinBtn = document.getElementById('orgJoinBtn');
 
-    btn.addEventListener('click', function () {
-      const isHidden = wrap.hasAttribute('hidden');
-      if (isHidden) wrap.removeAttribute('hidden');
-      else wrap.setAttribute('hidden', '');
+  let activeIndex = -1;
+  let items = [];
+  let debounceTimer = null;
+  let lastQuery = '';
 
-      if (isHidden) wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-  })();
+  function resetSelection() {
+    orgIdInput.value = '';
+    joinBtn.disabled = true;
+    activeIndex = -1;
+  }
+
+  function closeResults() {
+    results.style.display = 'none';
+    results.innerHTML = '';
+    items = [];
+    activeIndex = -1;
+  }
+
+  function openResults() {
+    results.style.display = 'block';
+  }
+
+  function escapeHtml(str) {
+    return String(str || '')
+      .replaceAll('&','&amp;')
+      .replaceAll('<','&lt;')
+      .replaceAll('>','&gt;')
+      .replaceAll('"','&quot;')
+      .replaceAll("'","&#039;");
+  }
+
+  function render(list) {
+    items = list || [];
+    if (!items.length) {
+      results.innerHTML = '<div style="padding:10px 12px; font-size:0.95rem; opacity:0.8;">No matches</div>';
+      openResults();
+      return;
+    }
+
+    results.innerHTML = items.map((org, i) => `
+      <button type="button"
+              data-index="${i}"
+              style="display:block; width:100%; text-align:left; padding:10px 12px; border:0; background:${i===activeIndex ? 'rgba(78,80,162,0.08)' : '#fff'}; cursor:pointer;">
+        <div style="font-weight:600;">${escapeHtml(org.name)}</div>
+        ${org.slug ? `<div style="font-size:0.85rem; opacity:0.7;">${escapeHtml(org.slug)}</div>` : ''}
+      </button>
+    `).join('');
+    openResults();
+  }
+
+  async function search(q) {
+    const url = `/dashboard/leader/organization/search?q=${encodeURIComponent(q)}`;
+    const res = await fetch(url, { headers: { 'Accept': 'application/json' }});
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.organizations || [];
+  }
+
+  input.addEventListener('input', () => {
+    const q = input.value.trim();
+    resetSelection();
+    if (q.length < 2) { closeResults(); return; }
+
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(async () => {
+      if (q === lastQuery) return;
+      lastQuery = q;
+
+      const list = await search(q);
+      render(list);
+    }, 200);
+  });
+
+  results.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-index]');
+    if (!btn) return;
+
+    const idx = Number(btn.dataset.index);
+    const org = items[idx];
+    if (!org) return;
+
+    input.value = org.name;
+    orgIdInput.value = org._id;
+    joinBtn.disabled = false;
+    closeResults();
+  });
+
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('.groupsection-org-request')) return;
+    closeResults();
+  });
+
+  input.addEventListener('keydown', (e) => {
+    if (results.style.display !== 'block') return;
+    if (!items.length) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      activeIndex = Math.min(activeIndex + 1, items.length - 1);
+      render(items);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      activeIndex = Math.max(activeIndex - 1, 0);
+      render(items);
+    } else if (e.key === 'Enter') {
+      if (activeIndex >= 0 && items[activeIndex]) {
+        e.preventDefault();
+        const org = items[activeIndex];
+        input.value = org.name;
+        orgIdInput.value = org._id;
+        joinBtn.disabled = false;
+        closeResults();
+      }
+    } else if (e.key === 'Escape') {
+      closeResults();
+    }
+  });
+})();
 </script>
+
 
 
 

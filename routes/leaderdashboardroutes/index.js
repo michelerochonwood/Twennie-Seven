@@ -113,7 +113,14 @@ router.post('/mark-seen', isAuthenticated, async (req, res) => {
   }
 });
 
-
+router.get('/organization/search', isAuthenticated, async (req, res, next) => {
+  try {
+    return await leaderDashboardController.searchOrganizations(req, res);
+  } catch (err) {
+    console.error('Error searching organizations:', err);
+    next(err);
+  }
+});
 // ------------------------------------------------------------
 // ✅ POST /dashboard/leader/organization/join
 // Join an existing organization (domain verified)
