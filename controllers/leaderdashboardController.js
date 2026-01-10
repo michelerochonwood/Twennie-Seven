@@ -27,10 +27,6 @@ const Organization = require('../models/member_models/organization');
 
 
 
-const Organization = require('../models/member_models/organization');
-
-
-
 function emailDomain(email = '') {
   const at = String(email).toLowerCase().split('@')[1];
   return at ? at.trim() : '';
