@@ -122,55 +122,7 @@
       </div>
     {{/if}}
 
-    <!-- TAGS FOR THIS EXERCISE (read + actions) -->
-    <div class="single_unit-tags white-container" style="margin-top:24px; margin-bottom:24px;">
-      <h4 class="assign-tag-title" style="margin-bottom:10px;">tags for this exercise</h4>
-
-      {{#if tagsForUnit.length}}
-        <ul class="unit-tag-list" style="list-style:none; padding:0; margin:0; display:flex; flex-wrap:wrap; gap:10px;">
-          {{#each tagsForUnit}}
-            <li class="tag-pill" style="display:flex; align-items:center; gap:8px; background:#f4f5ff; color:#4e50a2; border-radius:999px; padding:6px 10px;">
-              <span class="tag-name" style="font-weight:600;">{{name}}</span>
-
-              {{!-- If this tag is an assignment to the current user, show its state --}}
-              {{#if assignedToMe}}
-                {{#if completedAt}}
-                  <span class="tag-status" style="font-size:12px; color:#0ea75a;">completed</span>
-                {{else}}
-                  <button
-                    type="button"
-                    class="tag-action"
-                    data-action="complete"
-                    data-tag="{{_id}}"
-                    style="border:none; background:#0ea75a; color:#fff; border-radius:999px; padding:4px 8px; cursor:pointer; font-size:12px;">
-                    mark complete
-                  </button>
-                  {{#if instructions}}
-                    <span class="tag-instructions" style="font-size:12px; color:#6b7280;">“{{instructions}}”</span>
-                  {{/if}}
-                {{/if}}
-              {{/if}}
-
-              {{!-- If I created this tag, show remove-from-this-unit --}}
-              {{#if createdByMe}}
-                <button
-                  type="button"
-                  class="tag-action"
-                  data-action="remove"
-                  data-tag="{{_id}}"
-                  data-item="{{@root._id}}"
-                  data-type="exercise"
-                  style="border:none; background:#e11d48; color:#fff; border-radius:999px; padding:4px 8px; cursor:pointer; font-size:12px;">
-                  remove from this unit
-                </button>
-              {{/if}}
-            </li>
-          {{/each}}
-        </ul>
-      {{else}}
-        <p style="margin:0; color:#6b7280;">No tags yet. Use “assign” (leaders) or “tag this unit” to add one.</p>
-      {{/if}}
-    </div>
+    
 
     <!-- Notes Section -->
     {{#if isGroupMemberOrLeader}}
@@ -260,35 +212,6 @@
     form.submit(); // controller will redirect back with ?tag=ok
   }
 
-  async function markTagComplete(tagId) {
-    try {
-      await fetch(`/tags/${tagId}/complete`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': '{{csrfToken}}' },
-        body: JSON.stringify({ _csrf: '{{csrfToken}}' })
-      });
-      const btn = document.querySelector(`.tag-action[data-action="complete"][data-tag="${tagId}"]`);
-      if (btn) btn.outerHTML = '<span class="tag-status" style="font-size:12px; color:#0ea75a;">completed</span>';
-    } catch (e) {
-      alert('Could not mark complete. Please try again.');
-    }
-  }
-
-  async function removeTagFromUnit(tagId, itemId, itemType) {
-    try {
-      await fetch(`/tags/remove/${tagId}/${itemId}/${itemType}`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': '{{csrfToken}}' },
-        body: JSON.stringify({ _csrf: '{{csrfToken}}' })
-      });
-      const btn = document.querySelector(
-        `.tag-action[data-action="remove"][data-tag="${tagId}"][data-item="${itemId}"][data-type="${itemType}"]`
-      );
-      if (btn) btn.closest('.tag-pill').remove();
-    } catch (e) {
-      alert('Could not remove tag from this unit. Please try again.');
-    }
-  }
 
   // Delegate clicks for tag actions
   document.addEventListener('click', (e) => {

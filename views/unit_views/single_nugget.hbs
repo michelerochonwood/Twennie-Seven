@@ -141,44 +141,7 @@
       </div>
     {{/if}}
 
-    <!-- Tags -->
-    <div class="single_unit-tags white-container">
-      <h4>tags for this nugget</h4>
-      {{#if tagsForUnit.length}}
-        <ul class="unit-tag-list">
-          {{#each tagsForUnit}}
-            <li class="tag-pill">
-              <span class="tag-name">{{name}}</span>
 
-              {{#if assignedToMe}}
-                {{#if completedAt}}
-                  <span class="tag-status">completed</span>
-                {{else}}
-                  <button type="button" class="tag-action" data-action="complete" data-tag="{{_id}}">
-                    mark complete
-                  </button>
-                {{/if}}
-              {{/if}}
-
-              {{#if createdByMe}}
-                <button
-                  type="button"
-                  class="tag-action"
-                  data-action="remove"
-                  data-tag="{{_id}}"
-                  data-item="{{@root._id}}"
-                  data-type="nugget"
-                >
-                  remove
-                </button>
-              {{/if}}
-            </li>
-          {{/each}}
-        </ul>
-      {{else}}
-        <p>No tags yet. Use “assign” (leaders) or “tag this nugget” to add one.</p>
-      {{/if}}
-    </div>
 
 
 
