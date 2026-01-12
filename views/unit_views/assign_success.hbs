@@ -4,10 +4,10 @@
   <h1 class="success-title">assignment complete!</h1>
 
   <p class="success-message">
-    The prompt set <strong>{{promptSetTitle}}</strong> was successfully assigned to:
+    The {{unitLabel}} <strong>{{unitTitle}}</strong> was successfully assigned to:
   </p>
 
-  {{#if assignedNames}}
+  {{#if assignedNames.length}}
     <ul>
       {{#each assignedNames}}
         <li>{{this}}</li>
@@ -18,10 +18,9 @@
   {{/if}}
 
   <p class="success-message">
-    These members will see this prompt set in their dashboards.
+    These members will see this {{unitLabel}} in their dashboards.
   </p>
 
-  {{!-- Optional: show skips for transparency --}}
   {{#if skippedLimitNames.length}}
     <p class="success-message">
       Skipped (limit of 3 active):
@@ -40,41 +39,15 @@
 </div>
 
 <style>
-.success-container {
-  text-align: center;
-  margin: 50px auto;
-  padding: 20px;
-  max-width: 500px;
-}
-.success-title {
-  margin-top: 200px;
-  color: #262262;
-  font-size: 24px;
-  font-weight: bold;
-}
-.success-message {
-  font-size: 18px;
-  margin: 10px 0;
-  font-family: "Figtree";
-}
+.success-container { text-align: center; margin: 50px auto; padding: 20px; max-width: 500px; }
+.success-title { margin-top: 200px; color: #262262; font-size: 24px; font-weight: bold; }
+.success-message { font-size: 18px; margin: 10px 0; font-family: "Figtree"; }
 .success-button {
-  display: block;
-  font-size: 11pt;
-  margin: 10px auto;
-  padding: 10px 20px;
-  border-radius: 99px;
-  background-color: #262262;
-  color: white;
-  font-family: "Figtree";
-  font-weight: 800;
-  border: none;
-  text-align: center;
-  text-decoration: none;
-  cursor: pointer;
-  width: 50%;
+  display: block; font-size: 11pt; margin: 10px auto; padding: 10px 20px;
+  border-radius: 99px; background-color: #262262; color: white;
+  font-family: "Figtree"; font-weight: 800; border: none;
+  text-align: center; text-decoration: none; cursor: pointer; width: 50%;
 }
-.success-button:hover {
-  background-color: #4a4ab2;
-}
+.success-button:hover { background-color: #4a4ab2; }
 </style>
 

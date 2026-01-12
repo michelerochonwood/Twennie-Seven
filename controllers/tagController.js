@@ -3,6 +3,83 @@ const Tag = require('../models/tag');
 const Member = require('../models/member_models/member');
 const Leader = require('../models/member_models/leader');
 const GroupMember = require('../models/member_models/group_member');
+const Article = require('../models/unit_models/article');
+const Video = require('../models/unit_models/video');
+const Interview = require('../models/unit_models/interview');
+const Exercise = require('../models/unit_models/exercise');
+const Template = require('../models/unit_models/template');
+const PromptSet = require('../models/unit_models/promptset');
+const UpcomingUnit = require('../models/unit_models/upcoming');
+const Nugget = require('../models/unit_models/nugget');
+const Mission = require('../models/unit_models/mission');
+
+
+function unitLabelFromType(itemType) {
+  const map = {
+    article: 'article',
+    video: 'video',
+    interview: 'interview',
+    exercise: 'exercise',
+    template: 'template',
+    promptset: 'prompt set',
+    upcoming: 'upcoming unit',
+    nugget: 'nugget',
+    mission: 'mission',
+  };
+  return map[itemType] || 'unit';
+}
+
+async function getUnitTitle(itemType, itemId) {
+  const id = String(itemId || '').trim();
+  if (!id) return '(untitled)';
+
+  try {
+    switch (itemType) {
+      case 'article': {
+        const doc = await Article.findById(id).select('article_title').lean();
+        return doc?.article_title || '(untitled)';
+      }
+      case 'video': {
+        const doc = await Video.findById(id).select('video_title').lean();
+        return doc?.video_title || '(untitled)';
+      }
+      case 'interview': {
+        const doc = await Interview.findById(id).select('interview_title').lean();
+        return doc?.interview_title || '(untitled)';
+      }
+      case 'exercise': {
+        const doc = await Exercise.findById(id).select('exercise_title').lean();
+        return doc?.exercise_title || '(untitled)';
+      }
+      case 'template': {
+        const doc = await Template.findById(id).select('template_title').lean();
+        return doc?.template_title || '(untitled)';
+      }
+      case 'promptset': {
+        const doc = await PromptSet.findById(id).select('promptset_title').lean();
+        return doc?.promptset_title || '(untitled)';
+      }
+      case 'upcoming': {
+        const doc = await UpcomingUnit.findById(id).select('title').lean();
+        return doc?.title || '(untitled)';
+      }
+      case 'nugget': {
+        const doc = await Nugget.findById(id).select('title').lean();
+        return doc?.title || '(untitled)';
+      }
+      case 'mission': {
+        const doc = await Mission.findById(id).select('mission_title').lean();
+        return doc?.mission_title || '(untitled)';
+      }
+      default:
+        return '(untitled)';
+    }
+  } catch (e) {
+    console.error('[getUnitTitle] lookup failed:', itemType, id, e.message || e);
+    return '(untitled)';
+  }
+}
+
 
 /** helper: detect if this came from a standard HTML form */
 function isHtmlForm(req) {
@@ -141,10 +218,40 @@ exports.createTag = async (req, res) => {
     await tag.save();
 
     // HTML success flows
-    const isLeader = userModel === 'leader';
-    if (fromForm && isLeader && normalizedAssignedTo.length > 0) {
-      return res.render('unit_views/assign_success', { layout: 'unitviewlayout' });
-    }
+// HTML success flows
+const isLeader = userModel === 'leader';
+if (fromForm && isLeader && normalizedAssignedTo.length > 0) {
+  // Build view model for assign_success.hbs
+  const unitLabel = unitLabelFromType(itemType);
+  const unitTitle = await getUnitTitle(itemType, itemId);
+
+  // Names we attempted to assign to (best effort)
+  const assignedNames = normalizedAssignedTo.map(x => String(x.member)); // fallback if we can't resolve names
+
+  // OPTIONAL: resolve member names properly (recommended)
+  const ids = normalizedAssignedTo.map(x => x.member);
+  const [members, groupMembers] = await Promise.all([
+    Member.find({ _id: { $in: ids } }).select('_id name').lean(),
+    GroupMember.find({ _id: { $in: ids } }).select('_id name').lean(),
+  ]);
+  const nameById = new Map();
+  members.forEach(m => nameById.set(String(m._id), m.name));
+  groupMembers.forEach(gm => nameById.set(String(gm._id), gm.name));
+
+  const resolvedAssignedNames = ids
+    .map(id => nameById.get(String(id)) || String(id))
+    .filter(Boolean);
+
+  return res.render('unit_views/assign_success', {
+    layout: 'unitviewlayout',
+    unitLabel,
+    unitTitle,
+    assignedNames: resolvedAssignedNames,
+    skippedLimitNames: [],  // you can wire real skips later
+    skippedDupesNames: [],  // you can wire real skips later
+  });
+}
+
 
     if (fromForm) {
       const referer = req.get('referer');

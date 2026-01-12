@@ -140,8 +140,7 @@
   </div>
 </div>
 
-<!-- ⭐️ Centered Video Frame Below -->
-<!-- ⭐️ Centered Video Frame Below -->
+
 <!-- ⭐️ Centered Video Frame Below -->
 <div style="display: flex; justify-content: center; margin: 40px 0;">
   <div
@@ -159,7 +158,13 @@
       var poster = this.querySelector('.youtube-poster');
       var iframe = this.querySelector('iframe');
       if (poster) poster.style.display = 'none';
-      if (iframe) iframe.style.display = 'block';
+      if (iframe) {
+        iframe.style.display = 'block';
+        if (!iframe.dataset.loaded) {
+          iframe.src = iframe.dataset.src;
+          iframe.dataset.loaded = 'true';
+        }
+      }
     "
   >
     <!-- Poster -->
@@ -177,7 +182,7 @@
     />
 
     <!-- Play Button -->
-    <div 
+    <div
       style="
         position: absolute;
         top: 50%; left: 50%;
@@ -189,9 +194,10 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        pointer-events: none;
       "
     >
-      <div 
+      <div
         style="
           width: 0;
           height: 0;
@@ -203,9 +209,10 @@
       ></div>
     </div>
 
-    <!-- YouTube iframe -->
+    <!-- YouTube iframe (src is set only after click) -->
     <iframe
-      src="https://www.youtube.com/embed/tUnOLnUaV5o?autoplay=1"
+      data-src="https://www.youtube.com/embed/tUnOLnUaV5o?autoplay=1"
+      src="about:blank"
       title="Mission Control intro video"
       frameborder="0"
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -220,6 +227,7 @@
     ></iframe>
   </div>
 </div>
+
 
 
 
