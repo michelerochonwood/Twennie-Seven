@@ -231,14 +231,15 @@ const csvMirror  = req.body.assignedMemberIdsCsv;     // CSV string we just rena
     }
   },
 
-  assignSuccess: (req, res) => {
+assignSuccess: (req, res) => {
   // pull once; then clear so it doesn’t linger across refreshes
   const s = req.session.lastAssignSummary || {};
   delete req.session.lastAssignSummary;
 
   const locals = {
-    layout: 'dashboardlayout',
+    layout: 'unitviewlayout', // ✅ use the unit view layout that the existing success view expects
     title: 'Assignment Successful',
+
     // Prefer session (authoritative), fall back to query string
     promptSetTitle: s.promptSetTitle || req.query.title || 'Prompt Set',
     assignedNames: Array.isArray(s.assignedNames) ? s.assignedNames : [],
@@ -246,8 +247,10 @@ const csvMirror  = req.body.assignedMemberIdsCsv;     // CSV string we just rena
     skippedDupesNames: Array.isArray(s.skippedDupesNames) ? s.skippedDupesNames : []
   };
 
-  return res.render('member_form_views/assignsuccess', locals);
+  // ✅ This view actually exists
+  return res.render('unit_views/assign_success', locals);
 },
+
 
   /** GET leader’s assigned prompt sets */
   getAssignedPromptSets: async (req, res) => {
