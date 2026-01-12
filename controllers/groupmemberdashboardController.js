@@ -436,6 +436,37 @@ function getMissionBadgePath(category) {
   return `/badges/missions/${filename}.png`;
 }
 
+
+// ---- SAFETY HELPERS (dashboard tabs + csrf) ----
+function safeCsrfToken(req) {
+  try {
+    return (typeof req.csrfToken === 'function') ? req.csrfToken() : null;
+  } catch (e) {
+    console.warn('[groupmemberdashboard] csrfToken unavailable:', e.message || e);
+    return null;
+  }
+}
+
+// Ensure DashboardSeen.tabs always supports get/set/has (Map-like)
+// Works even if older documents stored tabs as plain objects.
+function ensureTabsMap(seenDoc) {
+  if (!seenDoc) return;
+
+  const t = seenDoc.tabs;
+
+  // Already Map-like (Mongoose Map or native Map)
+  if (t && typeof t.get === 'function' && typeof t.set === 'function') return;
+
+  // Convert plain object -> Map
+  const raw = (t && typeof t === 'object') ? t : {};
+  const m = new Map();
+  for (const [k, v] of Object.entries(raw)) {
+    m.set(k, v);
+  }
+  seenDoc.tabs = m;
+}
+
+
 module.exports = {
     renderGroupMemberDashboard: async (req, res) => {
 
@@ -990,33 +1021,44 @@ group: (leaderDoc?.members || []).length,
 };
 
 // Load/create seen doc for this group member
+// Load/create seen doc for this group member
 let seenDocGM = await DashboardSeen.findOne({ userId: id, role: 'group_member' });
 
 if (!seenDocGM) {
   // First time: baseline all tabs to current counts (no dots on first render)
   seenDocGM = new DashboardSeen({ userId: id, role: 'group_member', tabs: new Map() });
-  for (const [key, val] of Object.entries(gmCounts)) {
+}
+
+// ✅ make tabs Map-like even if older docs stored it as an object
+ensureTabsMap(seenDocGM);
+
+// First time OR existing: baseline any missing tabs once
+let updated = false;
+
+for (const [key, val] of Object.entries(gmCounts)) {
+  const hasKey =
+    seenDocGM.tabs && typeof seenDocGM.tabs.has === 'function'
+      ? seenDocGM.tabs.has(key)
+      : false;
+
+  if (!hasKey) {
     seenDocGM.tabs.set(key, { count: val, seenAt: new Date() });
+    updated = true;
   }
+}
+
+// If doc was new or we added tabs, save it
+if (updated || seenDocGM.isNew) {
   await seenDocGM.save();
-} else {
-  // If new tabs were added later, baseline them once
-  let updated = false;
-  for (const [key, val] of Object.entries(gmCounts)) {
-    if (!seenDocGM.tabs?.has(key)) {
-      seenDocGM.tabs.set(key, { count: val, seenAt: new Date() });
-      updated = true;
-    }
-  }
-  if (updated) await seenDocGM.save();
 }
 
 // Compute badges: show dot ONLY if current > lastSeen
 const gmBadges = {};
 for (const [key, val] of Object.entries(gmCounts)) {
-  const last = seenDocGM.tabs?.get(key)?.count ?? val; // default to current as baseline
+  const last = seenDocGM.tabs.get(key)?.count ?? val; // default to current as baseline
   gmBadges[key] = val > last;
 }
+
 
 const group = {
   ...leaderDoc,
@@ -1027,7 +1069,7 @@ const group = {
 return res.render('groupmember_dashboard', {
   layout: 'dashboardlayout',
   title: 'Group Member Dashboard',
-  csrfToken: req.csrfToken(),
+  csrfToken: safeCsrfToken(req),
 
   mfaStatus,
 
@@ -1170,15 +1212,18 @@ markGroupMemberTabSeen: async (req, res) => {
     if (!tabKey) return res.status(400).json({ ok: false, error: 'missing tabKey' });
 
     // Load/create doc
-    let seenDoc = await DashboardSeen.findOne({ userId: memberId, role: 'group_member' });
-    if (!seenDoc) {
-      seenDoc = new DashboardSeen({ userId: memberId, role: 'group_member', tabs: new Map() });
-    }
+let seenDoc = await DashboardSeen.findOne({ userId: memberId, role: 'group_member' });
+if (!seenDoc) {
+  seenDoc = new DashboardSeen({ userId: memberId, role: 'group_member', tabs: new Map() });
+}
 
-    // Update this tab with the current count and timestamp
-    const countNum = Number(currentCount) || 0;
-    seenDoc.tabs.set(tabKey, { count: countNum, seenAt: new Date() });
-    await seenDoc.save();
+// ✅ ensure tabs Map-like even if older docs stored it as an object
+ensureTabsMap(seenDoc);
+
+// Update this tab with the current count and timestamp
+const countNum = Number(currentCount) || 0;
+seenDoc.tabs.set(tabKey, { count: countNum, seenAt: new Date() });
+await seenDoc.save();
 
     return res.json({ ok: true });
   } catch (e) {
