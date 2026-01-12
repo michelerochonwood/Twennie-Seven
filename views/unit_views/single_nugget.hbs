@@ -180,20 +180,7 @@
       {{/if}}
     </div>
 
-    <!-- Notes -->
-    {{#if isGroupMemberOrLeader}}
-      <div class="single_nugget-notes-container">
-        <h3>record notes</h3>
-        <form action="/notes/submit" method="POST" class="single_nugget-notes-form">
-          <input type="hidden" name="_csrf" value="{{csrfToken}}">
-          <input type="hidden" name="unitId" value="{{_id}}">
-          <input type="hidden" name="unitType" value="nugget">
-          <textarea name="note_content" class="single_nugget-notes-textarea" rows="5" maxlength="1000" placeholder="Write your notes here..."></textarea>
-          <button type="submit" class="single_nugget-notes-submit">submit notes</button>
-        </form>
-      </div>
-    {{/if}}
-  </div>
+
 
   <!-- Sidebar -->
   <aside class="single_nugget-sidebar">
