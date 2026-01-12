@@ -3,6 +3,17 @@ const Tag = require('../models/tag');
 const Member = require('../models/member_models/member');
 const Leader = require('../models/member_models/leader');
 const GroupMember = require('../models/member_models/group_member');
+// Unit models (for success page title lookup)
+const Article = require('../models/unit_models/article');
+const Video = require('../models/unit_models/video');
+const Interview = require('../models/unit_models/interview');
+const Exercise = require('../models/unit_models/exercise');
+const Template = require('../models/unit_models/template');
+const PromptSet = require('../models/unit_models/promptset');
+const Upcoming = require('../models/unit_models/upcoming');
+const Nugget = require('../models/unit_models/nugget');
+const Mission = require('../models/unit_models/mission');
+
 
 /** helper: detect if this came from a standard HTML form */
 function isHtmlForm(req) {
@@ -37,6 +48,71 @@ function canonicalUnitType(t) {
   return n;
 }
 
+function unitLabelFromType(itemType) {
+  const map = {
+    article: 'article',
+    video: 'video',
+    interview: 'interview',
+    exercise: 'exercise',
+    template: 'template',
+    promptset: 'prompt set',
+    upcoming: 'upcoming unit',
+    nugget: 'nugget',
+    mission: 'mission',
+    topic: 'topic'
+  };
+  return map[itemType] || 'unit';
+}
+
+async function getUnitTitle(itemType, itemId) {
+  try {
+    switch (itemType) {
+      case 'article': {
+        const d = await Article.findById(itemId).select('article_title').lean();
+        return d?.article_title || 'Untitled article';
+      }
+      case 'video': {
+        const d = await Video.findById(itemId).select('video_title').lean();
+        return d?.video_title || 'Untitled video';
+      }
+      case 'interview': {
+        const d = await Interview.findById(itemId).select('interview_title').lean();
+        return d?.interview_title || 'Untitled interview';
+      }
+      case 'exercise': {
+        const d = await Exercise.findById(itemId).select('exercise_title').lean();
+        return d?.exercise_title || 'Untitled exercise';
+      }
+      case 'template': {
+        const d = await Template.findById(itemId).select('template_title').lean();
+        return d?.template_title || 'Untitled template';
+      }
+      case 'promptset': {
+        const d = await PromptSet.findById(itemId).select('promptset_title').lean();
+        return d?.promptset_title || 'Untitled prompt set';
+      }
+      case 'upcoming': {
+        const d = await Upcoming.findById(itemId).select('title').lean();
+        return d?.title || 'Untitled upcoming unit';
+      }
+      case 'nugget': {
+        const d = await Nugget.findById(itemId).select('title').lean();
+        return d?.title || 'Untitled nugget';
+      }
+      case 'mission': {
+        const d = await Mission.findById(itemId).select('mission_title').lean();
+        return d?.mission_title || 'Untitled mission';
+      }
+      case 'topic':
+        return 'Topic';
+      default:
+        return 'Untitled unit';
+    }
+  } catch (e) {
+    console.error('[tagController] getUnitTitle failed:', itemType, itemId, e.message || e);
+    return 'Untitled unit';
+  }
+}
 
 
 
@@ -141,24 +217,42 @@ exports.createTag = async (req, res) => {
     await tag.save();
 
     // HTML success flows
-    const isLeader = userModel === 'leader';
-    if (fromForm && isLeader && normalizedAssignedTo.length > 0) {
-      return res.render('unit_views/assign_success', { layout: 'unitviewlayout' });
-    }
+// HTML success flows
+const isLeader = userModel === 'leader';
+if (fromForm && isLeader && normalizedAssignedTo.length > 0) {
+  // Resolve assigned member names (GroupMembers are the normal assignees)
+  const assignedIds = normalizedAssignedTo.map(a => a.member).filter(Boolean);
 
-    if (fromForm) {
-      const referer = req.get('referer');
-      if (referer) {
-        const sep = referer.includes('?') ? '&' : '?';
-        return res.redirect(`${referer}${sep}tag=ok`);
-      }
-      const role = req.user?.membershipType || 'member';
-      const fallback =
-        role === 'leader'      ? '/dashboard/leader' :
-        role === 'group_member'? '/dashboard/groupmember' :
-                                 '/dashboard/member';
-      return res.redirect(fallback);
-    }
+  const assignees = assignedIds.length
+    ? await GroupMember.find({ _id: { $in: assignedIds } }).select('_id name').lean()
+    : [];
+
+  const nameById = new Map(assignees.map(m => [m._id.toString(), m.name]));
+  const assignedNames = assignedIds
+    .map(id => nameById.get(String(id)) || String(id))
+    .filter(Boolean);
+
+  const unitLabel = unitLabelFromType(itemType);
+  const unitTitle = await getUnitTitle(itemType, itemId);
+
+  // Render the shared success view with the variables it needs
+  return res.render('unit_views/assign_success', {
+    layout: 'unitviewlayout',
+    title: 'Assignment Successful',
+
+    // New generic fields (template supports these)
+    unitLabel,
+    unitTitle,
+
+    // Old prompt set field (template supports this too, but we’ll populate it anyway)
+    promptSetTitle: unitTitle,
+
+    assignedNames,
+    skippedLimitNames: [], // Tag assignments don't enforce a 3-active limit here
+    skippedDupesNames: []  // Tag assignments don't dedupe per-member here
+  });
+}
+
 
     return res.status(200).json({ message: 'Tag saved successfully.', tag });
 
