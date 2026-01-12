@@ -485,7 +485,7 @@ let completedPromptSets = [];
             //members of a group are meant to show in the group member dashboard as cards - it is important that none of this changed because the group members are located based on the leader of the group - if you are rewriting anything in this renderdashboard, make sure to rewrite it exactly as you see it here. 
     
 const userData = await GroupMember.findById(id)
-  .select('name email username profileImage professionalTitle organization leader emailPreferenceLevel mfa.enabled mfa.method mfa.recoveryCodes mfa.updatedAt')
+  .select('name email username profileImage professionalTitle organization groupId leader emailPreferenceLevel mfa.enabled mfa.method mfa.recoveryCodes mfa.updatedAt')
   .lean();
 
 if (!userData) {
@@ -497,10 +497,15 @@ if (!userData) {
 }
 
 // ✅ Load the leader (this is the "group")
-const leaderDoc = await Leader.findById(userData.leader)
+const leaderId = userData.groupId || userData.leader; // ✅ prefer new field, fallback old
+
+const leaderDoc = await Leader.findById(leaderId)
   .select('groupName groupLeaderName groupSize topics members organization organizationName organizationOptOut')
   .populate({ path: 'members', model: 'GroupMember', select: 'name professionalTitle' })
   .lean();
+
+  console.log('[GM DASH] leaderId resolved to:', leaderId ? leaderId.toString() : leaderId);
+
 
 if (!leaderDoc) {
   return res.status(404).render('error', {
@@ -1119,7 +1124,8 @@ maxGroupSize: leaderDoc.groupSize,
         
         
         } catch (err) {
-            console.error('Error rendering group member dashboard:', err);
+            console.error('Error rendering group member dashboard:', err.stack || err);
+
             return res.status(500).render('error', { title: 'Error', errorMessage: 'An unexpected error occurred.' });
         }
     },
