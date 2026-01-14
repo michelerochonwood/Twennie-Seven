@@ -1,4 +1,86 @@
-<section class="leader-admin-section">
-  <h2>My Groups and Leaders</h2>
-  <p>Coming soon.</p>
+<section class="orgadmin-groupsleaders">
+
+  <h2 class="orgadmin-title">my groups and leaders</h2>
+
+  {{#if orgGroups.length}}
+
+    <div class="orgadmin-gl-grid">
+      {{#each orgGroups}}
+
+        <div class="orgadmin-gl-card">
+
+          <!-- Top images (leader + group) -->
+          <div class="orgadmin-gl-images">
+            <div class="orgadmin-gl-avatar">
+              <img
+                src="{{#if leaderImage}}{{leaderImage}}{{else}}/images/default-avatar.png{{/if}}"
+                alt="{{#if groupLeaderName}}{{groupLeaderName}}{{else}}Leader{{/if}} profile image"
+              >
+              <span class="orgadmin-gl-avatar-label">leader</span>
+            </div>
+
+            <div class="orgadmin-gl-avatar orgadmin-gl-avatar--group">
+              <img
+                src="{{#if groupImage}}{{groupImage}}{{else}}/images/default-group.png{{/if}}"
+                alt="{{#if groupName}}{{groupName}}{{else}}Group{{/if}} image"
+              >
+              <span class="orgadmin-gl-avatar-label">group</span>
+            </div>
+          </div>
+
+          <!-- Info -->
+          <div class="orgadmin-gl-info">
+            <h3 class="orgadmin-gl-groupname">{{groupName}}</h3>
+
+            <p class="orgadmin-gl-meta">
+              Leader:
+              <strong>{{#if groupLeaderName}}{{groupLeaderName}}{{else}}—{{/if}}</strong>
+            </p>
+
+            <p class="orgadmin-gl-meta">
+              Members:
+              <strong>
+                {{#if memberCount}}
+                  {{memberCount}}
+                {{else}}
+                  {{#if members.length}}{{members.length}}{{else}}0{{/if}}
+                {{/if}}
+              </strong>
+            </p>
+          </div>
+
+          <!-- Actions -->
+          <div class="orgadmin-gl-actions">
+            <button
+              type="button"
+              class="orgadmin-gl-btn"
+              {{#if leaderId}}
+                onclick="window.location.href='/profile/leader/{{leaderId}}'"
+              {{else}}
+                onclick="window.location.href='/profile/leader/{{groupLeaderId}}'"
+              {{/if}}
+            >
+              view leader profile
+            </button>
+
+            <button
+              type="button"
+              class="orgadmin-gl-btn orgadmin-gl-btn--secondary"
+              onclick="window.location.href='/profile/group/{{_id}}'"
+            >
+              view group profile
+            </button>
+          </div>
+
+        </div>
+
+      {{/each}}
+    </div>
+
+  {{else}}
+    <p class="orgadmin-empty" style="text-align:center; margin: 1rem 0 0;">
+      No groups found for this organization yet.
+    </p>
+  {{/if}}
+
 </section>

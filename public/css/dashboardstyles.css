@@ -5262,3 +5262,96 @@ box-shadow: none !important;
 
 
 
+
+
+/*------------------------------------------------------------------------------*/
+
+/*ADMIN DASHBOARD STYLES*/
+
+/*------------------------------------------------------------------------------*/
+
+.orgadmin-groupsleaders { margin-bottom: 80px; }
+
+.orgadmin-title {
+  font-size: 1.35rem;
+  margin: 0 0 1rem;
+}
+
+.orgadmin-gl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.orgadmin-gl-card {
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 18px;
+  padding: 1rem;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+}
+
+.orgadmin-gl-images {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+}
+
+.orgadmin-gl-avatar {
+  width: 86px;
+  text-align: center;
+}
+
+.orgadmin-gl-avatar img {
+  width: 86px;
+  height: 86px;
+  border-radius: 999px;
+  object-fit: cover;
+  display: block;
+  margin: 0 auto;
+  border: 2px solid rgba(0,0,0,0.06);
+}
+
+.orgadmin-gl-avatar--group img {
+  border-radius: 18px; /* group image looks better as rounded square */
+}
+
+.orgadmin-gl-avatar-label {
+  display: inline-block;
+  margin-top: 0.35rem;
+  font-size: 0.8rem;
+  opacity: 0.75;
+}
+
+.orgadmin-gl-info { text-align: center; }
+
+.orgadmin-gl-groupname {
+  margin: 0.25rem 0 0.35rem;
+  font-size: 1.1rem;
+}
+
+.orgadmin-gl-meta {
+  margin: 0.2rem 0;
+  opacity: 0.85;
+}
+
+.orgadmin-gl-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 0.9rem;
+  flex-wrap: wrap;
+}
+
+.orgadmin-gl-btn {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.55rem 0.9rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.orgadmin-gl-btn--secondary {
+  background: rgba(0,0,0,0.06);
+}
