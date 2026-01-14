@@ -570,6 +570,7 @@ html, body {
 
 .dashboard-tab .tab-title {
   text-align: right;
+  color: white;
 }
 
 .dashboard-tab-content {
