@@ -1,5 +1,18 @@
 // middleware/ensureAuthenticated.js
 
+/**
+ * LOW-RISK ensureAuthenticated
+ * ----------------------------
+ * - No async/await
+ * - No DB queries
+ * - Does NOT overwrite req.user with a Passport session id
+ * - Keeps req.session.user admin/org flags updated when req.user has them
+ *
+ * Important: This middleware only guarantees req.user exists if Passport
+ * has already populated it for this request. If your routes rely solely on
+ * req.session.user, this middleware won't "hydrate" a full user object.
+ */
+
 const ensureAuthenticated = (req, res, next) => {
   console.log('🔍 Middleware: Checking Authentication');
   console.log('   Session:', req.session);
@@ -10,7 +23,7 @@ const ensureAuthenticated = (req, res, next) => {
     console.warn('⚠️ req.user is missing or malformed. This will block access.');
   }
 
-  // ✅ Restore req.user early if missing but session has it
+  // ✅ Restore req.user early if missing but Passport session has something
   // IMPORTANT: Passport often stores only a user id in req.session.passport.user.
   // We must NOT assign that id directly to req.user.
   if (!req.user && req.session?.passport?.user) {
@@ -34,8 +47,7 @@ const ensureAuthenticated = (req, res, next) => {
       isAdmin: req.user.isAdmin
     });
 
-    // ✅ Ensure session user is also present
-    // Keep the original fields you rely on, plus admin/org flags when available
+    // ✅ Ensure session.user exists (your app uses this in many places)
     if (!req.session.user) {
       console.warn('⚠️ Session user data is missing, restoring session...');
       req.session.user = {
@@ -45,7 +57,7 @@ const ensureAuthenticated = (req, res, next) => {
       };
     }
 
-    // ✅ Keep admin/org flags fresh (won’t break if undefined)
+    // ✅ Keep admin/org flags fresh (harmless if undefined)
     if (req.session.user) {
       if (typeof req.user.isAdmin !== 'undefined') req.session.user.isAdmin = !!req.user.isAdmin;
       if (typeof req.user.organization !== 'undefined') req.session.user.organization = req.user.organization || null;
