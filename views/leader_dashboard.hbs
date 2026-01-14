@@ -3,6 +3,7 @@
 <div class="dashboard-grid">
   <!-- Sidebar (Left) -->
   <div class="dashboard-sidebar">
+    {{leader.username}} isAdmin={{leader.isAdmin}}
     {{> dashboardpartials/leader_sidebar }}
   </div>
 
@@ -14,7 +15,7 @@
      ORG ADMIN TABS + CONTENT (ADMIN ONLY)
      This block must sit ABOVE the leader tab navigation
 ========================================================= --}}
-{{#if isOrgAdmin}}
+{{#if leader.isAdmin}}
 
   {{!-- Admin Tab Navigation --}}
   <div class="dashboard-tabs-container dashboard-tabs-container--admin">
