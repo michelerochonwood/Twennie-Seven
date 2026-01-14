@@ -1249,6 +1249,7 @@ if (assignedPromptCards[0]) console.log('assignedPromptCards[0] sample:', assign
 return res.render('leader_dashboard', {
   layout: 'dashboardlayout',
   title: 'Leader Dashboard',
+  adminMode: false,
 csrfToken: req.csrfToken ? req.csrfToken() : null,
 leader: {
   ...userData,
