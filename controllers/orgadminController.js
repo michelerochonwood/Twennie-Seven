@@ -18,21 +18,10 @@ async function buildOrgSnapshot(orgId) {
 
   if (!organization) {
     return {
-      organization: null,
-      counts: {
-        leaders: 0,
-        groups: 0,
-        members: 0,
-        pendingJoinRequests: 0,
-        pendingLibrarySubmissions: 0
-      },
-      learningFootprint: {
-        activeLearners: 0,
-        unitsCompleted: 0,
-        promptSetsCompleted: 0,
-        avgCompletionsPerLearner: 0,
-        topUnitType: '—'
-      }
+organization: null,
+counts: { leaders: 0, groups: 0, members: 0, pendingJoinRequests: 0, pendingLibrarySubmissions: 0 },
+learningFootprint: { activeLearners: 0, unitsCompleted: 0, promptSetsCompleted: 0, avgCompletionsPerLearner: 0, topUnitType: '—' },
+
     };
   }
 
