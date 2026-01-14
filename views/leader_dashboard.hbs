@@ -11,8 +11,7 @@
 
     {{!-- =========================================================
          ADMIN MODE TOGGLE (admins only)
-         - Visible only if leader.isAdmin is true
-         - Switches between leader mode and admin mode
+         - This is navigation between leader mode and org-admin mode
     ========================================================= --}}
     {{#if leader.isAdmin}}
       <div class="dashboard-admin-toggle" style="display:flex; justify-content:flex-end; margin-bottom: 0.75rem;">
@@ -32,202 +31,192 @@
 
     {{!-- =========================================================
          ADMIN MODE VIEW
-         - Shows admin tabs + admin content ONLY
-         - Hides leader tabs/content entirely
+         - JS tabs (no reload)
+         - IMPORTANT: render ALL panels; show/hide with .active
     ========================================================= --}}
     {{#if adminMode}}
       {{#if leader.isAdmin}}
 
-<!-- Admin Tab Navigation (JS tabs, no page reload) -->
-<div class="dashboard-tabs-container dashboard-tabs-container--admin">
+        <!-- Admin Tab Navigation -->
+        <div class="dashboard-tabs-container dashboard-tabs-container--admin" data-tabs-scope="admin">
+          <button
+            class="dashboard-tab {{#if (eq adminTab "my-organization")}}active{{/if}}"
+            type="button"
+            data-tab="admin-my-organization"
+            data-href="/dashboard/leader/org-admin/my-organization"
+          >
+            <span class="tab-title">my organization</span>
+            <div class="tab-arrow"></div>
+          </button>
 
-  <button class="dashboard-tab {{#if (eq adminTab "my-organization")}}active{{/if}}"
-          type="button"
-          data-admin-tab="my-organization"
-          data-admin-href="/dashboard/leader/org-admin/my-organization">
-    <span class="tab-title">my organization</span>
-    <div class="tab-arrow"></div>
-  </button>
+          <button
+            class="dashboard-tab {{#if (eq adminTab "groups-leaders")}}active{{/if}}"
+            type="button"
+            data-tab="admin-groups-leaders"
+            data-href="/dashboard/leader/org-admin/groups-leaders"
+          >
+            <span class="tab-title">my groups and leaders</span>
+            <div class="tab-arrow"></div>
+          </button>
 
-  <button class="dashboard-tab {{#if (eq adminTab "groups-leaders")}}active{{/if}}"
-          type="button"
-          data-admin-tab="groups-leaders"
-          data-admin-href="/dashboard/leader/org-admin/groups-leaders">
-    <span class="tab-title">my groups and leaders</span>
-    <div class="tab-arrow"></div>
-  </button>
+          <button
+            class="dashboard-tab {{#if (eq adminTab "requests")}}active{{/if}}"
+            type="button"
+            data-tab="admin-requests"
+            data-href="/dashboard/leader/org-admin/requests"
+          >
+            <span class="tab-title">requests to join</span>
+            <div class="tab-arrow"></div>
+          </button>
 
-  <button class="dashboard-tab {{#if (eq adminTab "requests")}}active{{/if}}"
-          type="button"
-          data-admin-tab="requests"
-          data-admin-href="/dashboard/leader/org-admin/requests">
-    <span class="tab-title">requests to join</span>
-    <div class="tab-arrow"></div>
-  </button>
+          <button
+            class="dashboard-tab {{#if (eq adminTab "suggestions")}}active{{/if}}"
+            type="button"
+            data-tab="admin-suggestions"
+            data-href="/dashboard/leader/org-admin/suggestions"
+          >
+            <span class="tab-title">learning suggestions</span>
+            <div class="tab-arrow"></div>
+          </button>
 
-  <button class="dashboard-tab {{#if (eq adminTab "suggestions")}}active{{/if}}"
-          type="button"
-          data-admin-tab="suggestions"
-          data-admin-href="/dashboard/leader/org-admin/suggestions">
-    <span class="tab-title">learning suggestions</span>
-    <div class="tab-arrow"></div>
-  </button>
+          <button
+            class="dashboard-tab {{#if (eq adminTab "company-library")}}active{{/if}}"
+            type="button"
+            data-tab="admin-company-library"
+            data-href="/dashboard/leader/org-admin/company-library"
+          >
+            <span class="tab-title">company library units</span>
+            <div class="tab-arrow"></div>
+          </button>
 
-  <button class="dashboard-tab {{#if (eq adminTab "company-library")}}active{{/if}}"
-          type="button"
-          data-admin-tab="company-library"
-          data-admin-href="/dashboard/leader/org-admin/company-library">
-    <span class="tab-title">company library units</span>
-    <div class="tab-arrow"></div>
-  </button>
+          <button
+            class="dashboard-tab {{#if (eq adminTab "reports")}}active{{/if}}"
+            type="button"
+            data-tab="admin-reports"
+            data-href="/dashboard/leader/org-admin/reports"
+          >
+            <span class="tab-title">organization reports</span>
+            <div class="tab-arrow"></div>
+          </button>
+        </div>
 
-  <button class="dashboard-tab {{#if (eq adminTab "reports")}}active{{/if}}"
-          type="button"
-          data-admin-tab="reports"
-          data-admin-href="/dashboard/leader/org-admin/reports">
-    <span class="tab-title">organization reports</span>
-    <div class="tab-arrow"></div>
-  </button>
+        <!-- Admin Content Panels -->
+        <div class="leader-admin-panel" data-panels-scope="admin">
 
-</div>
+          <div
+            class="dashboard-tab-content admin-tab-content {{#if (eq adminTab "my-organization")}}active{{/if}}"
+            id="admin-my-organization"
+          >
+            {{> dashboardpartials/admin_myorganization }}
+          </div>
 
+          <div
+            class="dashboard-tab-content admin-tab-content {{#if (eq adminTab "groups-leaders")}}active{{/if}}"
+            id="admin-groups-leaders"
+          >
+            {{> dashboardpartials/admin_groupsleaders }}
+          </div>
 
-<!-- Admin Content Panels (JS toggles .active like leader tabs) -->
-<div class="leader-admin-panel">
+          <div
+            class="dashboard-tab-content admin-tab-content {{#if (eq adminTab "requests")}}active{{/if}}"
+            id="admin-requests"
+          >
+            {{> dashboardpartials/admin_requests }}
+          </div>
 
-  <div class="dashboard-tab-content admin-tab-content {{#if (eq adminTab "my-organization")}}active{{/if}}"
-       id="admin-my-organization">
-    {{> dashboardpartials/admin_myorganization }}
-  </div>
+          <div
+            class="dashboard-tab-content admin-tab-content {{#if (eq adminTab "suggestions")}}active{{/if}}"
+            id="admin-suggestions"
+          >
+            {{> dashboardpartials/admin_suggestions }}
+          </div>
 
-  <div class="dashboard-tab-content admin-tab-content {{#if (eq adminTab "groups-leaders")}}active{{/if}}"
-       id="admin-groups-leaders">
-    {{> dashboardpartials/admin_groupsleaders }}
-  </div>
+          <div
+            class="dashboard-tab-content admin-tab-content {{#if (eq adminTab "company-library")}}active{{/if}}"
+            id="admin-company-library"
+          >
+            {{> dashboardpartials/admin_companylibrary }}
+          </div>
 
-  <div class="dashboard-tab-content admin-tab-content {{#if (eq adminTab "requests")}}active{{/if}}"
-       id="admin-requests">
-    {{> dashboardpartials/admin_requests }}
-  </div>
+          <div
+            class="dashboard-tab-content admin-tab-content {{#if (eq adminTab "reports")}}active{{/if}}"
+            id="admin-reports"
+          >
+            {{> dashboardpartials/admin_reports }}
+          </div>
 
-  <div class="dashboard-tab-content admin-tab-content {{#if (eq adminTab "suggestions")}}active{{/if}}"
-       id="admin-suggestions">
-    {{> dashboardpartials/admin_suggestions }}
-  </div>
-
-  <div class="dashboard-tab-content admin-tab-content {{#if (eq adminTab "company-library")}}active{{/if}}"
-       id="admin-company-library">
-    {{> dashboardpartials/admin_companylibrary }}
-  </div>
-
-  <div class="dashboard-tab-content admin-tab-content {{#if (eq adminTab "reports")}}active{{/if}}"
-       id="admin-reports">
-    {{> dashboardpartials/admin_reports }}
-  </div>
-
-</div>
-<script>
-  // Admin tabs (no page reload)
-  document.querySelectorAll('.dashboard-tab[data-admin-tab]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const tab = btn.dataset.adminTab;
-
-      // Toggle active state on admin tab buttons
-      document.querySelectorAll('.dashboard-tab[data-admin-tab]').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-
-      // Toggle active state on admin content panels
-      document.querySelectorAll('.admin-tab-content').forEach(p => p.classList.remove('active'));
-      const panel = document.getElementById(`admin-${tab}`);
-      if (panel) panel.classList.add('active');
-
-      // Update URL without navigation (nice UX)
-      const href = btn.dataset.adminHref;
-      if (href && window.history && window.history.replaceState) {
-        window.history.replaceState({}, '', href);
-      }
-    });
-  });
-</script>
-
+        </div>
 
       {{/if}}
+
     {{!-- =========================================================
          LEADER MODE VIEW (default)
-         - Your existing smooth JS tabs
     ========================================================= --}}
     {{else}}
 
-      <!-- Tab Navigation -->
-      <div class="dashboard-tabs-container">
-        <!-- 1) Membership overview -->
-        <button class="dashboard-tab active" data-tab="membership">
+      <!-- Leader Tab Navigation -->
+      <div class="dashboard-tabs-container" data-tabs-scope="leader">
+
+        <button class="dashboard-tab active" type="button" data-tab="membership">
           <span class="tab-title">membership overview</span>
           <div class="tab-arrow"></div>
         </button>
 
-        <!-- 2) My favorite topics -->
-        <button class="dashboard-tab" data-tab="topics" data-count="{{leaderCounts.topics}}">
+        <button class="dashboard-tab" type="button" data-tab="topics" data-count="{{leaderCounts.topics}}">
           <span class="tab-title">my favorite topics</span>
           {{#if leaderBadges.topics}}<span class="tab-dot"></span>{{/if}}
           <div class="tab-arrow"></div>
         </button>
 
-        <!-- 3) My group members -->
-        <button class="dashboard-tab" data-tab="group" data-count="{{leaderCounts.group}}">
+        <button class="dashboard-tab" type="button" data-tab="group" data-count="{{leaderCounts.group}}">
           <span class="tab-title">my group members</span>
           {{#if leaderBadges.group}}<span class="tab-dot"></span>{{/if}}
           <div class="tab-arrow"></div>
         </button>
 
-        <!-- 4) Registered prompt sets -->
-        <button class="dashboard-tab" data-tab="prompts" data-count="{{leaderCounts.prompts}}">
+        <button class="dashboard-tab" type="button" data-tab="prompts" data-count="{{leaderCounts.prompts}}">
           <span class="tab-title">registered prompt sets</span>
           {{#if leaderBadges.prompts}}<span class="tab-dot"></span>{{/if}}
           <div class="tab-arrow"></div>
         </button>
 
-        <!-- 5) Prompt set progress & completions -->
-        <button class="dashboard-tab" data-tab="progress" data-count="{{leaderCounts.progress}}">
+        <button class="dashboard-tab" type="button" data-tab="progress" data-count="{{leaderCounts.progress}}">
           <span class="tab-title">prompt set progress and completions</span>
           {{#if leaderBadges.progress}}<span class="tab-dot"></span>{{/if}}
           <div class="tab-arrow"></div>
         </button>
 
-        <!-- 6) My tags and assignments -->
-        <button class="dashboard-tab" data-tab="tagged" data-count="{{leaderCounts.tagged}}">
+        <button class="dashboard-tab" type="button" data-tab="tagged" data-count="{{leaderCounts.tagged}}">
           <span class="tab-title">my team's learning and assignments</span>
           {{#if leaderBadges.tagged}}<span class="tab-dot"></span>{{/if}}
           <div class="tab-arrow"></div>
         </button>
 
-        <!-- ✅ Missions -->
-        <button class="dashboard-tab" data-tab="missions" data-count="{{leaderCounts.missions}}">
+        <button class="dashboard-tab" type="button" data-tab="missions" data-count="{{leaderCounts.missions}}">
           <span class="tab-title">my team's missions</span>
           {{#if leaderBadges.missions}}<span class="tab-dot"></span>{{/if}}
           <div class="tab-arrow"></div>
         </button>
 
-        <!-- 7) Contribute to the library -->
-        <button class="dashboard-tab" data-tab="contribute">
+        <button class="dashboard-tab" type="button" data-tab="contribute">
           <span class="tab-title">contribute to my library</span>
           <div class="tab-arrow"></div>
         </button>
 
-        <!-- 8) My library units -->
-        <button class="dashboard-tab" data-tab="library" data-count="{{leaderCounts.library}}">
+        <button class="dashboard-tab" type="button" data-tab="library" data-count="{{leaderCounts.library}}">
           <span class="tab-title">my library units</span>
           {{#if leaderBadges.library}}<span class="tab-dot"></span>{{/if}}
           <div class="tab-arrow"></div>
         </button>
+
       </div>
 
-      <!-- Right Topics Column (fixed; reused partial) -->
+      <!-- Right Topics Column -->
       <div class="dashboard-page">
         {{> topicpartials/topics_column_partial}}
       </div>
 
-      <!-- Tab Content -->
+      <!-- Leader Panels -->
       <div class="dashboard-tab-content active" id="membership">
         {{> dashboardpartials/leader_membership }}
       </div>
@@ -272,7 +261,66 @@
         {{> dashboardpartials/leader_mylibraryunits }}
       </div>
 
-      {{!-- Leader tab JS (only run in leader mode) --}}
+    {{/if}}
+
+    {{!-- =========================================================
+         ONE TAB SCRIPT (handles leader + admin, safely scoped)
+    ========================================================= --}}
+    <script>
+      (function () {
+        function initTabs(scopeName) {
+          const tabsContainer = document.querySelector(`[data-tabs-scope="${scopeName}"]`);
+          const panelsScope = document.querySelector(`[data-panels-scope="${scopeName}"]`);
+
+          // Leader mode doesn't have a panels scope wrapper, so fall back to document
+          const panelRoot = panelsScope || document;
+
+          if (!tabsContainer) return;
+
+          const tabs = Array.from(tabsContainer.querySelectorAll('.dashboard-tab[data-tab]'));
+          if (!tabs.length) return;
+
+          function setActive(tabId) {
+            // Tabs
+            tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === tabId));
+
+            // Panels
+            const panels = Array.from(panelRoot.querySelectorAll('.dashboard-tab-content'));
+            panels.forEach(p => p.classList.toggle('active', p.id === tabId));
+
+            // Optional URL update (admin only uses data-href)
+            const activeBtn = tabs.find(t => t.dataset.tab === tabId);
+            const href = activeBtn && activeBtn.dataset.href;
+            if (href && window.history && window.history.replaceState) {
+              window.history.replaceState({}, '', href);
+            }
+          }
+
+          // Click handler
+          tabs.forEach(btn => {
+            btn.addEventListener('click', () => {
+              const tabId = btn.dataset.tab;
+              setActive(tabId);
+            });
+          });
+
+          // Ensure something is active on load (prevents "blank" state)
+          const preActive = tabs.find(t => t.classList.contains('active')) || tabs[0];
+          if (preActive) setActive(preActive.dataset.tab);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+          initTabs('admin');
+          initTabs('leader');
+        });
+      })();
+    </script>
+
+    {{!-- =========================================================
+         LEADER "MARK SEEN" SCRIPT (leader mode only)
+         - safe: only binds if leader tab buttons exist
+    ========================================================= --}}
+    {{#unless adminMode}}
       <script>
         async function markSeenLeader(tab, count) {
           try {
@@ -287,25 +335,22 @@
           } catch (e) { /* no-op */ }
         }
 
-        document.querySelectorAll('.dashboard-tab[data-tab]').forEach(btn => {
-          btn.addEventListener('click', () => {
-            const tab = btn.dataset.tab;
-            const count = btn.dataset.count || 0;
+        document.addEventListener('DOMContentLoaded', () => {
+          document.querySelectorAll('[data-tabs-scope="leader"] .dashboard-tab[data-tab]').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const tab = btn.dataset.tab;
+              const count = btn.dataset.count || 0;
 
-            if (['group','topics','prompts','progress','library','tagged','missions'].includes(tab)) {
-              markSeenLeader(tab, count);
-              const dot = btn.querySelector('.tab-dot');
-              if (dot) dot.style.display = 'none';
-            }
+              if (['group','topics','prompts','progress','library','tagged','missions'].includes(tab)) {
+                markSeenLeader(tab, count);
+                const dot = btn.querySelector('.tab-dot');
+                if (dot) dot.style.display = 'none';
+              }
+            });
           });
         });
       </script>
-
-    {{/if}}
+    {{/unless}}
 
   </div>
 </div>
-
-
-
-

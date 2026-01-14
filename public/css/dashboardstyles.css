@@ -575,6 +575,7 @@ html, body {
 
 .dashboard-tab-content {
   display: none;
+  
 }
 
 .dashboard-tab-content.active {
