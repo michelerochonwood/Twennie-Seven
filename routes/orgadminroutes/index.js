@@ -6,7 +6,7 @@ const ensureAuthenticated = require('../../middleware/ensureAuthenticated');
 const requireOrgAdmin = require('../../middleware/requireOrgAdmin');
 
 // Controller (we’ll create next)
-const leaderOrgAdminController = require('../../controllers/leaderOrgAdminController');
+const leaderOrgAdminController = require('../../controllers/orgadminController');
 
 // Base: /dashboard/leader/org-admin
 
