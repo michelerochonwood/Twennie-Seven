@@ -660,6 +660,9 @@ const userData = await Leader.findById(id)
     'organizationOptOut',
     'organizationName',
 
+    +   // ✅ org admin flag
++   'isAdmin',
+
     'topics',
     'members',
 

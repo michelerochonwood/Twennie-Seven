@@ -6,19 +6,12 @@ const leaderDashboardController = require('../../controllers/leaderdashboardCont
 const DashboardSeen = require('../../models/dashboard_seen');
 
 // --- Auth gate ---
-const isAuthenticated = (req, res, next) => {
-  if (req.session?.user) {
-    console.log(`User authenticated: ${req.session.user.username}`);
-    return next();
-  }
-  console.warn('Access denied. Redirecting to login.');
-  return res.redirect('/auth/login');
-};
+const ensureAuthenticated = require('../../middleware/ensureAuthenticated');
 
 // ------------------------------------------------------------
 // ✅ GET /dashboard/leader/organization/success
 // ------------------------------------------------------------
-router.get('/organization/success', isAuthenticated, async (req, res, next) => {
+router.get('/organization/success', ensureAuthenticated, async (req, res, next) => {
   try {
     return leaderDashboardController.organizationSuccess(req, res);
   } catch (err) {
@@ -28,7 +21,7 @@ router.get('/organization/success', isAuthenticated, async (req, res, next) => {
 });
 
 // --- GET /dashboard/leader ---
-router.get('/', isAuthenticated, async (req, res, next) => {
+router.get('/', ensureAuthenticated, async (req, res, next) => {
   try {
     const dashboardData = await leaderDashboardController.renderLeaderDashboard(req, res);
 
@@ -49,7 +42,7 @@ router.get('/', isAuthenticated, async (req, res, next) => {
 });
 
 // --- POST /dashboard/leader/account/details ---
-router.post('/account/details', isAuthenticated, async (req, res, next) => {
+router.post('/account/details', ensureAuthenticated, async (req, res, next) => {
   try {
     await leaderDashboardController.updateAccountDetails(req, res);
   } catch (err) {
@@ -59,7 +52,7 @@ router.post('/account/details', isAuthenticated, async (req, res, next) => {
 });
 
 // --- POST /dashboard/leader/account/email-preferences ---
-router.post('/account/email-preferences', isAuthenticated, async (req, res, next) => {
+router.post('/account/email-preferences', ensureAuthenticated, async (req, res, next) => {
   try {
     await leaderDashboardController.updateEmailPreferences(req, res);
   } catch (err) {
@@ -70,7 +63,7 @@ router.post('/account/email-preferences', isAuthenticated, async (req, res, next
 
 // --- POST /dashboard/leader/mark-seen ---
 // Persist "last seen" count for a tab so green dots only show on increases
-router.post('/mark-seen', isAuthenticated, async (req, res) => {
+router.post('/mark-seen', ensureAuthenticated, async (req, res) => {
   try {
     const rawId = req.session?.user?.id || req.user?._id;
     if (!rawId) {
@@ -113,7 +106,7 @@ router.post('/mark-seen', isAuthenticated, async (req, res) => {
   }
 });
 
-router.get('/organization/search', isAuthenticated, async (req, res, next) => {
+router.get('/organization/search', ensureAuthenticated, async (req, res, next) => {
   try {
     return await leaderDashboardController.searchOrganizations(req, res);
   } catch (err) {
@@ -125,7 +118,7 @@ router.get('/organization/search', isAuthenticated, async (req, res, next) => {
 // ✅ POST /dashboard/leader/organization/join
 // Join an existing organization (domain verified)
 // ------------------------------------------------------------
-router.post('/organization/join', isAuthenticated, async (req, res, next) => {
+router.post('/organization/join', ensureAuthenticated, async (req, res, next) => {
   try {
     return await leaderDashboardController.joinOrganizationByDomain(req, res);
   } catch (err) {
@@ -138,7 +131,7 @@ router.post('/organization/join', isAuthenticated, async (req, res, next) => {
 // ✅ POST /dashboard/leader/organization/request-join
 // Request to join an organization (approval flow)
 // ------------------------------------------------------------
-router.post('/organization/request-join', isAuthenticated, async (req, res, next) => {
+router.post('/organization/request-join', ensureAuthenticated, async (req, res, next) => {
   try {
     return await leaderDashboardController.requestJoinOrganization(req, res);
   } catch (err) {
