@@ -9,6 +9,87 @@
   <!-- Main Content (Right) -->
   <div class="dashboard-main has-right-rail">
 
+
+{{!-- =========================================================
+     ORG ADMIN TABS + CONTENT (ADMIN ONLY)
+     This block must sit ABOVE the leader tab navigation
+========================================================= --}}
+{{#if isOrgAdmin}}
+
+  {{!-- Admin Tab Navigation --}}
+  <div class="dashboard-tabs-container dashboard-tabs-container--admin">
+
+    <a class="dashboard-tab {{#if (eq adminTab "my-organization")}}active{{/if}}"
+       href="/dashboard/leader/org-admin/my-organization">
+      <span class="tab-title">my organization</span>
+      <div class="tab-arrow"></div>
+    </a>
+
+    <a class="dashboard-tab {{#if (eq adminTab "groups-leaders")}}active{{/if}}"
+       href="/dashboard/leader/org-admin/groups-leaders">
+      <span class="tab-title">my groups and leaders</span>
+      <div class="tab-arrow"></div>
+    </a>
+
+    <a class="dashboard-tab {{#if (eq adminTab "requests")}}active{{/if}}"
+       href="/dashboard/leader/org-admin/requests">
+      <span class="tab-title">requests to join</span>
+      <div class="tab-arrow"></div>
+    </a>
+
+    <a class="dashboard-tab {{#if (eq adminTab "suggestions")}}active{{/if}}"
+       href="/dashboard/leader/org-admin/suggestions">
+      <span class="tab-title">learning suggestions</span>
+      <div class="tab-arrow"></div>
+    </a>
+
+    <a class="dashboard-tab {{#if (eq adminTab "company-library")}}active{{/if}}"
+       href="/dashboard/leader/org-admin/company-library">
+      <span class="tab-title">company library units</span>
+      <div class="tab-arrow"></div>
+    </a>
+
+    <a class="dashboard-tab {{#if (eq adminTab "reports")}}active{{/if}}"
+       href="/dashboard/leader/org-admin/reports">
+      <span class="tab-title">organization reports</span>
+      <div class="tab-arrow"></div>
+    </a>
+
+  </div>
+
+  {{!-- Admin Tab Content (renders ABOVE leader tab content) --}}
+  {{#if adminTab}}
+    <div class="leader-admin-panel">
+
+      {{#if (eq adminTab "my-organization")}}
+        {{> dashboardpartials/admin_myorganization }}
+      {{/if}}
+
+      {{#if (eq adminTab "groups-leaders")}}
+        {{> dashboardpartials/admin_groupsleaders }}
+      {{/if}}
+
+      {{#if (eq adminTab "requests")}}
+        {{> dashboardpartials/admin_requests }}
+      {{/if}}
+
+      {{#if (eq adminTab "suggestions")}}
+        {{> dashboardpartials/admin_suggestions }}
+      {{/if}}
+
+      {{#if (eq adminTab "company-library")}}
+        {{> dashboardpartials/admin_companylibrary }}
+      {{/if}}
+
+      {{#if (eq adminTab "reports")}}
+        {{> dashboardpartials/admin_reports }}
+      {{/if}}
+
+    </div>
+  {{/if}}
+
+{{/if}}
+
     <!-- Tab Navigation -->
     <div class="dashboard-tabs-container">
       <!-- 1) Membership overview -->

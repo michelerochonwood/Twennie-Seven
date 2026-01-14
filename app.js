@@ -477,7 +477,11 @@ if (process.env.MONGO_URI) {
 app.use('/', require('./routes/promoroutes/promoroutes'));
 app.use('/member', require('./routes/memberroutes'));
 app.use('/member/group', require('./routes/groupmemberroutes'));
+
+
 app.use('/dashboard/leader', require('./routes/leaderdashboardroutes'));
+app.use('/dashboard/leader/org-admin', require('./routes/orgadminroutes'));
+
 app.use('/dashboard/groupmember', require('./routes/groupmemberdashboardroutes'));
 app.use('/dashboard/group_member', require('./routes/groupmemberdashboardroutes'));
 app.use('/dashboard/member', require('./routes/memberdashboardroutes'));
@@ -506,6 +510,7 @@ app.use('/dashboard', require('./routes/preferenceroutes'));
 app.use('/ui', require('./routes/uiroutes'));
 app.use('/', require('./routes/missionroutes'));
 app.use('/search', require('./routes/searchroutes'));
+
 
 
 

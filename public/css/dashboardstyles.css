@@ -2582,6 +2582,19 @@ html, body {
   margin-left: 20%;
 } */
 
+
+
+/* Make <a class="dashboard-tab"> look identical to <button class="dashboard-tab"> */
+.dashboard-tab {
+  text-decoration: none;
+  color: inherit;
+}
+
+
+.dashboard-tabs-container--admin {
+  margin-bottom: 10px;   /* slightly tighter gap */
+}
+
 .dashboard-tab { position: relative; }
 .tab-dot {
   position: absolute;

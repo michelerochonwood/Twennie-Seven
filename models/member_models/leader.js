@@ -54,6 +54,13 @@ organizationName: {
   maxlength: 120,
   default: ''
 },
+
+// --- Organization admin ---
+isAdmin: {
+  type: Boolean,
+  default: false
+},
+
   industry: {
     type: String,
     required: [true, 'Industry is required'],

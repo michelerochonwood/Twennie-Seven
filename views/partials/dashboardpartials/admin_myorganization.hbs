@@ -1,0 +1,121 @@
+<section class="leader-topics-container leader-admin-section">
+
+  <h2 class="leader-dashboard-subtitles">my organization</h2>
+
+  {{!-- Org Identity --}}
+  <div class="groupsection-org-card" style="margin: 0.75rem auto; max-width: 800px;">
+    <p class="groupsection-org-card-name" style="margin: 0;">
+      {{#if organization.name}}{{organization.name}}{{else}}(organization){{/if}}
+    </p>
+
+    <p class="groupsection-org-card-meta">
+      {{#if organization.industry}}
+        industry: {{organization.industry}}
+      {{else}}
+        industry: —
+      {{/if}}
+    </p>
+
+    {{!-- Optional: show when org was created / joined --}}
+    {{#if organization.createdAt}}
+      <p class="groupsection-org-card-meta">on twennie since {{formatDate organization.createdAt}}</p>
+    {{/if}}
+
+    <p class="groupsection-org-card-info" style="margin-top: 0.5rem;">
+      you are viewing this organization as an administrator.
+    </p>
+  </div>
+
+  {{!-- Snapshot Counts --}}
+  <div class="groupsection-org-grid" style="max-width: 800px; margin: 0.5rem auto 1.25rem auto;">
+    <div class="groupsection-org-card">
+      <p class="groupsection-org-card-name">{{counts.leaders}}</p>
+      <p class="groupsection-org-card-meta">leaders</p>
+    </div>
+
+    <div class="groupsection-org-card">
+      <p class="groupsection-org-card-name">{{counts.groups}}</p>
+      <p class="groupsection-org-card-meta">groups</p>
+    </div>
+
+    <div class="groupsection-org-card">
+      <p class="groupsection-org-card-name">{{counts.members}}</p>
+      <p class="groupsection-org-card-meta">members</p>
+    </div>
+
+    <div class="groupsection-org-card">
+      <p class="groupsection-org-card-name">{{counts.pendingJoinRequests}}</p>
+      <p class="groupsection-org-card-meta">join requests</p>
+    </div>
+
+    <div class="groupsection-org-card">
+      <p class="groupsection-org-card-name">{{counts.pendingLibrarySubmissions}}</p>
+      <p class="groupsection-org-card-meta">library submissions</p>
+    </div>
+  </div>
+
+  {{!-- What admins can do (quick links) --}}
+  <div class="groupsection-org-card" style="margin: 0 auto 1.25rem auto; max-width: 800px; text-align: left;">
+    <p class="leader-membership-access-title" style="margin: 0 0 0.5rem 0;">admin actions</p>
+
+    <ul class="group-preference-list">
+      <li>
+        view all leaders and groups
+        <a class="groupsection-org-card-button" href="/dashboard/leader/org-admin/groups-leaders">open</a>
+      </li>
+      <li>
+        review and approve join requests
+        <a class="groupsection-org-card-button" href="/dashboard/leader/org-admin/requests">open</a>
+      </li>
+      <li>
+        suggest learning to all leaders (not assignments)
+        <a class="groupsection-org-card-button" href="/dashboard/leader/org-admin/suggestions">open</a>
+      </li>
+      <li>
+        approve company library submissions
+        <a class="groupsection-org-card-button" href="/dashboard/leader/org-admin/company-library">open</a>
+      </li>
+      <li>
+        view organization learning report (by team)
+        <a class="groupsection-org-card-button" href="/dashboard/leader/org-admin/reports">open</a>
+      </li>
+    </ul>
+  </div>
+
+  {{!-- Learning footprint (light) --}}
+  <div class="groupsection-org-card" style="margin: 0 auto 1.25rem auto; max-width: 800px;">
+    <p class="leader-membership-access-title" style="margin: 0 0 0.5rem 0;">learning footprint (last 30 days)</p>
+
+    <div class="groupsection-org-grid" style="margin-top: 0.5rem;">
+      <div class="groupsection-org-card">
+        <p class="groupsection-org-card-name">{{learningFootprint.activeLearners}}</p>
+        <p class="groupsection-org-card-meta">active learners</p>
+      </div>
+
+      <div class="groupsection-org-card">
+        <p class="groupsection-org-card-name">{{learningFootprint.unitsCompleted}}</p>
+        <p class="groupsection-org-card-meta">units completed</p>
+      </div>
+
+      <div class="groupsection-org-card">
+        <p class="groupsection-org-card-name">{{learningFootprint.promptSetsCompleted}}</p>
+        <p class="groupsection-org-card-meta">prompt sets completed</p>
+      </div>
+
+      <div class="groupsection-org-card">
+        <p class="groupsection-org-card-name">{{learningFootprint.avgCompletionsPerLearner}}</p>
+        <p class="groupsection-org-card-meta">avg / learner</p>
+      </div>
+
+      <div class="groupsection-org-card">
+        <p class="groupsection-org-card-name">{{learningFootprint.topUnitType}}</p>
+        <p class="groupsection-org-card-meta">top unit type</p>
+      </div>
+    </div>
+
+    <p class="groupsection-org-card-info" style="margin-top: 0.75rem;">
+      this is a light snapshot. the full comparison report lives in “organization reports.”
+    </p>
+  </div>
+
+</section>
