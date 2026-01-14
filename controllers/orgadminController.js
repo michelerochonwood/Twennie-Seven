@@ -1,18 +1,9 @@
-// controllers/leaderOrgAdminController.js
-
-/**
- * Org Admin Controller
- * --------------------
- * Stub-only controller for org admin dashboard tabs.
- * All routes render the existing leader dashboard view
- * with an adminTab flag so the UI can switch content.
- */
+// controllers/orgadminController.js
 
 const mongoose = require('mongoose');
 
 const Leader = require('../models/member_models/leader');
-const Organization = require('../models/member_models/organization'); // adjust path if your org model lives elsewhere
-
+const Organization = require('../models/member_models/organization');
 
 function safeNumber(n) {
   const v = Number(n);
@@ -36,17 +27,13 @@ async function buildOrgSnapshot(orgId) {
     };
   }
 
-  // Leaders in org (exclude opted out just in case)
   const leaderFilter = { organization: orgId, organizationOptOut: { $ne: true } };
 
   const leadersCount = await Leader.countDocuments(leaderFilter);
 
-  // "Groups" — best-available proxy without a separate Group model:
-  // count distinct groupName values among leaders in this org
   const distinctGroupNames = await Leader.distinct('groupName', leaderFilter);
   const groupsCount = distinctGroupNames?.filter(Boolean).length || 0;
 
-  // Members count — sum lengths of leader.members arrays (no GroupMember model needed)
   const membersAgg = await Leader.aggregate([
     { $match: { ...leaderFilter, members: { $exists: true } } },
     { $project: { memberCount: { $size: { $ifNull: ['$members', []] } } } },
@@ -55,7 +42,6 @@ async function buildOrgSnapshot(orgId) {
 
   const membersCount = membersAgg?.[0]?.total || 0;
 
-  // Pending counts + learning footprint: stub to 0 until we wire models
   const counts = {
     leaders: safeNumber(leadersCount),
     groups: safeNumber(groupsCount),
@@ -75,83 +61,74 @@ async function buildOrgSnapshot(orgId) {
   return { organization, counts, learningFootprint };
 }
 
-
+function baseRenderData(req) {
+  return {
+    layout: 'dashboardlayout',
+    title: 'Leader Dashboard',
+    leader: req.user,
+    isOrgAdmin: true,
+    leaderCounts: {},
+    leaderBadges: {},
+    registeredPromptSets: [],
+    assignedPromptCards: [],
+    csrfToken: req.csrfToken ? req.csrfToken() : null
+  };
+}
 
 const leaderOrgAdminController = {
 
-async myOrganization(req, res, next) {
-  try {
-    const orgIdRaw = req.user?.organization;
-    if (!orgIdRaw) {
-      // should be prevented by requireOrgAdmin, but keep it safe
-      return res.redirect('/dashboard/leader');
+  async myOrganization(req, res, next) {
+    try {
+      const orgIdRaw = req.user?.organization;
+      if (!orgIdRaw) return res.redirect('/dashboard/leader');
+
+      const orgId = new mongoose.Types.ObjectId(String(orgIdRaw));
+      const { organization, counts, learningFootprint } = await buildOrgSnapshot(orgId);
+
+      return res.render('leader_dashboard', {
+        ...baseRenderData(req),
+        adminTab: 'my-organization',
+        organization,
+        counts,
+        learningFootprint
+      });
+    } catch (err) {
+      console.error('Org admin myOrganization error:', err);
+      return next(err);
     }
-
-    const orgId = new mongoose.Types.ObjectId(String(orgIdRaw));
-
-    const { organization, counts, learningFootprint } = await buildOrgSnapshot(orgId);
-
-    // Provide safe defaults so existing leader dashboard partials don’t crash
-    return res.render('dashboards/leader_dashboard', {
-      leader: req.user,
-      isOrgAdmin: true,
-      adminTab: 'my-organization',
-
-      // ✅ admin_myorganization.hbs expects these:
-      organization,
-      counts,
-      learningFootprint,
-
-      // ✅ safe defaults for leader dashboard template references:
-      leaderCounts: {},
-      leaderBadges: {},
-      registeredPromptSets: [],
-      assignedPromptCards: [],
-      csrfToken: req.csrfToken ? req.csrfToken() : null
-    });
-  } catch (err) {
-    console.error('Org admin myOrganization error:', err);
-    return next(err);
-  }
-},
-
+  },
 
   groupsLeaders(req, res) {
-    return res.render('dashboards/leader_dashboard', {
-      leader: req.user,
-      isOrgAdmin: true,
+    return res.render('leader_dashboard', {
+      ...baseRenderData(req),
       adminTab: 'groups-leaders'
     });
   },
 
   requests(req, res) {
-    return res.render('dashboards/leader_dashboard', {
-      leader: req.user,
-      isOrgAdmin: true,
+    return res.render('leader_dashboard', {
+      ...baseRenderData(req),
       adminTab: 'requests'
     });
   },
 
   suggestions(req, res) {
-    return res.render('dashboards/leader_dashboard', {
-      leader: req.user,
-      isOrgAdmin: true,
+    return res.render('leader_dashboard', {
+      ...baseRenderData(req),
       adminTab: 'suggestions'
     });
   },
 
   companyLibrary(req, res) {
-    return res.render('dashboards/leader_dashboard', {
-      leader: req.user,
-      isOrgAdmin: true,
+    return res.render('leader_dashboard', {
+      ...baseRenderData(req),
       adminTab: 'company-library'
     });
   },
 
   reports(req, res) {
-    return res.render('dashboards/leader_dashboard', {
-      leader: req.user,
-      isOrgAdmin: true,
+    return res.render('leader_dashboard', {
+      ...baseRenderData(req),
       adminTab: 'reports'
     });
   }
@@ -159,3 +136,4 @@ async myOrganization(req, res, next) {
 };
 
 module.exports = leaderOrgAdminController;
+
