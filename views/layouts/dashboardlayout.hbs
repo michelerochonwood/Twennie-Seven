@@ -1,77 +1,58 @@
-<!DOCTYPE html>
-<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  {{!-- Dynamic Page Title --}}
   <title>{{#if title}}{{title}} - Twennie Dashboard{{else}}Twennie Dashboard{{/if}}</title>
 
-  {{!-- Keep fonts as-is; just make sure they render immediately when ready --}}
-  {{!-- Replace /fonts/YourFont*.woff2 with your actual files (or remove this block if you use system fonts) --}}
-  <link rel="preconnect" href="https://www.twennie.com" crossorigin>
-  <link rel="preload" href="/fonts/YourFont-Regular.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/fonts/YourFont-Bold.woff2" as="font" type="font/woff2" crossorigin>
-  <style>
-    @font-face {
-      font-family: "YourFont";
-      src: url("/fonts/YourFont-Regular.woff2") format("woff2");
-      font-weight: 400;
-      font-style: normal;
-      font-display: swap; /* prevents invisible text while fonts load */
-    }
-    @font-face {
-      font-family: "YourFont";
-      src: url("/fonts/YourFont-Bold.woff2") format("woff2");
-      font-weight: 700;
-      font-style: normal;
-      font-display: swap;
-    }
-    /* Minimal paint so content isn't naked; no font or color opinion */
-    body { margin:0; }
-    /* Hide custom elements until defined (prevents icon pop-in) */
-    ion-icon:not(:defined){ visibility: hidden; }
-    /* Prevent janky fades/slides during first paint */
-    .no-transitions * { transition: none !important; }
-  </style>
-  
-  {{!-- views/shared/consent_analytics.hbs --}}
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){ dataLayer.push(arguments); }
+  {{!-- (Optional) FOUC blocker: uncomment if needed --}}
+  {{!-- <style>html.fouc body{visibility:hidden;}</style>
+  <script>document.documentElement.classList.add('fouc');</script> --}}
 
-  gtag('consent', 'default', {
-    security_storage: 'granted',
-    functionality_storage: {{#if consent.functional}}"granted"{{else}}"denied"{{/if}},
-    analytics_storage:    {{#if consent.analytics}}"granted"{{else}}"denied"{{/if}},
-    ad_storage:           "denied",
-    ad_user_data:         "denied",
-    ad_personalization:   "denied"
-  });
-</script>
-
-{{#if consent.analytics}}
-  <script async src="https://www.googletagmanager.com/gtag/js?id={{GA_ID}}"></script>
+  {{!-- Consent + Analytics --}}
   <script>
-    gtag('js', new Date());
-    gtag('config', '{{GA_ID}}');
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+
+    gtag('consent', 'default', {
+      security_storage: 'granted',
+      functionality_storage: {{#if consent.functional}}"granted"{{else}}"denied"{{/if}},
+      analytics_storage:    {{#if consent.analytics}}"granted"{{else}}"denied"{{/if}},
+      ad_storage:           "denied",
+      ad_user_data:         "denied",
+      ad_personalization:   "denied"
+    });
   </script>
-{{/if}}
 
+  {{#if consent.analytics}}
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{GA_ID}}"></script>
+    <script>
+      gtag('js', new Date());
+      gtag('config', '{{GA_ID}}');
+    </script>
+  {{/if}}
 
-  {{!-- Navigation Styles --}}
-  <link rel="stylesheet" href="https://www.twennie.com/css/navigation.css?v={{timestamp}}">
+  {{!-- CSS (local + preloaded to reduce FOUC) --}}
+  <link rel="preload" href="/css/navigation.css?v={{timestamp}}" as="style">
+  <link rel="stylesheet" href="/css/navigation.css?v={{timestamp}}">
 
-  <!-- Dashboard Styles -->
-  <link rel="stylesheet" href="https://www.twennie.com/css/dashboardstyles.css?v={{timestamp}}">
+  <link rel="preload" href="/css/dashboardstyles.css?v={{timestamp}}" as="style">
+  <link rel="stylesheet" href="/css/dashboardstyles.css?v={{timestamp}}">
 
   {{!-- Mobile Navigation Script --}}
   <script src="/javascript/mobile-nav.js?v={{timestamp}}" defer></script>
 
-  <!-- Ionicons Library -->
+  {{!-- Ionicons --}}
   <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+  {{!-- (Optional) FOUC blocker end: uncomment if needed --}}
+  {{!-- <script>
+    window.addEventListener('load', () => {
+      document.documentElement.classList.remove('fouc');
+    });
+  </script> --}}
 </head>
+
 
 <body class="dashboard-body" style="margin-bottom: 200px">
   {{> mainpartials/header}}
