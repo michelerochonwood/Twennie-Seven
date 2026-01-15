@@ -24,6 +24,7 @@ const Nugget = require('../models/unit_models/nugget'); // ✅ NEW
 const Mission = require('../models/unit_models/mission'); // ✅ NEW
 const OrganizationJoinRequest = require('../models/member_models/organization_join_request');
 const Organization = require('../models/member_models/organization');
+const mongoose = require('mongoose');
 
 
 
