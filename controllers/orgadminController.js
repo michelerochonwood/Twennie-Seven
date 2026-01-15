@@ -186,69 +186,75 @@ return res.render('leader_dashboard', {
   },
 
   // ADMIN: Approve a join request
-  async approveJoinRequest(req, res) {
-    try {
-      const adminId = req.user?._id;
-      const { requestId } = req.params;
+// ADMIN: Approve a join request
+async approveJoinRequest(req, res) {
+  const back = '/dashboard/leader/org-admin/my-organization';
 
-      const jr = await OrganizationJoinRequest.findById(requestId);
-      if (!jr) return res.redirect('/dashboard/leader/admin?msg=req-not-found');
-      if (jr.status !== 'pending') return res.redirect('/dashboard/leader/admin?msg=req-not-pending');
+  try {
+    const adminId = req.user?._id;
+    const { requestId } = req.params;
 
-      const leader = await Leader.findById(jr.leader);
-      if (!leader) return res.redirect('/dashboard/leader/admin?msg=leader-not-found');
+    const jr = await OrganizationJoinRequest.findById(requestId);
+    if (!jr) return res.redirect(`${back}?msg=req-not-found`);
+    if (jr.status !== 'pending') return res.redirect(`${back}?msg=req-not-pending`);
 
-      // Attach org to leader
-      leader.organization = jr.organization;
-      leader.organizationOptOut = false;
+    const leader = await Leader.findById(jr.leader);
+    if (!leader) return res.redirect(`${back}?msg=leader-not-found`);
 
-      const org = await Organization.findById(jr.organization).select('name').lean();
-      if (org?.name) leader.organizationName = org.name;
+    // Attach org to leader
+    leader.organization = jr.organization;
+    leader.organizationOptOut = false;
 
-      await leader.save();
+    const org = await Organization.findById(jr.organization).select('name').lean();
+    if (org?.name) leader.organizationName = org.name;
 
-      // Keep group profile in sync (best-effort)
-      await GroupProfile.updateOne(
-        { groupId: leader._id },
-        { $set: { organization: jr.organization } }
-      );
+    await leader.save();
 
-      // Mark request approved
-      jr.status = 'approved';
-      jr.reviewedAt = new Date();
-      jr.reviewedBy = adminId;
-      jr.note = String(req.body.note || '').trim();
-      await jr.save();
+    // Keep group profile in sync (best-effort)
+    await GroupProfile.updateOne(
+      { groupId: leader._id },
+      { $set: { organization: jr.organization } }
+    );
 
-      return res.redirect('/dashboard/leader/admin?msg=approved');
-    } catch (err) {
-      console.error('approveJoinRequest error:', err);
-      return res.redirect('/dashboard/leader/admin?msg=approve-error');
-    }
-  },
+    // Mark request approved
+    jr.status = 'approved';
+    jr.reviewedAt = new Date();
+    jr.reviewedBy = adminId;
+    jr.note = String(req.body.note || '').trim();
+    await jr.save();
 
-  // ADMIN: Reject a join request
-  async rejectJoinRequest(req, res) {
-    try {
-      const adminId = req.user?._id;
-      const { requestId } = req.params;
+    return res.redirect(`${back}?msg=approved`);
+  } catch (err) {
+    console.error('approveJoinRequest error:', err);
+    return res.redirect(`${back}?msg=approve-error`);
+  }
+},
 
-      const jr = await OrganizationJoinRequest.findById(requestId);
-      if (!jr) return res.redirect('/dashboard/leader/admin?msg=req-not-found');
-      if (jr.status !== 'pending') return res.redirect('/dashboard/leader/admin?msg=req-not-pending');
+// ADMIN: Reject a join request
+async rejectJoinRequest(req, res) {
+  const back = '/dashboard/leader/org-admin/my-organization';
 
-      jr.status = 'rejected';
-      jr.reviewedAt = new Date();
-      jr.reviewedBy = adminId;
-      jr.note = String(req.body.note || '').trim();
-      await jr.save();
+  try {
+    const adminId = req.user?._id;
+    const { requestId } = req.params;
 
-      return res.redirect('/dashboard/leader/admin?msg=rejected');
-    } catch (err) {
-      console.error('rejectJoinRequest error:', err);
-      return res.redirect('/dashboard/leader/admin?msg=reject-error');
-    }
-  },
+    const jr = await OrganizationJoinRequest.findById(requestId);
+    if (!jr) return res.redirect(`${back}?msg=req-not-found`);
+    if (jr.status !== 'pending') return res.redirect(`${back}?msg=req-not-pending`);
+
+    jr.status = 'rejected';
+    jr.reviewedAt = new Date();
+    jr.reviewedBy = adminId;
+    jr.note = String(req.body.note || '').trim();
+    await jr.save();
+
+    return res.redirect(`${back}?msg=rejected`);
+  } catch (err) {
+    console.error('rejectJoinRequest error:', err);
+    return res.redirect(`${back}?msg=reject-error`);
+  }
+},
+
 
   // The remaining admin tabs can render without extra data for now
   requests(req, res) {

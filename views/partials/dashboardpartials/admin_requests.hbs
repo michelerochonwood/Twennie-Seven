@@ -1,40 +1,82 @@
-<h2>organization join requests ({{orgSnapshot.counts.pendingJoinRequests}})</h2>
+<h2 class="orgadmin-title">
+  organization join requests ({{orgSnapshot.counts.pendingJoinRequests}})
+</h2>
 
 {{#if orgSnapshot.pendingJoinRequestsList.length}}
-  {{#each orgSnapshot.pendingJoinRequestsList}}
-    <div class="admin-request-card">
-      <div>
-        <strong>{{this.leader.groupLeaderName}}</strong>
-        <div class="muted">{{this.leader.groupLeaderEmail}}</div>
-      </div>
+  <div class="orgadmin-gl-grid">
+    {{#each orgSnapshot.pendingJoinRequestsList}}
+      <div class="orgadmin-gl-card admin-request-card">
 
-      <div class="admin-request-actions" style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center; margin-top:0.75rem;">
-        {{!-- APPROVE --}}
-        <form method="POST" action="/dashboard/leader/org-admin/join-requests/{{this._id}}/approve" style="display:flex; gap:0.5rem; align-items:center;">
-          {{#if ../csrfToken}}<input type="hidden" name="_csrf" value="{{../csrfToken}}">{{/if}}
-          <input
-            type="text"
-            name="note"
-            placeholder="note (optional)"
-            style="min-width:220px;"
-          >
-          <button type="submit">approve</button>
-        </form>
+        {{!-- Leader identity --}}
+        <div class="orgadmin-gl-info">
+          <h3 class="orgadmin-gl-groupname">
+            {{this.leader.groupLeaderName}}
+          </h3>
+          <p class="orgadmin-gl-meta muted">
+            {{this.leader.groupLeaderEmail}}
+          </p>
+        </div>
 
-        {{!-- REJECT --}}
-        <form method="POST" action="/dashboard/leader/org-admin/join-requests/{{this._id}}/reject" style="display:flex; gap:0.5rem; align-items:center;">
-          {{#if ../csrfToken}}<input type="hidden" name="_csrf" value="{{../csrfToken}}">{{/if}}
-          <input
-            type="text"
-            name="note"
-            placeholder="note (optional)"
-            style="min-width:220px;"
+        {{!-- Actions --}}
+        <div class="orgadmin-gl-actions admin-request-actions">
+
+          {{!-- APPROVE --}}
+          <form
+            method="POST"
+            action="/dashboard/leader/org-admin/join-requests/{{this._id}}/approve"
+            class="admin-request-form"
           >
-          <button type="submit" class="danger">reject</button>
-        </form>
+            {{#if ../csrfToken}}
+              <input type="hidden" name="_csrf" value="{{../csrfToken}}">
+            {{/if}}
+
+            <input
+              type="text"
+              name="note"
+              placeholder="approval note (optional)"
+              class="admin-request-note"
+            >
+
+            <button
+              type="submit"
+              class="orgadmin-gl-btn orgadmin-gl-btn--primary"
+            >
+              approve
+            </button>
+          </form>
+
+          {{!-- REJECT --}}
+          <form
+            method="POST"
+            action="/dashboard/leader/org-admin/join-requests/{{this._id}}/reject"
+            class="admin-request-form"
+          >
+            {{#if ../csrfToken}}
+              <input type="hidden" name="_csrf" value="{{../csrfToken}}">
+            {{/if}}
+
+            <input
+              type="text"
+              name="note"
+              placeholder="rejection note (optional)"
+              class="admin-request-note"
+            >
+
+            <button
+              type="submit"
+              class="orgadmin-gl-btn orgadmin-gl-btn--danger"
+            >
+              reject
+            </button>
+          </form>
+
+        </div>
       </div>
-    </div>
-  {{/each}}
+    {{/each}}
+  </div>
 {{else}}
-  <p class="muted">no pending requests</p>
+  <p class="muted" style="text-align:center;">
+    no pending requests
+  </p>
 {{/if}}
+

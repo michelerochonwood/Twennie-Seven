@@ -5355,3 +5355,46 @@ box-shadow: none !important;
 .orgadmin-gl-btn--secondary {
   background: rgba(0,0,0,0.06);
 }
+
+
+/* --- Admin: Join Request Cards --- */
+
+.admin-request-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.admin-request-form {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.admin-request-note {
+  font-family: "Figtree";
+  font-size: 0.75rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid #ccc;
+  min-width: 200px;
+}
+
+/* Primary / danger variants (match brand) */
+.orgadmin-gl-btn--primary {
+  background: #262262;
+  color: #fff;
+}
+.orgadmin-gl-btn--primary:hover {
+  background: #4a4ab2;
+}
+
+.orgadmin-gl-btn--danger {
+  background: #dc176a;
+  color: #fff;
+}
+.orgadmin-gl-btn--danger:hover {
+  background: #b01453;
+}
+
