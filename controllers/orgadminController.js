@@ -1,7 +1,8 @@
 // controllers/orgadminController.js
 // Org Admin Controller (Admin Mode only)
-// Renders the SAME leader_dashboard view, but with adminMode=true so the view
-// shows admin tabs/content and hides leader tabs/content.
+// Renders the SAME leader_dashboard view, with adminMode=true.
+// IMPORTANT: We preload ALL admin-mode data on every admin route render
+// so admin tabs can switch client-side with no flash / missing data.
 
 const mongoose = require('mongoose');
 
@@ -10,7 +11,6 @@ const Organization = require('../models/member_models/organization');
 const OrganizationJoinRequest = require('../models/member_models/organization_join_request');
 const GroupProfile = require('../models/profile_models/group_profile');
 const LeaderProfile = require('../models/profile_models/leader_profile');
-
 
 // -----------------------------
 // Helpers
@@ -42,9 +42,11 @@ async function getOrgIdForAdmin(req) {
   const adminId = req.user?._id;
   if (!adminId) return null;
 
-  const admin = await Leader.findById(adminId).select('organization organizationOptOut isAdmin').lean();
-  if (!admin?.organization || admin.organizationOptOut === true) return null;
+  const admin = await Leader.findById(adminId)
+    .select('organization organizationOptOut isAdmin')
+    .lean();
 
+  if (!admin?.organization || admin.organizationOptOut === true) return null;
   return toObjectId(admin.organization);
 }
 
@@ -126,16 +128,19 @@ async function buildOrgGroupsLeaders(orgId) {
 
   const ids = leaders.map(l => l._id);
 
-  // Group images
-  const groupProfiles = await GroupProfile.find({ groupId: { $in: ids } })
-    .select('groupId groupImage')
-    .lean();
-  const groupImgByLeaderId = new Map(groupProfiles.map(p => [p.groupId.toString(), p.groupImage]));
+  const [groupProfiles, leaderProfiles] = await Promise.all([
+    // Group images
+    GroupProfile.find({ groupId: { $in: ids } })
+      .select('groupId groupImage')
+      .lean(),
 
-  // Leader profile images (true “leader avatar”)
-  const leaderProfiles = await LeaderProfile.find({ leaderId: { $in: ids } })
-    .select('leaderId profileImage')
-    .lean();
+    // Leader profile images (true “leader avatar”)
+    LeaderProfile.find({ leaderId: { $in: ids } })
+      .select('leaderId profileImage')
+      .lean()
+  ]);
+
+  const groupImgByLeaderId = new Map(groupProfiles.map(p => [p.groupId.toString(), p.groupImage]));
   const leaderImgByLeaderId = new Map(leaderProfiles.map(p => [p.leaderId.toString(), p.profileImage]));
 
   return leaders.map(l => {
@@ -145,16 +150,13 @@ async function buildOrgGroupsLeaders(orgId) {
       _id: l._id,
       groupName: l.groupName || 'Unnamed group',
       groupLeaderName: l.groupLeaderName || '—',
-
       leaderId: l._id,
 
-      // ✅ leader avatar comes from LeaderProfile first
       leaderImage:
         leaderImgByLeaderId.get(idStr) ||
         l.profileImage ||
         '/images/default-avatar.png',
 
-      // ✅ group avatar comes from GroupProfile
       groupImage:
         groupImgByLeaderId.get(idStr) ||
         '/images/default-group.png',
@@ -164,23 +166,32 @@ async function buildOrgGroupsLeaders(orgId) {
   });
 }
 
+// Build all data needed for ALL admin tabs, every time (no flash, no missing vars)
+async function buildAdminPayload(orgId) {
+  const [orgSnapshot, orgGroups, organization] = await Promise.all([
+    buildOrgSnapshot(orgId),
+    buildOrgGroupsLeaders(orgId),
+    Organization.findById(orgId).select('name slug').lean()
+  ]);
+
+  return { orgSnapshot, orgGroups, organization };
+}
 
 // -----------------------------
 // Controller
 // -----------------------------
 const orgadminController = {
-  // ADMIN: My Organization snapshot
   async myOrganization(req, res, next) {
     try {
       const orgId = await getOrgIdForAdmin(req);
       if (!orgId) return res.redirect('/dashboard/leader');
 
-      const snapshot = await buildOrgSnapshot(orgId);
+      const payload = await buildAdminPayload(orgId);
 
       return res.render('leader_dashboard', {
         ...baseRenderData(req),
         adminTab: 'my-organization',
-        orgSnapshot: snapshot
+        ...payload
       });
     } catch (err) {
       console.error('Org admin myOrganization error:', err);
@@ -188,23 +199,92 @@ const orgadminController = {
     }
   },
 
-  // ADMIN: Groups & Leaders listing
   async groupsLeaders(req, res, next) {
     try {
       const orgId = await getOrgIdForAdmin(req);
       if (!orgId) return res.redirect('/dashboard/leader');
 
-      const organization = await Organization.findById(orgId).select('name slug').lean();
-      const orgGroups = await buildOrgGroupsLeaders(orgId);
+      const payload = await buildAdminPayload(orgId);
 
       return res.render('leader_dashboard', {
         ...baseRenderData(req),
         adminTab: 'groups-leaders',
-        organization,
-        orgGroups
+        ...payload
       });
     } catch (err) {
       console.error('Org admin groupsLeaders error:', err);
+      return next(err);
+    }
+  },
+
+  async requests(req, res, next) {
+    try {
+      const orgId = await getOrgIdForAdmin(req);
+      if (!orgId) return res.redirect('/dashboard/leader');
+
+      const payload = await buildAdminPayload(orgId);
+
+      return res.render('leader_dashboard', {
+        ...baseRenderData(req),
+        adminTab: 'requests',
+        ...payload
+      });
+    } catch (err) {
+      console.error('Org admin requests error:', err);
+      return next(err);
+    }
+  },
+
+  async suggestions(req, res, next) {
+    try {
+      const orgId = await getOrgIdForAdmin(req);
+      if (!orgId) return res.redirect('/dashboard/leader');
+
+      const payload = await buildAdminPayload(orgId);
+
+      return res.render('leader_dashboard', {
+        ...baseRenderData(req),
+        adminTab: 'suggestions',
+        ...payload
+      });
+    } catch (err) {
+      console.error('Org admin suggestions error:', err);
+      return next(err);
+    }
+  },
+
+  async companyLibrary(req, res, next) {
+    try {
+      const orgId = await getOrgIdForAdmin(req);
+      if (!orgId) return res.redirect('/dashboard/leader');
+
+      const payload = await buildAdminPayload(orgId);
+
+      return res.render('leader_dashboard', {
+        ...baseRenderData(req),
+        adminTab: 'company-library',
+        ...payload
+      });
+    } catch (err) {
+      console.error('Org admin companyLibrary error:', err);
+      return next(err);
+    }
+  },
+
+  async reports(req, res, next) {
+    try {
+      const orgId = await getOrgIdForAdmin(req);
+      if (!orgId) return res.redirect('/dashboard/leader');
+
+      const payload = await buildAdminPayload(orgId);
+
+      return res.render('leader_dashboard', {
+        ...baseRenderData(req),
+        adminTab: 'reports',
+        ...payload
+      });
+    } catch (err) {
+      console.error('Org admin reports error:', err);
       return next(err);
     }
   },
@@ -273,24 +353,8 @@ const orgadminController = {
       console.error('rejectJoinRequest error:', err);
       return res.redirect(`${back}?msg=reject-error`);
     }
-  },
-
-  // Remaining admin tabs
-  requests(req, res) {
-    return res.render('leader_dashboard', { ...baseRenderData(req), adminTab: 'requests' });
-  },
-
-  suggestions(req, res) {
-    return res.render('leader_dashboard', { ...baseRenderData(req), adminTab: 'suggestions' });
-  },
-
-  companyLibrary(req, res) {
-    return res.render('leader_dashboard', { ...baseRenderData(req), adminTab: 'company-library' });
-  },
-
-  reports(req, res) {
-    return res.render('leader_dashboard', { ...baseRenderData(req), adminTab: 'reports' });
   }
 };
 
 module.exports = orgadminController;
+
