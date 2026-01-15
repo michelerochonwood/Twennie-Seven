@@ -171,11 +171,28 @@ async function buildAdminPayload(orgId) {
   const [orgSnapshot, orgGroups, organization] = await Promise.all([
     buildOrgSnapshot(orgId),
     buildOrgGroupsLeaders(orgId),
-    Organization.findById(orgId).select('name slug').lean()
+    Organization.findById(orgId).select('name slug industry createdAt').lean()
   ]);
 
-  return { orgSnapshot, orgGroups, organization };
+  return {
+    // keep snapshot available if some partials use orgSnapshot.*
+    orgSnapshot,
+
+    // ✅ flatten for existing partials like admin_myorganization
+    counts: orgSnapshot?.counts || {
+      leaders: 0, groups: 0, members: 0, pendingJoinRequests: 0, pendingLibrarySubmissions: 0
+    },
+    learningFootprint: orgSnapshot?.learningFootprint || {
+      activeLearners: 0, unitsCompleted: 0, promptSetsCompleted: 0, avgCompletionsPerLearner: 0, topUnitType: '—'
+    },
+    pendingJoinRequestsList: orgSnapshot?.pendingJoinRequestsList || [],
+
+    // org identity + other admin tab data
+    organization,
+    orgGroups
+  };
 }
+
 
 // -----------------------------
 // Controller
