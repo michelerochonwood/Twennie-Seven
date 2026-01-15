@@ -595,6 +595,14 @@ function showSuccessMessage() {
   document.getElementById('assignSuccessMessage').classList.remove('hidden');
 }
 
+function toggleSuggestNoteField(checkbox) {
+  const leaderId = checkbox.value;
+  const selector = `textarea[name="suggestTo[${leaderId}][note]"]`;
+  const textarea = document.querySelector(selector);
+  if (textarea) textarea.style.display = checkbox.checked ? 'block' : 'none';
+}
+
+
 /* --------------------------------------------
    Validation before submit (assign form)
 ---------------------------------------------*/

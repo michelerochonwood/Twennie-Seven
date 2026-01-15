@@ -290,6 +290,48 @@
         </div>
       {{/if}}
 
+      {{!-- Admin: suggest this unit to org leaders --}}
+{{#if isOrgAdmin}}
+  <div class="assign-tag-form white-container" style="margin-top:1.25rem;">
+    <h4 class="assign-tag-title">Suggest this mission to organization leaders</h4>
+    <p class="groupsection-org-card-info" style="margin-top:0.25rem;">
+      Send a suggestion (with an optional note) to one or more leaders in your organization.
+    </p>
+
+    <form id="suggestMissionForm-{{_id}}" action="/org-suggestions/create" method="POST">
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+      <input type="hidden" name="unitId" value="{{_id}}">
+      <input type="hidden" name="unitType" value="mission">
+
+      <fieldset class="assign-tag-members">
+        <legend class="assign-tag-legend">Select leaders and optionally add a note:</legend>
+
+        {{#each orgLeaders}}
+          <div class="assign-tag-member-block">
+            <label class="assign-tag-member-label">
+              <input
+                type="checkbox"
+                name="suggestTo[{{_id}}][leader]"
+                value="{{_id}}"
+                onchange="toggleSuggestNoteField(this)">
+              {{groupLeaderName}}{{#if groupName}} — {{groupName}}{{/if}}
+            </label>
+
+            <textarea
+              class="assign-tag-instructions"
+              name="suggestTo[{{_id}}][note]"
+              placeholder="Optional note for {{groupLeaderName}}"
+              style="display:none;"></textarea>
+          </div>
+        {{/each}}
+      </fieldset>
+
+      <button type="submit" class="form-button submit-button">send suggestions</button>
+    </form>
+  </div>
+{{/if}}
+
+
       <!-- MEMBER / GROUP MEMBER: quick 'tag this mission' -->
       {{#if isGroupMemberOrMember}}
         <div class="single_unit-tag-container" style="margin-bottom:200px;">
@@ -456,6 +498,16 @@
       element.classList.toggle('open');
     }
   }
+
+  function toggleSuggestNoteField(checkbox) {
+  var leaderId = checkbox.value;
+  var selector = 'textarea[name="suggestTo[' + leaderId + '][note]"]';
+  var textarea = document.querySelector(selector);
+  if (textarea) {
+    textarea.style.display = checkbox.checked ? 'block' : 'none';
+  }
+}
+
 
   function toggleInstructionField(checkbox) {
     var memberId = checkbox.value;

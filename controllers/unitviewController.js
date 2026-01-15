@@ -49,6 +49,32 @@ async function resolveAuthorById(authorId) {
     };
   }
 
+  async function buildOrgLeaderListForAdmin(req) {
+  const userId = req.user?._id;
+  if (!userId) return { isOrgAdmin: false, orgLeaders: [] };
+
+  const admin = await Leader.findById(userId)
+    .select('organization organizationOptOut isAdmin')
+    .lean();
+
+  if (!admin?.isAdmin) return { isOrgAdmin: false, orgLeaders: [] };
+  if (!admin?.organization || admin.organizationOptOut === true) return { isOrgAdmin: false, orgLeaders: [] };
+
+  const orgId = admin.organization;
+
+  const orgLeaders = await Leader.find({
+    organization: orgId,
+    organizationOptOut: { $ne: true },
+    _id: { $ne: userId } // optional: don’t suggest to self
+  })
+    .select('_id groupLeaderName groupName')
+    .sort({ groupName: 1 })
+    .lean();
+
+  return { isOrgAdmin: true, orgLeaders };
+}
+
+
   // 2. Check group member profile
   profile = await GroupMemberProfile.findOne({ memberId: authorId }).select('profileImage name');
   if (profile) {
@@ -137,10 +163,7 @@ function getMissionBadgePath(category) {
 
 module.exports = {
 
-  // ---- The Mine: Clients list ----
-// ---- The Mine: Clients view (cards of nuggets; card title = client) ----
-// ---- The Mine: Clients view (cards of nuggets; card title = client) ----
-// ---- The Mine: Clients view (cards; card title = client) ----
+
 // ---- The Mine: Clients view (requires createdBy on every nugget) ----
 viewMineClients: async (req, res) => {
   try {
@@ -654,50 +677,56 @@ viewArticle: async (req, res) => {
 
     // 7) Image URL
     const articleImage = article.image?.url || '/images/default-article.png';
+    const adminSuggest = await buildOrgLeaderListForAdmin(req);
 
     // 8) Render
-    return res.render('unit_views/single_article', {
-      layout: 'unitviewlayout',
+// 8) Render
+return res.render('unit_views/single_article', {
+  layout: 'unitviewlayout',
 
-      // Unit identity & content
-      _id: article._id.toString(),
-      unitType: 'article',
-      article_title: article.article_title,
-      short_summary: article.short_summary,
-      full_summary: article.full_summary,
-      article_body: article.article_body,
-      article_image: articleImage,
+  // Unit identity & content
+  _id: article._id.toString(),
+  unitType: 'article',
+  article_title: article.article_title,
+  short_summary: article.short_summary,
+  full_summary: article.full_summary,
+  article_body: article.article_body,
+  article_image: articleImage,
 
-      // Author card
-      author: {
-        name: author.name || 'Unknown Author',
-        image: author.image || '/images/default-avatar.png',
-      },
+  // Author card
+  author: {
+    name: author.name || 'Unknown Author',
+    image: author.image || '/images/default-avatar.png',
+  },
 
-      // Topics
-      main_topic: article.main_topic,
-      secondary_topics: article.secondary_topics,
-      sub_topic: article.sub_topic,
+  // Topics
+  main_topic: article.main_topic,
+  secondary_topics: article.secondary_topics,
+  sub_topic: article.sub_topic,
 
-      // UX flags
-      word_count: wordCount,
-      isOwner,
-      isAuthorizedToViewFullContent,
-      isAuthenticated: !!req.user,
-      isLeader: currentMembership === 'leader',
-      isGroupMemberOrLeader:
-        currentMembership === 'leader' || currentMembership === 'group_member',
-      isGroupMemberOrMember:
-        currentMembership === 'group_member' || currentMembership === 'member',
+  // UX flags
+  word_count: wordCount,
+  isOwner,
+  isAuthorizedToViewFullContent,
+  isAuthenticated: !!req.user,
+  isLeader: currentMembership === 'leader',
+  isGroupMemberOrLeader:
+    currentMembership === 'leader' || currentMembership === 'group_member',
+  isGroupMemberOrMember:
+    currentMembership === 'group_member' || currentMembership === 'member',
 
-      // Leader-only assignment data (undefined if not leader → harmless in template)
-      groupMembers,
-      leaderId,
-      leaderName: leaderName || req.user?.username || 'You',
+  // ✅ Admin suggestion UI vars (top-level)
+  ...adminSuggest,
 
-      // CSRF for native form posts
-      csrfToken: req.csrfToken(),
-    });
+  // Leader-only assignment data
+  groupMembers,
+  leaderId,
+  leaderName: leaderName || req.user?.username || 'You',
+
+  // CSRF for native form posts
+  csrfToken: req.csrfToken(),
+});
+
 
   } catch (err) {
     console.error('💥 Error fetching article:', err.stack || err.message);
