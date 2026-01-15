@@ -5279,9 +5279,10 @@ box-shadow: none !important;
 
 .orgadmin-gl-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(2, minmax(280px, 1fr));
   gap: 1rem;
 }
+
 
 .orgadmin-gl-card {
   background: #fff;
@@ -5396,5 +5397,11 @@ box-shadow: none !important;
 }
 .orgadmin-gl-btn--danger:hover {
   background: #b01453;
+}
+
+@media (max-width: 900px) {
+  .orgadmin-gl-grid {
+    grid-template-columns: 1fr;
+  }
 }
 

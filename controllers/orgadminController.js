@@ -9,6 +9,8 @@ const Leader = require('../models/member_models/leader');
 const Organization = require('../models/member_models/organization');
 const OrganizationJoinRequest = require('../models/member_models/organization_join_request');
 const GroupProfile = require('../models/profile_models/group_profile');
+const LeaderProfile = require('../models/profile_models/leader_profile');
+
 
 // -----------------------------
 // Helpers
@@ -124,24 +126,44 @@ async function buildOrgGroupsLeaders(orgId) {
 
   const ids = leaders.map(l => l._id);
 
-  const profiles = await GroupProfile.find({ groupId: { $in: ids } })
+  // Group images
+  const groupProfiles = await GroupProfile.find({ groupId: { $in: ids } })
     .select('groupId groupImage')
     .lean();
+  const groupImgByLeaderId = new Map(groupProfiles.map(p => [p.groupId.toString(), p.groupImage]));
 
-  const imgByGroupId = new Map(profiles.map(p => [p.groupId.toString(), p.groupImage]));
+  // Leader profile images (true “leader avatar”)
+  const leaderProfiles = await LeaderProfile.find({ leaderId: { $in: ids } })
+    .select('leaderId profileImage')
+    .lean();
+  const leaderImgByLeaderId = new Map(leaderProfiles.map(p => [p.leaderId.toString(), p.profileImage]));
 
-  return leaders.map(l => ({
-    _id: l._id,
-    groupName: l.groupName || 'Unnamed group',
-    groupLeaderName: l.groupLeaderName || '—',
+  return leaders.map(l => {
+    const idStr = l._id.toString();
 
-    leaderId: l._id,
-    leaderImage: l.profileImage || '/images/default-avatar.png',
+    return {
+      _id: l._id,
+      groupName: l.groupName || 'Unnamed group',
+      groupLeaderName: l.groupLeaderName || '—',
 
-    groupImage: imgByGroupId.get(l._id.toString()) || '/images/default-group.png',
-    memberCount: Array.isArray(l.members) ? l.members.length : (l.groupSize || 0)
-  }));
+      leaderId: l._id,
+
+      // ✅ leader avatar comes from LeaderProfile first
+      leaderImage:
+        leaderImgByLeaderId.get(idStr) ||
+        l.profileImage ||
+        '/images/default-avatar.png',
+
+      // ✅ group avatar comes from GroupProfile
+      groupImage:
+        groupImgByLeaderId.get(idStr) ||
+        '/images/default-group.png',
+
+      memberCount: Array.isArray(l.members) ? l.members.length : (l.groupSize || 0)
+    };
+  });
 }
+
 
 // -----------------------------
 // Controller
