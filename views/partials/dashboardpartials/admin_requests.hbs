@@ -8,17 +8,10 @@
         <div class="muted">{{this.leader.groupLeaderEmail}}</div>
       </div>
 
-      <form method="POST" action="/dashboard/leader/admin/join-requests/{{this._id}}/approve">
-        {{#if ../csrfToken}}<input type="hidden" name="_csrf" value="{{../csrfToken}}">{{/if}}
-        <input name="note" placeholder="note (optional)">
-        <button type="submit">approve</button>
-      </form>
+<form method="POST" action="/dashboard/leader/org-admin/join-requests/{{this._id}}/approve">
 
-      <form method="POST" action="/dashboard/leader/admin/join-requests/{{this._id}}/reject">
-        {{#if ../csrfToken}}<input type="hidden" name="_csrf" value="{{../csrfToken}}">{{/if}}
-        <input name="note" placeholder="note (optional)">
-        <button type="submit" class="danger">reject</button>
-      </form>
+<form method="POST" action="/dashboard/leader/org-admin/join-requests/{{this._id}}/reject">
+
     </div>
   {{/each}}
 {{else}}

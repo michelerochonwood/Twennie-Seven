@@ -151,16 +151,13 @@ const orgadminController = {
       const orgId = toObjectId(req.user?.organization);
       if (!orgId) return res.redirect('/dashboard/leader');
 
-      const snapshot = await buildOrgSnapshot(orgId);
+const snapshot = await buildOrgSnapshot(orgId);
 
-      return res.render('leader_dashboard', {
-        ...baseRenderData(req),
-        adminTab: 'my-organization',
-        organization: snapshot.organization,
-        counts: snapshot.counts,
-        learningFootprint: snapshot.learningFootprint,
-        pendingJoinRequestsList: snapshot.pendingJoinRequestsList
-      });
+return res.render('leader_dashboard', {
+  ...baseRenderData(req),
+  adminTab: 'my-organization',
+  orgSnapshot: snapshot
+});
     } catch (err) {
       console.error('Org admin myOrganization error:', err);
       return next(err);
