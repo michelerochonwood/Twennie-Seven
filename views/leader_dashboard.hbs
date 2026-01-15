@@ -266,55 +266,56 @@
     {{!-- =========================================================
          ONE TAB SCRIPT (handles leader + admin, safely scoped)
     ========================================================= --}}
-    <script>
-      (function () {
-        function initTabs(scopeName) {
-          const tabsContainer = document.querySelector(`[data-tabs-scope="${scopeName}"]`);
-          const panelsScope = document.querySelector(`[data-panels-scope="${scopeName}"]`);
+<script>
+  (function () {
+    function initTabs(scopeName) {
+      const tabsContainer = document.querySelector(`[data-tabs-scope="${scopeName}"]`);
+      const panelsScope = document.querySelector(`[data-panels-scope="${scopeName}"]`);
+      const panelRoot = panelsScope || document;
 
-          // Leader mode doesn't have a panels scope wrapper, so fall back to document
-          const panelRoot = panelsScope || document;
+      if (!tabsContainer) return;
 
-          if (!tabsContainer) return;
+      const tabs = Array.from(tabsContainer.querySelectorAll('.dashboard-tab[data-tab]'));
+      if (!tabs.length) return;
 
-          const tabs = Array.from(tabsContainer.querySelectorAll('.dashboard-tab[data-tab]'));
-          if (!tabs.length) return;
+      function setActive(tabId) {
+        // Tabs
+        tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === tabId));
 
-          function setActive(tabId) {
-            // Tabs
-            tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === tabId));
+        // Panels
+        const panels = Array.from(panelRoot.querySelectorAll('.dashboard-tab-content'));
+        panels.forEach(p => p.classList.toggle('active', p.id === tabId));
+      }
 
-            // Panels
-            const panels = Array.from(panelRoot.querySelectorAll('.dashboard-tab-content'));
-            panels.forEach(p => p.classList.toggle('active', p.id === tabId));
+      // Click handler
+      tabs.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tabId = btn.dataset.tab;
+          const href = btn.dataset.href;
 
-            // Optional URL update (admin only uses data-href)
-            const activeBtn = tabs.find(t => t.dataset.tab === tabId);
-            const href = activeBtn && activeBtn.dataset.href;
-            if (href && window.history && window.history.replaceState) {
-              window.history.replaceState({}, '', href);
-            }
+          // ✅ ADMIN: do a real navigation so the server route can supply data (orgGroups, etc.)
+          if (scopeName === 'admin' && href) {
+            window.location.href = href;
+            return;
           }
 
-          // Click handler
-          tabs.forEach(btn => {
-            btn.addEventListener('click', () => {
-              const tabId = btn.dataset.tab;
-              setActive(tabId);
-            });
-          });
-
-          // Ensure something is active on load (prevents "blank" state)
-          const preActive = tabs.find(t => t.classList.contains('active')) || tabs[0];
-          if (preActive) setActive(preActive.dataset.tab);
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-          initTabs('admin');
-          initTabs('leader');
+          // ✅ LEADER: keep JS-only tabs (no reload)
+          setActive(tabId);
         });
-      })();
-    </script>
+      });
+
+      // Ensure something is active on load
+      const preActive = tabs.find(t => t.classList.contains('active')) || tabs[0];
+      if (preActive) setActive(preActive.dataset.tab);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initTabs('admin');
+      initTabs('leader');
+    });
+  })();
+</script>
+
 
     {{!-- =========================================================
          LEADER "MARK SEEN" SCRIPT (leader mode only)
