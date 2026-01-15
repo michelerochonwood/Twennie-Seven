@@ -37,60 +37,61 @@ function convertYouTubeToEmbed(url) {
 
 
 async function resolveAuthorById(authorId) {
-  // 1. Check leader profile
-  let profile = await LeaderProfile.findOne({ leaderId: authorId }).select('profileImage name organization');
-  if (profile) {
-    const leader = await Leader.findById(authorId).select('groupName');
+  if (!authorId) {
     return {
-      name: profile.name || 'Leader',
-      image: profile.profileImage || '/images/default-avatar.png',
-      organization: profile.organization || null,
-      groupId: leader?._id || null // treat the leader's own ID as their groupId
+      name: 'Unknown Author',
+      image: '/images/default-avatar.png',
+      organization: null,
+      groupId: null
     };
   }
 
-  async function buildOrgLeaderListForAdmin(req) {
-  const userId = req.user?._id;
-  if (!userId) return { isOrgAdmin: false, orgLeaders: [] };
+  const idStr = authorId.toString();
 
-  const admin = await Leader.findById(userId)
-    .select('organization organizationOptOut isAdmin')
+  // 1) Leader profile
+  let profile = await LeaderProfile
+    .findOne({ leaderId: idStr })
+    .select('profileImage name organization')
     .lean();
 
-  if (!admin?.isAdmin) return { isOrgAdmin: false, orgLeaders: [] };
-  if (!admin?.organization || admin.organizationOptOut === true) return { isOrgAdmin: false, orgLeaders: [] };
-
-  const orgId = admin.organization;
-
-  const orgLeaders = await Leader.find({
-    organization: orgId,
-    organizationOptOut: { $ne: true },
-    _id: { $ne: userId } // optional: don’t suggest to self
-  })
-    .select('_id groupLeaderName groupName')
-    .sort({ groupName: 1 })
-    .lean();
-
-  return { isOrgAdmin: true, orgLeaders };
-}
-
-
-  // 2. Check group member profile
-  profile = await GroupMemberProfile.findOne({ memberId: authorId }).select('profileImage name');
   if (profile) {
-    const member = await GroupMember.findById(authorId).select('groupId organization');
+    // Leaders anchor their own "group" using their Leader _id
+    const leader = await Leader.findById(idStr).select('_id groupName organization').lean();
+
+    return {
+      name: (profile.name || leader?.groupLeaderName || leader?.username || 'Leader'),
+      image: profile.profileImage || '/images/default-avatar.png',
+      organization: profile.organization || leader?.organization || null,
+      groupId: leader?._id || null
+    };
+  }
+
+  // 2) Group member profile
+  profile = await GroupMemberProfile
+    .findOne({ memberId: idStr })
+    .select('profileImage name')
+    .lean();
+
+  if (profile) {
+    const gm = await GroupMember.findById(idStr).select('_id organization groupId').lean();
+
     return {
       name: profile.name || 'Group Member',
       image: profile.profileImage || '/images/default-avatar.png',
-      groupId: member?.groupId || null,
-      organization: member?.organization || null
+      organization: gm?.organization || null,
+      groupId: gm?.groupId || null
     };
   }
 
-  // 3. Check individual member profile
-  profile = await MemberProfile.findOne({ memberId: authorId }).select('profileImage name');
+  // 3) Individual member profile
+  profile = await MemberProfile
+    .findOne({ memberId: idStr })
+    .select('profileImage name')
+    .lean();
+
   if (profile) {
-    const member = await Member.findById(authorId).select('organization');
+    const member = await Member.findById(idStr).select('_id organization').lean();
+
     return {
       name: profile.name || 'Member',
       image: profile.profileImage || '/images/default-avatar.png',
@@ -99,13 +100,41 @@ async function resolveAuthorById(authorId) {
     };
   }
 
-  // 4. Fallback
+  // 4) Fallback (no profiles found)
   return {
     name: 'Unknown Author',
     image: '/images/default-avatar.png',
     organization: null,
     groupId: null
   };
+}
+
+
+async function buildOrgLeaderListForAdmin(req) {
+  const userId = req.user?._id || req.user?.id;
+  if (!userId) return { isOrgAdmin: false, orgLeaders: [] };
+
+  const admin = await Leader.findById(userId)
+    .select('organization organizationOptOut isAdmin')
+    .lean();
+
+  if (!admin?.isAdmin) return { isOrgAdmin: false, orgLeaders: [] };
+  if (!admin?.organization || admin.organizationOptOut === true) {
+    return { isOrgAdmin: false, orgLeaders: [] };
+  }
+
+  const orgId = admin.organization;
+
+  const orgLeaders = await Leader.find({
+    organization: orgId,
+    organizationOptOut: { $ne: true },
+    _id: { $ne: admin._id }
+  })
+    .select('_id groupLeaderName groupName')
+    .sort({ groupName: 1 })
+    .lean();
+
+  return { isOrgAdmin: true, orgLeaders };
 }
 
 // Unified leader assign context for ALL unit views
