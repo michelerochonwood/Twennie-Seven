@@ -268,32 +268,53 @@
     ========================================================= --}}
 <script>
   (function () {
-    function initLeaderTabs() {
-      const tabsContainer = document.querySelector('[data-tabs-scope="leader"]');
+    function initTabs(scopeName) {
+      const tabsContainer = document.querySelector(`[data-tabs-scope="${scopeName}"]`);
+      const panelsScope = document.querySelector(`[data-panels-scope="${scopeName}"]`);
+      const panelRoot = panelsScope || document;
+
       if (!tabsContainer) return;
 
       const tabs = Array.from(tabsContainer.querySelectorAll('.dashboard-tab[data-tab]'));
       if (!tabs.length) return;
 
       function setActive(tabId) {
+        // Tabs
         tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === tabId));
-        const panels = Array.from(document.querySelectorAll('.dashboard-tab-content'));
+
+        // Panels
+        const panels = Array.from(panelRoot.querySelectorAll('.dashboard-tab-content'));
         panels.forEach(p => p.classList.toggle('active', p.id === tabId));
       }
 
+      // Click handler
       tabs.forEach(btn => {
-        btn.addEventListener('click', () => setActive(btn.dataset.tab));
+        btn.addEventListener('click', () => {
+          const tabId = btn.dataset.tab;
+          const href = btn.dataset.href;
+
+          // ✅ ADMIN: do a real navigation so the server route can supply data (orgGroups, etc.)
+          if (scopeName === 'admin' && href) {
+            window.location.href = href;
+            return;
+          }
+
+          // ✅ LEADER: keep JS-only tabs (no reload)
+          setActive(tabId);
+        });
       });
 
-      // Keep your existing default behavior
+      // Ensure something is active on load
       const preActive = tabs.find(t => t.classList.contains('active')) || tabs[0];
       if (preActive) setActive(preActive.dataset.tab);
     }
 
-    document.addEventListener('DOMContentLoaded', initLeaderTabs);
+document.addEventListener('DOMContentLoaded', () => {
+  // ✅ admin tabs are real navigation now; no JS toggling needed
+  initTabs('leader');
+});
   })();
 </script>
-
 
 
     {{!-- =========================================================
