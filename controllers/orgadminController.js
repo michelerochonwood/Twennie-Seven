@@ -11,6 +11,17 @@ const OrganizationJoinRequest = require('../models/member_models/organization_jo
 
 const GroupProfile = require('../models/profile_models/group_profile');
 
+function baseRenderData(req) {
+  return {
+    layout: 'dashboardlayout',
+    title: 'Leader Dashboard',
+    adminMode: true,
+    leader: req.user,
+    csrfToken: req.csrfToken ? req.csrfToken() : null
+  };
+}
+
+
 function safeNumber(n) {
   const v = Number(n);
   return Number.isFinite(v) ? v : 0;
@@ -148,7 +159,12 @@ const orgadminController = {
 const snapshot = await buildOrgSnapshot(orgId);
 
 return res.render('leader_dashboard', {
-  ...baseRenderData(req),
+  layout: 'dashboardlayout',
+  title: 'Leader Dashboard',
+  adminMode: true,
+  leader: req.user,
+  csrfToken: req.csrfToken ? req.csrfToken() : null,
+
   adminTab: 'my-organization',
   orgSnapshot: snapshot
 });
