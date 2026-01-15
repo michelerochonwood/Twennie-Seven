@@ -59,20 +59,21 @@ async function getOrgIdForAdmin(req) {
 async function buildOrgSnapshot(orgId) {
   const organization = await Organization.findById(orgId).lean();
 
-  if (!organization) {
-    return {
-      organization: null,
-      counts: { leaders: 0, groups: 0, members: 0, pendingJoinRequests: 0, pendingLibrarySubmissions: 0 },
-      pendingJoinRequestsList: [],
-      learningFootprint: {
-        activeLearners: 0,
-        unitsCompleted: 0,
-        promptSetsCompleted: 0,
-        avgCompletionsPerLearner: 0,
-        topUnitType: '—'
-      }
-    };
-  }
+  // Base empty shape (keeps your view stable)
+  const empty = {
+    organization: null,
+    counts: { leaders: 0, groups: 0, members: 0, pendingJoinRequests: 0, pendingLibrarySubmissions: 0 },
+    pendingJoinRequestsList: [],
+    learningFootprint: {
+      activeLearners: 0,
+      unitsCompleted: 0,
+      promptSetsCompleted: 0,
+      avgCompletionsPerLearner: 0,
+      topUnitType: '—'
+    }
+  };
+
+  if (!organization) return empty;
 
   const leaderFilter = { organization: orgId, organizationOptOut: { $ne: true } };
 
@@ -83,22 +84,28 @@ async function buildOrgSnapshot(orgId) {
     pendingJoinRequestsList,
     learningFootprint
   ] = await Promise.all([
+    // Leaders in org
     Leader.countDocuments(leaderFilter),
 
+    // Group names in org
     Leader.distinct('groupName', leaderFilter),
 
+    // Members total (sum of each leader.members array length)
     Leader.aggregate([
       { $match: leaderFilter },
       { $project: { memberCount: { $size: { $ifNull: ['$members', []] } } } },
       { $group: { _id: null, total: { $sum: '$memberCount' } } }
     ]),
 
+    // Pending join requests
     OrganizationJoinRequest.find({ organization: orgId, status: 'pending' })
       .populate('leader', 'groupLeaderName groupLeaderEmail username groupName profileImage')
       .sort({ requestedAt: -1 })
       .lean(),
 
-    // ✅ compute learning footprint from DB (notes + promptsetcompletion)
+    // Learning footprint (Notes + PromptSetCompletion)
+    // IMPORTANT: ensure buildLearningFootprintForOrg() matches your schema:
+    // Notes uses memberID (not member) in your DB.
     buildLearningFootprintForOrg(orgId, 30)
   ]);
 
@@ -118,15 +125,10 @@ async function buildOrgSnapshot(orgId) {
       pendingLibrarySubmissions: 0
     },
     pendingJoinRequestsList: pendingJoinRequestsList || [],
-    learningFootprint: learningFootprint || {
-      activeLearners: 0,
-      unitsCompleted: 0,
-      promptSetsCompleted: 0,
-      avgCompletionsPerLearner: 0,
-      topUnitType: '—'
-    }
+    learningFootprint: learningFootprint || empty.learningFootprint
   };
 }
+
 
 
 function daysAgo(n) {
