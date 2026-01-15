@@ -178,24 +178,31 @@ const leader = new Leader({
       await leaderProfile.save();
       console.log(`✅ Leader Profile Created: ${leaderProfile._id}`);
 
-      // 5) Group Profile
-      const groupProfile = new GroupProfile({
-        groupId: savedLeader._id,
-        groupName: savedLeader.groupName,
-        groupLeaderName: savedLeader.groupLeaderName,
-        organization: savedLeader.organization,
-        groupSize: savedLeader.groupSize,
-        groupGoals: "",
-        groupTopics: {
-          topic1: topic1 || "Default Topic 1",
-          topic2: topic2 || "Default Topic 2",
-          topic3: topic3 || "Default Topic 3"
-        },
-        members: [],
-        groupImage: "/images/default-group.png"
-      });
-      await groupProfile.save();
-      console.log(`✅ Group Profile Created: ${groupProfile._id}`);
+// 5) Group Profile (idempotent; prevents duplicates)
+const groupProfile = await GroupProfile.findOneAndUpdate(
+  { groupId: savedLeader._id },
+  {
+    $setOnInsert: {
+      groupId: savedLeader._id,
+      groupName: savedLeader.groupName,
+      groupLeaderName: savedLeader.groupLeaderName,
+      organization: savedLeader.organization, // null at creation time is fine
+      groupSize: savedLeader.groupSize,
+      groupGoals: "",
+      groupTopics: {
+        topic1: topic1 || "Default Topic 1",
+        topic2: topic2 || "Default Topic 2",
+        topic3: topic3 || "Default Topic 3"
+      },
+      members: [],
+      groupImage: "/images/default-group.png"
+    }
+  },
+  { upsert: true, new: true, setDefaultsOnInsert: true }
+);
+
+console.log(`✅ Group Profile ensured: ${groupProfile._id}`);
+
 
       // 6) Validate & create GroupMembers (default password, hashed)
       const memberList = coerceMembers(members);

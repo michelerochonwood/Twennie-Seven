@@ -112,37 +112,31 @@ async function buildOrgGroupsLeaders(orgId) {
   const leaderFilter = { organization: orgId, organizationOptOut: { $ne: true } };
 
   const leaders = await Leader.find(leaderFilter)
-    .select('_id groupLeaderName groupName groupImage profileImage members')
+    .select('_id groupLeaderName groupName profileImage members groupSize')
     .sort({ groupName: 1 })
     .lean();
 
-  return (leaders || []).map(l => ({
-    _id: l._id, // group id proxy = leader id
-    groupName: l.groupName || 'Unnamed group',
-    groupImage: l.groupImage || null,
-    memberCount: Array.isArray(l.members) ? l.members.length : 0,
+  // Pull group images from GroupProfile (because leaders don’t reliably have groupImage)
+  const ids = leaders.map(l => l._id);
+  const profiles = await GroupProfile.find({ groupId: { $in: ids } })
+    .select('groupId groupImage')
+    .lean();
 
+  const imgByGroupId = new Map(profiles.map(p => [p.groupId.toString(), p.groupImage]));
+
+  return (leaders || []).map(l => ({
+    _id: l._id,
+    groupName: l.groupName || 'Unnamed group',
     groupLeaderName: l.groupLeaderName || '—',
+
     leaderId: l._id,
-    leaderImage: l.profileImage || null
+    leaderImage: l.profileImage || '/images/default-avatar.png',
+
+    groupImage: imgByGroupId.get(l._id.toString()) || '/images/default-group.png',
+    memberCount: Array.isArray(l.members) ? l.members.length : (l.groupSize || 0)
   }));
 }
 
-function baseRenderData(req) {
-  return {
-    layout: 'dashboardlayout',
-    title: 'Leader Dashboard',
-
-    // drives admin-mode UI
-    adminMode: true,
-
-    // your view checks leader.isAdmin
-    leader: req.user,
-
-    // keep CSRF available for admin forms
-    csrfToken: req.csrfToken ? req.csrfToken() : null
-  };
-}
 
 const orgadminController = {
   // ADMIN: My Organization snapshot
