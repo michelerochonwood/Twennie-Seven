@@ -7,6 +7,9 @@ const mongoose = require('mongoose');
 
 const Leader = require('../models/member_models/leader');
 const Organization = require('../models/member_models/organization');
+const OrganizationJoinRequest = require('../models/member_models/organization_join_request');
+
+const GroupProfile = require('../models/profile_models/group_profile');
 
 function safeNumber(n) {
   const v = Number(n);
@@ -20,29 +23,65 @@ function toObjectId(id) {
   return mongoose.Types.ObjectId.isValid(s) ? new mongoose.Types.ObjectId(s) : null;
 }
 
+/**
+ * Build a snapshot of organization totals + pending join requests.
+ * (Learning footprint is stubbed for now.)
+ */
 async function buildOrgSnapshot(orgId) {
   const organization = await Organization.findById(orgId).lean();
 
   if (!organization) {
     return {
       organization: null,
-      counts: { leaders: 0, groups: 0, members: 0, pendingJoinRequests: 0, pendingLibrarySubmissions: 0 },
-      learningFootprint: { activeLearners: 0, unitsCompleted: 0, promptSetsCompleted: 0, avgCompletionsPerLearner: 0, topUnitType: '—' },
+      counts: {
+        leaders: 0,
+        groups: 0,
+        members: 0,
+        pendingJoinRequests: 0,
+        pendingLibrarySubmissions: 0
+      },
+      pendingJoinRequestsList: [],
+      learningFootprint: {
+        activeLearners: 0,
+        unitsCompleted: 0,
+        promptSetsCompleted: 0,
+        avgCompletionsPerLearner: 0,
+        topUnitType: '—'
+      }
     };
   }
 
   const leaderFilter = { organization: orgId, organizationOptOut: { $ne: true } };
 
-  const leadersCount = await Leader.countDocuments(leaderFilter);
+  const [
+    leadersCount,
+    distinctGroupNames,
+    membersAgg,
+    pendingJoinRequestsList
+  ] = await Promise.all([
+    Leader.countDocuments(leaderFilter),
 
-  const distinctGroupNames = await Leader.distinct('groupName', leaderFilter);
-  const groupsCount = (distinctGroupNames || []).filter(n => String(n || '').trim().length).length;
+    Leader.distinct('groupName', leaderFilter),
 
-  const membersAgg = await Leader.aggregate([
-    { $match: leaderFilter },
-    { $project: { memberCount: { $size: { $ifNull: ['$members', []] } } } },
-    { $group: { _id: null, total: { $sum: '$memberCount' } } }
+    Leader.aggregate([
+      { $match: leaderFilter },
+      { $project: { memberCount: { $size: { $ifNull: ['$members', []] } } } },
+      { $group: { _id: null, total: { $sum: '$memberCount' } } }
+    ]),
+
+    OrganizationJoinRequest.find({
+      organization: orgId,
+      status: 'pending'
+    })
+      .populate('leader', 'groupLeaderName groupLeaderEmail username groupName profileImage')
+      .sort({ requestedAt: -1 })
+      .lean()
   ]);
+
+  const groupsCount = (distinctGroupNames || [])
+    .map(n => String(n || '').trim())
+    .filter(Boolean).length;
+
   const membersCount = membersAgg?.[0]?.total || 0;
 
   return {
@@ -51,9 +90,10 @@ async function buildOrgSnapshot(orgId) {
       leaders: safeNumber(leadersCount),
       groups: safeNumber(groupsCount),
       members: safeNumber(membersCount),
-      pendingJoinRequests: 0,
+      pendingJoinRequests: safeNumber(pendingJoinRequestsList?.length || 0),
       pendingLibrarySubmissions: 0
     },
+    pendingJoinRequestsList: pendingJoinRequestsList || [],
     learningFootprint: {
       activeLearners: 0,
       unitsCompleted: 0,
@@ -64,63 +104,62 @@ async function buildOrgSnapshot(orgId) {
   };
 }
 
-
+/**
+ * Build a list of org groups/leaders for admin listing.
+ * Here, a "group" is effectively a Leader record (your current data model).
+ */
 async function buildOrgGroupsLeaders(orgId) {
   const leaderFilter = { organization: orgId, organizationOptOut: { $ne: true } };
 
-const leaders = await Leader.find(leaderFilter)
-  .select('_id name groupName groupImage profileImage members')
-  .sort({ groupName: 1 })
-  .lean();
-
+  const leaders = await Leader.find(leaderFilter)
+    .select('_id groupLeaderName groupName groupImage profileImage members')
+    .sort({ groupName: 1 })
+    .lean();
 
   return (leaders || []).map(l => ({
-    _id: l._id,                               // group id (proxy = leader id)
+    _id: l._id, // group id proxy = leader id
     groupName: l.groupName || 'Unnamed group',
     groupImage: l.groupImage || null,
     memberCount: Array.isArray(l.members) ? l.members.length : 0,
 
-    groupLeaderName: l.name || '—',
+    groupLeaderName: l.groupLeaderName || '—',
     leaderId: l._id,
-    leaderImage: l.profileImage || null       // if your Leader uses another field, swap it here
+    leaderImage: l.profileImage || null
   }));
 }
-
 
 function baseRenderData(req) {
   return {
     layout: 'dashboardlayout',
     title: 'Leader Dashboard',
 
-    // ✅ this drives the mode switch + hides leader tabs/content
+    // drives admin-mode UI
     adminMode: true,
 
-    // used by the view (toggle + admin permission check)
+    // your view checks leader.isAdmin
     leader: req.user,
 
-    // helpful, but your view is now driven by leader.isAdmin anyway
-    isOrgAdmin: true,
-
-    // keep CSRF available for any admin forms
+    // keep CSRF available for admin forms
     csrfToken: req.csrfToken ? req.csrfToken() : null
   };
 }
 
 const orgadminController = {
-
+  // ADMIN: My Organization snapshot
   async myOrganization(req, res, next) {
     try {
       const orgId = toObjectId(req.user?.organization);
       if (!orgId) return res.redirect('/dashboard/leader');
 
-      const { organization, counts, learningFootprint } = await buildOrgSnapshot(orgId);
+      const snapshot = await buildOrgSnapshot(orgId);
 
       return res.render('leader_dashboard', {
         ...baseRenderData(req),
         adminTab: 'my-organization',
-        organization,
-        counts,
-        learningFootprint
+        organization: snapshot.organization,
+        counts: snapshot.counts,
+        learningFootprint: snapshot.learningFootprint,
+        pendingJoinRequestsList: snapshot.pendingJoinRequestsList
       });
     } catch (err) {
       console.error('Org admin myOrganization error:', err);
@@ -128,6 +167,7 @@ const orgadminController = {
     }
   },
 
+  // ADMIN: Groups & Leaders listing
   async groupsLeaders(req, res, next) {
     try {
       const orgId = toObjectId(req.user?.organization);
@@ -148,6 +188,72 @@ const orgadminController = {
     }
   },
 
+  // ADMIN: Approve a join request
+  async approveJoinRequest(req, res) {
+    try {
+      const adminId = req.user?._id;
+      const { requestId } = req.params;
+
+      const jr = await OrganizationJoinRequest.findById(requestId);
+      if (!jr) return res.redirect('/dashboard/leader/admin?msg=req-not-found');
+      if (jr.status !== 'pending') return res.redirect('/dashboard/leader/admin?msg=req-not-pending');
+
+      const leader = await Leader.findById(jr.leader);
+      if (!leader) return res.redirect('/dashboard/leader/admin?msg=leader-not-found');
+
+      // Attach org to leader
+      leader.organization = jr.organization;
+      leader.organizationOptOut = false;
+
+      const org = await Organization.findById(jr.organization).select('name').lean();
+      if (org?.name) leader.organizationName = org.name;
+
+      await leader.save();
+
+      // Keep group profile in sync (best-effort)
+      await GroupProfile.updateOne(
+        { groupId: leader._id },
+        { $set: { organization: jr.organization } }
+      );
+
+      // Mark request approved
+      jr.status = 'approved';
+      jr.reviewedAt = new Date();
+      jr.reviewedBy = adminId;
+      jr.note = String(req.body.note || '').trim();
+      await jr.save();
+
+      return res.redirect('/dashboard/leader/admin?msg=approved');
+    } catch (err) {
+      console.error('approveJoinRequest error:', err);
+      return res.redirect('/dashboard/leader/admin?msg=approve-error');
+    }
+  },
+
+  // ADMIN: Reject a join request
+  async rejectJoinRequest(req, res) {
+    try {
+      const adminId = req.user?._id;
+      const { requestId } = req.params;
+
+      const jr = await OrganizationJoinRequest.findById(requestId);
+      if (!jr) return res.redirect('/dashboard/leader/admin?msg=req-not-found');
+      if (jr.status !== 'pending') return res.redirect('/dashboard/leader/admin?msg=req-not-pending');
+
+      jr.status = 'rejected';
+      jr.reviewedAt = new Date();
+      jr.reviewedBy = adminId;
+      jr.note = String(req.body.note || '').trim();
+      await jr.save();
+
+      return res.redirect('/dashboard/leader/admin?msg=rejected');
+    } catch (err) {
+      console.error('rejectJoinRequest error:', err);
+      return res.redirect('/dashboard/leader/admin?msg=reject-error');
+    }
+  },
+
+  // The remaining admin tabs can render without extra data for now
   requests(req, res) {
     return res.render('leader_dashboard', { ...baseRenderData(req), adminTab: 'requests' });
   },
@@ -165,6 +271,6 @@ const orgadminController = {
   }
 };
 
-
 module.exports = orgadminController;
+
 

@@ -5,57 +5,39 @@ const router = express.Router();
 const ensureAuthenticated = require('../../middleware/ensureAuthenticated');
 const requireOrgAdmin = require('../../middleware/requireOrgAdmin');
 
-// Controller (we’ll create next)
-const leaderOrgAdminController = require('../../controllers/orgadminController');
+const orgadminController = require('../../controllers/orgadminController');
 
+// NOTE: Mount this router like:
+// app.use('/dashboard/leader/org-admin', require('./routes/dashboard/leaderOrgAdminRoutes'));
+
+// ------------------------------------------------------------
+// Admin-mode dashboard tabs (GET)
 // Base: /dashboard/leader/org-admin
+// ------------------------------------------------------------
+router.get('/my-organization', ensureAuthenticated, requireOrgAdmin, orgadminController.myOrganization);
+router.get('/groups-leaders',  ensureAuthenticated, requireOrgAdmin, orgadminController.groupsLeaders);
+router.get('/requests',        ensureAuthenticated, requireOrgAdmin, orgadminController.requests);
+router.get('/suggestions',     ensureAuthenticated, requireOrgAdmin, orgadminController.suggestions);
+router.get('/company-library', ensureAuthenticated, requireOrgAdmin, orgadminController.companyLibrary);
+router.get('/reports',         ensureAuthenticated, requireOrgAdmin, orgadminController.reports);
 
-router.get('/my-organization', ensureAuthenticated, requireOrgAdmin, (req, res, next) => {
-  try {
-    return leaderOrgAdminController.myOrganization(req, res);
-  } catch (err) {
-    next(err);
-  }
-});
+// ------------------------------------------------------------
+// Join request review actions (POST)
+// Base: /dashboard/leader/org-admin
+// ------------------------------------------------------------
+router.post(
+  '/join-requests/:requestId/approve',
+  ensureAuthenticated,
+  requireOrgAdmin,
+  orgadminController.approveJoinRequest
+);
 
-router.get('/groups-leaders', ensureAuthenticated, requireOrgAdmin, (req, res, next) => {
-  try {
-    return leaderOrgAdminController.groupsLeaders(req, res);
-  } catch (err) {
-    next(err);
-  }
-});
-
-router.get('/requests', ensureAuthenticated, requireOrgAdmin, (req, res, next) => {
-  try {
-    return leaderOrgAdminController.requests(req, res);
-  } catch (err) {
-    next(err);
-  }
-});
-
-router.get('/suggestions', ensureAuthenticated, requireOrgAdmin, (req, res, next) => {
-  try {
-    return leaderOrgAdminController.suggestions(req, res);
-  } catch (err) {
-    next(err);
-  }
-});
-
-router.get('/company-library', ensureAuthenticated, requireOrgAdmin, (req, res, next) => {
-  try {
-    return leaderOrgAdminController.companyLibrary(req, res);
-  } catch (err) {
-    next(err);
-  }
-});
-
-router.get('/reports', ensureAuthenticated, requireOrgAdmin, (req, res, next) => {
-  try {
-    return leaderOrgAdminController.reports(req, res);
-  } catch (err) {
-    next(err);
-  }
-});
+router.post(
+  '/join-requests/:requestId/reject',
+  ensureAuthenticated,
+  requireOrgAdmin,
+  orgadminController.rejectJoinRequest
+);
 
 module.exports = router;
+

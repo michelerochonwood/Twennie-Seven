@@ -8,10 +8,11 @@ const organizationJoinRequestSchema = new mongoose.Schema({
 
   requestedAt: { type: Date, default: Date.now },
   reviewedAt:  { type: Date },
-  reviewedBy:  { type: mongoose.Schema.Types.ObjectId, ref: 'Leader' }, // optional: org admin leader
+  reviewedBy:  { type: mongoose.Schema.Types.ObjectId, ref: 'Leader' }, // admin who reviewed
   note:        { type: String, default: '' }
 }, { timestamps: true });
 
 organizationJoinRequestSchema.index({ organization: 1, leader: 1 }, { unique: true });
 
 module.exports = mongoose.model('OrganizationJoinRequest', organizationJoinRequestSchema);
+

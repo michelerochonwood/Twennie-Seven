@@ -32,6 +32,9 @@ router.get('/organization/success', (req, res) => {
   return res.redirect('/dashboard/leader/organization/success');
 });
 
+router.post('/organization/request-join', leaderController.requestJoinOrganization);
+
+
 
 // ------------------------------------------------------------
 // Group member management (specific leader)

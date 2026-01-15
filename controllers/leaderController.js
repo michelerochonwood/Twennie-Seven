@@ -6,6 +6,8 @@ const { validateGroupMemberData } = require('../utils/validateGroupMember');
 const LeaderProfile = require('../models/profile_models/leader_profile');
 const GroupProfile = require('../models/profile_models/group_profile');
 const Organization = require('../models/member_models/organization');
+const OrganizationJoinRequest = require('../models/member_models/organization_join_request');
+
 
 const bcrypt = require('bcrypt');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
@@ -764,6 +766,42 @@ return res.redirect('/dashboard/leader/organization/success');
   }
 },
 
+requestJoinOrganization: async (req, res) => {
+  try {
+    const leaderId = req.session?.user?.id;
+    if (!leaderId) return res.redirect('/dashboard/leader?msg=not-logged-in');
+
+    const leader = await Leader.findById(leaderId).select('organization organizationOptOut').lean();
+    if (!leader) return res.redirect('/dashboard/leader?msg=leader-not-found');
+
+    // Optional guard: don’t allow request if already attached and not opted out
+    if (leader.organization && !leader.organizationOptOut) {
+      return res.redirect('/dashboard/leader?msg=already-has-org');
+    }
+
+    const raw = String(req.body.orgSlugOrName || '').trim().toLowerCase();
+    if (!raw) return res.redirect('/dashboard/leader?msg=missing-org');
+
+    // match by slug first, then by a loose name match
+    const esc = raw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const org = await Organization.findOne({
+      $or: [{ slug: raw }, { name: new RegExp(esc, 'i') }]
+    }).select('_id name slug').lean();
+
+    if (!org) return res.redirect('/dashboard/leader?msg=org-not-found');
+
+    await OrganizationJoinRequest.updateOne(
+      { organization: org._id, leader: leaderId },
+      { $setOnInsert: { status: 'pending', requestedAt: new Date() } },
+      { upsert: true }
+    );
+
+    return res.redirect('/dashboard/leader?msg=join-request-sent');
+  } catch (err) {
+    console.error('requestJoinOrganization error:', err);
+    return res.redirect('/dashboard/leader?msg=join-request-error');
+  }
+},
 
 
 };

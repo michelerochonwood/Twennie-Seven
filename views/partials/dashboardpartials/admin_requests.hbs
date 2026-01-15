@@ -1,4 +1,26 @@
-<section class="leader-admin-section">
-  <h2>Requests to Join</h2>
-  <p>Coming soon.</p>
-</section>
+<h2>organization join requests ({{orgSnapshot.counts.pendingJoinRequests}})</h2>
+
+{{#if orgSnapshot.pendingJoinRequestsList.length}}
+  {{#each orgSnapshot.pendingJoinRequestsList}}
+    <div class="admin-request-card">
+      <div>
+        <strong>{{this.leader.groupLeaderName}}</strong>
+        <div class="muted">{{this.leader.groupLeaderEmail}}</div>
+      </div>
+
+      <form method="POST" action="/dashboard/leader/admin/join-requests/{{this._id}}/approve">
+        {{#if ../csrfToken}}<input type="hidden" name="_csrf" value="{{../csrfToken}}">{{/if}}
+        <input name="note" placeholder="note (optional)">
+        <button type="submit">approve</button>
+      </form>
+
+      <form method="POST" action="/dashboard/leader/admin/join-requests/{{this._id}}/reject">
+        {{#if ../csrfToken}}<input type="hidden" name="_csrf" value="{{../csrfToken}}">{{/if}}
+        <input name="note" placeholder="note (optional)">
+        <button type="submit" class="danger">reject</button>
+      </form>
+    </div>
+  {{/each}}
+{{else}}
+  <p class="muted">no pending requests</p>
+{{/if}}
