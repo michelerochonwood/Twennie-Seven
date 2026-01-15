@@ -56,40 +56,47 @@
 
 
 
-  {{!-- Learning footprint (light) --}}
-  <div class="groupsection-org-card" style="margin: 0 auto 1.25rem auto; max-width: 800px;">
-    <p class="leader-membership-access-title" style="margin: 0 0 0.5rem 0;">learning footprint (last 30 days)</p>
+{{!-- Learning footprint (light) --}}
+<div class="groupsection-org-card" style="margin: 0 auto 1.25rem auto; max-width: 800px;">
+  <p class="leader-membership-access-title" style="margin: 0 0 0.5rem 0;">learning footprint (last 30 days)</p>
 
-    <div class="groupsection-org-grid" style="margin-top: 0.5rem;">
-      <div class="groupsection-org-card">
-        <p class="groupsection-org-card-name">{{learningFootprint.activeLearners}}</p>
-        <p class="groupsection-org-card-meta">active learners</p>
-      </div>
-
-      <div class="groupsection-org-card">
-        <p class="groupsection-org-card-name">{{learningFootprint.unitsCompleted}}</p>
-        <p class="groupsection-org-card-meta">units completed</p>
-      </div>
-
-      <div class="groupsection-org-card">
-        <p class="groupsection-org-card-name">{{learningFootprint.promptSetsCompleted}}</p>
-        <p class="groupsection-org-card-meta">prompt sets completed</p>
-      </div>
-
-      <div class="groupsection-org-card">
-        <p class="groupsection-org-card-name">{{learningFootprint.avgCompletionsPerLearner}}</p>
-        <p class="groupsection-org-card-meta">avg / learner</p>
-      </div>
-
-      <div class="groupsection-org-card">
-        <p class="groupsection-org-card-name">{{learningFootprint.topUnitType}}</p>
-        <p class="groupsection-org-card-meta">top unit type</p>
-      </div>
+  <div class="groupsection-org-grid" style="margin-top: 0.5rem;">
+    <div class="groupsection-org-card">
+      <p class="groupsection-org-card-name">{{learningFootprint.activeLearners}}</p>
+      <p class="groupsection-org-card-meta">active learners</p>
     </div>
 
-    <p class="groupsection-org-card-info" style="margin-top: 0.75rem;">
-      this is a light snapshot. the full comparison report lives in “organization reports.”
-    </p>
+    <div class="groupsection-org-card">
+      <p class="groupsection-org-card-name">{{learningFootprint.unitsCompleted}}</p>
+      <p class="groupsection-org-card-meta">units completed</p>
+    </div>
+
+    <div class="groupsection-org-card">
+      <p class="groupsection-org-card-name">{{learningFootprint.promptSetsCompleted}}</p>
+      <p class="groupsection-org-card-meta">prompt sets completed</p>
+    </div>
+
+    <div class="groupsection-org-card">
+      <p class="groupsection-org-card-name">{{learningFootprint.avgCompletionsPerLearner}}</p>
+      <p class="groupsection-org-card-meta">avg / learner</p>
+    </div>
+
+    <div class="groupsection-org-card">
+      <p class="groupsection-org-card-name">
+        {{#if learningFootprint.mostPopularTopic}}
+          {{learningFootprint.mostPopularTopic}}
+        {{else}}
+          —
+        {{/if}}
+      </p>
+      <p class="groupsection-org-card-meta">most popular topic</p>
+    </div>
   </div>
+
+  <p class="groupsection-org-card-info" style="margin-top: 0.75rem;">
+    this is a light snapshot. the full comparison report lives in “organization reports.”
+  </p>
+</div>
+
 
 </section>

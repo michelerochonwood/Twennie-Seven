@@ -150,19 +150,19 @@ function daysAgo(n) {
 async function buildLearningFootprintForOrg(orgId, days = 30) {
   const since = daysAgo(days);
 
+  const empty = {
+    activeLearners: 0,
+    unitsCompleted: 0,
+    promptSetsCompleted: 0,
+    avgCompletionsPerLearner: 0,
+    mostPopularTopic: '—'
+  };
+
   // leaders in org
   const leaderFilter = { organization: orgId, organizationOptOut: { $ne: true } };
   const leaders = await Leader.find(leaderFilter).select('_id members').lean();
 
-  if (!leaders.length) {
-    return {
-      activeLearners: 0,
-      unitsCompleted: 0,
-      promptSetsCompleted: 0,
-      avgCompletionsPerLearner: 0,
-      topUnitType: '—'
-    };
-  }
+  if (!leaders.length) return empty;
 
   // Build learner ids: leaders + their members
   const learnerIdSet = new Set();
@@ -177,17 +177,9 @@ async function buildLearningFootprintForOrg(orgId, days = 30) {
     .filter(s => mongoose.Types.ObjectId.isValid(s))
     .map(s => new mongoose.Types.ObjectId(s));
 
-  if (!learnerIds.length) {
-    return {
-      activeLearners: 0,
-      unitsCompleted: 0,
-      promptSetsCompleted: 0,
-      avgCompletionsPerLearner: 0,
-      topUnitType: '—'
-    };
-  }
+  if (!learnerIds.length) return empty;
 
-  // Notes completions (non-prompt units)
+  // Notes completions (non-prompt units) + most popular topic from Notes.main_topic
   const notesAgg = await Notes.aggregate([
     {
       $match: {
@@ -196,18 +188,43 @@ async function buildLearningFootprintForOrg(orgId, days = 30) {
       }
     },
     {
-      $group: {
-        _id: null,
-        unitsCompleted: { $sum: 1 },
-        activeLearnerSet: { $addToSet: '$memberID' }
+      $project: {
+        memberID: 1,
+        main_topic: { $trim: { input: { $ifNull: ['$main_topic', ''] } } }
+      }
+    },
+    {
+      $facet: {
+        // totals + active learners
+        totals: [
+          {
+            $group: {
+              _id: null,
+              unitsCompleted: { $sum: 1 },
+              activeLearnerSet: { $addToSet: '$memberID' }
+            }
+          }
+        ],
+
+        // most popular topic (ignore blanks)
+        topTopic: [
+          { $match: { main_topic: { $ne: '' } } },
+          { $group: { _id: '$main_topic', count: { $sum: 1 } } },
+          { $sort: { count: -1 } },
+          { $limit: 1 }
+        ]
       }
     }
   ]);
 
-  const unitsCompleted = notesAgg?.[0]?.unitsCompleted || 0;
-  const activeFromNotes = new Set(
-    (notesAgg?.[0]?.activeLearnerSet || []).map(id => String(id))
-  );
+  const totals = notesAgg?.[0]?.totals?.[0] || null;
+  const unitsCompleted = totals?.unitsCompleted || 0;
+
+  const activeFromNotesArr = totals?.activeLearnerSet || [];
+  const activeFromNotes = new Set(activeFromNotesArr.map(id => String(id)));
+
+  const mostPopularTopic =
+    notesAgg?.[0]?.topTopic?.[0]?._id ? String(notesAgg[0].topTopic[0]._id) : '—';
 
   // Prompt set completions
   const pscAgg = await PromptSetCompletion.aggregate([
@@ -227,9 +244,8 @@ async function buildLearningFootprintForOrg(orgId, days = 30) {
   ]);
 
   const promptSetsCompleted = pscAgg?.[0]?.promptSetsCompleted || 0;
-  const activeFromPSC = new Set(
-    (pscAgg?.[0]?.activeLearnerSet || []).map(id => String(id))
-  );
+  const activeFromPSCArr = pscAgg?.[0]?.activeLearnerSet || [];
+  const activeFromPSC = new Set(activeFromPSCArr.map(id => String(id)));
 
   // Union active learners (notes OR prompt sets)
   const activeLearners = new Set([...activeFromNotes, ...activeFromPSC]).size;
@@ -242,7 +258,7 @@ async function buildLearningFootprintForOrg(orgId, days = 30) {
     unitsCompleted: safeNumber(unitsCompleted),
     promptSetsCompleted: safeNumber(promptSetsCompleted),
     avgCompletionsPerLearner,
-    topUnitType: unitsCompleted > 0 ? 'units' : '—' // Notes doesn't store unit type
+    mostPopularTopic
   };
 }
 
