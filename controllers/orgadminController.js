@@ -150,9 +150,8 @@ function daysAgo(n) {
 async function buildLearningFootprintForOrg(orgId, days = 30) {
   const since = daysAgo(days);
 
-  // 1) Get org leaders + their member ids
+  // leaders in org
   const leaderFilter = { organization: orgId, organizationOptOut: { $ne: true } };
-
   const leaders = await Leader.find(leaderFilter).select('_id members').lean();
 
   if (!leaders.length) {
@@ -165,18 +164,18 @@ async function buildLearningFootprintForOrg(orgId, days = 30) {
     };
   }
 
-  // Build a unique list of "learner ids"
-  // Include leaders themselves (in case they complete units) + their group members.
+  // Build learner ids: leaders + their members
   const learnerIdSet = new Set();
   for (const l of leaders) {
-    if (l?._id) learnerIdSet.add(l._id.toString());
+    if (l?._id) learnerIdSet.add(String(l._id));
     if (Array.isArray(l.members)) {
       for (const m of l.members) learnerIdSet.add(String(m));
     }
   }
+
   const learnerIds = Array.from(learnerIdSet)
-    .map(s => (mongoose.Types.ObjectId.isValid(s) ? new mongoose.Types.ObjectId(s) : null))
-    .filter(Boolean);
+    .filter(s => mongoose.Types.ObjectId.isValid(s))
+    .map(s => new mongoose.Types.ObjectId(s));
 
   if (!learnerIds.length) {
     return {
@@ -188,81 +187,52 @@ async function buildLearningFootprintForOrg(orgId, days = 30) {
     };
   }
 
-  // 2) Non-prompt completions via Notes
-  // NOTE: Adjust the field name if Notes uses something other than "member" or "createdAt".
-  // Common patterns: member, user, author, submittedBy, createdAt, submittedAt.
+  // Notes completions (non-prompt units)
   const notesAgg = await Notes.aggregate([
     {
       $match: {
         createdAt: { $gte: since },
-        member: { $in: learnerIds }
-      }
-    },
-    {
-      $project: {
-        member: 1,
-        unitType: {
-          $ifNull: ['$unitType', { $ifNull: ['$unitModel', '$unitKind'] }]
-        }
+        memberID: { $in: learnerIds }
       }
     },
     {
       $group: {
         _id: null,
         unitsCompleted: { $sum: 1 },
-        activeLearnerSet: { $addToSet: '$member' },
-        unitTypeCounts: { $push: '$unitType' }
+        activeLearnerSet: { $addToSet: '$memberID' }
       }
     }
   ]);
 
   const unitsCompleted = notesAgg?.[0]?.unitsCompleted || 0;
-  const activeLearnersFromNotes = (notesAgg?.[0]?.activeLearnerSet || []).length;
+  const activeFromNotes = new Set(
+    (notesAgg?.[0]?.activeLearnerSet || []).map(id => String(id))
+  );
 
-  // Determine top unit type (best effort)
-  let topUnitType = '—';
-  const rawTypes = notesAgg?.[0]?.unitTypeCounts || [];
-  if (rawTypes.length) {
-    const counts = new Map();
-    for (const t of rawTypes) {
-      const key = String(t || '').trim();
-      if (!key) continue;
-      counts.set(key, (counts.get(key) || 0) + 1);
-    }
-    let best = null;
-    for (const [k, v] of counts.entries()) {
-      if (!best || v > best.v) best = { k, v };
-    }
-    if (best?.k) topUnitType = best.k;
-  }
-
-  // 3) Prompt set completions
-  // NOTE: Adjust these fields to match your schema.
-  // Common patterns: member/user, completedAt/createdAt, status/completed/isComplete
+  // Prompt set completions
   const pscAgg = await PromptSetCompletion.aggregate([
     {
       $match: {
-        $or: [
-          { completedAt: { $gte: since } },
-          { createdAt: { $gte: since } }
-        ],
-        member: { $in: learnerIds },
-        $or: [
-          { status: 'completed' },
-          { completed: true },
-          { isComplete: true }
-        ]
+        completedAt: { $gte: since },
+        memberId: { $in: learnerIds }
       }
     },
-    { $group: { _id: null, promptSetsCompleted: { $sum: 1 } } }
+    {
+      $group: {
+        _id: null,
+        promptSetsCompleted: { $sum: 1 },
+        activeLearnerSet: { $addToSet: '$memberId' }
+      }
+    }
   ]);
 
   const promptSetsCompleted = pscAgg?.[0]?.promptSetsCompleted || 0;
+  const activeFromPSC = new Set(
+    (pscAgg?.[0]?.activeLearnerSet || []).map(id => String(id))
+  );
 
-  // Active learners: if you want “active learners” to mean anyone who completed ANYTHING:
-  // we should union notes + promptsetcompletion unique members.
-  // For simplicity, we use notes-based active learners; you can expand later.
-  const activeLearners = activeLearnersFromNotes;
+  // Union active learners (notes OR prompt sets)
+  const activeLearners = new Set([...activeFromNotes, ...activeFromPSC]).size;
 
   const avgCompletionsPerLearner =
     activeLearners > 0 ? Number((unitsCompleted / activeLearners).toFixed(2)) : 0;
@@ -272,9 +242,10 @@ async function buildLearningFootprintForOrg(orgId, days = 30) {
     unitsCompleted: safeNumber(unitsCompleted),
     promptSetsCompleted: safeNumber(promptSetsCompleted),
     avgCompletionsPerLearner,
-    topUnitType: topUnitType || '—'
+    topUnitType: unitsCompleted > 0 ? 'units' : '—' // Notes doesn't store unit type
   };
 }
+
 
 
 async function buildOrgGroupsLeaders(orgId) {
