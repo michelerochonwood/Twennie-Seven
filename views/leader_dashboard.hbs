@@ -309,10 +309,10 @@
       if (preActive) setActive(preActive.dataset.tab);
     }
 
-document.addEventListener('DOMContentLoaded', () => {
-  // ✅ admin tabs are real navigation now; no JS toggling needed
-  initTabs('leader');
-});
+    document.addEventListener('DOMContentLoaded', () => {
+      initTabs('admin');
+      initTabs('leader');
+    });
   })();
 </script>
 
