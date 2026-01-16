@@ -147,21 +147,40 @@ const fetchContributedUnits = async (memberId) => {
 
 // ✅ Fetch Member Engagement Report
 // ✅ Member Engagement (per-member rows shaped for the view)
+// ✅ Member Engagement (per-member rows shaped for the NEW view)
 const getMemberEngagementReport = async (req, res) => {
   try {
     console.log("✅ Fetching Member Engagement Report (updated)…");
 
+    // Always normalize leader id (prevents empty group member queries)
+    const leaderId = (req.user?._id || req.user?.id || req.session?.user?.id)?.toString();
+    console.log("[memberengagement] leaderId:", leaderId, "req.user.id:", req.user?.id, "req.user._id:", req.user?._id);
+
+    if (!leaderId) {
+      return res.status(403).render("member_form_views/error", {
+        layout: "memberformlayout",
+        title: "Access denied",
+        errorMessage: "Could not determine your leader account."
+      });
+    }
+
     // 1) Leader for header
-    const leader = await Leader.findById(req.user.id).select("groupName").lean();
+    const leader = await Leader.findById(leaderId).select("groupName").lean();
     if (!leader) {
-      console.error("❌ Leader not found.");
-      return res.status(403).json({ error: "Access denied", message: "Leader not found." });
+      console.error("❌ Leader not found:", leaderId);
+      return res.status(403).render("member_form_views/error", {
+        layout: "memberformlayout",
+        title: "Access denied",
+        errorMessage: "Leader account not found."
+      });
     }
 
     // 2) Members of this leader’s group
-    const members = await GroupMember.find({ groupId: req.user.id })
+    const members = await GroupMember.find({ groupId: leaderId })
       .select("_id name")
       .lean();
+
+    console.log("[memberengagement] group members:", members.length);
 
     if (!members.length) {
       return res.render("report_views/memberengagement", {
@@ -183,32 +202,33 @@ const getMemberEngagementReport = async (req, res) => {
 
       Notes.find({ memberID: { $in: memberIds } }).lean(),
 
-      // For mission title lookup (missionsCompleted)
+      // For mission title lookup (missionsCompleted list)
       Mission.find({}).select("_id mission_title").lean()
     ]);
 
     const missionTitleById = new Map(
-      missions.map(m => [m._id.toString(), m.mission_title || "Untitled mission"])
+      (missions || []).map(m => [m._id.toString(), m.mission_title || "Untitled mission"])
     );
 
     // Group prompt completions by member
     const completionsByMember = new Map();
-    for (const c of promptCompletions) {
-      const key = c.memberId.toString();
+    for (const c of (promptCompletions || [])) {
+      const key = c.memberId?.toString?.() || "";
+      if (!key) continue;
       if (!completionsByMember.has(key)) completionsByMember.set(key, []);
       completionsByMember.get(key).push(c);
     }
 
     // Group notes by member
     const notesByMember = new Map();
-    for (const n of notes) {
+    for (const n of (notes || [])) {
       const key = n.memberID?.toString?.() || "";
       if (!key) continue;
       if (!notesByMember.has(key)) notesByMember.set(key, []);
       notesByMember.get(key).push(n);
     }
 
-    // 4) Build rows
+    // 4) Build rows per member
     const memberEngagementReports = [];
 
     for (const m of members) {
@@ -216,23 +236,24 @@ const getMemberEngagementReport = async (req, res) => {
 
       // Prompt sets completed
       const myComps = completionsByMember.get(mid) || [];
-      const promptSetsCompleted = myComps.map(c => ({
-        name: c.promptSetId?.promptset_title || "Unknown Prompt Set",
-        dateCompleted: c.completedAt || c.createdAt
-      }));
+      const promptSetsCompleted = myComps
+        .map(c => ({
+          name: c.promptSetId?.promptset_title || "Unknown Prompt Set",
+          dateCompleted: c.completedAt || c.createdAt
+        }))
+        .sort((a, b) => new Date(a.dateCompleted || 0) - new Date(b.dateCompleted || 0));
 
-      // Units completed (Notes -> resolve unit details)
+      // Notes = units completed + missions completed + topics
       const myNotes = notesByMember.get(mid) || [];
       const unitsCompleted = [];
       const topicsFromCompleted = [];
 
-      // Missions completed (derived from notes where unitType === 'mission')
-      const missionsCompleted = [];
       const missionIdSet = new Set();
+      const missionsCompleted = [];
 
       for (const n of myNotes) {
-        // Missions completed
-        if (String(n.unitType || '').toLowerCase() === 'mission' && n.unitID) {
+        // Missions completed (best signal right now = notes on mission units)
+        if (String(n.unitType || "").toLowerCase() === "mission" && n.unitID) {
           const missionId = n.unitID.toString();
           if (!missionIdSet.has(missionId)) {
             missionIdSet.add(missionId);
@@ -243,13 +264,16 @@ const getMemberEngagementReport = async (req, res) => {
           }
         }
 
-        // Units completed (any note is a completion)
+        // Units completed (any note counts as completion)
         const d = await resolveUnitDetails(n.unitID);
         unitsCompleted.push({ unitTitle: d.unitTitle, unitType: d.unitType });
 
         if (d.main_topic) topicsFromCompleted.push(d.main_topic);
         if (Array.isArray(d.secondary_topics)) topicsFromCompleted.push(...d.secondary_topics);
       }
+
+      unitsCompleted.sort((a, b) => (a.unitTitle || "").localeCompare(b.unitTitle || ""));
+      missionsCompleted.sort((a, b) => (a.missionTitle || "").localeCompare(b.missionTitle || ""));
 
       // Topics from prompt completions
       const topicsFromComps = myComps.flatMap(c => {
@@ -262,11 +286,6 @@ const getMemberEngagementReport = async (req, res) => {
         new Set([...topicsFromComps, ...topicsFromCompleted].filter(Boolean))
       ).sort((a, b) => a.localeCompare(b));
 
-      // Sorting
-      promptSetsCompleted.sort((a, b) => new Date(a.dateCompleted || 0) - new Date(b.dateCompleted || 0));
-      unitsCompleted.sort((a, b) => (a.unitTitle || '').localeCompare(b.unitTitle || ''));
-      missionsCompleted.sort((a, b) => (a.missionTitle || '').localeCompare(b.missionTitle || ''));
-
       memberEngagementReports.push({
         memberName: nameById.get(mid) || "Unknown Member",
         unitsCompleted,
@@ -276,19 +295,21 @@ const getMemberEngagementReport = async (req, res) => {
       });
     }
 
-    // 5) Render
+    console.log("[memberengagement] rows:", memberEngagementReports.length);
+    if (memberEngagementReports[0]) console.log("[memberengagement] sample row:", memberEngagementReports[0]);
+
     return res.render("report_views/memberengagement", {
       layout: "dashboardlayout",
       leaderGroupName: leader.groupName,
       isMemberEngagement: true,
       memberEngagementReports
     });
-
   } catch (err) {
     console.error("❌ Error loading Member Engagement Report:", err);
     return res.status(500).send("Server error");
   }
 };
+
 
 
 
