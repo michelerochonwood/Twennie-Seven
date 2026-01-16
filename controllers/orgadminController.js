@@ -679,6 +679,13 @@ async function buildOrgGroupsLeaders(orgId) {
   });
 }
 
+// ✅ Admin: Team Engagement across teams (org-wide)
+// Updated to return:
+// - groupImage (from GroupProfile)
+// - promptSetsCompleted: ALL prompt set titles completed by the team (deduped, alphabetized)
+// - unitsCompleted: ALL unit titles completed by the team (deduped, alphabetized; missions excluded)
+// - topTopics (unchanged)
+// Removed counts that your new partial no longer uses.
 async function buildAdminTeamEngagement(orgId) {
   const leaderFilter = { organization: orgId, organizationOptOut: { $ne: true } };
 
@@ -690,17 +697,21 @@ async function buildAdminTeamEngagement(orgId) {
 
   if (!leaders.length) return [];
 
+  // ✅ Group images (one query)
+  const leaderIds = leaders.map(l => l._id);
+  const groupProfiles = await GroupProfile.find({ groupId: { $in: leaderIds } })
+    .select("groupId groupImage")
+    .lean();
+  const groupImgByLeaderId = new Map(
+    (groupProfiles || []).map(p => [p.groupId.toString(), p.groupImage])
+  );
+
   // Collect all person ids (leaders + group members) once
   const allPersonIdSet = new Set();
-  const groupMemberIdSet = new Set();
-
   for (const l of leaders) {
     if (l?._id) allPersonIdSet.add(String(l._id));
     if (Array.isArray(l.members)) {
-      for (const m of l.members) {
-        allPersonIdSet.add(String(m));
-        groupMemberIdSet.add(String(m));
-      }
+      for (const m of l.members) allPersonIdSet.add(String(m));
     }
   }
 
@@ -708,27 +719,14 @@ async function buildAdminTeamEngagement(orgId) {
     .filter(s => mongoose.Types.ObjectId.isValid(s))
     .map(s => new mongoose.Types.ObjectId(s));
 
-  const allGroupMemberIds = Array.from(groupMemberIdSet)
-    .filter(s => mongoose.Types.ObjectId.isValid(s))
-    .map(s => new mongoose.Types.ObjectId(s));
+  // --- Bulk pulls across org ---
+  const [promptCompletions, notes] = await Promise.all([
+    PromptSetCompletion.find({ memberId: { $in: allPersonIds } })
+      .populate("promptSetId", "promptset_title main_topic secondary_topics")
+      .lean(),
 
-  // --- Bulk pulls across org (fast) ---
-  const [promptCompletions, notes, contributedArticles, contributedVideos, contributedInterviews, contributedExercises, contributedTemplates, contributedPromptSets] =
-    await Promise.all([
-      PromptSetCompletion.find({ memberId: { $in: allPersonIds } })
-        .populate("promptSetId", "promptset_title main_topic secondary_topics")
-        .lean(),
-
-      Notes.find({ memberID: { $in: allPersonIds } }).lean(),
-
-      // contributions: by group members only (consistent with your prior team report)
-      Article.find({ "author.id": { $in: allGroupMemberIds } }).select("main_topic secondary_topics author").lean(),
-      Video.find({ "author.id": { $in: allGroupMemberIds } }).select("main_topic secondary_topics author").lean(),
-      Interview.find({ "author.id": { $in: allGroupMemberIds } }).select("main_topic secondary_topics author").lean(),
-      Exercise.find({ "author.id": { $in: allGroupMemberIds } }).select("main_topic secondary_topics author").lean(),
-      Template.find({ "author.id": { $in: allGroupMemberIds } }).select("main_topic secondary_topics author").lean(),
-      PromptSet.find({ "author.id": { $in: allGroupMemberIds } }).select("main_topic secondary_topics author").lean()
-    ]);
+    Notes.find({ memberID: { $in: allPersonIds } }).lean()
+  ]);
 
   // Index completions + notes by personId for quick aggregation
   const completionsByPerson = new Map(); // personIdStr -> [completion]
@@ -747,25 +745,7 @@ async function buildAdminTeamEngagement(orgId) {
     notesByPerson.get(pid).push(n);
   }
 
-  // Contributions grouped by authorId
-  const contribDocs = [
-    ...(contributedArticles || []),
-    ...(contributedVideos || []),
-    ...(contributedInterviews || []),
-    ...(contributedExercises || []),
-    ...(contributedTemplates || []),
-    ...(contributedPromptSets || [])
-  ];
-
-  const contribByAuthor = new Map(); // authorIdStr -> [doc]
-  for (const d of contribDocs) {
-    const aid = (d.author?.id || d.author || "").toString?.() || "";
-    if (!aid) continue;
-    if (!contribByAuthor.has(aid)) contribByAuthor.set(aid, []);
-    contribByAuthor.get(aid).push(d);
-  }
-
-  // Resolve unit details cache for notes → topics, and mission-filtering safety
+  // Resolve unit details cache for notes → titles/topics, and mission-filtering safety
   const unitCache = new Map(); // unitIdStr -> resolved details
 
   const reports = [];
@@ -775,38 +755,34 @@ async function buildAdminTeamEngagement(orgId) {
     const memberIds = Array.isArray(l.members) ? l.members.map(x => x.toString()) : [];
     const teamPersonIds = [leaderIdStr, ...memberIds];
 
-    // ---- Prompt set completions ----
+    // ---- Prompt set completions (ALL titles, deduped) ----
     const teamPromptComps = teamPersonIds.flatMap(pid => completionsByPerson.get(pid) || []);
-    const promptSetsCompletedCount = teamPromptComps.length;
+    const promptSetTitleSet = new Set(
+      teamPromptComps
+        .map(p => p.promptSetId?.promptset_title || "")
+        .filter(Boolean)
+    );
+    const promptSetsCompleted = Array.from(promptSetTitleSet).sort((a, b) => a.localeCompare(b));
 
-    const badgesEarnedCount = teamPromptComps.reduce((acc, p) => {
-      const hasBadge = p?.earnedBadge?.image || p?.earnedBadge?.name;
-      return acc + (hasBadge ? 1 : 0);
-    }, 0);
-
+    // Topics from completions (for topTopics)
     const topicsFromCompletions = teamPromptComps.flatMap(p => {
       const main = p.promptSetId?.main_topic ? [p.promptSetId.main_topic] : [];
       const secs = Array.isArray(p.promptSetId?.secondary_topics) ? p.promptSetId.secondary_topics : [];
       return [...main, ...secs];
     });
 
-    const recentPromptSets = teamPromptComps
-      .slice()
-      .sort((a, b) => new Date(b.completedAt || b.createdAt || 0) - new Date(a.completedAt || a.createdAt || 0))
-      .slice(0, 3)
-      .map(p => p.promptSetId?.promptset_title || "Unknown Prompt Set");
-
-    // ---- Units completed (notes) ----
+    // ---- Units completed (ALL titles, deduped; missions excluded robustly) ----
     const teamNotes = teamPersonIds.flatMap(pid => notesByPerson.get(pid) || []);
 
-    // exclude missions
-    const filteredNotes = teamNotes.filter(n => String(n.unitType || "").toLowerCase() !== "mission");
+    // First pass: exclude missions by note unitType if present
+    const nonMissionNotes = teamNotes.filter(n => String(n.unitType || "").toLowerCase() !== "mission");
 
+    // Distinct unitIDs from notes
     const distinctUnitIds = Array.from(
-      new Set(filteredNotes.map(n => (n.unitID ? String(n.unitID) : "")).filter(Boolean))
+      new Set(nonMissionNotes.map(n => (n.unitID ? String(n.unitID) : "")).filter(Boolean))
     );
 
-    let unitsCompletedCount = 0;
+    const unitTitleSet = new Set();
     const topicsFromCompletedUnits = [];
 
     for (const uid of distinctUnitIds) {
@@ -815,33 +791,22 @@ async function buildAdminTeamEngagement(orgId) {
         d = await resolveUnitDetails(uid);
         unitCache.set(uid, d);
       }
+
+      // Second pass: if it resolves to a mission anyway, skip (covers bad/missing note.unitType)
       if (String(d.unitType || "").toLowerCase() === "mission") continue;
 
-      unitsCompletedCount += 1;
+      if (d.unitTitle) unitTitleSet.add(d.unitTitle);
+
       if (d.main_topic) topicsFromCompletedUnits.push(d.main_topic);
       if (Array.isArray(d.secondary_topics) && d.secondary_topics.length) {
         topicsFromCompletedUnits.push(...d.secondary_topics);
       }
     }
 
-    // ---- Units contributed (by members only, consistent with earlier logic) ----
-    const memberContribDocs = memberIds.flatMap(mid => contribByAuthor.get(mid) || []);
-    const unitsContributedCount = memberContribDocs.length;
+    const unitsCompleted = Array.from(unitTitleSet).sort((a, b) => a.localeCompare(b));
 
-    const topicsFromContributions = memberContribDocs.flatMap(d => {
-      const main = d.main_topic ? [d.main_topic] : [];
-      const secs = Array.isArray(d.secondary_topics) ? d.secondary_topics : [];
-      return [...main, ...secs];
-    });
-
-    // ---- Topics engaged + top topics ----
-    const allTopics = [
-      ...topicsFromCompletions,
-      ...topicsFromCompletedUnits,
-      ...topicsFromContributions
-    ].filter(Boolean);
-
-    const topicsEngagedCount = new Set(allTopics).size;
+    // ---- Top topics (based on completions + completed units) ----
+    const allTopics = [...topicsFromCompletions, ...topicsFromCompletedUnits].filter(Boolean);
 
     const freq = new Map();
     for (const t of allTopics) freq.set(t, (freq.get(t) || 0) + 1);
@@ -857,27 +822,27 @@ async function buildAdminTeamEngagement(orgId) {
       teamLeaderName: l.groupLeaderName || l.name || "Leader",
       memberCount: memberIds.length,
 
-      promptSetsCompletedCount,
-      badgesEarnedCount,
-      unitsCompletedCount,
-      unitsContributedCount,
-      topicsEngagedCount,
+      // ✅ New fields for the trimmed admin_reports partial
+      groupImage:
+        groupImgByLeaderId.get(leaderIdStr) || "/images/default-group.png",
 
-      topTopics,
-      recentPromptSets
+      promptSetsCompleted, // ALL titles
+      unitsCompleted,      // ALL titles
+      topTopics
     });
   }
 
-  // Sort: most learning activity first
+  // Sort: most learning activity first (based on list lengths), then name
   reports.sort((a, b) => {
-    const as = (a.promptSetsCompletedCount || 0) + (a.unitsCompletedCount || 0);
-    const bs = (b.promptSetsCompletedCount || 0) + (b.unitsCompletedCount || 0);
+    const as = (a.promptSetsCompleted?.length || 0) + (a.unitsCompleted?.length || 0);
+    const bs = (b.promptSetsCompleted?.length || 0) + (b.unitsCompleted?.length || 0);
     if (bs !== as) return bs - as;
     return (a.teamName || "").localeCompare(b.teamName || "");
   });
 
   return reports;
 }
+
 
 // Build all data needed for ALL admin tabs, every time (no flash, no missing vars)
 async function buildAdminPayload(orgId) {

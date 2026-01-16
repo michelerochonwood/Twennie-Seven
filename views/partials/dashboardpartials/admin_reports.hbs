@@ -9,10 +9,7 @@
         <tr>
           <th class="dashboard-library-header">team</th>
           <th class="dashboard-library-header">prompt sets completed</th>
-          <th class="dashboard-library-header">badges earned</th>
           <th class="dashboard-library-header">units completed</th>
-          <th class="dashboard-library-header">units contributed</th>
-          <th class="dashboard-library-header">topics engaged</th>
           <th class="dashboard-library-header">top topics</th>
         </tr>
       </thead>
@@ -23,43 +20,50 @@
 
             <!-- Team -->
             <td class="dashboard-library-cell">
-              <div class="multi-record-item"><strong>{{this.teamName}}</strong></div>
-              {{#if this.teamLeaderName}}
-                <div class="multi-record-item" style="opacity:0.8;">leader: {{this.teamLeaderName}}</div>
-              {{/if}}
-              <div class="multi-record-item" style="opacity:0.8;">
-                members: {{this.memberCount}}
+              <div style="display:flex; gap:0.75rem; align-items:flex-start;">
+                
+                <!-- Group Image -->
+                <img
+                  src="{{this.groupImage}}"
+                  alt="group image"
+                  style="width:44px; height:44px; border-radius:8px; object-fit:cover;"
+                >
+
+                <!-- Team Info -->
+                <div>
+                  <div class="multi-record-item">
+                    <strong>{{this.teamName}}</strong>
+                  </div>
+
+                  {{#if this.teamLeaderName}}
+                    <div class="multi-record-item" style="opacity:0.8;">
+                      leader: {{this.teamLeaderName}}
+                    </div>
+                  {{/if}}
+
+                  <div class="multi-record-item" style="opacity:0.8;">
+                    members: {{this.memberCount}}
+                  </div>
+                </div>
               </div>
             </td>
 
-            <!-- Prompt Sets Completed -->
+            <!-- Prompt Sets Completed (titles only) -->
             <td class="dashboard-library-cell">
-              <div class="multi-record-item">{{this.promptSetsCompletedCount}}</div>
-{{#each this.recentPromptSets}}
-  <div class="multi-record-item" style="opacity:0.9;">{{this}}</div>
-{{else}}
-  <span class="no-data">—</span>
-{{/each}}
+              {{#each this.recentPromptSets}}
+                <div class="multi-record-item">{{this}}</div>
+              {{else}}
+                <span class="no-data">—</span>
+              {{/each}}
             </td>
 
-            <!-- Badges Earned -->
+            <!-- Units Completed (titles only) -->
             <td class="dashboard-library-cell">
-              <div class="multi-record-item">{{this.badgesEarnedCount}}</div>
-            </td>
-
-            <!-- Units Completed -->
-            <td class="dashboard-library-cell">
-              <div class="multi-record-item">{{this.unitsCompletedCount}}</div>
-            </td>
-
-            <!-- Units Contributed -->
-            <td class="dashboard-library-cell">
-              <div class="multi-record-item">{{this.unitsContributedCount}}</div>
-            </td>
-
-            <!-- Topics Engaged -->
-            <td class="dashboard-library-cell">
-              <div class="multi-record-item">{{this.topicsEngagedCount}}</div>
+              {{#each this.recentUnitsCompleted}}
+                <div class="multi-record-item">{{this}}</div>
+              {{else}}
+                <span class="no-data">—</span>
+              {{/each}}
             </td>
 
             <!-- Top Topics -->
@@ -67,17 +71,19 @@
               {{#each this.topTopics}}
                 <div class="multi-record-item">{{this}}</div>
               {{else}}
-                <span class="no-data">No topics</span>
+                <span class="no-data">—</span>
               {{/each}}
             </td>
 
           </tr>
         {{else}}
           <tr>
-            <td colspan="7" class="no-data">No team engagement data available.</td>
+            <td colspan="4" class="no-data">No team engagement data available.</td>
           </tr>
         {{/each}}
       </tbody>
     </table>
   </div>
 </section>
+
+
