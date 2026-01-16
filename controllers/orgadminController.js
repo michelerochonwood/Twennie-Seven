@@ -77,10 +77,10 @@ const since = null; // no date filter
   });
 }
 
-async function buildLibrarySubmissionsCount(orgId, days = null) {
-  const since = (typeof days === 'number') ? daysAgo(days) : null;
-  const dateFilter = since ? { createdAt: { $gte: since } } : {};
+async function buildLibrarySubmissionsCount(orgId) {
+  // NOTE: this is now ALL-TIME (no date filter)
 
+  // org people = leaders + their members
   const leaderFilter = { organization: orgId, organizationOptOut: { $ne: true } };
   const leaders = await Leader.find(leaderFilter).select('_id members').lean();
   if (!leaders.length) return 0;
@@ -88,7 +88,9 @@ async function buildLibrarySubmissionsCount(orgId, days = null) {
   const idSet = new Set();
   for (const l of leaders) {
     if (l?._id) idSet.add(String(l._id));
-    if (Array.isArray(l.members)) for (const m of l.members) idSet.add(String(m));
+    if (Array.isArray(l.members)) {
+      for (const m of l.members) idSet.add(String(m));
+    }
   }
 
   const orgPersonIds = Array.from(idSet)
@@ -107,23 +109,30 @@ async function buildLibrarySubmissionsCount(orgId, days = null) {
     missionsCreated,
     nuggetsCreated
   ] = await Promise.all([
-    Article.countDocuments({ 'author.id': { $in: orgPersonIds }, ...dateFilter }),
-    Video.countDocuments({ 'author.id': { $in: orgPersonIds }, ...dateFilter }),
-    PromptSet.countDocuments({ 'author.id': { $in: orgPersonIds }, ...dateFilter }),
-    Interview.countDocuments({ 'author.id': { $in: orgPersonIds }, ...dateFilter }),
-    Exercise.countDocuments({ 'author.id': { $in: orgPersonIds }, ...dateFilter }),
-    Template.countDocuments({ 'author.id': { $in: orgPersonIds }, ...dateFilter }),
+    Article.countDocuments({ 'author.id': { $in: orgPersonIds } }),
+    Video.countDocuments({ 'author.id': { $in: orgPersonIds } }),
+    PromptSet.countDocuments({ 'author.id': { $in: orgPersonIds } }),
+    Interview.countDocuments({ 'author.id': { $in: orgPersonIds } }),
+    Exercise.countDocuments({ 'author.id': { $in: orgPersonIds } }),
+    Template.countDocuments({ 'author.id': { $in: orgPersonIds } }),
 
-    // adjust if your mission field is createdBy instead of created_by
-    Mission.countDocuments({ created_by: { $in: orgPersonIds }, ...dateFilter }),
-    Nugget.countDocuments({ createdBy: { $in: orgPersonIds }, ...dateFilter })
+    // missions/nuggets use different creator fields in your app
+    Mission.countDocuments({ created_by: { $in: orgPersonIds } }),
+    Nugget.countDocuments({ createdBy: { $in: orgPersonIds } })
   ]);
 
   return (
-    articlesCreated + videosCreated + promptSetsCreated + interviewsCreated +
-    exercisesCreated + templatesCreated + missionsCreated + nuggetsCreated
+    articlesCreated +
+    videosCreated +
+    promptSetsCreated +
+    interviewsCreated +
+    exercisesCreated +
+    templatesCreated +
+    missionsCreated +
+    nuggetsCreated
   );
 }
+
 
 // -----------------------------
 // Snapshot builders
@@ -131,7 +140,6 @@ async function buildLibrarySubmissionsCount(orgId, days = null) {
 async function buildOrgSnapshot(orgId) {
   const organization = await Organization.findById(orgId).lean();
 
-  // Base empty shape (keeps your view stable)
   const empty = {
     organization: null,
     counts: {
@@ -154,7 +162,10 @@ async function buildOrgSnapshot(orgId) {
 
   if (!organization) return empty;
 
-  const leaderFilter = { organization: orgId, organizationOptOut: { $ne: true } };
+  const leaderFilter = {
+    organization: orgId,
+    organizationOptOut: { $ne: true }
+  };
 
   const [
     leadersCount,
@@ -165,33 +176,48 @@ async function buildOrgSnapshot(orgId) {
     suggestionsSent,
     pendingLibrarySubmissions
   ] = await Promise.all([
-    // Leaders in org
+    // leaders
     Leader.countDocuments(leaderFilter),
 
-    // Group names in org (kept for backward compat, even if you don't display it)
+    // groups (distinct group names)
     Leader.distinct('groupName', leaderFilter),
 
-    // Members total (sum of each leader.members array length)
+    // members (sum of leader.members[])
     Leader.aggregate([
       { $match: leaderFilter },
-      { $project: { memberCount: { $size: { $ifNull: ['$members', []] } } } },
-      { $group: { _id: null, total: { $sum: '$memberCount' } } }
+      {
+        $project: {
+          memberCount: { $size: { $ifNull: ['$members', []] } }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: '$memberCount' }
+        }
+      }
     ]),
 
-    // Pending join requests
-    OrganizationJoinRequest.find({ organization: orgId, status: 'pending' })
-      .populate('leader', 'groupLeaderName groupLeaderEmail username groupName profileImage')
+    // join requests
+    OrganizationJoinRequest.find({
+      organization: orgId,
+      status: 'pending'
+    })
+      .populate(
+        'leader',
+        'groupLeaderName groupLeaderEmail username groupName profileImage'
+      )
       .sort({ requestedAt: -1 })
       .lean(),
 
-    // Learning footprint (Notes + PromptSetCompletion)
+    // learning footprint (30 days is fine here)
     buildLearningFootprintForOrg(orgId, 30),
 
-    // ✅ NEW metric: suggestions sent (last 30 days)
-    buildSuggestionsSentCount(orgId, 30),
+    // ✅ ALL-TIME suggestions
+    UnitSuggestion.countDocuments({ organization: orgId }),
 
-    // ✅ NEW metric: library submissions (last 30 days)
-    buildLibrarySubmissionsCount(orgId, null)
+    // ✅ ALL-TIME library submissions
+    buildLibrarySubmissionsCount(orgId)
   ]);
 
   const groupsCount = (distinctGroupNames || [])
@@ -206,14 +232,15 @@ async function buildOrgSnapshot(orgId) {
       leaders: safeNumber(leadersCount),
       groups: safeNumber(groupsCount),
       members: safeNumber(membersCount),
-      pendingJoinRequests: safeNumber(pendingJoinRequestsList?.length || 0),
+      pendingJoinRequests: safeNumber(pendingJoinRequestsList.length),
       pendingLibrarySubmissions: safeNumber(pendingLibrarySubmissions),
       suggestionsSent: safeNumber(suggestionsSent)
     },
-    pendingJoinRequestsList: pendingJoinRequestsList || [],
+    pendingJoinRequestsList,
     learningFootprint: learningFootprint || empty.learningFootprint
   };
 }
+
 
 
 
