@@ -22,6 +22,8 @@ const Exercise  = require('../models/unit_models/exercise');
 const Template  = require('../models/unit_models/template');
 const Mission   = require('../models/unit_models/mission');
 const Nugget    = require('../models/unit_models/nugget');
+const GroupMember = require('../models/member_models/group_member');
+const Upcoming = require('../models/unit_models/upcoming');
 
 
 // -----------------------------
@@ -81,7 +83,36 @@ function viewPathForUnit(unitType, unitId) {
   return `/unitviews/${t}s/view/${id}`;
 }
 
+function pickTitle(unit) {
+  return (
+    unit.mission_title ||
+    unit.article_title ||
+    unit.video_title ||
+    unit.promptset_title ||
+    unit.interview_title ||
+    unit.exercise_title ||
+    unit.template_title ||
+    unit.title ||
+    unit.name ||
+    'Untitled Unit'
+  );
+}
 
+function pickMainTopic(unit) {
+  return unit.main_topic || unit.discipline || unit.client || unit.region || 'No topic';
+}
+
+function normalizeUnitTypeFromDoc(doc) {
+  if (doc.article_title) return 'article';
+  if (doc.video_title) return 'video';
+  if (doc.promptset_title) return 'promptset';
+  if (doc.interview_title) return 'interview';
+  if (doc.exercise_title) return 'exercise';
+  if (doc.template_title) return 'template';
+  if (doc.mission_title) return 'mission';
+  if (doc.title && (doc.discipline || doc.client || doc.region)) return 'nugget';
+  return 'unknown';
+}
 
 
 async function buildLibrarySubmissionsCount(orgId) {
@@ -251,7 +282,137 @@ UnitSuggestion.countDocuments({
 }
 
 
+async function buildOrgLeaderLibraries(orgId) {
+  const leaderFilter = { organization: orgId, organizationOptOut: { $ne: true } };
 
+  // all leaders (groups) in org
+  const leaders = await Leader.find(leaderFilter)
+    .select('_id groupName groupLeaderName members groupSize')
+    .sort({ groupName: 1 })
+    .lean();
+
+  if (!leaders.length) return [];
+
+  const rows = [];
+
+  for (const leader of leaders) {
+    const leaderId = leader._id;
+    const leaderIdStr = leaderId.toString();
+
+    // group members for this leader
+    const groupMembers = await GroupMember.find({ groupId: leaderId })
+      .select('_id name')
+      .lean();
+
+    const groupMemberIds = groupMembers.map(m => m._id);
+    const memberNameById = new Map(groupMembers.map(m => [m._id.toString(), m.name]));
+
+    // ----- leader units (authored by leader) -----
+    const [
+      leaderArticles,
+      leaderVideos,
+      leaderPromptSets,
+      leaderInterviews,
+      leaderExercises,
+      leaderTemplates,
+      leaderUpcomings,
+      leaderNuggets,
+      leaderMissions
+    ] = await Promise.all([
+      Article.find({ 'author.id': leaderIdStr }).lean(),
+      Video.find({ 'author.id': leaderIdStr }).lean(),
+      PromptSet.find({ 'author.id': leaderIdStr }).lean(),
+      Interview.find({ 'author.id': leaderIdStr }).lean(),
+      Exercise.find({ 'author.id': leaderIdStr }).lean(),
+      Template.find({ 'author.id': leaderIdStr }).lean(),
+      Upcoming.find({ createdBy: leaderId }).lean(),
+      Nugget.find({ createdBy: leaderId }).lean(),
+      Mission.find({ $or: [{ created_by: leaderId }, { createdBy: leaderId }] }).lean()
+    ]);
+
+    const leaderUnits = [
+      ...leaderArticles,
+      ...leaderVideos,
+      ...leaderPromptSets,
+      ...leaderInterviews,
+      ...leaderExercises,
+      ...leaderTemplates,
+      ...(leaderUpcomings || []),
+      ...(leaderNuggets || []),
+      ...(leaderMissions || [])
+    ].map(u => {
+      const unitType = u.unit_type ? 'upcoming' : normalizeUnitTypeFromDoc(u);
+      return {
+        unitType,
+        plannedType: u.unit_type || null, // upcoming only
+        title: pickTitle(u),
+        status: u.status || (unitType === 'nugget' ? '—' : 'Unknown'),
+        mainTopic: pickMainTopic(u),
+        _id: u._id,
+        projectedRelease: u.projected_release_at || u.projectedRelease || null
+      };
+    });
+
+    // ----- group member units (authored by group members) -----
+    const [
+      gmArticles,
+      gmVideos,
+      gmPromptSets,
+      gmInterviews,
+      gmExercises,
+      gmTemplates,
+      gmUpcomings,
+      gmNuggets,
+      gmMissions
+    ] = await Promise.all([
+      Article.find({ 'author.id': { $in: groupMemberIds } }).lean(),
+      Video.find({ 'author.id': { $in: groupMemberIds } }).lean(),
+      PromptSet.find({ 'author.id': { $in: groupMemberIds } }).lean(),
+      Interview.find({ 'author.id': { $in: groupMemberIds } }).lean(),
+      Exercise.find({ 'author.id': { $in: groupMemberIds } }).lean(),
+      Template.find({ 'author.id': { $in: groupMemberIds } }).lean(),
+      Upcoming.find({ createdBy: { $in: groupMemberIds } }).lean(),
+      Nugget.find({ createdBy: { $in: groupMemberIds } }).lean(),
+      Mission.find({ $or: [{ created_by: { $in: groupMemberIds } }, { createdBy: { $in: groupMemberIds } }] }).lean()
+    ]);
+
+    const groupMemberUnits = [
+      ...gmArticles,
+      ...gmVideos,
+      ...gmPromptSets,
+      ...gmInterviews,
+      ...gmExercises,
+      ...gmTemplates,
+      ...(gmUpcomings || []),
+      ...(gmNuggets || []),
+      ...(gmMissions || [])
+    ].map(u => {
+      const unitType = u.unit_type ? 'upcoming' : normalizeUnitTypeFromDoc(u);
+      const authorId = (u.createdBy || u.author?.id || u.author || u.created_by || '').toString?.() || '';
+
+      return {
+        author: memberNameById.get(authorId) || 'Group Member',
+        unitType,
+        plannedType: u.unit_type || null, // upcoming only
+        title: pickTitle(u),
+        status: u.status || (unitType === 'nugget' ? '—' : 'Unknown'),
+        mainTopic: pickMainTopic(u),
+        _id: u._id,
+        projectedRelease: u.projected_release_at || u.projectedRelease || null
+      };
+    });
+
+    rows.push({
+      leaderId: leaderIdStr,
+      leaderName: leader.groupLeaderName || leader.username || 'Leader',
+      groupName: leader.groupName || 'Unnamed group',
+      leaderUnits,
+      groupMemberUnits
+    });
+  }
+
+  return rows;
+}
 
 
 function daysAgo(n) {
@@ -603,23 +764,28 @@ async suggestions(req, res, next) {
 
 
 
-  async companyLibrary(req, res, next) {
-    try {
-      const orgId = await getOrgIdForAdmin(req);
-      if (!orgId) return res.redirect('/dashboard/leader');
+async companyLibrary(req, res, next) {
+  try {
+    const orgId = await getOrgIdForAdmin(req);
+    if (!orgId) return res.redirect('/dashboard/leader');
 
-      const payload = await buildAdminPayload(orgId);
+    const payload = await buildAdminPayload(orgId);
 
-      return res.render('leader_dashboard', {
-        ...baseRenderData(req),
-        adminTab: 'company-library',
-        ...payload
-      });
-    } catch (err) {
-      console.error('Org admin companyLibrary error:', err);
-      return next(err);
-    }
-  },
+    // ✅ NEW: libraries for every leader + their group
+    const orgLeaderLibraries = await buildOrgLeaderLibraries(orgId);
+
+    return res.render('leader_dashboard', {
+      ...baseRenderData(req),
+      adminTab: 'company-library',
+      ...payload,
+      orgLeaderLibraries
+    });
+  } catch (err) {
+    console.error('Org admin companyLibrary error:', err);
+    return next(err);
+  }
+},
+
 
   async reports(req, res, next) {
     try {
