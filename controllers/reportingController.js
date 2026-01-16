@@ -175,10 +175,20 @@ const getMemberEngagementReport = async (req, res) => {
       });
     }
 
-    // 2) Members of this leader’s group
-    const members = await GroupMember.find({ groupId: leaderId })
+// 2) Members of this leader’s group
+const leaderDoc = await Leader.findById(leaderId).select("groupName members").lean();
+
+const memberIdsFromLeader = Array.isArray(leaderDoc?.members) ? leaderDoc.members : [];
+console.log("[memberengagement] leader.members length:", memberIdsFromLeader.length);
+
+const members = memberIdsFromLeader.length
+  ? await GroupMember.find({ _id: { $in: memberIdsFromLeader } })
       .select("_id name")
-      .lean();
+      .lean()
+  : [];
+
+console.log("[memberengagement] group members (from leader.members):", members.length);
+
 
     console.log("[memberengagement] group members:", members.length);
 
