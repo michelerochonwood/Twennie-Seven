@@ -154,7 +154,14 @@ const getMemberEngagementReport = async (req, res) => {
 
     // Always normalize leader id (prevents empty group member queries)
     const leaderId = (req.user?._id || req.user?.id || req.session?.user?.id)?.toString();
-    console.log("[memberengagement] leaderId:", leaderId, "req.user.id:", req.user?.id, "req.user._id:", req.user?._id);
+    console.log(
+      "[memberengagement] leaderId:",
+      leaderId,
+      "req.user.id:",
+      req.user?.id,
+      "req.user._id:",
+      req.user?._id
+    );
 
     if (!leaderId) {
       return res.status(403).render("member_form_views/error", {
@@ -164,9 +171,9 @@ const getMemberEngagementReport = async (req, res) => {
       });
     }
 
-    // 1) Leader for header
-    const leader = await Leader.findById(leaderId).select("groupName").lean();
-    if (!leader) {
+    // 1) Leader for header + member list source of truth
+    const leaderDoc = await Leader.findById(leaderId).select("groupName members").lean();
+    if (!leaderDoc) {
       console.error("❌ Leader not found:", leaderId);
       return res.status(403).render("member_form_views/error", {
         layout: "memberformlayout",
@@ -175,27 +182,22 @@ const getMemberEngagementReport = async (req, res) => {
       });
     }
 
-// 2) Members of this leader’s group
-const leaderDoc = await Leader.findById(leaderId).select("groupName members").lean();
+    // 2) Members of this leader’s group (use leader.members instead of GroupMember.groupId)
+    const memberIdsFromLeader = Array.isArray(leaderDoc.members) ? leaderDoc.members : [];
+    console.log("[memberengagement] leader.members length:", memberIdsFromLeader.length);
 
-const memberIdsFromLeader = Array.isArray(leaderDoc?.members) ? leaderDoc.members : [];
-console.log("[memberengagement] leader.members length:", memberIdsFromLeader.length);
+    const members = memberIdsFromLeader.length
+      ? await GroupMember.find({ _id: { $in: memberIdsFromLeader } })
+          .select("_id name")
+          .lean()
+      : [];
 
-const members = memberIdsFromLeader.length
-  ? await GroupMember.find({ _id: { $in: memberIdsFromLeader } })
-      .select("_id name")
-      .lean()
-  : [];
-
-console.log("[memberengagement] group members (from leader.members):", members.length);
-
-
-    console.log("[memberengagement] group members:", members.length);
+    console.log("[memberengagement] group members (from leader.members):", members.length);
 
     if (!members.length) {
       return res.render("report_views/memberengagement", {
         layout: "dashboardlayout",
-        leaderGroupName: leader.groupName,
+        leaderGroupName: leaderDoc.groupName,
         isMemberEngagement: true,
         memberEngagementReports: []
       });
@@ -213,11 +215,21 @@ console.log("[memberengagement] group members (from leader.members):", members.l
       Notes.find({ memberID: { $in: memberIds } }).lean(),
 
       // For mission title lookup (missionsCompleted list)
-      Mission.find({}).select("_id mission_title").lean()
+      Mission.find({}).select("_id mission_title main_topic secondary_topics").lean()
     ]);
 
     const missionTitleById = new Map(
       (missions || []).map(m => [m._id.toString(), m.mission_title || "Untitled mission"])
+    );
+
+    const missionTopicsById = new Map(
+      (missions || []).map(m => [
+        m._id.toString(),
+        {
+          main: m.main_topic || "",
+          secondary: Array.isArray(m.secondary_topics) ? m.secondary_topics : []
+        }
+      ])
     );
 
     // Group prompt completions by member
@@ -262,19 +274,28 @@ console.log("[memberengagement] group members (from leader.members):", members.l
       const missionsCompleted = [];
 
       for (const n of myNotes) {
-        // Missions completed (best signal right now = notes on mission units)
-        if (String(n.unitType || "").toLowerCase() === "mission" && n.unitID) {
-          const missionId = n.unitID.toString();
-          if (!missionIdSet.has(missionId)) {
-            missionIdSet.add(missionId);
+        const isMissionNote = String(n.unitType || "").toLowerCase() === "mission";
+        const unitIdStr = n.unitID?.toString?.() || "";
+
+        // ✅ Missions completed: record mission, but DO NOT also count as "unit completed"
+        if (isMissionNote && unitIdStr) {
+          if (!missionIdSet.has(unitIdStr)) {
+            missionIdSet.add(unitIdStr);
             missionsCompleted.push({
-              missionId,
-              missionTitle: missionTitleById.get(missionId) || "Untitled mission"
+              missionId: unitIdStr,
+              missionTitle: missionTitleById.get(unitIdStr) || "Untitled mission"
             });
           }
+
+          // (optional) include mission topics in topics engaged
+          const mt = missionTopicsById.get(unitIdStr);
+          if (mt?.main) topicsFromCompleted.push(mt.main);
+          if (Array.isArray(mt?.secondary) && mt.secondary.length) topicsFromCompleted.push(...mt.secondary);
+
+          continue; // ✅ critical: prevents missions from appearing under units
         }
 
-        // Units completed (any note counts as completion)
+        // Units completed (non-mission notes)
         const d = await resolveUnitDetails(n.unitID);
         unitsCompleted.push({ unitTitle: d.unitTitle, unitType: d.unitType });
 
@@ -310,7 +331,7 @@ console.log("[memberengagement] group members (from leader.members):", members.l
 
     return res.render("report_views/memberengagement", {
       layout: "dashboardlayout",
-      leaderGroupName: leader.groupName,
+      leaderGroupName: leaderDoc.groupName,
       isMemberEngagement: true,
       memberEngagementReports
     });
@@ -319,6 +340,7 @@ console.log("[memberengagement] group members (from leader.members):", members.l
     return res.status(500).send("Server error");
   }
 };
+
 
 
 
