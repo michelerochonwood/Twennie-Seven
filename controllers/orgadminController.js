@@ -29,6 +29,87 @@ const Upcoming = require('../models/unit_models/upcoming');
 // -----------------------------
 // Helpers
 // -----------------------------
+
+
+const resolveUnitDetails = async (unitID) => {
+  if (!unitID) {
+    return {
+      unitTitle: "Unknown Unit",
+      unitType: "Unknown",
+      main_topic: "Unknown",
+      secondary_topics: []
+    };
+  }
+
+  const id = unitID.toString();
+
+  // Helper to normalize common fields
+  const normalize = (doc, title, type) => ({
+    unitTitle: title || "Unknown Unit",
+    unitType: type || "Unknown",
+    main_topic: doc?.main_topic || "Unknown Topic",
+    secondary_topics: Array.isArray(doc?.secondary_topics) ? doc.secondary_topics : []
+  });
+
+  // Try each model in priority order
+  const article = await Article.findById(id).select("article_title main_topic secondary_topics").lean();
+  if (article) return normalize(article, article.article_title, "Article");
+
+  const video = await Video.findById(id).select("video_title main_topic secondary_topics").lean();
+  if (video) return normalize(video, video.video_title, "Video");
+
+  const interview = await Interview.findById(id).select("interview_title main_topic secondary_topics").lean();
+  if (interview) return normalize(interview, interview.interview_title, "Interview");
+
+  const exercise = await Exercise.findById(id).select("exercise_title main_topic secondary_topics").lean();
+  if (exercise) return normalize(exercise, exercise.exercise_title, "Exercise");
+
+  const template = await Template.findById(id).select("template_title main_topic secondary_topics").lean();
+  if (template) return normalize(template, template.template_title, "Template");
+
+  const promptSet = await PromptSet.findById(id).select("promptset_title main_topic secondary_topics").lean();
+  if (promptSet) return normalize(promptSet, promptSet.promptset_title, "Prompt Set");
+
+  // ✅ Missions
+  // Your mission topics live on main_topic/secondary_topics; title is mission_title
+  const mission = await Mission.findById(id).select("mission_title main_topic secondary_topics").lean();
+  if (mission) return normalize(mission, mission.mission_title, "Mission");
+
+  // ✅ Nuggets
+  // Nuggets don’t necessarily have topics; treat discipline/client/region as the “main_topic”
+  const nugget = await Nugget.findById(id).select("title discipline client region").lean();
+  if (nugget) {
+    return {
+      unitTitle: nugget.title || "Untitled Nugget",
+      unitType: "Nugget",
+      main_topic: nugget.discipline || nugget.client || nugget.region || "Unknown Topic",
+      secondary_topics: []
+    };
+  }
+
+  // ✅ Upcoming Units
+  // Upcoming uses title + main_topic; no secondary_topics typically
+  const upcoming = await Upcoming.findById(id).select("title unit_type main_topic secondary_topics").lean();
+  if (upcoming) {
+    const planned = upcoming.unit_type ? ` (${upcoming.unit_type})` : "";
+    return {
+      unitTitle: (upcoming.title || "Upcoming Unit") + planned,
+      unitType: "Upcoming",
+      main_topic: upcoming.main_topic || "Unknown Topic",
+      secondary_topics: Array.isArray(upcoming.secondary_topics) ? upcoming.secondary_topics : []
+    };
+  }
+
+  return {
+    unitTitle: "Unknown Unit",
+    unitType: "Unknown",
+    main_topic: "Unknown",
+    secondary_topics: []
+  };
+};
+
+
+
 function baseRenderData(req) {
   return {
     layout: 'dashboardlayout',
@@ -598,39 +679,245 @@ async function buildOrgGroupsLeaders(orgId) {
   });
 }
 
+async function buildAdminTeamEngagement(orgId) {
+  const leaderFilter = { organization: orgId, organizationOptOut: { $ne: true } };
+
+  // All leaders in org = all teams
+  const leaders = await Leader.find(leaderFilter)
+    .select("_id groupName groupLeaderName name members")
+    .sort({ groupName: 1 })
+    .lean();
+
+  if (!leaders.length) return [];
+
+  // Collect all person ids (leaders + group members) once
+  const allPersonIdSet = new Set();
+  const groupMemberIdSet = new Set();
+
+  for (const l of leaders) {
+    if (l?._id) allPersonIdSet.add(String(l._id));
+    if (Array.isArray(l.members)) {
+      for (const m of l.members) {
+        allPersonIdSet.add(String(m));
+        groupMemberIdSet.add(String(m));
+      }
+    }
+  }
+
+  const allPersonIds = Array.from(allPersonIdSet)
+    .filter(s => mongoose.Types.ObjectId.isValid(s))
+    .map(s => new mongoose.Types.ObjectId(s));
+
+  const allGroupMemberIds = Array.from(groupMemberIdSet)
+    .filter(s => mongoose.Types.ObjectId.isValid(s))
+    .map(s => new mongoose.Types.ObjectId(s));
+
+  // --- Bulk pulls across org (fast) ---
+  const [promptCompletions, notes, contributedArticles, contributedVideos, contributedInterviews, contributedExercises, contributedTemplates, contributedPromptSets] =
+    await Promise.all([
+      PromptSetCompletion.find({ memberId: { $in: allPersonIds } })
+        .populate("promptSetId", "promptset_title main_topic secondary_topics")
+        .lean(),
+
+      Notes.find({ memberID: { $in: allPersonIds } }).lean(),
+
+      // contributions: by group members only (consistent with your prior team report)
+      Article.find({ "author.id": { $in: allGroupMemberIds } }).select("main_topic secondary_topics author").lean(),
+      Video.find({ "author.id": { $in: allGroupMemberIds } }).select("main_topic secondary_topics author").lean(),
+      Interview.find({ "author.id": { $in: allGroupMemberIds } }).select("main_topic secondary_topics author").lean(),
+      Exercise.find({ "author.id": { $in: allGroupMemberIds } }).select("main_topic secondary_topics author").lean(),
+      Template.find({ "author.id": { $in: allGroupMemberIds } }).select("main_topic secondary_topics author").lean(),
+      PromptSet.find({ "author.id": { $in: allGroupMemberIds } }).select("main_topic secondary_topics author").lean()
+    ]);
+
+  // Index completions + notes by personId for quick aggregation
+  const completionsByPerson = new Map(); // personIdStr -> [completion]
+  for (const c of (promptCompletions || [])) {
+    const pid = c.memberId?.toString?.() || "";
+    if (!pid) continue;
+    if (!completionsByPerson.has(pid)) completionsByPerson.set(pid, []);
+    completionsByPerson.get(pid).push(c);
+  }
+
+  const notesByPerson = new Map(); // personIdStr -> [note]
+  for (const n of (notes || [])) {
+    const pid = n.memberID?.toString?.() || "";
+    if (!pid) continue;
+    if (!notesByPerson.has(pid)) notesByPerson.set(pid, []);
+    notesByPerson.get(pid).push(n);
+  }
+
+  // Contributions grouped by authorId
+  const contribDocs = [
+    ...(contributedArticles || []),
+    ...(contributedVideos || []),
+    ...(contributedInterviews || []),
+    ...(contributedExercises || []),
+    ...(contributedTemplates || []),
+    ...(contributedPromptSets || [])
+  ];
+
+  const contribByAuthor = new Map(); // authorIdStr -> [doc]
+  for (const d of contribDocs) {
+    const aid = (d.author?.id || d.author || "").toString?.() || "";
+    if (!aid) continue;
+    if (!contribByAuthor.has(aid)) contribByAuthor.set(aid, []);
+    contribByAuthor.get(aid).push(d);
+  }
+
+  // Resolve unit details cache for notes → topics, and mission-filtering safety
+  const unitCache = new Map(); // unitIdStr -> resolved details
+
+  const reports = [];
+
+  for (const l of leaders) {
+    const leaderIdStr = l._id.toString();
+    const memberIds = Array.isArray(l.members) ? l.members.map(x => x.toString()) : [];
+    const teamPersonIds = [leaderIdStr, ...memberIds];
+
+    // ---- Prompt set completions ----
+    const teamPromptComps = teamPersonIds.flatMap(pid => completionsByPerson.get(pid) || []);
+    const promptSetsCompletedCount = teamPromptComps.length;
+
+    const badgesEarnedCount = teamPromptComps.reduce((acc, p) => {
+      const hasBadge = p?.earnedBadge?.image || p?.earnedBadge?.name;
+      return acc + (hasBadge ? 1 : 0);
+    }, 0);
+
+    const topicsFromCompletions = teamPromptComps.flatMap(p => {
+      const main = p.promptSetId?.main_topic ? [p.promptSetId.main_topic] : [];
+      const secs = Array.isArray(p.promptSetId?.secondary_topics) ? p.promptSetId.secondary_topics : [];
+      return [...main, ...secs];
+    });
+
+    const recentPromptSets = teamPromptComps
+      .slice()
+      .sort((a, b) => new Date(b.completedAt || b.createdAt || 0) - new Date(a.completedAt || a.createdAt || 0))
+      .slice(0, 3)
+      .map(p => p.promptSetId?.promptset_title || "Unknown Prompt Set");
+
+    // ---- Units completed (notes) ----
+    const teamNotes = teamPersonIds.flatMap(pid => notesByPerson.get(pid) || []);
+
+    // exclude missions
+    const filteredNotes = teamNotes.filter(n => String(n.unitType || "").toLowerCase() !== "mission");
+
+    const distinctUnitIds = Array.from(
+      new Set(filteredNotes.map(n => (n.unitID ? String(n.unitID) : "")).filter(Boolean))
+    );
+
+    let unitsCompletedCount = 0;
+    const topicsFromCompletedUnits = [];
+
+    for (const uid of distinctUnitIds) {
+      let d = unitCache.get(uid);
+      if (!d) {
+        d = await resolveUnitDetails(uid);
+        unitCache.set(uid, d);
+      }
+      if (String(d.unitType || "").toLowerCase() === "mission") continue;
+
+      unitsCompletedCount += 1;
+      if (d.main_topic) topicsFromCompletedUnits.push(d.main_topic);
+      if (Array.isArray(d.secondary_topics) && d.secondary_topics.length) {
+        topicsFromCompletedUnits.push(...d.secondary_topics);
+      }
+    }
+
+    // ---- Units contributed (by members only, consistent with earlier logic) ----
+    const memberContribDocs = memberIds.flatMap(mid => contribByAuthor.get(mid) || []);
+    const unitsContributedCount = memberContribDocs.length;
+
+    const topicsFromContributions = memberContribDocs.flatMap(d => {
+      const main = d.main_topic ? [d.main_topic] : [];
+      const secs = Array.isArray(d.secondary_topics) ? d.secondary_topics : [];
+      return [...main, ...secs];
+    });
+
+    // ---- Topics engaged + top topics ----
+    const allTopics = [
+      ...topicsFromCompletions,
+      ...topicsFromCompletedUnits,
+      ...topicsFromContributions
+    ].filter(Boolean);
+
+    const topicsEngagedCount = new Set(allTopics).size;
+
+    const freq = new Map();
+    for (const t of allTopics) freq.set(t, (freq.get(t) || 0) + 1);
+
+    const topTopics = Array.from(freq.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([topic]) => topic);
+
+    reports.push({
+      teamId: leaderIdStr,
+      teamName: l.groupName || "Unnamed group",
+      teamLeaderName: l.groupLeaderName || l.name || "Leader",
+      memberCount: memberIds.length,
+
+      promptSetsCompletedCount,
+      badgesEarnedCount,
+      unitsCompletedCount,
+      unitsContributedCount,
+      topicsEngagedCount,
+
+      topTopics,
+      recentPromptSets
+    });
+  }
+
+  // Sort: most learning activity first
+  reports.sort((a, b) => {
+    const as = (a.promptSetsCompletedCount || 0) + (a.unitsCompletedCount || 0);
+    const bs = (b.promptSetsCompletedCount || 0) + (b.unitsCompletedCount || 0);
+    if (bs !== as) return bs - as;
+    return (a.teamName || "").localeCompare(b.teamName || "");
+  });
+
+  return reports;
+}
+
 // Build all data needed for ALL admin tabs, every time (no flash, no missing vars)
 async function buildAdminPayload(orgId) {
-  const [orgSnapshot, orgGroups, organization] = await Promise.all([
+  const [orgSnapshot, orgGroups, organization, adminTeamEngagementReports] = await Promise.all([
     buildOrgSnapshot(orgId),
     buildOrgGroupsLeaders(orgId),
-    Organization.findById(orgId).select('name slug industry createdAt').lean()
+    Organization.findById(orgId).select('name slug industry createdAt').lean(),
+
+    // ✅ NEW: cross-team engagement table
+    buildAdminTeamEngagement(orgId)
   ]);
 
   return {
-    // keep snapshot available if some partials use orgSnapshot.*
     orgSnapshot,
 
-    // ✅ flatten for existing partials like admin_myorganization
-counts: orgSnapshot?.counts || {
-  leaders: 0, groups: 0, members: 0,
-  pendingJoinRequests: 0,
-  pendingLibrarySubmissions: 0,
-  suggestionsSent: 0
-},
-learningFootprint: orgSnapshot?.learningFootprint || {
-  activeLearners: 0,
-  unitsCompleted: 0,
-  promptSetsCompleted: 0,
-  avgCompletionsPerLearner: 0,
-  mostPopularTopic: '—'
-},
+    counts: orgSnapshot?.counts || {
+      leaders: 0, groups: 0, members: 0,
+      pendingJoinRequests: 0,
+      pendingLibrarySubmissions: 0,
+      suggestionsSent: 0
+    },
+    learningFootprint: orgSnapshot?.learningFootprint || {
+      activeLearners: 0,
+      unitsCompleted: 0,
+      promptSetsCompleted: 0,
+      avgCompletionsPerLearner: 0,
+      mostPopularTopic: '—'
+    },
     pendingJoinRequestsList: orgSnapshot?.pendingJoinRequestsList || [],
 
-    // org identity + other admin tab data
     organization,
-    orgGroups
+    orgGroups,
+
+    // ✅ NEW: used by dashboardpartials/admin_reports
+    adminTeamEngagementReports
   };
 }
+
+
+
 
 
 // -----------------------------
