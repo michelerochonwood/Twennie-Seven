@@ -1010,5 +1010,4 @@ module.exports = {
   getPromptSetsCompletedReport,
   getTeamEngagementReport,
   getUnitsCompletedReport,
-
 };
