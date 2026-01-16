@@ -537,9 +537,10 @@ async suggestions(req, res, next) {
 
     const payload = await buildAdminPayload(orgId);
 
-    // ✅ My Suggestions (created by this admin)
     const adminId = req.user?._id;
+    if (!adminId) return res.redirect('/dashboard/leader');
 
+    // ✅ My Suggestions (created by this admin, within this org)
     const rawMySuggestions = await UnitSuggestion.find({
       organization: orgId,
       suggestedBy: adminId
@@ -547,18 +548,46 @@ async suggestions(req, res, next) {
       .sort({ createdAt: -1 })
       .lean();
 
-    const mySuggestions = rawMySuggestions.map(s => ({
-      _id: s._id.toString(),
-      unitType: s.unitType,
-      unitTitle: s.unitTitle || 'Untitled unit',
-      main_topic: s.main_topic || '',
-      secondary_topic: s.secondary_topic || '',
-      note: s.note || '',
-      status: s.status || 'pending',
-      suggestedAtFormatted: s.createdAt ? fmtDate(s.createdAt) : '',
-      viewPath: viewPathForUnit(s.unitType, s.unitId),
-      leaderId: s.leaderId?.toString?.() || ''
-    }));
+    // Resolve leader recipient names in one query
+    const leaderIds = [...new Set(
+      rawMySuggestions
+        .map(s => s.leaderId?.toString?.())
+        .filter(Boolean)
+    )];
+
+    const leaders = leaderIds.length
+      ? await Leader.find({ _id: { $in: leaderIds } })
+          .select('_id groupLeaderName username groupName')
+          .lean()
+      : [];
+
+    const leaderNameById = new Map(
+      leaders.map(l => [
+        l._id.toString(),
+        (l.groupLeaderName || l.username || l.groupName || 'Leader')
+      ])
+    );
+
+    const mySuggestions = rawMySuggestions.map(s => {
+      const leaderIdStr = s.leaderId?.toString?.() || '';
+      const leaderName = leaderIdStr ? (leaderNameById.get(leaderIdStr) || 'Leader') : '';
+
+      return {
+        _id: s._id.toString(),
+        unitType: s.unitType,
+        unitTitle: s.unitTitle || 'Untitled unit',
+        main_topic: s.main_topic || '',
+        secondary_topic: s.secondary_topic || '',
+        note: s.note || '',
+        status: s.status || 'pending',
+        suggestedAtFormatted: s.createdAt ? fmtDate(s.createdAt) : '',
+        viewPath: viewPathForUnit(s.unitType, s.unitId),
+
+        // ✅ for the partial (array for future multi-leader support)
+        leaderId: leaderIdStr,
+        suggestedToNames: leaderName ? [leaderName] : []
+      };
+    });
 
     return res.render('leader_dashboard', {
       ...baseRenderData(req),
@@ -571,6 +600,7 @@ async suggestions(req, res, next) {
     return next(err);
   }
 },
+
 
 
   async companyLibrary(req, res, next) {
