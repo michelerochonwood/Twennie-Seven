@@ -75,29 +75,30 @@
   <!-- Report Navigation Links -->
   <div class="report-links-container">
 
-    {{#unless isMemberEngagement}}
-      <a href="/reports/memberengagement" class="report-link">
-        <img src="https://www.twennie.com/icons/memberengagement.svg" alt="Member Engagement Report">
-      </a>
-    {{/unless}}
+{{#unless isMemberEngagement}}
+  <a href="/reports/memberengagement" class="report-link">
+    <img src="/images/memberengagementreport.png" alt="Member Engagement Report">
+  </a>
+{{/unless}}
 
-    {{#unless isTeamEngagement}}
-      <a href="/reports/teamengagement" class="report-link">
-        <img src="https://www.twennie.com/icons/teamengagement.svg" alt="Team Engagement Report">
-      </a>
-    {{/unless}}
+{{#unless isNuggetsMonitored}}
+  <a href="/reports/nuggetsmonitored" class="report-link">
+    <img src="/images/nuggetsreport.png" alt="Nuggets Being Monitored Report">
+  </a>
+{{/unless}}
 
-    {{#unless isPromptSetsCompleted}}
-      <a href="/reports/promptsetscompleted" class="report-link">
-        <img src="https://www.twennie.com/icons/promptsets.svg" alt="Prompt Sets Report">
-      </a>
-    {{/unless}}
+{{#unless isPromptSetsCompleted}}
+  <a href="/reports/promptsetscompleted" class="report-link">
+    <img src="/images/promptsetsreport.png" alt="Prompt Sets Report">
+  </a>
+{{/unless}}
 
-    {{#unless isUnitsCompleted}}
-      <a href="/reports/unitscompleted" class="report-link">
-        <img src="https://www.twennie.com/icons/libraryunits.svg" alt="Library Units Report">
-      </a>
-    {{/unless}}
+{{#unless isUnitsCompleted}}
+  <a href="/reports/unitscompleted" class="report-link">
+    <img src="/images/libraryunitsreport.png" alt="Library Units Report">
+  </a>
+{{/unless}}
+
 
   </div>
 </section>

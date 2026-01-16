@@ -543,52 +543,88 @@ const getNuggetsMonitoredReport = async (req, res) => {
 };
 
 
-// ✅ Fetch Prompt Sets Completed Report
-// ✅ Leader: Prompt Sets Completed (progress-driven, with completion fallback)
+// ✅ Fetch Prompt Sets Completed Report (progress-driven, completion fallback)
+// Uses leader.members as source of truth + includes leader as a row source.
 const getPromptSetsCompletedReport = async (req, res) => {
   try {
-    console.log("✅ Fetching Prompt Sets Completed Report (from PROGRESS)…");
+    console.log("✅ Fetching Prompt Sets Completed Report (from PROGRESS; leader+members)…");
 
-    // 0) Leader + group members
-    const leader = await Leader.findById(req.user.id).select("groupName").lean();
-    if (!leader) {
-      console.error("❌ Leader not found.");
-      return res.status(403).json({ error: "Access denied", message: "Leader not found." });
+    const leaderId = (req.user?._id || req.user?.id || req.session?.user?.id)?.toString();
+    if (!leaderId) {
+      return res.status(403).render("member_form_views/error", {
+        layout: "memberformlayout",
+        title: "Access denied",
+        errorMessage: "Could not determine your leader account."
+      });
     }
 
-    const members = await GroupMember.find({ groupId: req.user.id })
-      .select("_id name")
-      .lean();
+    // 1) Leader header + member list source of truth
+    const leaderDoc = await Leader.findById(leaderId).select("_id name groupName members").lean();
+    if (!leaderDoc) {
+      console.error("❌ Leader not found:", leaderId);
+      return res.status(403).render("member_form_views/error", {
+        layout: "memberformlayout",
+        title: "Access denied",
+        errorMessage: "Leader account not found."
+      });
+    }
 
-    const memberIds = members.map(m => m._id?.toString());
-    const nameById = new Map(members.map(m => [m._id.toString(), m.name]));
+    // 2) Group members from leader.members
+    const memberIdsFromLeader = Array.isArray(leaderDoc.members) ? leaderDoc.members : [];
+    const groupMembers = memberIdsFromLeader.length
+      ? await GroupMember.find({ _id: { $in: memberIdsFromLeader } })
+          .select("_id name")
+          .lean()
+      : [];
 
-    // 1) Pull all PROGRESS rows for this team (source of truth for notes)
-    const progresses = await PromptSetProgress.find({ memberId: { $in: memberIds } })
+    // 3) People included in report (leader + group members)
+    const reportPeople = [
+      { _id: leaderDoc._id, name: leaderDoc.name || "Leader" },
+      ...groupMembers
+    ];
+
+    const personIds = reportPeople.map(p => p._id); // ObjectIds
+    const nameById = new Map(reportPeople.map(p => [p._id.toString(), p.name]));
+
+    if (!personIds.length) {
+      return res.render("report_views/promptsetscompleted", {
+        layout: "dashboardlayout",
+        leaderGroupName: leaderDoc.groupName,
+        isPromptSetsCompleted: true,
+        promptSetsCompletedReports: []
+      });
+    }
+
+    // 4) Pull PROGRESS rows (source of truth for notes)
+    // ✅ IMPORTANT: use ObjectId $in (your completion docs show ObjectId memberId)
+    const progresses = await PromptSetProgress.find({ memberId: { $in: personIds } })
       .populate("promptSetId")
       .lean();
 
-    // 2) Pull COMPLETIONS once (to get completedAt if it exists)
-    const completions = await PromptSetCompletion.find({ memberId: { $in: memberIds } })
-      .select("memberId promptSetId completedAt notes")
+    // 5) Pull COMPLETIONS once (for completedAt fallback)
+    const completions = await PromptSetCompletion.find({ memberId: { $in: personIds } })
+      .select("memberId promptSetId completedAt createdAt updatedAt")
       .lean();
 
     const completionKey = (mid, psid) => `${mid}::${psid}`;
     const completionByKey = new Map(
-      completions.map(c => [completionKey(c.memberId.toString(), c.promptSetId.toString()), c])
+      (completions || []).map(c => [
+        completionKey(c.memberId.toString(), c.promptSetId.toString()),
+        c
+      ])
     );
 
     const TOTAL_PROMPTS = 21; // Prompt0 + Prompts 1..20
     const reports = [];
 
-    for (const p of progresses) {
+    for (const p of (progresses || [])) {
       const ps = p.promptSetId;
-      if (!ps) continue; // guard
+      if (!ps) continue;
 
-      const mid = p.memberId?.toString();
+      const mid = p.memberId?.toString?.() || "";
       const memberName = nameById.get(mid) || "Unknown Member";
 
-      // Prompts: build 21 columns from PromptSet fields (0..20)
+      // Prompts: 21 columns from PromptSet fields (0..20)
       const prompts = Array.from({ length: TOTAL_PROMPTS }, (_, idx) => {
         const headlineKey = `prompt_headline${idx}`;
         const textKey     = `Prompt${idx}`;
@@ -598,7 +634,7 @@ const getPromptSetsCompletedReport = async (req, res) => {
         };
       });
 
-      // Notes from progress; pad to 21; shape to { notes: [{content}] }
+      // Notes from progress; pad to 21; shape: { notes: [{ memberName, content }] }
       const notesArr = Array.isArray(p.notes) ? p.notes : [];
       const promptNotes = Array.from({ length: TOTAL_PROMPTS }, (_, idx) => {
         const content = notesArr[idx] || "";
@@ -610,26 +646,28 @@ const getPromptSetsCompletedReport = async (req, res) => {
       const dateCompleted = comp?.completedAt || p.updatedAt || p.createdAt;
 
       reports.push({
-        // Overview table
+        // Table 1 fields (new view uses these)
         promptSetTitle: ps.promptset_title || "Unknown Prompt Set",
         main_topic: ps.main_topic || "No Topic",
         secondary_topics: ps.secondary_topics || [],
         purpose: ps.purpose || "No purpose provided",
+
+        // Still okay to keep (view no longer shows them, but other views may)
         characteristics: ps.characteristics || [],
         targetAudience: ps.target_audience || "No audience specified",
 
-        // Who/when
+        // Who/when (view iterates completedBy)
         completedBy: [{ memberName, dateCompleted }],
 
-        // Prompt texts & notes tables
+        // Table 2 fields
         prompts,
         promptNotes
       });
     }
 
-    // Optional: sort by Prompt Set Title then member
+    // Sort by Prompt Set Title then member
     reports.sort((a, b) => {
-      const t = a.promptSetTitle.localeCompare(b.promptSetTitle);
+      const t = (a.promptSetTitle || "").localeCompare(b.promptSetTitle || "");
       if (t !== 0) return t;
       const an = a.completedBy?.[0]?.memberName || "";
       const bn = b.completedBy?.[0]?.memberName || "";
@@ -638,18 +676,15 @@ const getPromptSetsCompletedReport = async (req, res) => {
 
     return res.render("report_views/promptsetscompleted", {
       layout: "dashboardlayout",
-      leaderGroupName: leader.groupName,
+      leaderGroupName: leaderDoc.groupName,
+      isPromptSetsCompleted: true,
       promptSetsCompletedReports: reports
     });
   } catch (err) {
-    console.error("❌ Error loading Prompt Sets Completed Report (progress-driven):", err);
+    console.error("❌ Error loading Prompt Sets Completed Report (progress-driven; leader+members):", err);
     return res.status(500).send("Server error");
   }
 };
-
-
-
-
 
 
 
@@ -807,39 +842,84 @@ const getTeamEngagementReport = async (req, res) => {
 
 
 
+// ✅ Fetch Units Completed Report (grouped by unit, includes notes)
+// UPDATED to:
+// - use leader.members as source of truth (like Member Engagement)
+// - include leader as a “person” (optional; harmless if leader has no Notes)
+// - EXCLUDE missions from this report (missions are not "library units")
+// - keep output shape exactly as the view expects
 const getUnitsCompletedReport = async (req, res) => {
   try {
-    console.log("✅ Fetching Units Completed Report (grouped by unit)…");
+    console.log("✅ Fetching Units Completed Report (grouped by unit; leader+members)…");
 
-    // 1) Leader header
-    const leader = await Leader.findById(req.user.id).select("groupName").lean();
-    if (!leader) {
-      console.error("❌ Leader not found.");
-      return res.status(403).json({ error: "Access denied", message: "Leader not found." });
+    const leaderId = (req.user?._id || req.user?.id || req.session?.user?.id)?.toString();
+    if (!leaderId) {
+      return res.status(403).render("member_form_views/error", {
+        layout: "memberformlayout",
+        title: "Access denied",
+        errorMessage: "Could not determine your leader account."
+      });
     }
 
-    // 2) Team members
-    const members = await GroupMember.find({ groupId: req.user.id })
-      .select("_id name")
-      .lean();
+    // 1) Leader header + member list source of truth
+    const leaderDoc = await Leader.findById(leaderId).select("_id name groupName members").lean();
+    if (!leaderDoc) {
+      console.error("❌ Leader not found:", leaderId);
+      return res.status(403).render("member_form_views/error", {
+        layout: "memberformlayout",
+        title: "Access denied",
+        errorMessage: "Leader account not found."
+      });
+    }
 
-    const memberIds = members.map(m => m._id);
-    const nameById = new Map(members.map(m => [m._id.toString(), m.name]));
-    if (!memberIds.length) {
-      console.warn("⚠️ No group members found.");
+    // 2) Group members from leader.members
+    const memberIdsFromLeader = Array.isArray(leaderDoc.members) ? leaderDoc.members : [];
+    const groupMembers = memberIdsFromLeader.length
+      ? await GroupMember.find({ _id: { $in: memberIdsFromLeader } })
+          .select("_id name")
+          .lean()
+      : [];
+
+    // ✅ Include leader as a report person (optional)
+    const reportPeople = [
+      { _id: leaderDoc._id, name: leaderDoc.name || "Leader" },
+      ...groupMembers
+    ];
+
+    const personIds = reportPeople.map(p => p._id);
+    const nameById = new Map(reportPeople.map(p => [p._id.toString(), p.name]));
+
+    if (!personIds.length) {
       return res.render("report_views/unitscompleted", {
         layout: "dashboardlayout",
-        leaderGroupName: leader.groupName,
+        leaderGroupName: leaderDoc.groupName,
+        isUnitsCompleted: true,
         unitsCompletedReports: []
       });
     }
 
-    // 3) Fetch all unit completion notes for those members
-    const notes = await Notes.find({ memberID: { $in: memberIds } }).lean();
+    // 3) Fetch all completion notes for these people
+    // NOTE: Notes uses memberID (capital D) in your existing codebase
+    const notes = await Notes.find({ memberID: { $in: personIds } }).lean();
 
-    // 4) Group notes by unitID
+    // 4) Filter OUT mission notes (missions have their own column/report)
+    const filteredNotes = (notes || []).filter(n => {
+      const t = String(n.unitType || "").toLowerCase();
+      return t !== "mission";
+    });
+
+    if (!filteredNotes.length) {
+      return res.render("report_views/unitscompleted", {
+        layout: "dashboardlayout",
+        leaderGroupName: leaderDoc.groupName,
+        isUnitsCompleted: true,
+        unitsCompletedReports: []
+      });
+    }
+
+    // 5) Group notes by unitID
     const byUnit = new Map(); // unitID -> { notes: [note], members: Set(memberId) }
-    for (const n of notes) {
+    for (const n of filteredNotes) {
       const u = (n.unitID || "").toString();
       if (!u) continue;
       if (!byUnit.has(u)) byUnit.set(u, { notes: [], members: new Set() });
@@ -847,62 +927,67 @@ const getUnitsCompletedReport = async (req, res) => {
       byUnit.get(u).members.add((n.memberID || "").toString());
     }
 
-    // 5) Build report rows per unit
+    // 6) Build report rows per unit
     const unitsCompletedReports = [];
+
     for (const [unitID, bucket] of byUnit.entries()) {
       // Resolve unit metadata: title / type / topics
       const details = await resolveUnitDetails(unitID);
 
-      // CompletedBy: each member who has at least one note for this unit (date = earliest note they submitted for this unit)
+      // ✅ Extra guard: if resolve says it's a Mission, skip it (covers bad/missing unitType on Notes)
+      if (String(details.unitType || "").toLowerCase() === "mission") continue;
+
+      // CompletedBy: each member who has at least one note for this unit
       const completedBy = [];
       for (const mid of bucket.members) {
         const memberNotesForUnit = bucket.notes.filter(n => String(n.memberID) === mid);
         if (!memberNotesForUnit.length) continue;
+
         const firstDate = memberNotesForUnit
           .map(n => n.createdAt || n.updatedAt)
           .filter(Boolean)
           .sort((a, b) => new Date(a) - new Date(b))[0];
+
         completedBy.push({
           memberName: nameById.get(mid) || "Unknown Member",
           dateCompleted: firstDate || new Date(0)
         });
       }
 
-      // MemberNotes: flatten all notes (each row expects an array of { notes: [{content, dateSubmitted}] })
-      // Your table iterates memberNotes -> notes -> content/dateSubmitted
-      const memberNotes = [];
-      for (const n of bucket.notes) {
-        memberNotes.push({
+      // MemberNotes: flatten all notes
+      // View expects: memberNotes -> notes -> {content, dateSubmitted}
+      const memberNotes = bucket.notes
+        .map(n => ({
           notes: [{
             content: n.note_content || "",
             dateSubmitted: n.createdAt || n.updatedAt || null
           }]
+        }))
+        .sort((a, b) => {
+          const da = a.notes?.[0]?.dateSubmitted ? new Date(a.notes[0].dateSubmitted) : 0;
+          const db = b.notes?.[0]?.dateSubmitted ? new Date(b.notes[0].dateSubmitted) : 0;
+          return da - db;
         });
-      }
 
       unitsCompletedReports.push({
         unitTitle: details.unitTitle,
         unitType: details.unitType,
         main_topic: details.main_topic,
         secondary_topics: details.secondary_topics || [],
-        completedBy: completedBy.sort((a, b) => (a.dateCompleted || 0) - (b.dateCompleted || 0)),
-        memberNotes: memberNotes.sort((a, b) => {
-          const da = a.notes?.[0]?.dateSubmitted ? new Date(a.notes[0].dateSubmitted) : 0;
-          const db = b.notes?.[0]?.dateSubmitted ? new Date(b.notes[0].dateSubmitted) : 0;
-          return da - db;
-        })
+        completedBy: completedBy.sort((a, b) => new Date(a.dateCompleted || 0) - new Date(b.dateCompleted || 0)),
+        memberNotes
       });
     }
 
     // Optional: sort units alphabetically
-    unitsCompletedReports.sort((a, b) => a.unitTitle.localeCompare(b.unitTitle));
+    unitsCompletedReports.sort((a, b) => (a.unitTitle || "").localeCompare(b.unitTitle || ""));
 
     return res.render("report_views/unitscompleted", {
       layout: "dashboardlayout",
-      leaderGroupName: leader.groupName,
+      leaderGroupName: leaderDoc.groupName,
+      isUnitsCompleted: true,
       unitsCompletedReports
     });
-
   } catch (err) {
     console.error("❌ Error loading Units Completed Report:", err);
     return res.status(500).send("Server error");
@@ -911,160 +996,19 @@ const getUnitsCompletedReport = async (req, res) => {
 
 
 
-const TOTAL_PROMPTS = 21; // Prompt0 + Prompts 1..20
-
-const getIndividualPromptSetCompletionReport = async (req, res) => {
-  try {
-    console.log("✅ Fetching Individual Prompt Set Report from PROGRESS...");
-
-    const memberId = req.user._id;
-    const TOTAL_PROMPTS = 21; // Prompt0 + Prompts 1..20
-
-    // Pull all progress rows for this member (source of truth for notes)
-    const progresses = await PromptSetProgress.find({ memberId })
-      .populate('promptSetId')
-      .lean();
-
-    const reportData = progresses
-      .filter(p => !!p.promptSetId) // guard missing PS
-      .map(p => {
-        const ps = p.promptSetId;
-
-        // Build the 21 prompt descriptors from the PromptSet doc.
-        // We render 21 columns labeled 1..21 in the view; internally we map:
-        // column 1 → Prompt0, column 2 → Prompt1, ... column 21 → Prompt20
-        const prompts = Array.from({ length: TOTAL_PROMPTS }, (_, col) => {
-          const idx = col === 0 ? 0 : col; // col=0→0, col=20→20 (1-based view, 0-based storage)
-          const headlineKey = `prompt_headline${idx}`;
-          const textKey     = `Prompt${idx}`;
-          return {
-            promptHeadline: ps?.[headlineKey] || `Prompt ${col + 1}`,
-            promptText: ps?.[textKey] || ''
-          };
-        });
-
-        // Notes from progress; pad to 21
-        const notes = Array.isArray(p.notes) ? p.notes : [];
-        const promptNotes = Array.from({ length: TOTAL_PROMPTS }, (_, col) => {
-          const idx = col === 0 ? 0 : col; // same mapping as above
-          const content = notes[idx] || '';
-          return {
-            promptNumber: `Prompt ${col + 1}`,
-            notes: content ? [{ content }] : []
-          };
-        });
-
-        return {
-          promptSetTitle: ps.promptset_title,
-          main_topic: ps.main_topic,
-          secondary_topics: ps.secondary_topics || [],
-          purpose: ps.purpose || "No purpose provided",
-          characteristics: ps.characteristics || [],
-          targetAudience: ps.target_audience || "No audience specified",
-          // We don't have an actual completion date here; use updatedAt as a proxy
-          dateCompleted: p.updatedAt || p.createdAt,
-
-          prompts,      // for the “Prompt Texts” row
-          promptNotes   // for the “Your Notes” row
-        };
-      });
-
-    return res.render("report_views/individual_promptsets_completed", {
-      layout: "dashboardlayout",
-      promptSetsCompletedReports: reportData
-    });
-
-  } catch (err) {
-    console.error("❌ Error loading individual prompt set report (from progress):", err);
-    return res.status(500).render("member_form_views/error", {
-      layout: "memberformlayout",
-      title: "Report Error",
-      errorMessage: "We couldn't load your prompt set report. Please try again later."
-    });
-  }
-};
 
 
-const getGroupMemberPromptSetCompletionReport = async (req, res) => {
-  try {
-    console.log("✅ Fetching Group Member Prompt Set Report from PROGRESS...");
 
-    const memberId = req.user._id;
-    const TOTAL_PROMPTS = 21; // Prompt0 + Prompts 1..20
 
-    // Pull all progress rows for this member (source of truth for notes)
-    const progresses = await PromptSetProgress.find({ memberId })
-      .populate('promptSetId')
-      .lean();
-
-    const reportData = progresses
-      .filter(p => !!p.promptSetId)
-      .map(p => {
-        const ps = p.promptSetId;
-
-        // Build 21 prompt descriptors (view shows 1..21; map to 0..20 internally)
-        const prompts = Array.from({ length: TOTAL_PROMPTS }, (_, col) => {
-          const idx = col === 0 ? 0 : col;
-          const headlineKey = `prompt_headline${idx}`;
-          const textKey     = `Prompt${idx}`;
-          return {
-            promptHeadline: ps?.[headlineKey] || `Prompt ${col + 1}`,
-            promptText: ps?.[textKey] || ''
-          };
-        });
-
-        // Notes from progress; pad to 21
-        const notes = Array.isArray(p.notes) ? p.notes : [];
-        const promptNotes = Array.from({ length: TOTAL_PROMPTS }, (_, col) => {
-          const idx = col === 0 ? 0 : col;
-          const content = notes[idx] || '';
-          return {
-            promptNumber: `Prompt ${col + 1}`,
-            notes: content ? [{ content }] : []
-          };
-        });
-
-        return {
-          promptSetTitle: ps.promptset_title,
-          main_topic: ps.main_topic,
-          secondary_topics: ps.secondary_topics || [],
-          purpose: ps.purpose || "No purpose provided",
-          characteristics: ps.characteristics || [],
-          targetAudience: ps.target_audience || "No audience specified",
-          dateCompleted: p.updatedAt || p.createdAt,
-
-          prompts,
-          promptNotes
-        };
-      });
-
-    return res.render("report_views/groupmember_promptsets_completed", {
-      layout: "dashboardlayout",
-      promptSetsCompletedReports: reportData
-    });
-
-  } catch (err) {
-    console.error("❌ Error loading group member prompt set report (from progress):", err);
-    return res.status(500).render("groupmember_form_views/error", {
-      layout: "groupmemberformlayout",
-      title: "Report Error",
-      errorMessage: "We couldn't load your prompt set report. Please try again later."
-    });
-  }
-};
-
-// GET /reports/memberengagement.csv
 
 
 
 
 module.exports = {
-
   getMemberEngagementReport,
+  getNuggetsMonitoredReport,
   getPromptSetsCompletedReport,
   getTeamEngagementReport,
   getUnitsCompletedReport,
-  getIndividualPromptSetCompletionReport,
-getGroupMemberPromptSetCompletionReport,
-getNuggetsMonitoredReport 
+
 };
