@@ -25,6 +25,7 @@ const Mission = require('../models/unit_models/mission'); // ✅ NEW
 const OrganizationJoinRequest = require('../models/member_models/organization_join_request');
 const Organization = require('../models/member_models/organization');
 const mongoose = require('mongoose');
+const UnitSuggestion = require('../models/unit_models/unit_suggestion');
 
 
 
@@ -252,7 +253,14 @@ missions.forEach(m => {
 }
 
 
+function viewPathForSuggestion(unitType, unitId) {
+  const t = String(unitType || '').toLowerCase();
+  const id = unitId?.toString?.() || String(unitId || '');
 
+  if (t === 'nugget')  return `/unitviews/nuggets/view/${id}`;
+  if (t === 'mission') return `/unitviews/missions/view/${id}`;
+  return `/unitviews/${t}s/view/${id}`; // article/video/interview/exercise/template/promptset
+}
 
 
 async function buildLeaderAssignedUnits(leaderId) {
@@ -726,6 +734,35 @@ const groupProfile = await GroupProfile
   .findOne({ groupId: id })
   .select('groupImage')
   .lean();
+
+
+
+  // ------------------------------------------------------------
+// ✅ NEW: units suggested to this leader by org admins
+// ------------------------------------------------------------
+const rawUnitSuggestions = await UnitSuggestion.find({
+  leaderId: userData._id,
+  status: 'pending'
+})
+  .sort({ createdAt: -1 })
+  .limit(50)
+  .populate('suggestedBy', 'groupLeaderName username')
+  .lean();
+
+const leaderSuggestedUnits = rawUnitSuggestions.map(s => ({
+  _id: s._id.toString(),
+  unitType: s.unitType,
+  unitTitle: s.unitTitle || 'Untitled unit',
+  main_topic: s.main_topic || '',
+  note: s.note || '',
+  suggestedByName:
+    s.suggestedBy?.groupLeaderName ||
+    s.suggestedBy?.username ||
+    'organization admin',
+  suggestedAtFormatted: s.createdAt ? fmtDate(s.createdAt) : '',
+  viewPath: viewPathForSuggestion(s.unitType, s.unitId)
+}));
+
 
 
 // ------------------------------------------------------------
@@ -1286,6 +1323,8 @@ orgGroups,
   selectedTopics,
   topicsEmpty,
   topicSuggestions,
+
+  leaderSuggestedUnits,
 
   // Account / email prefs
   leaderAccount,

@@ -152,7 +152,82 @@
       <p class="tagged-no-units">You have no assigned nuggets.</p>
     {{/if}}
   </div>
+
+
+  
 </section>
+
+
+
+<div class="tagged-section-divider" aria-hidden="true"></div>
+
+{{!-- =========================
+     4) ORG-SUGGESTED UNITS (ADMIN → LEADER)
+     expects: leaderSuggestedUnits = [{
+       _id,
+       unitType,
+       unitTitle,
+       main_topic,
+       note,
+       suggestedByName,
+       suggestedAtFormatted,
+       viewPath
+     }]
+     ========================= --}}
+<section class="leader-suggested-units-section" style="margin-top:20px">
+  <h2 class="tagged-units-title">units suggested by my organization</h2>
+
+  <div class="tagged-units-grid">
+    {{#if leaderSuggestedUnits.length}}
+      {{#each leaderSuggestedUnits}}
+        <div class="leader-assigned-unit-card leader-suggested-unit-card">
+          <div class="tagged-unit-icon">
+            <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
+          </div>
+
+          <div class="tagged-unit-info">
+            <h3 class="tagged-unit-title">{{unitTitle}}</h3>
+
+            {{#if main_topic}}
+              <p class="tagged-unit-topic">{{main_topic}}</p>
+            {{/if}}
+
+            <p class="leader-assigned-to">
+              suggested by: {{suggestedByName}}
+              {{#if suggestedAtFormatted}}
+                <span class="muted">({{suggestedAtFormatted}})</span>
+              {{/if}}
+            </p>
+
+            {{#if note}}
+              <p class="leader-assigned-instructions">
+                <em>{{note}}</em>
+              </p>
+            {{/if}}
+          </div>
+
+          <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
+            <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
+
+            {{!-- These will be wired later --}}
+            <button class="tagged-unit-link muted" disabled>
+              mark as seen
+            </button>
+
+            <button class="tagged-unit-link muted" disabled>
+              dismiss
+            </button>
+          </div>
+        </div>
+      {{/each}}
+    {{else}}
+      <p class="tagged-no-units">
+        Your organization hasn’t suggested any units yet.
+      </p>
+    {{/if}}
+  </div>
+</section>
+
 
 <script>
   function getCsrfToken() {
