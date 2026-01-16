@@ -10,40 +10,90 @@ const Template = require('../models/unit_models/template');
 const PromptSetCompletion = require('../models/prompt_models/promptsetcompletion');
 const Notes = require('../models/notes/notes');
 const { toCSV } = require('../utils/csv');
+const Mission = require('../models/unit_models/mission');
+const Upcoming = require('../models/unit_models/upcoming');
+const Nugget   = require('../models/unit_models/nugget');
 
 
 
 
-
-
-// ✅ Resolve Unit Title & Topics
 const resolveUnitDetails = async (unitID) => {
-    if (!unitID) return { unitTitle: "Unknown Unit", unitType: "Unknown", main_topic: "Unknown", secondary_topics: [] };
-
-    const unit = await Article.findById(unitID).select("article_title main_topic secondary_topics").lean() ||
-                 await Video.findById(unitID).select("video_title main_topic secondary_topics").lean() ||
-                 await Interview.findById(unitID).select("interview_title main_topic secondary_topics").lean() ||
-                 await Exercise.findById(unitID).select("exercise_title main_topic secondary_topics").lean() ||
-                 await Template.findById(unitID).select("template_title main_topic secondary_topics").lean() ||
-                 await PromptSet.findById(unitID).select("promptset_title main_topic secondary_topics").lean();
-
-    if (!unit) {
-        return { unitTitle: "Unknown Unit", unitType: "Unknown", main_topic: "Unknown", secondary_topics: [] };
-    }
-
+  if (!unitID) {
     return {
-        unitTitle: unit.article_title || unit.video_title || unit.interview_title ||
-                   unit.exercise_title || unit.template_title || unit.promptset_title || "Unknown Unit",
-        unitType: unit.article_title ? "Article" :
-                  unit.video_title ? "Video" :
-                  unit.interview_title ? "Interview" :
-                  unit.exercise_title ? "Exercise" :
-                  unit.template_title ? "Template" :
-                  unit.promptset_title ? "Prompt Set" : "Unknown",
-        main_topic: unit.main_topic || "Unknown Topic",
-        secondary_topics: unit.secondary_topics || []
+      unitTitle: "Unknown Unit",
+      unitType: "Unknown",
+      main_topic: "Unknown",
+      secondary_topics: []
     };
+  }
+
+  const id = unitID.toString();
+
+  // Helper to normalize common fields
+  const normalize = (doc, title, type) => ({
+    unitTitle: title || "Unknown Unit",
+    unitType: type || "Unknown",
+    main_topic: doc?.main_topic || "Unknown Topic",
+    secondary_topics: Array.isArray(doc?.secondary_topics) ? doc.secondary_topics : []
+  });
+
+  // Try each model in priority order
+  const article = await Article.findById(id).select("article_title main_topic secondary_topics").lean();
+  if (article) return normalize(article, article.article_title, "Article");
+
+  const video = await Video.findById(id).select("video_title main_topic secondary_topics").lean();
+  if (video) return normalize(video, video.video_title, "Video");
+
+  const interview = await Interview.findById(id).select("interview_title main_topic secondary_topics").lean();
+  if (interview) return normalize(interview, interview.interview_title, "Interview");
+
+  const exercise = await Exercise.findById(id).select("exercise_title main_topic secondary_topics").lean();
+  if (exercise) return normalize(exercise, exercise.exercise_title, "Exercise");
+
+  const template = await Template.findById(id).select("template_title main_topic secondary_topics").lean();
+  if (template) return normalize(template, template.template_title, "Template");
+
+  const promptSet = await PromptSet.findById(id).select("promptset_title main_topic secondary_topics").lean();
+  if (promptSet) return normalize(promptSet, promptSet.promptset_title, "Prompt Set");
+
+  // ✅ Missions
+  // Your mission topics live on main_topic/secondary_topics; title is mission_title
+  const mission = await Mission.findById(id).select("mission_title main_topic secondary_topics").lean();
+  if (mission) return normalize(mission, mission.mission_title, "Mission");
+
+  // ✅ Nuggets
+  // Nuggets don’t necessarily have topics; treat discipline/client/region as the “main_topic”
+  const nugget = await Nugget.findById(id).select("title discipline client region").lean();
+  if (nugget) {
+    return {
+      unitTitle: nugget.title || "Untitled Nugget",
+      unitType: "Nugget",
+      main_topic: nugget.discipline || nugget.client || nugget.region || "Unknown Topic",
+      secondary_topics: []
+    };
+  }
+
+  // ✅ Upcoming Units
+  // Upcoming uses title + main_topic; no secondary_topics typically
+  const upcoming = await Upcoming.findById(id).select("title unit_type main_topic secondary_topics").lean();
+  if (upcoming) {
+    const planned = upcoming.unit_type ? ` (${upcoming.unit_type})` : "";
+    return {
+      unitTitle: (upcoming.title || "Upcoming Unit") + planned,
+      unitType: "Upcoming",
+      main_topic: upcoming.main_topic || "Unknown Topic",
+      secondary_topics: Array.isArray(upcoming.secondary_topics) ? upcoming.secondary_topics : []
+    };
+  }
+
+  return {
+    unitTitle: "Unknown Unit",
+    unitType: "Unknown",
+    main_topic: "Unknown",
+    secondary_topics: []
+  };
 };
+
 
 const fetchContributedUnits = async (memberId) => {
     const [articles, videos, interviews, exercises, templates, promptSets] = await Promise.all([
@@ -99,7 +149,7 @@ const fetchContributedUnits = async (memberId) => {
 // ✅ Member Engagement (per-member rows shaped for the view)
 const getMemberEngagementReport = async (req, res) => {
   try {
-    console.log("✅ Fetching Member Engagement Report (per-member aggregation)…");
+    console.log("✅ Fetching Member Engagement Report (updated)…");
 
     // 1) Leader for header
     const leader = await Leader.findById(req.user.id).select("groupName").lean();
@@ -114,10 +164,10 @@ const getMemberEngagementReport = async (req, res) => {
       .lean();
 
     if (!members.length) {
-      console.warn("⚠️ No group members found.");
       return res.render("report_views/memberengagement", {
         layout: "dashboardlayout",
         leaderGroupName: leader.groupName,
+        isMemberEngagement: true,
         memberEngagementReports: []
       });
     }
@@ -125,15 +175,23 @@ const getMemberEngagementReport = async (req, res) => {
     const memberIds = members.map(m => m._id);
     const nameById = new Map(members.map(m => [m._id.toString(), m.name]));
 
-    // 3) Pull data in bulk
+    // 3) Bulk pulls
+    const [promptCompletions, notes, missions] = await Promise.all([
+      PromptSetCompletion.find({ memberId: { $in: memberIds } })
+        .populate("promptSetId", "promptset_title main_topic secondary_topics")
+        .lean(),
 
-    // 3a) Prompt set completions (for completed sets + badges + topics)
-    const promptCompletions = await PromptSetCompletion
-      .find({ memberId: { $in: memberIds } })
-      .populate("promptSetId", "promptset_title main_topic secondary_topics")
-      .lean();
+      Notes.find({ memberID: { $in: memberIds } }).lean(),
 
-    // Group completions by member
+      // For mission title lookup (missionsCompleted)
+      Mission.find({}).select("_id mission_title").lean()
+    ]);
+
+    const missionTitleById = new Map(
+      missions.map(m => [m._id.toString(), m.mission_title || "Untitled mission"])
+    );
+
+    // Group prompt completions by member
     const completionsByMember = new Map();
     for (const c of promptCompletions) {
       const key = c.memberId.toString();
@@ -141,110 +199,79 @@ const getMemberEngagementReport = async (req, res) => {
       completionsByMember.get(key).push(c);
     }
 
-    // 3b) Units completed (Notes) grouped per member
-    const notes = await Notes.find({ memberID: { $in: memberIds } }).lean();
+    // Group notes by member
     const notesByMember = new Map();
     for (const n of notes) {
-      const key = n.memberID.toString();
+      const key = n.memberID?.toString?.() || "";
+      if (!key) continue;
       if (!notesByMember.has(key)) notesByMember.set(key, []);
       notesByMember.get(key).push(n);
     }
 
-    // 3c) Units contributed (authored by team members), grouped per author
-    const [
-      art, vid, intv, ex, tpl, psets
-    ] = await Promise.all([
-      Article.find({ "author.id": { $in: memberIds } }).select("article_title main_topic secondary_topics author.id").lean(),
-      Video.find({ "author.id": { $in: memberIds } }).select("video_title main_topic secondary_topics author.id").lean(),
-      Interview.find({ "author.id": { $in: memberIds } }).select("interview_title main_topic secondary_topics author.id").lean(),
-      Exercise.find({ "author.id": { $in: memberIds } }).select("exercise_title main_topic secondary_topics author.id").lean(),
-      Template.find({ "author.id": { $in: memberIds } }).select("template_title main_topic secondary_topics author.id").lean(),
-      PromptSet.find({ "author.id": { $in: memberIds } }).select("promptset_title main_topic secondary_topics author.id").lean()
-    ]);
-
-    const pushGrp = (map, key, val) => {
-      if (!map.has(key)) map.set(key, []);
-      map.get(key).push(val);
-    };
-
-    const contribByMember = new Map();
-
-    for (const u of art)  pushGrp(contribByMember, u.author?.id?.toString?.() || "", { unitTitle: u.article_title, unitType: "Article",  main_topic: u.main_topic, secondary_topics: u.secondary_topics || [] });
-    for (const u of vid)  pushGrp(contribByMember, u.author?.id?.toString?.() || "", { unitTitle: u.video_title,   unitType: "Video",    main_topic: u.main_topic, secondary_topics: u.secondary_topics || [] });
-    for (const u of intv) pushGrp(contribByMember, u.author?.id?.toString?.() || "", { unitTitle: u.interview_title,unitType: "Interview",main_topic: u.main_topic, secondary_topics: u.secondary_topics || [] });
-    for (const u of ex)   pushGrp(contribByMember, u.author?.id?.toString?.() || "", { unitTitle: u.exercise_title, unitType: "Exercise", main_topic: u.main_topic, secondary_topics: u.secondary_topics || [] });
-    for (const u of tpl)  pushGrp(contribByMember, u.author?.id?.toString?.() || "", { unitTitle: u.template_title, unitType: "Template", main_topic: u.main_topic, secondary_topics: u.secondary_topics || [] });
-    for (const u of psets)pushGrp(contribByMember, u.author?.id?.toString?.() || "", { unitTitle: u.promptset_title,unitType: "Prompt Set",main_topic: u.main_topic, secondary_topics: u.secondary_topics || [] });
-
-    // 4) Build rows per member in the shapes the view expects
+    // 4) Build rows
     const memberEngagementReports = [];
 
     for (const m of members) {
       const mid = m._id.toString();
 
-      // Prompt sets completed (title + date)
+      // Prompt sets completed
       const myComps = completionsByMember.get(mid) || [];
       const promptSetsCompleted = myComps.map(c => ({
         name: c.promptSetId?.promptset_title || "Unknown Prompt Set",
         dateCompleted: c.completedAt || c.createdAt
       }));
 
-      // Badges earned
-      const badgesEarned = myComps.flatMap(c => {
-        const img = c.earnedBadge?.image;
-        const nm  = c.earnedBadge?.name;
-        return (img || nm)
-          ? [{ badgeImage: img || "/images/default-badge.png", badgeName: nm || "a Twennie Badge" }]
-          : [];
-      });
-
-      // Units completed (via Notes → resolve unit details)
+      // Units completed (Notes -> resolve unit details)
       const myNotes = notesByMember.get(mid) || [];
       const unitsCompleted = [];
       const topicsFromCompleted = [];
 
+      // Missions completed (derived from notes where unitType === 'mission')
+      const missionsCompleted = [];
+      const missionIdSet = new Set();
+
       for (const n of myNotes) {
+        // Missions completed
+        if (String(n.unitType || '').toLowerCase() === 'mission' && n.unitID) {
+          const missionId = n.unitID.toString();
+          if (!missionIdSet.has(missionId)) {
+            missionIdSet.add(missionId);
+            missionsCompleted.push({
+              missionId,
+              missionTitle: missionTitleById.get(missionId) || "Untitled mission"
+            });
+          }
+        }
+
+        // Units completed (any note is a completion)
         const d = await resolveUnitDetails(n.unitID);
         unitsCompleted.push({ unitTitle: d.unitTitle, unitType: d.unitType });
+
         if (d.main_topic) topicsFromCompleted.push(d.main_topic);
         if (Array.isArray(d.secondary_topics)) topicsFromCompleted.push(...d.secondary_topics);
       }
 
-      // Units contributed (already shaped)
-      const myContrib = contribByMember.get(mid) || [];
-      const unitsContributed = myContrib.map(u => ({ unitTitle: u.unitTitle, unitType: u.unitType }));
-
-      // Topics engaged (from completions, completed units, contributions)
+      // Topics from prompt completions
       const topicsFromComps = myComps.flatMap(c => {
         const main = c.promptSetId?.main_topic ? [c.promptSetId.main_topic] : [];
         const secs = Array.isArray(c.promptSetId?.secondary_topics) ? c.promptSetId.secondary_topics : [];
         return [...main, ...secs];
       });
 
-      const topicsFromContrib = myContrib.flatMap(u => {
-        const main = u.main_topic ? [u.main_topic] : [];
-        const secs = Array.isArray(u.secondary_topics) ? u.secondary_topics : [];
-        return [...main, ...secs];
-      });
-
       const topicsEngaged = Array.from(
-        new Set(
-          [...topicsFromComps, ...topicsFromCompleted, ...topicsFromContrib].filter(Boolean)
-        )
+        new Set([...topicsFromComps, ...topicsFromCompleted].filter(Boolean))
       ).sort((a, b) => a.localeCompare(b));
 
-      // Optional sorting for nicer output
-      promptSetsCompleted.sort((a, b) => (a.dateCompleted || 0) - (b.dateCompleted || 0));
-      badgesEarned.sort((a, b) => (a.badgeName || "").localeCompare(b.badgeName || ""));
-      unitsCompleted.sort((a, b) => a.unitTitle.localeCompare(b.unitTitle));
-      unitsContributed.sort((a, b) => a.unitTitle.localeCompare(b.unitTitle));
+      // Sorting
+      promptSetsCompleted.sort((a, b) => new Date(a.dateCompleted || 0) - new Date(b.dateCompleted || 0));
+      unitsCompleted.sort((a, b) => (a.unitTitle || '').localeCompare(b.unitTitle || ''));
+      missionsCompleted.sort((a, b) => (a.missionTitle || '').localeCompare(b.missionTitle || ''));
 
       memberEngagementReports.push({
         memberName: nameById.get(mid) || "Unknown Member",
-        promptSetsCompleted,
-        badgesEarned,
         unitsCompleted,
-        unitsContributed,
+        promptSetsCompleted,
+        missionsCompleted,
         topicsEngaged
       });
     }
@@ -253,6 +280,7 @@ const getMemberEngagementReport = async (req, res) => {
     return res.render("report_views/memberengagement", {
       layout: "dashboardlayout",
       leaderGroupName: leader.groupName,
+      isMemberEngagement: true,
       memberEngagementReports
     });
 
@@ -261,6 +289,7 @@ const getMemberEngagementReport = async (req, res) => {
     return res.status(500).send("Server error");
   }
 };
+
 
 
 // ✅ Fetch Prompt Sets Completed Report
