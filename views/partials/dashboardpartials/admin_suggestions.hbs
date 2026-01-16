@@ -1,14 +1,17 @@
-<section class="leader-admin-section" style="margin-top:20px">
+<section class="leader-admin-section leader-suggested-units-section">
   <h2 class="tagged-units-title">my suggestions</h2>
 
   <div class="tagged-units-grid">
     {{#if mySuggestions.length}}
       {{#each mySuggestions}}
         <div class="leader-assigned-unit-card leader-suggested-unit-card">
+
+          <!-- Icon -->
           <div class="tagged-unit-icon">
             <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
           </div>
 
+          <!-- Info -->
           <div class="tagged-unit-info">
             <h3 class="tagged-unit-title">{{unitTitle}}</h3>
 
@@ -16,13 +19,27 @@
               <p class="tagged-unit-topic">{{main_topic}}</p>
             {{/if}}
 
-            <p class="leader-assigned-to">
-              status: {{status}}
-              {{#if suggestedAtFormatted}}
-                <span class="muted">({{suggestedAtFormatted}})</span>
-              {{/if}}
-            </p>
+            <!-- Suggested to -->
+            {{#if suggestedToNames.length}}
+              <p class="leader-assigned-to">
+                suggested to:
+                {{#each suggestedToNames}}
+                  <span class="leader-assigned-name">
+                    {{this}}{{#unless @last}}, {{/unless}}
+                  </span>
+                {{/each}}
 
+                {{#if suggestedAtFormatted}}
+                  <span class="muted">({{suggestedAtFormatted}})</span>
+                {{/if}}
+              </p>
+            {{else}}
+              <p class="leader-assigned-to muted">
+                suggested to: —
+              </p>
+            {{/if}}
+
+            <!-- Note -->
             {{#if note}}
               <p class="leader-assigned-instructions">
                 <em>{{note}}</em>
@@ -30,18 +47,32 @@
             {{/if}}
           </div>
 
-          <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
-            <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
+          <!-- Actions -->
+          <div
+            class="tagged-unit-actions"
+            style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;"
+          >
+            <a href="{{viewPath}}" class="tagged-unit-link">
+              view unit
+            </a>
 
-            {{!-- Later: add "withdraw suggestion" etc --}}
+            {{!-- future wiring --}}
             <button class="tagged-unit-link muted" disabled>
-              withdraw
+              mark as seen
+            </button>
+
+            <button class="tagged-unit-link muted" disabled>
+              dismiss
             </button>
           </div>
+
         </div>
       {{/each}}
     {{else}}
-      <p class="tagged-no-units">You haven’t suggested any units yet.</p>
+      <p class="tagged-no-units">
+        you haven’t suggested any units yet.
+      </p>
     {{/if}}
   </div>
 </section>
+
