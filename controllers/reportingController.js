@@ -151,6 +151,10 @@ const fetchContributedUnits = async (memberId) => {
 // - Missions NEVER appear under unitsCompleted (even if Notes.unitType is missing/wrong)
 // - Uses resolveUnitDetails() as source of truth for mission detection
 // - Keeps mission topics included in topicsEngaged
+// ✅ Member Engagement (per-member rows shaped for the view)
+// - Missions NEVER appear under unitsCompleted (even if Notes.unitType is missing/wrong)
+// - Uses resolveUnitDetails() as source of truth for mission detection
+// - Keeps mission topics included in topicsEngaged
 const getMemberEngagementReport = async (req, res) => {
   try {
     console.log("✅ Fetching Member Engagement Report (mission-safe)…");
@@ -354,6 +358,7 @@ const getMemberEngagementReport = async (req, res) => {
     return res.status(500).send("Server error");
   }
 };
+
 
 
 
