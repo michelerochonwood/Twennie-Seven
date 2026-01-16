@@ -65,17 +65,24 @@ async function getOrgIdForAdmin(req) {
 }
 
 
-
-
-
-async function buildSuggestionsSentCount(orgId, days = 30) {
-const since = null; // no date filter
-
-  return UnitSuggestion.countDocuments({
-    organization: orgId,
-    createdAt: { $gte: since }
-  });
+function fmtDate(d) {
+  if (!d) return '';
+  const dd = new Date(d);
+  if (Number.isNaN(dd.getTime())) return '';
+  return dd.toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: '2-digit' });
 }
+
+function viewPathForUnit(unitType, unitId) {
+  const t = String(unitType || '').toLowerCase();
+  const id = unitId?.toString?.() || String(unitId || '');
+
+  if (t === 'nugget')  return `/unitviews/nuggets/view/${id}`;
+  if (t === 'mission') return `/unitviews/missions/view/${id}`;
+  return `/unitviews/${t}s/view/${id}`;
+}
+
+
+
 
 async function buildLibrarySubmissionsCount(orgId) {
   // NOTE: this is now ALL-TIME (no date filter)
@@ -214,7 +221,9 @@ async function buildOrgSnapshot(orgId) {
     buildLearningFootprintForOrg(orgId, 30),
 
     // ✅ ALL-TIME suggestions
-    UnitSuggestion.countDocuments({ organization: orgId }),
+UnitSuggestion.countDocuments({
+  $or: [{ organization: orgId }, { organization: String(orgId) }]
+}),
 
     // ✅ ALL-TIME library submissions
     buildLibrarySubmissionsCount(orgId)
@@ -521,23 +530,48 @@ const orgadminController = {
     }
   },
 
-  async suggestions(req, res, next) {
-    try {
-      const orgId = await getOrgIdForAdmin(req);
-      if (!orgId) return res.redirect('/dashboard/leader');
+async suggestions(req, res, next) {
+  try {
+    const orgId = await getOrgIdForAdmin(req);
+    if (!orgId) return res.redirect('/dashboard/leader');
 
-      const payload = await buildAdminPayload(orgId);
+    const payload = await buildAdminPayload(orgId);
 
-      return res.render('leader_dashboard', {
-        ...baseRenderData(req),
-        adminTab: 'suggestions',
-        ...payload
-      });
-    } catch (err) {
-      console.error('Org admin suggestions error:', err);
-      return next(err);
-    }
-  },
+    // ✅ My Suggestions (created by this admin)
+    const adminId = req.user?._id;
+
+    const rawMySuggestions = await UnitSuggestion.find({
+      organization: orgId,
+      suggestedBy: adminId
+    })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    const mySuggestions = rawMySuggestions.map(s => ({
+      _id: s._id.toString(),
+      unitType: s.unitType,
+      unitTitle: s.unitTitle || 'Untitled unit',
+      main_topic: s.main_topic || '',
+      secondary_topic: s.secondary_topic || '',
+      note: s.note || '',
+      status: s.status || 'pending',
+      suggestedAtFormatted: s.createdAt ? fmtDate(s.createdAt) : '',
+      viewPath: viewPathForUnit(s.unitType, s.unitId),
+      leaderId: s.leaderId?.toString?.() || ''
+    }));
+
+    return res.render('leader_dashboard', {
+      ...baseRenderData(req),
+      adminTab: 'suggestions',
+      ...payload,
+      mySuggestions
+    });
+  } catch (err) {
+    console.error('Org admin suggestions error:', err);
+    return next(err);
+  }
+},
+
 
   async companyLibrary(req, res, next) {
     try {
