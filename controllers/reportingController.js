@@ -147,12 +147,15 @@ const fetchContributedUnits = async (memberId) => {
 
 // ✅ Fetch Member Engagement Report
 // ✅ Member Engagement (per-member rows shaped for the view)
-// ✅ Member Engagement (per-member rows shaped for the NEW view)
+
+// - Missions NEVER appear under unitsCompleted (even if Notes.unitType is missing/wrong)
+// - Uses resolveUnitDetails() as source of truth for mission detection
+// - Keeps mission topics included in topicsEngaged
 const getMemberEngagementReport = async (req, res) => {
   try {
-    console.log("✅ Fetching Member Engagement Report (updated)…");
+    console.log("✅ Fetching Member Engagement Report (mission-safe)…");
 
-    // Always normalize leader id (prevents empty group member queries)
+    // Normalize leader id
     const leaderId = (req.user?._id || req.user?.id || req.session?.user?.id)?.toString();
     console.log(
       "[memberengagement] leaderId:",
@@ -182,7 +185,7 @@ const getMemberEngagementReport = async (req, res) => {
       });
     }
 
-    // 2) Members of this leader’s group (use leader.members instead of GroupMember.groupId)
+    // 2) Members of this leader’s group (use leader.members)
     const memberIdsFromLeader = Array.isArray(leaderDoc.members) ? leaderDoc.members : [];
     console.log("[memberengagement] leader.members length:", memberIdsFromLeader.length);
 
@@ -214,7 +217,7 @@ const getMemberEngagementReport = async (req, res) => {
 
       Notes.find({ memberID: { $in: memberIds } }).lean(),
 
-      // For mission title lookup (missionsCompleted list)
+      // Used for stable title lookup / fallback
       Mission.find({}).select("_id mission_title main_topic secondary_topics").lean()
     ]);
 
@@ -274,33 +277,44 @@ const getMemberEngagementReport = async (req, res) => {
       const missionsCompleted = [];
 
       for (const n of myNotes) {
-        const isMissionNote = String(n.unitType || "").toLowerCase() === "mission";
         const unitIdStr = n.unitID?.toString?.() || "";
+        if (!unitIdStr) continue;
 
-        // ✅ Missions completed: record mission, but DO NOT also count as "unit completed"
-        if (isMissionNote && unitIdStr) {
+        // ✅ Resolve what this note actually points to (mission-safe)
+        const d = await resolveUnitDetails(unitIdStr);
+        const resolvedType = String(d.unitType || "").toLowerCase();
+
+        // ✅ If it resolves to a mission, route to missionsCompleted no matter what Notes.unitType says
+        if (resolvedType === "mission") {
           if (!missionIdSet.has(unitIdStr)) {
             missionIdSet.add(unitIdStr);
             missionsCompleted.push({
               missionId: unitIdStr,
-              missionTitle: missionTitleById.get(unitIdStr) || "Untitled mission"
+              missionTitle: missionTitleById.get(unitIdStr) || d.unitTitle || "Untitled mission"
             });
           }
 
-          // (optional) include mission topics in topics engaged
+          // Include mission topics in topics engaged
           const mt = missionTopicsById.get(unitIdStr);
           if (mt?.main) topicsFromCompleted.push(mt.main);
           if (Array.isArray(mt?.secondary) && mt.secondary.length) topicsFromCompleted.push(...mt.secondary);
 
-          continue; // ✅ critical: prevents missions from appearing under units
+          // Fallback: if missionTopicsById didn't have it (e.g., newly added), use resolved details
+          if (!mt?.main && d.main_topic) topicsFromCompleted.push(d.main_topic);
+          if ((!mt?.secondary || !mt.secondary.length) && Array.isArray(d.secondary_topics) && d.secondary_topics.length) {
+            topicsFromCompleted.push(...d.secondary_topics);
+          }
+
+          continue; // ✅ critical: keeps missions out of unitsCompleted
         }
 
-        // Units completed (non-mission notes)
-        const d = await resolveUnitDetails(n.unitID);
+        // ✅ Otherwise: normal unit completion
         unitsCompleted.push({ unitTitle: d.unitTitle, unitType: d.unitType });
 
         if (d.main_topic) topicsFromCompleted.push(d.main_topic);
-        if (Array.isArray(d.secondary_topics)) topicsFromCompleted.push(...d.secondary_topics);
+        if (Array.isArray(d.secondary_topics) && d.secondary_topics.length) {
+          topicsFromCompleted.push(...d.secondary_topics);
+        }
       }
 
       unitsCompleted.sort((a, b) => (a.unitTitle || "").localeCompare(b.unitTitle || ""));
