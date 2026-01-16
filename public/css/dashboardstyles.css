@@ -2789,8 +2789,8 @@ html, body {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: auto;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 10px;
   transition: transform 0.2s ease-in-out;
