@@ -69,7 +69,7 @@ async function getOrgIdForAdmin(req) {
 
 
 async function buildSuggestionsSentCount(orgId, days = 30) {
-  const since = daysAgo(days);
+const since = null; // no date filter
 
   return UnitSuggestion.countDocuments({
     organization: orgId,
@@ -77,10 +77,10 @@ async function buildSuggestionsSentCount(orgId, days = 30) {
   });
 }
 
-async function buildLibrarySubmissionsCount(orgId, days = 30) {
-  const since = daysAgo(days);
+async function buildLibrarySubmissionsCount(orgId, days = null) {
+  const since = (typeof days === 'number') ? daysAgo(days) : null;
+  const dateFilter = since ? { createdAt: { $gte: since } } : {};
 
-  // org people = leaders + their members (same approach you used for footprint)
   const leaderFilter = { organization: orgId, organizationOptOut: { $ne: true } };
   const leaders = await Leader.find(leaderFilter).select('_id members').lean();
   if (!leaders.length) return 0;
@@ -107,16 +107,16 @@ async function buildLibrarySubmissionsCount(orgId, days = 30) {
     missionsCreated,
     nuggetsCreated
   ] = await Promise.all([
-    Article.countDocuments({ 'author.id': { $in: orgPersonIds }, createdAt: { $gte: since } }),
-    Video.countDocuments({ 'author.id': { $in: orgPersonIds }, createdAt: { $gte: since } }),
-    PromptSet.countDocuments({ 'author.id': { $in: orgPersonIds }, createdAt: { $gte: since } }),
-    Interview.countDocuments({ 'author.id': { $in: orgPersonIds }, createdAt: { $gte: since } }),
-    Exercise.countDocuments({ 'author.id': { $in: orgPersonIds }, createdAt: { $gte: since } }),
-    Template.countDocuments({ 'author.id': { $in: orgPersonIds }, createdAt: { $gte: since } }),
+    Article.countDocuments({ 'author.id': { $in: orgPersonIds }, ...dateFilter }),
+    Video.countDocuments({ 'author.id': { $in: orgPersonIds }, ...dateFilter }),
+    PromptSet.countDocuments({ 'author.id': { $in: orgPersonIds }, ...dateFilter }),
+    Interview.countDocuments({ 'author.id': { $in: orgPersonIds }, ...dateFilter }),
+    Exercise.countDocuments({ 'author.id': { $in: orgPersonIds }, ...dateFilter }),
+    Template.countDocuments({ 'author.id': { $in: orgPersonIds }, ...dateFilter }),
 
-    // missions/nuggets use different creator fields in your app
-    Mission.countDocuments({ created_by: { $in: orgPersonIds }, createdAt: { $gte: since } }),
-    Nugget.countDocuments({ createdBy: { $in: orgPersonIds }, createdAt: { $gte: since } })
+    // adjust if your mission field is createdBy instead of created_by
+    Mission.countDocuments({ created_by: { $in: orgPersonIds }, ...dateFilter }),
+    Nugget.countDocuments({ createdBy: { $in: orgPersonIds }, ...dateFilter })
   ]);
 
   return (
@@ -191,7 +191,7 @@ async function buildOrgSnapshot(orgId) {
     buildSuggestionsSentCount(orgId, 30),
 
     // ✅ NEW metric: library submissions (last 30 days)
-    buildLibrarySubmissionsCount(orgId, 30)
+    buildLibrarySubmissionsCount(orgId, null)
   ]);
 
   const groupsCount = (distinctGroupNames || [])
