@@ -5411,6 +5411,6 @@ box-shadow: none !important;
 }
 
 .admin-wide-table {
-  min-width: 1200px; /* adjust if you want even more breathing room */
+  min-width: 1000px; /* adjust if you want even more breathing room */
 }
 
