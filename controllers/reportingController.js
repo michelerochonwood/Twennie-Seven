@@ -13,6 +13,7 @@ const { toCSV } = require('../utils/csv');
 const Mission = require('../models/unit_models/mission');
 const Upcoming = require('../models/unit_models/upcoming');
 const Nugget   = require('../models/unit_models/nugget');
+const Tag = require('../models/unit_models/tag'); 
 
 
 
@@ -340,7 +341,206 @@ const getMemberEngagementReport = async (req, res) => {
 
 
 
+const getNuggetsMonitoredReport = async (req, res) => {
+  try {
+    console.log("✅ Fetching Nuggets Being Monitored Report…");
 
+    const leaderId = (req.user?._id || req.user?.id || req.session?.user?.id)?.toString();
+    if (!leaderId) {
+      return res.status(403).render("member_form_views/error", {
+        layout: "memberformlayout",
+        title: "Access denied",
+        errorMessage: "Could not determine your leader account."
+      });
+    }
+
+    const leaderDoc = await Leader.findById(leaderId).select("_id name groupName members").lean();
+    if (!leaderDoc) {
+      return res.status(403).render("member_form_views/error", {
+        layout: "memberformlayout",
+        title: "Access denied",
+        errorMessage: "Leader account not found."
+      });
+    }
+
+    // Group members (from leader.members as source of truth)
+    const memberIdsFromLeader = Array.isArray(leaderDoc.members) ? leaderDoc.members : [];
+    const groupMembers = memberIdsFromLeader.length
+      ? await GroupMember.find({ _id: { $in: memberIdsFromLeader } }).select("_id name").lean()
+      : [];
+
+    // People map (leader + members) for name lookup
+    const people = [
+      { _id: leaderDoc._id, name: leaderDoc.name || "Leader", role: "leader" },
+      ...groupMembers.map(m => ({ _id: m._id, name: m.name || "Group Member", role: "member" }))
+    ];
+    const nameById = new Map(people.map(p => [p._id.toString(), p.name]));
+    const roleById = new Map(people.map(p => [p._id.toString(), p.role]));
+
+    // ✅ Find all tags that include nuggets
+    // NOTE: if your unitType is stored as "nugget" (lowercase), keep as-is.
+    // If you have mixed casing, this will still work if you normalize when saving;
+    // otherwise we can broaden it later.
+    const nuggetTags = await Tag.find({
+      "associatedUnits.unitType": "nugget"
+    })
+      .select("name createdAt associatedUnits assignedTo")
+      .lean();
+
+    if (!nuggetTags.length) {
+      return res.render("report_views/nuggetsmonitored", {
+        layout: "dashboardlayout",
+        leaderGroupName: leaderDoc.groupName,
+        isNuggetsMonitored: true,
+        monitoredNuggets: []
+      });
+    }
+
+    // Collect all nugget ids referenced by tags
+    const nuggetIds = [];
+    for (const t of nuggetTags) {
+      const units = Array.isArray(t.associatedUnits) ? t.associatedUnits : [];
+      for (const u of units) {
+        if (String(u.unitType || "").toLowerCase() !== "nugget") continue;
+        const id = u.item?.toString?.();
+        if (id) nuggetIds.push(id);
+      }
+    }
+
+    // Bulk fetch nugget details (title + discipline/client/region)
+    const uniqueNuggetIds = Array.from(new Set(nuggetIds));
+    const nuggets = uniqueNuggetIds.length
+      ? await Nugget.find({ _id: { $in: uniqueNuggetIds } })
+          .select("title discipline client region")
+          .lean()
+      : [];
+
+    const nuggetById = new Map(
+      nuggets.map(n => [n._id.toString(), n])
+    );
+
+    // Build rows: one row per tagged nugget (dedupe across multiple tags)
+    // If the same nugget is tagged multiple times, we merge monitors + instructions + choose earliest taggedAt.
+    const rowByNuggetId = new Map();
+
+    for (const t of nuggetTags) {
+      const tagName = t.name || "Untitled Tag";
+      const taggedAt = t.createdAt || null;
+
+      const units = Array.isArray(t.associatedUnits) ? t.associatedUnits : [];
+      const assignedTo = Array.isArray(t.assignedTo) ? t.assignedTo : [];
+
+      // Determine monitors + instructions from assignedTo
+      const monitors = [];
+      const instructions = [];
+
+      for (const a of assignedTo) {
+        const mid = a.member?.toString?.();
+        if (!mid) continue;
+
+        monitors.push({
+          memberName: nameById.get(mid) || "Unknown",
+          role: roleById.get(mid) || ""
+        });
+
+        if (a.instructions) instructions.push(a.instructions);
+      }
+
+      // If nothing assigned, consider the tag creator (leader) as monitoring (optional)
+      // This matches your “any tagged nugget is monitored” intent.
+      if (!monitors.length) {
+        monitors.push({
+          memberName: leaderDoc.name || "Leader",
+          role: "leader"
+        });
+      }
+
+      const isAssigned = assignedTo.length > 0;
+
+      for (const u of units) {
+        if (String(u.unitType || "").toLowerCase() !== "nugget") continue;
+        const nid = u.item?.toString?.();
+        if (!nid) continue;
+
+        const nug = nuggetById.get(nid);
+
+        const baseRow = rowByNuggetId.get(nid) || {
+          nuggetId: nid,
+          nuggetTitle: nug?.title || "Untitled Nugget",
+          discipline: nug?.discipline || "",
+          client: nug?.client || "",
+          region: nug?.region || "",
+
+          tagName: tagName,
+          tagDescription: "", // placeholder if you later add it
+          taggedAt: taggedAt,
+
+          isAssigned: isAssigned,
+          monitoredBy: [],
+          instructions: []
+        };
+
+        // If the nugget appears under multiple tags:
+        // - keep earliest taggedAt
+        // - merge monitors/instructions
+        if (!baseRow.taggedAt || (taggedAt && new Date(taggedAt) < new Date(baseRow.taggedAt))) {
+          baseRow.taggedAt = taggedAt;
+        }
+
+        // If you’d rather show the “most recent” tagName, swap comparison above and set tagName accordingly.
+        // For now: first/earliest tag name wins.
+        if (!baseRow.tagName) baseRow.tagName = tagName;
+
+        // Merge monitors (dedupe by memberName+role)
+        const existingMonitorKeys = new Set(
+          (baseRow.monitoredBy || []).map(m => `${m.memberName}::${m.role || ""}`)
+        );
+        for (const m of monitors) {
+          const k = `${m.memberName}::${m.role || ""}`;
+          if (!existingMonitorKeys.has(k)) {
+            existingMonitorKeys.add(k);
+            baseRow.monitoredBy.push(m);
+          }
+        }
+
+        // Merge instructions (dedupe exact strings)
+        const instrSet = new Set(baseRow.instructions || []);
+        for (const ins of instructions) {
+          if (!ins) continue;
+          if (!instrSet.has(ins)) {
+            instrSet.add(ins);
+            baseRow.instructions.push(ins);
+          }
+        }
+
+        // If any tag instance is assigned, mark assigned
+        if (isAssigned) baseRow.isAssigned = true;
+
+        rowByNuggetId.set(nid, baseRow);
+      }
+    }
+
+    // Final list + sorting
+    const monitoredNuggets = Array.from(rowByNuggetId.values())
+      .map(r => {
+        // Sort monitors/instructions for tidy display
+        r.monitoredBy = (r.monitoredBy || []).sort((a, b) => (a.memberName || "").localeCompare(b.memberName || ""));
+        r.instructions = (r.instructions || []).sort((a, b) => (a || "").localeCompare(b || ""));
+        return r;
+      })
+      .sort((a, b) => (a.nuggetTitle || "").localeCompare(b.nuggetTitle || ""));
+
+    return res.render("report_views/nuggetsmonitored", {
+      layout: "dashboardlayout",
+      leaderGroupName: leaderDoc.groupName,
+      isNuggetsMonitored: true,
+      monitoredNuggets
+    });
+  } catch (err) {
+    console.error("❌ Error loading Nuggets Being Monitored Report:", err);
+    return res.status(500).send("Server error");
+  }
+};
 
 
 // ✅ Fetch Prompt Sets Completed Report
@@ -865,5 +1065,6 @@ module.exports = {
   getTeamEngagementReport,
   getUnitsCompletedReport,
   getIndividualPromptSetCompletionReport,
-getGroupMemberPromptSetCompletionReport
+getGroupMemberPromptSetCompletionReport,
+getNuggetsMonitoredReport 
 };

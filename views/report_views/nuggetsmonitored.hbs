@@ -1,0 +1,141 @@
+{{!-- views/report_views/nuggetsmonitored.hbs --}}
+{{#*inline "title"}}Nuggets Being Monitored | Twennie{{/inline}}
+
+<section class="dashboard-section">
+  <h1 class="dashboard-section-title" style="margin-bottom: 30px;">
+    {{leaderGroupName}}; Nuggets Being Monitored
+  </h1>
+
+  <div class="table-container">
+    <table class="dashboard-library-table">
+      <thead>
+        <tr>
+          <th class="dashboard-library-header">nugget</th>
+          <th class="dashboard-library-header">who’s monitoring</th>
+          <th class="dashboard-library-header">tag / assignment</th>
+          <th class="dashboard-library-header">notes / instructions</th>
+          <th class="dashboard-library-header">date tagged</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {{#each monitoredNuggets}}
+          <tr class="dashboard-library-row">
+
+            {{!-- Nugget --}}
+            <td class="dashboard-library-cell">
+              <div class="multi-record-item">
+                {{#if this.nuggetTitle}}
+                  {{this.nuggetTitle}}
+                {{else}}
+                  Untitled Nugget
+                {{/if}}
+              </div>
+
+              {{!-- Optional extra context (safe to leave blank until controller supplies it) --}}
+              {{#if this.client}}
+                <div class="multi-record-item" style="opacity:0.8;">client: {{this.client}}</div>
+              {{/if}}
+              {{#if this.region}}
+                <div class="multi-record-item" style="opacity:0.8;">region: {{this.region}}</div>
+              {{/if}}
+              {{#if this.discipline}}
+                <div class="multi-record-item" style="opacity:0.8;">discipline: {{this.discipline}}</div>
+              {{/if}}
+            </td>
+
+            {{!-- Who’s Monitoring --}}
+            <td class="dashboard-library-cell">
+              {{#each this.monitoredBy}}
+                <div class="multi-record-item">
+                  {{this.memberName}}
+                  {{#if this.role}}
+                    <span style="opacity:0.8;">({{this.role}})</span>
+                  {{/if}}
+                </div>
+              {{else}}
+                <span class="no-data">No monitors listed</span>
+              {{/each}}
+            </td>
+
+            {{!-- Tag / Assignment --}}
+            <td class="dashboard-library-cell">
+              {{!-- Tag name (from Tag collection) --}}
+              {{#if this.tagName}}
+                <div class="multi-record-item">tag: {{this.tagName}}</div>
+              {{else}}
+                <span class="no-data">No tag name</span>
+              {{/if}}
+
+              {{!-- Assigned status (if controller provides it) --}}
+              {{#if this.isAssigned}}
+                <div class="multi-record-item" style="opacity:0.9;">assigned</div>
+              {{else}}
+                <div class="multi-record-item" style="opacity:0.9;">tagged</div>
+              {{/if}}
+            </td>
+
+            {{!-- Notes / Instructions --}}
+            <td class="dashboard-library-cell">
+              {{!-- Tag-level description / context (optional) --}}
+              {{#if this.tagDescription}}
+                <div class="multi-record-item">{{this.tagDescription}}</div>
+              {{/if}}
+
+              {{!-- Assignment instructions (array) --}}
+              {{#each this.instructions}}
+                <div class="multi-record-item">• {{this}}</div>
+              {{else}}
+                <span class="no-data">No instructions</span>
+              {{/each}}
+            </td>
+
+            {{!-- Date Tagged --}}
+            <td class="dashboard-library-cell">
+              {{#if this.taggedAt}}
+                {{formatDate this.taggedAt}}
+              {{else}}
+                <span class="no-data">—</span>
+              {{/if}}
+            </td>
+
+          </tr>
+        {{else}}
+          <tr>
+            <td colspan="5" class="no-data">No monitored nuggets available.</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+
+  {{!-- Report Navigation Links --}}
+  <div class="report-links-container">
+
+    {{#unless isMemberEngagement}}
+      <a href="/reports/memberengagement" class="report-link">
+        <img src="https://www.twennie.com/icons/memberengagement.svg" alt="Member Engagement Report">
+      </a>
+    {{/unless}}
+
+    {{!-- Replace Team Engagement with Nuggets Monitored --}}
+    {{#unless isNuggetsMonitored}}
+      <a href="/reports/nuggetsmonitored" class="report-link">
+        <img src="https://www.twennie.com/icons/nuggets.svg" alt="Nuggets Being Monitored Report">
+      </a>
+    {{/unless}}
+
+    {{#unless isPromptSetsCompleted}}
+      <a href="/reports/promptsetscompleted" class="report-link">
+        <img src="https://www.twennie.com/icons/promptsets.svg" alt="Prompt Sets Report">
+      </a>
+    {{/unless}}
+
+    {{#unless isUnitsCompleted}}
+      <a href="/reports/unitscompleted" class="report-link">
+        <img src="https://www.twennie.com/icons/libraryunits.svg" alt="Library Units Report">
+      </a>
+    {{/unless}}
+
+  </div>
+</section>

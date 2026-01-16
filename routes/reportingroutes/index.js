@@ -11,12 +11,13 @@ router.get("/promptsetscompleted",  ensureAuthenticated, reportingController.get
 router.get("/teamengagement",       ensureAuthenticated, reportingController.getTeamEngagementReport);
 router.get("/unitscompleted",       ensureAuthenticated, reportingController.getUnitsCompletedReport);
 
+// ✅ Nuggets being monitored
+router.get("/nuggetsmonitored",     ensureAuthenticated, reportingController.getNuggetsMonitoredReport);
+
 // Individual / Group member prompt-set reports
 router.get("/mypromptsets",         ensureAuthenticated, reportingController.getIndividualPromptSetCompletionReport);
 router.get("/groupmypromptsets",    ensureAuthenticated, reportingController.getGroupMemberPromptSetCompletionReport);
 
-// ---------- CSV export routes ----------
-
-
 module.exports = router;
+
 
