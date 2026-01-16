@@ -816,6 +816,12 @@ async function buildAdminTeamEngagement(orgId) {
       .slice(0, 5)
       .map(([topic]) => topic);
 
+      console.log("ADMIN TEAM ROW:", {
+  team: l.groupName,
+  ps: promptSetsCompleted.length,
+  units: unitsCompleted.length
+});
+
     reports.push({
       teamId: leaderIdStr,
       teamName: l.groupName || "Unnamed group",

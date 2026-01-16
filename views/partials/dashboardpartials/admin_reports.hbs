@@ -3,14 +3,16 @@
 <section class="leader-topics-container leader-admin-section">
   <h2 class="leader-dashboard-subtitles">team engagement</h2>
 
-  <div class="table-container">
-    <table class="dashboard-library-table">
+
+
+  <div class="table-container wide-table-container">
+    <table class="dashboard-library-table wide-table">
       <thead>
         <tr>
-          <th class="dashboard-library-header">team</th>
-          <th class="dashboard-library-header">prompt sets completed</th>
-          <th class="dashboard-library-header">units completed</th>
-          <th class="dashboard-library-header">top topics</th>
+          <th class="dashboard-library-header" style="min-width: 260px;">team</th>
+          <th class="dashboard-library-header" style="min-width: 340px;">prompt sets completed</th>
+          <th class="dashboard-library-header" style="min-width: 420px;">units completed</th>
+          <th class="dashboard-library-header" style="min-width: 260px;">top topics</th>
         </tr>
       </thead>
 
@@ -21,15 +23,12 @@
             <!-- Team -->
             <td class="dashboard-library-cell">
               <div style="display:flex; gap:0.75rem; align-items:flex-start;">
-                
-                <!-- Group Image -->
                 <img
                   src="{{this.groupImage}}"
                   alt="group image"
                   style="width:44px; height:44px; border-radius:8px; object-fit:cover;"
                 >
 
-                <!-- Team Info -->
                 <div>
                   <div class="multi-record-item">
                     <strong>{{this.teamName}}</strong>
@@ -48,18 +47,18 @@
               </div>
             </td>
 
-            <!-- Prompt Sets Completed (titles only) -->
+            <!-- Prompt Sets Completed (ALL titles) -->
             <td class="dashboard-library-cell">
-              {{#each this.recentPromptSets}}
+              {{#each this.promptSetsCompleted}}
                 <div class="multi-record-item">{{this}}</div>
               {{else}}
                 <span class="no-data">—</span>
               {{/each}}
             </td>
 
-            <!-- Units Completed (titles only) -->
+            <!-- Units Completed (ALL titles) -->
             <td class="dashboard-library-cell">
-              {{#each this.recentUnitsCompleted}}
+              {{#each this.unitsCompleted}}
                 <div class="multi-record-item">{{this}}</div>
               {{else}}
                 <span class="no-data">—</span>
