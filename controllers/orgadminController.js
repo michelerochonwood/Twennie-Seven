@@ -13,6 +13,15 @@ const GroupProfile = require('../models/profile_models/group_profile');
 const LeaderProfile = require('../models/profile_models/leader_profile');
 const PromptSetCompletion = require('../models/prompt_models/promptsetcompletion');
 const Notes = require('../models/notes/notes');
+const UnitSuggestion = require('../models/unit_models/unit_suggestion'); // optional if you pick suggestions metric
+const Article   = require('../models/unit_models/article');
+const Video     = require('../models/unit_models/video');
+const PromptSet = require('../models/unit_models/promptset');
+const Interview = require('../models/unit_models/interview');
+const Exercise  = require('../models/unit_models/exercise');
+const Template  = require('../models/unit_models/template');
+const Mission   = require('../models/unit_models/mission');
+const Nugget    = require('../models/unit_models/nugget');
 
 
 // -----------------------------
@@ -49,8 +58,71 @@ async function getOrgIdForAdmin(req) {
     .select('organization organizationOptOut isAdmin')
     .lean();
 
+  if (!admin?.isAdmin) return null;
   if (!admin?.organization || admin.organizationOptOut === true) return null;
+
   return toObjectId(admin.organization);
+}
+
+
+
+
+
+async function buildSuggestionsSentCount(orgId, days = 30) {
+  const since = daysAgo(days);
+
+  return UnitSuggestion.countDocuments({
+    organization: orgId,
+    createdAt: { $gte: since }
+  });
+}
+
+async function buildLibrarySubmissionsCount(orgId, days = 30) {
+  const since = daysAgo(days);
+
+  // org people = leaders + their members (same approach you used for footprint)
+  const leaderFilter = { organization: orgId, organizationOptOut: { $ne: true } };
+  const leaders = await Leader.find(leaderFilter).select('_id members').lean();
+  if (!leaders.length) return 0;
+
+  const idSet = new Set();
+  for (const l of leaders) {
+    if (l?._id) idSet.add(String(l._id));
+    if (Array.isArray(l.members)) for (const m of l.members) idSet.add(String(m));
+  }
+
+  const orgPersonIds = Array.from(idSet)
+    .filter(s => mongoose.Types.ObjectId.isValid(s))
+    .map(s => new mongoose.Types.ObjectId(s));
+
+  if (!orgPersonIds.length) return 0;
+
+  const [
+    articlesCreated,
+    videosCreated,
+    promptSetsCreated,
+    interviewsCreated,
+    exercisesCreated,
+    templatesCreated,
+    missionsCreated,
+    nuggetsCreated
+  ] = await Promise.all([
+    Article.countDocuments({ 'author.id': { $in: orgPersonIds }, createdAt: { $gte: since } }),
+    Video.countDocuments({ 'author.id': { $in: orgPersonIds }, createdAt: { $gte: since } }),
+    PromptSet.countDocuments({ 'author.id': { $in: orgPersonIds }, createdAt: { $gte: since } }),
+    Interview.countDocuments({ 'author.id': { $in: orgPersonIds }, createdAt: { $gte: since } }),
+    Exercise.countDocuments({ 'author.id': { $in: orgPersonIds }, createdAt: { $gte: since } }),
+    Template.countDocuments({ 'author.id': { $in: orgPersonIds }, createdAt: { $gte: since } }),
+
+    // missions/nuggets use different creator fields in your app
+    Mission.countDocuments({ created_by: { $in: orgPersonIds }, createdAt: { $gte: since } }),
+    Nugget.countDocuments({ createdBy: { $in: orgPersonIds }, createdAt: { $gte: since } })
+  ]);
+
+  return (
+    articlesCreated + videosCreated + promptSetsCreated + interviewsCreated +
+    exercisesCreated + templatesCreated + missionsCreated + nuggetsCreated
+  );
 }
 
 // -----------------------------
@@ -62,14 +134,21 @@ async function buildOrgSnapshot(orgId) {
   // Base empty shape (keeps your view stable)
   const empty = {
     organization: null,
-    counts: { leaders: 0, groups: 0, members: 0, pendingJoinRequests: 0, pendingLibrarySubmissions: 0 },
+    counts: {
+      leaders: 0,
+      groups: 0,
+      members: 0,
+      pendingJoinRequests: 0,
+      pendingLibrarySubmissions: 0,
+      suggestionsSent: 0
+    },
     pendingJoinRequestsList: [],
     learningFootprint: {
       activeLearners: 0,
       unitsCompleted: 0,
       promptSetsCompleted: 0,
       avgCompletionsPerLearner: 0,
-      topUnitType: '—'
+      mostPopularTopic: '—'
     }
   };
 
@@ -82,12 +161,14 @@ async function buildOrgSnapshot(orgId) {
     distinctGroupNames,
     membersAgg,
     pendingJoinRequestsList,
-    learningFootprint
+    learningFootprint,
+    suggestionsSent,
+    pendingLibrarySubmissions
   ] = await Promise.all([
     // Leaders in org
     Leader.countDocuments(leaderFilter),
 
-    // Group names in org
+    // Group names in org (kept for backward compat, even if you don't display it)
     Leader.distinct('groupName', leaderFilter),
 
     // Members total (sum of each leader.members array length)
@@ -104,9 +185,13 @@ async function buildOrgSnapshot(orgId) {
       .lean(),
 
     // Learning footprint (Notes + PromptSetCompletion)
-    // IMPORTANT: ensure buildLearningFootprintForOrg() matches your schema:
-    // Notes uses memberID (not member) in your DB.
-    buildLearningFootprintForOrg(orgId, 30)
+    buildLearningFootprintForOrg(orgId, 30),
+
+    // ✅ NEW metric: suggestions sent (last 30 days)
+    buildSuggestionsSentCount(orgId, 30),
+
+    // ✅ NEW metric: library submissions (last 30 days)
+    buildLibrarySubmissionsCount(orgId, 30)
   ]);
 
   const groupsCount = (distinctGroupNames || [])
@@ -122,12 +207,14 @@ async function buildOrgSnapshot(orgId) {
       groups: safeNumber(groupsCount),
       members: safeNumber(membersCount),
       pendingJoinRequests: safeNumber(pendingJoinRequestsList?.length || 0),
-      pendingLibrarySubmissions: 0
+      pendingLibrarySubmissions: safeNumber(pendingLibrarySubmissions),
+      suggestionsSent: safeNumber(suggestionsSent)
     },
     pendingJoinRequestsList: pendingJoinRequestsList || [],
     learningFootprint: learningFootprint || empty.learningFootprint
   };
 }
+
 
 
 
@@ -327,12 +414,19 @@ async function buildAdminPayload(orgId) {
     orgSnapshot,
 
     // ✅ flatten for existing partials like admin_myorganization
-    counts: orgSnapshot?.counts || {
-      leaders: 0, groups: 0, members: 0, pendingJoinRequests: 0, pendingLibrarySubmissions: 0
-    },
-    learningFootprint: orgSnapshot?.learningFootprint || {
-      activeLearners: 0, unitsCompleted: 0, promptSetsCompleted: 0, avgCompletionsPerLearner: 0, topUnitType: '—'
-    },
+counts: orgSnapshot?.counts || {
+  leaders: 0, groups: 0, members: 0,
+  pendingJoinRequests: 0,
+  pendingLibrarySubmissions: 0,
+  suggestionsSent: 0
+},
+learningFootprint: orgSnapshot?.learningFootprint || {
+  activeLearners: 0,
+  unitsCompleted: 0,
+  promptSetsCompleted: 0,
+  avgCompletionsPerLearner: 0,
+  mostPopularTopic: '—'
+},
     pendingJoinRequestsList: orgSnapshot?.pendingJoinRequestsList || [],
 
     // org identity + other admin tab data
