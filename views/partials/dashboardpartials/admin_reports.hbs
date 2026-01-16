@@ -3,10 +3,8 @@
 <section class="leader-topics-container leader-admin-section">
   <h2 class="leader-dashboard-subtitles">team engagement</h2>
 
-
-
-  <div class="table-container wide-table-container">
-    <table class="dashboard-library-table wide-table">
+  <div class="table-container admin-wide-table-container">
+    <table class="dashboard-library-table admin-wide-table">
       <thead>
         <tr>
           <th class="dashboard-library-header" style="min-width: 260px;">team</th>
@@ -47,7 +45,7 @@
               </div>
             </td>
 
-            <!-- Prompt Sets Completed (ALL titles) -->
+            <!-- Prompt Sets Completed -->
             <td class="dashboard-library-cell">
               {{#each this.promptSetsCompleted}}
                 <div class="multi-record-item">{{this}}</div>
@@ -56,7 +54,7 @@
               {{/each}}
             </td>
 
-            <!-- Units Completed (ALL titles) -->
+            <!-- Units Completed -->
             <td class="dashboard-library-cell">
               {{#each this.unitsCompleted}}
                 <div class="multi-record-item">{{this}}</div>
@@ -84,5 +82,6 @@
     </table>
   </div>
 </section>
+
 
 

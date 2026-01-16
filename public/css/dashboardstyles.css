@@ -5405,3 +5405,12 @@ box-shadow: none !important;
   }
 }
 
+.admin-wide-table-container {
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.admin-wide-table {
+  min-width: 1200px; /* adjust if you want even more breathing room */
+}
+
