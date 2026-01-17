@@ -12,47 +12,157 @@
         >
         <h2 class="twennie-map-dashboard-title">Twennie Dashboard</h2>
         <p class="twennie-map-dashboard-subtitle">
-          Choose a lane to see what each part does.
+          Choose a lane to the right to see what each part does.
         </p>
       </div>
 
-      {{!-- Lanes --}}
+      {{!-- =========================================================
+          1) LEARN
+      ========================================================= --}}
       {{#each mapLanes}}
-        <details class="twennie-map-lane">
-          <summary class="twennie-map-lane-summary">
-            <span class="twennie-map-lane-arrow">➜</span>
-            <span class="twennie-map-lane-title">{{this.title}}</span>
-            {{#if this.subtitle}}
-              <span class="twennie-map-lane-subtitle">{{this.subtitle}}</span>
-            {{/if}}
-          </summary>
+        {{#if (eq this.key "learn")}}
+          <details class="twennie-map-lane">
+            <summary class="twennie-map-lane-summary">
+              <span class="twennie-map-lane-arrow">➜</span>
+              <span class="twennie-map-lane-title">{{this.title}}</span>
+              {{#if this.subtitle}}
+                <span class="twennie-map-lane-subtitle">{{this.subtitle}}</span>
+              {{/if}}
+            </summary>
 
-          <div class="twennie-map-lane-content">
-            <div class="twennie-map-image-row">
-              {{#each this.images}}
-<button class="twennie-map-card" type="button">
-  <img src="{{this.src}}" alt="{{this.alt}}" class="twennie-map-card-img">
+            <div class="twennie-map-lane-content">
+              <div class="twennie-map-image-row">
+                {{#each this.images}}
+                  <button class="twennie-map-card" type="button">
+                    <img src="{{this.src}}" alt="{{this.alt}}" class="twennie-map-card-img">
 
-  <!-- Persistent title under image -->
-  <span class="twennie-map-card-title">
-    {{this.title}}
-  </span>
+                    <span class="twennie-map-card-title">
+                      {{this.title}}
+                    </span>
 
-  <!-- Hover overlay -->
-  <span class="twennie-map-card-overlay">
-    <strong>{{this.title}}</strong>
-    <span class="twennie-map-card-desc">{{this.desc}}</span>
-  </span>
-</button>
-
-              {{/each}}
+                    <span class="twennie-map-card-overlay">
+                      <strong>{{this.title}}</strong>
+                      <span class="twennie-map-card-desc">{{this.desc}}</span>
+                    </span>
+                  </button>
+                {{/each}}
+              </div>
             </div>
-          </div>
-        </details>
+          </details>
+        {{/if}}
+      {{/each}}
+
+      {{!-- =========================================================
+          2) MONITOR LEARNING (REPORTS)
+      ========================================================= --}}
+      {{#each mapLanes}}
+        {{#if (eq this.key "reports")}}
+          <details class="twennie-map-lane">
+            <summary class="twennie-map-lane-summary">
+              <span class="twennie-map-lane-arrow">➜</span>
+              <span class="twennie-map-lane-title">{{this.title}}</span>
+              {{#if this.subtitle}}
+                <span class="twennie-map-lane-subtitle">{{this.subtitle}}</span>
+              {{/if}}
+            </summary>
+
+            <div class="twennie-map-lane-content">
+              <div class="twennie-map-image-row">
+                {{#each this.images}}
+                  <button class="twennie-map-card" type="button">
+                    <img src="{{this.src}}" alt="{{this.alt}}" class="twennie-map-card-img">
+
+                    <span class="twennie-map-card-title">
+                      {{this.title}}
+                    </span>
+
+                    <span class="twennie-map-card-overlay">
+                      <strong>{{this.title}}</strong>
+                      <span class="twennie-map-card-desc">{{this.desc}}</span>
+                    </span>
+                  </button>
+                {{/each}}
+              </div>
+            </div>
+          </details>
+        {{/if}}
+      {{/each}}
+
+      {{!-- =========================================================
+          3) CREATE LEARNING AND WORK PACKAGES (MISSIONS)
+      ========================================================= --}}
+      {{#each mapLanes}}
+        {{#if (eq this.key "missions")}}
+          <details class="twennie-map-lane">
+            <summary class="twennie-map-lane-summary">
+              <span class="twennie-map-lane-arrow">➜</span>
+              <span class="twennie-map-lane-title">{{this.title}}</span>
+              {{#if this.subtitle}}
+                <span class="twennie-map-lane-subtitle">{{this.subtitle}}</span>
+              {{/if}}
+            </summary>
+
+            <div class="twennie-map-lane-content">
+              <div class="twennie-map-image-row">
+                {{#each this.images}}
+                  <button class="twennie-map-card" type="button">
+                    <img src="{{this.src}}" alt="{{this.alt}}" class="twennie-map-card-img">
+
+                    <span class="twennie-map-card-title">
+                      {{this.title}}
+                    </span>
+
+                    <span class="twennie-map-card-overlay">
+                      <strong>{{this.title}}</strong>
+                      <span class="twennie-map-card-desc">{{this.desc}}</span>
+                    </span>
+                  </button>
+                {{/each}}
+              </div>
+            </div>
+          </details>
+        {{/if}}
+      {{/each}}
+
+      {{!-- =========================================================
+          4) MONITOR OPPORTUNITIES (MINE)
+      ========================================================= --}}
+      {{#each mapLanes}}
+        {{#if (eq this.key "mine")}}
+          <details class="twennie-map-lane">
+            <summary class="twennie-map-lane-summary">
+              <span class="twennie-map-lane-arrow">➜</span>
+              <span class="twennie-map-lane-title">{{this.title}}</span>
+              {{#if this.subtitle}}
+                <span class="twennie-map-lane-subtitle">{{this.subtitle}}</span>
+              {{/if}}
+            </summary>
+
+            <div class="twennie-map-lane-content">
+              <div class="twennie-map-image-row">
+                {{#each this.images}}
+                  <button class="twennie-map-card" type="button">
+                    <img src="{{this.src}}" alt="{{this.alt}}" class="twennie-map-card-img">
+
+                    <span class="twennie-map-card-title">
+                      {{this.title}}
+                    </span>
+
+                    <span class="twennie-map-card-overlay">
+                      <strong>{{this.title}}</strong>
+                      <span class="twennie-map-card-desc">{{this.desc}}</span>
+                    </span>
+                  </button>
+                {{/each}}
+              </div>
+            </div>
+          </details>
+        {{/if}}
       {{/each}}
 
     </div>
   </section>
 
 </section>
+
 

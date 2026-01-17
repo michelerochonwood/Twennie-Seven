@@ -6110,6 +6110,7 @@ margin-right: 5px; /* Space between icon and text */
   grid-template-columns: 320px 1fr;
   gap: 1rem 1.25rem;
   align-items:start;
+  font-family: "Figtree";
 }
 
 .twennie-map-dashboard{
@@ -6243,12 +6244,14 @@ margin-right: 5px; /* Space between icon and text */
 
 .twennie-map-card-title {
   display: block;
+  font-family: "Figtree";
   padding: 0.6rem 0.75rem 0.75rem;
   font-size: 1.05rem;
   font-weight: 700;
   color: #4a4ab2; /* Twennie blue */
   text-align: left;
   background: #ffffff;
+  text-transform: lowercase;
 }
 
 /* Keep title readable when overlay appears */
