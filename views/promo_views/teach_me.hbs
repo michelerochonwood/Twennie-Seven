@@ -73,6 +73,11 @@
 
   </section>
 
+<!-- ⭐⭐ NEW: HOW TWENNIE WORKS (INTERACTIVE MAP) ⭐⭐ -->
+<section class="teach-me-map-section">
+  {{> mainpartials/twennie_map }}
+</section>
+
 
   <!-- ⭐⭐ NEW: ORIENTATION CONTENT ⭐⭐ -->
   <section class="teach-me-orientation">
@@ -239,6 +244,10 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
+
+    // -----------------------------------------
+    // Bluey dropdowns (existing)
+    // -----------------------------------------
     const toggles = document.querySelectorAll('.teach-me-toggle');
 
     toggles.forEach(function (button) {
@@ -249,10 +258,24 @@
         this.classList.toggle('is-open', !isOpen);
         this.setAttribute('aria-expanded', String(!isOpen));
 
-        if (body) {
-          body.hidden = isOpen;
-        }
+        if (body) body.hidden = isOpen;
       });
     });
+
+    // -----------------------------------------
+    // Twennie map accordion (one lane open)
+    // -----------------------------------------
+    const lanes = Array.from(document.querySelectorAll(".twennie-map-lane"));
+
+    lanes.forEach(lane => {
+      lane.addEventListener("toggle", () => {
+        if (!lane.open) return;
+        lanes.forEach(other => {
+          if (other !== lane) other.open = false;
+        });
+      });
+    });
+
   });
 </script>
+

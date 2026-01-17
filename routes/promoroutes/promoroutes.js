@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const twenniemapController = require('../../controllers/twenniemapController');
 
 // Define routes
 router.get('/', (req, res) => {
@@ -137,11 +138,7 @@ router.get('/sample_template', (req, res) => {
     });
 });
 
-router.get('/teach_me', (req, res) => {
-    res.render('promo_views/teach_me', {
-        layout: 'mainlayout'
-    });
-});
+router.get('/teach_me', twenniemapController.getTeachMe);
 
 router.get('/training_bingo', (req, res) => {
     res.render('promo_views/training_bingo', {

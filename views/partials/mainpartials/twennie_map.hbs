@@ -1,0 +1,50 @@
+<section class="teach-me-map-section">
+
+  <section class="twennie-map">
+    <div class="twennie-map-grid">
+
+      <!-- Left: Dashboard tile -->
+      <div class="twennie-map-dashboard">
+        <img
+          src="/images/dashboardscreenshot.png"
+          alt="Twennie dashboard"
+          class="twennie-map-dashboard-img"
+        >
+        <h2 class="twennie-map-dashboard-title">Twennie Dashboard</h2>
+        <p class="twennie-map-dashboard-subtitle">
+          Choose a lane to see what each part does.
+        </p>
+      </div>
+
+      {{!-- Lanes --}}
+      {{#each mapLanes}}
+        <details class="twennie-map-lane">
+          <summary class="twennie-map-lane-summary">
+            <span class="twennie-map-lane-arrow">➜</span>
+            <span class="twennie-map-lane-title">{{this.title}}</span>
+            {{#if this.subtitle}}
+              <span class="twennie-map-lane-subtitle">{{this.subtitle}}</span>
+            {{/if}}
+          </summary>
+
+          <div class="twennie-map-lane-content">
+            <div class="twennie-map-image-row">
+              {{#each this.images}}
+                <button class="twennie-map-card" type="button">
+                  <img src="{{this.src}}" alt="{{this.alt}}" class="twennie-map-card-img">
+                  <span class="twennie-map-card-overlay">
+                    <strong>{{this.title}}</strong>
+                    <span class="twennie-map-card-desc">{{this.desc}}</span>
+                  </span>
+                </button>
+              {{/each}}
+            </div>
+          </div>
+        </details>
+      {{/each}}
+
+    </div>
+  </section>
+
+</section>
+

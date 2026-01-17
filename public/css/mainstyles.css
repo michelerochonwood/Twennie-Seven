@@ -5916,6 +5916,7 @@ margin-right: 5px; /* Space between icon and text */
   margin-bottom: 0.35rem;
 }
 
+
 /* ---------------------------------------------------
    Three-column membership layout
 --------------------------------------------------- */
@@ -6099,6 +6100,143 @@ margin-right: 5px; /* Space between icon and text */
     max-width: 100%;
   }
 }
+
+/* =========================================================
+   Twennie Map (interactive explanation)
+========================================================= */
+
+.twennie-map-grid{
+  display:grid;
+  grid-template-columns: 320px 1fr;
+  gap: 1rem 1.25rem;
+  align-items:start;
+}
+
+.twennie-map-dashboard{
+  grid-row: 1 / span 4;
+  border: 1px solid rgba(0,0,0,0.10);
+  border-radius: 18px;
+  padding: 1rem;
+  height: fit-content;
+  position: sticky;
+  top: 1rem;
+  background: #fff;
+}
+
+.twennie-map-dashboard-img{
+  width: 100%;
+  border-radius: 14px;
+  display:block;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+
+.twennie-map-dashboard-title{
+  margin: 0.75rem 0 0.25rem;
+  font-size: 1.15rem;
+}
+
+.twennie-map-dashboard-subtitle{
+  margin: 0;
+  opacity: 0.8;
+  font-size: 0.95rem;
+}
+
+.twennie-map-lane{
+  border: 1px solid rgba(0,0,0,0.10);
+  border-radius: 18px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.twennie-map-lane-summary{
+  cursor: pointer;
+  display:flex;
+  gap: 0.75rem;
+  align-items: baseline;
+  padding: 0.9rem 1rem;
+  user-select: none;
+}
+
+.twennie-map-lane-summary::-webkit-details-marker{ display:none; }
+
+.twennie-map-lane-arrow{
+  font-weight: 700;
+}
+
+.twennie-map-lane-title{
+  font-weight: 700;
+}
+
+.twennie-map-lane-subtitle{
+  margin-left: auto;
+  opacity: 0.75;
+  font-size: 0.9rem;
+}
+
+.twennie-map-lane-content{
+  border-top: 1px solid rgba(0,0,0,0.08);
+  padding: 0.75rem 1rem 1rem;
+}
+
+.twennie-map-image-row{
+  display:flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+}
+
+.twennie-map-card{
+  position: relative;
+  border: 1px solid rgba(0,0,0,0.10);
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+  min-width: 240px;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.twennie-map-card-img{
+  display:block;
+  width:100%;
+  height:auto;
+}
+
+.twennie-map-card-overlay{
+  position:absolute;
+  inset:0;
+  padding: 0.85rem;
+  background: rgba(255,255,255,0.94);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  display:flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.twennie-map-card:hover .twennie-map-card-overlay,
+.twennie-map-card:focus-visible .twennie-map-card-overlay{
+  opacity: 1;
+}
+
+.twennie-map-card-desc{
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+@media (max-width: 900px){
+  .twennie-map-grid{ grid-template-columns: 1fr; }
+  .twennie-map-dashboard{
+    grid-row: auto;
+    position: relative;
+    top: auto;
+  }
+  .twennie-map-lane-subtitle{
+    display:none;
+  }
+}
+
 
 
 
