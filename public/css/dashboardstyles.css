@@ -4275,11 +4275,11 @@ box-shadow: none !important;
 }
 
 /* Sticky Table Headers */
-.dashboard-library-table thead {
-  position: relative;
+.dashboard-library-table thead th {
+  position: sticky;
   top: 0;
-  background-color: #4a4ab2;
-  z-index: 2;
+  z-index: 5;
+  background: #4a4ab2; /* prevents text bleed-through */
 }
 
 /* Table Header Styling */
