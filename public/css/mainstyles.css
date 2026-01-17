@@ -6257,7 +6257,9 @@ margin-right: 5px; /* Space between icon and text */
   opacity: 0.15;
 }
 
-
+.twennie-map-card-title {
+  text-align: center;
+}
 
 
 
