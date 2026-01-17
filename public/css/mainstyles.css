@@ -6133,13 +6133,16 @@ margin-right: 5px; /* Space between icon and text */
 
 .twennie-map-dashboard-title{
   margin: 0.75rem 0 0.25rem;
-  font-size: 1.15rem;
+  font-size: 1.25rem;
+  color: #4a4ab2;
+  text-align: center;
 }
 
 .twennie-map-dashboard-subtitle{
   margin: 0;
   opacity: 0.8;
-  font-size: 0.95rem;
+  font-size: 1rem;
+  text-align: center;
 }
 
 .twennie-map-lane{
