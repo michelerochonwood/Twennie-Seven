@@ -6222,6 +6222,7 @@ margin-right: 5px; /* Space between icon and text */
 }
 
 .twennie-map-card-desc{
+  font-family: "Figtree";
   font-size: 0.95rem;
   opacity: 0.9;
 }
