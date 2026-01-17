@@ -77,11 +77,12 @@
     </table>
   </div>
 
-  {{!-- =========================================================
+{{!-- =========================================================
      TABLE 2: Prompt Notes (Option A)
      - one big table
-     - prompt texts shown ONCE per prompt set (header row)
-     - then one row per completing member with notes
+     - intro/orientation prompt shown in first column
+     - prompts 1–20 shown ONCE as header row
+     - member rows show notes aligned to prompts 1–20
 ========================================================= --}}
 <h2 class="dashboard-section-title">Prompt Notes</h2>
 
@@ -90,7 +91,7 @@
     <thead>
       <tr>
         <th class="dashboard-library-header">prompt set / member</th>
-        {{#each (range 1 21)}}
+        {{#each (range 1 20)}}
           <th class="dashboard-library-header">prompt {{this}}</th>
         {{/each}}
       </tr>
@@ -104,18 +105,24 @@
           <td class="dashboard-library-cell">
             <strong>{{this.promptSetTitle}}</strong><br>
             <span class="multi-record-item">prompt instructions</span>
+
+            {{!-- Intro / orientation prompt (Prompt 0) --}}
+            {{#if this.prompts.[0].promptText}}
+              <div class="multi-record-item" style="margin-top: 0.5rem;">
+                <strong>orientation:</strong> {{this.prompts.[0].promptText}}
+              </div>
+            {{/if}}
           </td>
 
+          {{!-- Prompts 1–20 only --}}
           {{#each this.prompts}}
-            <td class="dashboard-library-cell">
-              <div class="multi-record-item">
-                <strong>{{this.promptHeadline}}:</strong> {{this.promptText}}
-              </div>
-            </td>
-          {{else}}
-            <td class="dashboard-library-cell" colspan="21">
-              <span class="no-data">No prompt text available</span>
-            </td>
+            {{#unless @first}}
+              <td class="dashboard-library-cell">
+                <div class="multi-record-item">
+                  <strong>{{this.promptHeadline}}:</strong> {{this.promptText}}
+                </div>
+              </td>
+            {{/unless}}
           {{/each}}
         </tr>
 
@@ -127,18 +134,17 @@
               <span class="multi-record-item">{{formatDate this.dateCompleted}}</span>
             </td>
 
+            {{!-- Notes aligned to prompts 1–20 --}}
             {{#each this.promptNotes}}
-              <td class="dashboard-library-cell">
-                {{#each this.notes}}
-                  <div class="multi-record-item">{{this.content}}</div>
-                {{else}}
-                  <span class="no-data">No notes</span>
-                {{/each}}
-              </td>
-            {{else}}
-              <td class="dashboard-library-cell" colspan="21">
-                <span class="no-data">No notes</span>
-              </td>
+              {{#unless @first}}
+                <td class="dashboard-library-cell">
+                  {{#each this.notes}}
+                    <div class="multi-record-item">{{this.content}}</div>
+                  {{else}}
+                    <span class="no-data">No notes</span>
+                  {{/each}}
+                </td>
+              {{/unless}}
             {{/each}}
           </tr>
         {{else}}
@@ -146,18 +152,19 @@
             <td class="dashboard-library-cell">
               <strong>{{../promptSetTitle}}</strong>
             </td>
-            <td colspan="21" class="no-data">No completions</td>
+            <td colspan="20" class="no-data">No completions</td>
           </tr>
         {{/each}}
 
       {{else}}
         <tr>
-          <td colspan="22" class="no-data">No prompt notes available.</td>
+          <td colspan="21" class="no-data">No prompt notes available.</td>
         </tr>
       {{/each}}
     </tbody>
   </table>
 </div>
+
 
 
   {{!-- =========================================================
