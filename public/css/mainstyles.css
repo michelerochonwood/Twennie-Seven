@@ -6205,15 +6205,18 @@ margin-right: 5px; /* Space between icon and text */
 }
 
 .twennie-map-card-overlay{
-  position:absolute;
-  inset:0;
+  position: absolute;
+  inset: 0;
   padding: 0.85rem;
   background: rgba(255,255,255,0.94);
   opacity: 0;
   transition: opacity 0.15s ease;
-  display:flex;
+  display: flex;
   flex-direction: column;
   gap: 0.4rem;
+
+  justify-content: center; /* ✅ vertical centering */
+  align-items: center;     /* ✅ horizontal centering */
 }
 
 .twennie-map-card-overlay strong {
@@ -6225,7 +6228,7 @@ margin-right: 5px; /* Space between icon and text */
   margin-bottom: 0.35rem;
   text-transform: lowercase;
   text-align: center;
-  justify-content: center;
+
 }
 .twennie-map-card:hover .twennie-map-card-overlay,
 .twennie-map-card:focus-visible .twennie-map-card-overlay{
@@ -6237,7 +6240,7 @@ margin-right: 5px; /* Space between icon and text */
   font-size: 0.95rem;
   opacity: 0.9;
   text-align: center;
-  justify-content: center;
+
 }
 
 @media (max-width: 900px){
