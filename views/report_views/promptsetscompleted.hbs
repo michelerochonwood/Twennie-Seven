@@ -79,10 +79,9 @@
 
 {{!-- =========================================================
      TABLE 2: Prompt Notes (Option A)
-     - one big table
      - intro/orientation prompt shown in first column
      - prompts 1–20 shown ONCE as header row
-     - member rows show notes aligned to prompts 1–20
+     - member rows aligned perfectly under headers
 ========================================================= --}}
 <h2 class="dashboard-section-title">Prompt Notes</h2>
 
@@ -91,9 +90,17 @@
     <thead>
       <tr>
         <th class="dashboard-library-header">prompt set / member</th>
-        {{#each (range 1 20)}}
-          <th class="dashboard-library-header">prompt {{this}}</th>
-        {{/each}}
+
+        {{!-- Generate headers from prompts[1..] (no hardcoded range) --}}
+        {{#if promptSetsCompletedReports.[0].prompts}}
+          {{#each promptSetsCompletedReports.[0].prompts}}
+            {{#unless @first}}
+              <th class="dashboard-library-header">
+                prompt {{@index}}
+              </th>
+            {{/unless}}
+          {{/each}}
+        {{/if}}
       </tr>
     </thead>
 
@@ -106,7 +113,7 @@
             <strong>{{this.promptSetTitle}}</strong><br>
             <span class="multi-record-item">prompt instructions</span>
 
-            {{!-- Intro / orientation prompt (Prompt 0) --}}
+            {{!-- Orientation prompt (Prompt 0) --}}
             {{#if this.prompts.[0].promptText}}
               <div class="multi-record-item" style="margin-top: 0.5rem;">
                 <strong>orientation:</strong> {{this.prompts.[0].promptText}}
@@ -114,7 +121,7 @@
             {{/if}}
           </td>
 
-          {{!-- Prompts 1–20 only --}}
+          {{!-- Prompts 1–20 --}}
           {{#each this.prompts}}
             {{#unless @first}}
               <td class="dashboard-library-cell">
@@ -164,6 +171,7 @@
     </tbody>
   </table>
 </div>
+
 
 
 
