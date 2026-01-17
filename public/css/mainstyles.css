@@ -6237,6 +6237,27 @@ margin-right: 5px; /* Space between icon and text */
   }
 }
 
+/* =========================================================
+   Twennie Map — Image Card Titles
+========================================================= */
+
+.twennie-map-card-title {
+  display: block;
+  padding: 0.6rem 0.75rem 0.75rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #4a4ab2; /* Twennie blue */
+  text-align: left;
+  background: #ffffff;
+}
+
+/* Keep title readable when overlay appears */
+.twennie-map-card:hover .twennie-map-card-title,
+.twennie-map-card:focus-visible .twennie-map-card-title {
+  opacity: 0.15;
+}
+
+
 
 
 

@@ -30,13 +30,21 @@
           <div class="twennie-map-lane-content">
             <div class="twennie-map-image-row">
               {{#each this.images}}
-                <button class="twennie-map-card" type="button">
-                  <img src="{{this.src}}" alt="{{this.alt}}" class="twennie-map-card-img">
-                  <span class="twennie-map-card-overlay">
-                    <strong>{{this.title}}</strong>
-                    <span class="twennie-map-card-desc">{{this.desc}}</span>
-                  </span>
-                </button>
+<button class="twennie-map-card" type="button">
+  <img src="{{this.src}}" alt="{{this.alt}}" class="twennie-map-card-img">
+
+  <!-- Persistent title under image -->
+  <span class="twennie-map-card-title">
+    {{this.title}}
+  </span>
+
+  <!-- Hover overlay -->
+  <span class="twennie-map-card-overlay">
+    <strong>{{this.title}}</strong>
+    <span class="twennie-map-card-desc">{{this.desc}}</span>
+  </span>
+</button>
+
               {{/each}}
             </div>
           </div>
