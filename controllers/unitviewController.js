@@ -532,8 +532,7 @@ viewMineDisciplines: async (req, res) => {
 
     // 2) Enforce membership: nuggets are for paying members only
     const membershipType = req.user?.accessLevel || req.user?.membershipType;
-    const paidMemberships = ['paid_individual', 'leader', 'group_member']; 
-    // adjust this list depending on which Twennie roles you consider "paid"
+    const paidMemberships = ['paid_individual', 'leader', 'group_member'];
     if (!membershipType || !paidMemberships.includes(membershipType)) {
       console.log(`🚫 Access denied for membership type: ${membershipType}`);
       return res.status(403).render('unit_views/error', {
@@ -552,11 +551,17 @@ viewMineDisciplines: async (req, res) => {
     const currentMembership = req.user?.membershipType || req.user?.accessLevel;
     const isOwner = !!(currentUserId && creatorId && currentUserId === creatorId);
 
-    // 5) If leader, load group members for assignment UI
+    // 5) Leader assignment context (if leader)
+    const isLeader = currentMembership === 'leader';
     let groupMembers = [];
-    let leaderId, leaderName;
-    if (currentMembership === 'leader' && currentUserId) {
-      const leaderDoc = await Leader.findById(currentUserId);
+    let leaderId;
+    let leaderName;
+
+    if (isLeader && currentUserId) {
+      const leaderDoc = await Leader.findById(currentUserId)
+        .select('_id groupLeaderName username')
+        .lean();
+
       if (leaderDoc) {
         groupMembers = await GroupMember.find({ groupId: leaderDoc._id })
           .select('_id name')
@@ -566,7 +571,10 @@ viewMineDisciplines: async (req, res) => {
       }
     }
 
-    // 6) Render the nugget view
+    // 6) ✅ Org Admin suggestion context
+    const adminSuggest = await buildOrgLeaderListForAdmin(req);
+
+    // 7) Render the nugget view
     return res.render('unit_views/single_nugget', {
       layout: 'unitviewlayout',
 
@@ -589,26 +597,28 @@ viewMineDisciplines: async (req, res) => {
 
       // Creator sidebar
       creator: {
-        name: creator.name,
-        image: creator.image,
+        name: creator?.name || 'Unknown Author',
+        image: creator?.image || '/images/default-avatar.png',
       },
 
       // Flags
       isOwner,
       isAuthenticated: !!req.user,
-      isLeader: currentMembership === 'leader',
-      isGroupMemberOrLeader:
-        currentMembership === 'leader' || currentMembership === 'group_member',
-      isGroupMemberOrMember:
-        currentMembership === 'group_member' || currentMembership === 'member',
+      isLeader,
+      isGroupMemberOrLeader: isLeader || currentMembership === 'group_member',
+      isGroupMemberOrMember: currentMembership === 'group_member' || currentMembership === 'member',
+
+      // ✅ Admin suggest vars (top-level)
+      ...adminSuggest,
 
       // Leader-only assignment data
       groupMembers,
       leaderId,
       leaderName: leaderName || req.user?.username || 'You',
 
-      csrfToken: req.csrfToken(),
+      csrfToken: typeof req.csrfToken === 'function' ? req.csrfToken() : null,
     });
+
   } catch (err) {
     console.error('💥 Error fetching nugget:', err.stack || err.message);
     return res.status(500).render('unit_views/error', {
@@ -618,6 +628,7 @@ viewMineDisciplines: async (req, res) => {
     });
   }
 },
+
     
 viewArticle: async (req, res) => {
   try {
@@ -796,6 +807,7 @@ viewVideo: async (req, res) => {
     const authorIdRaw = video.author?.id || video.author;
     const authorId = authorIdRaw ? authorIdRaw.toString() : null;
     const author = await resolveAuthorById(authorId);
+
     if (!authorId || !author) {
       console.error(`❌ Author with ID ${authorId} not found.`);
       return res.status(404).render('unit_views/error', {
@@ -807,20 +819,22 @@ viewVideo: async (req, res) => {
 
     // 3) Ownership & current user
     const currentUserId = (req.user?._id || req.user?.id)?.toString();
-    const currentMembership = req.user?.membershipType || null;
+    const currentMembership = req.user?.membershipType || req.user?.accessLevel || null;
     const isOwner = !!(currentUserId && authorId && currentUserId === authorId);
     console.log(`👑 Is owner: ${isOwner}`);
 
     // 4) Access control (fetch author's org/team from real doc)
     let authorOrg = null;
     let authorGroupId = null;
+
     const [authorAsLeader, authorAsGroupMember] = await Promise.all([
       Leader.findById(authorId).select('_id organization').lean(),
       GroupMember.findById(authorId).select('_id organization groupId').lean()
     ]);
+
     if (authorAsLeader) {
       authorOrg = authorAsLeader.organization || null;
-      authorGroupId = authorAsLeader._id; // leaders use their own id for team checks
+      authorGroupId = authorAsLeader._id; // leaders use their own id as group id
     } else if (authorAsGroupMember) {
       authorOrg = authorAsGroupMember.organization || null;
       authorGroupId = authorAsGroupMember.groupId || null;
@@ -848,28 +862,40 @@ viewVideo: async (req, res) => {
       isAuthorizedToViewFullContent = isOwner || isOrgMatch || isTeamMatch;
     }
 
-    console.log("🔒 Access breakdown (video):", { isOrgMatch, isTeamMatch, isAuthorizedToViewFullContent });
+    console.log("🔒 Access breakdown (video):", {
+      isOrgMatch,
+      isTeamMatch,
+      isAuthorizedToViewFullContent
+    });
 
     // 5) Leader context for assignments
+    const isLeader = currentMembership === 'leader';
     let groupMembers = [];
     let leaderId;
     let leaderName;
-    if (currentMembership === 'leader' && currentUserId) {
-      const leaderDoc = await Leader.findById(currentUserId);
+
+    if (isLeader && currentUserId) {
+      const leaderDoc = await Leader.findById(currentUserId)
+        .select('_id groupLeaderName username')
+        .lean();
+
       if (leaderDoc) {
         groupMembers = await GroupMember.find({ groupId: leaderDoc._id })
           .select('_id name')
           .lean();
         leaderId = leaderDoc._id.toString();
         leaderName = leaderDoc.groupLeaderName || leaderDoc.username || 'You';
-        console.log("🧑‍🤝‍🧑 Group members found:", groupMembers);
+        console.log("🧑‍🤝‍🧑 Group members found:", groupMembers.length);
       }
     }
 
     // 6) Build YouTube embed link
     const embedLink = convertYouTubeToEmbed(video.video_content);
 
-    // 7) Render
+    // 7) ✅ Org Admin suggestion context
+    const adminSuggest = await buildOrgLeaderListForAdmin(req);
+
+    // 8) Render
     return res.render('unit_views/single_video', {
       layout: 'unitviewlayout',
 
@@ -891,18 +917,19 @@ viewVideo: async (req, res) => {
 
       // topics
       main_topic: video.main_topic,
-      secondary_topics: video.secondary_topics,
+      secondary_topics: video.secondary_topics || [],
       sub_topic: video.sub_topic,
 
       // flags
       isOwner,
       isAuthorizedToViewFullContent,
       isAuthenticated: !!req.user,
-      isLeader: currentMembership === 'leader',
-      isGroupMemberOrLeader:
-        currentMembership === 'leader' || currentMembership === 'group_member',
-      isGroupMemberOrMember:
-        currentMembership === 'group_member' || currentMembership === 'member',
+      isLeader,
+      isGroupMemberOrLeader: isLeader || currentMembership === 'group_member',
+      isGroupMemberOrMember: currentMembership === 'group_member' || currentMembership === 'member',
+
+      // ✅ Admin suggest vars (top-level)
+      ...adminSuggest,
 
       // leader-only assignment data
       groupMembers,
@@ -910,7 +937,7 @@ viewVideo: async (req, res) => {
       leaderName: leaderName || req.user?.username || 'You',
 
       // CSRF
-      csrfToken: req.csrfToken(),
+      csrfToken: typeof req.csrfToken === 'function' ? req.csrfToken() : null,
     });
 
   } catch (err) {
@@ -927,6 +954,7 @@ viewVideo: async (req, res) => {
 
 
 
+
       
     
     
@@ -938,7 +966,7 @@ viewInterview: async (req, res) => {
     const { id } = req.params;
     console.log(`🎙️ Fetching interview with ID: ${id}`);
 
-    // 1. Fetch the interview
+    // 1) Fetch the interview
     const interview = await Interview.findById(id);
     if (!interview) {
       console.warn(`❌ Interview with ID ${id} not found.`);
@@ -949,12 +977,12 @@ viewInterview: async (req, res) => {
       });
     }
 
-    console.log("✅ Interview found:", interview);
-
-    // 2. Resolve the author
-    const authorId = interview.author?.id || interview.author;
+    // 2) Resolve author
+    const authorIdRaw = interview.author?.id || interview.author;
+    const authorId = authorIdRaw ? authorIdRaw.toString() : null;
     const author = await resolveAuthorById(authorId);
-    if (!author) {
+
+    if (!authorId || !author) {
       console.error(`❌ Author with ID ${authorId} not found.`);
       return res.status(404).render('unit_views/error', {
         layout: 'unitviewlayout',
@@ -963,11 +991,29 @@ viewInterview: async (req, res) => {
       });
     }
 
-    // 3. Check if the current user is the owner
-    const isOwner = req.user && req.user.id.toString() === authorId.toString();
+    // 3) Ownership & current user
+    const currentUserId = (req.user?._id || req.user?.id)?.toString();
+    const currentMembership = req.user?.membershipType || req.user?.accessLevel || null;
+    const isOwner = !!(currentUserId && authorId && currentUserId === authorId);
     console.log(`👑 Is owner: ${isOwner}`);
 
-    // 4. Determine access based on visibility
+    // 4) Access control (fetch author's org/team from real doc)
+    let authorOrg = null;
+    let authorGroupId = null;
+
+    const [authorAsLeader, authorAsGroupMember] = await Promise.all([
+      Leader.findById(authorId).select('_id organization').lean(),
+      GroupMember.findById(authorId).select('_id organization groupId').lean()
+    ]);
+
+    if (authorAsLeader) {
+      authorOrg = authorAsLeader.organization || null;
+      authorGroupId = authorAsLeader._id; // leaders use their own id as group id
+    } else if (authorAsGroupMember) {
+      authorOrg = authorAsGroupMember.organization || null;
+      authorGroupId = authorAsGroupMember.groupId || null;
+    }
+
     let isAuthorizedToViewFullContent = false;
     let isOrgMatch = false;
     let isTeamMatch = false;
@@ -978,77 +1024,99 @@ viewInterview: async (req, res) => {
       isOrgMatch =
         interview.visibility === 'organization_only' &&
         req.user?.organization &&
-        author.organization &&
-        req.user.organization === author.organization;
+        authorOrg &&
+        req.user.organization === authorOrg;
 
       isTeamMatch =
         interview.visibility === 'team_only' &&
         req.user?.groupId &&
-        author.groupId &&
-        req.user.groupId.toString() === author.groupId.toString();
+        authorGroupId &&
+        req.user.groupId.toString() === authorGroupId.toString();
 
       isAuthorizedToViewFullContent = isOwner || isOrgMatch || isTeamMatch;
     }
 
-    console.log("🔒 Access breakdown:");
-    console.log("• Org match:", isOrgMatch);
-    console.log("• Team match:", isTeamMatch);
-    console.log("🔓 Authorized to view full content:", isAuthorizedToViewFullContent);
+    console.log("🔒 Access breakdown (interview):", {
+      isOrgMatch,
+      isTeamMatch,
+      isAuthorizedToViewFullContent
+    });
 
-    // 5. Get group members and leaderId if applicable
+    // 5) Leader context for assignments
+    const isLeader = currentMembership === 'leader';
     let groupMembers = [];
-    let leaderName = null;
-    let leaderId = null;
+    let leaderId;
+    let leaderName;
 
-    if (req.user?.membershipType === 'leader') {
-      const leader = await Leader.findById(req.user.id);
-      if (leader) {
-        groupMembers = await GroupMember.find({ groupId: leader._id })
+    if (isLeader && currentUserId) {
+      const leaderDoc = await Leader.findById(currentUserId)
+        .select('_id groupLeaderName username')
+        .lean();
+
+      if (leaderDoc) {
+        groupMembers = await GroupMember.find({ groupId: leaderDoc._id })
           .select('_id name')
           .lean();
-        leaderName = leader.groupLeaderName || leader.username || 'You';
-        leaderId = leader._id.toString();
-        console.log("🧑‍🤝‍🧑 Group members found:", groupMembers);
+        leaderId = leaderDoc._id.toString();
+        leaderName = leaderDoc.groupLeaderName || leaderDoc.username || 'You';
+        console.log("🧑‍🤝‍🧑 Group members found:", groupMembers.length);
       }
     }
 
-    // ✅ 6. Convert the video link to embed format
+    // 6) Convert the video link to embed format
     const embedLink = convertYouTubeToEmbed(interview.video_link);
 
-    // 7. Render the view
-    res.render('unit_views/single_interview', {
+    // 7) ✅ Org Admin suggestion context
+    const adminSuggest = await buildOrgLeaderListForAdmin(req);
+
+    // 8) Render
+    return res.render('unit_views/single_interview', {
       layout: 'unitviewlayout',
+
+      // identity & content
       _id: interview._id.toString(),
+      unitType: 'interview',
       interview_title: interview.interview_title,
       short_summary: interview.short_summary,
       full_summary: interview.full_summary,
       interview_link: interview.video_link || '',
       embedLink,
       interview_content: interview.transcript || "Transcript will be available soon.",
+
+      // author card
       author: {
         name: author.name || 'Unknown Author',
         image: author.image || '/images/default-avatar.png',
       },
+
+      // topics
       main_topic: interview.main_topic,
-      secondary_topics: interview.secondary_topics,
+      secondary_topics: interview.secondary_topics || [],
       sub_topic: interview.sub_topic,
+
+      // flags
       isOwner,
       isAuthorizedToViewFullContent,
-      isAuthenticated: req.isAuthenticated(),
-      isLeader: req.user?.membershipType === 'leader',
-      isGroupMemberOrLeader:
-        req.user?.membershipType === 'leader' || req.user?.membershipType === 'group_member',
-      isGroupMemberOrMember:
-        req.user?.membershipType === 'group_member' || req.user?.membershipType === 'member',
+      isAuthenticated: typeof req.isAuthenticated === 'function' ? req.isAuthenticated() : !!req.user,
+      isLeader,
+      isGroupMemberOrLeader: isLeader || currentMembership === 'group_member',
+      isGroupMemberOrMember: currentMembership === 'group_member' || currentMembership === 'member',
+
+      // ✅ Admin suggest vars (top-level)
+      ...adminSuggest,
+
+      // leader-only assignment data
       groupMembers,
-      leaderId: leaderId || req.user._id.toString(), // ✅ Ensures correct leaderId even if fallback
-      leaderName: leaderName || req.user.username || 'You',
-      csrfToken: req.csrfToken()
+      leaderId,
+      leaderName: leaderName || req.user?.username || 'You',
+
+      // CSRF
+      csrfToken: typeof req.csrfToken === 'function' ? req.csrfToken() : null,
     });
 
   } catch (err) {
     console.error('💥 Error fetching interview:', err.stack || err.message);
-    res.status(500).render('unit_views/error', {
+    return res.status(500).render('unit_views/error', {
       layout: 'unitviewlayout',
       title: 'Error',
       errorMessage: 'An error occurred while fetching the interview.',
@@ -1094,18 +1162,22 @@ viewPromptset: async (req, res) => {
       });
     }
 
+    // 3) Ownership & current user
     const currentUserId = (req.user?._id || req.user?.id)?.toString();
+    const currentMembership = req.user?.membershipType || req.user?.accessLevel || null;
+
     const isOwner = !!(currentUserId && authorId && currentUserId === authorId);
-    const currentMembership = req.user?.membershipType || null;
     const isLeader = currentMembership === 'leader';
 
     // Fetch the author's org/team from their actual doc
     let authorOrg = null;
     let authorGroupId = null;
+
     const [authorAsLeader, authorAsGroupMember] = await Promise.all([
       Leader.findById(authorId).select('_id organization').lean(),
       GroupMember.findById(authorId).select('_id organization groupId').lean()
     ]);
+
     if (authorAsLeader) {
       authorOrg = authorAsLeader.organization || null;
       authorGroupId = authorAsLeader._id; // leaders use their own id as group id
@@ -1114,14 +1186,15 @@ viewPromptset: async (req, res) => {
       authorGroupId = authorAsGroupMember.groupId || null;
     }
 
-    // 3) Additional membership checks
-    const isGroupMember = !!(await GroupMember.findById(currentUserId).select('_id'));
+    // 4) Additional membership checks
+    const isGroupMember = !!(await GroupMember.findById(currentUserId).select('_id').lean());
     const isPaidIndividual =
       req.user?.membershipType === 'member' &&
       ['paid_individual', 'contributor_individual'].includes(req.user?.accessLevel);
 
-    // 4) Visibility check
+    // 5) Visibility check
     let isAuthorizedToViewFullContent = false;
+
     if (promptSet.visibility === 'all_members') {
       isAuthorizedToViewFullContent = true;
     } else {
@@ -1137,38 +1210,55 @@ viewPromptset: async (req, res) => {
         authorGroupId &&
         req.user.groupId.toString() === authorGroupId.toString();
 
+      // Prompt sets are more permissive in your system (leader, group_member, paid individual)
       isAuthorizedToViewFullContent =
         isOwner || isLeader || isGroupMember || isPaidIndividual || isOrgMatch || isTeamMatch;
     }
 
-    // 5) Leader context for assignment UI
+    // 6) Leader context for assignment UI (if leader)
     let groupMembers = [];
+    let leaderId = undefined;
+    let leaderName = undefined;
+
     if (isLeader && currentUserId) {
-      const leaderDoc = await Leader.findById(currentUserId).select('_id groupLeaderName username').lean();
+      const leaderDoc = await Leader.findById(currentUserId)
+        .select('_id groupLeaderName username')
+        .lean();
+
       if (leaderDoc) {
         groupMembers = await GroupMember.find({ groupId: leaderDoc._id })
           .select('name _id')
           .lean();
+        leaderId = leaderDoc._id.toString();
+        leaderName = leaderDoc.groupLeaderName || leaderDoc.username || 'You';
       }
     }
 
-    // 6) Render
+    // 7) ✅ Org Admin suggestion context
+    const adminSuggest = await buildOrgLeaderListForAdmin(req);
+
+    // 8) Render
     return res.render('unit_views/single_promptset', {
       layout: 'unitviewlayout',
-      csrfToken: req.csrfToken(),
+      csrfToken: typeof req.csrfToken === 'function' ? req.csrfToken() : null,
 
+      // identity & content
       _id: promptSet._id.toString(),
+      unitType: 'promptset',
       promptset_title: promptSet.promptset_title,
       short_summary: promptSet.short_summary,
       full_summary: promptSet.full_summary,
       main_topic: promptSet.main_topic,
-      secondary_topics: promptSet.secondary_topics,
+      secondary_topics: promptSet.secondary_topics || [],
       sub_topic: promptSet.sub_topic,
+
+      // optional metadata
       target_audience: promptSet.target_audience,
       characteristics: promptSet.characteristics,
       purpose: promptSet.purpose,
       suggested_frequency: promptSet.suggested_frequency,
 
+      // prompts / headlines
       prompts: [
         promptSet.Prompt1, promptSet.Prompt2, promptSet.Prompt3, promptSet.Prompt4, promptSet.Prompt5,
         promptSet.Prompt6, promptSet.Prompt7, promptSet.Prompt8, promptSet.Prompt9, promptSet.Prompt10,
@@ -1193,6 +1283,7 @@ viewPromptset: async (req, res) => {
         permission: promptSet.permission,
       },
 
+      // author card
       author: {
         name: author.name || 'Unknown Author',
         image: author.image || '/images/default-avatar.png',
@@ -1204,8 +1295,16 @@ viewPromptset: async (req, res) => {
       isAuthenticated: typeof req.isAuthenticated === 'function' ? req.isAuthenticated() : !!req.user,
       isAuthorizedToViewFullContent,
 
-      // leader UI data
+      isGroupMemberOrLeader: isLeader || currentMembership === 'group_member',
+      isGroupMemberOrMember: currentMembership === 'group_member' || currentMembership === 'member',
+
+      // ✅ Admin suggest vars (top-level)
+      ...adminSuggest,
+
+      // leader UI data (if your HBS uses it)
       groupMembers,
+      leaderId,
+      leaderName: leaderName || req.user?.username || 'You',
     });
 
   } catch (err) {
@@ -1238,33 +1337,37 @@ viewExercise: async (req, res) => {
       });
     }
 
-    // 2) Resolve creator profile (name/image)
+    // 2) Resolve author (creator) for sidebar
     const authorIdRaw = exercise.author?.id || exercise.author;
     const authorId = authorIdRaw ? authorIdRaw.toString() : null;
     if (!authorId) {
       return res.status(500).render('unit_views/error', {
         layout: 'unitviewlayout',
         title: 'Error',
-        errorMessage: 'An error occurred while fetching the exercise author.',
+        errorMessage: 'Exercise author is missing.',
       });
     }
+
     const creator = await resolveAuthorById(authorId);
 
-    // 3) Access checks
+    // 3) Current user helpers
     const currentUserId = (req.user?._id || req.user?.id)?.toString();
+    const currentMembership = req.user?.membershipType || req.user?.accessLevel || null;
+
     const isOwner = !!(currentUserId && authorId && currentUserId === authorId);
 
-    // Load author's actual doc to read organization / team
+    // 4) Access control (same pattern you used elsewhere)
     let authorOrg = null;
     let authorGroupId = null;
+
     const [authorAsLeader, authorAsGroupMember] = await Promise.all([
       Leader.findById(authorId).select('_id organization').lean(),
       GroupMember.findById(authorId).select('_id organization groupId').lean()
     ]);
+
     if (authorAsLeader) {
       authorOrg = authorAsLeader.organization || null;
-      // Leaders treat their own _id as groupId for team-only checks
-      authorGroupId = authorAsLeader._id;
+      authorGroupId = authorAsLeader._id; // leaders anchor to own id
     } else if (authorAsGroupMember) {
       authorOrg = authorAsGroupMember.organization || null;
       authorGroupId = authorAsGroupMember.groupId || null;
@@ -1292,16 +1395,24 @@ viewExercise: async (req, res) => {
       isAuthorizedToViewFullContent = isOwner || isOrgMatch || isTeamMatch;
     }
 
-    console.log('🔒 Access breakdown (exercise):', { isOwner, isOrgMatch, isTeamMatch, isAuthorizedToViewFullContent });
+    console.log('🔒 Access breakdown (exercise):', {
+      isOwner,
+      isOrgMatch,
+      isTeamMatch,
+      isAuthorizedToViewFullContent
+    });
 
-    // 4) Leader context for assignments
-    const currentMembership = req.user?.membershipType;
+    // 5) Leader context for assignment UI
+    const isLeader = currentMembership === 'leader';
     let groupMembers = [];
     let leaderId = undefined;
     let leaderName = undefined;
 
-    if (currentMembership === 'leader' && currentUserId) {
-      const leaderDoc = await Leader.findById(currentUserId);
+    if (isLeader && currentUserId) {
+      const leaderDoc = await Leader.findById(currentUserId)
+        .select('_id groupLeaderName username')
+        .lean();
+
       if (leaderDoc) {
         groupMembers = await GroupMember.find({ groupId: leaderDoc._id })
           .select('_id name')
@@ -1311,14 +1422,18 @@ viewExercise: async (req, res) => {
       }
     }
 
-    // 5) Normalize document uploads to an array
-    const documentUploads = Array.isArray(exercise.document_uploads)
-      ? exercise.document_uploads
-      : exercise.document_uploads
-        ? [exercise.document_uploads]
+    // 6) ✅ Org Admin suggestion context (this is what you were missing in other unit types)
+    const adminSuggest = await buildOrgLeaderListForAdmin(req);
+
+    // 7) Normalize document uploads for the view (your HBS expects array of strings)
+    const rawDocs = exercise.document_uploads;
+    const document_uploads = Array.isArray(rawDocs)
+      ? rawDocs.filter(Boolean)
+      : rawDocs
+        ? [rawDocs]
         : [];
 
-    // 6) Render
+    // 8) Render
     return res.render('unit_views/single_exercise', {
       layout: 'unitviewlayout',
 
@@ -1330,28 +1445,29 @@ viewExercise: async (req, res) => {
       full_summary: exercise.full_summary,
       time_required: exercise.time_required,
       file_format: exercise.file_format,
-      document_uploads: documentUploads,
+      document_uploads,
 
       // creator card
       creator: {
-        name: creator.name || 'Unknown Creator',
-        image: creator.image || '/images/default-avatar.png',
+        name: creator?.name || 'Unknown Creator',
+        image: creator?.image || '/images/default-avatar.png',
       },
 
       // topics
       main_topic: exercise.main_topic,
-      secondary_topics: exercise.secondary_topics,
+      secondary_topics: exercise.secondary_topics || [],
       sub_topic: exercise.sub_topic,
 
       // flags
       isOwner,
       isAuthorizedToViewFullContent,
       isAuthenticated: !!req.user,
-      isLeader: currentMembership === 'leader',
-      isGroupMemberOrLeader:
-        currentMembership === 'leader' || currentMembership === 'group_member',
-      isGroupMemberOrMember:
-        currentMembership === 'group_member' || currentMembership === 'member',
+      isLeader,
+      isGroupMemberOrLeader: isLeader || currentMembership === 'group_member',
+      isGroupMemberOrMember: currentMembership === 'group_member' || currentMembership === 'member',
+
+      // ✅ Admin suggest vars (top-level)
+      ...adminSuggest,
 
       // leader-only assignment data
       groupMembers,
@@ -1359,7 +1475,7 @@ viewExercise: async (req, res) => {
       leaderName: leaderName || req.user?.username || 'You',
 
       // CSRF
-      csrfToken: req.csrfToken(),
+      csrfToken: typeof req.csrfToken === 'function' ? req.csrfToken() : null,
     });
 
   } catch (err) {
@@ -1371,6 +1487,7 @@ viewExercise: async (req, res) => {
     });
   }
 },
+
 
 
 
@@ -1398,6 +1515,7 @@ viewTemplate: async (req, res) => {
     const authorIdRaw = template.author?.id || template.author;
     const authorId = authorIdRaw ? authorIdRaw.toString() : null;
     const author = await resolveAuthorById(authorId);
+
     if (!authorId || !author) {
       return res.status(404).render('unit_views/error', {
         layout: 'unitviewlayout',
@@ -1406,18 +1524,21 @@ viewTemplate: async (req, res) => {
       });
     }
 
-    // 3) Ownership
+    // 3) Ownership & current user
     const currentUserId = (req.user?._id || req.user?.id)?.toString();
-    const currentMembership = req.user?.membershipType || null;
+    const currentMembership = req.user?.membershipType || req.user?.accessLevel || null;
+
     const isOwner = !!(currentUserId && authorId && currentUserId === authorId);
 
     // 4) Access control: fetch author's org/team from real doc
     let authorOrg = null;
     let authorGroupId = null;
+
     const [authorAsLeader, authorAsGroupMember] = await Promise.all([
       Leader.findById(authorId).select('_id organization').lean(),
       GroupMember.findById(authorId).select('_id organization groupId').lean()
     ]);
+
     if (authorAsLeader) {
       authorOrg = authorAsLeader.organization || null;
       authorGroupId = authorAsLeader._id; // leaders use their own id for team checks
@@ -1448,14 +1569,24 @@ viewTemplate: async (req, res) => {
       isAuthorizedToViewFullContent = isOwner || isOrgMatch || isTeamMatch;
     }
 
-    console.log("🔒 Access breakdown (template):", { isOwner, isOrgMatch, isTeamMatch, isAuthorizedToViewFullContent });
+    console.log("🔒 Access breakdown (template):", {
+      isOwner,
+      isOrgMatch,
+      isTeamMatch,
+      isAuthorizedToViewFullContent
+    });
 
     // 5) Leader context for assignments
+    const isLeader = currentMembership === 'leader';
     let groupMembers = [];
     let leaderId;
     let leaderName;
-    if (currentMembership === 'leader' && currentUserId) {
-      const leaderDoc = await Leader.findById(currentUserId);
+
+    if (isLeader && currentUserId) {
+      const leaderDoc = await Leader.findById(currentUserId)
+        .select('_id groupLeaderName username')
+        .lean();
+
       if (leaderDoc) {
         groupMembers = await GroupMember.find({ groupId: leaderDoc._id })
           .select('_id name')
@@ -1465,16 +1596,22 @@ viewTemplate: async (req, res) => {
       }
     }
 
-    // 6) Normalize document uploads → [{ url, filename }]
+    // 6) ✅ Org Admin suggestion context
+    const adminSuggest = await buildOrgLeaderListForAdmin(req);
+
+    // 7) Normalize document uploads → [{ url, filename }]
     const toFilename = (u) => {
       try {
         const last = (u || '').split('/').pop() || 'download';
         return decodeURIComponent(last);
-      } catch { return 'download'; }
+      } catch {
+        return 'download';
+      }
     };
 
     let documentUploads = [];
     const rawDocs = template.documentUploads;
+
     if (Array.isArray(rawDocs)) {
       documentUploads = rawDocs.map(d =>
         typeof d === 'string'
@@ -1489,7 +1626,7 @@ viewTemplate: async (req, res) => {
       ];
     }
 
-    // 7) Render
+    // 8) Render
     return res.render('unit_views/single_template', {
       layout: 'unitviewlayout',
 
@@ -1510,18 +1647,19 @@ viewTemplate: async (req, res) => {
 
       // topics
       main_topic: template.main_topic,
-      secondary_topics: template.secondary_topics,
+      secondary_topics: template.secondary_topics || [],
       sub_topic: template.sub_topic,
 
       // flags
       isOwner,
       isAuthorizedToViewFullContent,
       isAuthenticated: !!req.user,
-      isLeader: currentMembership === 'leader',
-      isGroupMemberOrLeader:
-        currentMembership === 'leader' || currentMembership === 'group_member',
-      isGroupMemberOrMember:
-        currentMembership === 'group_member' || currentMembership === 'member',
+      isLeader,
+      isGroupMemberOrLeader: isLeader || currentMembership === 'group_member',
+      isGroupMemberOrMember: currentMembership === 'group_member' || currentMembership === 'member',
+
+      // ✅ Admin suggest vars (top-level)
+      ...adminSuggest,
 
       // leader-only assignment data
       groupMembers,
@@ -1529,7 +1667,7 @@ viewTemplate: async (req, res) => {
       leaderName: leaderName || req.user?.username || 'You',
 
       // CSRF
-      csrfToken: req.csrfToken(),
+      csrfToken: typeof req.csrfToken === 'function' ? req.csrfToken() : null,
     });
 
   } catch (err) {
@@ -1541,6 +1679,7 @@ viewTemplate: async (req, res) => {
     });
   }
 },
+
 
 
 viewUpcoming: async (req, res) => {
@@ -1681,13 +1820,12 @@ viewMission: async (req, res) => {
       });
     }
 
-    // --- Badge fields (NEW) ---
+    // --- Badge fields ---
     const category = mission.category || 'other';
     const badge_name = (mission.badge_name && String(mission.badge_name).trim())
       ? String(mission.badge_name).trim()
-      : ''; // you said you'll fill these in Mongo
+      : '';
 
-    // Prefer a stored unique badge path if you ever add it later; otherwise use category defaults
     const badgeImagePath =
       mission.badgeImagePath ||
       mission.badge_image ||
@@ -1697,7 +1835,6 @@ viewMission: async (req, res) => {
     // --- Owner + creator (for sidebar) ---
     const currentUserId = (req.user?._id || req.user?.id)?.toString();
 
-    // Try a variety of possible fields for the creator id
     let rawOwnerId =
       mission.createdBy ||
       mission.created_by ||
@@ -1736,52 +1873,28 @@ viewMission: async (req, res) => {
 
         switch (lu.unit_type) {
           case 'article':
-            Model = Article;
-            titleField = 'article_title';
-            basePath = '/unitviews/articles/view';
-            displayType = 'Article';
+            Model = Article; titleField = 'article_title'; basePath = '/unitviews/articles/view'; displayType = 'Article';
             break;
           case 'video':
-            Model = Video;
-            titleField = 'video_title';
-            basePath = '/unitviews/videos/view';
-            displayType = 'Video';
+            Model = Video; titleField = 'video_title'; basePath = '/unitviews/videos/view'; displayType = 'Video';
             break;
           case 'interview':
-            Model = Interview;
-            titleField = 'interview_title';
-            basePath = '/unitviews/interviews/view';
-            displayType = 'Interview';
+            Model = Interview; titleField = 'interview_title'; basePath = '/unitviews/interviews/view'; displayType = 'Interview';
             break;
           case 'promptset':
-            Model = PromptSet;
-            titleField = 'promptset_title';
-            basePath = '/unitviews/promptsets/view';
-            displayType = 'Prompt Set';
+            Model = PromptSet; titleField = 'promptset_title'; basePath = '/unitviews/promptsets/view'; displayType = 'Prompt Set';
             break;
           case 'exercise':
-            Model = Exercise;
-            titleField = 'exercise_title';
-            basePath = '/unitviews/exercises/view';
-            displayType = 'Exercise';
+            Model = Exercise; titleField = 'exercise_title'; basePath = '/unitviews/exercises/view'; displayType = 'Exercise';
             break;
           case 'template':
-            Model = Template;
-            titleField = 'template_title';
-            basePath = '/unitviews/templates/view';
-            displayType = 'Template';
+            Model = Template; titleField = 'template_title'; basePath = '/unitviews/templates/view'; displayType = 'Template';
             break;
           case 'nugget':
-            Model = Nugget;
-            titleField = 'title';
-            basePath = '/unitviews/nuggets/view';
-            displayType = 'Nugget';
+            Model = Nugget; titleField = 'title'; basePath = '/unitviews/nuggets/view'; displayType = 'Nugget';
             break;
           case 'mission':
-            Model = Mission;
-            titleField = 'mission_title';
-            basePath = '/unitviews/missions/view';
-            displayType = 'Mission';
+            Model = Mission; titleField = 'mission_title'; basePath = '/unitviews/missions/view'; displayType = 'Mission';
             break;
           default:
             return null;
@@ -1817,12 +1930,16 @@ viewMission: async (req, res) => {
       leaderName,
     } = await getLeaderAssignContext(req);
 
+    // ✅ Org Admin suggestion context
+    const adminSuggest = await buildOrgLeaderListForAdmin(req);
+
     // --- Render single_mission view ---
     return res.render('unit_views/single_mission', {
       layout: 'unitviewlayout',
 
       // identity
       _id: mission._id.toString(),
+      unitType: 'mission',
 
       // title + summaries
       mission_title: mission.mission_title,
@@ -1831,12 +1948,12 @@ viewMission: async (req, res) => {
 
       // meta
       status: mission.status,
-      category, // ✅ uses normalized category above
+      category,
       timeframe: mission.timeframe,
       estimated_effort_hours: mission.estimated_effort_hours,
       open_to: mission.open_to,
 
-      // ✅ NEW: badge display
+      // badge display
       badge_name,
       badgeImagePath,
 
@@ -1868,10 +1985,7 @@ viewMission: async (req, res) => {
 
       // creator for sidebar
       creator: creator
-        ? {
-            name: creator.name || 'Unknown Author',
-            image: creator.image || '/images/default-avatar.png',
-          }
+        ? { name: creator.name || 'Unknown Author', image: creator.image || '/images/default-avatar.png' }
         : null,
 
       // flags
@@ -1881,12 +1995,15 @@ viewMission: async (req, res) => {
       isGroupMemberOrMember: isGroupMember || isMember,
       isGroupMemberOrLeaderOrMember: isLeader || isGroupMember || isMember,
 
+      // ✅ Admin suggest vars (top-level)
+      ...adminSuggest,
+
       // leader assignment UI
       groupMembers,
       leaderId,
       leaderName: leaderName || req.user?.username || 'You',
 
-      csrfToken: req.csrfToken(),
+      csrfToken: typeof req.csrfToken === 'function' ? req.csrfToken() : null,
     });
 
   } catch (err) {
