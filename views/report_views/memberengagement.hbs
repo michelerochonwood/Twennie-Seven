@@ -5,70 +5,109 @@
     {{leaderGroupName}}; Member Engagement
   </h1>
 
-  <div class="table-container">
+  
+      {{#if groupedUnits.length}}
+  <div class="table-container" style="margin-bottom: 1.5rem;">
+    <h2 class="dashboard-section-title" style="margin-bottom: 14px;">units completed (grouped)</h2>
+
     <table class="dashboard-library-table">
       <thead>
         <tr>
-          <th class="dashboard-library-header">member</th>
-          <th class="dashboard-library-header">units completed</th>
-          <th class="dashboard-library-header">prompt sets completed</th>
-          <th class="dashboard-library-header">missions completed</th>
-          <th class="dashboard-library-header">topics engaged</th>
+          <th class="dashboard-library-header">unit</th>
+          <th class="dashboard-library-header">type</th>
+          <th class="dashboard-library-header">members</th>
         </tr>
       </thead>
 
       <tbody>
-        {{#each memberEngagementReports}}
+        {{#each groupedUnits}}
           <tr class="dashboard-library-row">
-
-            <!-- Member -->
-            <td class="dashboard-library-cell member-name">
-              {{this.memberName}}
-            </td>
-
-            <!-- Units Completed -->
+            <td class="dashboard-library-cell">{{this.unitTitle}}</td>
+            <td class="dashboard-library-cell">{{this.unitType}}</td>
             <td class="dashboard-library-cell">
-              {{#each this.unitsCompleted}}
-                <div class="multi-record-item">{{this.unitTitle}} ({{this.unitType}})</div>
-              {{else}}
-                <span class="no-data">No units completed</span>
-              {{/each}}
-            </td>
-
-            <!-- Prompt Sets Completed -->
-            <td class="dashboard-library-cell">
-              {{#each this.promptSetsCompleted}}
-                <div class="multi-record-item">{{this.name}} ({{formatDate this.dateCompleted}})</div>
-              {{else}}
-                <span class="no-data">No prompt sets completed</span>
-              {{/each}}
-            </td>
-
-            <!-- Missions Completed -->
-            <td class="dashboard-library-cell">
-              {{#each this.missionsCompleted}}
-                <div class="multi-record-item">{{this.missionTitle}}</div>
-              {{else}}
-                <span class="no-data">No missions completed</span>
-              {{/each}}
-            </td>
-
-            <!-- Topics Engaged -->
-            <td class="dashboard-library-cell">
-              {{#each this.topicsEngaged}}
+              {{#each this.members}}
                 <div class="multi-record-item">{{this}}</div>
-              {{else}}
-                <span class="no-data">No topics engaged</span>
               {{/each}}
             </td>
-
-          </tr>
-        {{else}}
-          <tr>
-            <td colspan="5" class="no-data">No engagement data available.</td>
           </tr>
         {{/each}}
       </tbody>
+    </table>
+  </div>
+{{/if}}
+  <div class="table-container">
+    <table class="dashboard-library-table">
+
+
+
+      <thead>
+  <tr>
+    <th class="dashboard-library-header">member</th>
+    <th class="dashboard-library-header">topics engaged</th>
+    <th class="dashboard-library-header">units completed</th>
+    <th class="dashboard-library-header">prompt sets completed</th>
+    <th class="dashboard-library-header">missions completed</th>
+  </tr>
+</thead>
+
+<tbody>
+  {{#each memberEngagementReports}}
+    <tr class="dashboard-library-row">
+
+      <!-- Member -->
+      <td class="dashboard-library-cell member-name">
+        {{this.memberName}}
+        {{#if ../leaderName}}
+          <div class="multi-record-item" style="opacity:0.75; font-size:0.85em;">
+            leader: {{../leaderName}}
+          </div>
+        {{/if}}
+      </td>
+
+      <!-- Topics Engaged (moved to col 2) -->
+      <td class="dashboard-library-cell">
+        {{#each this.topicsEngaged}}
+          <div class="multi-record-item">{{this}}</div>
+        {{else}}
+          <span class="no-data">No topics engaged</span>
+        {{/each}}
+      </td>
+
+      <!-- Units Completed -->
+      <td class="dashboard-library-cell">
+        {{#each this.unitsCompleted}}
+          <div class="multi-record-item">{{this.unitTitle}} ({{this.unitType}})</div>
+        {{else}}
+          <span class="no-data">No units completed</span>
+        {{/each}}
+      </td>
+
+      <!-- Prompt Sets Completed -->
+      <td class="dashboard-library-cell">
+        {{#each this.promptSetsCompleted}}
+          <div class="multi-record-item">{{this.name}} ({{formatDate this.dateCompleted}})</div>
+        {{else}}
+          <span class="no-data">No prompt sets completed</span>
+        {{/each}}
+      </td>
+
+      <!-- Missions Completed -->
+      <td class="dashboard-library-cell">
+        {{#each this.missionsCompleted}}
+          <div class="multi-record-item">{{this.missionTitle}}</div>
+        {{else}}
+          <span class="no-data">No missions completed</span>
+        {{/each}}
+      </td>
+
+    </tr>
+  {{else}}
+    <tr>
+      <td colspan="5" class="no-data">No engagement data available.</td>
+    </tr>
+  {{/each}}
+</tbody>
+
     </table>
   </div>
 
