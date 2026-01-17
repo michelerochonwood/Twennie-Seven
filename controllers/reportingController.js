@@ -158,15 +158,22 @@ const fetchContributedUnits = async (memberId) => {
 // - Keeps mission topics included in topicsEngaged
 const getMemberEngagementReport = async (req, res) => {
   try {
-    console.log("✅ Fetching Member Engagement Report (leader+members)…");
+    console.log("✅ Fetching Member Engagement Report (leader + members)…");
 
-    // --- helpers ---
-    const safeString = (v) => (v == null ? "" : String(v));
+    // -----------------------------
+    // Helpers
+    // -----------------------------
     const safeArray = (v) => (Array.isArray(v) ? v : []);
     const toIdString = (v) => (v && typeof v.toString === "function" ? v.toString() : "");
+    const safeString = (v) => (v == null ? "" : String(v));
+    const uniq = (arr) => Array.from(new Set(arr));
+    const sortAZ = (a, b) => safeString(a).localeCompare(safeString(b));
 
-    // --- auth / leader ---
+    // -----------------------------
+    // Leader identity
+    // -----------------------------
     const leaderId = toIdString(req.user?._id || req.user?.id || req.session?.user?.id);
+
     if (!leaderId) {
       return res.status(403).render("member_form_views/error", {
         layout: "memberformlayout",
@@ -175,7 +182,11 @@ const getMemberEngagementReport = async (req, res) => {
       });
     }
 
-    const leaderDoc = await Leader.findById(leaderId).select("_id name groupName members").lean();
+    // IMPORTANT: your leader record uses groupLeaderName, not name
+    const leaderDoc = await Leader.findById(leaderId)
+      .select("_id groupName groupLeaderName members")
+      .lean();
+
     if (!leaderDoc) {
       return res.status(403).render("member_form_views/error", {
         layout: "memberformlayout",
@@ -184,10 +195,11 @@ const getMemberEngagementReport = async (req, res) => {
       });
     }
 
-    const leaderName =
-      leaderDoc.name || leaderDoc.fullName || leaderDoc.memberName || "Leader";
+    const leaderName = leaderDoc.groupLeaderName || "Leader";
 
-    // --- group members ---
+    // -----------------------------
+    // Group members
+    // -----------------------------
     const memberIdsFromLeader = safeArray(leaderDoc.members);
     const groupMembers = memberIdsFromLeader.length
       ? await GroupMember.find({ _id: { $in: memberIdsFromLeader } })
@@ -195,12 +207,17 @@ const getMemberEngagementReport = async (req, res) => {
           .lean()
       : [];
 
+    // Include leader as a report person + members
     const reportPeople = [
-      { _id: leaderDoc._id, name: leaderName }, // leader row
+      { _id: leaderDoc._id, name: leaderName },
       ...groupMembers.map(m => ({ _id: m._id, name: m.name || "Group Member" }))
     ];
 
-    if (!reportPeople.length) {
+    const personIds = reportPeople.map(p => p._id);
+    const nameById = new Map(reportPeople.map(p => [toIdString(p._id), p.name]));
+
+    // If for some reason we have nobody, render empty safely
+    if (!personIds.length) {
       return res.render("report_views/memberengagement", {
         layout: "dashboardlayout",
         leaderGroupName: leaderDoc.groupName,
@@ -211,10 +228,9 @@ const getMemberEngagementReport = async (req, res) => {
       });
     }
 
-    const personIds = reportPeople.map(p => p._id);
-    const nameById = new Map(reportPeople.map(p => [toIdString(p._id), p.name]));
-
-    // --- fetch data ---
+    // -----------------------------
+    // Fetch all engagement sources
+    // -----------------------------
     const [promptCompletions, notes, missions] = await Promise.all([
       PromptSetCompletion.find({ memberId: { $in: personIds } })
         .populate("promptSetId", "promptset_title main_topic secondary_topics")
@@ -222,9 +238,12 @@ const getMemberEngagementReport = async (req, res) => {
 
       Notes.find({ memberID: { $in: personIds } }).lean(),
 
-      Mission.find({}).select("_id mission_title main_topic secondary_topics").lean()
+      Mission.find({})
+        .select("_id mission_title main_topic secondary_topics")
+        .lean()
     ]);
 
+    // Mission lookup maps
     const missionTitleById = new Map(
       safeArray(missions).map(m => [toIdString(m._id), m.mission_title || "Untitled mission"])
     );
@@ -239,7 +258,9 @@ const getMemberEngagementReport = async (req, res) => {
       ])
     );
 
-    // --- group prompt completions by person ---
+    // -----------------------------
+    // Index prompt completions by person
+    // -----------------------------
     const completionsByPerson = new Map();
     for (const c of safeArray(promptCompletions)) {
       const key = toIdString(c.memberId);
@@ -248,7 +269,9 @@ const getMemberEngagementReport = async (req, res) => {
       completionsByPerson.get(key).push(c);
     }
 
-    // --- group notes by person ---
+    // -----------------------------
+    // Index notes by person
+    // -----------------------------
     const notesByPerson = new Map();
     for (const n of safeArray(notes)) {
       const key = toIdString(n.memberID);
@@ -257,40 +280,40 @@ const getMemberEngagementReport = async (req, res) => {
       notesByPerson.get(key).push(n);
     }
 
-    // --- BULK resolve unit details (prevents await-in-loop explosion) ---
-    const allUnitIdStrs = Array.from(
-      new Set(
-        safeArray(notes)
-          .map(n => toIdString(n.unitID))
-          .filter(Boolean)
-      )
+    // -----------------------------
+    // Bulk resolve unit details (prevents await inside loops)
+    // -----------------------------
+    const allUnitIdStrs = uniq(
+      safeArray(notes)
+        .map(n => toIdString(n.unitID))
+        .filter(Boolean)
     );
 
     const unitDetailsById = new Map();
 
-    // Best-effort bulk resolution: still uses your resolveUnitDetails, but in parallel with dedupe.
-    // If resolveUnitDetails already does caching internally, this is still fine.
     await Promise.all(
       allUnitIdStrs.map(async (unitIdStr) => {
         try {
           const d = await resolveUnitDetails(unitIdStr);
           unitDetailsById.set(unitIdStr, d || {});
         } catch (e) {
-          console.warn("[memberengagement] resolveUnitDetails failed for", unitIdStr, e?.message);
+          console.warn("[memberengagement] resolveUnitDetails failed:", unitIdStr, e?.message);
           unitDetailsById.set(unitIdStr, {});
         }
       })
     );
 
-    // --- build report rows + groupedUnits ---
-    const groupedUnitsMap = new Map(); // key -> { unitTitle, unitType, members: [] }
+    // -----------------------------
+    // Build per-person report + grouped units
+    // -----------------------------
     const memberEngagementReports = [];
+    const groupedUnitsMap = new Map(); // unitId -> { unitTitle, unitType, members: [] }
 
     for (const p of reportPeople) {
       const pid = toIdString(p._id);
       const personName = nameById.get(pid) || "Unknown";
 
-      // Prompt sets completed
+      // Prompt sets completed (and topics from them)
       const myComps = completionsByPerson.get(pid) || [];
       const promptSetsCompleted = myComps
         .map(c => ({
@@ -299,19 +322,19 @@ const getMemberEngagementReport = async (req, res) => {
         }))
         .sort((a, b) => new Date(a.dateCompleted || 0) - new Date(b.dateCompleted || 0));
 
-      // Topics from prompt set completions
       const topicsFromComps = myComps.flatMap(c => {
         const main = c.promptSetId?.main_topic ? [c.promptSetId.main_topic] : [];
         const secs = Array.isArray(c.promptSetId?.secondary_topics) ? c.promptSetId.secondary_topics : [];
         return [...main, ...secs];
       });
 
-      // Notes -> units/missions/topics
+      // Notes -> units / missions / topics
       const myNotes = notesByPerson.get(pid) || [];
 
+      const unitSeen = new Set();    // dedupe units per person
+      const missionSeen = new Set(); // dedupe missions per person
+
       const unitsCompleted = [];
-      const unitSeen = new Set(); // dedupe units per person
-      const missionSeen = new Set();
       const missionsCompleted = [];
       const topicsFromCompleted = [];
 
@@ -321,10 +344,11 @@ const getMemberEngagementReport = async (req, res) => {
 
         const d = unitDetailsById.get(unitIdStr) || {};
         const unitTitle = safeString(d.unitTitle) || "Untitled";
-        const unitTypeRaw = safeString(d.unitType).toLowerCase();
+        const unitType = safeString(d.unitType) || "Unit";
+        const unitTypeLower = unitType.toLowerCase();
 
-        // Missions: dedupe + topic pull
-        if (unitTypeRaw === "mission") {
+        // Missions
+        if (unitTypeLower === "mission") {
           if (!missionSeen.has(unitIdStr)) {
             missionSeen.add(unitIdStr);
             missionsCompleted.push({
@@ -337,7 +361,7 @@ const getMemberEngagementReport = async (req, res) => {
           if (mt?.main) topicsFromCompleted.push(mt.main);
           if (Array.isArray(mt?.secondary) && mt.secondary.length) topicsFromCompleted.push(...mt.secondary);
 
-          // fallback to unit details topics if mission docs missing
+          // fallback topics if mission doc missing
           if (!mt?.main && d.main_topic) topicsFromCompleted.push(d.main_topic);
           if ((!mt?.secondary || !mt.secondary.length) && Array.isArray(d.secondary_topics) && d.secondary_topics.length) {
             topicsFromCompleted.push(...d.secondary_topics);
@@ -346,51 +370,56 @@ const getMemberEngagementReport = async (req, res) => {
           continue;
         }
 
-        // Non-mission units: dedupe per person
-        const unitKeyForPerson = unitIdStr; // prefer actual id, not title
-        if (unitSeen.has(unitKeyForPerson)) continue;
-        unitSeen.add(unitKeyForPerson);
+        // Non-mission units
+        if (unitSeen.has(unitIdStr)) continue;
+        unitSeen.add(unitIdStr);
 
-        const unitType = safeString(d.unitType) || "Unit";
-        unitsCompleted.push({ unitId: unitIdStr, unitTitle, unitType });
+        unitsCompleted.push({ unitTitle, unitType });
 
         if (d.main_topic) topicsFromCompleted.push(d.main_topic);
         if (Array.isArray(d.secondary_topics) && d.secondary_topics.length) {
           topicsFromCompleted.push(...d.secondary_topics);
         }
 
-        // ✅ add to groupedUnitsMap (same unit once; list member names)
-        const groupedKey = unitIdStr; // stable across members
-        if (!groupedUnitsMap.has(groupedKey)) {
-          groupedUnitsMap.set(groupedKey, {
+        // Grouped units table (unit appears once, members listed)
+        if (!groupedUnitsMap.has(unitIdStr)) {
+          groupedUnitsMap.set(unitIdStr, {
             unitTitle,
             unitType,
             members: []
           });
         }
-        groupedUnitsMap.get(groupedKey).members.push(personName);
+        groupedUnitsMap.get(unitIdStr).members.push(personName);
       }
 
-      unitsCompleted.sort((a, b) => safeString(a.unitTitle).localeCompare(safeString(b.unitTitle)));
-      missionsCompleted.sort((a, b) => safeString(a.missionTitle).localeCompare(safeString(b.missionTitle)));
+      unitsCompleted.sort((a, b) => sortAZ(a.unitTitle, b.unitTitle));
+      missionsCompleted.sort((a, b) => sortAZ(a.missionTitle, b.missionTitle));
 
-      const topicsEngaged = Array.from(
-        new Set([...topicsFromComps, ...topicsFromCompleted].filter(Boolean).map(t => safeString(t).trim()).filter(Boolean))
-      ).sort((a, b) => a.localeCompare(b));
+      const topicsEngaged = uniq(
+        [...topicsFromComps, ...topicsFromCompleted]
+          .map(t => safeString(t).trim())
+          .filter(Boolean)
+      ).sort(sortAZ);
 
       memberEngagementReports.push({
         memberName: personName,
-        unitsCompleted: unitsCompleted.map(u => ({ unitTitle: u.unitTitle, unitType: u.unitType })), // keep your existing shape
+        topicsEngaged,
+        unitsCompleted,
         promptSetsCompleted,
-        missionsCompleted,
-        topicsEngaged
+        missionsCompleted
       });
     }
 
     const groupedUnits = Array.from(groupedUnitsMap.values())
-      .map(x => ({ ...x, members: Array.from(new Set(x.members)).sort((a, b) => a.localeCompare(b)) }))
-      .sort((a, b) => safeString(a.unitTitle).localeCompare(safeString(b.unitTitle)));
+      .map(u => ({
+        ...u,
+        members: uniq(u.members).sort(sortAZ)
+      }))
+      .sort((a, b) => sortAZ(a.unitTitle, b.unitTitle));
 
+    // -----------------------------
+    // Render
+    // -----------------------------
     return res.render("report_views/memberengagement", {
       layout: "dashboardlayout",
       leaderGroupName: leaderDoc.groupName,
@@ -404,6 +433,7 @@ const getMemberEngagementReport = async (req, res) => {
     return res.status(500).send("Server error");
   }
 };
+
 
 
 
