@@ -16,7 +16,9 @@
       <!-- Name and Buttons -->
       <div class="leader-profile-info">
         <h2 class="leader-profile-name">{{leader.groupLeaderName}}</h2>
-        <p class="leader-profile-title">Group Leader</p>
+<p class="leader-profile-title">
+  {{#if adminMode}}Organization Administrator{{else}}Group Leader{{/if}}
+</p>
 
         <a
           href="/profile/leader/{{leader._id}}"
@@ -34,13 +36,9 @@
         </button>
 
         <!-- Teach Me Button -->
-        <a
-          href="/teach_me"
-          class="leader-profile-btn"
-          style="margin-top: 0.75rem;"
-        >
-          leader orientation
-        </a>
+<a href="/teach_me" class="leader-profile-btn" style="margin-top: 0.75rem;">
+  {{#if adminMode}}admin orientation{{else}}leader orientation{{/if}}
+</a>
       </div>
     </div>
 
