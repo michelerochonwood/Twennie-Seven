@@ -4282,6 +4282,14 @@ box-shadow: none !important;
   background: #4a4ab2; /* prevents text bleed-through */
 }
 
+.dashboard-section .table-container {
+  position: relative; /* anchor for sticky headers */
+}
+
+.dashboard-section .dashboard-library-table thead th {
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.08);
+}
+
 /* Table Header Styling */
 .dashboard-library-header {
   background: #4a4ab2;
