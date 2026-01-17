@@ -642,12 +642,26 @@ const getNuggetsMonitoredReport = async (req, res) => {
 
 
 // ✅ Fetch Prompt Sets Completed Report (progress-driven, completion fallback)
-// Uses leader.members as source of truth + includes leader as a row source.
+// Option A view shape:
+// - ONE record per prompt set
+// - Prompts rendered ONCE as a header row
+// - Member rows below with member-specific notes + completion date
 const getPromptSetsCompletedReport = async (req, res) => {
   try {
-    console.log("✅ Fetching Prompt Sets Completed Report (from PROGRESS; leader+members)…");
+    console.log("✅ Fetching Prompt Sets Completed Report (grouped by prompt set; leader+members)…");
 
-    const leaderId = (req.user?._id || req.user?.id || req.session?.user?.id)?.toString();
+    // -----------------------------
+    // Helpers
+    // -----------------------------
+    const safeArray = (v) => (Array.isArray(v) ? v : []);
+    const toIdString = (v) => (v && typeof v.toString === "function" ? v.toString() : "");
+    const safeString = (v) => (v == null ? "" : String(v));
+    const sortAZ = (a, b) => safeString(a).localeCompare(safeString(b));
+
+    // -----------------------------
+    // Leader identity
+    // -----------------------------
+    const leaderId = toIdString(req.user?._id || req.user?.id || req.session?.user?.id);
     if (!leaderId) {
       return res.status(403).render("member_form_views/error", {
         layout: "memberformlayout",
@@ -656,8 +670,11 @@ const getPromptSetsCompletedReport = async (req, res) => {
       });
     }
 
-    // 1) Leader header + member list source of truth
-    const leaderDoc = await Leader.findById(leaderId).select("_id name groupName members").lean();
+    // IMPORTANT: your leader record uses groupLeaderName (not name)
+    const leaderDoc = await Leader.findById(leaderId)
+      .select("_id groupName groupLeaderName members")
+      .lean();
+
     if (!leaderDoc) {
       console.error("❌ Leader not found:", leaderId);
       return res.status(403).render("member_form_views/error", {
@@ -667,22 +684,26 @@ const getPromptSetsCompletedReport = async (req, res) => {
       });
     }
 
-    // 2) Group members from leader.members
-    const memberIdsFromLeader = Array.isArray(leaderDoc.members) ? leaderDoc.members : [];
+    const leaderName = leaderDoc.groupLeaderName || "Leader";
+
+    // -----------------------------
+    // Group members
+    // -----------------------------
+    const memberIdsFromLeader = safeArray(leaderDoc.members);
     const groupMembers = memberIdsFromLeader.length
       ? await GroupMember.find({ _id: { $in: memberIdsFromLeader } })
           .select("_id name")
           .lean()
       : [];
 
-    // 3) People included in report (leader + group members)
+    // Report people = leader + group members
     const reportPeople = [
-      { _id: leaderDoc._id, name: leaderDoc.name || "Leader" },
-      ...groupMembers
+      { _id: leaderDoc._id, name: leaderName },
+      ...groupMembers.map(m => ({ _id: m._id, name: m.name || "Group Member" }))
     ];
 
-    const personIds = reportPeople.map(p => p._id); // ObjectIds
-    const nameById = new Map(reportPeople.map(p => [p._id.toString(), p.name]));
+    const personIds = reportPeople.map(p => p._id); // ObjectIds for $in queries
+    const nameById = new Map(reportPeople.map(p => [toIdString(p._id), p.name]));
 
     if (!personIds.length) {
       return res.render("report_views/promptsetscompleted", {
@@ -693,84 +714,117 @@ const getPromptSetsCompletedReport = async (req, res) => {
       });
     }
 
-    // 4) Pull PROGRESS rows (source of truth for notes)
-    // ✅ IMPORTANT: use ObjectId $in (your completion docs show ObjectId memberId)
+    // -----------------------------
+    // Fetch progress + completions
+    // -----------------------------
+    // PROGRESS is source of truth for notes
     const progresses = await PromptSetProgress.find({ memberId: { $in: personIds } })
       .populate("promptSetId")
       .lean();
 
-    // 5) Pull COMPLETIONS once (for completedAt fallback)
+    // COMPLETIONS is fallback for "completion date"
     const completions = await PromptSetCompletion.find({ memberId: { $in: personIds } })
       .select("memberId promptSetId completedAt createdAt updatedAt")
       .lean();
 
     const completionKey = (mid, psid) => `${mid}::${psid}`;
     const completionByKey = new Map(
-      (completions || []).map(c => [
-        completionKey(c.memberId.toString(), c.promptSetId.toString()),
+      safeArray(completions).map(c => [
+        completionKey(toIdString(c.memberId), toIdString(c.promptSetId)),
         c
       ])
     );
 
+    // -----------------------------
+    // Build ONE report record per prompt set
+    // -----------------------------
     const TOTAL_PROMPTS = 21; // Prompt0 + Prompts 1..20
-    const reports = [];
+    const byPromptSet = new Map(); // psId -> report row
 
-    for (const p of (progresses || [])) {
-      const ps = p.promptSetId;
-      if (!ps) continue;
+    for (const prog of safeArray(progresses)) {
+      const ps = prog.promptSetId;
+      const psId = toIdString(ps?._id);
+      if (!ps || !psId) continue;
 
-      const mid = p.memberId?.toString?.() || "";
+      const mid = toIdString(prog.memberId);
+      if (!mid) continue;
+
       const memberName = nameById.get(mid) || "Unknown Member";
 
-      // Prompts: 21 columns from PromptSet fields (0..20)
-      const prompts = Array.from({ length: TOTAL_PROMPTS }, (_, idx) => {
-        const headlineKey = `prompt_headline${idx}`;
-        const textKey     = `Prompt${idx}`;
-        return {
-          promptHeadline: ps?.[headlineKey] || `Prompt ${idx === 0 ? 1 : idx + 1}`,
-          promptText: ps?.[textKey] || ""
-        };
-      });
+      // Initialize prompt set row ONCE
+      if (!byPromptSet.has(psId)) {
+        // Build prompt header row once per prompt set
+        const prompts = Array.from({ length: TOTAL_PROMPTS }, (_, idx) => {
+          const headlineKey = `prompt_headline${idx}`;
+          const textKey = `Prompt${idx}`;
+          return {
+            promptHeadline: ps?.[headlineKey] || `Prompt ${idx === 0 ? 1 : idx + 1}`,
+            promptText: ps?.[textKey] || ""
+          };
+        });
 
-      // Notes from progress; pad to 21; shape: { notes: [{ memberName, content }] }
-      const notesArr = Array.isArray(p.notes) ? p.notes : [];
+        byPromptSet.set(psId, {
+          // Table 1 fields
+          promptSetTitle: ps.promptset_title || "Unknown Prompt Set",
+          main_topic: ps.main_topic || "No Topic",
+          secondary_topics: safeArray(ps.secondary_topics),
+          purpose: ps.purpose || "No purpose provided",
+
+          // Table 2 header row
+          prompts,
+
+          // For Option A table 2: members under prompt header
+          completedBy: [] // we will push { memberId, memberName, dateCompleted, promptNotes }
+        });
+      }
+
+      const row = byPromptSet.get(psId);
+
+      // Notes are stored on progress; ensure 21 columns
+      const notesArr = safeArray(prog.notes);
       const promptNotes = Array.from({ length: TOTAL_PROMPTS }, (_, idx) => {
-        const content = notesArr[idx] || "";
-        return { notes: content ? [{ memberName, content }] : [] };
+        const content = safeString(notesArr[idx]).trim();
+        return { notes: content ? [{ content }] : [] };
       });
 
-      // Completion fallback for date
-      const comp = completionByKey.get(completionKey(mid, ps._id.toString()));
-      const dateCompleted = comp?.completedAt || p.updatedAt || p.createdAt;
+      // Completion date fallback: Completion doc > updatedAt > createdAt
+      const comp = completionByKey.get(completionKey(mid, psId));
+      const dateCompleted = comp?.completedAt || prog.updatedAt || prog.createdAt || comp?.createdAt;
 
-      reports.push({
-        // Table 1 fields (new view uses these)
-        promptSetTitle: ps.promptset_title || "Unknown Prompt Set",
-        main_topic: ps.main_topic || "No Topic",
-        secondary_topics: ps.secondary_topics || [],
-        purpose: ps.purpose || "No purpose provided",
-
-        // Still okay to keep (view no longer shows them, but other views may)
-        characteristics: ps.characteristics || [],
-        targetAudience: ps.target_audience || "No audience specified",
-
-        // Who/when (view iterates completedBy)
-        completedBy: [{ memberName, dateCompleted }],
-
-        // Table 2 fields
-        prompts,
+      row.completedBy.push({
+        memberId: mid,
+        memberName,
+        dateCompleted,
         promptNotes
       });
     }
 
-    // Sort by Prompt Set Title then member
-    reports.sort((a, b) => {
-      const t = (a.promptSetTitle || "").localeCompare(b.promptSetTitle || "");
-      if (t !== 0) return t;
-      const an = a.completedBy?.[0]?.memberName || "";
-      const bn = b.completedBy?.[0]?.memberName || "";
-      return an.localeCompare(bn);
-    });
+    // Convert map -> array, dedupe/sort member rows per prompt set
+    const reports = Array.from(byPromptSet.values())
+      .map(r => {
+        // Dedupe: if multiple progress docs exist for same member+promptset, keep the "most recent"
+        const byMember = new Map();
+        for (const entry of safeArray(r.completedBy)) {
+          const key = entry.memberId || entry.memberName;
+          const prev = byMember.get(key);
+
+          const prevDate = prev?.dateCompleted ? new Date(prev.dateCompleted) : new Date(0);
+          const nextDate = entry?.dateCompleted ? new Date(entry.dateCompleted) : new Date(0);
+
+          if (!prev || nextDate > prevDate) byMember.set(key, entry);
+        }
+
+        r.completedBy = Array.from(byMember.values()).sort((a, b) => {
+          // sort by completion date then name
+          const ad = a.dateCompleted ? new Date(a.dateCompleted) : new Date(0);
+          const bd = b.dateCompleted ? new Date(b.dateCompleted) : new Date(0);
+          if (ad.getTime() !== bd.getTime()) return ad - bd;
+          return sortAZ(a.memberName, b.memberName);
+        });
+
+        return r;
+      })
+      .sort((a, b) => sortAZ(a.promptSetTitle, b.promptSetTitle));
 
     return res.render("report_views/promptsetscompleted", {
       layout: "dashboardlayout",
@@ -779,10 +833,11 @@ const getPromptSetsCompletedReport = async (req, res) => {
       promptSetsCompletedReports: reports
     });
   } catch (err) {
-    console.error("❌ Error loading Prompt Sets Completed Report (progress-driven; leader+members):", err);
+    console.error("❌ Error loading Prompt Sets Completed Report:", err);
     return res.status(500).send("Server error");
   }
 };
+
 
 
 
