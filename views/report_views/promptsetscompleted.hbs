@@ -78,87 +78,87 @@
   </div>
 
   {{!-- =========================================================
-      TABLE 2: Prompt Notes (Option A)
-      - one big table
-      - prompt texts shown ONCE per prompt set (header row)
-      - then one row per completing member with notes
-  ========================================================= --}}
-  <h2 class="dashboard-section-title">Prompt Notes</h2>
+     TABLE 2: Prompt Notes (Option A)
+     - one big table
+     - prompt texts shown ONCE per prompt set (header row)
+     - then one row per completing member with notes
+========================================================= --}}
+<h2 class="dashboard-section-title">Prompt Notes</h2>
 
-  <div class="table-container wide-table-container">
-    <table class="dashboard-library-table wide-table">
-      <thead>
-        <tr>
-          <th class="dashboard-library-header">prompt set / member</th>
-          {{#each (range 1 21)}}
-            <th class="dashboard-library-header">prompt {{this}}</th>
+<div class="table-container wide-table-container">
+  <table class="dashboard-library-table wide-table">
+    <thead>
+      <tr>
+        <th class="dashboard-library-header">prompt set / member</th>
+        {{#each (range 1 21)}}
+          <th class="dashboard-library-header">prompt {{this}}</th>
+        {{/each}}
+      </tr>
+    </thead>
+
+    <tbody>
+      {{#each promptSetsCompletedReports}}
+
+        {{!-- Prompt Set Header Row (instructions / assignment) --}}
+        <tr class="dashboard-library-row promptset-header-row">
+          <td class="dashboard-library-cell">
+            <strong>{{this.promptSetTitle}}</strong><br>
+            <span class="multi-record-item">prompt instructions</span>
+          </td>
+
+          {{#each this.prompts}}
+            <td class="dashboard-library-cell">
+              <div class="multi-record-item">
+                <strong>{{this.promptHeadline}}:</strong> {{this.promptText}}
+              </div>
+            </td>
+          {{else}}
+            <td class="dashboard-library-cell" colspan="21">
+              <span class="no-data">No prompt text available</span>
+            </td>
           {{/each}}
         </tr>
-      </thead>
 
-      <tbody>
-        {{#each promptSetsCompletedReports}}
-
-          {{!-- Header row for this prompt set (prompts shown once) --}}
-          <tr class="dashboard-library-row" style="border-top: 3px solid #e6e6e6;">
+        {{!-- Member rows (notes submitted) --}}
+        {{#each this.completedBy}}
+          <tr class="dashboard-library-row">
             <td class="dashboard-library-cell">
-              <strong>{{this.promptSetTitle}}</strong><br>
-              <span class="multi-record-item">prompts (header)</span>
+              <strong>{{this.memberName}}</strong><br>
+              <span class="multi-record-item">{{formatDate this.dateCompleted}}</span>
             </td>
 
-            {{#each this.prompts}}
-              <td class="dashboard-library-cell" style="vertical-align: top;">
-                <div class="multi-record-item">
-                  <strong>{{this.promptHeadline}}:</strong> {{this.promptText}}
-                </div>
+            {{#each this.promptNotes}}
+              <td class="dashboard-library-cell">
+                {{#each this.notes}}
+                  <div class="multi-record-item">{{this.content}}</div>
+                {{else}}
+                  <span class="no-data">No notes</span>
+                {{/each}}
               </td>
             {{else}}
-              {{!-- If for some reason prompts are missing, keep the table intact --}}
               <td class="dashboard-library-cell" colspan="21">
-                <span class="no-data">No prompt text available</span>
+                <span class="no-data">No notes</span>
               </td>
             {{/each}}
           </tr>
-
-          {{!-- Member rows (notes only) --}}
-          {{#each this.completedBy}}
-            <tr class="dashboard-library-row">
-              <td class="dashboard-library-cell">
-                <strong>{{this.memberName}}</strong><br>
-                <span class="multi-record-item">{{formatDate this.dateCompleted}}</span>
-              </td>
-
-              {{#each this.promptNotes}}
-                <td class="dashboard-library-cell" style="vertical-align: top;">
-                  {{#each this.notes}}
-                    <div class="multi-record-item">{{this.content}}</div>
-                  {{else}}
-                    <span class="no-data">No notes</span>
-                  {{/each}}
-                </td>
-              {{else}}
-                <td class="dashboard-library-cell" colspan="21">
-                  <span class="no-data">No notes</span>
-                </td>
-              {{/each}}
-            </tr>
-          {{else}}
-            <tr class="dashboard-library-row">
-              <td class="dashboard-library-cell">
-                <strong>{{../promptSetTitle}}</strong>
-              </td>
-              <td colspan="21" class="no-data">No completions</td>
-            </tr>
-          {{/each}}
-
         {{else}}
-          <tr>
-            <td colspan="22" class="no-data">No prompt notes available.</td>
+          <tr class="dashboard-library-row">
+            <td class="dashboard-library-cell">
+              <strong>{{../promptSetTitle}}</strong>
+            </td>
+            <td colspan="21" class="no-data">No completions</td>
           </tr>
         {{/each}}
-      </tbody>
-    </table>
-  </div>
+
+      {{else}}
+        <tr>
+          <td colspan="22" class="no-data">No prompt notes available.</td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</div>
+
 
   {{!-- =========================================================
       Report Navigation Links

@@ -4290,6 +4290,24 @@ box-shadow: none !important;
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.08);
 }
 
+/* =========================================================
+   REPORTS — Prompt Set Header Row (Prompt Notes table)
+   Visually distinguishes the prompt instructions
+========================================================= */
+
+.dashboard-section .promptset-header-row td,
+.dashboard-section .promptset-header-row th {
+  background-color: #fde8ef; /* light pink */
+}
+
+.dashboard-section .promptset-header-row {
+  border-top: 3px solid #e3a3b5;
+}
+
+.dashboard-section .promptset-header-row strong {
+  font-weight: 600;
+}
+
 /* Table Header Styling */
 .dashboard-library-header {
   background: #4a4ab2;
