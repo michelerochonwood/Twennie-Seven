@@ -97,7 +97,7 @@ exports.getTeachMe = (req, res) => {
           src: "/images/onereportscreenshot.png",
           alt: "One report",
           title: "One report",
-          desc: "This is a report. It summarizes completions and engagement so you can coach effectively. The report center provides four report types."
+          desc: "This is a report. It summarizes completions and engagement so you can coach effectively. The report center provides four report types: Member Engagement, Completed Prompt Sets, Completed Library Units, and Nuggets Assigned."
         }
       ]
     }
