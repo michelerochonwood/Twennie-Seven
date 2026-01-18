@@ -6114,7 +6114,7 @@ margin-right: 5px; /* Space between icon and text */
 }
 
 .twennie-map-dashboard{
-  grid-row: 1 / span 4;
+  grid-row: 1 / span 5;
   border: 1px solid rgba(0,0,0,0.10);
   border-radius: 18px;
   padding: 1rem;
@@ -6156,7 +6156,7 @@ margin-right: 5px; /* Space between icon and text */
   cursor: pointer;
   display:flex;
   gap: 0.75rem;
-  align-items: baseline;
+  align-items: center;
   padding: 0.9rem 1rem;
   user-select: none;
 }
@@ -6291,11 +6291,7 @@ margin-right: 5px; /* Space between icon and text */
    Twennie Map — Lane icons with labels (final)
 ========================================================= */
 
-.twennie-map-lane-summary {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
+
 
 /* Icon container (dark grey square) */
 .twennie-map-lane-icon {
