@@ -41,19 +41,19 @@ exports.getTeachMe = (req, res) => {
       src: "/images/contributescreenshot.png",
       alt: "Contribute content",
       title: "contribute",
-      desc: "This is the contribute area. Use Twennie’s guided forms to add articles, videos, templates, exercises, and more to your library."
+      desc: "This is the contribute to the library area. Use Twennie’s guided forms to add articles, videos, templates, exercises, and more to your library. You can share your learning content with your group only, your organization only, or the whole Twennie community."
     },
     {
       src: "/images/createvideoscreenshot.png",
       alt: "Create a video",
       title: "create videos",
-      desc: "This is the video creation flow. Upload or publish short videos to share practical know-how with your team or the wider Twennie library."
+      desc: "This is the library unit creation flow. Upload or publish articles, videos, interviews, prompt sets, exercises, or templates to share practical know-how with your team or the wider Twennie library."
     },
     {
       src: "/images/mylibraryunitsscreenshot.png",
       alt: "My library units",
       title: "my library units",
-      desc: "This is My Library Units. It’s your workspace to review, edit, and manage everything you’ve created or contributed."
+      desc: "This is My Library Units tab in your dashboard. It’s your workspace to review, edit, and manage everything you’ve created or contributed to your part of the library."
     }
   ]
 },
