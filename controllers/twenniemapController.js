@@ -33,6 +33,32 @@ exports.getTeachMe = (req, res) => {
       ]
     },
     {
+  key: "create_learning",
+  title: "create learning",
+  subtitle: "Contribute and manage your own library content.",
+  images: [
+    {
+      src: "/images/contributescreenshot.png",
+      alt: "Contribute content",
+      title: "contribute",
+      desc: "This is the contribute area. Use Twennie’s guided forms to add articles, videos, templates, exercises, and more to your library."
+    },
+    {
+      src: "/images/createvideoscreenshot.png",
+      alt: "Create a video",
+      title: "create videos",
+      desc: "This is the video creation flow. Upload or publish short videos to share practical know-how with your team or the wider Twennie library."
+    },
+    {
+      src: "/images/mylibraryunitsscreenshot.png",
+      alt: "My library units",
+      title: "my library units",
+      desc: "This is My Library Units. It’s your workspace to review, edit, and manage everything you’ve created or contributed."
+    }
+  ]
+},
+
+    {
       key: "mine",
       title: "monitor project opportunities",
       subtitle: "Track nuggets by client, region, or discipline.",
@@ -66,13 +92,13 @@ exports.getTeachMe = (req, res) => {
           src: "/images/missioncontrolscreenshot.png",
           alt: "Mission Control",
           title: "Mission Control",
-          desc: "This is Mission Control. It’s where leaders create and assign missions. Missions are packages of learning or work that make it easier for you to complete assignments in a topic or category. Use missions to create work for times when the workload is light or to combine learning units into a comprehensive examination of a topic."
+          desc: "This is Mission Control. It’s where leaders create and assign missions. Missions are packages of learning or work that make it easier for you to complete assignments in a topic or category. Use missions when the workload is light or to combine learning units into a more comprehensive examination of a topic."
         },
         {
           src: "/images/missiontypescreenshot.png",
           alt: "Mission types",
           title: "Mission types",
-          desc: "This shows mission types so you can choose the right kind of assignment for you. Twennie uses nine different types of missions: learning, research, business development, internal improvements, culture and play, client experience, community, administration, and other, which we call 'rogue'."
+          desc: "The mission type view shows mission types so you can choose the right kind of assignment for you. Twennie uses nine different types of missions: learning, research, business development, internal improvements, culture and play, client experience, community, administration, and other, which we call 'rogue'."
         },
         {
           src: "/images/singlemissionscreenshot.png",
@@ -97,7 +123,7 @@ exports.getTeachMe = (req, res) => {
           src: "/images/onereportscreenshot.png",
           alt: "One report",
           title: "One report",
-          desc: "This is a report. It summarizes completions and engagement so you can coach effectively. The report center provides four report types: Member Engagement, Completed Prompt Sets, Completed Library Units, and Nuggets Assigned."
+          desc: "This is a report. It summarizes completions and engagement so you can coach effectively. The report center provides four report types: Member Engagement, Completed Prompt Sets, Completed Library Units, and Nuggets Assigned. Only group leaders can access the report center."
         }
       ]
     }

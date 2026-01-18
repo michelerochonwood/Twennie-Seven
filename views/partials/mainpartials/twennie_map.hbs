@@ -56,6 +56,48 @@
         {{/if}}
       {{/each}}
 
+{{!-- =========================================================
+    NEW) CREATE LEARNING
+========================================================= --}}
+{{#each mapLanes}}
+  {{#if (eq this.key "create_learning")}}
+    <details class="twennie-map-lane">
+      <summary class="twennie-map-lane-summary">
+        <span class="twennie-map-lane-icon" aria-hidden="true">
+          <img src="/icons/customicon.svg" alt="" class="twennie-map-lane-icon-img">
+          <span class="twennie-map-lane-icon-label">create learning</span>
+        </span>
+
+        <span class="twennie-map-lane-arrow" aria-hidden="true">➜</span>
+        <span class="twennie-map-lane-title">{{this.title}}</span>
+
+        {{#if this.subtitle}}
+          <span class="twennie-map-lane-subtitle">{{this.subtitle}}</span>
+        {{/if}}
+      </summary>
+
+      <div class="twennie-map-lane-content">
+        <div class="twennie-map-image-row">
+          {{#each this.images}}
+            <button class="twennie-map-card" type="button">
+              <img src="{{this.src}}" alt="{{this.alt}}" class="twennie-map-card-img">
+
+              <span class="twennie-map-card-title">{{this.title}}</span>
+
+              <span class="twennie-map-card-overlay">
+                <strong>{{this.title}}</strong>
+                <span class="twennie-map-card-desc">{{this.desc}}</span>
+              </span>
+            </button>
+          {{/each}}
+        </div>
+      </div>
+    </details>
+  {{/if}}
+{{/each}}
+
+
+
       {{!-- =========================================================
           2) MONITOR LEARNING (REPORTS)
       ========================================================= --}}
