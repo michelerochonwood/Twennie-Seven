@@ -6298,8 +6298,8 @@ margin-right: 5px; /* Space between icon and text */
 }
 
 .twennie-map-lane-icon{
-  width: 44px;
-  height: 44px;
+  width: 88px;
+  height: 88px;
   border-radius: 10px;
   background: #5a5552; /* dark grey */
   display:flex;
@@ -6309,8 +6309,8 @@ margin-right: 5px; /* Space between icon and text */
 }
 
 .twennie-map-lane-icon-img{
-  width: 22px;
-  height: 22px;
+  width: 44px;
+  height: 44px;
   display:block;
 }
 
