@@ -41,13 +41,13 @@ exports.getTeachMe = (req, res) => {
           src: "/images/minescreenshot.png",
           alt: "The Twennie Mine",
           title: "The Twennie Mine",
-          desc: "This is the Twennie Mine. It’s where you monitor market intel and early-stage opportunities. You can create your own nuggets or use the ones Twennie has already created. These leads are gathered from readily available online sources - they are NOT posted by any clients."
+          desc: "This is the Twennie Mine. It’s where you monitor market intel and early-stage opportunities. You can create your own nuggets or use the ones Twennie has already suggested in the Mine. These leads are gathered from readily available online sources - they are NOT posted by any clients."
         },
         {
           src: "/images/clientnuggetscreenshot.png",
           alt: "Nuggets list",
           title: "Nuggets list",
-          desc: "This view shows nuggets grouped by client/region/discipline so you can scan what exactly what you're looking for."
+          desc: "This view shows nuggets grouped by client/region/discipline so you can scan what exactly what you're looking for. The same nugget will appear in all three categories, but organized by client, region, or discipline."
         },
         {
           src: "/images/singlenuggetscreenshot.png",
@@ -66,7 +66,7 @@ exports.getTeachMe = (req, res) => {
           src: "/images/missioncontrolscreenshot.png",
           alt: "Mission Control",
           title: "Mission Control",
-          desc: "This is Mission Control. It’s where leaders create and assign missions. Missions are packages of learning or work that make it easier for you to complete assignments in a topic or category."
+          desc: "This is Mission Control. It’s where leaders create and assign missions. Missions are packages of learning or work that make it easier for you to complete assignments in a topic or category. Use missions to create work for times when the workload is light or to combine learning units into a comprehensive examination of a topic."
         },
         {
           src: "/images/missiontypescreenshot.png",
@@ -78,7 +78,7 @@ exports.getTeachMe = (req, res) => {
           src: "/images/singlemissionscreenshot.png",
           alt: "Single mission",
           title: "One mission",
-          desc: "This is one mission. It includes instructions, expectations, and outcomes. Leaders can assign missions to their group members. Anyone can create new missions in the dashboard tab, contribute to my library."
+          desc: "This is one mission. It includes instructions, expectations, and projected outcomes. Leaders can assign missions to their group members. Anyone can create new missions in the dashboard tab, 'contribute to my library.'"
         }
       ]
     },
