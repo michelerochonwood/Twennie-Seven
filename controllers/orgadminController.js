@@ -991,6 +991,10 @@ async suggestions(req, res, next) {
       const leaderIdStr = s.leaderId?.toString?.() || '';
       const leaderName = leaderIdStr ? (leaderNameById.get(leaderIdStr) || 'Leader') : '';
 
+      // ✅ prevent broken links if unitId is missing
+      const hasUnit = Boolean(s.unitId);
+      const viewPath = hasUnit ? viewPathForUnit(s.unitType, s.unitId) : null;
+
       return {
         _id: s._id.toString(),
         unitType: s.unitType,
@@ -1000,11 +1004,16 @@ async suggestions(req, res, next) {
         note: s.note || '',
         status: s.status || 'pending',
         suggestedAtFormatted: s.createdAt ? fmtDate(s.createdAt) : '',
-        viewPath: viewPathForUnit(s.unitType, s.unitId),
+
+        // ✅ optional link
+        viewPath,
 
         // ✅ for the partial (array for future multi-leader support)
         leaderId: leaderIdStr,
-        suggestedToNames: leaderName ? [leaderName] : []
+        suggestedToNames: leaderName ? [leaderName] : [],
+
+        // ✅ future-proof: show when leader acknowledged (safe if field doesn't exist yet)
+        acknowledgedAtFormatted: s.acknowledgedAt ? fmtDate(s.acknowledgedAt) : '',
       };
     });
 

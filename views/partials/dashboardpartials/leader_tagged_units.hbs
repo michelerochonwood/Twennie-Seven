@@ -171,7 +171,9 @@
        note,
        suggestedByName,
        suggestedAtFormatted,
-       viewPath
+       viewPath,
+       isAcknowledged,
+       acknowledgedAtFormatted
      }]
      ========================= --}}
 <section class="leader-suggested-units-section" style="margin-top:20px">
@@ -207,14 +209,32 @@
           </div>
 
           <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
-            <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
 
-            {{!-- These will be wired later --}}
-            <button class="tagged-unit-link muted" disabled>
-              mark as seen
-            </button>
+            {{#if viewPath}}
+              <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
+            {{else}}
+              <span class="tagged-unit-link muted">view unavailable</span>
+            {{/if}}
 
-            <button class="tagged-unit-link muted" disabled>
+            {{!-- ✅ Acknowledgement state --}}
+            {{#if isAcknowledged}}
+              <span class="tagged-unit-link muted" aria-disabled="true">
+                seen{{#if acknowledgedAtFormatted}} <span class="muted">({{acknowledgedAtFormatted}})</span>{{/if}}
+              </span>
+            {{else}}
+              {{!-- will be wired --}}
+              <button
+                class="tagged-unit-link"
+                type="button"
+                data-suggestion-id="{{_id}}"
+                disabled
+              >
+                thanks!
+              </button>
+            {{/if}}
+
+            {{!-- future wiring --}}
+            <button class="tagged-unit-link muted" type="button" disabled>
               dismiss
             </button>
           </div>
@@ -227,6 +247,7 @@
     {{/if}}
   </div>
 </section>
+
 
 
 <script>

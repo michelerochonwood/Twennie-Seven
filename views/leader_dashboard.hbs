@@ -316,6 +316,49 @@
   })();
 </script>
 
+<!-- 
+✅ OPTIONAL: tiny client script (so the "thanks!" button works)
+Put this in the leader dashboard page script area.
+It assumes your thanks button has: data-suggestion-id="{{_id}}"
+ -->
+<script>
+  async function leaderThanksSuggestion(btn) {
+    const id = btn?.dataset?.suggestionId;
+    if (!id) return;
+
+    btn.disabled = true;
+
+    try {
+      const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+      const res = await fetch(`/dashboard/leader/suggestions/${id}/thanks`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(csrf ? { 'X-CSRF-Token': csrf } : {}) }
+      });
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok || !data.ok) {
+        btn.disabled = false;
+        alert(data.message || 'Could not save. Please try again.');
+        return;
+      }
+
+      // simplest UX: reload so the card shows "seen"
+      location.reload();
+    } catch (e) {
+      console.error(e);
+      btn.disabled = false;
+      alert('Could not save. Please try again.');
+    }
+  }
+
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-suggestion-id]');
+    if (!btn) return;
+    // only target the thanks button (you can add a class if needed)
+    if (btn.textContent.trim().toLowerCase() !== 'thanks!') return;
+    leaderThanksSuggestion(btn);
+  });
+</script>
 
     {{!-- =========================================================
          LEADER "MARK SEEN" SCRIPT (leader mode only)

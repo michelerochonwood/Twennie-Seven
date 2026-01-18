@@ -140,5 +140,14 @@ router.post('/organization/request-join', ensureAuthenticated, async (req, res, 
   }
 });
 
+// ------------------------------------------------------------
+// ✅ Route wiring (wherever your leader dashboard routes live)
+// Add this line:
+// ------------------------------------------------------------
+
+// Example:
+router.post('/dashboard/leader/suggestions/:id/thanks', leaderController.acknowledgeSuggestedUnit);
+
+
 
 module.exports = router;

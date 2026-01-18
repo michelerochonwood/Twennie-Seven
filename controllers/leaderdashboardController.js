@@ -737,31 +737,46 @@ const groupProfile = await GroupProfile
 
 
 
-  // ------------------------------------------------------------
-// ✅ NEW: units suggested to this leader by org admins
+
 // ------------------------------------------------------------
+// ✅ ORG-SUGGESTED UNITS (ADMIN → LEADER) + "thanks"/seen support
+// Paste this block over your existing "rawUnitSuggestions / leaderSuggestedUnits" block
+// inside renderLeaderDashboard (right where you currently build leaderSuggestedUnits).
+// ------------------------------------------------------------
+
+// show both pending + acknowledged so "seen" can remain visible after clicking thanks
 const rawUnitSuggestions = await UnitSuggestion.find({
   leaderId: userData._id,
-  status: 'pending'
+  status: { $in: ['pending', 'acknowledged'] }
 })
   .sort({ createdAt: -1 })
   .limit(50)
-  .populate('suggestedBy', 'groupLeaderName username')
+  .populate('suggestedBy', 'groupLeaderName username') // org admin (Leader doc)
   .lean();
 
-const leaderSuggestedUnits = rawUnitSuggestions.map(s => ({
-  _id: s._id.toString(),
-  unitType: s.unitType,
-  unitTitle: s.unitTitle || 'Untitled unit',
-  main_topic: s.main_topic || '',
-  note: s.note || '',
-  suggestedByName:
-    s.suggestedBy?.groupLeaderName ||
-    s.suggestedBy?.username ||
-    'organization admin',
-  suggestedAtFormatted: s.createdAt ? fmtDate(s.createdAt) : '',
-  viewPath: viewPathForSuggestion(s.unitType, s.unitId)
-}));
+const leaderSuggestedUnits = rawUnitSuggestions.map(s => {
+  const acknowledgedAt = s.acknowledgedAt || s.seenAt || null; // supports either field name
+  const isAcknowledged = Boolean(acknowledgedAt) || s.status === 'acknowledged';
+
+  return {
+    _id: s._id.toString(),
+    unitType: s.unitType,
+    unitTitle: s.unitTitle || 'Untitled unit',
+    main_topic: s.main_topic || '',
+    note: s.note || '',
+    suggestedByName:
+      s.suggestedBy?.groupLeaderName ||
+      s.suggestedBy?.username ||
+      'organization admin',
+    suggestedAtFormatted: s.createdAt ? fmtDate(s.createdAt) : '',
+    viewPath: viewPathForSuggestion(s.unitType, s.unitId),
+
+    // ✅ used by the updated partial
+    isAcknowledged,
+    acknowledgedAtFormatted: acknowledgedAt ? fmtDate(acknowledgedAt) : ''
+  };
+});
+
 
 
 
@@ -1393,6 +1408,48 @@ const dashboardUrl = '/dashboard/leader';
     });
   }
 },
+
+// ------------------------------------------------------------
+// ✅ NEW: POST /dashboard/leader/suggestions/:id/thanks
+// Paste this as a NEW export in module.exports (same level as updateEmailPreferences, etc.)
+// Then add a route to call it.
+// ------------------------------------------------------------
+acknowledgeSuggestedUnit: async (req, res) => {
+  try {
+    const leaderId = req.session?.user?.id;
+    if (!leaderId) return res.status(401).json({ ok: false, message: 'Not logged in.' });
+
+    const suggestionId = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(suggestionId)) {
+      return res.status(400).json({ ok: false, message: 'Invalid suggestion id.' });
+    }
+
+    // Only allow acknowledging suggestions that belong to this leader
+    const updated = await UnitSuggestion.findOneAndUpdate(
+      { _id: suggestionId, leaderId, status: { $in: ['pending', 'acknowledged'] } },
+      {
+        $set: {
+          status: 'acknowledged',
+          acknowledgedAt: new Date()
+        }
+      },
+      { new: true }
+    ).lean();
+
+    if (!updated) {
+      return res.status(404).json({ ok: false, message: 'Suggestion not found.' });
+    }
+
+    return res.json({
+      ok: true,
+      acknowledgedAtFormatted: updated.acknowledgedAt ? fmtDate(updated.acknowledgedAt) : ''
+    });
+  } catch (err) {
+    console.error('acknowledgeSuggestedUnit error:', err);
+    return res.status(500).json({ ok: false, message: 'Server error' });
+  }
+},
+
 
   // --- POST /leader-dashboard/account/email-preferences ---
 updateEmailPreferences: async (req, res) => {
