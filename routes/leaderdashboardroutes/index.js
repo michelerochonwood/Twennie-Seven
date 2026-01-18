@@ -146,7 +146,7 @@ router.post('/organization/request-join', ensureAuthenticated, async (req, res, 
 // ------------------------------------------------------------
 
 // Example:
-router.post('/dashboard/leader/suggestions/:id/thanks', leaderController.acknowledgeSuggestedUnit);
+router.post('/dashboard/leader/suggestions/:id/thanks', leaderdashboardController.acknowledgeSuggestedUnit);
 
 
 
