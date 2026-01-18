@@ -6288,36 +6288,53 @@ margin-right: 5px; /* Space between icon and text */
 
 
 /* =========================================================
-   Twennie Map — Lane icons (dark grey squares)
+   Twennie Map — Lane icons with labels (final)
 ========================================================= */
 
-.twennie-map-lane-summary{
-  display:flex;
-  align-items:center;
+.twennie-map-lane-summary {
+  display: flex;
+  align-items: center;
   gap: 0.75rem;
 }
 
-.twennie-map-lane-icon{
+/* Icon container (dark grey square) */
+.twennie-map-lane-icon {
   width: 88px;
   height: 88px;
   border-radius: 8px;
   background: #5a5552; /* dark grey */
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
   flex: 0 0 88px;
+  text-align: center;
 }
 
-.twennie-map-lane-icon-img{
+/* SVG icon */
+.twennie-map-lane-icon-img {
   width: 44px;
   height: 44px;
-  display:block;
+  display: block;
 }
 
-/* Small spacing tweak so subtitle still floats nicely on wide screens */
-.twennie-map-lane-subtitle{
+/* Label under icon */
+.twennie-map-lane-icon-label {
+  font-family: "Figtree", sans-serif;
+  font-size: 0.5rem;
+  font-weight: 200;
+  color: #ffffff;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Keep subtitle pushed right on wide screens */
+.twennie-map-lane-subtitle {
   margin-left: auto;
 }
+
 
 
 
