@@ -146,7 +146,14 @@ router.post('/organization/request-join', ensureAuthenticated, async (req, res, 
 // ------------------------------------------------------------
 
 // Example:
-router.post('/dashboard/leader/suggestions/:id/thanks', leaderdashboardController.acknowledgeSuggestedUnit);
+router.post('/suggestions/:id/thanks', ensureAuthenticated, async (req, res, next) => {
+  try {
+    return await leaderDashboardController.acknowledgeSuggestedUnit(req, res);
+  } catch (err) {
+    console.error('Error acknowledging suggestion:', err);
+    next(err);
+  }
+});
 
 
 
