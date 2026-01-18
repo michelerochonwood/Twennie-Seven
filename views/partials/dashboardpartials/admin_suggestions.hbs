@@ -39,6 +39,17 @@
               </p>
             {{/if}}
 
+            <!-- ✅ Seen / Thanks status -->
+            {{#if isAcknowledged}}
+              <p class="leader-assigned-to muted" style="margin-top: 0.35rem;">
+                ✅ seen{{#if acknowledgedAtFormatted}} <span class="muted">({{acknowledgedAtFormatted}})</span>{{/if}}
+              </p>
+            {{else}}
+              <p class="leader-assigned-to muted" style="margin-top: 0.35rem;">
+                ⏳ waiting for leader
+              </p>
+            {{/if}}
+
             <!-- Note -->
             {{#if note}}
               <p class="leader-assigned-instructions">
@@ -52,18 +63,11 @@
             class="tagged-unit-actions"
             style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;"
           >
-            <a href="{{viewPath}}" class="tagged-unit-link">
-              view unit
-            </a>
-
-            {{!-- future wiring --}}
-            <button class="tagged-unit-link muted" disabled>
-              mark as seen
-            </button>
-
-            <button class="tagged-unit-link muted" disabled>
-              dismiss
-            </button>
+            {{#if viewPath}}
+              <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
+            {{else}}
+              <span class="tagged-unit-link muted">view unavailable</span>
+            {{/if}}
           </div>
 
         </div>
@@ -75,4 +79,5 @@
     {{/if}}
   </div>
 </section>
+
 

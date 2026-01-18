@@ -995,6 +995,10 @@ async suggestions(req, res, next) {
       const hasUnit = Boolean(s.unitId);
       const viewPath = hasUnit ? viewPathForUnit(s.unitType, s.unitId) : null;
 
+      // ✅ acknowledgement state (supports either field name)
+      const acknowledgedAt = s.acknowledgedAt || s.seenAt || null;
+      const isAcknowledged = Boolean(acknowledgedAt) || s.status === 'acknowledged';
+
       return {
         _id: s._id.toString(),
         unitType: s.unitType,
@@ -1012,8 +1016,9 @@ async suggestions(req, res, next) {
         leaderId: leaderIdStr,
         suggestedToNames: leaderName ? [leaderName] : [],
 
-        // ✅ future-proof: show when leader acknowledged (safe if field doesn't exist yet)
-        acknowledgedAtFormatted: s.acknowledgedAt ? fmtDate(s.acknowledgedAt) : '',
+        // ✅ admin dashboard status display
+        isAcknowledged,
+        acknowledgedAtFormatted: acknowledgedAt ? fmtDate(acknowledgedAt) : ''
       };
     });
 
@@ -1028,6 +1033,7 @@ async suggestions(req, res, next) {
     return next(err);
   }
 },
+
 
 
 

@@ -217,21 +217,25 @@
             {{/if}}
 
             {{!-- ✅ Acknowledgement state --}}
-            {{#if isAcknowledged}}
-              <span class="tagged-unit-link muted" aria-disabled="true">
-                seen{{#if acknowledgedAtFormatted}} <span class="muted">({{acknowledgedAtFormatted}})</span>{{/if}}
-              </span>
-            {{else}}
-              {{!-- will be wired --}}
-              <button
-                class="tagged-unit-link"
-                type="button"
-                data-suggestion-id="{{_id}}"
-                disabled
-              >
-                thanks!
-              </button>
-            {{/if}}
+{{!-- ✅ Acknowledgement state --}}
+{{#if isAcknowledged}}
+  <span class="tagged-unit-link muted" aria-disabled="true">
+    seen{{#if acknowledgedAtFormatted}} <span class="muted">({{acknowledgedAtFormatted}})</span>{{/if}}
+  </span>
+{{else}}
+  <button
+    class="tagged-unit-link js-thanks-btn"
+    type="button"
+    data-suggestion-id="{{_id}}"
+  >
+    thanks!
+  </button>
+
+  <div class="multi-record-item muted js-thanks-msg" style="display:none; text-align:center;">
+    your thanks have been sent to the admin!
+  </div>
+{{/if}}
+
 
             {{!-- future wiring --}}
             <button class="tagged-unit-link muted" type="button" disabled>
@@ -299,6 +303,77 @@
       alert('An error occurred while deleting the tag.');
     }
   }
+
+async function sendThanksForSuggestion(buttonEl) {
+  const id = buttonEl?.dataset?.suggestionId;
+  if (!id) return;
+
+  // Find the card + success message early (before DOM changes)
+  const card =
+    buttonEl.closest('.leader-suggested-unit-card') ||
+    buttonEl.closest('.leader-assigned-unit-card');
+
+  const msg = card ? card.querySelector('.js-thanks-msg') : null;
+
+  // UI: disable + show sending state
+  const originalText = buttonEl.textContent;
+  buttonEl.disabled = true;
+  buttonEl.textContent = 'sending...';
+
+  try {
+    const csrf = getCsrfToken();
+    if (!csrf) {
+      buttonEl.disabled = false;
+      buttonEl.textContent = originalText;
+      alert('Missing CSRF token. Please refresh and try again.');
+      return;
+    }
+
+    const res = await fetch(`/dashboard/leader/suggestions/${id}/thanks`, {
+      method: 'POST',
+      headers: { 'X-CSRF-Token': csrf }
+    });
+
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok || !data.ok) {
+      buttonEl.disabled = false;
+      buttonEl.textContent = originalText;
+      alert(data.message || `Could not send thanks (HTTP ${res.status}).`);
+      return;
+    }
+
+    // Build the "seen" label to replace the button
+    const seenLabel = document.createElement('span');
+    seenLabel.className = 'tagged-unit-link muted';
+    seenLabel.setAttribute('aria-disabled', 'true');
+
+    const dt = data.acknowledgedAtFormatted ? ` (${data.acknowledgedAtFormatted})` : '';
+    seenLabel.textContent = `seen${dt}`;
+
+    // Replace button with the label
+    buttonEl.replaceWith(seenLabel);
+
+    // Show the success message on the card (if present)
+    if (msg) {
+      msg.style.display = 'block';
+    }
+  } catch (err) {
+    console.error('sendThanksForSuggestion error:', err);
+    buttonEl.disabled = false;
+    buttonEl.textContent = originalText;
+    alert('Could not send thanks. Please try again.');
+  }
+}
+
+
+// event delegation: works even if cards render dynamically
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.js-thanks-btn');
+  if (!btn) return;
+  sendThanksForSuggestion(btn);
+});
+
 </script>
 
 
