@@ -6300,7 +6300,7 @@ margin-right: 5px; /* Space between icon and text */
 .twennie-map-lane-icon{
   width: 88px;
   height: 88px;
-  border-radius: 10px;
+  border-radius: 8px;
   background: #5a5552; /* dark grey */
   display:flex;
   align-items:center;

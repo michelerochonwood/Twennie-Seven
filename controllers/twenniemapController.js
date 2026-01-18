@@ -28,7 +28,7 @@ exports.getTeachMe = (req, res) => {
           src: "/images/singleunitscreenshot.png",
           alt: "Single learning unit",
           title: "Single learning unit",
-          desc: "This is a learning unit. A learning unit can be an article, video, interview, prompt set, exercise, or template. It’s one piece of content with its own view."
+          desc: "This is a learning unit. A learning unit can be an article, video, interview, prompt set, exercise, or template. It’s one piece of content with its own view. Depending on the unit, learning can be done within 5, 10, or 20 minutes."
         }
       ]
     },
