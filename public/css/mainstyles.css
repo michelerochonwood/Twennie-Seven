@@ -6287,6 +6287,37 @@ margin-right: 5px; /* Space between icon and text */
 }
 
 
+/* =========================================================
+   Twennie Map — Lane icons (dark grey squares)
+========================================================= */
+
+.twennie-map-lane-summary{
+  display:flex;
+  align-items:center;
+  gap: 0.75rem;
+}
+
+.twennie-map-lane-icon{
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: #2f2f2f; /* dark grey */
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex: 0 0 44px;
+}
+
+.twennie-map-lane-icon-img{
+  width: 22px;
+  height: 22px;
+  display:block;
+}
+
+/* Small spacing tweak so subtitle still floats nicely on wide screens */
+.twennie-map-lane-subtitle{
+  margin-left: auto;
+}
 
 
 
