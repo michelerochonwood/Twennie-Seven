@@ -1542,13 +1542,6 @@ html, body {
   margin-top: 10px;
 }
 
-/* Each member row inside the card */
-.leader-assigned-member {
-  display: grid;
-  grid-template-columns: 42px 1fr auto; /* avatar | info | actions */
-  gap: 10px;
-  align-items: center;
-}
 
 /* status + due spans across the row */
 .leader-assigned-card-top {
@@ -1596,16 +1589,7 @@ html, body {
   border-radius: 999px;
 }
 
-/* action column */
-.leader-assigned-actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 0;          /* important: don't push it down/out */
-  width: auto;            /* don't force 100% inside the grid cell */
-  justify-self: end;      /* align to right edge of the row */
-}
+
 
 .leader-assigned-unassign {
   padding: 8px 12px;
@@ -1617,18 +1601,9 @@ html, body {
   margin: 0;
 }
 
-/* Mobile: stack avatar + info + button cleanly */
-@media (max-width: 520px) {
-  .leader-assigned-member {
-    grid-template-columns: 42px 1fr;
-  }
 
-  .leader-assigned-actions {
-    grid-column: 1 / -1;
-    justify-self: start;
-    margin-top: 6px;
-  }
-}
+
+
 
 /* Leader Tagged & Assigned Units Section */
 .tagged-units-section,
@@ -3142,6 +3117,8 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+    grid-column: 1 / -1;
+  grid-row: 1;
 }
 
 .leader-assigned-status {
@@ -3207,7 +3184,8 @@ html, body {
 
 .leader-assigned-member {
   display: grid;
-  grid-template-columns: 42px 1fr;
+  grid-template-columns: 42px 1fr auto; /* avatar | info | actions */
+  grid-template-rows: auto auto;        /* top-row (status/due) + content row */
   gap: 10px;
   align-items: center;
 }
@@ -3270,19 +3248,17 @@ html, body {
 }
 
 .leader-assigned-actions {
+  grid-column: 3;
+  grid-row: 2;
   display: flex;
   align-items: center;
-  justify-content: flex-end; /* keeps buttons inside the right edge */
+  justify-content: flex-end;
   gap: 10px;
-  margin-top: 6px;
 
-  /* ✅ prevents “half outside the card” when parent is a grid/flex cell */
-  width: 100%;
+  margin-top: 0;   /* ✅ don’t push it out of the row */
+  width: auto;     /* ✅ stop the “half outside” look */
   min-width: 0;
   box-sizing: border-box;
-
-  /* ✅ if any ancestor has overflow issues, this keeps the row contained */
-  flex-wrap: wrap;
 }
 
 .leader-assigned-unassign,
