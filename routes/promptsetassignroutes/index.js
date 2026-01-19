@@ -14,13 +14,23 @@ router.get('/assignments', isAuthenticated, promptSetAssignController.getAssigne
 // Fetch assigned prompt sets for the current member
 router.get('/assignments/me', isAuthenticated, promptSetAssignController.getAssignedPromptSetsForMember);
 
+// ✅ Unassign a single member (more specific route FIRST)
+router.delete(
+  '/unassign/:assignmentId/:memberId',
+  isAuthenticated,
+  promptSetAssignController.unassignPromptSetMember
+);
+
 // Unassign a prompt set (remove a single assignment doc)
-router.delete('/unassign/:assignmentId', isAuthenticated, promptSetAssignController.unassignPromptSet);
+router.delete(
+  '/unassign/:assignmentId',
+  isAuthenticated,
+  promptSetAssignController.unassignPromptSet
+);
 
 // Render success page after assigning a prompt set
 // (Reads one-time summary from req.session.lastAssignSummary and clears it)
 router.get('/assignsuccess', isAuthenticated, (req, res, next) => {
-  // Helpful no-cache headers so the page reflects the latest session summary
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   res.set('Pragma', 'no-cache');
   res.set('Expires', '0');
@@ -28,5 +38,6 @@ router.get('/assignsuccess', isAuthenticated, (req, res, next) => {
 });
 
 module.exports = router;
+
 
 

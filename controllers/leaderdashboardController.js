@@ -361,15 +361,16 @@ function fmtDate(d) {
   return dd.toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: '2-digit' });
 }
 
-async function buildAssignedPromptCards(leaderId) {
+async function buildAssignedPromptSets(leaderId) {
   const leaderObjectId = Types.ObjectId.isValid(leaderId) ? new Types.ObjectId(leaderId) : leaderId;
 
   const assignments = await AssignPromptSet.find({ groupLeaderId: leaderObjectId }).lean();
-
   if (!assignments.length) return [];
 
+  // Collect ids
   const promptSetIds = new Set();
   const memberIds = new Set();
+
   for (const a of assignments) {
     if (a.promptSetId) promptSetIds.add(a.promptSetId.toString());
     for (const mid of a.assignedMemberIds || []) memberIds.add(mid.toString());
@@ -385,31 +386,62 @@ async function buildAssignedPromptCards(leaderId) {
   const memberById = new Map(members.map(m => [m._id.toString(), m]));
   const profileByMemberId = new Map(profiles.map(p => [p.groupMemberId.toString(), p]));
 
-  const cards = [];
+  // ✅ Batch-load progress to avoid N+1 queries
+  const progressDocs = await PromptSetProgress
+    .find({
+      memberId: { $in: [...memberIds] },
+      promptSetId: { $in: [...promptSetIds] }
+    })
+    .select('memberId promptSetId currentPromptIndex completedPrompts')
+    .lean();
+
+  const progressByKey = new Map(
+    progressDocs.map(p => [`${p.memberId.toString()}-${p.promptSetId.toString()}`, p])
+  );
+
+  // ✅ Group results by promptSetId
+  const grouped = new Map(); // key: promptSetId -> { promptSet fields + members[] }
+
   for (const a of assignments) {
-    const ps = psById.get(a.promptSetId?.toString());
+    const psId = a.promptSetId?.toString();
+    const ps = psById.get(psId);
     if (!ps) continue;
-    const target = a.targetCompletionDate || ps.target_completion_date || null;
+
+    // per-assignment “target” fallback logic preserved
+    const targetRaw = a.targetCompletionDate || ps.target_completion_date || null;
+
+    // ensure group exists
+    if (!grouped.has(psId)) {
+      grouped.set(psId, {
+        promptSetId: psId,
+        promptSetTitle: ps.promptset_title,
+        mainTopic: ps.main_topic || 'No topic',
+        frequency: a.frequency || ps.suggested_frequency || 'weekly',
+        members: [],
+
+        // Optional: used for sorting cards (we’ll set/update this below)
+        sortDateRaw: targetRaw ? new Date(targetRaw) : null
+      });
+    }
+
+    const card = grouped.get(psId);
     const now = new Date();
 
     for (const memberId of a.assignedMemberIds || []) {
       const mid = memberId?.toString();
       const m = memberById.get(mid);
       if (!m) continue;
+
       const prof = profileByMemberId.get(mid);
       const memberImage = prof?.profileImage || '/images/default-avatar.png';
 
-      const progress = await PromptSetProgress
-        .findOne({ memberId: mid, promptSetId: ps._id })
-        .select('currentPromptIndex completedPrompts')
-        .lean();
-
+      const progress = progressByKey.get(`${mid}-${psId}`);
       const completedCount = Array.isArray(progress?.completedPrompts) ? progress.completedPrompts.length : 0;
       const progressPercent = Math.min(100, Math.round((completedCount / 20) * 100));
       const currentPromptIndex = Number.isInteger(progress?.currentPromptIndex) ? progress.currentPromptIndex : 0;
 
       const isCompleted = completedCount >= 20;
-      const isOverdue = !isCompleted && target && new Date(target) < now;
+      const isOverdue = !isCompleted && targetRaw && new Date(targetRaw) < now;
       const hasStarted = !isCompleted && completedCount > 0;
 
       let status = 'assigned';
@@ -418,14 +450,9 @@ async function buildAssignedPromptCards(leaderId) {
       else if (isOverdue) { status = 'overdue'; statusLabel = 'overdue'; }
       else if (hasStarted) { status = 'inprogress'; statusLabel = 'in progress'; }
 
-      cards.push({
-        assignmentId: a._id.toString(),
-        promptSetId: ps._id.toString(),
-        promptSetTitle: ps.promptset_title,
-        mainTopic: ps.main_topic || 'No topic',
-        frequency: a.frequency || ps.suggested_frequency || 'weekly',
-        targetCompletionDate: fmtDate(target),
-
+      // member row
+      card.members.push({
+        assignmentId: a._id.toString(),           // ⚠️ see note below about unassign
         memberId: mid,
         memberName: m.name,
         memberImage,
@@ -436,20 +463,39 @@ async function buildAssignedPromptCards(leaderId) {
         status,
         statusLabel,
 
+        targetCompletionDate: fmtDate(targetRaw),
+        targetCompletionDateRaw: targetRaw ? new Date(targetRaw) : null,
+
         leaderNotes: a.leaderNotes || ''
       });
+
+      // Update sort date: earliest target across members/assignments wins
+      if (targetRaw) {
+        const td = new Date(targetRaw);
+        if (!card.sortDateRaw || td < card.sortDateRaw) card.sortDateRaw = td;
+      }
     }
+
+    // Optional: keep members in a consistent order (overdue first, then in progress, then assigned, then completed)
+    const statusRank = { overdue: 0, inprogress: 1, assigned: 2, completed: 3 };
+    card.members.sort((x, y) => (statusRank[x.status] ?? 9) - (statusRank[y.status] ?? 9));
   }
 
-  // sort by real date, not the formatted string
-  cards.sort((a, b) => {
-    const ad = new Date(a.targetCompletionDate);
-    const bd = new Date(b.targetCompletionDate);
+  const result = Array.from(grouped.values());
+
+  // Sort cards by their earliest target date; nulls go last
+  result.sort((a, b) => {
+    const ad = a.sortDateRaw ? new Date(a.sortDateRaw) : null;
+    const bd = b.sortDateRaw ? new Date(b.sortDateRaw) : null;
+    if (!ad && !bd) return 0;
+    if (!ad) return 1;
+    if (!bd) return -1;
     return ad - bd;
   });
 
-  return cards;
+  return result;
 }
+
 
 
 
@@ -1289,7 +1335,7 @@ for (const [key, val] of Object.entries(leaderCounts)) {
   leaderBadges[key] = val > last;
 }
 
-const assignedPromptCards = await buildAssignedPromptCards(id);
+const assignedPromptSets = await buildAssignedPromptSets(id);
 console.log('assignedPromptCards count:', assignedPromptCards.length);
 if (assignedPromptCards[0]) console.log('assignedPromptCards[0] sample:', assignedPromptCards[0]);
 
@@ -1325,7 +1371,7 @@ orgGroups,
   leaderAssignedUnits,         // raw assigned units, if you still need them
   leaderAssignmentsOpen,
   leaderAssignmentsCompleted,
-  assignedPromptCards,
+assignedPromptSets,
 
   // Prompt set data
   registeredPromptSets: leaderPrompts,

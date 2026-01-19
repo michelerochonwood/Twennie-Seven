@@ -307,6 +307,64 @@ assignSuccess: (req, res) => {
       console.error('Error unassigning prompt set:', error);
       res.status(500).json({ message: 'An error occurred while removing the assignment.' });
     }
+  },
+
+  /** DELETE one member’s assignment (fan-out doc) */
+unassignPromptSetMember: async (req, res) => {
+  try {
+    const leaderId = req.user && req.user._id ? req.user._id.toString() : null;
+    if (!leaderId) {
+      return res.status(401).json({ message: 'Not authenticated.' });
+    }
+
+    const { assignmentId, memberId } = req.params;
+
+    if (!ObjectId.isValid(assignmentId) || !ObjectId.isValid(memberId)) {
+      return res.status(400).json({ message: 'Invalid assignmentId or memberId.' });
+    }
+
+    const assignment = await AssignPromptSet.findById(assignmentId).lean();
+    if (!assignment) {
+      return res.status(404).json({ message: 'Assignment not found.' });
+    }
+
+    // ✅ Ensure leader owns this assignment
+    if (String(assignment.groupLeaderId) !== String(leaderId)) {
+      return res.status(403).json({ message: 'You do not have permission to modify this assignment.' });
+    }
+
+    const memberOid = new ObjectId(memberId);
+
+    // ✅ Fan-out guarantee: this doc should only contain one member
+    const assignedIds = Array.isArray(assignment.assignedMemberIds) ? assignment.assignedMemberIds.map(String) : [];
+    if (!assignedIds.includes(String(memberOid))) {
+      return res.status(400).json({ message: 'This assignment is not for the specified member.' });
+    }
+
+    const promptSetId = assignment.promptSetId;
+
+    // ✅ Delete the assignment doc
+    await AssignPromptSet.findByIdAndDelete(assignmentId);
+
+    // Optional cleanup: remove progress ONLY if no other source keeps it "underway"
+    const [stillAssigned, stillRegistered] = await Promise.all([
+      AssignPromptSet.exists({ promptSetId, assignedMemberIds: memberOid }),
+      PromptSetRegistration.exists({ memberId: memberId, promptSetId })
+    ]);
+
+    if (!stillAssigned && !stillRegistered) {
+      await PromptSetProgress.deleteOne({ memberId: memberId, promptSetId });
+    }
+
+    // If your UI expects redirect instead of JSON, switch to:
+    // return res.redirect('/dashboard/leader');
+
+    return res.status(200).json({ message: 'Assignment removed successfully.' });
+  } catch (error) {
+    console.error('Error unassigning prompt set for member:', error);
+    return res.status(500).json({ message: 'An error occurred while removing the assignment.' });
   }
+}
+
 };
 

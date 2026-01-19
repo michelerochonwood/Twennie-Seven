@@ -113,20 +113,24 @@
                       prompt {{currentPromptIndex}}/20
                     </p>
                   </div>
-                </div>
+                </div> 
 
-                <div class="leader-assigned-actions">
-                  <form
-                    action="/promptsetassign/unassign/{{assignmentId}}"
-                    method="POST"
-                    class="leader-unassign-form"
-                    onsubmit="return confirm('Unassign this prompt set from {{memberName}}?');"
-                  >
-                    <input type="hidden" name="_csrf" value="{{../../csrfToken}}">
-                    <input type="hidden" name="_method" value="DELETE">
-                    <button type="submit" class="leader-assigned-unassign">unassign</button>
-                  </form>
-                </div>
+<div class="leader-assigned-actions">
+  <form
+    method="POST"
+    action="/promptsetassign/unassign/{{assignmentId}}/{{memberId}}"
+    class="leader-unassign-form"
+    onsubmit="return confirm('Unassign this prompt set from {{memberName}}?');"
+  >
+    {{#if ../../csrfToken}}
+      <input type="hidden" name="_csrf" value="{{../../csrfToken}}">
+    {{/if}}
+    <input type="hidden" name="_method" value="DELETE">
+    <button type="submit" class="leader-assigned-unassign">
+      unassign
+    </button>
+  </form>
+</div>
               </div>
             {{/each}}
           </div>
