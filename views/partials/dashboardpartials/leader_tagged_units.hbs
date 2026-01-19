@@ -6,7 +6,7 @@
      expects: leaderSelfTaggedNonMissionUnits = [{ _id, title, mainTopic, unitType, tagId, viewPath }]
      ========================= --}}
 <section class="tagged-units-section">
-  <h2 class="tagged-units-title">tagged library units</h2>
+  <h2 class="tagged-units-title">my self-assigned library units</h2>
   <div class="tagged-units-grid">
     {{#if leaderSelfTaggedNonMissionUnits.length}}
       {{#each leaderSelfTaggedNonMissionUnits}}
@@ -31,7 +31,7 @@
         </div>
       {{/each}}
     {{else}}
-      <p class="tagged-no-units">You have no self-tagged library units.</p>
+      <p class="tagged-no-units">You have no self-assigned library units.</p>
     {{/if}}
   </div>
 </section>
@@ -111,7 +111,7 @@
       <!-- Card content -->
       <div class="leader-nugget-card-content">
         <div class="tagged-unit-icon">
-          <img src="/icons/nuggeticon.svg" alt="nugget icon" style="width: 100px; height: auto">
+          <img src="/icons/nuggeticon.svg" alt="nugget icon" style="width: 80px; height: auto">
         </div>
 
         <div class="tagged-unit-info">
