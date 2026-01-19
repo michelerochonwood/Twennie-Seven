@@ -252,6 +252,31 @@ missions.forEach(m => {
   }
 }
 
+leaderAssignedUnits.push({
+  _id: item,
+  unitType,
+  title,
+  mainTopic,
+  tagId: tag._id.toString(),
+  viewPath,
+
+  // ✅ nugget fields
+  client: (unitType === 'nugget') ? (unit.client || '') : '',
+  region: (unitType === 'nugget') ? (unit.region || '') : '',
+  discipline: (unitType === 'nugget') ? (unit.discipline || '') : '',
+
+  // ✅ mission fields
+  category,
+  badge_name: (unitType === 'mission') ? (unit.badge_name || '') : '',
+  badgeImagePath,
+
+  assignedTo: {
+    _id: assignee.member?.toString(),
+    name: member.name,
+    instructions: assignee.instructions || '',
+    completedAt: assignee.completedAt || null,
+  }
+});
 
 function viewPathForSuggestion(unitType, unitId) {
   const t = String(unitType || '').toLowerCase();
@@ -1283,31 +1308,6 @@ function groupAssignedNuggets(flatRows = []) {
 
   return Array.from(byNuggetId.values());
 }
-
-leaderAssignedUnits.push({
-  _id: item,
-  unitType,
-  title,
-  mainTopic,
-  tagId: tag._id.toString(),
-  viewPath,
-
-  // ✅ Add these here (correct scope)
-  client: (unitType === 'nugget') ? (unit.client || '') : '',
-  region: (unitType === 'nugget') ? (unit.region || '') : '',
-  discipline: (unitType === 'nugget') ? (unit.discipline || '') : '',
-
-  category,
-  badge_name: (unitType === 'mission') ? (unit.badge_name || '') : '',
-  badgeImagePath,
-
-  assignedTo: {
-    _id: assignee.member?.toString(),
-    name: member.name,
-    instructions: assignee.instructions || '',
-    completedAt: assignee.completedAt || null,
-  }
-});
 
 
 
