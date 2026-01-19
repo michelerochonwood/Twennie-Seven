@@ -1,71 +1,91 @@
-<section class="leader-admin-section leader-suggested-units-section">
-  <h2 class="tagged-units-title">my suggestions</h2>
+{{!-- views/dashboardpartials/admin_reports.hbs --}}
 
-  <div class="tagged-units-grid">
-    {{#if mySuggestions.length}}
-      {{#each mySuggestions}}
-        <div class="leader-assigned-unit-card leader-suggested-unit-card">
+<section class="leader-topics-container leader-admin-section">
+  <h2 class="leader-dashboard-subtitles">team engagement</h2>
 
-          <!-- Icon -->
-          <div class="tagged-unit-icon">
-            <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
-          </div>
+  <div class="table-container admin-wide-table-container">
+    <table class="dashboard-library-table admin-wide-table">
+      <thead>
+        <tr>
+          <th class="dashboard-library-header" style="min-width: 260px;">team</th>
+          <th class="dashboard-library-header" style="min-width: 260px;">top topics</th>
+          <th class="dashboard-library-header" style="min-width: 420px;">units completed</th>
+          <th class="dashboard-library-header" style="min-width: 340px;">prompt sets completed</th>
 
-          <!-- Info -->
-          <div class="tagged-unit-info">
-            <h3 class="tagged-unit-title">{{unitTitle}}</h3>
 
-            {{#if main_topic}}
-              <p class="tagged-unit-topic">{{main_topic}}</p>
-            {{/if}}
+        </tr>
+      </thead>
 
-            <!-- Suggested to -->
-            {{#if suggestedToNames.length}}
-              <p class="leader-assigned-to">
-                suggested to:
-                {{#each suggestedToNames}}
-                  <span class="leader-assigned-name">
-                    {{this}}{{#unless @last}}, {{/unless}}
-                  </span>
-                {{/each}}
+      <tbody>
+        {{#each adminTeamEngagementReports}}
+          <tr class="dashboard-library-row">
 
-                {{#if suggestedAtFormatted}}
-                  <span class="muted">({{suggestedAtFormatted}})</span>
-                {{/if}}
-              </p>
-            {{else}}
-              <p class="leader-assigned-to muted">
-                suggested to: —
-              </p>
-            {{/if}}
+            <!-- Team -->
+            <td class="dashboard-library-cell">
+              <div style="display:flex; gap:0.75rem; align-items:flex-start;">
+                <img
+                  src="{{this.groupImage}}"
+                  alt="group image"
+                  style="width:44px; height:44px; border-radius:8px; object-fit:cover;"
+                >
 
-            <!-- Note -->
-            {{#if note}}
-              <p class="leader-assigned-instructions">
-                <em>{{note}}</em>
-              </p>
-            {{/if}}
-          </div>
+                <div>
+                  <div class="multi-record-item">
+                    <strong>{{this.teamName}}</strong>
+                  </div>
 
-          <!-- Actions -->
-          <div
-            class="tagged-unit-actions"
-            style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;"
-          >
-            <a href="{{viewPath}}" class="tagged-unit-link">
-              view unit
-            </a>
-          </div>
+                  {{#if this.teamLeaderName}}
+                    <div class="multi-record-item" style="opacity:0.8;">
+                      leader: {{this.teamLeaderName}}
+                    </div>
+                  {{/if}}
 
-        </div>
-      {{/each}}
-    {{else}}
-      <p class="tagged-no-units">
-        you haven’t suggested any units yet.
-      </p>
-    {{/if}}
+                  <div class="multi-record-item" style="opacity:0.8;">
+                    members: {{this.memberCount}}
+                  </div>
+                </div>
+              </div>
+            </td>
+
+            <!-- Prompt Sets Completed -->
+            <td class="dashboard-library-cell">
+              {{#each this.promptSetsCompleted}}
+                <div class="multi-record-item">{{this}}</div>
+              {{else}}
+                <span class="no-data">—</span>
+              {{/each}}
+            </td>
+
+            <!-- Units Completed -->
+            <td class="dashboard-library-cell">
+              {{#each this.unitsCompleted}}
+                <div class="multi-record-item">{{this}}</div>
+              {{else}}
+                <span class="no-data">—</span>
+              {{/each}}
+            </td>
+
+            <!-- Top Topics -->
+            <td class="dashboard-library-cell">
+              {{#each this.topTopics}}
+                <div class="multi-record-item">{{this}}</div>
+              {{else}}
+                <span class="no-data">—</span>
+              {{/each}}
+            </td>
+
+          </tr>
+        {{else}}
+          <tr>
+            <td colspan="4" class="no-data">No team engagement data available.</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
   </div>
 </section>
+
+
 
 
 
