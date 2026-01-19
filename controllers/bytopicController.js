@@ -237,7 +237,7 @@ const libraryUnits = await Promise.all(
 
 //
 // ---- BEGIN: smarter segmentation by authorship + visibility ----
-const userId = req.user?.id || req.session.user?.id || null;
+const userId = (req.user?._id || req.user?.id)?.toString() || null;
 
 // Helper: normalize org keys consistently
 const normalize = (s) => (s || '').toString().trim().toLowerCase();
@@ -262,7 +262,9 @@ let myGroupAuthorIds = new Set();
 
 if (leaderDoc) {
   myGroupAuthorIds.add(String(leaderDoc._id));
-  const groupMembersForLeader = await GroupMember.find({ leaderId: leaderDoc._id }).select('_id').lean();
+const groupMembersForLeader = await GroupMember.find({ leader: leaderDoc._id })
+  .select('_id')
+  .lean();
 
   if (!groupMembersForLeader.length && leaderDoc.groupName) {
     const byGroupName = await GroupMember.find({ groupName: leaderDoc.groupName }).select('_id').lean();
@@ -271,14 +273,15 @@ if (leaderDoc) {
     groupMembersForLeader.forEach(m => myGroupAuthorIds.add(String(m._id)));
   }
 } else if (groupMemberDoc) {
-  if (groupMemberDoc.leaderId) myGroupAuthorIds.add(String(groupMemberDoc.leaderId));
-  myGroupAuthorIds.add(String(groupMemberDoc._id));
+if (groupMemberDoc.leader) myGroupAuthorIds.add(String(groupMemberDoc.leader));
+myGroupAuthorIds.add(String(groupMemberDoc._id));
 
-  const peers = await GroupMember.find(
-    groupMemberDoc.leaderId
-      ? { leaderId: groupMemberDoc.leaderId }
-      : (groupMemberDoc.groupName ? { groupName: groupMemberDoc.groupName } : { _id: null })
-  ).select('_id').lean();
+const peers = await GroupMember.find(
+  groupMemberDoc.leader
+    ? { leader: groupMemberDoc.leader }
+    : (groupMemberDoc.groupName ? { groupName: groupMemberDoc.groupName } : { _id: null })
+).select('_id').lean();
+
 
   peers.forEach(p => myGroupAuthorIds.add(String(p._id)));
 }
@@ -286,8 +289,8 @@ if (leaderDoc) {
 // Build an organization key for the current viewer
 const me = leaderDoc || groupMemberDoc || memberDoc || {};
 const myOrgKey =
+  me.organization ? String(me.organization) :
   normalize(me.organizationId) ||
-  normalize(me.organization) ||
   emailDomain(me.email);
 
 // We’ll cache author org keys so we don’t keep hitting the DB
@@ -305,11 +308,11 @@ async function getAuthorOrgKey(authorId) {
   } catch (_) { /* ignore */ }
 
   const doc = aLeader || aGM || aMember || {};
-  const orgKey =
-    normalize(doc.organizationId) ||
-    normalize(doc.organization) ||
-    emailDomain(doc.email) ||
-    null;
+const orgKey =
+  doc.organization ? String(doc.organization) :
+  normalize(doc.organizationId) ||
+  emailDomain(doc.email) ||
+  null;
 
   authorOrgKeyCache.set(key, orgKey);
   return orgKey;
@@ -337,7 +340,7 @@ if (myOrgKey) {
     return !!authorOrgKey && authorOrgKey === myOrgKey;
   });
 } else {
-  orgLibraryUnits = libraryUnits.filter(u => u.visibility === 'organization_only');
+  orgLibraryUnits = [];
 }
 
 // 4) Twennie’s units = globally visible (all_members)
