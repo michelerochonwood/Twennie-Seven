@@ -12,7 +12,7 @@ function canContributeFromUser(u) {
 }
 
 exports.getCreateLearningGuide = (req, res) => {
-  res.render('promo_views/create_learning_guide', {
+  res.render('promo_views/creating_content', {
     layout: 'mainlayout',
     canContribute: canContributeFromUser(req.user)
   });
