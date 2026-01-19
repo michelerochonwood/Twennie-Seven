@@ -154,18 +154,39 @@
 {{!-- Admin: suggest this unit to org leaders --}}
 {{#if isOrgAdmin}}
   <div class="assign-tag-form white-container" style="margin-top:1.25rem;">
+
+    {{!-- ✅ SUCCESS MESSAGE --}}
+    {{#if (and suggestionSuccess (eq suggestedUnitId _id))}}
+      <div class="success-message" style="
+        margin-bottom:0.75rem;
+        padding:0.6rem 0.75rem;
+        background:#e9f7ef;
+        color:#0f5132;
+        border-radius:6px;
+        font-weight:600;
+      ">
+        ✅ Suggestions sent successfully.
+      </div>
+    {{/if}}
+
     <h4 class="assign-tag-title">Suggest this unit to organization leaders</h4>
     <p class="groupsection-org-card-info" style="margin-top:0.25rem;">
       Send a suggestion (with an optional note) to one or more leaders in your organization.
     </p>
 
-    <form id="suggestInterviewForm-{{_id}}" action="/unitsuggestions/org-suggestions/create" method="POST">
+    <form
+      id="suggestInterviewForm-{{_id}}"
+      action="/unitsuggestions/org-suggestions/create"
+      method="POST"
+    >
       <input type="hidden" name="_csrf" value="{{csrfToken}}">
       <input type="hidden" name="unitId" value="{{_id}}">
       <input type="hidden" name="unitType" value="interview">
 
       <fieldset class="assign-tag-members">
-        <legend class="assign-tag-legend">Select leaders and optionally add a note:</legend>
+        <legend class="assign-tag-legend">
+          Select leaders and optionally add a note:
+        </legend>
 
         {{#each orgLeaders}}
           <div class="assign-tag-member-block">
@@ -174,7 +195,8 @@
                 type="checkbox"
                 name="suggestTo[{{_id}}][leader]"
                 value="{{_id}}"
-                onchange="toggleSuggestNoteField(this)">
+                onchange="toggleSuggestNoteField(this)"
+              >
               {{groupLeaderName}}{{#if groupName}} — {{groupName}}{{/if}}
             </label>
 
@@ -182,17 +204,49 @@
               class="assign-tag-instructions"
               name="suggestTo[{{_id}}][note]"
               placeholder="Optional note for {{groupLeaderName}}"
-              style="display:none;"></textarea>
+              style="display:none;"
+            ></textarea>
           </div>
         {{/each}}
       </fieldset>
 
-      <button type="submit" class="form-button submit-button">send suggestions</button>
+      <button type="submit" class="form-button submit-button">
+        send suggestions
+      </button>
+    </form>
+
+  </div>
+{{/if}}
+
+{{!-- Notes --}}
+{{#if isGroupMemberOrLeader}}
+  <div class="single_interview-notes-container">
+    <h3 class="single_interview-notes-title">record notes</h3>
+    <p class="single_interview-notes-instructions">
+      Record notes on this interview. Capture what you learned, what surprised you, and how it might change your approach.
+      These notes will be part of your Twennie learning record. (Keep your learning data hygienic — only post notes once you’ve completed the unit.)
+    </p>
+
+    <form action="/notes/submit" method="POST" class="single_interview-notes-form">
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+      <input type="hidden" name="unitId" value="{{_id}}">
+      <input type="hidden" name="unitType" value="interview">
+      <input type="hidden" name="main_topic" value="{{main_topic}}">
+      <input type="hidden" name="secondary_topic" value="{{sub_topic}}">
+
+      <textarea
+        name="note_content"
+        class="single_interview-notes-textarea"
+        rows="5"
+        maxlength="1000"
+        placeholder="Write your notes here..."
+      ></textarea>
+
+      <button type="submit" class="single_interview-notes-submit">submit notes</button>
     </form>
   </div>
 {{/if}}
 
-  </div> <!-- /.single_interview-main -->
 
   <!-- Sidebar -->
   <aside class="single_interview-sidebar">

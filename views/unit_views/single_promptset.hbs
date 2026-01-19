@@ -447,6 +447,21 @@
     {{!-- Admin: suggest this unit to org leaders (PROMPT SET) --}}
 {{#if isOrgAdmin}}
   <div class="assign-tag-form white-container" style="margin-top:1.25rem;">
+
+        {{!-- ✅ SUCCESS MESSAGE --}}
+    {{#if (and suggestionSuccess (eq suggestedUnitId _id))}}
+      <div class="success-message" style="
+        margin-bottom:0.75rem;
+        padding:0.6rem 0.75rem;
+        background:#e9f7ef;
+        color:#0f5132;
+        border-radius:6px;
+        font-weight:600;
+      ">
+        ✅ Suggestions sent successfully.
+      </div>
+    {{/if}}
+    
     <h4 class="assign-tag-title">Suggest this unit to organization leaders</h4>
     <p class="groupsection-org-card-info" style="margin-top:0.25rem;">
       Send a suggestion (with an optional note) to one or more leaders in your organization.

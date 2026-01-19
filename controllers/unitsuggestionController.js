@@ -201,9 +201,13 @@ const unitSuggestionController = {
 
       if (!docs.length) return res.redirect('back');
 
-      await UnitSuggestion.insertMany(docs, { ordered: false });
+await UnitSuggestion.insertMany(docs, { ordered: false });
 
-      return res.redirect('back');
+const ref = req.get('referer') || 'back';
+if (ref === 'back') return res.redirect('back');
+const joiner = ref.includes('?') ? '&' : '?';
+return res.redirect(`${ref}${joiner}suggested=1`);
+
     } catch (err) {
       console.error('unitSuggestionController.create error:', err);
       return res.redirect('back');

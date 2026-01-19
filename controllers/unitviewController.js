@@ -757,7 +757,10 @@ return res.render('unit_views/single_article', {
 
   // ✅ Admin suggestion UI vars (top-level)
   ...adminSuggest,
-
+// ✅ Suggestion success banner (after redirect back)
+suggestionSuccess: req.query.suggested === '1',
+suggestedUnitId: req.query.unitId || '',
+suggestedUnitType: req.query.unitType || '',
   // Leader-only assignment data
   groupMembers,
   leaderId,
@@ -930,7 +933,10 @@ viewVideo: async (req, res) => {
 
       // ✅ Admin suggest vars (top-level)
       ...adminSuggest,
-
+// ✅ Suggestion success banner (after redirect back)
+suggestionSuccess: req.query.suggested === '1',
+suggestedUnitId: req.query.unitId || '',
+suggestedUnitType: req.query.unitType || '',
       // leader-only assignment data
       groupMembers,
       leaderId,
@@ -1104,7 +1110,10 @@ viewInterview: async (req, res) => {
 
       // ✅ Admin suggest vars (top-level)
       ...adminSuggest,
-
+// ✅ Suggestion success banner (after redirect back)
+suggestionSuccess: req.query.suggested === '1',
+suggestedUnitId: req.query.unitId || '',
+suggestedUnitType: req.query.unitType || '',
       // leader-only assignment data
       groupMembers,
       leaderId,
@@ -1300,7 +1309,10 @@ viewPromptset: async (req, res) => {
 
       // ✅ Admin suggest vars (top-level)
       ...adminSuggest,
-
+// ✅ Suggestion success banner (after redirect back)
+suggestionSuccess: req.query.suggested === '1',
+suggestedUnitId: req.query.unitId || '',
+suggestedUnitType: req.query.unitType || '',
       // leader UI data (if your HBS uses it)
       groupMembers,
       leaderId,
@@ -1468,7 +1480,10 @@ viewExercise: async (req, res) => {
 
       // ✅ Admin suggest vars (top-level)
       ...adminSuggest,
-
+// ✅ Suggestion success banner (after redirect back)
+suggestionSuccess: req.query.suggested === '1',
+suggestedUnitId: req.query.unitId || '',
+suggestedUnitType: req.query.unitType || '',
       // leader-only assignment data
       groupMembers,
       leaderId,
@@ -1660,7 +1675,10 @@ viewTemplate: async (req, res) => {
 
       // ✅ Admin suggest vars (top-level)
       ...adminSuggest,
-
+// ✅ Suggestion success banner (after redirect back)
+suggestionSuccess: req.query.suggested === '1',
+suggestedUnitId: req.query.unitId || '',
+suggestedUnitType: req.query.unitType || '',
       // leader-only assignment data
       groupMembers,
       leaderId,
@@ -1997,7 +2015,10 @@ viewMission: async (req, res) => {
 
       // ✅ Admin suggest vars (top-level)
       ...adminSuggest,
-
+// ✅ Suggestion success banner (after redirect back)
+suggestionSuccess: req.query.suggested === '1',
+suggestedUnitId: req.query.unitId || '',
+suggestedUnitType: req.query.unitType || '',
       // leader assignment UI
       groupMembers,
       leaderId,

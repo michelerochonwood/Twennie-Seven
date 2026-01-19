@@ -144,18 +144,39 @@
 {{!-- Admin: suggest this unit to org leaders (TEMPLATE) --}}
 {{#if isOrgAdmin}}
   <div class="assign-tag-form white-container" style="margin-top:1.25rem;">
+
+    {{!-- ✅ SUCCESS MESSAGE --}}
+    {{#if (and suggestionSuccess (eq suggestedUnitId _id))}}
+      <div class="success-message" style="
+        margin-bottom:0.75rem;
+        padding:0.6rem 0.75rem;
+        background:#e9f7ef;
+        color:#0f5132;
+        border-radius:6px;
+        font-weight:600;
+      ">
+        ✅ Suggestions sent successfully.
+      </div>
+    {{/if}}
+
     <h4 class="assign-tag-title">Suggest this unit to organization leaders</h4>
     <p class="groupsection-org-card-info" style="margin-top:0.25rem;">
       Send a suggestion (with an optional note) to one or more leaders in your organization.
     </p>
 
-    <form id="suggestTemplateForm-{{_id}}" action="/unitsuggestions/org-suggestions/create" method="POST">
+    <form
+      id="suggestTemplateForm-{{_id}}"
+      action="/unitsuggestions/org-suggestions/create"
+      method="POST"
+    >
       <input type="hidden" name="_csrf" value="{{csrfToken}}">
       <input type="hidden" name="unitId" value="{{_id}}">
       <input type="hidden" name="unitType" value="template">
 
       <fieldset class="assign-tag-members">
-        <legend class="assign-tag-legend">Select leaders and optionally add a note:</legend>
+        <legend class="assign-tag-legend">
+          Select leaders and optionally add a note:
+        </legend>
 
         {{#each orgLeaders}}
           <div class="assign-tag-member-block">
@@ -172,15 +193,19 @@
               class="assign-tag-instructions"
               name="suggestTo[{{_id}}][note]"
               placeholder="Optional note for {{groupLeaderName}}"
-              style="display:none;"></textarea>
+              style="display:none;"
+            ></textarea>
           </div>
         {{/each}}
       </fieldset>
 
-      <button type="submit" class="form-button submit-button">send suggestions</button>
+      <button type="submit" class="form-button submit-button">
+        send suggestions
+      </button>
     </form>
   </div>
 {{/if}}
+
 
 
     <!-- Notes Form -->
@@ -188,7 +213,7 @@
       <div class="single_template-notes-container">
         <h3 class="single_template-notes-title">record notes</h3>
         <p class="single_template-notes-instructions">
-          Record notes on this template. Consider how it relates to your work and how it might change your approach. These notes will be part of your Twennie learning record.
+          Record notes on this template. Consider how it relates to your work and how it might change your approach. These notes will be part of your Twennie learning record. (Keep your learning data hygienic - only post notes on a unit once you've completed all the tasks.)
         </p>
 
         <form action="/notes/submit" method="POST" class="single_template-notes-form">
