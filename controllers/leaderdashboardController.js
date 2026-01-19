@@ -1335,9 +1335,11 @@ for (const [key, val] of Object.entries(leaderCounts)) {
   leaderBadges[key] = val > last;
 }
 
-const assignedPromptSets = await buildAssignedPromptSets(id);
-console.log('assignedPromptCards count:', assignedPromptCards.length);
-if (assignedPromptCards[0]) console.log('assignedPromptCards[0] sample:', assignedPromptCards[0]);
+console.log('assignedPromptSets count:', Array.isArray(assignedPromptSets) ? assignedPromptSets.length : 0);
+if (Array.isArray(assignedPromptSets) && assignedPromptSets[0]) {
+  console.log('assignedPromptSets[0] sample:', assignedPromptSets[0]);
+}
+
 
 
 
