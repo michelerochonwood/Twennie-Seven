@@ -66,7 +66,15 @@
               {{/each}}
             </div>
           </div>
+          {{else}}
+  <div class="single_interview-window">
+    <div class="unauthorized-message">
+      <p>You must be logged in (and have access) to view this interview.</p>
+      <a href="/auth/login" class="login-link">log in to access</a>
+    </div>
+  </div>
         {{/if}}
+        
 
         <!-- Quick Tag (Member/Group Member) -->
         {{#if isGroupMemberOrMember}}
@@ -246,7 +254,14 @@
     </form>
   </div>
 {{/if}}
+      {{!-- ✅ CLOSE isAuthorizedToViewFullContent --}}
+      {{/if}}
 
+    {{!-- ✅ CLOSE .single_interview-content --}}
+    </div>
+
+  {{!-- ✅ CLOSE .single_interview-main --}}
+  </div>
 
   <!-- Sidebar -->
   <aside class="single_interview-sidebar">
