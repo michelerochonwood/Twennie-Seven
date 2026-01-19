@@ -298,7 +298,7 @@
       Send a suggestion (with an optional note) to one or more leaders in your organization.
     </p>
 
-    <form id="suggestMissionForm-{{_id}}" action="/org-suggestions/create" method="POST">
+    <form id="suggestMissionForm-{{_id}}" action="/unitsuggestions/org-suggestions/create" method="POST">
       <input type="hidden" name="_csrf" value="{{csrfToken}}">
       <input type="hidden" name="unitId" value="{{_id}}">
       <input type="hidden" name="unitType" value="mission">

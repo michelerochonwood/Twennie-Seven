@@ -134,7 +134,7 @@
       Send a suggestion (with an optional note) to one or more leaders in your organization.
     </p>
 
-    <form id="suggestNuggetForm-{{_id}}" action="/org-suggestions/create" method="POST">
+    <form id="suggestNuggetForm-{{_id}}" action="/unitsuggestions/org-suggestions/create" method="POST">
       <input type="hidden" name="_csrf" value="{{csrfToken}}">
       <input type="hidden" name="unitId" value="{{_id}}">
       <input type="hidden" name="unitType" value="nugget">
@@ -159,7 +159,7 @@
               placeholder="Optional note for {{groupLeaderName}}"
               style="display:none;"></textarea>
           </div>
-        {{/each}}
+        {{/each}} 
       </fieldset>
 
       <button type="submit" class="form-button submit-button">send suggestions</button>
