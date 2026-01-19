@@ -11,8 +11,6 @@
           <th class="dashboard-library-header" style="min-width: 260px;">top topics</th>
           <th class="dashboard-library-header" style="min-width: 420px;">units completed</th>
           <th class="dashboard-library-header" style="min-width: 340px;">prompt sets completed</th>
-
-
         </tr>
       </thead>
 
@@ -20,7 +18,7 @@
         {{#each adminTeamEngagementReports}}
           <tr class="dashboard-library-row">
 
-            <!-- Team -->
+            {{!-- TEAM --}}
             <td class="dashboard-library-cell">
               <div style="display:flex; gap:0.75rem; align-items:flex-start;">
                 <img
@@ -47,16 +45,16 @@
               </div>
             </td>
 
-            <!-- Prompt Sets Completed -->
+            {{!-- TOP TOPICS --}}
             <td class="dashboard-library-cell">
-              {{#each this.promptSetsCompleted}}
+              {{#each this.topTopics}}
                 <div class="multi-record-item">{{this}}</div>
               {{else}}
                 <span class="no-data">—</span>
               {{/each}}
             </td>
 
-            <!-- Units Completed -->
+            {{!-- UNITS COMPLETED --}}
             <td class="dashboard-library-cell">
               {{#each this.unitsCompleted}}
                 <div class="multi-record-item">{{this}}</div>
@@ -65,9 +63,9 @@
               {{/each}}
             </td>
 
-            <!-- Top Topics -->
+            {{!-- PROMPT SETS COMPLETED --}}
             <td class="dashboard-library-cell">
-              {{#each this.topTopics}}
+              {{#each this.promptSetsCompleted}}
                 <div class="multi-record-item">{{this}}</div>
               {{else}}
                 <span class="no-data">—</span>
@@ -77,13 +75,16 @@
           </tr>
         {{else}}
           <tr>
-            <td colspan="4" class="no-data">No team engagement data available.</td>
+            <td colspan="4" class="no-data">
+              No team engagement data available.
+            </td>
           </tr>
         {{/each}}
       </tbody>
     </table>
   </div>
 </section>
+
 
 
 
