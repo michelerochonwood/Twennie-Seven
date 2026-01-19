@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const twenniemapController = require('../../controllers/twenniemapController');
+const createLearningController = require('../../controllers/createLearningController');
 
 // Define routes
 router.get('/', (req, res) => {
@@ -151,6 +152,9 @@ router.get('/enterprise_members', (req, res) => {
         layout: 'mainlayout'
     });
 });
+
+// ✅ Create Learning (orientation / instructional)
+router.get('/create_learning', createLearningController.getCreateLearningGuide);
 
 // Export the router
 module.exports = router;

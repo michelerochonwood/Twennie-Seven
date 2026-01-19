@@ -21,11 +21,14 @@ const uploadDocs = require('../../middleware/multerDocuments');
 const uploadImg = require('../../middleware/multerImages');
 const csrf = require('csurf');
 const csrfProtection = csrf();
+const ensureCanContribute = require('../../middleware/ensureCanContribute');
 
 // Debugging
 console.log('ensureAuthenticated:', ensureAuthenticated);
 console.log('ensureAuthenticated is a function:', typeof ensureAuthenticated === 'function');
 console.log('unitFormController:', unitFormController);
+
+
 
 // Shared topics list (kept inline here to mirror your file)
 const mainTopics = [
@@ -83,7 +86,7 @@ const mainTopics = [
   'Rescuing a Project That Has Gone Off the Rails'
 ];
 
-router.get('/form_nugget', ensureAuthenticated, unitFormController.getNuggetForm);
+router.get('/form_nugget', ensureAuthenticated, ensureCanContribute, unitFormController.getNuggetForm);
 
 router.get('/edit_nugget/:id', ensureAuthenticated, async (req, res) => {
   try {
@@ -135,7 +138,8 @@ router.post(
 // =========================
 // Article Form Routes (existing)
 // =========================
-router.get('/form_article', ensureAuthenticated, unitFormController.getArticleForm);
+
+router.get('/form_article', ensureAuthenticated, ensureCanContribute, unitFormController.getArticleForm);
 
 router.get('/edit_article/:id', ensureAuthenticated, async (req, res) => {
   try {
@@ -214,7 +218,13 @@ router.post(
 // =========================
 
 // GET: create upcoming
-router.get('/form_upcoming', ensureAuthenticated, unitFormController.getUpcomingForm);
+
+router.get(
+  '/form_upcoming',
+  ensureAuthenticated,
+  ensureCanContribute,
+  unitFormController.getUpcomingForm
+);
 
 // GET: edit upcoming
 router.get('/edit_upcoming/:id', ensureAuthenticated, async (req, res) => {
@@ -297,7 +307,7 @@ router.get('/prefill_from_upcoming/:unitType/:id',
 
 
 // Video Form Routes
-router.get('/form_video', ensureAuthenticated, unitFormController.getVideoForm);
+router.get('/form_video', ensureAuthenticated, ensureCanContribute, unitFormController.getVideoForm);
 
 // Edit Video Route
 router.get('/edit_video/:id', ensureAuthenticated, async (req, res) => {
@@ -418,7 +428,12 @@ router.get('/edit_video/:id', ensureAuthenticated, async (req, res) => {
 router.post('/submit_video', ensureAuthenticated, unitFormController.submitVideo);
 
 // Interview Form Routes
-router.get('/form_interview', ensureAuthenticated, unitFormController.getInterviewForm);
+router.get(
+  '/form_interview',
+  ensureAuthenticated,
+  ensureCanContribute,
+  unitFormController.getInterviewForm
+);
 
 router.get('/edit_interview/:id', ensureAuthenticated, async (req, res) => {
     try {
@@ -527,7 +542,13 @@ router.post('/submit_interview', ensureAuthenticated, unitFormController.submitI
 
 
 // Route to display the template form (Create New)
-router.get('/form_template', ensureAuthenticated, csrfProtection, unitFormController.getTemplateForm);
+router.get(
+  '/form_template',
+  ensureAuthenticated,
+  ensureCanContribute,
+  csrfProtection,
+  unitFormController.getTemplateForm
+);
 
 
 // Route to display the edit form for an existing template
@@ -644,7 +665,12 @@ router.post(
   
   
 
-router.get('/form_promptset', ensureAuthenticated, unitFormController.getPromptForm);
+router.get(
+  '/form_promptset',
+  ensureAuthenticated,
+  ensureCanContribute,
+  unitFormController.getPromptForm
+);
 
 router.get('/edit_promptset/:id', ensureAuthenticated, async (req, res) => {
   try {
@@ -911,6 +937,7 @@ router.get('/edit_exercise/:id', ensureAuthenticated, csrfProtection, async (req
 router.get(
   '/form_mission',
   ensureAuthenticated,
+  ensureCanContribute,
   csrfProtection,
   unitFormController.getMissionForm
 );

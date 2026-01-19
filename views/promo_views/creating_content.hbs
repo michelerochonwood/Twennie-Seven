@@ -1,0 +1,240 @@
+{{#*inline "title"}}Create Learning Content | Twennie{{/inline}}
+
+<section class="teach-me-page">
+
+  <!-- Hero -->
+  <div class="twennie-tagline-animated" style="margin-top: 5.5rem;">
+    <h1>create learning content on twennie</h1>
+    <p>instructions, examples, and visibility rules — in plain language.</p>
+  </div>
+
+  <!-- Contribution (reuse your dashboard partial markup) -->
+  <!-- NOTE: we’ll gate links with JS below. -->
+  <section class="contribution-section" data-contrib-gate="true">
+    <div class="contribution-container">
+      <div style="text-align: center; margin-bottom: -20px; margin-top: -40px;">
+        <img src="/images/blueyteacher.png" alt="Bluey Teacher" style="max-width: 200px;">
+      </div>
+
+      <h2 class="dashboard-titles" style="text-align: center;">add a unit to my library</h2>
+
+      <p class="contribution-subtitle" style="text-align: center; font-weight: 500; margin-top: -10px;">
+        learn by unleashing your inner teacher
+      </p>
+
+      <p class="contributor-benefits">
+        Are you a writer? A coach? A videographer? A trainer? Twennie enables you to develop these skills,
+        practice, and share learning with other professionals.
+      </p>
+
+      <!-- Gate message (visible to non-members; hidden if logged in by JS or server flag later) -->
+      <div class="orientation-block" style="margin: 1.25rem auto; max-width: 900px;">
+        <p class="orientation-intro" style="margin-bottom: 0.75rem;">
+          <strong>Note:</strong> Creating learning content requires an active membership.
+          You can still explore this guide (and the map) without logging in.
+        </p>
+
+        <div class="cta-button-group" style="margin: 0;">
+          <a class="cta-button" href="/auth/login">log in</a>
+          <a class="cta-button" href="/membership">become a member</a>
+        </div>
+      </div>
+
+      <button id="toggleContribute" class="contribute-btn">
+        I want to contribute to my library
+      </button>
+
+      <div id="contributionGrid" class="contribution-grid" style="display: none;">
+
+        <a href="/unitform/form_article" class="unit-card" data-unit-link="true">
+          <div class="svg-container" style="padding-top: 8px;">
+            <img src="/icons/article.svg" alt="Article icon" style="display:block; width:40px; height:auto; margin:0 auto;">
+          </div>
+        </a>
+
+        <a href="/unitform/form_video" class="unit-card" data-unit-link="true">
+          <div class="svg-container" style="padding-top: 8px; width: 40px">
+            <img src="/icons/video.svg" alt="Video icon" style="display:block; height:auto; margin:0 auto;">
+          </div>
+        </a>
+
+        <a href="/unitform/form_interview" class="unit-card" data-unit-link="true">
+          <div class="svg-container" style="padding-top: 8px;">
+            <img src="/icons/interview.svg" alt="Interview icon" style="display:block; width:90px; height:auto; margin:0 auto;">
+          </div>
+        </a>
+
+        <a href="/unitform/form_promptset" class="unit-card" data-unit-link="true">
+          <div class="svg-container" style="padding-top: 8px;">
+            <img src="/icons/promptset.svg" alt="Prompt set icon" style="display:block; width:100px; height:auto; margin:0 auto;">
+          </div>
+        </a>
+
+        <a href="/unitform/form_template" class="unit-card" data-unit-link="true">
+          <div class="svg-container" style="padding-top: 8px;">
+            <img src="/icons/template.svg" alt="Template icon" style="display:block; width:100px; height:auto; margin:0 auto;">
+          </div>
+        </a>
+
+        <a href="/unitform/form_exercise" class="unit-card" data-unit-link="true">
+          <div class="svg-container" style="padding-top: 8px;">
+            <img src="/icons/exercise.svg" alt="Exercise icon" style="display:block; width:65px; height:auto; margin:0 auto;">
+          </div>
+        </a>
+
+        <a href="/unitform/form_mission" class="unit-card" data-unit-link="true">
+          <div class="svg-container" style="padding-top: 8px;">
+            <img src="/icons/mission.svg" alt="Mission icon" style="display:block; width:65px; height:auto; margin:0 auto;">
+          </div>
+        </a>
+
+        <a href="/unitform/form_upcoming" class="unit-card" data-unit-link="true">
+          <div class="svg-container" style="padding-top: 8px;">
+            <img src="/icons/upcoming.svg" alt="Upcoming unit icon" style="display:block; width:70px; height:auto; margin:0 auto;">
+          </div>
+        </a>
+
+        <a href="/unitform/form_nugget" class="unit-card" data-unit-link="true">
+          <div class="svg-container" style="padding-top: 8px;">
+            <img src="/icons/nuggeticon.svg" alt="Nugget icon" style="display:block; width:90px; height:auto; margin:0 auto;">
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- FAQ rows (map-style blocks) -->
+  <section class="teach-me-orientation" style="max-width: 1100px; margin: 2rem auto 0;">
+
+    <div class="orientation-block">
+      <h2 class="orientation-heading">what kind of learning content should i create?</h2>
+      <p class="orientation-intro">
+        Create the kind of learning you wish existed when you were learning your job. The best Twennie units are practical,
+        specific, and based on real work.
+      </p>
+      <ul class="orientation-list">
+        <li><strong>Best starting point:</strong> write what you’ve learned the hard way (mistakes, fixes, better approaches).</li>
+        <li><strong>Most valuable content:</strong> repeatable methods, checklists, templates, and “how to think” breakdowns.</li>
+        <li><strong>Strong signal:</strong> if you’ve explained it to a colleague more than once, it probably belongs on Twennie.</li>
+      </ul>
+    </div>
+
+    <div class="orientation-block">
+      <h2 class="orientation-heading">what kind of learning content can i create?</h2>
+      <p class="orientation-intro">
+        Twennie learning is delivered through unit types that match different learning styles and time budgets.
+      </p>
+      <ul class="orientation-list">
+        <li><strong>articles:</strong> explain a concept, approach, or method (fast to write, easy to revisit).</li>
+        <li><strong>videos:</strong> teach with voice + visuals (best for demonstrations and storytelling).</li>
+        <li><strong>interviews:</strong> capture expertise from others (best for “how experts think”).</li>
+        <li><strong>prompt sets:</strong> 20-step micro-learning that drives action over time.</li>
+        <li><strong>exercises:</strong> guided practice inside Twennie (structured work + reflection).</li>
+        <li><strong>templates:</strong> reusable documents, scripts, checklists, or frameworks.</li>
+        <li><strong>missions:</strong> a packaged assignment (learning + outcome) that leaders can assign.</li>
+        <li><strong>upcoming units:</strong> announce what you’re building next and track production.</li>
+        <li><strong>nuggets:</strong> market intel / early opportunity tracking (client/region/discipline).</li>
+      </ul>
+    </div>
+
+    <div class="orientation-block">
+      <h2 class="orientation-heading">how do i create content that fits in twennie units?</h2>
+      <p class="orientation-intro">
+        Twennie is not built around long courses. Units are small, useful, and easy to assign.
+      </p>
+      <ul class="orientation-list">
+        <li><strong>pick a single outcome:</strong> what should the learner do differently after this?</li>
+        <li><strong>aim for 5–20 minutes:</strong> one unit = one learning session.</li>
+        <li><strong>write like a guide:</strong> clear steps, examples, and “watch-outs.”</li>
+        <li><strong>connect to a topic:</strong> choose the closest topic so others can find it.</li>
+      </ul>
+    </div>
+
+    <div class="orientation-block">
+      <h2 class="orientation-heading">where will my content show on twennie — and who can see it?</h2>
+      <p class="orientation-intro">
+        You choose visibility when you create a unit. Twennie then shows your unit in the library under its topic,
+        but only to the audience you selected.
+      </p>
+      <ul class="orientation-list">
+        <li><strong>my library units:</strong> you will always see your own content in your dashboard workspace.</li>
+        <li><strong>group only:</strong> visible to members in your group (leader + group members).</li>
+        <li><strong>organization:</strong> visible to members in your organization (across groups).</li>
+        <li><strong>twennie community:</strong> visible to all Twennie members.</li>
+        <li><strong>leaders can assign:</strong> if visible to a leader’s scope, they can assign and track completion.</li>
+      </ul>
+    </div>
+
+    <div class="orientation-block">
+      <h2 class="orientation-heading">can i write about any topic i want?</h2>
+      <p class="orientation-intro">
+        Mostly yes — but content must fit Twennie’s purpose: professional learning that improves work performance.
+      </p>
+      <ul class="orientation-list">
+        <li><strong>good fit:</strong> methods, tools, mindsets, examples, templates, coaching guidance.</li>
+        <li><strong>not a fit:</strong> confidential client information, private employee issues, or anything that breaks trust.</li>
+        <li><strong>best practice:</strong> anonymize real stories and focus on the lesson, not the company.</li>
+      </ul>
+    </div>
+
+    <div class="orientation-block">
+      <h2 class="orientation-heading">can individual members post learning content?</h2>
+      <p class="orientation-intro">
+        Yes — as long as they have an active membership that includes contribution.
+        Leaders, group members, paid individuals, and contributors can create units.
+      </p>
+      <ul class="orientation-list">
+        <li><strong>free accounts:</strong> can explore learning, but cannot publish content.</li>
+        <li><strong>contributors + paid members:</strong> can publish to their allowed visibility scope.</li>
+        <li><strong>leaders:</strong> can publish and assign learning to their group.</li>
+      </ul>
+    </div>
+
+    <div class="orientation-block">
+      <h2 class="orientation-heading">how long does my content stay on twennie?</h2>
+      <p class="orientation-intro">
+        Your content stays in your library until you remove it. Twennie is designed to be a living knowledge system.
+      </p>
+      <ul class="orientation-list">
+        <li><strong>you control it:</strong> edit, update, or remove your units anytime.</li>
+        <li><strong>staying useful matters:</strong> update older units when practices change.</li>
+        <li><strong>nuggets are “freshness-based”:</strong> they’re meant to be updated as intel changes.</li>
+      </ul>
+    </div>
+
+  </section>
+
+</section>
+
+
+<script>
+  // Basic toggle (mirrors your dashboard behavior)
+  (function () {
+    const btn = document.getElementById('toggleContribute');
+    const grid = document.getElementById('contributionGrid');
+    if (btn && grid) {
+      btn.addEventListener('click', () => {
+        grid.style.display = (grid.style.display === 'none' || !grid.style.display) ? 'grid' : 'none';
+      });
+    }
+
+    // Membership gating (promo-safe default: treat as not logged in)
+    // Later we can pass a server flag like: res.render(..., { canContribute: true })
+    const canContribute = Boolean(window.TWENNIE_CAN_CONTRIBUTE);
+
+    const unitLinks = document.querySelectorAll('[data-unit-link="true"]');
+    unitLinks.forEach(a => {
+      if (!canContribute) {
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          window.location.href = '/membership';
+        });
+        a.style.opacity = '0.65';
+        a.style.filter = 'grayscale(25%)';
+        a.title = 'Membership required to create content';
+      }
+    });
+  })();
+</script>
