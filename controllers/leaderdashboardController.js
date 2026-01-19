@@ -1190,10 +1190,6 @@ const leaderNuggetRows = (leaderNuggets || []).map((n) => ({
 
 // Append once
 leaderUnits = [...leaderUnits, ...leaderNuggetRows, ...leaderUpcomingRows];
-
-
-
-      leaderUnits = [...leaderUnits, ...leaderUpcomingRows];      
             
 
             console.log("All session keys before rendering:", Object.keys(req.session));
@@ -1335,10 +1331,18 @@ for (const [key, val] of Object.entries(leaderCounts)) {
   leaderBadges[key] = val > last;
 }
 
-console.log('assignedPromptSets count:', Array.isArray(assignedPromptSets) ? assignedPromptSets.length : 0);
+const assignedPromptSets = await buildAssignedPromptSets(id);
+
+console.log(
+  'assignedPromptSets count:',
+  Array.isArray(assignedPromptSets) ? assignedPromptSets.length : 0
+);
 if (Array.isArray(assignedPromptSets) && assignedPromptSets[0]) {
   console.log('assignedPromptSets[0] sample:', assignedPromptSets[0]);
 }
+
+
+
 
 
 
