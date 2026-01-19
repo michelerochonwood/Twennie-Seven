@@ -117,7 +117,7 @@ exports.getTeachMe = (req, res) => {
           src: "/images/reportcenterscreenshot.png",
           alt: "Report center",
           title: "Report center",
-          desc: "This is the Report Center, accessible to leaders only. It’s where leaders view group learning activity and completions.  Here you can see topics covered by your team, units completed, and badges earned. All notes your team has recorded on learning will show in these reports. Twennie can help you use AI to summarize these notes and plan future learning more strategically."
+          desc: "This is the Report Center, accessible to leaders only. It’s where leaders view group learning activity and completions.  Here you can see topics explored by your team, units completed, and badges earned. All notes your team has recorded on learning will show in these reports. Twennie can help you use AI to summarize these notes and plan future learning more strategically."
         },
         {
           src: "/images/onereportscreenshot.png",
