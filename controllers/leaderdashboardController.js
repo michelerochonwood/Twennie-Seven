@@ -323,26 +323,7 @@ const badgeImagePath =
     ? (unit.badgeImagePath || unit.badge_image || unit.badgeImage || getMissionBadgePath(category))
     : null;
 
-leaderAssignedUnits.push({
-  _id: item,
-  unitType,
-  title,
-  mainTopic,
-  tagId: tag._id.toString(),
-  viewPath,
 
-  // ✅ NEW: badge display fields (missions only)
-  category,
-  badge_name: (unitType === 'mission') ? (unit.badge_name || '') : '',
-  badgeImagePath,
-
-  assignedTo: {
-    _id: assignee.member?.toString(),
-    name: member.name,
-    instructions: assignee.instructions || '',
-    completedAt: assignee.completedAt || null,
-  }
-});
       }
     }
   }
@@ -1311,12 +1292,11 @@ leaderAssignedUnits.push({
   tagId: tag._id.toString(),
   viewPath,
 
-  // ✅ NEW: nugget display fields (only meaningful for nuggets)
+  // ✅ Add these here (correct scope)
   client: (unitType === 'nugget') ? (unit.client || '') : '',
   region: (unitType === 'nugget') ? (unit.region || '') : '',
   discipline: (unitType === 'nugget') ? (unit.discipline || '') : '',
 
-  // ✅ missions badge fields (existing)
   category,
   badge_name: (unitType === 'mission') ? (unit.badge_name || '') : '',
   badgeImagePath,
@@ -1329,7 +1309,8 @@ leaderAssignedUnits.push({
   }
 });
 
-const leaderAssignedNuggetsGrouped = groupAssignedNuggets(leaderAssignedNuggets);
+
+
 
 
 // --- Membership tab: derive view flags & user fields for template ---
@@ -1356,6 +1337,8 @@ const leaderAssignedNonNuggetUnits  = leaderAssignedNonNuggetUnitsRaw.map(mapAss
 const leaderAssignedNuggets         = leaderAssignedNuggetsRaw.map(mapAssigned);          // existing assigned nuggets
 const leaderAssignedMissions        = leaderAssignedMissionsRaw.map(mapAssigned);         // NEW: missions only
 const leaderAssignedNonMissionUnits = leaderAssignedNonMissionUnitsRaw.map(mapAssigned);  // NEW: non-mission, non-nugget
+
+const leaderAssignedNuggetsGrouped = groupAssignedNuggets(leaderAssignedNuggets);
 
 
 // 1) Email preference flags (defaults to Level 1 if unset/invalid)
