@@ -6836,3 +6836,164 @@ margin-right: 5px; /* Space between icon and text */
 
 
 
+/* =========================================================
+   CREATE LEARNING — Contribute section styles
+   (copied from dashboardstyles.css)
+   ========================================================= */
+
+.contribution-section {
+  margin-top: 75px; /* Reduced from 100px */
+}
+
+.contribution-container {
+  text-align: center;
+}
+
+.contribute-btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem; /* Reduced from 1rem 2rem */
+  background-color: #262262;
+  color: white;
+  text-decoration: none;
+  border-radius: 99px;
+  font-weight: 800;
+  transition: background-color 0.2s;
+  font-size: 0.75rem; /* Adjusted for readability */
+}
+
+.contribute-btn:hover {
+  background-color: #4a4ab2;
+}
+
+.contributor-benefits {
+  font-family: "Figtree";
+  text-align: center;
+  width: 30%;         /* Reduced from 40% */
+  margin-left: 35%;   /* Adjusted from 30% */
+  font-size: 0.75rem; /* Reduced for consistency */
+}
+
+/* Toggle button + button consistency */
+.contribution-section .contribute-btn,
+.contribution-section #toggleContribute {
+  font-family: "Figtree";
+  width: 30%;               /* Reduced from 40% */
+  padding: 0.75rem 1.5rem;  /* Reduced from 1rem 2rem */
+  background-color: #262262;
+  color: white;
+  border: none;
+  border-radius: 99px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  z-index: 99;
+}
+
+/* Hover */
+.contribution-section .contribute-btn:hover,
+.contribution-section #toggleContribute:hover {
+  background-color: #4a4ab2;
+}
+
+/* Card grid */
+.contribution-grid {
+  margin-top: 1.125rem; /* Reduced from 1.5rem */
+  display: grid;
+  grid-template-columns: repeat(3, minmax(75px, 112.5px)); /* Reduced from 100px, 150px */
+  gap: 0.75rem; /* Reduced from 1rem */
+  justify-content: center;
+  width: 60%; /* Reduced from 80% */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.unit-card {
+  aspect-ratio: 1;
+  background-color: rgb(230, 230, 230);
+  border-radius: 0.375rem; /* Reduced from 0.5rem */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 1.5px 3px rgba(0, 0, 0, 0.2);
+}
+
+.unit-card:hover {
+  background-color: #c6c6ef;
+}
+
+.svg-container {
+  width: 48px; /* Reduced from 64px */
+  height: auto;
+  margin-bottom: 0.75rem; /* Reduced from 1rem */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Titles used in the contribution partial */
+.dashboard-titles {
+  color:#262262;
+  font-family: "Figtree";
+  margin-top: 20px;
+}
+
+.dashboard-titles-contribute {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-family: "Figtree";
+  color: #262262;
+}
+
+/* (Optional) exists in dashboardstyles, keep if you ever show a label under unit cards */
+.unit-title {
+  font-weight: 800;
+  text-align: center;
+  color: white;
+  font-family: "Figtree";
+  font-size: 0.75rem;
+}
+
+/* =========================================================
+   Responsive tweaks (copied from dashboardstyles.css)
+   These are the bits that make the contribution section
+   not break on smaller screens.
+   ========================================================= */
+
+/* matches your existing breakpoint behavior */
+@media screen and (max-width: 1030px) {
+  .contribution-container .contributor-benefits {
+    margin: 1.55rem auto 1.35rem auto;
+    width: 60%;
+  }
+
+  .contribution-section #toggleContribute {
+    width: fit-content;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .contribution-container .contributor-benefits {
+    width: 75%;
+  }
+
+  .contribution-grid {
+    margin-top: 2rem;
+    grid-template-columns: repeat(3, 1fr);
+    width: 80%;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .contribution-grid {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 540px) {
+  .contribution-container .contributor-benefits {
+    width: 100%;
+  }
+}
