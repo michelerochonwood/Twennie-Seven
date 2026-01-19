@@ -4,19 +4,19 @@ exports.getTeachMe = (req, res) => {
     {
       key: "learn",
       title: "learn",
-      subtitle: "Explore topics, KPIs, and learning units.",
+      subtitle: "Explore topics, KPIs, and learning units in the Twennie library.",
       images: [
         {
           src: "/images/topictreescreenshot.png",
           alt: "Topic tree",
           title: "Topic tree",
-          desc: "The topic tree is your first step in learning. It shows how Twennie's topics are organized. Twennie focuses on three main spheres of learning: project management, business development, and leadership. Under those you will find our seven main topic categories: project management, business development and marketing, proposals, people management, technology, workplace culture, and AI. Under those, topics are further broken down into items like proposal strategy, managing scope, or leading change. Easily browse everything available in the main library and find topics you want to explore. "
+          desc: "The topic tree is your first step. It shows how Twennie learning is organized - in three main spheres: project management, business development, and leadership. Under those are our seven topic categories: project management, business development and marketing, proposals, people management, technology, workplace culture, and AI. Categories are further broken down into individual topics like proposal strategy, managing scope, or leading change."
         },
         {
           src: "/images/kpiviewscreenshot.png",
           alt: "Topic breakdown and KPIs",
           title: "Topic breakdown + KPIs",
-          desc: "Your next step is the topic breakdown. Twennie doesn't use courses, quizzes, or tests - instead we provide key performance indicators(KPIs) here in this view, which shows you how to apply topic-specific learning to your work performance. The KPIs are directly transferrable to a career plan and applicable to a range of professional roles."
+          desc: "Your next step is the topic breakdown. Twennie doesn't use courses, quizzes, or tests - instead we provide key performance indicators(KPIs) here. This shows you how to apply topic-specific learning directly to your work performance. The KPIs are transferrable to a career plan and applicable to a range of professional roles."
         },
         {
           src: "/images/bytopicscreenshot.png",
@@ -28,7 +28,7 @@ exports.getTeachMe = (req, res) => {
           src: "/images/singleunitscreenshot.png",
           alt: "Single learning unit",
           title: "Single learning unit",
-          desc: "This is an individual learning unit - an article, video, interview, prompt set, exercise, or template - one piece of content with its own view. Depending on the unit, learning can be done within 5, 10, or 20 minutes, which will show in the sidebar of the unit view. When you record notes on a library unit, you have completed that unit. Completions are tracked in yours and your leader's dashboard. The badges you've earned show in your dashboard tabs. Leaders can assign these units to group members and track completion."
+          desc: "This is an individual learning unit - an article, video, interview, prompt set, exercise, or template - one piece of content with its own view. Depending on the unit, learning can be done within 5, 10, or 20 minutes. When you record notes on a library unit, you have completed that unit. Completions are tracked in yours and your leader's dashboard. The badges you've earned show in your dashboard tabs. Leaders can assign these units to group members and track completion."
         }
       ]
     },
@@ -53,7 +53,7 @@ exports.getTeachMe = (req, res) => {
       src: "/images/mylibraryunitsscreenshot.png",
       alt: "My library units",
       title: "my library units",
-      desc: "This is the 'my library units' tab in your dashboard. This is your workspace to review, edit, and manage all the learning units you’ve created or contributed to your portion of the library."
+      desc: "This is the 'my library units' tab in your dashboard. This is your workspace to review, edit, and manage all the learning units you’ve created or contributed to your library."
     }
   ]
 },
@@ -67,13 +67,13 @@ exports.getTeachMe = (req, res) => {
           src: "/images/minescreenshot.png",
           alt: "The Twennie Mine",
           title: "The Twennie Mine",
-          desc: "This is the Twennie Mine. It’s where you monitor market intel and early-stage opportunities - not RFPs. An RFP may later emerge from these opportunities, but the purpose of the Mine is to track them earlier in the cycle. The Mine contains a mix of project opportunities in engineering disciplines - each one is called a nugget. You can create your own nuggets visible to your team only, or track the ones Twennie has already suggested. These leads are gathered from readily available online sources - they are NOT posted by any clients."
+          desc: "This is the Twennie Mine. It’s where you monitor market intel and early-stage opportunities - not RFPs. An RFP may later emerge from these opportunities, but the purpose of the Mine is to track them earlier in the cycle. The Mine contains a mix of project opportunities in technical disciplines - each one is called a nugget. You can create your own nuggets visible to your team only or your organization only. Any leads you see in the Twennie examples are gathered from readily available online sources - they are NOT posted by any clients."
         },
         {
           src: "/images/clientnuggetscreenshot.png",
           alt: "Nuggets list",
           title: "Nuggets list",
-          desc: "This view shows nuggets grouped by client/region/discipline so you can find exactly what you're looking for. The same nugget will appear in all three categories, but organized by client, region, or discipline. At the bottom of the page you'll see nuggets managed by Twennie. Nuggets you've created will show under 'created by me' section. If you've shared with your team only, your nugget will be visible only to them under the 'created by my group' section. If you've shared with your organization, the nugget will show in that section, too, to all people in your organization that have memberships on Twennie."
+          desc: "This view shows nuggets grouped by client/region/discipline. The same nugget will appear in all three categories, but organized by client, region, or discipline. At the bottom of the page you'll see example nuggets managed by Twennie - these are there only to give you some ideas for where to mine your own nuggets, so avoid relying solely on these for tracking opportunities. Nuggets you've created will show under 'created by me' section. If you've shared with your team only, your nugget will be visible only to them under the 'created by my group' section. If you've shared with your organization, the nugget will show in that section, too, to all people in your organization with memberships on Twennie."
         },
         {
           src: "/images/singlenuggetscreenshot.png",
@@ -92,7 +92,7 @@ exports.getTeachMe = (req, res) => {
           src: "/images/missioncontrolscreenshot.png",
           alt: "Mission Control",
           title: "Mission Control",
-          desc: "This is Mission Control. It’s where leaders access and assign missions. Missions are packages of learning or work assignments in a topic or category. Use missions when the workload is light, when you want to assign and track internal projects, or combine learning units into a more comprehensive examination of a topic."
+          desc: "This is Mission Control. It’s where leaders access and assign missions. A mission is a package of learning or work in a topic or category. Use missions when the workload is light, when you want to assign and track internal projects, or combine learning units into a more comprehensive analysis of a topic."
         },
         {
           src: "/images/missiontypescreenshot.png",
@@ -111,7 +111,7 @@ exports.getTeachMe = (req, res) => {
     {
       key: "reports",
       title: "monitor learning",
-      subtitle: "See what’s being learned and what’s completed.",
+      subtitle: "FOR LEADERS ONLY | See what’s been learned and completed.",
       images: [
         {
           src: "/images/reportcenterscreenshot.png",
