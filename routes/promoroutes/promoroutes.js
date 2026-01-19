@@ -155,36 +155,27 @@ router.get('/enterprise_members', (req, res) => {
 
 // ✅ Create Learning (orientation / instructional)
 router.get('/create_learning', (req, res) => {
-  const u = req.user;
+  // Use the already-hydrated locals from app.js
+  const u = res.locals.user || req.user || null;
 
-  const canContribute =
-    !!u && (
-      // leader
-      !!u.groupLeaderEmail || u.membershipType === 'leader' ||
-      // group member
-      u.membershipType === 'group_member' ||
-      // paid/contributor individual
-      (u.membershipType === 'member' &&
-        (u.accessLevel === 'paid_individual' || u.accessLevel === 'contributor_individual'))
-    );
+  const canContribute = !!u && (
+    // leader
+    !!u.groupLeaderEmail || u.membershipType === 'leader' ||
+    // group member
+    u.membershipType === 'group_member' ||
+    // paid / contributor individual
+    (
+      (u.membershipType === 'member' || !!u.email) &&
+      (u.accessLevel === 'paid_individual' || u.accessLevel === 'contributor_individual')
+    )
+  );
 
-  res.render('promo_views/creating_content', {
+  return res.render('promo_views/creating_content', {
     layout: 'mainlayout',
-
-    // ✅ this is what your header uses for {{#if user}}
-    user: u ? {
-      username: u.username || u.groupLeaderName || u.name || 'member',
-      membershipType: u.membershipType || (u.groupLeaderEmail ? 'leader' : (u.email ? 'member' : '')),
-    } : null,
-
-    // if you use these in the header globally, pass them too (optional)
-    dashboardLink: u?.groupLeaderEmail ? '/dashboard/leader' : '/dashboard/member',
-    userProfileImage: u?.profileImage || u?.avatar || '/images/default-avatar.png',
-
-    // ✅ this is what the view should use for link gating
     canContribute
   });
 });
+
 
 // Export the router
 module.exports = router;

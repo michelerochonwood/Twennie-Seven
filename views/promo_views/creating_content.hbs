@@ -8,16 +8,21 @@
     <p>instructions, examples, and visibility rules — in plain language.</p>
   </div>
 
-  <!-- Contribution (reuse your dashboard partial markup) -->
-  <!-- NOTE: we’ll gate links with JS below. -->
+  <!-- Contribution (reuse dashboard-style contribution section) -->
   <section class="contribution-section" data-contrib-gate="true">
     <div class="contribution-container">
+
+      <!-- Centered Image -->
       <div style="text-align: center; margin-bottom: -20px; margin-top: -40px;">
         <img src="/images/blueyteacher.png" alt="Bluey Teacher" style="max-width: 200px;">
       </div>
 
-      <h2 class="dashboard-titles" style="text-align: center;">add a unit to my library</h2>
+      <!-- Main Title -->
+      <h2 class="dashboard-titles" style="text-align: center;">
+        add a unit to my library
+      </h2>
 
+      <!-- Subtitle -->
       <p class="contribution-subtitle" style="text-align: center; font-weight: 500; margin-top: -10px;">
         learn by unleashing your inner teacher
       </p>
@@ -27,73 +32,94 @@
         practice, and share learning with other professionals.
       </p>
 
-      <!-- Gate message (visible to non-members; hidden if logged in by JS or server flag later) -->
-      <div class="orientation-block" style="margin: 1.25rem auto; max-width: 900px;">
-        <p class="orientation-intro" style="margin-bottom: 0.75rem;">
-          <strong>Note:</strong> Creating learning content requires an active membership.
-          You can still explore this guide (and the map) without logging in.
-        </p>
+      <!-- Gate message (ONLY if user cannot contribute) -->
+      {{#unless canContribute}}
+        <div class="orientation-block" style="margin: 1.25rem auto; max-width: 900px;">
+          <p class="orientation-intro" style="margin-bottom: 0.75rem;">
+            <strong>Note:</strong> Creating learning content requires an active membership.
+            You can still explore this guide without logging in.
+          </p>
 
-        <div class="cta-button-group" style="margin: 0;">
-          <a class="cta-button" href="/auth/login">log in</a>
-          <a class="cta-button" href="/membership">become a member</a>
+          <div class="cta-button-group" style="margin: 0;">
+            <a class="cta-button" href="/auth/login">log in</a>
+            <a class="cta-button" href="/membership">become a member</a>
+          </div>
         </div>
-      </div>
+      {{/unless}}
 
+      <!-- Toggle -->
       <button id="toggleContribute" class="contribute-btn">
-        I want to contribute to my library
+        {{#if canContribute}}
+          show unit creation options
+        {{else}}
+          see what you can create
+        {{/if}}
       </button>
 
-      <div id="contributionGrid" class="contribution-grid" style="display: none;">
+      <!-- Grid (auto-open for contributors; hidden for non-members until toggle) -->
+      <div
+        id="contributionGrid"
+        class="contribution-grid"
+        style="{{#if canContribute}}display: grid;{{else}}display: none;{{/if}}"
+      >
 
+        <!-- Article -->
         <a href="/unitform/form_article" class="unit-card" data-unit-link="true">
           <div class="svg-container" style="padding-top: 8px;">
             <img src="/icons/article.svg" alt="Article icon" style="display:block; width:40px; height:auto; margin:0 auto;">
           </div>
         </a>
 
+        <!-- Video -->
         <a href="/unitform/form_video" class="unit-card" data-unit-link="true">
           <div class="svg-container" style="padding-top: 8px; width: 40px">
             <img src="/icons/video.svg" alt="Video icon" style="display:block; height:auto; margin:0 auto;">
           </div>
         </a>
 
+        <!-- Interview -->
         <a href="/unitform/form_interview" class="unit-card" data-unit-link="true">
           <div class="svg-container" style="padding-top: 8px;">
             <img src="/icons/interview.svg" alt="Interview icon" style="display:block; width:90px; height:auto; margin:0 auto;">
           </div>
         </a>
 
+        <!-- Prompt Set -->
         <a href="/unitform/form_promptset" class="unit-card" data-unit-link="true">
           <div class="svg-container" style="padding-top: 8px;">
             <img src="/icons/promptset.svg" alt="Prompt set icon" style="display:block; width:100px; height:auto; margin:0 auto;">
           </div>
         </a>
 
+        <!-- Template -->
         <a href="/unitform/form_template" class="unit-card" data-unit-link="true">
           <div class="svg-container" style="padding-top: 8px;">
             <img src="/icons/template.svg" alt="Template icon" style="display:block; width:100px; height:auto; margin:0 auto;">
           </div>
         </a>
 
+        <!-- Exercise -->
         <a href="/unitform/form_exercise" class="unit-card" data-unit-link="true">
           <div class="svg-container" style="padding-top: 8px;">
             <img src="/icons/exercise.svg" alt="Exercise icon" style="display:block; width:65px; height:auto; margin:0 auto;">
           </div>
         </a>
 
+        <!-- Mission -->
         <a href="/unitform/form_mission" class="unit-card" data-unit-link="true">
           <div class="svg-container" style="padding-top: 8px;">
             <img src="/icons/mission.svg" alt="Mission icon" style="display:block; width:65px; height:auto; margin:0 auto;">
           </div>
         </a>
 
+        <!-- Upcoming Unit -->
         <a href="/unitform/form_upcoming" class="unit-card" data-unit-link="true">
           <div class="svg-container" style="padding-top: 8px;">
             <img src="/icons/upcoming.svg" alt="Upcoming unit icon" style="display:block; width:70px; height:auto; margin:0 auto;">
           </div>
         </a>
 
+        <!-- Nugget -->
         <a href="/unitform/form_nugget" class="unit-card" data-unit-link="true">
           <div class="svg-container" style="padding-top: 8px;">
             <img src="/icons/nuggeticon.svg" alt="Nugget icon" style="display:block; width:90px; height:auto; margin:0 auto;">
@@ -127,15 +153,15 @@
         Twennie learning is delivered through unit types that match different learning styles and time budgets.
       </p>
       <ul class="orientation-list">
-        <li><strong>articles:</strong> explain a concept, approach, or method (fast to write, easy to revisit).</li>
-        <li><strong>videos:</strong> teach with voice + visuals (best for demonstrations and storytelling).</li>
-        <li><strong>interviews:</strong> capture expertise from others (best for “how experts think”).</li>
-        <li><strong>prompt sets:</strong> 20-step micro-learning that drives action over time.</li>
-        <li><strong>exercises:</strong> guided practice inside Twennie (structured work + reflection).</li>
+        <li><strong>articles:</strong> explain a concept, approach, or method.</li>
+        <li><strong>videos:</strong> teach with voice + visuals.</li>
+        <li><strong>interviews:</strong> capture expertise from others.</li>
+        <li><strong>prompt sets:</strong> 20-step micro-learning that drives action.</li>
+        <li><strong>exercises:</strong> guided practice inside Twennie.</li>
         <li><strong>templates:</strong> reusable documents, scripts, checklists, or frameworks.</li>
-        <li><strong>missions:</strong> a packaged assignment (learning + outcome) that leaders can assign.</li>
-        <li><strong>upcoming units:</strong> announce what you’re building next and track production.</li>
-        <li><strong>nuggets:</strong> market intel / early opportunity tracking (client/region/discipline).</li>
+        <li><strong>missions:</strong> packaged work + outcome that leaders can assign.</li>
+        <li><strong>upcoming units:</strong> announce what you’re building next and track progress.</li>
+        <li><strong>nuggets:</strong> market intel / opportunity tracking by client, region, or discipline.</li>
       </ul>
     </div>
 
@@ -155,13 +181,13 @@
     <div class="orientation-block">
       <h2 class="orientation-heading">where will my content show on twennie — and who can see it?</h2>
       <p class="orientation-intro">
-        You choose visibility when you create a unit. Twennie then shows your unit in the library under its topic,
+        You choose visibility when you create a unit. Twennie shows your unit under its topic,
         but only to the audience you selected.
       </p>
       <ul class="orientation-list">
-        <li><strong>my library units:</strong> you will always see your own content in your dashboard workspace.</li>
-        <li><strong>group only:</strong> visible to members in your group (leader + group members).</li>
-        <li><strong>organization:</strong> visible to members in your organization (across groups).</li>
+        <li><strong>my library units:</strong> you always see your own content in your dashboard workspace.</li>
+        <li><strong>group only:</strong> visible to members in your group.</li>
+        <li><strong>organization:</strong> visible to members in your organization.</li>
         <li><strong>twennie community:</strong> visible to all Twennie members.</li>
         <li><strong>leaders can assign:</strong> if visible to a leader’s scope, they can assign and track completion.</li>
       </ul>
@@ -200,7 +226,7 @@
       <ul class="orientation-list">
         <li><strong>you control it:</strong> edit, update, or remove your units anytime.</li>
         <li><strong>staying useful matters:</strong> update older units when practices change.</li>
-        <li><strong>nuggets are “freshness-based”:</strong> they’re meant to be updated as intel changes.</li>
+        <li><strong>nuggets are freshness-based:</strong> they’re meant to be updated as intel changes.</li>
       </ul>
     </div>
 
@@ -210,22 +236,25 @@
 
 
 <script>
-    window.TWENNIE_CAN_CONTRIBUTE = {{#if canContribute}}true{{else}}false{{/if}};
-  // Basic toggle (mirrors your dashboard behavior)
+  // server-driven gate flag
+  window.TWENNIE_CAN_CONTRIBUTE = {{#if canContribute}}true{{else}}false{{/if}};
+
   (function () {
+    // Toggle grid open/closed
     const btn = document.getElementById('toggleContribute');
     const grid = document.getElementById('contributionGrid');
+
     if (btn && grid) {
       btn.addEventListener('click', () => {
-        grid.style.display = (grid.style.display === 'none' || !grid.style.display) ? 'grid' : 'none';
+        const isHidden = (grid.style.display === 'none' || !grid.style.display);
+        grid.style.display = isHidden ? 'grid' : 'none';
       });
     }
 
-    // Membership gating (promo-safe default: treat as not logged in)
-    // Later we can pass a server flag like: res.render(..., { canContribute: true })
+    // Gate clicks for non-contributors (but still let them SEE the options)
     const canContribute = Boolean(window.TWENNIE_CAN_CONTRIBUTE);
-
     const unitLinks = document.querySelectorAll('[data-unit-link="true"]');
+
     unitLinks.forEach(a => {
       if (!canContribute) {
         a.addEventListener('click', (e) => {
