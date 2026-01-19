@@ -1545,14 +1545,9 @@ html, body {
 /* Each member row inside the card */
 .leader-assigned-member {
   display: grid;
-  grid-template-columns: 44px 1fr auto;
-  grid-template-rows: auto auto;
-  gap: 8px 12px;
+  grid-template-columns: 42px 1fr auto; /* avatar | info | actions */
+  gap: 10px;
   align-items: center;
-
-  padding: 10px;
-  border-radius: 10px;
-  background: rgba(0,0,0,0.03);
 }
 
 /* status + due spans across the row */
@@ -1574,7 +1569,7 @@ html, body {
 
 /* member info */
 .leader-assigned-member-info {
-  min-width: 0; /* prevents overflow */
+  min-width: 0;
 }
 
 .leader-assigned-member-name {
@@ -1603,8 +1598,13 @@ html, body {
 
 /* action column */
 .leader-assigned-actions {
-  justify-self: end;
-  align-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 0;          /* important: don't push it down/out */
+  width: auto;            /* don't force 100% inside the grid cell */
+  justify-self: end;      /* align to right edge of the row */
 }
 
 .leader-assigned-unassign {
@@ -1613,16 +1613,20 @@ html, body {
   font-size: 12px;
 }
 
+.leader-unassign-form {
+  margin: 0;
+}
+
 /* Mobile: stack avatar + info + button cleanly */
 @media (max-width: 520px) {
   .leader-assigned-member {
-    grid-template-columns: 44px 1fr;
-    grid-template-rows: auto auto auto;
+    grid-template-columns: 42px 1fr;
   }
 
   .leader-assigned-actions {
     grid-column: 1 / -1;
     justify-self: start;
+    margin-top: 6px;
   }
 }
 
