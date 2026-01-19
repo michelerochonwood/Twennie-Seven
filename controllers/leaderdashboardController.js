@@ -252,31 +252,6 @@ missions.forEach(m => {
   }
 }
 
-leaderAssignedUnits.push({
-  _id: item,
-  unitType,
-  title,
-  mainTopic,
-  tagId: tag._id.toString(),
-  viewPath,
-
-  // ✅ nugget fields
-  client: (unitType === 'nugget') ? (unit.client || '') : '',
-  region: (unitType === 'nugget') ? (unit.region || '') : '',
-  discipline: (unitType === 'nugget') ? (unit.discipline || '') : '',
-
-  // ✅ mission fields
-  category,
-  badge_name: (unitType === 'mission') ? (unit.badge_name || '') : '',
-  badgeImagePath,
-
-  assignedTo: {
-    _id: assignee.member?.toString(),
-    name: member.name,
-    instructions: assignee.instructions || '',
-    completedAt: assignee.completedAt || null,
-  }
-});
 
 function viewPathForSuggestion(unitType, unitId) {
   const t = String(unitType || '').toLowerCase();
@@ -347,6 +322,30 @@ const badgeImagePath =
   (unitType === 'mission')
     ? (unit.badgeImagePath || unit.badge_image || unit.badgeImage || getMissionBadgePath(category))
     : null;
+
+leaderAssignedUnits.push({
+  _id: item.toString(),
+  unitType,
+  title,
+  mainTopic,
+  tagId: tag._id.toString(),
+  viewPath,
+
+  client: (unitType === 'nugget') ? (unit.client || null) : null,
+  region: (unitType === 'nugget') ? (unit.region || null) : null,
+  discipline: (unitType === 'nugget') ? (unit.discipline || null) : null,
+
+  category,
+  badge_name: (unitType === 'mission') ? (unit.badge_name || '') : '',
+  badgeImagePath,
+
+  assignedTo: {
+    _id: assignee.member?.toString(),
+    name: member.name,
+    instructions: assignee.instructions || '',
+    completedAt: assignee.completedAt || null,
+  }
+});
 
 
       }
