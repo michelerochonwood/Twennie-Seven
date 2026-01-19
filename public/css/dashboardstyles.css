@@ -3268,8 +3268,17 @@ html, body {
 .leader-assigned-actions {
   display: flex;
   align-items: center;
+  justify-content: flex-end; /* keeps buttons inside the right edge */
   gap: 10px;
   margin-top: 6px;
+
+  /* ✅ prevents “half outside the card” when parent is a grid/flex cell */
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+
+  /* ✅ if any ancestor has overflow issues, this keeps the row contained */
+  flex-wrap: wrap;
 }
 
 .leader-assigned-unassign,
@@ -3282,7 +3291,16 @@ html, body {
   cursor: pointer;
   font-family: "Figtree";
   text-decoration: none;
+
+  /* ✅ make buttons behave consistently inside grid/flex */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  max-width: 100%;
+  box-sizing: border-box;
 }
+
 
 .leader-assigned-unassign {
   background: #262262;
