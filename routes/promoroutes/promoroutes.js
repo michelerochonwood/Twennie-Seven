@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const twenniemapController = require('../../controllers/twenniemapController');
-const createLearningController = require('../../controllers/createLearningController');
+const createLearningController = require('../../controllers/createlearningController');
 
 // Define routes
 router.get('/', (req, res) => {
