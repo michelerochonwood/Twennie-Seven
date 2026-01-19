@@ -141,6 +141,20 @@ router.post('/organization/request-join', ensureAuthenticated, async (req, res, 
 });
 
 // ------------------------------------------------------------
+// ✅ POST /dashboard/leader/assigned-nuggets/unassign
+// Unassign ONE member from ONE nugget tag
+// body: { tagId, memberId }
+// ------------------------------------------------------------
+router.post('/assigned-nuggets/unassign', ensureAuthenticated, async (req, res, next) => {
+  try {
+    return await leaderDashboardController.unassignAssignedNugget(req, res);
+  } catch (err) {
+    console.error('Error unassigning assigned nugget:', err);
+    next(err);
+  }
+});
+
+// ------------------------------------------------------------
 // ✅ Route wiring (wherever your leader dashboard routes live)
 // Add this line:
 // ------------------------------------------------------------

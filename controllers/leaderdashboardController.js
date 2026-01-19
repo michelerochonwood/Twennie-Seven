@@ -689,7 +689,10 @@ async function getLeaderPromptSchedule(leaderId, promptSetId) {
         remainingPrompts,
         spread
     };
+
+
 }
+
 
 
 
@@ -1249,6 +1252,86 @@ const groupCompletedPromptSets = groupCompletedRecords.map(record => ({
 
 // Map the completion records to a formatted array
 const { leaderAssignedUnits, leaderAssignmentsOpen, leaderAssignmentsCompleted } = await buildLeaderAssignedUnits(id);
+
+
+// ✅ Group assigned nuggets so one nugget card shows all assignees
+function groupAssignedNuggets(flatRows = []) {
+  const byNuggetId = new Map();
+
+  for (const r of flatRows) {
+    const nuggetId = r?._id?.toString?.() || String(r?._id || '');
+    if (!nuggetId) continue;
+
+    if (!byNuggetId.has(nuggetId)) {
+      byNuggetId.set(nuggetId, {
+        _id: nuggetId,
+        title: r.title || 'Untitled nugget',
+        client: r.client || null,
+        region: r.region || null,
+        discipline: r.discipline || null,
+
+        // keep if you ever want it
+        tagId: r.tagId || null,
+
+        assignments: []
+      });
+    }
+
+    const card = byNuggetId.get(nuggetId);
+
+    card.assignments.push({
+      tagId: r.tagId || '',
+      assignedToId: r.assignedToId || '',
+      assignedToName: r.assignedToName || '',
+      assignedInstructions: r.assignedInstructions || '',
+      assignedCompletedAtFormatted: r.assignedCompletedAtFormatted || '',
+      // optional raw if you want later
+      assignedCompletedAt: r.assignedTo?.completedAt || null
+    });
+  }
+
+  // Optional: sort assignees so pending first
+  byNuggetId.forEach(card => {
+    card.assignments.sort((a, b) => {
+      const aDone = !!a.assignedCompletedAt;
+      const bDone = !!b.assignedCompletedAt;
+      if (aDone === bDone) return (a.assignedToName || '').localeCompare(b.assignedToName || '');
+      return aDone ? 1 : -1;
+    });
+  });
+
+  return Array.from(byNuggetId.values());
+}
+
+leaderAssignedUnits.push({
+  _id: item,
+  unitType,
+  title,
+  mainTopic,
+  tagId: tag._id.toString(),
+  viewPath,
+
+  // ✅ NEW: nugget display fields (only meaningful for nuggets)
+  client: (unitType === 'nugget') ? (unit.client || '') : '',
+  region: (unitType === 'nugget') ? (unit.region || '') : '',
+  discipline: (unitType === 'nugget') ? (unit.discipline || '') : '',
+
+  // ✅ missions badge fields (existing)
+  category,
+  badge_name: (unitType === 'mission') ? (unit.badge_name || '') : '',
+  badgeImagePath,
+
+  assignedTo: {
+    _id: assignee.member?.toString(),
+    name: member.name,
+    instructions: assignee.instructions || '',
+    completedAt: assignee.completedAt || null,
+  }
+});
+
+const leaderAssignedNuggetsGrouped = groupAssignedNuggets(leaderAssignedNuggets);
+
+
 // --- Membership tab: derive view flags & user fields for template ---
 
 // ✅ helper to flatten assignedTo for the template
@@ -1406,6 +1489,8 @@ assignedPromptSets,
   leaderAssignedNonMissionUnits,      // NEW: assigned non-mission, non-nugget
   leaderAssignedMissions,             // NEW: assigned missions
   leaderAssignedNuggets,              // existing assigned nuggets
+
+  leaderAssignedNuggetsGrouped,
 
   // MFA + tab badges
   mfaStatus,
@@ -1707,7 +1792,51 @@ requestJoinOrganization: async (req, res) => {
       errorMessage: 'Could not send join request. Please try again.'
     });
   }
-}
+},
+
+// ------------------------------------------------------------
+// ✅ POST /dashboard/leader/assigned-nuggets/unassign
+// Removes a single assignedTo entry from the Tag doc
+// ------------------------------------------------------------
+unassignAssignedNugget: async (req, res) => {
+  try {
+    const leaderId = req.session?.user?.id || req.user?._id;
+    if (!leaderId) return res.status(401).json({ ok: false, message: 'Not logged in.' });
+
+    const { tagId, memberId } = req.body || {};
+
+    if (!mongoose.Types.ObjectId.isValid(tagId) || !mongoose.Types.ObjectId.isValid(memberId)) {
+      return res.status(400).json({ ok: false, message: 'Invalid tagId or memberId.' });
+    }
+
+    // Security: leader can only modify tags they created
+    const updated = await Tag.findOneAndUpdate(
+      { _id: tagId, createdBy: leaderId },
+      { $pull: { assignedTo: { member: new mongoose.Types.ObjectId(memberId) } } },
+      { new: true }
+    ).lean();
+
+    if (!updated) {
+      return res.status(404).json({ ok: false, message: 'Tag not found or not allowed.' });
+    }
+
+    // If assignedTo now empty, you can optionally unset it (not required)
+    // if (!updated.assignedTo?.length) {
+    //   await Tag.updateOne({ _id: tagId }, { $set: { assignedTo: [] } });
+    // }
+
+    return res.json({
+      ok: true,
+      tagId,
+      memberId,
+      remainingAssignedCount: Array.isArray(updated.assignedTo) ? updated.assignedTo.length : 0
+    });
+  } catch (err) {
+    console.error('unassignAssignedNugget error:', err);
+    return res.status(500).json({ ok: false, message: 'Server error.' });
+  }
+},
+
 
 
 
