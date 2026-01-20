@@ -113,6 +113,8 @@ const memberSchema = new mongoose.Schema({
   emailPreferencesUpdatedAt: {
     type: Date
   },
+  googleId: { type: String, unique: true, sparse: true },
+avatar: { type: String, trim: true },
   mfa: {
   enabled: { type: Boolean, default: false },
   method: { type: String, enum: ['totp'], default: undefined },

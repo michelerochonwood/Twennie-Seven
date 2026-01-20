@@ -90,6 +90,9 @@ const groupMemberSchema = new mongoose.Schema({
   },
   emailPreferencesUpdatedAt: { type: Date },
 
+  googleId: { type: String, unique: true, sparse: true },
+avatar: { type: String, trim: true },
+
   // MFA
   mfa: mfaSchema
 }, {

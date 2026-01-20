@@ -63,15 +63,21 @@ function normalizeUserMeta(user) {
 
 module.exports = {
   // -------- Views --------
-  showLoginForm: (req, res) => {
-    console.log('Login page accessed');
-    const csrfToken = req.csrfToken ? req.csrfToken() : null;
-    res.render('login_views/login_view', {
-      layout: 'mainlayout',
-      title: 'Login',
-      csrfToken,
-    });
-  },
+showLoginForm: (req, res) => {
+  const csrfToken = req.csrfToken ? req.csrfToken() : null;
+
+  let error = null;
+  if (req.query.error === 'google') {
+    error = 'No Twennie account found for that Google email. Please sign up or use your email and password.';
+  }
+
+  res.render('login_views/login_view', {
+    layout: 'mainlayout',
+    title: 'Login',
+    csrfToken,
+    error
+  });
+},
 
   // -------- Handlers --------
   // 1) finds user by email across all types

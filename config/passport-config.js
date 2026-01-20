@@ -8,57 +8,73 @@ const GroupMember = require('../models/member_models/group_member');
 module.exports = (passport) => {
 
   // ✅ Local Strategy for email/password login
-  passport.use(new LocalStrategy(
-    {
-      usernameField: 'email',
-      passwordField: 'password',
-      passReqToCallback: true
-    },
-    async (req, email, password, done) => { 
-      try {
-        const normalizedEmail = email.toLowerCase();
-        const { membershipType } = req.body;
-        let user;
+// ✅ Google OAuth2 Strategy (Member, Leader, GroupMember)
+passport.use(new GoogleStrategy(
+  {
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: process.env.GOOGLE_CALLBACK_URL || '/auth/google/callback',
+    proxy: true
+  },
+  async (accessToken, refreshToken, profile, done) => {
+    try {
+      const email = (profile.emails?.[0]?.value || '').toLowerCase();
+      const googleId = profile.id;
+      const avatar = profile.photos?.[0]?.value || null;
+      const displayName = profile.displayName || null;
 
-        if (membershipType === 'member') {
-          user = await Member.findOne({ email: normalizedEmail });
-        } else if (membershipType === 'leader') {
-          user = await Leader.findOne({ groupLeaderEmail: normalizedEmail });
-        } else if (membershipType === 'group_member') {
-          user = await GroupMember.findOne({ email: normalizedEmail });
-        } else {
-          return done(null, false, { message: 'Invalid membership type.' });
-        }
+      if (!email) {
+        return done(null, false, { message: 'Google account did not return an email.' });
+      }
+
+      // 1) If already linked by googleId, find it fast (any collection)
+      let user =
+        (await Member.findOne({ googleId })) ||
+        (await Leader.findOne({ googleId })) ||
+        (await GroupMember.findOne({ googleId }));
+
+      // 2) Otherwise, link by email (member email vs leader groupLeaderEmail)
+      if (!user) {
+        user =
+          (await Member.findOne({ email })) ||
+          (await Leader.findOne({ groupLeaderEmail: email })) ||
+          (await GroupMember.findOne({ email }));
 
         if (!user) {
-          return done(null, false, { message: 'No user found with that email.' });
+          // No auto-create (schemas require too much)
+          return done(null, false, { message: 'No Twennie account found for that Google email.' });
         }
 
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-          return done(null, false, { message: 'Incorrect email or password.' });
+        // Link googleId
+        if (!user.googleId) user.googleId = googleId;
+
+        // Optional: store avatar without overwriting your existing profileImage
+        if (avatar && !user.avatar) user.avatar = avatar;
+
+        // Optional: if a Member is missing name (shouldn't be), fill it
+        if (displayName && !user.name && !user.groupLeaderName && !user.groupMemberName) {
+          user.name = displayName;
         }
 
-        console.log("✅ LocalStrategy authenticated:", {
-          id: user._id?.toString(),
-          email: user.email || user.groupLeaderEmail,
-          type: membershipType
-        });
-
-        return done(null, user);
-
-      } catch (err) {
-        console.error("❌ LocalStrategy error:", err);
-        return done(err);
+        await user.save();
       }
+
+      return done(null, user);
+    } catch (err) {
+      console.error('❌ GoogleStrategy error:', err);
+      return done(err, null);
     }
-  ));
+  }
+));
+
+
 
   // ✅ Google OAuth2 Strategy (for Members only)
   passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: '/auth/google/callback',
+    callbackURL: process.env.GOOGLE_CALLBACK_URL || '/auth/google/callback',
+
     proxy: true
   },
   async (accessToken, refreshToken, profile, done) => {

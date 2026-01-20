@@ -42,32 +42,47 @@ router.post('/login', loginController.handleLogin);
 router.get('/logout', (req, res, next) => {
   req.logout(err => {
     if (err) return next(err);
-    // destroy the session cookie + store record
     req.session?.destroy(() => {
-      res.clearCookie?.('connect.sid'); // optional but tidy
+      res.clearCookie?.('connect.sid');
       console.log('Logout successful');
       return res.redirect('/auth/login');
     });
   });
 });
 
-
-// --- Inactive account + Reactivation (works for all membership types) ---
+// Inactive account + Reactivation
 router.get('/inactive', loginController.showInactiveAccount);
 router.post('/reactivate', loginController.requestReactivation);
 
 // ---------- Google Authentication ----------
+// NOTE: since this router is mounted at /auth,
+// these become /auth/google and /auth/google/callback
 
-// Start Google OAuth
-router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+router.get('/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
 
-// Callback after Google login
 router.get(
-  '/auth/google/callback',
-  passport.authenticate('google', { failureRedirect: '/login' }),
-  blockInactiveAfterOAuth, // prevent cancelled users from logging in via Google
+  '/google/callback',
+passport.authenticate('google', { failureRedirect: '/auth/login?error=google' }),
+
+  blockInactiveAfterOAuth,
   (req, res) => {
-    const to = redirectFor(req.user) || '/dashboard';
+    const to = redirectFor(req.user) || '/dashboard/member';
+
+    // Optional: keep your session.user pattern consistent
+    // (harmless even if you rely on req.user elsewhere)
+    if (req.user?._id) {
+      req.session.user = {
+        id: req.user._id.toString(),
+        username: req.user.username || req.user.name || req.user.groupLeaderName || 'User',
+        membershipType: req.user.membershipType || 'member',
+        accessLevel: req.user.accessLevel || 'free_individual',
+        organization: req.user.organization || null,
+        groupId: req.user.groupId ? req.user.groupId.toString() : null,
+      };
+    }
+
     return res.redirect(to);
   }
 );
