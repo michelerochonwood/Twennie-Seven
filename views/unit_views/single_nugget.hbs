@@ -142,9 +142,9 @@
         ✅ Suggestions sent successfully.
       </div>
     {{/if}}
-    <h4 class="assign-tag-title">Suggest this nugget to organization leaders</h4>
+    <h4 class="assign-tag-title">Suggest this nugget to your organization's leaders</h4>
     <p class="groupsection-org-card-info" style="margin-top:0.25rem;">
-      Send a suggestion (with an optional note) to one or more leaders in your organization.
+      Send a suggestion to one or more leaders in your organization.
     </p>
 
     <form id="suggestNuggetForm-{{_id}}" action="/unitsuggestions/org-suggestions/create" method="POST">
@@ -153,7 +153,7 @@
       <input type="hidden" name="unitType" value="nugget">
 
       <fieldset class="assign-tag-members">
-        <legend class="assign-tag-legend">Select leaders and optionally add a note:</legend>
+        <legend class="assign-tag-legend">Select leaders and add a note, if needed:</legend>
 
         {{#each orgLeaders}}
           <div class="assign-tag-member-block">
