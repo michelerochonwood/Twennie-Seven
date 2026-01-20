@@ -68,36 +68,53 @@ passport.use(new GoogleStrategy(
 ));
 
 
-
-  // ✅ Google OAuth2 Strategy (for Members only)
-  passport.use(new GoogleStrategy({
+// ✅ Google OAuth2 Strategy (Member, Leader, GroupMember)
+passport.use(new GoogleStrategy(
+  {
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: process.env.GOOGLE_CALLBACK_URL || '/auth/google/callback',
-
+    callbackURL: process.env.GOOGLE_CALLBACK_URL || 'https://www.twennie.com/auth/google/callback',
     proxy: true
   },
-  async (accessToken, refreshToken, profile, done) => {
+  async (_accessToken, _refreshToken, profile, done) => {
     try {
-      let user = await Member.findOne({ googleId: profile.id });
+      const email = (profile.emails?.[0]?.value || '').toLowerCase();
+      const googleId = profile.id;
+      const avatar = profile.photos?.[0]?.value || null;
 
+      if (!email) return done(null, false, { message: 'Google account did not return an email.' });
+
+      // Find by googleId first
+      let user =
+        (await Member.findOne({ googleId })) ||
+        (await Leader.findOne({ googleId })) ||
+        (await GroupMember.findOne({ googleId }));
+
+      // Otherwise link by email
       if (!user) {
-        user = new Member({
-          googleId: profile.id,
-          name: profile.displayName,
-          email: profile.emails[0].value,
-          avatar: profile.photos[0].value
-        });
+        user =
+          (await Member.findOne({ email })) ||
+          (await Leader.findOne({ groupLeaderEmail: email })) ||
+          (await GroupMember.findOne({ email }));
+
+        if (!user) return done(null, false, { message: 'No Twennie account found for that Google email.' });
+
+        user.googleId = user.googleId || googleId;
+        if (avatar && !user.avatar) user.avatar = avatar;
+
         await user.save();
       }
 
       return done(null, user);
-
     } catch (err) {
-      console.error("❌ GoogleStrategy error:", err);
+      console.error('❌ GoogleStrategy error:', err);
       return done(err, null);
     }
-  }));
+  }
+));
+
+
+
 
   // ✅ Serialize user into session
   passport.serializeUser((user, done) => {
