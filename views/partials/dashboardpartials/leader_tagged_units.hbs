@@ -143,9 +143,9 @@
                           <p class="leader-assigned-to">assigned to: {{this.assignedToName}}</p>
 
                           {{#if this.assignedCompletedAtFormatted}}
-                            <p class="leader-assigned-status">✅ completed <span class="muted">({{this.assignedCompletedAtFormatted}})</span></p>
+                            <p class="leader-assigned-status">✅ closed <span class="muted">({{this.assignedCompletedAtFormatted}})</span></p>
                           {{else}}
-                            <p class="leader-assigned-status">⏳ pending</p>
+                            <p class="leader-assigned-status">⏳ monitoring</p>
                           {{/if}}
 
                           {{#if this.assignedInstructions}}
