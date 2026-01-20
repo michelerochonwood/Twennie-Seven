@@ -125,7 +125,9 @@ async function renderMissionList(req, res, options) {
 
     // ---- BEGIN: smarter segmentation by authorship + visibility ----
 
-    const userId = user?.id || req.session?.user?.id || null;
+const groupMembersForLeader = await GroupMember.find({
+  leader: leaderDoc._id,
+})
 
     const normalize = (s) => (s || '').toString().trim().toLowerCase();
     const emailDomain = (e) => {
@@ -156,11 +158,16 @@ async function renderMissionList(req, res, options) {
       myGroupAuthorIds.add(String(leaderDoc._id));
 
       // members tied to leaderId
-      const groupMembersForLeader = await GroupMember.find({
-        leaderId: leaderDoc._id,
-      })
-        .select('_id')
-        .lean();
+if (groupMemberDoc.leader) myGroupAuthorIds.add(String(groupMemberDoc.leader));
+myGroupAuthorIds.add(String(groupMemberDoc._id));
+
+const peers = await GroupMember.find(
+  groupMemberDoc.leader
+    ? { leader: groupMemberDoc.leader }
+    : (groupMemberDoc.groupName ? { groupName: groupMemberDoc.groupName } : { _id: null })
+).select('_id').lean();
+
+
 
       if (!groupMembersForLeader.length && leaderDoc.groupName) {
         // fallback: same groupName
@@ -175,18 +182,18 @@ async function renderMissionList(req, res, options) {
       }
     } else if (groupMemberDoc) {
       // group member + their leader + peers
-      if (groupMemberDoc.leaderId) {
-        myGroupAuthorIds.add(String(groupMemberDoc.leaderId));
-      }
-      myGroupAuthorIds.add(String(groupMemberDoc._id));
+if (groupMemberDoc.leader) {
+  myGroupAuthorIds.add(String(groupMemberDoc.leader));
+}
 
-      const peers = await GroupMember.find(
-        groupMemberDoc.leaderId
-          ? { leaderId: groupMemberDoc.leaderId }
-          : groupMemberDoc.groupName
-          ? { groupName: groupMemberDoc.groupName }
-          : { _id: null }
-      )
+const peers = await GroupMember.find(
+  groupMemberDoc.leader
+    ? { leader: groupMemberDoc.leader }
+    : groupMemberDoc.groupName
+    ? { groupName: groupMemberDoc.groupName }
+    : { _id: null }
+)
+
         .select('_id')
         .lean();
 
@@ -195,11 +202,10 @@ async function renderMissionList(req, res, options) {
 
     // Build an organization key for the current viewer
     const me = leaderDoc || groupMemberDoc || memberDoc || {};
-    const myOrgKey =
-      normalize(me.organizationId) ||
-      normalize(me.organization) ||
-      emailDomain(me.email);
-
+const myOrgKey =
+  me.organization ? String(me.organization) :
+  normalize(me.organizationId) ||
+  emailDomain(me.email);
     // Cache for author org keys
     const authorOrgKeyCache = new Map();
 
@@ -227,11 +233,12 @@ async function renderMissionList(req, res, options) {
       }
 
       const doc = aLeader || aGM || aMember || {};
-      const orgKey =
-        normalize(doc.organizationId) ||
-        normalize(doc.organization) ||
-        emailDomain(doc.email) ||
-        null;
+const orgKey =
+  doc.organization ? String(doc.organization) :
+  normalize(doc.organizationId) ||
+  emailDomain(doc.email) ||
+  null;
+
 
       authorOrgKeyCache.set(key, orgKey);
       return orgKey;
@@ -272,7 +279,7 @@ async function renderMissionList(req, res, options) {
       });
     } else {
       // if user has no org context, only show strictly org-only if you want
-      orgMissions = missions.filter((m) => m.visibility === 'organization_only');
+      orgMissions = [];
     }
 
     // 4) Twennie missions (globally visible)

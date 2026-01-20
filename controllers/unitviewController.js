@@ -67,21 +67,22 @@ async function resolveAuthorById(authorId) {
   }
 
   // 2) Group member profile
-  profile = await GroupMemberProfile
-    .findOne({ memberId: idStr })
-    .select('profileImage name')
-    .lean();
+profile = await GroupMemberProfile
+  .findOne({ groupMemberId: idStr })
+  .select('profileImage name')
+  .lean();
 
-  if (profile) {
-    const gm = await GroupMember.findById(idStr).select('_id organization groupId').lean();
+if (profile) {
+  const gm = await GroupMember.findById(idStr).select('_id organization leader').lean();
 
-    return {
-      name: profile.name || 'Group Member',
-      image: profile.profileImage || '/images/default-avatar.png',
-      organization: gm?.organization || null,
-      groupId: gm?.groupId || null
-    };
-  }
+  return {
+    name: profile.name || 'Group Member',
+    image: profile.profileImage || '/images/default-avatar.png',
+    organization: gm?.organization || null,
+    groupId: gm?.leader || null // keep the property name "groupId" if other code expects it
+  };
+}
+
 
   // 3) Individual member profile
   profile = await MemberProfile
@@ -150,9 +151,11 @@ async function getLeaderAssignContext(req) {
     if (leaderDoc) {
       leaderId = leaderDoc._id.toString();
       leaderName = leaderDoc.groupLeaderName || leaderDoc.username || 'You';
-      groupMembers = await GroupMember.find({ groupId: leaderDoc._id })
-        .select('_id name')
-        .lean();
+groupMembers = await GroupMember.find({
+  $or: [{ leader: leaderDoc._id }, { groupId: leaderDoc._id }]
+})
+.select('_id name')
+.lean();
     }
   }
 
@@ -225,14 +228,14 @@ viewMineClients: async (req, res) => {
     if (meId) {
       const [meAsLeader, meAsGroupMember, meAsMember] = await Promise.all([
         Leader.findById(meId).select('_id organization').lean(),
-        GroupMember.findById(meId).select('_id organization groupId').lean(),
+        GroupMember.findById(meId).select('_id organization leader').lean(),
         Member.findById(meId).select('_id organization').lean(),
       ]);
       if (meAsLeader) {
         myGroupId = meAsLeader._id?.toString() || null;
         myOrg     = meAsLeader.organization || null;
       } else if (meAsGroupMember) {
-        myGroupId = meAsGroupMember.groupId ? meAsGroupMember.groupId.toString() : null;
+        myGroupId = meAsGroupMember.leader ? meAsGroupMember.leader.toString() : null;
         myOrg     = meAsGroupMember.organization || null;
       } else if (meAsMember) {
         myOrg     = meAsMember.organization || null;
@@ -248,7 +251,7 @@ viewMineClients: async (req, res) => {
     if (creatorIds.length) {
       const [leaders, groupMembers] = await Promise.all([
         Leader.find({ _id: { $in: creatorIds } }).select('_id organization').lean(),
-        GroupMember.find({ _id: { $in: creatorIds } }).select('_id organization groupId').lean(),
+        GroupMember.find({ _id: { $in: creatorIds } }).select('_id organization leader').lean(),
       ]);
       leaders.forEach(doc => {
         const id = doc._id.toString();
@@ -258,7 +261,7 @@ viewMineClients: async (req, res) => {
       groupMembers.forEach(doc => {
         const id = doc._id.toString();
         orgByCreator[id]   = doc.organization || orgByCreator[id] || null;
-        groupByCreator[id] = (doc.groupId && doc.groupId.toString()) || groupByCreator[id] || null;
+        groupByCreator[id] = (doc.leader && doc.leader.toString()) || groupByCreator[id] || null;
       });
     }
 
@@ -333,53 +336,67 @@ viewMineRegions: async (req, res) => {
     const meId = (req.user?._id || req.user?.id || '').toString();
     console.log('[viewMineRegions] meId:', meId);
 
-    // Resolve my group/org (best effort)
-    let myGroupId = null, myOrg = null;
+    // Resolve my group leader id + my org
+    let myGroupId = null; // leader id that anchors my group
+    let myOrg = null;
+
     if (meId) {
       const [meAsLeader, meAsGroupMember, meAsMember] = await Promise.all([
         Leader.findById(meId).select('_id organization').lean(),
-        GroupMember.findById(meId).select('_id organization groupId').lean(),
+        GroupMember.findById(meId).select('_id organization leader').lean(),
         Member.findById(meId).select('_id organization').lean(),
       ]);
+
       if (meAsLeader) {
-        myGroupId = meAsLeader._id?.toString() || null;
-        myOrg     = meAsLeader.organization || null;
+        myGroupId = meAsLeader._id?.toString() || null; // leader anchors own group
+        myOrg = meAsLeader.organization || null;
       } else if (meAsGroupMember) {
-        myGroupId = meAsGroupMember.groupId ? meAsGroupMember.groupId.toString() : null;
-        myOrg     = meAsGroupMember.organization || null;
+        myGroupId = meAsGroupMember.leader ? meAsGroupMember.leader.toString() : null;
+        myOrg = meAsGroupMember.organization || null;
       } else if (meAsMember) {
-        myOrg     = meAsMember.organization || null;
+        myOrg = meAsMember.organization || null;
       }
     }
+
     console.log('[viewMineRegions] myGroupId:', myGroupId, 'myOrg:', myOrg);
 
-    // Build creator maps (org / group for each creator)
+    // Build creator maps: orgByCreator + groupByCreator (group = leader id)
     const creatorIds = [...new Set(nuggets.map(n => n.createdBy?.toString()).filter(Boolean))];
+
     const orgByCreator = Object.create(null);
     const groupByCreator = Object.create(null);
 
     if (creatorIds.length) {
       const [leaders, groupMembers] = await Promise.all([
         Leader.find({ _id: { $in: creatorIds } }).select('_id organization').lean(),
-        GroupMember.find({ _id: { $in: creatorIds } }).select('_id organization groupId').lean(),
+        GroupMember.find({ _id: { $in: creatorIds } }).select('_id organization leader').lean(),
       ]);
+
       leaders.forEach(doc => {
         const id = doc._id.toString();
-        orgByCreator[id]   = doc.organization || orgByCreator[id] || null;
+        orgByCreator[id] = doc.organization || orgByCreator[id] || null;
         groupByCreator[id] = id; // leader anchors to own id
       });
+
       groupMembers.forEach(doc => {
         const id = doc._id.toString();
-        orgByCreator[id]   = doc.organization || orgByCreator[id] || null;
-        groupByCreator[id] = (doc.groupId && doc.groupId.toString()) || groupByCreator[id] || null;
+        orgByCreator[id] = doc.organization || orgByCreator[id] || null;
+        groupByCreator[id] = (doc.leader && doc.leader.toString()) || groupByCreator[id] || null;
       });
     }
 
     // Partition
-    const createdByMe      = meId     ? nuggets.filter(n => n.createdBy?.toString() === meId) : [];
-    const createdByMyGroup = myGroupId? nuggets.filter(n => groupByCreator[n.createdBy?.toString()] === myGroupId) : [];
-    const createdByMyOrg   = myOrg    ? nuggets.filter(n => orgByCreator[n.createdBy?.toString()]   === myOrg)   : [];
-    const fromAllMembers   = nuggets;
+    const createdByMe = meId ? nuggets.filter(n => n.createdBy?.toString() === meId) : [];
+
+    const createdByMyGroup = myGroupId
+      ? nuggets.filter(n => groupByCreator[n.createdBy?.toString()] === myGroupId)
+      : [];
+
+    const createdByMyOrg = myOrg
+      ? nuggets.filter(n => orgByCreator[n.createdBy?.toString()] === myOrg)
+      : [];
+
+    const fromAllMembers = nuggets;
 
     console.log('[viewMineRegions] buckets => me:', createdByMe.length,
       'group:', createdByMyGroup.length, 'org:', createdByMyOrg.length, 'all:', fromAllMembers.length);
@@ -409,6 +426,7 @@ viewMineRegions: async (req, res) => {
 },
 
 
+
 // ---- The Mine: Disciplines list ----
 // ---- The Mine: Disciplines list (cards like client_view, title = discipline) ----
 viewMineDisciplines: async (req, res) => {
@@ -427,7 +445,7 @@ viewMineDisciplines: async (req, res) => {
     // Only nuggets with discipline + createdBy
     const nuggets = await Nugget.find({
       discipline: { $exists: true, $ne: '' },
-      createdBy:  { $exists: true, $ne: null },
+      createdBy: { $exists: true, $ne: null },
     })
       .sort({ discipline: 1 })
       .lean();
@@ -437,53 +455,67 @@ viewMineDisciplines: async (req, res) => {
     const meId = (req.user?._id || req.user?.id || '').toString();
     console.log('[viewMineDisciplines] meId:', meId);
 
-    // Resolve my group/org (best effort)
-    let myGroupId = null, myOrg = null;
+    // Resolve my group leader id + my org
+    let myGroupId = null; // leader id that anchors my group
+    let myOrg = null;
+
     if (meId) {
       const [meAsLeader, meAsGroupMember, meAsMember] = await Promise.all([
         Leader.findById(meId).select('_id organization').lean(),
-        GroupMember.findById(meId).select('_id organization groupId').lean(),
+        GroupMember.findById(meId).select('_id organization leader').lean(),
         Member.findById(meId).select('_id organization').lean(),
       ]);
+
       if (meAsLeader) {
         myGroupId = meAsLeader._id?.toString() || null;
-        myOrg     = meAsLeader.organization || null;
+        myOrg = meAsLeader.organization || null;
       } else if (meAsGroupMember) {
-        myGroupId = meAsGroupMember.groupId ? meAsGroupMember.groupId.toString() : null;
-        myOrg     = meAsGroupMember.organization || null;
+        myGroupId = meAsGroupMember.leader ? meAsGroupMember.leader.toString() : null;
+        myOrg = meAsGroupMember.organization || null;
       } else if (meAsMember) {
-        myOrg     = meAsMember.organization || null;
+        myOrg = meAsMember.organization || null;
       }
     }
+
     console.log('[viewMineDisciplines] myGroupId:', myGroupId, 'myOrg:', myOrg);
 
-    // Build creator maps (org / group for each creator)
+    // Build creator maps: orgByCreator + groupByCreator (group = leader id)
     const creatorIds = [...new Set(nuggets.map(n => n.createdBy?.toString()).filter(Boolean))];
+
     const orgByCreator = Object.create(null);
     const groupByCreator = Object.create(null);
 
     if (creatorIds.length) {
       const [leaders, groupMembers] = await Promise.all([
         Leader.find({ _id: { $in: creatorIds } }).select('_id organization').lean(),
-        GroupMember.find({ _id: { $in: creatorIds } }).select('_id organization groupId').lean(),
+        GroupMember.find({ _id: { $in: creatorIds } }).select('_id organization leader').lean(),
       ]);
+
       leaders.forEach(doc => {
         const id = doc._id.toString();
-        orgByCreator[id]   = doc.organization || orgByCreator[id] || null;
+        orgByCreator[id] = doc.organization || orgByCreator[id] || null;
         groupByCreator[id] = id; // leader anchors to own id
       });
+
       groupMembers.forEach(doc => {
         const id = doc._id.toString();
-        orgByCreator[id]   = doc.organization || orgByCreator[id] || null;
-        groupByCreator[id] = (doc.groupId && doc.groupId.toString()) || groupByCreator[id] || null;
+        orgByCreator[id] = doc.organization || orgByCreator[id] || null;
+        groupByCreator[id] = (doc.leader && doc.leader.toString()) || groupByCreator[id] || null;
       });
     }
 
     // Partition
-    const createdByMe      = meId     ? nuggets.filter(n => n.createdBy?.toString() === meId) : [];
-    const createdByMyGroup = myGroupId? nuggets.filter(n => groupByCreator[n.createdBy?.toString()] === myGroupId) : [];
-    const createdByMyOrg   = myOrg    ? nuggets.filter(n => orgByCreator[n.createdBy?.toString()]   === myOrg)   : [];
-    const fromAllMembers   = nuggets;
+    const createdByMe = meId ? nuggets.filter(n => n.createdBy?.toString() === meId) : [];
+
+    const createdByMyGroup = myGroupId
+      ? nuggets.filter(n => groupByCreator[n.createdBy?.toString()] === myGroupId)
+      : [];
+
+    const createdByMyOrg = myOrg
+      ? nuggets.filter(n => orgByCreator[n.createdBy?.toString()] === myOrg)
+      : [];
+
+    const fromAllMembers = nuggets;
 
     console.log('[viewMineDisciplines] buckets => me:', createdByMe.length,
       'group:', createdByMyGroup.length, 'org:', createdByMyOrg.length, 'all:', fromAllMembers.length);
@@ -511,6 +543,7 @@ viewMineDisciplines: async (req, res) => {
     });
   }
 },
+
 
 
 
