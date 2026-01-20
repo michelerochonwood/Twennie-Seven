@@ -111,6 +111,7 @@ if (profile) {
 }
 
 
+
 async function buildOrgLeaderListForAdmin(req) {
   const userId = req.user?._id || req.user?.id;
   if (!userId) return { isOrgAdmin: false, orgLeaders: [] };
@@ -142,35 +143,32 @@ async function buildOrgLeaderListForAdmin(req) {
 async function getLeaderAssignContext(req) {
   const currentUserId = (req.user?._id || req.user?.id)?.toString();
   const isLeader = req.user?.membershipType === 'leader';
+
   let groupMembers = [];
   let leaderId = null;
   let leaderName = null;
 
   if (isLeader && currentUserId) {
-    const leaderDoc = await Leader.findById(currentUserId).select('_id groupLeaderName username').lean();
+    const leaderDoc = await Leader.findById(currentUserId)
+      .select('_id groupLeaderName username')
+      .lean();
+
     if (leaderDoc) {
       leaderId = leaderDoc._id.toString();
       leaderName = leaderDoc.groupLeaderName || leaderDoc.username || 'You';
-groupMembers = await GroupMember.find({
-  $or: [{ leader: leaderDoc._id }, { groupId: leaderDoc._id }]
-})
-.select('_id name')
-.lean();
+
+      // ✅ schema is leader; support legacy groupId just in case
+      groupMembers = await GroupMember.find({
+        $or: [{ leader: leaderDoc._id }, { groupId: leaderDoc._id }]
+      })
+        .select('_id name')
+        .lean();
     }
   }
 
   return { isLeader, groupMembers, leaderId, leaderName };
 }
 
-// Build the tiny assign payload expected by the tag form
-function makeAssignProps(itemId, itemType) {
-  return {
-    assign: {
-      itemId: itemId?.toString(),
-      itemType // e.g., 'article','video','interview','exercise','template','promptset','upcoming','nugget'
-    }
-  };
-}
 
 
 const missionBadgeMap = {
@@ -191,7 +189,37 @@ function getMissionBadgePath(category) {
   return `/badges/missions/${filename}.png`;
 }
 
+async function getAuthorOrgTeam(authorId) {
+  if (!authorId) return { authorOrg: null, authorTeamId: null };
 
+  const idStr = authorId.toString();
+
+  const [asLeader, asGroupMember] = await Promise.all([
+    Leader.findById(idStr).select('_id organization').lean(),
+    GroupMember.findById(idStr).select('_id organization leader').lean()
+  ]);
+
+  if (asLeader) {
+    return {
+      authorOrg: asLeader.organization || null,
+      authorTeamId: asLeader._id || null
+    };
+  }
+
+  if (asGroupMember) {
+    return {
+      authorOrg: asGroupMember.organization || null,
+      authorTeamId: asGroupMember.leader || null
+    };
+  }
+
+  // Individuals: only org string sometimes; treat as no team anchor
+  const asMember = await Member.findById(idStr).select('_id organization').lean();
+  return {
+    authorOrg: asMember?.organization || null,
+    authorTeamId: null
+  };
+}
 
 module.exports = {
 
@@ -668,10 +696,8 @@ viewArticle: async (req, res) => {
     const { id } = req.params;
     console.log(`📄 Fetching article with ID: ${id}`);
 
-    // 1) Fetch the article
     const article = await Article.findById(id);
     if (!article) {
-      console.warn(`❌ Article with ID ${id} not found.`);
       return res.status(404).render('unit_views/error', {
         layout: 'unitviewlayout',
         title: 'Article Not Found',
@@ -679,27 +705,17 @@ viewArticle: async (req, res) => {
       });
     }
 
-    // 2) Resolve author
     const authorId = (article.author?.id || article.author)?.toString();
     const author = await resolveAuthorById(authorId);
-    if (!author) {
-      console.error(`❌ Author with ID ${authorId} not found.`);
-      return res.status(404).render('unit_views/error', {
-        layout: 'unitviewlayout',
-        title: 'Author Not Found',
-        errorMessage: `The author associated with this article could not be found.`,
-      });
-    }
 
-    // Current user helpers
     const currentUserId = (req.user?._id || req.user?.id)?.toString();
-    const currentMembership = req.user?.membershipType;
+    const currentMembership = req.user?.membershipType || req.user?.accessLevel || null;
 
-    // 3) Owner check
     const isOwner = !!(currentUserId && authorId && currentUserId === authorId);
-    console.log(`👑 Is owner: ${isOwner}`);
 
-    // 4) Visibility → access
+    // ✅ Author org/team from real docs (team anchor = leader id)
+    const { authorOrg, authorTeamId } = await getAuthorOrgTeam(authorId);
+
     let isAuthorizedToViewFullContent = false;
     let isOrgMatch = false;
     let isTeamMatch = false;
@@ -710,100 +726,66 @@ viewArticle: async (req, res) => {
       isOrgMatch =
         article.visibility === 'organization_only' &&
         req.user?.organization &&
-        author.organization &&
-        req.user.organization === author.organization;
+        authorOrg &&
+        String(req.user.organization) === String(authorOrg);
 
       isTeamMatch =
         article.visibility === 'team_only' &&
         req.user?.groupId &&
-        author.groupId &&
-        req.user.groupId.toString() === author.groupId.toString();
+        authorTeamId &&
+        String(req.user.groupId) === String(authorTeamId);
 
       isAuthorizedToViewFullContent = isOwner || isOrgMatch || isTeamMatch;
     }
 
-    console.log("🔒 Access breakdown:");
-    console.log("• Org match:", isOrgMatch);
-    console.log("• Team match:", isTeamMatch);
-    console.log("🔓 Authorized to view full content:", isAuthorizedToViewFullContent);
-
-    // 5) If leader, load group members for assignment UI
-    let groupMembers = [];
-    let leaderId = undefined;
-    let leaderName = undefined;
-
-    if (currentMembership === 'leader' && currentUserId) {
-      const leaderDoc = await Leader.findById(currentUserId);
-      if (leaderDoc) {
-        groupMembers = await GroupMember.find({ groupId: leaderDoc._id })
-          .select('_id name')
-          .lean();
-        leaderId = leaderDoc._id.toString();
-        leaderName = leaderDoc.groupLeaderName || leaderDoc.username || 'You';
-        console.log("🧑‍🤝‍🧑 Group members found:", groupMembers);
-      }
-    }
-
-    // 6) Word count
     const plainText = (article.article_body || '').replace(/<[^>]*>/g, ' ').trim();
     const wordCount = plainText ? plainText.split(/\s+/).filter(Boolean).length : 0;
 
-    // 7) Image URL
     const articleImage = article.image?.url || '/images/default-article.png';
+
+    // ✅ Leader assign + org admin suggest
+    const { isLeader, groupMembers, leaderId, leaderName } = await getLeaderAssignContext(req);
     const adminSuggest = await buildOrgLeaderListForAdmin(req);
 
-    // 8) Render
-// 8) Render
-return res.render('unit_views/single_article', {
-  layout: 'unitviewlayout',
+    return res.render('unit_views/single_article', {
+      layout: 'unitviewlayout',
 
-  // Unit identity & content
-  _id: article._id.toString(),
-  unitType: 'article',
-  article_title: article.article_title,
-  short_summary: article.short_summary,
-  full_summary: article.full_summary,
-  article_body: article.article_body,
-  article_image: articleImage,
+      _id: article._id.toString(),
+      unitType: 'article',
+      article_title: article.article_title,
+      short_summary: article.short_summary,
+      full_summary: article.full_summary,
+      article_body: article.article_body,
+      article_image: articleImage,
 
-  // Author card
-  author: {
-    name: author.name || 'Unknown Author',
-    image: author.image || '/images/default-avatar.png',
-  },
+      author: {
+        name: author.name || 'Unknown Author',
+        image: author.image || '/images/default-avatar.png',
+      },
 
-  // Topics
-  main_topic: article.main_topic,
-  secondary_topics: article.secondary_topics,
-  sub_topic: article.sub_topic,
+      main_topic: article.main_topic,
+      secondary_topics: article.secondary_topics,
+      sub_topic: article.sub_topic,
 
-  // UX flags
-  word_count: wordCount,
-  isOwner,
-  isAuthorizedToViewFullContent,
-  isAuthenticated: !!req.user,
-  isLeader: currentMembership === 'leader',
-  isGroupMemberOrLeader:
-    currentMembership === 'leader' || currentMembership === 'group_member',
-  isGroupMemberOrMember:
-    currentMembership === 'group_member' || currentMembership === 'member',
+      word_count: wordCount,
+      isOwner,
+      isAuthorizedToViewFullContent,
+      isAuthenticated: !!req.user,
+      isLeader,
+      isGroupMemberOrLeader: isLeader || currentMembership === 'group_member',
+      isGroupMemberOrMember: currentMembership === 'group_member' || currentMembership === 'member',
 
-  // ✅ Admin suggestion UI vars (top-level)
-  ...adminSuggest,
-// ✅ Suggestion success banner (after redirect back)
-suggestionSuccess: req.query.suggested === '1',
-suggestedUnitId: req.query.unitId || '',
-suggestedUnitType: req.query.unitType || '',
-  // Leader-only assignment data
-  groupMembers,
-  leaderId,
-  leaderName: leaderName || req.user?.username || 'You',
+      ...adminSuggest,
+      suggestionSuccess: req.query.suggested === '1',
+      suggestedUnitId: req.query.unitId || '',
+      suggestedUnitType: req.query.unitType || '',
 
-  // CSRF for native form posts
-  csrfToken: req.csrfToken(),
-});
+      groupMembers,
+      leaderId,
+      leaderName: leaderName || req.user?.username || 'You',
 
-
+      csrfToken: typeof req.csrfToken === 'function' ? req.csrfToken() : null,
+    });
   } catch (err) {
     console.error('💥 Error fetching article:', err.stack || err.message);
     return res.status(500).render('unit_views/error', {
@@ -820,6 +802,7 @@ suggestedUnitType: req.query.unitType || '',
 
 
 
+
       
     
     
@@ -828,10 +811,8 @@ viewVideo: async (req, res) => {
     const { id } = req.params;
     console.log(`🎥 Fetching video with ID: ${id}`);
 
-    // 1) Load the video
     const video = await Video.findById(id);
     if (!video) {
-      console.warn(`❌ Video with ID ${id} not found.`);
       return res.status(404).render('unit_views/error', {
         layout: 'unitviewlayout',
         title: 'Video Not Found',
@@ -839,42 +820,15 @@ viewVideo: async (req, res) => {
       });
     }
 
-    // 2) Resolve author (profile for name/image) + id for access checks
-    const authorIdRaw = video.author?.id || video.author;
-    const authorId = authorIdRaw ? authorIdRaw.toString() : null;
+    const authorId = (video.author?.id || video.author)?.toString();
     const author = await resolveAuthorById(authorId);
 
-    if (!authorId || !author) {
-      console.error(`❌ Author with ID ${authorId} not found.`);
-      return res.status(404).render('unit_views/error', {
-        layout: 'unitviewlayout',
-        title: 'Author Not Found',
-        errorMessage: `The author associated with this video could not be found.`,
-      });
-    }
-
-    // 3) Ownership & current user
     const currentUserId = (req.user?._id || req.user?.id)?.toString();
     const currentMembership = req.user?.membershipType || req.user?.accessLevel || null;
+
     const isOwner = !!(currentUserId && authorId && currentUserId === authorId);
-    console.log(`👑 Is owner: ${isOwner}`);
 
-    // 4) Access control (fetch author's org/team from real doc)
-    let authorOrg = null;
-    let authorGroupId = null;
-
-    const [authorAsLeader, authorAsGroupMember] = await Promise.all([
-      Leader.findById(authorId).select('_id organization').lean(),
-      GroupMember.findById(authorId).select('_id organization groupId').lean()
-    ]);
-
-    if (authorAsLeader) {
-      authorOrg = authorAsLeader.organization || null;
-      authorGroupId = authorAsLeader._id; // leaders use their own id as group id
-    } else if (authorAsGroupMember) {
-      authorOrg = authorAsGroupMember.organization || null;
-      authorGroupId = authorAsGroupMember.groupId || null;
-    }
+    const { authorOrg, authorTeamId } = await getAuthorOrgTeam(authorId);
 
     let isAuthorizedToViewFullContent = false;
     let isOrgMatch = false;
@@ -887,55 +841,25 @@ viewVideo: async (req, res) => {
         video.visibility === 'organization_only' &&
         req.user?.organization &&
         authorOrg &&
-        req.user.organization === authorOrg;
+        String(req.user.organization) === String(authorOrg);
 
       isTeamMatch =
         video.visibility === 'team_only' &&
         req.user?.groupId &&
-        authorGroupId &&
-        req.user.groupId.toString() === authorGroupId.toString();
+        authorTeamId &&
+        String(req.user.groupId) === String(authorTeamId);
 
       isAuthorizedToViewFullContent = isOwner || isOrgMatch || isTeamMatch;
     }
 
-    console.log("🔒 Access breakdown (video):", {
-      isOrgMatch,
-      isTeamMatch,
-      isAuthorizedToViewFullContent
-    });
-
-    // 5) Leader context for assignments
-    const isLeader = currentMembership === 'leader';
-    let groupMembers = [];
-    let leaderId;
-    let leaderName;
-
-    if (isLeader && currentUserId) {
-      const leaderDoc = await Leader.findById(currentUserId)
-        .select('_id groupLeaderName username')
-        .lean();
-
-      if (leaderDoc) {
-        groupMembers = await GroupMember.find({ groupId: leaderDoc._id })
-          .select('_id name')
-          .lean();
-        leaderId = leaderDoc._id.toString();
-        leaderName = leaderDoc.groupLeaderName || leaderDoc.username || 'You';
-        console.log("🧑‍🤝‍🧑 Group members found:", groupMembers.length);
-      }
-    }
-
-    // 6) Build YouTube embed link
     const embedLink = convertYouTubeToEmbed(video.video_content);
 
-    // 7) ✅ Org Admin suggestion context
+    const { isLeader, groupMembers, leaderId, leaderName } = await getLeaderAssignContext(req);
     const adminSuggest = await buildOrgLeaderListForAdmin(req);
 
-    // 8) Render
     return res.render('unit_views/single_video', {
       layout: 'unitviewlayout',
 
-      // identity & content
       _id: video._id.toString(),
       unitType: 'video',
       video_title: video.video_title,
@@ -945,18 +869,15 @@ viewVideo: async (req, res) => {
       embedLink,
       video_url: video.video_url || '/images/valuegroupcont.png',
 
-      // author card
       author: {
         name: author.name || 'Unknown Author',
         image: author.image || '/images/default-avatar.png',
       },
 
-      // topics
       main_topic: video.main_topic,
       secondary_topics: video.secondary_topics || [],
       sub_topic: video.sub_topic,
 
-      // flags
       isOwner,
       isAuthorizedToViewFullContent,
       isAuthenticated: !!req.user,
@@ -964,21 +885,17 @@ viewVideo: async (req, res) => {
       isGroupMemberOrLeader: isLeader || currentMembership === 'group_member',
       isGroupMemberOrMember: currentMembership === 'group_member' || currentMembership === 'member',
 
-      // ✅ Admin suggest vars (top-level)
       ...adminSuggest,
-// ✅ Suggestion success banner (after redirect back)
-suggestionSuccess: req.query.suggested === '1',
-suggestedUnitId: req.query.unitId || '',
-suggestedUnitType: req.query.unitType || '',
-      // leader-only assignment data
+      suggestionSuccess: req.query.suggested === '1',
+      suggestedUnitId: req.query.unitId || '',
+      suggestedUnitType: req.query.unitType || '',
+
       groupMembers,
       leaderId,
       leaderName: leaderName || req.user?.username || 'You',
 
-      // CSRF
       csrfToken: typeof req.csrfToken === 'function' ? req.csrfToken() : null,
     });
-
   } catch (err) {
     console.error('💥 Error fetching video:', err.stack || err.message);
     return res.status(500).render('unit_views/error', {
@@ -988,6 +905,7 @@ suggestedUnitType: req.query.unitType || '',
     });
   }
 },
+
 
 
 
@@ -1005,10 +923,8 @@ viewInterview: async (req, res) => {
     const { id } = req.params;
     console.log(`🎙️ Fetching interview with ID: ${id}`);
 
-    // 1) Fetch the interview
     const interview = await Interview.findById(id);
     if (!interview) {
-      console.warn(`❌ Interview with ID ${id} not found.`);
       return res.status(404).render('unit_views/error', {
         layout: 'unitviewlayout',
         title: 'Interview Not Found',
@@ -1016,103 +932,43 @@ viewInterview: async (req, res) => {
       });
     }
 
-    // 2) Resolve author
-    const authorIdRaw = interview.author?.id || interview.author;
-    const authorId = authorIdRaw ? authorIdRaw.toString() : null;
+    const authorId = (interview.author?.id || interview.author)?.toString();
     const author = await resolveAuthorById(authorId);
 
-    if (!authorId || !author) {
-      console.error(`❌ Author with ID ${authorId} not found.`);
-      return res.status(404).render('unit_views/error', {
-        layout: 'unitviewlayout',
-        title: 'Author Not Found',
-        errorMessage: `The author associated with this interview could not be found.`,
-      });
-    }
-
-    // 3) Ownership & current user
     const currentUserId = (req.user?._id || req.user?.id)?.toString();
     const currentMembership = req.user?.membershipType || req.user?.accessLevel || null;
+
     const isOwner = !!(currentUserId && authorId && currentUserId === authorId);
-    console.log(`👑 Is owner: ${isOwner}`);
 
-    // 4) Access control (fetch author's org/team from real doc)
-    let authorOrg = null;
-    let authorGroupId = null;
-
-    const [authorAsLeader, authorAsGroupMember] = await Promise.all([
-      Leader.findById(authorId).select('_id organization').lean(),
-      GroupMember.findById(authorId).select('_id organization groupId').lean()
-    ]);
-
-    if (authorAsLeader) {
-      authorOrg = authorAsLeader.organization || null;
-      authorGroupId = authorAsLeader._id; // leaders use their own id as group id
-    } else if (authorAsGroupMember) {
-      authorOrg = authorAsGroupMember.organization || null;
-      authorGroupId = authorAsGroupMember.groupId || null;
-    }
+    const { authorOrg, authorTeamId } = await getAuthorOrgTeam(authorId);
 
     let isAuthorizedToViewFullContent = false;
-    let isOrgMatch = false;
-    let isTeamMatch = false;
-
     if (interview.visibility === 'all_members') {
       isAuthorizedToViewFullContent = true;
     } else {
-      isOrgMatch =
+      const isOrgMatch =
         interview.visibility === 'organization_only' &&
         req.user?.organization &&
         authorOrg &&
-        req.user.organization === authorOrg;
+        String(req.user.organization) === String(authorOrg);
 
-      isTeamMatch =
+      const isTeamMatch =
         interview.visibility === 'team_only' &&
         req.user?.groupId &&
-        authorGroupId &&
-        req.user.groupId.toString() === authorGroupId.toString();
+        authorTeamId &&
+        String(req.user.groupId) === String(authorTeamId);
 
       isAuthorizedToViewFullContent = isOwner || isOrgMatch || isTeamMatch;
     }
 
-    console.log("🔒 Access breakdown (interview):", {
-      isOrgMatch,
-      isTeamMatch,
-      isAuthorizedToViewFullContent
-    });
-
-    // 5) Leader context for assignments
-    const isLeader = currentMembership === 'leader';
-    let groupMembers = [];
-    let leaderId;
-    let leaderName;
-
-    if (isLeader && currentUserId) {
-      const leaderDoc = await Leader.findById(currentUserId)
-        .select('_id groupLeaderName username')
-        .lean();
-
-      if (leaderDoc) {
-        groupMembers = await GroupMember.find({ groupId: leaderDoc._id })
-          .select('_id name')
-          .lean();
-        leaderId = leaderDoc._id.toString();
-        leaderName = leaderDoc.groupLeaderName || leaderDoc.username || 'You';
-        console.log("🧑‍🤝‍🧑 Group members found:", groupMembers.length);
-      }
-    }
-
-    // 6) Convert the video link to embed format
     const embedLink = convertYouTubeToEmbed(interview.video_link);
 
-    // 7) ✅ Org Admin suggestion context
+    const { isLeader, groupMembers, leaderId, leaderName } = await getLeaderAssignContext(req);
     const adminSuggest = await buildOrgLeaderListForAdmin(req);
 
-    // 8) Render
     return res.render('unit_views/single_interview', {
       layout: 'unitviewlayout',
 
-      // identity & content
       _id: interview._id.toString(),
       unitType: 'interview',
       interview_title: interview.interview_title,
@@ -1120,20 +976,17 @@ viewInterview: async (req, res) => {
       full_summary: interview.full_summary,
       interview_link: interview.video_link || '',
       embedLink,
-      interview_content: interview.transcript || "Transcript will be available soon.",
+      interview_content: interview.transcript || 'Transcript will be available soon.',
 
-      // author card
       author: {
         name: author.name || 'Unknown Author',
         image: author.image || '/images/default-avatar.png',
       },
 
-      // topics
       main_topic: interview.main_topic,
       secondary_topics: interview.secondary_topics || [],
       sub_topic: interview.sub_topic,
 
-      // flags
       isOwner,
       isAuthorizedToViewFullContent,
       isAuthenticated: typeof req.isAuthenticated === 'function' ? req.isAuthenticated() : !!req.user,
@@ -1141,21 +994,17 @@ viewInterview: async (req, res) => {
       isGroupMemberOrLeader: isLeader || currentMembership === 'group_member',
       isGroupMemberOrMember: currentMembership === 'group_member' || currentMembership === 'member',
 
-      // ✅ Admin suggest vars (top-level)
       ...adminSuggest,
-// ✅ Suggestion success banner (after redirect back)
-suggestionSuccess: req.query.suggested === '1',
-suggestedUnitId: req.query.unitId || '',
-suggestedUnitType: req.query.unitType || '',
-      // leader-only assignment data
+      suggestionSuccess: req.query.suggested === '1',
+      suggestedUnitId: req.query.unitId || '',
+      suggestedUnitType: req.query.unitType || '',
+
       groupMembers,
       leaderId,
       leaderName: leaderName || req.user?.username || 'You',
 
-      // CSRF
       csrfToken: typeof req.csrfToken === 'function' ? req.csrfToken() : null,
     });
-
   } catch (err) {
     console.error('💥 Error fetching interview:', err.stack || err.message);
     return res.status(500).render('unit_views/error', {
@@ -1165,6 +1014,7 @@ suggestedUnitType: req.query.unitType || '',
     });
   }
 },
+
 
 
 

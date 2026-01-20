@@ -68,9 +68,10 @@ async function resolveCreatorById(authorId) {
 }
 
 // Generic helper for category pages
+// Generic helper for category pages (rewritten cleanly; uses GroupMember.leader + org ObjectId matching)
 async function renderMissionList(req, res, options) {
   const {
-    category,    // schema category: 'learning', 'research', 'business_development', etc.
+    category,    // schema category: 'learning', 'research', etc.
     viewName,    // e.g. 'unit_views/missions_learning'
     pageTitle,   // {{title}} in the view
     shortSummary,
@@ -78,6 +79,7 @@ async function renderMissionList(req, res, options) {
   } = options;
 
   try {
+    // Gate: missions are paid-only
     if (!isPaidMember(req)) {
       return res.status(403).render('unit_views/error', {
         layout: 'unitviewlayout',
@@ -92,25 +94,21 @@ async function renderMissionList(req, res, options) {
     const membershipType = user?.membershipType || null;
     const accessLevel = user?.accessLevel || null;
 
-    // Same logic you use elsewhere for bytopic views
-    const leaderOrGroup =
-      membershipType === 'leader' || membershipType === 'group_member';
+    const leaderOrGroup = membershipType === 'leader' || membershipType === 'group_member';
     const paidIndividual =
       membershipType === 'member' &&
-      (accessLevel === 'paid_individual' ||
-        accessLevel === 'contributor_individual');
-    const freeIndividual =
-      membershipType === 'member' && accessLevel === 'free_individual';
+      (accessLevel === 'paid_individual' || accessLevel === 'contributor_individual');
+    const freeIndividual = membershipType === 'member' && accessLevel === 'free_individual';
 
     const isPaid = leaderOrGroup || paidIndividual;
     const isFree = freeIndividual;
 
     // 1) Fetch all missions in this category
     let missions = await Mission.find({ category })
-      .sort({ created_at: -1 }) // from schema
+      .sort({ created_at: -1 })
       .lean();
 
-    // 2) Normalize authors + visibility
+    // 2) Normalize creator + visibility
     missions = missions.map((m) => ({
       ...m,
       authorId:
@@ -119,15 +117,13 @@ async function renderMissionList(req, res, options) {
         m.author ||
         m.createdBy ||
         m.created_by ||
-        null,
-      visibility: m.visibility || 'all_members', // default
+        null, // ✅ mission schema uses created_by
+      visibility: m.visibility || 'all_members',
     }));
 
-    // ---- BEGIN: smarter segmentation by authorship + visibility ----
+    // ---- BEGIN: segmentation by authorship + visibility ----
 
-const groupMembersForLeader = await GroupMember.find({
-  leader: leaderDoc._id,
-})
+    const userId = (req.user?._id || req.user?.id)?.toString() || null;
 
     const normalize = (s) => (s || '').toString().trim().toLowerCase();
     const emailDomain = (e) => {
@@ -135,7 +131,7 @@ const groupMembersForLeader = await GroupMember.find({
       return e.split('@').pop().toLowerCase();
     };
 
-    // Load current user and derive group + org context
+    // Load current user role docs to derive group + org
     let leaderDoc = null;
     let groupMemberDoc = null;
     let memberDoc = null;
@@ -147,98 +143,70 @@ const groupMembersForLeader = await GroupMember.find({
         if (!leaderDoc && !groupMemberDoc) memberDoc = await Member.findById(userId).lean();
       }
     } catch (_) {
-      // ignore lookup errors
+      // ignore
     }
 
-    // Build group roster: includes the leader + all group members
-    let myGroupAuthorIds = new Set();
+    // Group roster (leader + members) using GroupMember.leader
+    const myGroupAuthorIds = new Set();
 
     if (leaderDoc) {
-      // leader themselves
       myGroupAuthorIds.add(String(leaderDoc._id));
 
-      // members tied to leaderId
-if (groupMemberDoc.leader) myGroupAuthorIds.add(String(groupMemberDoc.leader));
-myGroupAuthorIds.add(String(groupMemberDoc._id));
-
-const peers = await GroupMember.find(
-  groupMemberDoc.leader
-    ? { leader: groupMemberDoc.leader }
-    : (groupMemberDoc.groupName ? { groupName: groupMemberDoc.groupName } : { _id: null })
-).select('_id').lean();
-
-
-
-      if (!groupMembersForLeader.length && leaderDoc.groupName) {
-        // fallback: same groupName
-        const byGroupName = await GroupMember.find({
-          groupName: leaderDoc.groupName,
-        })
-          .select('_id')
-          .lean();
-        byGroupName.forEach((m) => myGroupAuthorIds.add(String(m._id)));
-      } else {
-        groupMembersForLeader.forEach((m) => myGroupAuthorIds.add(String(m._id)));
-      }
-    } else if (groupMemberDoc) {
-      // group member + their leader + peers
-if (groupMemberDoc.leader) {
-  myGroupAuthorIds.add(String(groupMemberDoc.leader));
-}
-
-const peers = await GroupMember.find(
-  groupMemberDoc.leader
-    ? { leader: groupMemberDoc.leader }
-    : groupMemberDoc.groupName
-    ? { groupName: groupMemberDoc.groupName }
-    : { _id: null }
-)
-
+      const groupMembersForLeader = await GroupMember.find({ leader: leaderDoc._id })
         .select('_id')
         .lean();
 
-      peers.forEach((p) => myGroupAuthorIds.add(String(p._id)));
+      if (!groupMembersForLeader.length && leaderDoc.groupName) {
+        // fallback: same groupName
+        const byGroupName = await GroupMember.find({ groupName: leaderDoc.groupName })
+          .select('_id')
+          .lean();
+        byGroupName.forEach(m => myGroupAuthorIds.add(String(m._id)));
+      } else {
+        groupMembersForLeader.forEach(m => myGroupAuthorIds.add(String(m._id)));
+      }
+    } else if (groupMemberDoc) {
+      if (groupMemberDoc.leader) myGroupAuthorIds.add(String(groupMemberDoc.leader));
+      myGroupAuthorIds.add(String(groupMemberDoc._id));
+
+      const peers = await GroupMember.find(
+        groupMemberDoc.leader
+          ? { leader: groupMemberDoc.leader }
+          : (groupMemberDoc.groupName ? { groupName: groupMemberDoc.groupName } : { _id: null })
+      )
+        .select('_id')
+        .lean();
+
+      peers.forEach(p => myGroupAuthorIds.add(String(p._id)));
     }
 
-    // Build an organization key for the current viewer
+    // Org key (ObjectId-first, then legacy)
     const me = leaderDoc || groupMemberDoc || memberDoc || {};
-const myOrgKey =
-  me.organization ? String(me.organization) :
-  normalize(me.organizationId) ||
-  emailDomain(me.email);
-    // Cache for author org keys
+    const myOrgKey =
+      me.organization ? String(me.organization) :
+      normalize(me.organizationId) ||
+      emailDomain(me.email);
+
+    // Cache author org keys
     const authorOrgKeyCache = new Map();
 
     async function getAuthorOrgKey(authorId) {
       const key = String(authorId);
       if (authorOrgKeyCache.has(key)) return authorOrgKeyCache.get(key);
 
-      let aLeader = null,
-        aGM = null,
-        aMember = null;
+      let aLeader = null, aGM = null, aMember = null;
       try {
-        aLeader = await Leader.findById(authorId)
-          .select('organizationId organization email')
-          .lean();
-        if (!aLeader)
-          aGM = await GroupMember.findById(authorId)
-            .select('organizationId organization email')
-            .lean();
-        if (!aLeader && !aGM)
-          aMember = await Member.findById(authorId)
-            .select('organizationId organization email')
-            .lean();
-      } catch (_) {
-        // ignore
-      }
+        aLeader = await Leader.findById(authorId).select('organization organizationName email')
+        if (!aLeader) aGM = await GroupMember.findById(authorId).select('organization organizationName email')
+        if (!aLeader && !aGM) aMember = await Member.findById(authorId).select('organization organizationName email')
+      } catch (_) { /* ignore */ }
 
       const doc = aLeader || aGM || aMember || {};
-const orgKey =
-  doc.organization ? String(doc.organization) :
-  normalize(doc.organizationId) ||
-  emailDomain(doc.email) ||
-  null;
-
+      const orgKey =
+        doc.organization ? String(doc.organization) :
+        normalize(doc.organizationId) ||
+        emailDomain(doc.email) ||
+        null;
 
       authorOrgKeyCache.set(key, orgKey);
       return orgKey;
@@ -258,11 +226,7 @@ const orgKey =
     let orgMissions = [];
     if (myOrgKey) {
       const uniqAuthorIds = [
-        ...new Set(
-          missions
-            .map((m) => (m.authorId ? String(m.authorId) : null))
-            .filter(Boolean)
-        ),
+        ...new Set(missions.map(m => (m.authorId ? String(m.authorId) : null)).filter(Boolean)),
       ];
 
       const orgKeyMap = new Map();
@@ -273,12 +237,10 @@ const orgKey =
       orgMissions = missions.filter((m) => {
         const vis = m.visibility || 'all_members';
         if (!['organization_only', 'all_members'].includes(vis)) return false;
-
         const authorOrgKey = orgKeyMap.get(String(m.authorId));
         return !!authorOrgKey && authorOrgKey === myOrgKey;
       });
     } else {
-      // if user has no org context, only show strictly org-only if you want
       orgMissions = [];
     }
 
@@ -318,7 +280,8 @@ const orgKey =
           ...m,
           creatorName,
           creatorImage,
-          // membership flags for views (mirroring bytopic injection)
+
+          // membership flags (mirroring bytopic injection)
           loggedIn,
           isLeaderOrGroupMember: leaderOrGroup,
           isPaid,
@@ -349,7 +312,7 @@ const orgKey =
           "Once your group starts creating missions, you'll see them here. Use team missions to coordinate how your group spends slow periods.",
       },
       {
-        sectionTitle: "missions created by my organization",
+        sectionTitle: 'missions created by my organization',
         missions: orgMissionsEnriched,
         emptyMessage:
           'As people across your organization create missions and share them with the broader firm, they will appear here.',
@@ -368,6 +331,7 @@ const orgKey =
       shortSummary,
       longSummary,
       sectionedMissions,
+
       // root-level flags if you ever want @root.loggedIn etc.
       loggedIn,
       isLeaderOrGroupMember: leaderOrGroup,
@@ -383,6 +347,7 @@ const orgKey =
     });
   }
 }
+
 
 // Helper: build mission data from form body
 function buildMissionDataFromBody(req) {
