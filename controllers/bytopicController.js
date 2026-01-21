@@ -107,7 +107,7 @@ exports.getTopicView = async (req, res) => {
   'Emotional Intelligence': 'emotionalintelligence',
   'Employee Experience': 'employeeexperience',
   'Finding Projects Before they Become RFPs': 'findingprojectsbeforetheybecomerfps',
-  'Integrated Project Delivery or IPD': 'integratedprojectdelivery',
+  'Integrated Project Delivery or IPD': 'integratedprojectdeliveryoripd',
   'Leadership in Technical Consulting': 'leadershipintechnicalconsulting',
   'Leading Change': 'leadingchange',
   'Leading Groups on Twennie': 'leadinggroupsontwennie',
