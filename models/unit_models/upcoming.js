@@ -21,7 +21,7 @@ const TOPIC_ENUM = [
   'Emotional Intelligence',
   'Employee Experience',
   'Finding Projects Before they Become RFPs',
-  'Integrated Project Delivery (IPD)',
+  'Integrated Project Delivery or IPD',
   'Leadership in Technical Consulting',
   'Leading Change',
   'Leading Groups on Twennie',
