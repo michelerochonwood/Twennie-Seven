@@ -5,6 +5,9 @@ const passport = require('passport');
 const Member = require('../models/member_models/member');
 const Leader = require('../models/member_models/leader');
 const GroupMember = require('../models/member_models/group_member');
+const crypto = require('crypto');
+const PasswordResetToken = require('../models/member_models/password_reset_token');
+const { sendMail } = require('../utils/mailer');
 
 function renderLoginError(res, req, msg) {
   return res.status(401).render('login_views/login_view', {
@@ -14,6 +17,20 @@ function renderLoginError(res, req, msg) {
     csrfToken: req.csrfToken ? req.csrfToken() : null,
   });
 }
+
+async function findUserWithTypeByEmail(emailLower) {
+  const member = await Member.findOne({ email: emailLower });
+  if (member) return { user: member, userType: 'member', email: member.email };
+
+  const leader = await Leader.findOne({ groupLeaderEmail: emailLower });
+  if (leader) return { user: leader, userType: 'leader', email: leader.groupLeaderEmail };
+
+  const gm = await GroupMember.findOne({ email: emailLower });
+  if (gm) return { user: gm, userType: 'group_member', email: gm.email };
+
+  return { user: null, userType: null, email: null };
+}
+
 
 // Try each user type by email (member uses 'email', leader uses 'groupLeaderEmail')
 async function findUserByEmailAllTypes(emailLower) {
@@ -200,6 +217,225 @@ showLoginForm: (req, res) => {
       supportEmail: 'info@twennie.com'
     });
   },
+
+  // GET /auth/forgot-password
+showForgotPasswordForm: (req, res) => {
+  return res.render('login_views/forgot_password_view', {
+    layout: 'mainlayout',
+    title: 'Forgot Password',
+    csrfToken: req.csrfToken ? req.csrfToken() : null,
+  });
+},
+
+// POST /auth/forgot-password
+requestPasswordReset: async (req, res) => {
+  const csrfToken = req.csrfToken ? req.csrfToken() : null;
+  const email = (req.body.email || '').toLowerCase().trim();
+
+  // Always show same response (prevents email enumeration)
+  const genericMsg = 'If an account exists for that email, we sent a reset link. Please check your inbox.';
+
+  try {
+    if (!email) {
+      return res.status(400).render('login_views/forgot_password_view', {
+        layout: 'mainlayout',
+        title: 'Forgot Password',
+        csrfToken,
+        error: 'Please enter your email address.'
+      });
+    }
+
+    const { user, userType, email: normalizedEmail } = await findUserWithTypeByEmail(email);
+
+    // Render success even if not found (security)
+    if (!user) {
+      return res.render('login_views/forgot_password_view', {
+        layout: 'mainlayout',
+        title: 'Forgot Password',
+        csrfToken,
+        message: genericMsg
+      });
+    }
+
+    // Block inactive users (optional)
+    if (user.isActive === false) {
+      return res.render('login_views/forgot_password_view', {
+        layout: 'mainlayout',
+        title: 'Forgot Password',
+        csrfToken,
+        message: genericMsg
+      });
+    }
+
+    // Generate token (store only a hash)
+    const tokenPlain = crypto.randomBytes(32).toString('hex');
+    const tokenHash = crypto.createHash('sha256').update(tokenPlain).digest('hex');
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+    // Invalidate old unused tokens for this user
+    await PasswordResetToken.updateMany(
+      { userId: user._id, userType, usedAt: null },
+      { $set: { usedAt: new Date() } }
+    );
+
+    await PasswordResetToken.create({
+      userId: user._id,
+      userType,
+      tokenHash,
+      expiresAt
+    });
+
+    const baseUrl = process.env.BASE_URL || 'https://www.twennie.com';
+    const resetUrl = `${baseUrl}/auth/reset-password?token=${encodeURIComponent(tokenPlain)}`;
+
+    await sendMail({
+      to: normalizedEmail,
+      subject: 'Reset your Twennie password',
+      text: `Reset your password: ${resetUrl}\n\nThis link expires in 1 hour.`,
+      html: `
+        <p>Hi!</p>
+        <p>We received a request to reset your Twennie password.</p>
+        <p><a href="${resetUrl}">Click here to reset your password</a> (expires in 1 hour).</p>
+        <p>If you didn’t request this, you can ignore this email.</p>
+      `
+    });
+
+    return res.render('login_views/forgot_password_view', {
+      layout: 'mainlayout',
+      title: 'Forgot Password',
+      csrfToken,
+      message: genericMsg
+    });
+  } catch (err) {
+    console.error('❌ requestPasswordReset error:', err);
+    // Still show generic message
+    return res.render('login_views/forgot_password_view', {
+      layout: 'mainlayout',
+      title: 'Forgot Password',
+      csrfToken,
+      message: genericMsg
+    });
+  }
+},
+
+// GET /auth/reset-password?token=...
+showResetPasswordForm: async (req, res) => {
+  const csrfToken = req.csrfToken ? req.csrfToken() : null;
+  const tokenPlain = String(req.query.token || '');
+
+  if (!tokenPlain) {
+    return res.status(400).render('login_views/login_view', {
+      layout: 'mainlayout',
+      title: 'Login',
+      csrfToken,
+      error: 'Reset link is invalid. Please request a new one.'
+    });
+  }
+
+  // We don't fully validate here (we validate on POST), but we can give nicer UX
+  return res.render('login_views/reset_password_view', {
+    layout: 'mainlayout',
+    title: 'Reset Password',
+    csrfToken,
+    token: tokenPlain
+  });
+},
+
+// POST /auth/reset-password
+handleResetPassword: async (req, res) => {
+  const csrfToken = req.csrfToken ? req.csrfToken() : null;
+  const tokenPlain = (req.body.token || '').trim();
+  const password = req.body.password || '';
+  const confirmPassword = req.body.confirmPassword || '';
+
+  try {
+    if (!tokenPlain) {
+      return res.status(400).render('login_views/login_view', {
+        layout: 'mainlayout',
+        title: 'Login',
+        csrfToken,
+        error: 'Reset link is invalid. Please request a new one.'
+      });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).render('login_views/reset_password_view', {
+        layout: 'mainlayout',
+        title: 'Reset Password',
+        csrfToken,
+        token: tokenPlain,
+        error: 'Password must be at least 8 characters.'
+      });
+    }
+
+    if (password !== confirmPassword) {
+      return res.status(400).render('login_views/reset_password_view', {
+        layout: 'mainlayout',
+        title: 'Reset Password',
+        csrfToken,
+        token: tokenPlain,
+        error: 'Passwords do not match.'
+      });
+    }
+
+    const tokenHash = crypto.createHash('sha256').update(tokenPlain).digest('hex');
+
+    const record = await PasswordResetToken.findOne({
+      tokenHash,
+      usedAt: null,
+      expiresAt: { $gt: new Date() }
+    });
+
+    if (!record) {
+      return res.status(400).render('login_views/login_view', {
+        layout: 'mainlayout',
+        title: 'Login',
+        csrfToken,
+        error: 'That reset link has expired or is invalid. Please request a new one.'
+      });
+    }
+
+    // Load the user from the correct collection
+    let user = null;
+    if (record.userType === 'member') user = await Member.findById(record.userId);
+    else if (record.userType === 'leader') user = await Leader.findById(record.userId);
+    else user = await GroupMember.findById(record.userId);
+
+    if (!user) {
+      await PasswordResetToken.updateOne({ _id: record._id }, { $set: { usedAt: new Date() } });
+      return res.status(400).render('login_views/login_view', {
+        layout: 'mainlayout',
+        title: 'Login',
+        csrfToken,
+        error: 'That reset link is invalid. Please request a new one.'
+      });
+    }
+
+    // Hash + save
+    const hashed = await bcrypt.hash(password, 12);
+    user.password = hashed;
+    await user.save();
+
+    // Mark token used
+    await PasswordResetToken.updateOne({ _id: record._id }, { $set: { usedAt: new Date() } });
+
+    return res.render('login_views/login_view', {
+      layout: 'mainlayout',
+      title: 'Login',
+      csrfToken,
+      message: 'Password updated. You can log in now.'
+    });
+  } catch (err) {
+    console.error('❌ handleResetPassword error:', err);
+    return res.status(500).render('login_views/login_view', {
+      layout: 'mainlayout',
+      title: 'Login',
+      csrfToken,
+      error: 'We could not reset your password. Please try again.'
+    });
+  }
+},
+
 
   // POST /auth/reactivate
   requestReactivation: async (req, res) => {

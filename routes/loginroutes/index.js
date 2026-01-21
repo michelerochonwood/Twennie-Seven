@@ -87,6 +87,13 @@ passport.authenticate('google', { failureRedirect: '/auth/login?error=google' })
   }
 );
 
+router.get('/forgot-password', loginController.showForgotPasswordForm);
+router.post('/forgot-password', loginController.requestPasswordReset);
+
+router.get('/reset-password', loginController.showResetPasswordForm);
+router.post('/reset-password', loginController.handleResetPassword);
+
+
 module.exports = router;
 
 
