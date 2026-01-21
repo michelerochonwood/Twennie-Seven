@@ -717,6 +717,40 @@
     "re-baselining scope, schedule, and budget",
     "documenting recovery lessons for future prevention"
   ]
+},
+
+{
+  "id": 218,
+  "title": "Pursuing the Right Projects for Your Firm and Your Team",
+  "shortSummary": "Not every opportunity is worth chasing. This topic teaches how to evaluate fit, risk, and capacity so teams pursue work that strengthens performance instead of draining it.",
+  "longSummary": "Pursuing the Right Projects for Your Firm and Your Team focuses on building discipline into how opportunities are selected before momentum takes over. It helps teams move beyond reactive pursuit behavior by introducing structured qualification, clear go/no-go decisions, and honest conversations about delivery capacity, risk, and opportunity cost. Rather than measuring success by how many pursuits are chased, this topic emphasizes win quality, portfolio health, and team sustainability. The goal is fewer regret pursuits, fewer difficult wins, and more work that aligns with strategy, strengths, and long-term growth.",
+  "subtopics": [
+    "early opportunity qualification and right-fit criteria",
+    "go/no-go decision frameworks and governance",
+    "balancing delivery capacity with pursuit volume",
+    "evaluating risk, fee realism, and commercial terms",
+    "avoiding momentum-driven and sunk-cost pursuits",
+    "aligning pursuits with firm strategy and strengths",
+    "measuring win quality beyond simple win rates",
+    "building a repeatable pursuit decision system"
+  ]
+},
+
+{
+  "id": 219,
+  "title": "Integrated Project Delivery (IPD)",
+  "shortSummary": "Integrated Project Delivery changes how complex work gets done by aligning teams early around shared risk, shared decisions, and project-wide outcomes.",
+  "longSummary": "Integrated Project Delivery (IPD) explores a collaborative approach to delivering complex projects that emphasizes early involvement, shared understanding of risk, and faster, more informed decision-making. Rather than optimizing individual scopes, IPD-style delivery focuses teams on overall project performance—constructability, schedule reliability, safety, and lifecycle outcomes. This topic treats IPD as a practical way of working, not just a contract type, showing how teams can adopt IPD behaviors even within traditional delivery models. The emphasis is on reducing late surprises by moving learning upstream and creating conditions where expertise can be applied earlier and more effectively.",
+  "subtopics": [
+    "early collaboration and co-location practices",
+    "shared risk visibility and joint mitigation",
+    "decision clarity and faster feedback loops",
+    "integrating constructability during design",
+    "using shared models as decision tools",
+    "aligning incentives around project outcomes",
+    "leadership behaviors that make collaboration safe",
+    "knowing when IPD adds value and when it does not"
+  ]
 }
 
 
