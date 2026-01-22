@@ -139,6 +139,12 @@ router.get('/sample_template', (req, res) => {
     });
 });
 
+router.get('/sample_nugget', (req, res) => {
+    res.render('promo_views/sample_nugget', {
+        layout: 'mainlayout'
+    });
+});
+
 router.get('/teach_me', twenniemapController.getTeachMe);
 
 router.get('/training_bingo', (req, res) => {
