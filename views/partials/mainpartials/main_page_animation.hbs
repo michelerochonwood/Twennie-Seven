@@ -118,69 +118,83 @@
 
 <!-- JS: Testimonial Rotation (now includes Miner Bluey + Spy Bluey) -->
 <script>
-const slides = [
-  {
-    src: "https://www.twennie.com/images/bluelady2.png",
-    alt: "Illustration of a woman",
-    quote: "Twennie.com allows a team to build a culture of learning. Learn in smaller increments, continually developing new skills and knowledge as you work."
-  },
-  {
-    src: "https://www.twennie.com/images/blueman3.png",
-    alt: "Illustration of a man",
-    quote: "Make a noticeable change in your group. Teach them to work together more effectively and support one another - get them learning on Twennie.com."
-  },
-  {
-    src: "https://www.twennie.com/images/bluelady3.png",
-    alt: "Illustration of a woman",
-    quote: "With Twennie.com, your team can learn right where they are, a little at a time. The platform adapts to its users."
-  },
+document.addEventListener("DOMContentLoaded", function () {
 
-  // Miner Bluey
-  {
-    src: "/images/minerbluey.png",
-    alt: "Miner Bluey",
-    style: "width: 300px; height: auto;",
-    quote: "The Twennie mine lets you track market nuggets — so the value isn't lost. It keeps our market radar sharp."
-  },
+  const slides = [
+    {
+      src: "https://www.twennie.com/images/bluelady2.png",
+      alt: "Illustration of a woman",
+      quote: "Twennie.com allows a team to build a culture of learning. Learn in smaller increments, continually developing new skills and knowledge as you work."
+    },
+    {
+      src: "https://www.twennie.com/images/blueman3.png",
+      alt: "Illustration of a man",
+      quote: "Make a noticeable change in your group. Teach them to work together more effectively and support one another - get them learning on Twennie.com."
+    },
+    {
+      src: "https://www.twennie.com/images/bluelady3.png",
+      alt: "Illustration of a woman",
+      quote: "With Twennie.com, your team can learn right where they are, a little at a time. The platform adapts to its users."
+    },
 
-  // Spy Bluey
-  {
-    src: "/images/spybluey.png",
-    alt: "Spy Bluey",
-    style: "width: 300px; height: auto;",
-    quote: "Missions give you a target. We pick one, do the work, share what we learn, and build momentum — without endless meetings."
-  }
-];
+    // Miner Bluey
+    {
+      src: "/images/minerbluey.png",
+      alt: "Miner Bluey",
+      style: "width: 300px; height: auto;",
+      quote: "The Twennie mine lets you track market nuggets — so the value isn't lost. It keeps our market radar sharp."
+    },
 
+    // Spy Bluey
+    {
+      src: "/images/spybluey.png",
+      alt: "Spy Bluey",
+      style: "width: 300px; height: auto;",
+      quote: "Missions give you a target. We pick one, do the work, share what we learn, and build momentum — without endless meetings."
+    }
+  ];
 
   let currentIndex = 0;
+
   const testimonialImage = document.getElementById("testimonial-image");
-  const testimonialText = document.getElementById("testimonial-text");
+  const testimonialText  = document.getElementById("testimonial-text");
+
+  if (!testimonialImage || !testimonialText) return;
+
+  function applySlide(slide) {
+    testimonialImage.src = slide.src;
+    testimonialImage.alt = slide.alt || "Twennie testimonial";
+    testimonialText.textContent = slide.quote || "";
+
+    // Apply style only when provided; otherwise clear it so it doesn't "stick"
+    testimonialImage.style.cssText = slide.style || "";
+  }
+
+  // Ensure first slide is applied (and style cleared if needed)
+  applySlide(slides[currentIndex]);
 
   function changeTestimonial() {
-    if (!testimonialImage || !testimonialText) return;
-
     testimonialImage.classList.add("fade-out");
     testimonialText.classList.add("fade-out");
 
     setTimeout(() => {
       currentIndex = (currentIndex + 1) % slides.length;
+      applySlide(slides[currentIndex]);
 
-      testimonialImage.src = slides[currentIndex].src;
-      testimonialImage.alt = slides[currentIndex].alt;
-      testimonialText.textContent = slides[currentIndex].quote;
-
+      // Allow DOM to paint the new content before removing fade-out
       setTimeout(() => {
         testimonialImage.classList.remove("fade-out");
         testimonialText.classList.remove("fade-out");
-        testimonialImage.style.cssText = slides[currentIndex].style || "";
       }, 100);
-    }, 1000);
+
+    }, 900);
   }
 
   setInterval(changeTestimonial, 8000);
+
 });
 </script>
+
 
 <!-- JS: Animate home-feature elements on scroll -->
 <script>
