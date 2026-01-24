@@ -1,5 +1,6 @@
-<section class="contribution-section">
+<section class="contribution-section" id="contribute">
   <div class="contribution-container">
+
     <!-- Centered Image -->
     <div style="text-align: center; margin-bottom: -20px; margin-top: -40px;">
       <img src="/images/blueyteacher.png" alt="Bluey Teacher" style="max-width: 200px;">
@@ -20,112 +21,156 @@
       practice, and share learning with other professionals.
     </p>
 
-    <button id="toggleContribute" class="contribute-btn">
-      I want to contribute to my library
-    </button>
+    {{!-- =========================================================
+        TERMS GATE
+        - If not logged in: prompt to log in
+        - If logged in but not accepted: prompt to accept terms
+        - If accepted: show contribute toggle + unit grid
+    ========================================================= --}}
 
-    <!-- All unit cards live inside this grid and are hidden/shown by the toggle -->
-    <div id="contributionGrid" class="contribution-grid" style="display: none;">
+    {{#if user}}
 
-      <!-- Article -->
-      <a href="/unitform/form_article" class="unit-card">
-        <div class="svg-container" style="padding-top: 8px;">
-          <img
-            src="/icons/article.svg"
-            alt="Article icon"
-            style="display:block; width:40px; height:auto; margin:0 auto;"
+      {{#unless user.termsAccepted}}
+        <div class="terms-gate-card" style="margin: 1rem 0; padding: 1rem; border-radius: 12px; border: 1px solid rgba(0,0,0,0.12); text-align: center;">
+          <p style="margin: 0 0 0.75rem 0; font-weight: 600;">
+            before you contribute, you must agree to Twennie’s terms &amp; conditions
+          </p>
+
+          <a
+            href="/termsconditions?next=/dashboard#contribute"
+            class="contribute-btn"
+            style="display:inline-block; text-decoration:none;"
           >
-        </div>
-      </a>
+            review &amp; accept terms
+          </a>
 
-      <!-- Video -->
-      <a href="/unitform/form_video" class="unit-card">
-        <div class="svg-container" style="padding-top: 8px; width: 40px">
-          <img
-            src="/icons/video.svg"
-            alt="Video icon"
-            style="display:block; height:auto; margin:0 auto;"
-          >
+          <p style="margin: 0.75rem 0 0 0; font-size: 0.95rem; opacity: 0.85;">
+            once accepted, you’ll be able to post units to your library.
+          </p>
         </div>
-      </a>
+      {{/unless}}
 
-      <!-- Interview -->
-      <a href="/unitform/form_interview" class="unit-card" >
-        <div class="svg-container" style="padding-top: 8px;">
-          <img
-            src="/icons/interview.svg"
-            alt="Interview icon"
-            style="display:block; width:90px; height:auto; margin:0 auto;"
-          >
+      {{#if user.termsAccepted}}
+
+        <button id="toggleContribute" class="contribute-btn" type="button">
+          I want to contribute to my library
+        </button>
+
+        <!-- All unit cards live inside this grid and are hidden/shown by the toggle -->
+        <div id="contributionGrid" class="contribution-grid" style="display: none;">
+
+          <!-- Article -->
+          <a href="/unitform/form_article" class="unit-card" aria-label="Create an article">
+            <div class="svg-container" style="padding-top: 8px;">
+              <img src="/icons/article.svg" alt="Article icon" style="display:block; width:40px; height:auto; margin:0 auto;">
+            </div>
+          </a>
+
+          <!-- Video -->
+          <a href="/unitform/form_video" class="unit-card" aria-label="Create a video">
+            <div class="svg-container" style="padding-top: 8px; width: 40px">
+              <img src="/icons/video.svg" alt="Video icon" style="display:block; height:auto; margin:0 auto;">
+            </div>
+          </a>
+
+          <!-- Interview -->
+          <a href="/unitform/form_interview" class="unit-card" aria-label="Create an interview">
+            <div class="svg-container" style="padding-top: 8px;">
+              <img src="/icons/interview.svg" alt="Interview icon" style="display:block; width:90px; height:auto; margin:0 auto;">
+            </div>
+          </a>
+
+          <!-- Prompt Set -->
+          <a href="/unitform/form_promptset" class="unit-card" aria-label="Create a prompt set">
+            <div class="svg-container" style="padding-top: 8px;">
+              <img src="/icons/promptset.svg" alt="Prompt set icon" style="display:block; width:100px; height:auto; margin:0 auto;">
+            </div>
+          </a>
+
+          <!-- Template -->
+          <a href="/unitform/form_template" class="unit-card" aria-label="Create a template">
+            <div class="svg-container" style="padding-top: 8px;">
+              <img src="/icons/template.svg" alt="Template icon" style="display:block; width:100px; height:auto; margin:0 auto;">
+            </div>
+          </a>
+
+          <!-- Exercise -->
+          <a href="/unitform/form_exercise" class="unit-card" aria-label="Create an exercise">
+            <div class="svg-container" style="padding-top: 8px;">
+              <img src="/icons/exercise.svg" alt="Exercise icon" style="display:block; width:65px; height:auto; margin:0 auto;">
+            </div>
+          </a>
+
+          <!-- Mission -->
+          <a href="/unitform/form_mission" class="unit-card" aria-label="Create a mission">
+            <div class="svg-container" style="padding-top: 8px;">
+              <img src="/icons/mission.svg" alt="Mission icon" style="display:block; width:65px; height:auto; margin:0 auto;">
+            </div>
+          </a>
+
+          <!-- Upcoming Unit -->
+          <a href="/unitform/form_upcoming" class="unit-card" aria-label="Create an upcoming unit">
+            <div class="svg-container" style="padding-top: 8px;">
+              <img src="/icons/upcoming.svg" alt="Upcoming unit icon" style="display:block; width:70px; height:auto; margin:0 auto;">
+            </div>
+          </a>
+
+          <!-- Nugget -->
+          <a href="/unitform/form_nugget" class="unit-card" aria-label="Create a nugget">
+            <div class="svg-container" style="padding-top: 8px;">
+              <img src="/icons/nuggeticon.svg" alt="Nugget icon" style="display:block; width:90px; height:auto; margin:0 auto;">
+            </div>
+          </a>
+
         </div>
-      </a>
 
-      <!-- Prompt Set -->
-      <a href="/unitform/form_promptset" class="unit-card">
-        <div class="svg-container" style="padding-top: 8px;">
-          <img
-            src="/icons/promptset.svg"
-            alt="Prompt set icon"
-            style="display:block; width:100px; height:auto; margin:0 auto;"
-          >
-        </div>
-      </a>
+        <script>
+          document.addEventListener('DOMContentLoaded', () => {
+            if (window.location.hash !== '#contribute') return;
 
-      <!-- Template -->
-      <a href="/unitform/form_template" class="unit-card">
-        <div class="svg-container" style="padding-top: 8px;">
-          <img
-            src="/icons/template.svg"
-            alt="Template icon"
-            style="display:block; width:100px; height:auto; margin:0 auto;"
-          >
-        </div>
-      </a>
+            const section = document.getElementById('contribute');
+            const toggleBtn = document.getElementById('toggleContribute');
+            const grid = document.getElementById('contributionGrid');
 
-      <!-- Exercise -->
-      <a href="/unitform/form_exercise" class="unit-card">
-        <div class="svg-container" style="padding-top: 8px;">
-          <img
-            src="/icons/exercise.svg"
-            alt="Exercise icon"
-            style="display:block; width:65px; height:auto; margin:0 auto;"
-          >
-        </div>
-      </a>
+            if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-      <!-- Mission -->
-      <a href="/unitform/form_mission" class="unit-card">
-        <div class="svg-container" style="padding-top: 8px;">
-          <img
-            src="/icons/mission.svg"
-            alt="Mission icon"
-            style="display:block; width:65px; height:auto; margin:0 auto;"
-          >
-        </div>
-      </a>
+            // If terms aren't accepted, these won't exist (by design)
+            if (!toggleBtn || !grid) return;
 
-      <!-- Upcoming Unit -->
-      <a href="/unitform/form_upcoming" class="unit-card">
-        <div class="svg-container" style="padding-top: 8px;">
-          <img
-            src="/icons/upcoming.svg"
-            alt="Upcoming unit icon"
-            style="display:block; width:70px; height:auto; margin:0 auto;"
-          >
-        </div>
-      </a>
+            // Prefer existing toggle behavior if you have it; fallback to direct display
+            try {
+              toggleBtn.click();
+            } catch (e) {
+              grid.style.display = 'grid';
+            }
 
-      <!-- Nugget -->
-      <a href="/unitform/form_nugget" class="unit-card">
-        <div class="svg-container" style="padding-top: 8px;">
-          <img
-            src="/icons/nuggeticon.svg"
-            alt="Nugget icon"
-            style="display:block; width:90px; height:auto; margin:0 auto;"
-          >
-        </div>
-      </a>
+            // Clear hash so refresh doesn't re-open
+            try {
+              history.replaceState(null, '', window.location.pathname + window.location.search);
+            } catch (e) {}
+          });
+        </script>
 
-    </div>
+      {{/if}}
+
+    {{else}}
+
+      <div class="terms-gate-card" style="margin: 1rem 0; padding: 1rem; border-radius: 12px; border: 1px solid rgba(0,0,0,0.12); text-align: center;">
+        <p style="margin: 0 0 0.75rem 0; font-weight: 600;">
+          log in to contribute to your library
+        </p>
+
+        <a href="/login" class="contribute-btn" style="display:inline-block; text-decoration:none;">
+          log in
+        </a>
+
+        <p style="margin: 0.75rem 0 0 0; font-size: 0.95rem; opacity: 0.85;">
+          once you’re logged in, you can review and accept the terms, then start creating units.
+        </p>
+      </div>
+
+    {{/if}}
+
   </div>
 </section>
+

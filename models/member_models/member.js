@@ -125,6 +125,18 @@ avatar: { type: String, trim: true },
   recoveryCodes: [{ type: String }], // bcrypt-hashed codes
   updatedAt: { type: Date }
 },
+
+termsAccepted: {
+  type: Boolean,
+  default: false,
+},
+termsAcceptedAt: {
+  type: Date,
+},
+termsVersion: {
+  type: String,
+  default: "v1",
+},
 }, {
   timestamps: true
 });

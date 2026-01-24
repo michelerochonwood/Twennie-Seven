@@ -79,11 +79,86 @@ router.get('/privacypolicy', (req, res) => {
     });
 });
 
+// --- Terms & Conditions (GET) ---
 router.get('/termsconditions', (req, res) => {
-    res.render('promo_views/termsconditions', {
-        layout: 'mainlayout'
+  const u = res.locals.user || req.user || null;
+  const next = req.query.next || '/dashboard';
+
+  try {
+    return res.render('promo_views/termsconditions', {
+      layout: 'mainlayout',
+      user: u,
+      next,
+      csrfToken: req.csrfToken ? req.csrfToken() : null,
     });
+  } catch (err) {
+    console.error('Error rendering termsconditions:', err);
+    return res.status(500).render('promo_views/main_home_page', {
+      layout: 'mainlayout',
+    });
+  }
 });
+
+
+// --- Terms & Conditions (POST accept) ---
+router.post('/termsconditions/accept', async (req, res) => {
+  const next = req.body.next || req.query.next || '/dashboard';
+
+  try {
+    // Must be logged in to accept
+    if (!req.user || !req.user._id) {
+      return res.status(401).render('promo_views/termsconditions', {
+        layout: 'mainlayout',
+        user: null,
+        next,
+        csrfToken: req.csrfToken ? req.csrfToken() : null,
+        errorMessage: 'Please log in to accept the Terms & Conditions.',
+      });
+    }
+
+    // Server-side validation (don’t rely only on HTML required attr)
+    if (!req.body.acceptTerms) {
+      return res.status(400).render('promo_views/termsconditions', {
+        layout: 'mainlayout',
+        user: req.user,
+        next,
+        csrfToken: req.csrfToken ? req.csrfToken() : null,
+        errorMessage: 'Please check the box to accept the Terms & Conditions.',
+      });
+    }
+
+    // Persist acceptance
+    req.user.termsAccepted = true;
+    req.user.termsAcceptedAt = new Date();
+    req.user.termsVersion = 'v1';
+    await req.user.save();
+
+    return res.redirect(next);
+  } catch (err) {
+    const isCsrfError = err && err.code === 'EBADCSRFTOKEN';
+    console.error('Error accepting terms:', err);
+
+    if (isCsrfError) {
+      return res.status(403).render('promo_views/termsconditions', {
+        layout: 'mainlayout',
+        user: res.locals.user || req.user || null,
+        next,
+        csrfToken: req.csrfToken ? req.csrfToken() : null,
+        errorMessage:
+          'Your session has expired or the form took too long to submit. Please refresh and try again.',
+      });
+    }
+
+    return res.status(500).render('promo_views/termsconditions', {
+      layout: 'mainlayout',
+      user: res.locals.user || req.user || null,
+      next,
+      csrfToken: req.csrfToken ? req.csrfToken() : null,
+      errorMessage: 'Could not save your terms acceptance. Please try again.',
+    });
+  }
+});
+
 
 router.get('/facilitation', (req, res) => {
     res.render('promo_views/facilitation', {

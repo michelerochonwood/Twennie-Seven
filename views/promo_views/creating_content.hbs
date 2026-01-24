@@ -9,7 +9,7 @@
   </div>
 
   <!-- Contribution (reuse dashboard-style contribution section) -->
-  <section class="contribution-section" data-contrib-gate="true">
+  <section class="contribution-section" data-contrib-gate="true" id="contribute">
     <div class="contribution-container">
 
       <!-- Centered Image -->
@@ -32,7 +32,13 @@
         practice, and share learning with other professionals.
       </p>
 
-      <!-- Gate message (ONLY if user cannot contribute) -->
+      {{!-- =========================================================
+          TERMS + MEMBERSHIP GATE
+          - If user cannot contribute: show membership notice + CTAs
+          - If user can contribute but has not accepted terms: show terms gate card
+          - If user has accepted terms: show toggle + creation grid
+      ========================================================= --}}
+
       {{#unless canContribute}}
         <div class="orientation-block" style="margin: 1.25rem auto; max-width: 900px;">
           <p class="orientation-intro" style="margin-bottom: 0.75rem;">
@@ -45,90 +51,196 @@
             <a class="cta-button" href="/membership">become a member</a>
           </div>
         </div>
+
+        <button id="toggleContribute" class="contribute-btn" type="button">
+          see what you can create
+        </button>
+
+        <div id="contributionGrid" class="contribution-grid" style="display: none;">
+
+          <!-- Article -->
+          <a href="/unitform/form_article" class="unit-card" data-unit-link="true" aria-label="Create an article">
+            <div class="svg-container" style="padding-top: 8px;">
+              <img src="/icons/article.svg" alt="Article icon" style="display:block; width:40px; height:auto; margin:0 auto;">
+            </div>
+          </a>
+
+          <!-- Video -->
+          <a href="/unitform/form_video" class="unit-card" data-unit-link="true" aria-label="Create a video">
+            <div class="svg-container" style="padding-top: 8px; width: 40px">
+              <img src="/icons/video.svg" alt="Video icon" style="display:block; height:auto; margin:0 auto;">
+            </div>
+          </a>
+
+          <!-- Interview -->
+          <a href="/unitform/form_interview" class="unit-card" data-unit-link="true" aria-label="Create an interview">
+            <div class="svg-container" style="padding-top: 8px;">
+              <img src="/icons/interview.svg" alt="Interview icon" style="display:block; width:90px; height:auto; margin:0 auto;">
+            </div>
+          </a>
+
+          <!-- Prompt Set -->
+          <a href="/unitform/form_promptset" class="unit-card" data-unit-link="true" aria-label="Create a prompt set">
+            <div class="svg-container" style="padding-top: 8px;">
+              <img src="/icons/promptset.svg" alt="Prompt set icon" style="display:block; width:100px; height:auto; margin:0 auto;">
+            </div>
+          </a>
+
+          <!-- Template -->
+          <a href="/unitform/form_template" class="unit-card" data-unit-link="true" aria-label="Create a template">
+            <div class="svg-container" style="padding-top: 8px;">
+              <img src="/icons/template.svg" alt="Template icon" style="display:block; width:100px; height:auto; margin:0 auto;">
+            </div>
+          </a>
+
+          <!-- Exercise -->
+          <a href="/unitform/form_exercise" class="unit-card" data-unit-link="true" aria-label="Create an exercise">
+            <div class="svg-container" style="padding-top: 8px;">
+              <img src="/icons/exercise.svg" alt="Exercise icon" style="display:block; width:65px; height:auto; margin:0 auto;">
+            </div>
+          </a>
+
+          <!-- Mission -->
+          <a href="/unitform/form_mission" class="unit-card" data-unit-link="true" aria-label="Create a mission">
+            <div class="svg-container" style="padding-top: 8px;">
+              <img src="/icons/mission.svg" alt="Mission icon" style="display:block; width:65px; height:auto; margin:0 auto;">
+            </div>
+          </a>
+
+          <!-- Upcoming Unit -->
+          <a href="/unitform/form_upcoming" class="unit-card" data-unit-link="true" aria-label="Create an upcoming unit">
+            <div class="svg-container" style="padding-top: 8px;">
+              <img src="/icons/upcoming.svg" alt="Upcoming unit icon" style="display:block; width:70px; height:auto; margin:0 auto;">
+            </div>
+          </a>
+
+          <!-- Nugget -->
+          <a href="/unitform/form_nugget" class="unit-card" data-unit-link="true" aria-label="Create a nugget">
+            <div class="svg-container" style="padding-top: 8px;">
+              <img src="/icons/nuggeticon.svg" alt="Nugget icon" style="display:block; width:90px; height:auto; margin:0 auto;">
+            </div>
+          </a>
+
+        </div>
+
+      {{else}}
+
+        {{!-- canContribute = true (member is eligible to create content) --}}
+        {{#if user}}
+
+          {{#unless user.termsAccepted}}
+            <div class="terms-gate-card" style="margin: 1rem 0; padding: 1rem; border-radius: 12px; border: 1px solid rgba(0,0,0,0.12); text-align: center;">
+              <p style="margin: 0 0 0.75rem 0; font-weight: 600;">
+                before you contribute, you must agree to Twennie’s terms &amp; conditions
+              </p>
+
+              <a
+                href="/termsconditions?next=/dashboard#contribute"
+                class="contribute-btn"
+                style="display:inline-block; text-decoration:none;"
+              >
+                review &amp; accept terms
+              </a>
+
+              <p style="margin: 0.75rem 0 0 0; font-size: 0.95rem; opacity: 0.85;">
+                once accepted, you’ll be able to post units to your library.
+              </p>
+            </div>
+          {{/unless}}
+
+          {{#if user.termsAccepted}}
+            <button id="toggleContribute" class="contribute-btn" type="button">
+              show unit creation options
+            </button>
+
+            <div id="contributionGrid" class="contribution-grid" style="display: grid;">
+
+              <!-- Article -->
+              <a href="/unitform/form_article" class="unit-card" data-unit-link="true" aria-label="Create an article">
+                <div class="svg-container" style="padding-top: 8px;">
+                  <img src="/icons/article.svg" alt="Article icon" style="display:block; width:40px; height:auto; margin:0 auto;">
+                </div>
+              </a>
+
+              <!-- Video -->
+              <a href="/unitform/form_video" class="unit-card" data-unit-link="true" aria-label="Create a video">
+                <div class="svg-container" style="padding-top: 8px; width: 40px">
+                  <img src="/icons/video.svg" alt="Video icon" style="display:block; height:auto; margin:0 auto;">
+                </div>
+              </a>
+
+              <!-- Interview -->
+              <a href="/unitform/form_interview" class="unit-card" data-unit-link="true" aria-label="Create an interview">
+                <div class="svg-container" style="padding-top: 8px;">
+                  <img src="/icons/interview.svg" alt="Interview icon" style="display:block; width:90px; height:auto; margin:0 auto;">
+                </div>
+              </a>
+
+              <!-- Prompt Set -->
+              <a href="/unitform/form_promptset" class="unit-card" data-unit-link="true" aria-label="Create a prompt set">
+                <div class="svg-container" style="padding-top: 8px;">
+                  <img src="/icons/promptset.svg" alt="Prompt set icon" style="display:block; width:100px; height:auto; margin:0 auto;">
+                </div>
+              </a>
+
+              <!-- Template -->
+              <a href="/unitform/form_template" class="unit-card" data-unit-link="true" aria-label="Create a template">
+                <div class="svg-container" style="padding-top: 8px;">
+                  <img src="/icons/template.svg" alt="Template icon" style="display:block; width:100px; height:auto; margin:0 auto;">
+                </div>
+              </a>
+
+              <!-- Exercise -->
+              <a href="/unitform/form_exercise" class="unit-card" data-unit-link="true" aria-label="Create an exercise">
+                <div class="svg-container" style="padding-top: 8px;">
+                  <img src="/icons/exercise.svg" alt="Exercise icon" style="display:block; width:65px; height:auto; margin:0 auto;">
+                </div>
+              </a>
+
+              <!-- Mission -->
+              <a href="/unitform/form_mission" class="unit-card" data-unit-link="true" aria-label="Create a mission">
+                <div class="svg-container" style="padding-top: 8px;">
+                  <img src="/icons/mission.svg" alt="Mission icon" style="display:block; width:65px; height:auto; margin:0 auto;">
+                </div>
+              </a>
+
+              <!-- Upcoming Unit -->
+              <a href="/unitform/form_upcoming" class="unit-card" data-unit-link="true" aria-label="Create an upcoming unit">
+                <div class="svg-container" style="padding-top: 8px;">
+                  <img src="/icons/upcoming.svg" alt="Upcoming unit icon" style="display:block; width:70px; height:auto; margin:0 auto;">
+                </div>
+              </a>
+
+              <!-- Nugget -->
+              <a href="/unitform/form_nugget" class="unit-card" data-unit-link="true" aria-label="Create a nugget">
+                <div class="svg-container" style="padding-top: 8px;">
+                  <img src="/icons/nuggeticon.svg" alt="Nugget icon" style="display:block; width:90px; height:auto; margin:0 auto;">
+                </div>
+              </a>
+
+            </div>
+          {{/if}}
+
+        {{else}}
+          <div class="orientation-block" style="margin: 1.25rem auto; max-width: 900px;">
+            <p class="orientation-intro" style="margin-bottom: 0.75rem;">
+              <strong>Note:</strong> Please log in to create learning content.
+            </p>
+            <div class="cta-button-group" style="margin: 0;">
+              <a class="cta-button" href="/auth/login">log in</a>
+            </div>
+          </div>
+        {{/if}}
+
       {{/unless}}
 
-      <!-- Toggle -->
-      <button id="toggleContribute" class="contribute-btn">
-        {{#if canContribute}}
-          show unit creation options
-        {{else}}
-          see what you can create
-        {{/if}}
-      </button>
-
-      <!-- Grid (auto-open for contributors; hidden for non-members until toggle) -->
-      <div
-        id="contributionGrid"
-        class="contribution-grid"
-        style="{{#if canContribute}}display: grid;{{else}}display: none;{{/if}}"
-      >
-
-        <!-- Article -->
-        <a href="/unitform/form_article" class="unit-card" data-unit-link="true">
-          <div class="svg-container" style="padding-top: 8px;">
-            <img src="/icons/article.svg" alt="Article icon" style="display:block; width:40px; height:auto; margin:0 auto;">
-          </div>
-        </a>
-
-        <!-- Video -->
-        <a href="/unitform/form_video" class="unit-card" data-unit-link="true">
-          <div class="svg-container" style="padding-top: 8px; width: 40px">
-            <img src="/icons/video.svg" alt="Video icon" style="display:block; height:auto; margin:0 auto;">
-          </div>
-        </a>
-
-        <!-- Interview -->
-        <a href="/unitform/form_interview" class="unit-card" data-unit-link="true">
-          <div class="svg-container" style="padding-top: 8px;">
-            <img src="/icons/interview.svg" alt="Interview icon" style="display:block; width:90px; height:auto; margin:0 auto;">
-          </div>
-        </a>
-
-        <!-- Prompt Set -->
-        <a href="/unitform/form_promptset" class="unit-card" data-unit-link="true">
-          <div class="svg-container" style="padding-top: 8px;">
-            <img src="/icons/promptset.svg" alt="Prompt set icon" style="display:block; width:100px; height:auto; margin:0 auto;">
-          </div>
-        </a>
-
-        <!-- Template -->
-        <a href="/unitform/form_template" class="unit-card" data-unit-link="true">
-          <div class="svg-container" style="padding-top: 8px;">
-            <img src="/icons/template.svg" alt="Template icon" style="display:block; width:100px; height:auto; margin:0 auto;">
-          </div>
-        </a>
-
-        <!-- Exercise -->
-        <a href="/unitform/form_exercise" class="unit-card" data-unit-link="true">
-          <div class="svg-container" style="padding-top: 8px;">
-            <img src="/icons/exercise.svg" alt="Exercise icon" style="display:block; width:65px; height:auto; margin:0 auto;">
-          </div>
-        </a>
-
-        <!-- Mission -->
-        <a href="/unitform/form_mission" class="unit-card" data-unit-link="true">
-          <div class="svg-container" style="padding-top: 8px;">
-            <img src="/icons/mission.svg" alt="Mission icon" style="display:block; width:65px; height:auto; margin:0 auto;">
-          </div>
-        </a>
-
-        <!-- Upcoming Unit -->
-        <a href="/unitform/form_upcoming" class="unit-card" data-unit-link="true">
-          <div class="svg-container" style="padding-top: 8px;">
-            <img src="/icons/upcoming.svg" alt="Upcoming unit icon" style="display:block; width:70px; height:auto; margin:0 auto;">
-          </div>
-        </a>
-
-        <!-- Nugget -->
-        <a href="/unitform/form_nugget" class="unit-card" data-unit-link="true">
-          <div class="svg-container" style="padding-top: 8px;">
-            <img src="/icons/nuggeticon.svg" alt="Nugget icon" style="display:block; width:90px; height:auto; margin:0 auto;">
-          </div>
-        </a>
-
-      </div>
     </div>
   </section>
+
+
+
+</section>
+
 
 
   <!-- FAQ rows (map-style blocks) -->
@@ -291,3 +403,35 @@
     });
   })();
 </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const toggleBtn = document.getElementById('toggleContribute');
+      const grid = document.getElementById('contributionGrid');
+
+      if (toggleBtn && grid) {
+        toggleBtn.addEventListener('click', () => {
+          const isHidden = grid.style.display === 'none' || !grid.style.display;
+          grid.style.display = isHidden ? 'grid' : 'none';
+        });
+      }
+
+      // Auto-open if returning with #contribute
+      if (window.location.hash === '#contribute') {
+        const section = document.getElementById('contribute');
+        if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        if (toggleBtn && grid) {
+          try {
+            toggleBtn.click();
+          } catch (e) {
+            grid.style.display = 'grid';
+          }
+        }
+
+        try {
+          history.replaceState(null, '', window.location.pathname + window.location.search);
+        } catch (e) {}
+      }
+    });
+  </script>

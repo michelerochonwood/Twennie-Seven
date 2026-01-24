@@ -49,6 +49,30 @@ function getCsrfToken(req) {
   return req.csrfToken ? req.csrfToken() : null;
 }
 
+// ✅ Require Terms acceptance before allowing any content submission/posting
+function requireTermsForPosting(req, res) {
+  if (!req.user || !req.user._id) {
+    res.status(401).render('unit_form_views/error', {
+      layout: 'unitformlayout',
+      title: 'Unauthorized',
+      errorMessage: 'Please log in to submit content.',
+    });
+    return false;
+  }
+
+  if (req.user.termsAccepted === true) return true;
+
+  res.status(403).render('unit_form_views/error', {
+    layout: 'unitformlayout',
+    title: 'Terms Required',
+    errorMessage: 'You must agree to Terms & Conditions before submitting content.',
+    ctaLink: '/terms?next=' + encodeURIComponent(req.originalUrl),
+    ctaText: 'Review & Accept Terms',
+  });
+
+  return false;
+}
+
 
 
 const createGetFormHandler = (unitType, viewPath) => (req, res) => {
@@ -225,51 +249,69 @@ const unitFormController = {
     },
 
     // POST Handlers with Validation
-    submitUnit: (Model, unitType, validateFunction) => async (req, res) => {
-        
+// POST Handlers with Validation (rewritten: consistent auth + terms gate + csrf helper)
+submitUnit: (Model, unitType, validateFunction) => async (req, res) => {
+  try {
+    console.log(`Received POST request for ${unitType}:`, req.body);
 
-        try {
-            console.log(`Received POST request for ${unitType}:`, req.body);
-    
-            const errors = validateFunction(req.body);
-            if (errors.length > 0) {
-                return res.render(`unit_form_views/form_${unitType}`, {
-                    layout: 'unitformlayout',
-                    data: req.body,
-                    errors,
-                    csrfToken: isDevelopment ? null : req.csrfToken(),
-                });
-            }
-    
-            const unitData = {
-                author: {
-                    id: req.user._id,
-                },
-                topic: req.body.topic || 'No topic specified', 
-                ...req.body,
-            };
-    
-            const unit = req.body._id
-                ? await Model.findByIdAndUpdate(req.body._id, unitData, { new: true })
-                : await Model.create(unitData);
-    
-            console.log(`Saved ${unitType} successfully:`, unit);
-    
-            res.render('unit_form_views/unit_success', {
-                layout: 'unitformlayout',
-                unitType,
-                unit,
-                csrfToken: isDevelopment ? null : req.csrfToken(),
-            });
-        } catch (error) {
-            console.error(`${unitType} submission error:`, error);
-            res.status(500).render('unit_form_views/error', {
-                layout: 'unitformlayout',
-                title: 'Error',
-                errorMessage: 'An error occurred while submitting the unit.',
-            });
-        }
-    },
+    // ✅ Auth + terms gate (consistent with other submit handlers)
+    if (!requireTermsForPosting(req, res)) return;
+
+    // ✅ Validate body
+    const errors = validateFunction(req.body);
+    if (errors.length > 0) {
+      return res.render(`unit_form_views/form_${unitType}`, {
+        layout: 'unitformlayout',
+        data: req.body,
+        errors,
+        csrfToken: getCsrfToken(req),
+      });
+    }
+
+    // ✅ Build payload (prefer explicit author.id from req.user)
+    const unitData = {
+      author: { id: req.user._id },
+      topic: req.body.topic || 'No topic specified',
+      ...req.body,
+    };
+
+    // ✅ Create or update
+    const unit = req.body._id
+      ? await Model.findByIdAndUpdate(req.body._id, unitData, {
+          new: true,
+          runValidators: true,
+        })
+      : await Model.create(unitData);
+
+    console.log(`Saved ${unitType} successfully:`, unit);
+
+    return res.render('unit_form_views/unit_success', {
+      layout: 'unitformlayout',
+      unitType,
+      unit,
+      csrfToken: getCsrfToken(req),
+    });
+  } catch (error) {
+    console.error(`${unitType} submission error:`, error);
+
+    const isCsrfError = error.code === 'EBADCSRFTOKEN';
+    if (isCsrfError) {
+      return res.status(403).render('unit_form_views/error', {
+        layout: 'unitformlayout',
+        title: 'Session Expired',
+        errorMessage:
+          'Your session has expired or the form took too long to submit. Please refresh and try again.',
+      });
+    }
+
+    return res.status(500).render('unit_form_views/error', {
+      layout: 'unitformlayout',
+      title: 'Error',
+      errorMessage: 'An error occurred while submitting the unit.',
+    });
+  }
+},
+
     
 
     // Success Page Handler
@@ -401,72 +443,83 @@ getUpcomingForm: (req, res) => {
 
 
 // ---- submitUpcoming (drop-in) ----
+// ---- submitUpcoming (rewritten for consistency: req.user only) ----
 submitUpcoming: async (req, res) => {
   try {
     const mainTopics = [
-  'AI in Consulting',
-  'AI in Learning',
-  'AI in Project Management',
-  'Analytics in Project Management',
-  'Business Development in Technical Services',
-  'Business Development Metrics',
-  'Candid Communication',
-  'Career Development in Technical Services',
-  'Client Experience',
-  'Client Feedback Software',
-  'Client Interactions',
-  'Closing a Project Strategically',
-  'Conducting Color Reviews of Proposals',
-  'Cross Selling in Multi-Disciplinary Firms',
-  'CRM Platforms',
-  'Designing a Proposal Process',
-  'Emotional Intelligence',
-  'Employee Experience',
-  'Finding Projects Before they Become RFPs',
-  'Integrated Project Delivery or IPD',
-  'Leadership in Technical Consulting',
-  'Leading Change',
-  'Leading Groups on Twennie',
-  'Making a Proposal Easy to Read, Skim, and Evaluate',
-  'Managing Scope So It Doesnt Manage You',
-  'Mental Health in Consulting Environments',
-  'Non-Technical Roles in Technical Environments',
-  'People Before Profit',
-  'Program Management',
-  'Project Management',
-  'Project Management Software',
-  'Proposal Management',
-  'Proposal Strategy',
-  'Pull Marketing',
-  'Pursuing the Right Projects for Your Firm and Your Team',
-  'Remote and Hybrid Work',
-  'Rescuing a Project That Has Gone Off the Rails',
-  'Risk Management',
-  'Social Entrepreneurship',
-  'Social Media, Advertising, and Other Mysteries',
-  'Soft Skills in Technical Environments',
-  'Storytelling in Technical Marketing',
-  'Team Building in Consulting',
-  'The Advantage of Failure',
-  'The First 10 Days of a Project',
-  'The Pareto Principle',
-  'The Power of Play in the Workplace',
-  'The Power of Purpose',
-  'Tips and Tricks for Proposal Proofreading',
-  'Turning a Project into a Business Development Powerhouse',
-  'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
-  'Using Lean in Project Management',
-  'When the Workload is Light',
-  'Workplace Culture'
+      'AI in Consulting',
+      'AI in Learning',
+      'AI in Project Management',
+      'Analytics in Project Management',
+      'Business Development in Technical Services',
+      'Business Development Metrics',
+      'Candid Communication',
+      'Career Development in Technical Services',
+      'Client Experience',
+      'Client Feedback Software',
+      'Client Interactions',
+      'Closing a Project Strategically',
+      'Conducting Color Reviews of Proposals',
+      'Cross Selling in Multi-Disciplinary Firms',
+      'CRM Platforms',
+      'Designing a Proposal Process',
+      'Emotional Intelligence',
+      'Employee Experience',
+      'Finding Projects Before they Become RFPs',
+      'Integrated Project Delivery or IPD',
+      'Leadership in Technical Consulting',
+      'Leading Change',
+      'Leading Groups on Twennie',
+      'Making a Proposal Easy to Read, Skim, and Evaluate',
+      'Managing Scope So It Doesnt Manage You',
+      'Mental Health in Consulting Environments',
+      'Non-Technical Roles in Technical Environments',
+      'People Before Profit',
+      'Program Management',
+      'Project Management',
+      'Project Management Software',
+      'Proposal Management',
+      'Proposal Strategy',
+      'Pull Marketing',
+      'Pursuing the Right Projects for Your Firm and Your Team',
+      'Remote and Hybrid Work',
+      'Rescuing a Project That Has Gone Off the Rails',
+      'Risk Management',
+      'Social Entrepreneurship',
+      'Social Media, Advertising, and Other Mysteries',
+      'Soft Skills in Technical Environments',
+      'Storytelling in Technical Marketing',
+      'Team Building in Consulting',
+      'The Advantage of Failure',
+      'The First 10 Days of a Project',
+      'The Pareto Principle',
+      'The Power of Play in the Workplace',
+      'The Power of Purpose',
+      'Tips and Tricks for Proposal Proofreading',
+      'Turning a Project into a Business Development Powerhouse',
+      'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
+      'Using Lean in Project Management',
+      'When the Workload is Light',
+      'Workplace Culture'
     ];
 
-    if (!req.user && !req.session?.user) {
+    const unitTypes = [
+      'article', 'video', 'interview', 'exercise', 'template',
+      'promptset', 'nugget', 'mission'
+    ];
+
+    // ✅ Auth: match your other submit handlers (Passport only)
+    if (!req.user || !req.user._id) {
       return res.status(401).render('unit_form_views/error', {
         layout: 'unitformlayout',
         title: 'Unauthorized',
         errorMessage: 'Please log in to submit an upcoming unit.',
       });
     }
+
+    if (!requireTermsForPosting(req, res)) return;
+
+
 
     // Pull fields
     const {
@@ -499,29 +552,22 @@ submitUpcoming: async (req, res) => {
         data: req.body,
         errors,
         mainTopics,
-        unitTypes: [
-          'article','video','interview','exercise','template',
-          'promptset', 'mission', 'nugget'
-        ],
+        unitTypes,
         csrfToken: getCsrfToken(req),
       });
     }
 
-    // Normalize optional secondary topic into array
+    // Normalize optional secondary topic(s) into an array
     const parsedSecondaryTopics =
       Array.isArray(secondary_topics)
         ? secondary_topics.filter(Boolean)
-        : (secondary_topics && typeof secondary_topics === 'string' && secondary_topics.trim() !== '')
-          ? [secondary_topics]
+        : (typeof secondary_topics === 'string' && secondary_topics.trim() !== '')
+          ? [secondary_topics.trim()]
           : [];
 
     // Constrain status to allowed values
     const ALLOWED_STATUS = ['in production', 'released', 'cancelled'];
     const safeStatus = ALLOWED_STATUS.includes(status) ? status : 'in production';
-
-    // Creator (for ownership)
-    const creatorId = (req.user?._id || req.session?.user?.id) || null;
-    const creatorModel = (req.user?.membershipType || req.session?.user?.membershipType) || null;
 
     const payload = {
       title: title.trim(),
@@ -558,7 +604,7 @@ submitUpcoming: async (req, res) => {
       };
     }
 
-    // Fallback image if none provided (create mode only or missing existing)
+    // Fallback image if none provided (create mode only)
     if (!payload.image && !_id) {
       payload.image = { public_id: null, url: '/images/default-upcoming.png' };
     }
@@ -566,11 +612,12 @@ submitUpcoming: async (req, res) => {
     let upcoming;
 
     if (_id) {
-      // Edit (do not overwrite an existing creator; backfill if missing)
+      // Edit: do not overwrite createdBy; only backfill if missing
       upcoming = await Upcoming.findByIdAndUpdate(_id, payload, {
         new: true,
         runValidators: true,
       });
+
       if (!upcoming) {
         return res.status(404).render('unit_form_views/error', {
           layout: 'unitformlayout',
@@ -579,19 +626,19 @@ submitUpcoming: async (req, res) => {
         });
       }
 
-      if (!upcoming.createdBy && creatorId) {
-        upcoming.createdBy = creatorId;
-        if (creatorModel) upcoming.createdByModel = creatorModel;
+      // Backfill creator only if missing
+      if (!upcoming.createdBy) {
+        upcoming.createdBy = req.user._id;
+        if (req.user.membershipType) upcoming.createdByModel = req.user.membershipType;
         await upcoming.save();
       }
 
       console.log(`Upcoming with ID ${_id} updated successfully.`);
     } else {
-      // Create — stamp creator for "my library units"
-      if (creatorId) {
-        payload.createdBy = creatorId;
-        if (creatorModel) payload.createdByModel = creatorModel;
-      }
+      // Create: stamp creator consistently from req.user
+      payload.createdBy = req.user._id;
+      if (req.user.membershipType) payload.createdByModel = req.user.membershipType;
+
       upcoming = new Upcoming(payload);
       await upcoming.save();
       console.log('New upcoming unit created successfully.');
@@ -604,6 +651,7 @@ submitUpcoming: async (req, res) => {
       unit: upcoming,
       csrfToken: getCsrfToken(req),
     });
+
   } catch (error) {
     const isCsrfError = error.code === 'EBADCSRFTOKEN';
     console.error('Error submitting upcoming unit:', error);
@@ -624,6 +672,7 @@ submitUpcoming: async (req, res) => {
     });
   }
 },
+
 
 // ---- prefillFromUpcoming (drop-in) ----
 prefillFromUpcoming: async (req, res) => {
@@ -784,6 +833,9 @@ prefillFromUpcoming: async (req, res) => {
     if (!req.user || !req.user._id) {
       throw new Error('User is not authenticated or missing user ID.');
     }
+
+    if (!requireTermsForPosting(req, res)) return;
+
 
     const {
       _id,
@@ -1005,6 +1057,9 @@ submitArticle: async (req, res) => {
       throw new Error('User is not authenticated or missing user ID.');
     }
 
+    if (!requireTermsForPosting(req, res)) return;
+
+
     // sanitize + word count
     const cleanHtml = sanitizeHtml(articleBody, {
       allowedTags: sanitizeHtml.defaults.allowedTags.concat(['h1', 'h2', 'img']),
@@ -1152,6 +1207,9 @@ submitVideo: async (req, res) => {
       throw new Error('User is not authenticated or missing user ID.');
     }
 
+    if (!requireTermsForPosting(req, res)) return;
+
+
     // Pull out id + upcoming context, keep the rest as payload
     const { _id, fromUpcomingId, ...videoData } = req.body;
 
@@ -1260,6 +1318,9 @@ submitInterview: async (req, res) => {
     if (!req.user || !req.user._id) {
       throw new Error('User is not authenticated or missing user ID.');
     }
+
+    if (!requireTermsForPosting(req, res)) return;
+
 
     // Pull out id + upcoming context; keep the rest as payload
     const { _id, fromUpcomingId, ...interviewData } = req.body;
@@ -1536,6 +1597,9 @@ submitPromptSet: async (req, res) => {
       throw new Error('User is not authenticated or missing user ID.');
     }
 
+    if (!requireTermsForPosting(req, res)) return;
+
+
     // Pull out id + upcoming context; keep the rest as payload
     const { _id, fromUpcomingId, ...promptSetData } = req.body;
     console.log('Raw request body:', req.body);
@@ -1733,6 +1797,9 @@ submitPromptSet: async (req, res) => {
       throw new Error('User is not authenticated or missing user ID.');
     }
 
+    if (!requireTermsForPosting(req, res)) return;
+
+
     // Pull id + upcoming context; keep rest as payload
     const { _id, fromUpcomingId, ...exerciseData } = req.body;
 
@@ -1877,6 +1944,9 @@ submitPromptSet: async (req, res) => {
     if (!req.user || !req.user._id) {
       throw new Error('User is not authenticated or missing user ID.');
     }
+
+    if (!requireTermsForPosting(req, res)) return;
+
 
     // Pull id + upcoming context; keep rest as payload
     const { _id, fromUpcomingId, ...templateData } = req.body;
@@ -2101,6 +2171,9 @@ submitPromptSet: async (req, res) => {
     if (!req.user || !req.user._id) {
       throw new Error('User is not authenticated or missing user ID.');
     }
+
+    if (!requireTermsForPosting(req, res)) return;
+
 
     const isEdit = !!req.body._id;
     const userId = req.user._id;

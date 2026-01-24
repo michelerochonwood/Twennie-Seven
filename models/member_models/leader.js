@@ -205,6 +205,18 @@ isAdmin: {
   googleId: { type: String, unique: true, sparse: true },
 avatar: { type: String, trim: true },
 
+termsAccepted: {
+  type: Boolean,
+  default: false,
+},
+termsAcceptedAt: {
+  type: Date,
+},
+termsVersion: {
+  type: String,
+  default: "v1",
+},
+
   // ---------- MFA ----------
   mfa: mfaSchema
 
