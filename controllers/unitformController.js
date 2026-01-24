@@ -50,6 +50,7 @@ function getCsrfToken(req) {
 }
 
 // ✅ Require Terms acceptance before allowing any content submission/posting
+// ✅ Require Terms acceptance before allowing any content submission/posting
 function requireTermsForPosting(req, res) {
   if (!req.user || !req.user._id) {
     res.status(401).render('unit_form_views/error', {
@@ -62,11 +63,12 @@ function requireTermsForPosting(req, res) {
 
   if (req.user.termsAccepted === true) return true;
 
+  // ✅ Correct route: /termsconditions (NOT /terms)
   res.status(403).render('unit_form_views/error', {
     layout: 'unitformlayout',
     title: 'Terms Required',
     errorMessage: 'You must agree to Terms & Conditions before submitting content.',
-    ctaLink: '/terms?next=' + encodeURIComponent(req.originalUrl),
+    ctaLink: '/termsconditions?next=' + encodeURIComponent(req.originalUrl),
     ctaText: 'Review & Accept Terms',
   });
 
@@ -75,178 +77,194 @@ function requireTermsForPosting(req, res) {
 
 
 
-const createGetFormHandler = (unitType, viewPath) => (req, res) => {
+
+const createGetFormHandler = (unitType, viewPath, { requireTerms = false } = {}) => (req, res) => {
   console.log(`🛡 Rendering ${unitType} form. CSRF available:`, typeof req.csrfToken === 'function');
 
-    try {
-        const mainTopics = [
-  'AI in Consulting',
-  'AI in Learning',
-  'AI in Project Management',
-  'Analytics in Project Management',
-  'Business Development in Technical Services',
-  'Business Development Metrics',
-  'Candid Communication',
-  'Career Development in Technical Services',
-  'Client Experience',
-  'Client Feedback Software',
-  'Client Interactions',
-  'Closing a Project Strategically',
-  'Conducting Color Reviews of Proposals',
-  'Cross Selling in Multi-Disciplinary Firms',
-  'CRM Platforms',
-  'Designing a Proposal Process',
-  'Emotional Intelligence',
-  'Employee Experience',
-  'Finding Projects Before they Become RFPs',
-  'Integrated Project Delivery or IPD',
-  'Leadership in Technical Consulting',
-  'Leading Change',
-  'Leading Groups on Twennie',
-  'Making a Proposal Easy to Read, Skim, and Evaluate',
-  'Managing Scope So It Doesnt Manage You',
-  'Mental Health in Consulting Environments',
-  'Non-Technical Roles in Technical Environments',
-  'People Before Profit',
-  'Program Management',
-  'Project Management',
-  'Project Management Software',
-  'Proposal Management',
-  'Proposal Strategy',
-  'Pull Marketing',
-  'Pursuing the Right Projects for Your Firm and Your Team',
-  'Remote and Hybrid Work',
-  'Rescuing a Project That Has Gone Off the Rails',
-  'Risk Management',
-  'Social Entrepreneurship',
-  'Social Media, Advertising, and Other Mysteries',
-  'Soft Skills in Technical Environments',
-  'Storytelling in Technical Marketing',
-  'Team Building in Consulting',
-  'The Advantage of Failure',
-  'The First 10 Days of a Project',
-  'The Pareto Principle',
-  'The Power of Play in the Workplace',
-  'The Power of Purpose',
-  'Tips and Tricks for Proposal Proofreading',
-  'Turning a Project into a Business Development Powerhouse',
-  'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
-  'Using Lean in Project Management',
-  'When the Workload is Light',
-  'Workplace Culture'
-        ];
-
-        res.render(`unit_form_views/${viewPath}`, {
-          layout: 'unitformlayout',
-          unitType,
-          mainTopics,
-          data: {},
-          csrfToken: getCsrfToken(req),
-      });
-    } catch (error) {
-        console.error(`Error rendering form for ${unitType}:`, error);
-        res.status(500).send(`Error rendering form for ${unitType}.`);
+  try {
+    // Optional: require terms BEFORE the user can even see the form
+    if (requireTerms) {
+      if (!requireTermsForPosting(req, res)) return;
     }
+
+    const mainTopics = [
+      'AI in Consulting',
+      'AI in Learning',
+      'AI in Project Management',
+      'Analytics in Project Management',
+      'Business Development in Technical Services',
+      'Business Development Metrics',
+      'Candid Communication',
+      'Career Development in Technical Services',
+      'Client Experience',
+      'Client Feedback Software',
+      'Client Interactions',
+      'Closing a Project Strategically',
+      'Conducting Color Reviews of Proposals',
+      'Cross Selling in Multi-Disciplinary Firms',
+      'CRM Platforms',
+      'Designing a Proposal Process',
+      'Emotional Intelligence',
+      'Employee Experience',
+      'Finding Projects Before they Become RFPs',
+      'Integrated Project Delivery or IPD',
+      'Leadership in Technical Consulting',
+      'Leading Change',
+      'Leading Groups on Twennie',
+      'Making a Proposal Easy to Read, Skim, and Evaluate',
+      'Managing Scope So It Doesnt Manage You',
+      'Mental Health in Consulting Environments',
+      'Non-Technical Roles in Technical Environments',
+      'People Before Profit',
+      'Program Management',
+      'Project Management',
+      'Project Management Software',
+      'Proposal Management',
+      'Proposal Strategy',
+      'Pull Marketing',
+      'Pursuing the Right Projects for Your Firm and Your Team',
+      'Remote and Hybrid Work',
+      'Rescuing a Project That Has Gone Off the Rails',
+      'Risk Management',
+      'Social Entrepreneurship',
+      'Social Media, Advertising, and Other Mysteries',
+      'Soft Skills in Technical Environments',
+      'Storytelling in Technical Marketing',
+      'Team Building in Consulting',
+      'The Advantage of Failure',
+      'The First 10 Days of a Project',
+      'The Pareto Principle',
+      'The Power of Play in the Workplace',
+      'The Power of Purpose',
+      'Tips and Tricks for Proposal Proofreading',
+      'Turning a Project into a Business Development Powerhouse',
+      'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
+      'Using Lean in Project Management',
+      'When the Workload is Light',
+      'Workplace Culture'
+    ];
+
+    return res.render(`unit_form_views/${viewPath}`, {
+      layout: 'unitformlayout',
+      unitType,
+      mainTopics,
+      data: {},
+      csrfToken: getCsrfToken(req),
+    });
+  } catch (error) {
+    console.error(`Error rendering form for ${unitType}:`, error);
+    return res.status(500).send(`Error rendering form for ${unitType}.`);
+  }
 };
+
 
 const unitFormController = {
     // Explicitly created handlers
-    getArticleForm: createGetFormHandler('article', 'form_article'),
-    getVideoForm: createGetFormHandler('video', 'form_video'),
-    getInterviewForm: createGetFormHandler('interview', 'form_interview'),
-    getPromptForm: createGetFormHandler('promptset', 'form_promptset'),
-    getExerciseForm: createGetFormHandler('exercise', 'form_exercise'),
-    getTemplateForm: createGetFormHandler('template', 'form_template'),
-    getMissionForm: (req, res) => {
-      console.log('🛡 Rendering mission form. CSRF available:', typeof req.csrfToken === 'function');
+// Explicitly created handlers (updated: optional terms gate on GET)
+getArticleForm: createGetFormHandler('article', 'form_article', { requireTerms: true }),
+getVideoForm: createGetFormHandler('video', 'form_video', { requireTerms: true }),
+getInterviewForm: createGetFormHandler('interview', 'form_interview', { requireTerms: true }),
 
-      try {
-        const mainTopics = [
-  'AI in Consulting',
-  'AI in Learning',
-  'AI in Project Management',
-  'Analytics in Project Management',
-  'Business Development in Technical Services',
-  'Business Development Metrics',
-  'Candid Communication',
-  'Career Development in Technical Services',
-  'Client Experience',
-  'Client Feedback Software',
-  'Client Interactions',
-  'Closing a Project Strategically',
-  'Conducting Color Reviews of Proposals',
-  'Cross Selling in Multi-Disciplinary Firms',
-  'CRM Platforms',
-  'Designing a Proposal Process',
-  'Emotional Intelligence',
-  'Employee Experience',
-  'Finding Projects Before they Become RFPs',
-  'Integrated Project Delivery or IPD',
-  'Leadership in Technical Consulting',
-  'Leading Change',
-  'Leading Groups on Twennie',
-  'Making a Proposal Easy to Read, Skim, and Evaluate',
-  'Managing Scope So It Doesnt Manage You',
-  'Mental Health in Consulting Environments',
-  'Non-Technical Roles in Technical Environments',
-  'People Before Profit',
-  'Program Management',
-  'Project Management',
-  'Project Management Software',
-  'Proposal Management',
-  'Proposal Strategy',
-  'Pull Marketing',
-  'Pursuing the Right Projects for Your Firm and Your Team',
-  'Remote and Hybrid Work',
-  'Rescuing a Project That Has Gone Off the Rails',
-  'Risk Management',
-  'Social Entrepreneurship',
-  'Social Media, Advertising, and Other Mysteries',
-  'Soft Skills in Technical Environments',
-  'Storytelling in Technical Marketing',
-  'Team Building in Consulting',
-  'The Advantage of Failure',
-  'The First 10 Days of a Project',
-  'The Pareto Principle',
-  'The Power of Play in the Workplace',
-  'The Power of Purpose',
-  'Tips and Tricks for Proposal Proofreading',
-  'Turning a Project into a Business Development Powerhouse',
-  'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
-  'Using Lean in Project Management',
-  'When the Workload is Light',
-  'Workplace Culture'
-        ];
+getExerciseForm: createGetFormHandler('exercise', 'form_exercise', { requireTerms: true }),
+getTemplateForm: createGetFormHandler('template', 'form_template', { requireTerms: true }),
 
-        const fromUpcomingId = req.query.fromUpcomingId || '';
+getMissionForm: (req, res) => {
+  console.log('🛡 Rendering mission form. CSRF available:', typeof req.csrfToken === 'function');
 
-        return res.render('unit_form_views/form_mission', {
-          layout: 'unitformlayout',
-          unitType: 'mission',
-          data: {},
-          mainTopics,
-          fromUpcomingId,
-          csrfToken: getCsrfToken(req),
-        });
-      } catch (error) {
-        console.error('Error rendering mission form:', error);
-        return res.status(500).send('Error rendering form for mission.');
-      }
-    },
+  try {
+    // ✅ Gate form access (not just submission)
+    if (!requireTermsForPosting(req, res)) return;
 
-        getNuggetForm: (req, res) => {
-      try {
-        res.render('unit_form_views/form_nugget', {
-          layout: 'unitformlayout',
-          unitType: 'nugget',
-          data: {},
-          csrfToken: getCsrfToken(req),
-        });
-      } catch (error) {
-        console.error('Error rendering nugget form:', error);
-        res.status(500).send('Error rendering nugget form.');
-      }
-    },
+    const mainTopics = [
+      'AI in Consulting',
+      'AI in Learning',
+      'AI in Project Management',
+      'Analytics in Project Management',
+      'Business Development in Technical Services',
+      'Business Development Metrics',
+      'Candid Communication',
+      'Career Development in Technical Services',
+      'Client Experience',
+      'Client Feedback Software',
+      'Client Interactions',
+      'Closing a Project Strategically',
+      'Conducting Color Reviews of Proposals',
+      'Cross Selling in Multi-Disciplinary Firms',
+      'CRM Platforms',
+      'Designing a Proposal Process',
+      'Emotional Intelligence',
+      'Employee Experience',
+      'Finding Projects Before they Become RFPs',
+      'Integrated Project Delivery or IPD',
+      'Leadership in Technical Consulting',
+      'Leading Change',
+      'Leading Groups on Twennie',
+      'Making a Proposal Easy to Read, Skim, and Evaluate',
+      'Managing Scope So It Doesnt Manage You',
+      'Mental Health in Consulting Environments',
+      'Non-Technical Roles in Technical Environments',
+      'People Before Profit',
+      'Program Management',
+      'Project Management',
+      'Project Management Software',
+      'Proposal Management',
+      'Proposal Strategy',
+      'Pull Marketing',
+      'Pursuing the Right Projects for Your Firm and Your Team',
+      'Remote and Hybrid Work',
+      'Rescuing a Project That Has Gone Off the Rails',
+      'Risk Management',
+      'Social Entrepreneurship',
+      'Social Media, Advertising, and Other Mysteries',
+      'Soft Skills in Technical Environments',
+      'Storytelling in Technical Marketing',
+      'Team Building in Consulting',
+      'The Advantage of Failure',
+      'The First 10 Days of a Project',
+      'The Pareto Principle',
+      'The Power of Play in the Workplace',
+      'The Power of Purpose',
+      'Tips and Tricks for Proposal Proofreading',
+      'Turning a Project into a Business Development Powerhouse',
+      'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
+      'Using Lean in Project Management',
+      'When the Workload is Light',
+      'Workplace Culture'
+    ];
+
+    const fromUpcomingId = req.query.fromUpcomingId || '';
+
+    return res.render('unit_form_views/form_mission', {
+      layout: 'unitformlayout',
+      unitType: 'mission',
+      data: {},
+      mainTopics,
+      fromUpcomingId,
+      csrfToken: getCsrfToken(req),
+    });
+  } catch (error) {
+    console.error('Error rendering mission form:', error);
+    return res.status(500).send('Error rendering form for mission.');
+  }
+},
+
+
+getNuggetForm: (req, res) => {
+  try {
+    // ✅ Gate form access (not just submission)
+    if (!requireTermsForPosting(req, res)) return;
+
+    return res.render('unit_form_views/form_nugget', {
+      layout: 'unitformlayout',
+      unitType: 'nugget',
+      data: {},
+      csrfToken: getCsrfToken(req),
+    });
+  } catch (error) {
+    console.error('Error rendering nugget form:', error);
+    return res.status(500).send('Error rendering nugget form.');
+  }
+},
 
     // POST Handlers with Validation
 // POST Handlers with Validation (rewritten: consistent auth + terms gate + csrf helper)
@@ -315,49 +333,53 @@ submitUnit: (Model, unitType, validateFunction) => async (req, res) => {
     
 
     // Success Page Handler
-    showSuccessPage: async (req, res) => {
+// Success Page Handler (rewritten: consistent csrf + safe model lookup)
+showSuccessPage: async (req, res) => {
+  const { unitType, id, error } = req.query;
 
-        const { unitType, id, error } = req.query;
+  try {
+    let unit = null;
 
-        try {
-let unit = null;
-if (id) {
-  const Model = {
-    article: Article,
-    video: Video,
-    interview: Interview,
-    promptset: PromptSet,
-    template: Template,
-    exercise: Exercise,
-    nugget: Nugget,
-    mission: Mission,
-  }[unitType];
+    if (id && unitType) {
+      const Model = {
+        article: Article,
+        video: Video,
+        interview: Interview,
+        promptset: PromptSet,
+        template: Template,
+        exercise: Exercise,
+        nugget: Nugget,
+        mission: Mission,
+        upcoming: Upcoming,
+      }[unitType];
 
-  if (!Model) {
-    console.warn(`Unknown unitType in success page: ${unitType}`);
-  } else {
-    unit = await Model.findById(id);
-    console.log(`Fetched ${unitType} for success page:`, unit);
+      if (!Model) {
+        console.warn(`[showSuccessPage] Unknown unitType: ${unitType}`);
+      } else {
+        unit = await Model.findById(id);
+        console.log(`[showSuccessPage] Fetched ${unitType} for success page:`, unit?._id || unit);
+      }
+    }
+
+    return res.render('unit_form_views/unit_success', {
+      layout: 'unitformlayout',
+      unitType,
+      unit,
+      error,
+      csrfToken: getCsrfToken(req),
+    });
+  } catch (fetchError) {
+    console.error(`[showSuccessPage] Error fetching ${unitType} details:`, fetchError);
+
+    return res.status(500).render('unit_form_views/error', {
+      layout: 'unitformlayout',
+      title: 'Error',
+      errorMessage: 'Unable to fetch unit details.',
+      csrfToken: getCsrfToken(req),
+    });
   }
-}
+},
 
-            res.render('unit_form_views/unit_success', {
-                layout: 'unitformlayout',
-                unitType,
-                unit,
-                error,
-                csrfToken: isDevelopment ? null : req.csrfToken(),
-            });
-        } catch (fetchError) {
-            console.error(`Error fetching ${unitType} details for success page:`, fetchError);
-            res.status(500).render('unit_form_views/error', {
-                layout: 'unitformlayout',
-                unitType,
-                error: 'Unable to fetch unit details.',
-                csrfToken: isDevelopment ? null : req.csrfToken(),
-            });
-        }
-    },
 
 
 // ↓ add alongside your explicit "getXForm" handlers
@@ -365,66 +387,69 @@ getUpcomingForm: (req, res) => {
   console.log('🛡 Rendering upcoming form. CSRF available:', typeof req.csrfToken === 'function');
 
   try {
+    // ✅ Gate form access (not just submission)
+    if (!requireTermsForPosting(req, res)) return;
+
     const mainTopics = [
-  'AI in Consulting',
-  'AI in Learning',
-  'AI in Project Management',
-  'Analytics in Project Management',
-  'Business Development in Technical Services',
-  'Business Development Metrics',
-  'Candid Communication',
-  'Career Development in Technical Services',
-  'Client Experience',
-  'Client Feedback Software',
-  'Client Interactions',
-  'Closing a Project Strategically',
-  'Conducting Color Reviews of Proposals',
-  'Cross Selling in Multi-Disciplinary Firms',
-  'CRM Platforms',
-  'Designing a Proposal Process',
-  'Emotional Intelligence',
-  'Employee Experience',
-  'Finding Projects Before they Become RFPs',
-  'Integrated Project Delivery or IPD',
-  'Leadership in Technical Consulting',
-  'Leading Change',
-  'Leading Groups on Twennie',
-  'Making a Proposal Easy to Read, Skim, and Evaluate',
-  'Managing Scope So It Doesnt Manage You',
-  'Mental Health in Consulting Environments',
-  'Non-Technical Roles in Technical Environments',
-  'People Before Profit',
-  'Program Management',
-  'Project Management',
-  'Project Management Software',
-  'Proposal Management',
-  'Proposal Strategy',
-  'Pull Marketing',
-  'Pursuing the Right Projects for Your Firm and Your Team',
-  'Remote and Hybrid Work',
-  'Rescuing a Project That Has Gone Off the Rails',
-  'Risk Management',
-  'Social Entrepreneurship',
-  'Social Media, Advertising, and Other Mysteries',
-  'Soft Skills in Technical Environments',
-  'Storytelling in Technical Marketing',
-  'Team Building in Consulting',
-  'The Advantage of Failure',
-  'The First 10 Days of a Project',
-  'The Pareto Principle',
-  'The Power of Play in the Workplace',
-  'The Power of Purpose',
-  'Tips and Tricks for Proposal Proofreading',
-  'Turning a Project into a Business Development Powerhouse',
-  'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
-  'Using Lean in Project Management',
-  'When the Workload is Light',
-  'Workplace Culture'
+      'AI in Consulting',
+      'AI in Learning',
+      'AI in Project Management',
+      'Analytics in Project Management',
+      'Business Development in Technical Services',
+      'Business Development Metrics',
+      'Candid Communication',
+      'Career Development in Technical Services',
+      'Client Experience',
+      'Client Feedback Software',
+      'Client Interactions',
+      'Closing a Project Strategically',
+      'Conducting Color Reviews of Proposals',
+      'Cross Selling in Multi-Disciplinary Firms',
+      'CRM Platforms',
+      'Designing a Proposal Process',
+      'Emotional Intelligence',
+      'Employee Experience',
+      'Finding Projects Before they Become RFPs',
+      'Integrated Project Delivery or IPD',
+      'Leadership in Technical Consulting',
+      'Leading Change',
+      'Leading Groups on Twennie',
+      'Making a Proposal Easy to Read, Skim, and Evaluate',
+      'Managing Scope So It Doesnt Manage You',
+      'Mental Health in Consulting Environments',
+      'Non-Technical Roles in Technical Environments',
+      'People Before Profit',
+      'Program Management',
+      'Project Management',
+      'Project Management Software',
+      'Proposal Management',
+      'Proposal Strategy',
+      'Pull Marketing',
+      'Pursuing the Right Projects for Your Firm and Your Team',
+      'Remote and Hybrid Work',
+      'Rescuing a Project That Has Gone Off the Rails',
+      'Risk Management',
+      'Social Entrepreneurship',
+      'Social Media, Advertising, and Other Mysteries',
+      'Soft Skills in Technical Environments',
+      'Storytelling in Technical Marketing',
+      'Team Building in Consulting',
+      'The Advantage of Failure',
+      'The First 10 Days of a Project',
+      'The Pareto Principle',
+      'The Power of Play in the Workplace',
+      'The Power of Purpose',
+      'Tips and Tricks for Proposal Proofreading',
+      'Turning a Project into a Business Development Powerhouse',
+      'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
+      'Using Lean in Project Management',
+      'When the Workload is Light',
+      'Workplace Culture'
     ];
 
     const unitTypes = [
       'article','video','interview','exercise','template',
-      'promptset', 'nugget', 'mission'
+      'promptset','nugget','mission'
     ];
 
     return res.render('unit_form_views/form_upcoming', {
@@ -440,6 +465,7 @@ getUpcomingForm: (req, res) => {
     return res.status(500).send('Error rendering form for upcoming.');
   }
 },
+
 
 
 // ---- submitUpcoming (drop-in) ----
@@ -504,24 +530,13 @@ submitUpcoming: async (req, res) => {
     ];
 
     const unitTypes = [
-      'article', 'video', 'interview', 'exercise', 'template',
-      'promptset', 'nugget', 'mission'
+      'article','video','interview','exercise','template',
+      'promptset','nugget','mission'
     ];
 
-    // ✅ Auth: match your other submit handlers (Passport only)
-    if (!req.user || !req.user._id) {
-      return res.status(401).render('unit_form_views/error', {
-        layout: 'unitformlayout',
-        title: 'Unauthorized',
-        errorMessage: 'Please log in to submit an upcoming unit.',
-      });
-    }
-
+    // ✅ Auth + terms gate (single source of truth)
     if (!requireTermsForPosting(req, res)) return;
 
-
-
-    // Pull fields
     const {
       _id,
       title,
@@ -557,7 +572,7 @@ submitUpcoming: async (req, res) => {
       });
     }
 
-    // Normalize optional secondary topic(s) into an array
+    // Normalize optional secondary topics into array
     const parsedSecondaryTopics =
       Array.isArray(secondary_topics)
         ? secondary_topics.filter(Boolean)
@@ -565,7 +580,6 @@ submitUpcoming: async (req, res) => {
           ? [secondary_topics.trim()]
           : [];
 
-    // Constrain status to allowed values
     const ALLOWED_STATUS = ['in production', 'released', 'cancelled'];
     const safeStatus = ALLOWED_STATUS.includes(status) ? status : 'in production';
 
@@ -584,7 +598,7 @@ submitUpcoming: async (req, res) => {
       priority: Number.isFinite(Number(priority)) ? Number(priority) : 0,
     };
 
-    // Handle image upload (optional)
+    // Optional image upload
     if (req.file) {
       const uploadResult = await new Promise((resolve, reject) => {
         const stream = uploader.upload_stream(
@@ -604,7 +618,7 @@ submitUpcoming: async (req, res) => {
       };
     }
 
-    // Fallback image if none provided (create mode only)
+    // Default image (create mode only)
     if (!payload.image && !_id) {
       payload.image = { public_id: null, url: '/images/default-upcoming.png' };
     }
@@ -612,7 +626,6 @@ submitUpcoming: async (req, res) => {
     let upcoming;
 
     if (_id) {
-      // Edit: do not overwrite createdBy; only backfill if missing
       upcoming = await Upcoming.findByIdAndUpdate(_id, payload, {
         new: true,
         runValidators: true,
@@ -623,6 +636,7 @@ submitUpcoming: async (req, res) => {
           layout: 'unitformlayout',
           title: 'Not Found',
           errorMessage: 'Upcoming unit not found for editing.',
+          csrfToken: getCsrfToken(req),
         });
       }
 
@@ -635,7 +649,6 @@ submitUpcoming: async (req, res) => {
 
       console.log(`Upcoming with ID ${_id} updated successfully.`);
     } else {
-      // Create: stamp creator consistently from req.user
       payload.createdBy = req.user._id;
       if (req.user.membershipType) payload.createdByModel = req.user.membershipType;
 
@@ -644,7 +657,6 @@ submitUpcoming: async (req, res) => {
       console.log('New upcoming unit created successfully.');
     }
 
-    // Success page
     return res.render('unit_form_views/unit_success', {
       layout: 'unitformlayout',
       unitType: 'upcoming',
@@ -674,78 +686,85 @@ submitUpcoming: async (req, res) => {
 },
 
 
+
 // ---- prefillFromUpcoming (drop-in) ----
 prefillFromUpcoming: async (req, res) => {
   try {
     const { unitType, id } = req.params;
+
     const upcoming = await Upcoming.findById(id).lean();
     if (!upcoming) {
       return res.status(404).render('unit_form_views/error', {
         layout: 'unitformlayout',
         title: 'Not Found',
-        errorMessage: 'Upcoming unit not found.'
+        errorMessage: 'Upcoming unit not found.',
+        csrfToken: getCsrfToken(req),
       });
     }
 
     const mainTopics = [
-  'AI in Consulting',
-  'AI in Learning',
-  'AI in Project Management',
-  'Analytics in Project Management',
-  'Business Development in Technical Services',
-  'Business Development Metrics',
-  'Candid Communication',
-  'Career Development in Technical Services',
-  'Client Experience',
-  'Client Feedback Software',
-  'Client Interactions',
-  'Closing a Project Strategically',
-  'Conducting Color Reviews of Proposals',
-  'Cross Selling in Multi-Disciplinary Firms',
-  'CRM Platforms',
-  'Designing a Proposal Process',
-  'Emotional Intelligence',
-  'Employee Experience',
-  'Finding Projects Before they Become RFPs',
-  'Integrated Project Delivery or IPD',
-  'Leadership in Technical Consulting',
-  'Leading Change',
-  'Leading Groups on Twennie',
-  'Making a Proposal Easy to Read, Skim, and Evaluate',
-  'Managing Scope So It Doesnt Manage You',
-  'Mental Health in Consulting Environments',
-  'Non-Technical Roles in Technical Environments',
-  'People Before Profit',
-  'Program Management',
-  'Project Management',
-  'Project Management Software',
-  'Proposal Management',
-  'Proposal Strategy',
-  'Pull Marketing',
-  'Pursuing the Right Projects for Your Firm and Your Team',
-  'Remote and Hybrid Work',
-  'Rescuing a Project That Has Gone Off the Rails',
-  'Risk Management',
-  'Social Entrepreneurship',
-  'Social Media, Advertising, and Other Mysteries',
-  'Soft Skills in Technical Environments',
-  'Storytelling in Technical Marketing',
-  'Team Building in Consulting',
-  'The Advantage of Failure',
-  'The First 10 Days of a Project',
-  'The Pareto Principle',
-  'The Power of Play in the Workplace',
-  'The Power of Purpose',
-  'Tips and Tricks for Proposal Proofreading',
-  'Turning a Project into a Business Development Powerhouse',
-  'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
-  'Using Lean in Project Management',
-  'When the Workload is Light',
-  'Workplace Culture'
+      'AI in Consulting',
+      'AI in Learning',
+      'AI in Project Management',
+      'Analytics in Project Management',
+      'Business Development in Technical Services',
+      'Business Development Metrics',
+      'Candid Communication',
+      'Career Development in Technical Services',
+      'Client Experience',
+      'Client Feedback Software',
+      'Client Interactions',
+      'Closing a Project Strategically',
+      'Conducting Color Reviews of Proposals',
+      'Cross Selling in Multi-Disciplinary Firms',
+      'CRM Platforms',
+      'Designing a Proposal Process',
+      'Emotional Intelligence',
+      'Employee Experience',
+      'Finding Projects Before they Become RFPs',
+      'Integrated Project Delivery or IPD',
+      'Leadership in Technical Consulting',
+      'Leading Change',
+      'Leading Groups on Twennie',
+      'Making a Proposal Easy to Read, Skim, and Evaluate',
+      'Managing Scope So It Doesnt Manage You',
+      'Mental Health in Consulting Environments',
+      'Non-Technical Roles in Technical Environments',
+      'People Before Profit',
+      'Program Management',
+      'Project Management',
+      'Project Management Software',
+      'Proposal Management',
+      'Proposal Strategy',
+      'Pull Marketing',
+      'Pursuing the Right Projects for Your Firm and Your Team',
+      'Remote and Hybrid Work',
+      'Rescuing a Project That Has Gone Off the Rails',
+      'Risk Management',
+      'Social Entrepreneurship',
+      'Social Media, Advertising, and Other Mysteries',
+      'Soft Skills in Technical Environments',
+      'Storytelling in Technical Marketing',
+      'Team Building in Consulting',
+      'The Advantage of Failure',
+      'The First 10 Days of a Project',
+      'The Pareto Principle',
+      'The Power of Play in the Workplace',
+      'The Power of Purpose',
+      'Tips and Tricks for Proposal Proofreading',
+      'Turning a Project into a Business Development Powerhouse',
+      'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
+      'Using Lean in Project Management',
+      'When the Workload is Light',
+      'Workplace Culture'
     ];
 
     // Image fallback
-    const image = upcoming.image?.url ? upcoming.image : { public_id: null, url: '/images/default-upcoming.png' };
+    const image = upcoming.image?.url
+      ? upcoming.image
+      : { public_id: null, url: '/images/default-upcoming.png' };
+
+    const fromUpcomingId = upcoming._id.toString();
 
     if (unitType === 'article') {
       return res.render('unit_form_views/form_article', {
@@ -761,8 +780,8 @@ prefillFromUpcoming: async (req, res) => {
           visibility: upcoming.visibility,
           image
         },
-        fromUpcomingId: upcoming._id.toString(),
-        csrfToken: req.csrfToken?.()
+        fromUpcomingId,
+        csrfToken: getCsrfToken(req),
       });
     }
 
@@ -780,8 +799,8 @@ prefillFromUpcoming: async (req, res) => {
           visibility: upcoming.visibility,
           image
         },
-        fromUpcomingId: upcoming._id.toString(),
-        csrfToken: req.csrfToken?.()
+        fromUpcomingId,
+        csrfToken: getCsrfToken(req),
       });
     }
 
@@ -806,36 +825,39 @@ prefillFromUpcoming: async (req, res) => {
         secondaryTopics,
         characteristics,
         frequencies,
-        fromUpcomingId: upcoming._id.toString(),
-        csrfToken: req.csrfToken?.()
+        fromUpcomingId,
+        csrfToken: getCsrfToken(req),
       });
     }
 
     return res.status(400).render('unit_form_views/error', {
       layout: 'unitformlayout',
       title: 'Unsupported',
-      errorMessage: `Prefill for unit type "${unitType}" is not configured yet.`
+      errorMessage: `Prefill for unit type "${unitType}" is not configured yet.`,
+      csrfToken: getCsrfToken(req),
     });
+
   } catch (err) {
     console.error('prefillFromUpcoming error:', err);
+
     return res.status(500).render('unit_form_views/error', {
       layout: 'unitformlayout',
       title: 'Error',
-      errorMessage: 'Could not prefill from upcoming.'
+      errorMessage: 'Could not prefill from upcoming.',
+      csrfToken: getCsrfToken(req),
     });
   }
 },
 
 
 
- submitNugget: async (req, res) => {
+submitNugget: async (req, res) => {
   try {
     if (!req.user || !req.user._id) {
       throw new Error('User is not authenticated or missing user ID.');
     }
 
     if (!requireTermsForPosting(req, res)) return;
-
 
     const {
       _id,
@@ -855,7 +877,6 @@ prefillFromUpcoming: async (req, res) => {
       fromUpcomingId
     } = req.body;
 
-    // Basic validation
     const errors = [];
     if (!title?.trim()) errors.push('Title is required.');
     if (!client?.trim()) errors.push('Client is required.');
@@ -920,7 +941,6 @@ prefillFromUpcoming: async (req, res) => {
       console.log('New nugget created successfully.');
     }
 
-    // migrate tags if this came from an upcoming unit
     if (fromUpcomingId) {
       await migrateAndDeleteUpcoming({
         fromUpcomingId,
@@ -929,9 +949,7 @@ prefillFromUpcoming: async (req, res) => {
       });
     }
 
-    // --- Prepare success payload so the template picks the right buttons ---
-    // 1) Provide a synthetic `nugget_title` (the template checks for *_title fields)
-    // 2) Provide explicit links (future-proof if you later switch the template to use them)
+    // Make success template happy (it checks for *_title fields)
     const unitForSuccess = {
       ...nugget.toObject(),
       nugget_title: nugget.title
@@ -940,15 +958,22 @@ prefillFromUpcoming: async (req, res) => {
     const viewLink = `/unitviews/nuggets/view/${nugget._id}`;
     const createLink = `/unitform/form_nugget`;
 
+    // ✅ Use real dashboard routes (no /dashboard)
+    const dashboardLink =
+      req.user?.membershipType === 'leader' ? '/dashboard/leader' :
+      req.user?.membershipType === 'group_member' ? '/dashboard/groupmember' :
+      '/dashboard/member';
+
     return res.render('unit_form_views/unit_success', {
       layout: 'unitformlayout',
       unitType: 'nugget',
       unit: unitForSuccess,
       viewLink,
       createLink,
-      dashboardLink: '/dashboard', // keep your existing pattern
+      dashboardLink,
       csrfToken: getCsrfToken(req),
     });
+
   } catch (error) {
     const isCsrfError = error.code === 'EBADCSRFTOKEN';
     console.error('Error submitting nugget:', error);
@@ -968,6 +993,7 @@ prefillFromUpcoming: async (req, res) => {
     });
   }
 },
+
 
 
 
@@ -1069,14 +1095,16 @@ submitArticle: async (req, res) => {
     const plainText = cleanHtml.replace(/<[^>]*>/g, ' ').trim();
     const wordCount = plainText.split(/\s+/).filter(Boolean).length;
 
-    if (wordCount < 800 || wordCount > 1200) {
-      return res.status(400).render('unit_form_views/form_article', {
-        layout: 'unitformlayout',
-        data: { ...req.body, article_body: cleanHtml },
-        errorMessage: `Your article must be between 800 and 1200 words. Current word count: ${wordCount}.`,
-        mainTopics,
-      });
-    }
+if (wordCount < 800 || wordCount > 1200) {
+  return res.status(400).render('unit_form_views/form_article', {
+    layout: 'unitformlayout',
+    data: { ...req.body, article_body: cleanHtml },
+    errorMessage: `Your article must be between 800 and 1200 words. Current word count: ${wordCount}.`,
+    mainTopics,
+    csrfToken: getCsrfToken(req),
+  });
+}
+
 
     // checkboxes
     const booleanFields = [
@@ -1199,9 +1227,6 @@ submitArticle: async (req, res) => {
 submitVideo: async (req, res) => {
   try {
     // CSRF (keep your existing guard)
-    if (process.env.NODE_ENV === 'production' && !req.body._csrf) {
-      throw new Error('CSRF token is missing or invalid.');
-    }
 
     if (!req.user || !req.user._id) {
       throw new Error('User is not authenticated or missing user ID.');
@@ -1414,172 +1439,91 @@ submitInterview: async (req, res) => {
 
 
     
-    getPromptForm: async (req, res) => {
+ getPromptForm: async (req, res) => {
+  try {
+    console.log('New prompt set form requested');
 
-        try {
-          console.log('New prompt set form requested');
-      
-          // Load existing data if editing; otherwise, use an empty object
-          const existingData = req.promptSet || {};
-      
-          // Retrieve any selected badge from the session (if a badge was chosen)
-          const selectedBadge = req.session.selectedBadge || {};
-      
-          // Attach the badge to the data (so the form will display it)
-          existingData.badge = selectedBadge;
-      
-          // Clear the badge from the session so that a new blank form won’t pre-fill a badge
-          req.session.selectedBadge = null;
-      
-          res.render('unit_form_views/form_promptset', {
-            layout: 'unitformlayout',
-            data: existingData, // Pre-filled for editing, empty for new
-            mainTopics: [
-  'AI in Consulting',
-  'AI in Learning',
-  'AI in Project Management',
-  'Analytics in Project Management',
-  'Business Development in Technical Services',
-  'Business Development Metrics',
-  'Candid Communication',
-  'Career Development in Technical Services',
-  'Client Experience',
-  'Client Feedback Software',
-  'Client Interactions',
-  'Closing a Project Strategically',
-  'Conducting Color Reviews of Proposals',
-  'Cross Selling in Multi-Disciplinary Firms',
-  'CRM Platforms',
-  'Designing a Proposal Process',
-  'Emotional Intelligence',
-  'Employee Experience',
-  'Finding Projects Before they Become RFPs',
-  'Integrated Project Delivery or IPD',
-  'Leadership in Technical Consulting',
-  'Leading Change',
-  'Leading Groups on Twennie',
-  'Making a Proposal Easy to Read, Skim, and Evaluate',
-  'Managing Scope So It Doesnt Manage You',
-  'Mental Health in Consulting Environments',
-  'Non-Technical Roles in Technical Environments',
-  'People Before Profit',
-  'Program Management',
-  'Project Management',
-  'Project Management Software',
-  'Proposal Management',
-  'Proposal Strategy',
-  'Pull Marketing',
-  'Pursuing the Right Projects for Your Firm and Your Team',
-  'Remote and Hybrid Work',
-  'Rescuing a Project That Has Gone Off the Rails',
-  'Risk Management',
-  'Social Entrepreneurship',
-  'Social Media, Advertising, and Other Mysteries',
-  'Soft Skills in Technical Environments',
-  'Storytelling in Technical Marketing',
-  'Team Building in Consulting',
-  'The Advantage of Failure',
-  'The First 10 Days of a Project',
-  'The Pareto Principle',
-  'The Power of Play in the Workplace',
-  'The Power of Purpose',
-  'Tips and Tricks for Proposal Proofreading',
-  'Turning a Project into a Business Development Powerhouse',
-  'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
-  'Using Lean in Project Management',
-  'When the Workload is Light',
-  'Workplace Culture'
-            ],
-            secondaryTopics: [
-  'AI in Consulting',
-  'AI in Learning',
-  'AI in Project Management',
-  'Analytics in Project Management',
-  'Business Development in Technical Services',
-  'Business Development Metrics',
-  'Candid Communication',
-  'Career Development in Technical Services',
-  'Client Experience',
-  'Client Feedback Software',
-  'Client Interactions',
-  'Closing a Project Strategically',
-  'Conducting Color Reviews of Proposals',
-  'Cross Selling in Multi-Disciplinary Firms',
-  'CRM Platforms',
-  'Designing a Proposal Process',
-  'Emotional Intelligence',
-  'Employee Experience',
-  'Finding Projects Before they Become RFPs',
-  'Integrated Project Delivery or IPD',
-  'Leadership in Technical Consulting',
-  'Leading Change',
-  'Leading Groups on Twennie',
-  'Making a Proposal Easy to Read, Skim, and Evaluate',
-  'Managing Scope So It Doesnt Manage You',
-  'Mental Health in Consulting Environments',
-  'Non-Technical Roles in Technical Environments',
-  'People Before Profit',
-  'Program Management',
-  'Project Management',
-  'Project Management Software',
-  'Proposal Management',
-  'Proposal Strategy',
-  'Pull Marketing',
-  'Pursuing the Right Projects for Your Firm and Your Team',
-  'Remote and Hybrid Work',
-  'Rescuing a Project That Has Gone Off the Rails',
-  'Risk Management',
-  'Social Entrepreneurship',
-  'Social Media, Advertising, and Other Mysteries',
-  'Soft Skills in Technical Environments',
-  'Storytelling in Technical Marketing',
-  'Team Building in Consulting',
-  'The Advantage of Failure',
-  'The First 10 Days of a Project',
-  'The Pareto Principle',
-  'The Power of Play in the Workplace',
-  'The Power of Purpose',
-  'Tips and Tricks for Proposal Proofreading',
-  'Turning a Project into a Business Development Powerhouse',
-  'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
-  'Using Lean in Project Management',
-  'When the Workload is Light',
-  'Workplace Culture'
-            ],
-            characteristics: [
-              'educational',
-              'motivational',
-              'provocative',
-              'fun',
-              'hilarious',
-              'silly',
-              'competitive',
-              'restorative',
-              'energizing',
-              'relationship-building',
-              'team building',
-              'stress-relieving',
-              'insightful',
-              'calming',
-              'reassuring',
-              'encouraging',
-              'creative',
-              'imaginative',
-              'heart-warming',
-              'other'
-            ],
-            frequencies: ['daily', 'weekly', 'monthly', 'quarterly'],
-            csrfToken: isDevelopment ? null : req.csrfToken(),
-          });
-        } catch (error) {
-          console.error('Error loading new prompt set form:', error);
-          res.status(500).render('unit_form_views/error', {
-            layout: 'unitformlayout',
-            title: 'Error',
-            errorMessage: 'An error occurred while loading the form.',
-          });
-        }
-      },
+    // ✅ Gate form access (not just submission)
+    if (!requireTermsForPosting(req, res)) return;
+
+    // Load existing data if editing; otherwise, use an empty object
+    const existingData = req.promptSet || {};
+
+    // Retrieve any selected badge from the session (if a badge was chosen)
+    const selectedBadge = req.session.selectedBadge || {};
+
+    // Attach the badge to the data (so the form will display it)
+    existingData.badge = selectedBadge;
+
+    // Clear the badge from the session so that a new blank form won’t pre-fill a badge
+    req.session.selectedBadge = null;
+
+    return res.render('unit_form_views/form_promptset', {
+      layout: 'unitformlayout',
+      data: existingData,
+      mainTopics: [
+        'AI in Consulting','AI in Learning','AI in Project Management','Analytics in Project Management',
+        'Business Development in Technical Services','Business Development Metrics','Candid Communication',
+        'Career Development in Technical Services','Client Experience','Client Feedback Software',
+        'Client Interactions','Closing a Project Strategically','Conducting Color Reviews of Proposals',
+        'Cross Selling in Multi-Disciplinary Firms','CRM Platforms','Designing a Proposal Process',
+        'Emotional Intelligence','Employee Experience','Finding Projects Before they Become RFPs',
+        'Integrated Project Delivery or IPD','Leadership in Technical Consulting','Leading Change',
+        'Leading Groups on Twennie','Making a Proposal Easy to Read, Skim, and Evaluate',
+        'Managing Scope So It Doesnt Manage You','Mental Health in Consulting Environments',
+        'Non-Technical Roles in Technical Environments','People Before Profit','Program Management',
+        'Project Management','Project Management Software','Proposal Management','Proposal Strategy',
+        'Pull Marketing','Pursuing the Right Projects for Your Firm and Your Team','Remote and Hybrid Work',
+        'Rescuing a Project That Has Gone Off the Rails','Risk Management','Social Entrepreneurship',
+        'Social Media, Advertising, and Other Mysteries','Soft Skills in Technical Environments',
+        'Storytelling in Technical Marketing','Team Building in Consulting','The Advantage of Failure',
+        'The First 10 Days of a Project','The Pareto Principle','The Power of Play in the Workplace',
+        'The Power of Purpose','Tips and Tricks for Proposal Proofreading',
+        'Turning a Project into a Business Development Powerhouse',
+        'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
+        'Using Lean in Project Management','When the Workload is Light','Workplace Culture'
+      ],
+      secondaryTopics: [
+        'AI in Consulting','AI in Learning','AI in Project Management','Analytics in Project Management',
+        'Business Development in Technical Services','Business Development Metrics','Candid Communication',
+        'Career Development in Technical Services','Client Experience','Client Feedback Software',
+        'Client Interactions','Closing a Project Strategically','Conducting Color Reviews of Proposals',
+        'Cross Selling in Multi-Disciplinary Firms','CRM Platforms','Designing a Proposal Process',
+        'Emotional Intelligence','Employee Experience','Finding Projects Before they Become RFPs',
+        'Integrated Project Delivery or IPD','Leadership in Technical Consulting','Leading Change',
+        'Leading Groups on Twennie','Making a Proposal Easy to Read, Skim, and Evaluate',
+        'Managing Scope So It Doesnt Manage You','Mental Health in Consulting Environments',
+        'Non-Technical Roles in Technical Environments','People Before Profit','Program Management',
+        'Project Management','Project Management Software','Proposal Management','Proposal Strategy',
+        'Pull Marketing','Pursuing the Right Projects for Your Firm and Your Team','Remote and Hybrid Work',
+        'Rescuing a Project That Has Gone Off the Rails','Risk Management','Social Entrepreneurship',
+        'Social Media, Advertising, and Other Mysteries','Soft Skills in Technical Environments',
+        'Storytelling in Technical Marketing','Team Building in Consulting','The Advantage of Failure',
+        'The First 10 Days of a Project','The Pareto Principle','The Power of Play in the Workplace',
+        'The Power of Purpose','Tips and Tricks for Proposal Proofreading',
+        'Turning a Project into a Business Development Powerhouse',
+        'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
+        'Using Lean in Project Management','When the Workload is Light','Workplace Culture'
+      ],
+      characteristics: [
+        'educational','motivational','provocative','fun','hilarious','silly','competitive','restorative',
+        'energizing','relationship-building','team building','stress-relieving','insightful','calming',
+        'reassuring','encouraging','creative','imaginative','heart-warming','other'
+      ],
+      frequencies: ['daily', 'weekly', 'monthly', 'quarterly'],
+      csrfToken: getCsrfToken(req),
+    });
+  } catch (error) {
+    console.error('Error loading new prompt set form:', error);
+    return res.status(500).render('unit_form_views/error', {
+      layout: 'unitformlayout',
+      title: 'Error',
+      errorMessage: 'An error occurred while loading the form.',
+      csrfToken: getCsrfToken(req),
+    });
+  }
+},
+
       
     
     
@@ -1702,22 +1646,23 @@ submitPromptSet: async (req, res) => {
     }
 
     // ✅ Always render success page
-    return res.render('unit_form_views/unit_success', {
-      layout: 'unitformlayout',
-      unitType: 'promptset',
-      unit: promptSet,
-      csrfToken: isDevelopment ? null : req.csrfToken(),
-    });
+return res.render('unit_form_views/unit_success', {
+  layout: 'unitformlayout',
+  unitType: 'promptset',
+  unit: promptSet,
+  csrfToken: getCsrfToken(req),
+});
   } catch (error) {
     console.error('Error submitting prompt set:', error);
 
     const isCsrfError = error.code === 'EBADCSRFTOKEN';
     if (isCsrfError) {
-      return res.status(403).render('unit_form_views/error', {
-        layout: 'unitformlayout',
-        title: 'Session Expired',
-        errorMessage: 'Your session has expired or the form took too long to submit. Please refresh and try again.',
-      });
+return res.status(403).render('unit_form_views/error', {
+  layout: 'unitformlayout',
+  title: 'Session Expired',
+  errorMessage: 'Your session has expired or the form took too long to submit. Please refresh and try again.',
+  csrfToken: getCsrfToken(req),
+});
     }
 
     return res.status(500).render('unit_form_views/error', {
@@ -1908,13 +1853,13 @@ submitPromptSet: async (req, res) => {
 
     // Validation error → re-render form with data + topics
     if (error.name === 'ValidationError') {
-      return res.status(400).render('unit_form_views/form_exercise', {
-        layout: 'unitformlayout',
-        data: req.body,
-        errorMessage: error.message,
-        mainTopics,
-        csrfToken: isDevelopment ? null : req.csrfToken(),
-      });
+return res.status(400).render('unit_form_views/form_exercise', {
+  layout: 'unitformlayout',
+  data: req.body,
+  errorMessage: error.message,
+  mainTopics,
+  csrfToken: getCsrfToken(req),
+});
     }
 
     const isCsrfError = error.code === 'EBADCSRFTOKEN';
@@ -2077,12 +2022,12 @@ submitPromptSet: async (req, res) => {
     }
 
     // ✅ Always render success page
-    return res.render('unit_form_views/unit_success', {
-      layout: 'unitformlayout',
-      unitType: 'template',
-      unit: templateDoc,
-      csrfToken: isDevelopment ? null : req.csrfToken(),
-    });
+return res.render('unit_form_views/unit_success', {
+  layout: 'unitformlayout',
+  unitType: 'template',
+  unit: templateDoc,
+  csrfToken: getCsrfToken(req),
+});
   } catch (error) {
     console.error('Error submitting template:', error);
 

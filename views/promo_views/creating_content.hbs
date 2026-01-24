@@ -37,6 +37,8 @@
           - If user cannot contribute: show membership notice + CTAs
           - If user can contribute but has not accepted terms: show terms gate card
           - If user has accepted terms: show toggle + creation grid
+          NOTE: This is a promo/orientation page, NOT a dashboard.
+                So the "next" should return here, not to /dashboard.
       ========================================================= --}}
 
       {{#unless canContribute}}
@@ -134,8 +136,9 @@
                 before you contribute, you must agree to Twennie’s terms &amp; conditions
               </p>
 
+              {{!-- IMPORTANT: return to THIS page after accepting --}}
               <a
-                href="/termsconditions?next=/dashboard#contribute"
+                href="/termsconditions?next=/create_learning#contribute"
                 class="contribute-btn"
                 style="display:inline-block; text-decoration:none;"
               >
@@ -153,7 +156,7 @@
               show unit creation options
             </button>
 
-            <div id="contributionGrid" class="contribution-grid" style="display: grid;">
+            <div id="contributionGrid" class="contribution-grid" style="display: none;">
 
               <!-- Article -->
               <a href="/unitform/form_article" class="unit-card" data-unit-link="true" aria-label="Create an article">
@@ -236,6 +239,37 @@
 
     </div>
   </section>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const toggleBtn = document.getElementById('toggleContribute');
+      const grid = document.getElementById('contributionGrid');
+
+      if (toggleBtn && grid) {
+        toggleBtn.addEventListener('click', () => {
+          const isHidden = grid.style.display === 'none' || !grid.style.display;
+          grid.style.display = isHidden ? 'grid' : 'none';
+        });
+      }
+
+      // Auto-open if returning with #contribute
+      if (window.location.hash !== '#contribute') return;
+
+      const section = document.getElementById('contribute');
+      if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      if (!toggleBtn || !grid) return;
+
+      try { toggleBtn.click(); } catch (e) { grid.style.display = 'grid'; }
+
+      try {
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+      } catch (e) {}
+    });
+  </script>
+
+</section>
+
 
 
 

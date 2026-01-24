@@ -83,9 +83,17 @@ router.get('/privacypolicy', (req, res) => {
 });
 
 // --- Terms & Conditions (GET) ---
+// --- Terms & Conditions (GET) ---
 router.get('/termsconditions', (req, res) => {
   const u = res.locals.user || req.user || null;
-  const next = req.query.next || '/dashboard';
+
+  // ✅ Default next must be a REAL dashboard route in your app (no /dashboard/)
+  const defaultNext =
+    u?.membershipType === 'leader' ? '/dashboard/leader#contribute' :
+    u?.membershipType === 'group_member' ? '/dashboard/groupmember#contribute' :
+    '/dashboard/member#contribute'; // change if your member dashboard route differs
+
+  const next = req.query.next || defaultNext;
 
   try {
     return res.render('promo_views/termsconditions', {
@@ -96,16 +104,21 @@ router.get('/termsconditions', (req, res) => {
     });
   } catch (err) {
     console.error('Error rendering termsconditions:', err);
-    return res.status(500).render('promo_views/main_home_page', {
-      layout: 'mainlayout',
-    });
+    return res.status(500).render('promo_views/main_home_page', { layout: 'mainlayout' });
   }
 });
 
 
 // --- Terms & Conditions (POST accept) ---
 router.post('/termsconditions/accept', async (req, res) => {
-  const next = req.body.next || req.query.next || '/dashboard';
+  const u = res.locals.user || req.user || null;
+
+  const defaultNext =
+    u?.membershipType === 'leader' ? '/dashboard/leader#contribute' :
+    u?.membershipType === 'group_member' ? '/dashboard/groupmember#contribute' :
+    '/dashboard/member#contribute'; // change if your member dashboard route differs
+
+  const next = req.body.next || req.query.next || defaultNext;
 
   try {
     // Must be logged in to accept
@@ -115,7 +128,7 @@ router.post('/termsconditions/accept', async (req, res) => {
         user: null,
         next,
         csrfToken: req.csrfToken ? req.csrfToken() : null,
-        errorMessage: 'Please log in to accept the Terms & Conditions.',
+        errorMessage: 'Please log in to accept the Terms &amp; Conditions.',
       });
     }
 
@@ -123,33 +136,32 @@ router.post('/termsconditions/accept', async (req, res) => {
     if (!req.body.acceptTerms) {
       return res.status(400).render('promo_views/termsconditions', {
         layout: 'mainlayout',
-        user: req.user,
+        user: u,
         next,
         csrfToken: req.csrfToken ? req.csrfToken() : null,
-        errorMessage: 'Please check the box to accept the Terms & Conditions.',
+        errorMessage: 'Please check the box to accept the Terms &amp; Conditions.',
       });
     }
 
-    // Persist acceptance
-// Persist acceptance (explicit model update — works even if req.user isn't a Mongoose doc)
-const updates = {
-  termsAccepted: true,
-  termsAcceptedAt: new Date(),
-  termsVersion: 'v1',
-};
+    // Persist acceptance (explicit model update — works even if req.user isn't a Mongoose doc)
+    const updates = {
+      termsAccepted: true,
+      termsAcceptedAt: new Date(),
+      termsVersion: 'v1',
+    };
 
-const userId = req.user._id;
-const type = req.user.membershipType;
+    const userId = req.user._id;
+    const type = req.user.membershipType;
 
-if (type === 'leader') {
-  await Leader.findByIdAndUpdate(userId, updates);
-} else if (type === 'group_member') {
-  await GroupMember.findByIdAndUpdate(userId, updates);
-} else {
-  await Member.findByIdAndUpdate(userId, updates);
-}
+    if (type === 'leader') {
+      await Leader.findByIdAndUpdate(userId, updates);
+    } else if (type === 'group_member') {
+      await GroupMember.findByIdAndUpdate(userId, updates);
+    } else {
+      await Member.findByIdAndUpdate(userId, updates);
+    }
 
-return res.redirect(next);
+    return res.redirect(next);
 
   } catch (err) {
     const isCsrfError = err && err.code === 'EBADCSRFTOKEN';
@@ -158,7 +170,7 @@ return res.redirect(next);
     if (isCsrfError) {
       return res.status(403).render('promo_views/termsconditions', {
         layout: 'mainlayout',
-        user: res.locals.user || req.user || null,
+        user: u,
         next,
         csrfToken: req.csrfToken ? req.csrfToken() : null,
         errorMessage:
@@ -168,13 +180,14 @@ return res.redirect(next);
 
     return res.status(500).render('promo_views/termsconditions', {
       layout: 'mainlayout',
-      user: res.locals.user || req.user || null,
+      user: u,
       next,
       csrfToken: req.csrfToken ? req.csrfToken() : null,
       errorMessage: 'Could not save your terms acceptance. Please try again.',
     });
   }
 });
+
 
 
 router.get('/facilitation', (req, res) => {

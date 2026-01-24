@@ -26,6 +26,7 @@
         - If not logged in: prompt to log in
         - If logged in but not accepted: prompt to accept terms
         - If accepted: show contribute toggle + unit grid
+        NOTE: This is inside the dashboard, so "next" must be a REAL dashboard route.
     ========================================================= --}}
 
     {{#if user}}
@@ -36,8 +37,9 @@
             before you contribute, you must agree to Twennie’s terms &amp; conditions
           </p>
 
+          {{!-- IMPORTANT: use your REAL dashboard route here (leader example below) --}}
           <a
-            href="/termsconditions?next=/dashboard#contribute"
+            href="/termsconditions?next=/dashboard/leader#contribute"
             class="contribute-btn"
             style="display:inline-block; text-decoration:none;"
           >
@@ -159,8 +161,6 @@
             </div>
           </a>
 
-
-
         </div>
 
         <script>
@@ -176,18 +176,18 @@
             }
 
             // Auto-open if returning with #contribute
-            if (window.location.hash === '#contribute') {
-              const section = document.getElementById('contribute');
-              if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            if (window.location.hash !== '#contribute') return;
 
-              if (toggleBtn && grid) {
-                try { toggleBtn.click(); } catch (e) { grid.style.display = 'grid'; }
-              }
+            const section = document.getElementById('contribute');
+            if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-              try {
-                history.replaceState(null, '', window.location.pathname + window.location.search);
-              } catch (e) {}
-            }
+            if (!toggleBtn || !grid) return;
+
+            try { toggleBtn.click(); } catch (e) { grid.style.display = 'grid'; }
+
+            try {
+              history.replaceState(null, '', window.location.pathname + window.location.search);
+            } catch (e) {}
           });
         </script>
 
