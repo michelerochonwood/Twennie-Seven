@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const twenniemapController = require('../../controllers/twenniemapController');
 const createLearningController = require('../../controllers/createlearningController');
+const Member = require('../../models/member_models/member');
+const Leader = require('../../models/member_models/leader');
+const GroupMember = require('../../models/member_models/group_member');
 
 // Define routes
 router.get('/', (req, res) => {
@@ -128,12 +131,26 @@ router.post('/termsconditions/accept', async (req, res) => {
     }
 
     // Persist acceptance
-    req.user.termsAccepted = true;
-    req.user.termsAcceptedAt = new Date();
-    req.user.termsVersion = 'v1';
-    await req.user.save();
+// Persist acceptance (explicit model update — works even if req.user isn't a Mongoose doc)
+const updates = {
+  termsAccepted: true,
+  termsAcceptedAt: new Date(),
+  termsVersion: 'v1',
+};
 
-    return res.redirect(next);
+const userId = req.user._id;
+const type = req.user.membershipType;
+
+if (type === 'leader') {
+  await Leader.findByIdAndUpdate(userId, updates);
+} else if (type === 'group_member') {
+  await GroupMember.findByIdAndUpdate(userId, updates);
+} else {
+  await Member.findByIdAndUpdate(userId, updates);
+}
+
+return res.redirect(next);
+
   } catch (err) {
     const isCsrfError = err && err.code === 'EBADCSRFTOKEN';
     console.error('Error accepting terms:', err);
