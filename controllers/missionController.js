@@ -510,6 +510,16 @@ module.exports = {
         'organized, compliant, and prepared when things get busy again.',
     }),
 
+      communityMissions: (req, res) =>
+    renderMissionList(req, res, {
+      category: 'other',
+      viewName: 'unit_views/missions_community',
+      pageTitle: 'Community Missions',
+      shortSummary: 'Missions that encourage giving and community involvement.',
+      longSummary:
+        'Use community missions for community outreach, volunteering, and giving.',
+    }),
+
   rogueMissions: (req, res) =>
     renderMissionList(req, res, {
       category: 'other',

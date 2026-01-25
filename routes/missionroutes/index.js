@@ -52,6 +52,11 @@ router.get(
   missionController.cultureAndPlayMissions
 );
 
+router.get(
+  '/unitviews/missions/community',
+  missionController.communityMissions
+);
+
 // Administrative Missions
 router.get(
   '/unitviews/missions/administrative',
