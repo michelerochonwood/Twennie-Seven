@@ -7,7 +7,7 @@
        1) MY TAGGED UNITS (NON-NUGGET, NON-MISSION)
        ===================================================== --}}
   <div class="group-member-tagged-subsection">
-    <h3 class="group-member-tagged-subtitle">my tagged units</h3>
+    <h3 class="group-member-tagged-subtitle">my self-assigned units</h3>
 
     <div class="tagged-units-grid">
       {{#if groupMemberSelfTaggedUnits.length}}
@@ -28,7 +28,7 @@
                   <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
                   <button class="tagged-unit-link"
                           onclick="removeSelfTag('{{tagId}}','{{_id}}','{{unitType}}')">
-                    remove tag
+                    remove assignment
                   </button>
                 </div>
               </div>
@@ -36,7 +36,7 @@
           {{/unless}}
         {{/each}}
       {{else}}
-        <p class="tagged-no-units">You have not tagged any units.</p>
+        <p class="tagged-no-units">You have not self-assigned any units.</p>
       {{/if}}
     </div>
   </div>
@@ -47,7 +47,7 @@
        2) MY ASSIGNED UNITS (NON-NUGGET, NON-MISSION)
        ===================================================== --}}
   <div class="group-member-tagged-subsection">
-    <h3 class="group-member-tagged-subtitle">my assigned units</h3>
+    <h3 class="group-member-tagged-subtitle">my leader-assigned units</h3>
 
     <div class="tagged-units-grid">
       {{#if groupMemberAssignedUnits.length}}
@@ -83,7 +83,7 @@
           {{/unless}}
         {{/each}}
       {{else}}
-        <p class="tagged-no-units">You have no units assigned by your leader.</p>
+        <p class="tagged-no-units">You have no leader-assigned units.</p>
       {{/if}}
     </div>
   </div>
@@ -94,7 +94,7 @@
        3) MY TAGGED NUGGETS (WITH SVG WAVE)
        ===================================================== --}}
   <div class="group-member-tagged-subsection">
-    <h3 class="group-member-tagged-subtitle">my tagged nuggets</h3>
+    <h3 class="group-member-tagged-subtitle">my self-assigned nuggets</h3>
 
     <div class="tagged-units-grid">
       {{#if groupMemberTaggedNuggets.length}}
@@ -130,7 +130,7 @@
           </div>
         {{/each}}
       {{else}}
-        <p class="tagged-no-units">You have not tagged any nuggets.</p>
+        <p class="tagged-no-units">You have not self-assigned any nuggets.</p>
       {{/if}}
     </div>
   </div>
@@ -141,7 +141,7 @@
        4) MY ASSIGNED NUGGETS (WITH SVG WAVE)
        ===================================================== --}}
   <div class="group-member-tagged-subsection">
-    <h3 class="group-member-tagged-subtitle">my assigned nuggets</h3>
+    <h3 class="group-member-tagged-subtitle">my leader-assigned nuggets</h3>
 
     <div class="tagged-units-grid">
       {{#if groupMemberAssignedNuggets.length}}
@@ -171,9 +171,9 @@
                   {{/if}}
 
                   {{#if assignedCompletedAtFormatted}}
-                    <p class="leader-assigned-status">✅ completed <span class="muted">({{assignedCompletedAtFormatted}})</span></p>
+                    <p class="leader-assigned-status">✅ closed <span class="muted">({{assignedCompletedAtFormatted}})</span></p>
                   {{else}}
-                    <p class="leader-assigned-status">⏳ pending</p>
+                    <p class="leader-assigned-status">⏳ monitoring</p>
                   {{/if}}
                 </div>
 
