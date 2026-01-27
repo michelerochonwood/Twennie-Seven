@@ -2064,7 +2064,7 @@ html, body {
   width: 300px;
   height: 300px;
   border: 2px solid #262262;
-  border-radius: 99px;
+  border-radius: 333px;
 
 }
 
@@ -2721,7 +2721,7 @@ html, body {
   width: 300px;
   height: 300px;
   border: 2px solid #262262;
-  border-radius: 99px;
+  border-radius: 333px;
 }
 
 .leader-sidebar .leader-profile-image {
@@ -3702,7 +3702,7 @@ html, body {
   width: 300px; /* Reduced from 150px */
   height: 300px;
   border: 1.5px solid #262262; /* Reduced border */
-  border-radius: 99px;
+  border-radius: 333px;
 }
 
 .member-sidebar .member-profile-image {
