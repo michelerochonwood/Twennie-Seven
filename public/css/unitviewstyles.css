@@ -563,7 +563,8 @@ html, body {
 }
 
 .single_video-duration-image {
-  width: 100px;
+  width: 300px;
+  height: auto;
 
 }
 
