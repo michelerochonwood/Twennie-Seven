@@ -15,10 +15,12 @@ const csrfProtection = csrf();
 // ------------------------------------------------------------
 // Helpers (Terms flow)
 // ------------------------------------------------------------
+// NOTE: your actual dashboard route is /dashboard/groupmember (no dash).
+// Schema name "group_member" does NOT determine the URL path.
 function dashboardHomeForUser(user) {
   const type = user?.membershipType || user?.accessLevel;
   if (type === 'leader') return '/dashboard/leader#contribute';
-  if (type === 'group_member') return '/dashboard/group-member#contribute'; // ✅ canonical
+  if (type === 'group_member') return '/dashboard/groupmember#contribute'; // ✅ real route
   return '/dashboard/member#contribute';
 }
 
@@ -31,9 +33,9 @@ function sanitizeNext(next, user) {
   if (next.startsWith('//')) return fallback;
   if (next.includes('://')) return fallback;
 
+  // role-based allowlist
   const type = user?.membershipType || user?.accessLevel;
 
-  // role-based allowlist
   if (type === 'leader') {
     if (next.startsWith('/dashboard/leader')) return next;
     if (next.startsWith('/unitform/')) return next;
@@ -42,7 +44,8 @@ function sanitizeNext(next, user) {
   }
 
   if (type === 'group_member') {
-    if (next.startsWith('/dashboard/group-member')) return next;
+    // group members can NOT go to leader dashboard
+    if (next.startsWith('/dashboard/groupmember')) return next;
     if (next.startsWith('/unitform/')) return next;
     if (next.startsWith('/termsconditions')) return next;
     return fallback;
@@ -290,3 +293,4 @@ router.get('/create_learning', (req, res) => {
 });
 
 module.exports = router;
+
