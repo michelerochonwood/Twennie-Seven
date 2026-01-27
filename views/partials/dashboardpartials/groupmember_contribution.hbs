@@ -53,15 +53,18 @@
         </div>
       {{/unless}}
 
-      {{#if user.termsAccepted}}
+{{#if user.termsAccepted}}
 
-        <!-- Toggle Button -->
-        <button id="toggleContribute" class="contribute-btn" type="button">
-          I want to contribute to the library
-        </button>
+  <!-- Toggle Button -->
+  <button class="contribute-btn js-toggle-contribute" type="button">
+    I want to contribute to the library
+  </button>
 
-        <!-- Hidden Contribution Grid -->
-        <div id="contributionGrid" class="contribution-grid" style="display: none;">
+
+  <!-- Hidden Contribution Grid -->
+  <div class="contribution-grid js-contribution-grid" style="display: none;">
+    <!-- ... keep all your unit cards exactly as-is ... -->
+
 
           <!-- Article -->
           <a href="/unitform/form_article" class="unit-card" aria-label="Create an article">
@@ -165,31 +168,33 @@
         </div>
 
         <script>
-          document.addEventListener('DOMContentLoaded', () => {
-            const toggleBtn = document.getElementById('toggleContribute');
-            const grid = document.getElementById('contributionGrid');
+    document.addEventListener('DOMContentLoaded', () => {
+      const section = document.getElementById('contribute');
+      if (!section) return;
 
-            if (toggleBtn && grid) {
-              toggleBtn.addEventListener('click', () => {
-                const isHidden = grid.style.display === 'none' || !grid.style.display;
-                grid.style.display = isHidden ? 'grid' : 'none';
-              });
-            }
+      const toggleBtn = section.querySelector('.js-toggle-contribute');
+      const grid = section.querySelector('.js-contribution-grid');
 
-            // Auto-open if returning with #contribute
-            if (window.location.hash !== '#contribute') return;
+      if (toggleBtn && grid) {
+        toggleBtn.addEventListener('click', () => {
+          const isHidden = grid.style.display === 'none' || !grid.style.display;
+          grid.style.display = isHidden ? 'grid' : 'none';
+        });
+      }
 
-            const section = document.getElementById('contribute');
-            if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Auto-open if returning with #contribute
+      if (window.location.hash !== '#contribute') return;
 
-            if (!toggleBtn || !grid) return;
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-            try { toggleBtn.click(); } catch (e) { grid.style.display = 'grid'; }
+      if (!toggleBtn || !grid) return;
 
-            try {
-              history.replaceState(null, '', window.location.pathname + window.location.search);
-            } catch (e) {}
-          });
+      try { toggleBtn.click(); } catch (e) { grid.style.display = 'grid'; }
+
+      try {
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+      } catch (e) {}
+    });
         </script>
 
       {{/if}}
