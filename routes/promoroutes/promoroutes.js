@@ -1,106 +1,127 @@
 const express = require('express');
 const router = express.Router();
+
 const twenniemapController = require('../../controllers/twenniemapController');
 const createLearningController = require('../../controllers/createlearningController');
+
 const Member = require('../../models/member_models/member');
 const Leader = require('../../models/member_models/leader');
 const GroupMember = require('../../models/member_models/group_member');
 
-// Define routes
+// ✅ CSRF (needed for terms acceptance)
+const csrf = require('csurf');
+const csrfProtection = csrf();
+
+// ------------------------------------------------------------
+// Helpers (Terms flow)
+// ------------------------------------------------------------
+function dashboardHomeForUser(user) {
+  const type = user?.membershipType || user?.accessLevel;
+  if (type === 'leader') return '/dashboard/leader#contribute';
+  if (type === 'group_member') return '/dashboard/group-member#contribute'; // ✅ canonical
+  return '/dashboard/member#contribute';
+}
+
+function sanitizeNext(next, user) {
+  const fallback = dashboardHomeForUser(user);
+
+  // must be a local path
+  if (typeof next !== 'string') return fallback;
+  if (!next.startsWith('/')) return fallback;
+  if (next.startsWith('//')) return fallback;
+  if (next.includes('://')) return fallback;
+
+  const type = user?.membershipType || user?.accessLevel;
+
+  // role-based allowlist
+  if (type === 'leader') {
+    if (next.startsWith('/dashboard/leader')) return next;
+    if (next.startsWith('/unitform/')) return next;
+    if (next.startsWith('/termsconditions')) return next;
+    return fallback;
+  }
+
+  if (type === 'group_member') {
+    if (next.startsWith('/dashboard/group-member')) return next;
+    if (next.startsWith('/unitform/')) return next;
+    if (next.startsWith('/termsconditions')) return next;
+    return fallback;
+  }
+
+  // individual members
+  if (next.startsWith('/dashboard/member')) return next;
+  if (next.startsWith('/unitform/')) return next;
+  if (next.startsWith('/termsconditions')) return next;
+
+  return fallback;
+}
+
+// ------------------------------------------------------------
+// Promo / public routes
+// ------------------------------------------------------------
 router.get('/', (req, res) => {
-    res.render('promo_views/main_home_page', {
-        layout: 'mainlayout'
-    });
+  res.render('promo_views/main_home_page', { layout: 'mainlayout' });
 });
 
 router.get('/avail_memberships', (req, res) => {
-    res.render('promo_views/avail_memberships', {
-        layout: 'mainlayout'
-    });
+  res.render('promo_views/avail_memberships', { layout: 'mainlayout' });
 });
 
 router.get('/topics', (req, res) => {
-    res.render('promo_views/topics', {
-        layout: 'mainlayout'
-    });
+  res.render('promo_views/topics', { layout: 'mainlayout' });
 });
 
 router.get('/contributor_units', (req, res) => {
-    res.render('promo_views/contributor_units', {
-        layout: 'mainlayout'
-    });
+  res.render('promo_views/contributor_units', { layout: 'mainlayout' });
 });
 
 router.get('/member_access', (req, res) => {
-    res.render('promo_views/member_access', {
-        layout: 'mainlayout'
-    });
+  res.render('promo_views/member_access', { layout: 'mainlayout' });
 });
 
-
-
-
 router.get('/what_is_twennie', (req, res) => {
-    res.render('promo_views/whatistwennie_view', {
-        layout: 'mainlayout'
-    });
+  res.render('promo_views/whatistwennie_view', { layout: 'mainlayout' });
 });
 
 router.get('/about_twennie', (req, res) => {
-    res.render('promo_views/about_twennie', {
-        layout: 'mainlayout'
-    });
+  res.render('promo_views/about_twennie', { layout: 'mainlayout' });
 });
 
 router.get('/contribute', (req, res) => {
-    res.render('promo_views/contribute', {
-        layout: 'mainlayout'
-    });
+  res.render('promo_views/contribute', { layout: 'mainlayout' });
 });
 
 router.get('/microstudies', (req, res) => {
-    res.render('promo_views/microstudies', {
-        layout: 'mainlayout'
-    });
+  res.render('promo_views/microstudies', { layout: 'mainlayout' });
 });
 
 router.get('/microcourses', (req, res) => {
-    res.render('promo_views/microcourses', {
-        layout: 'mainlayout'
-    });
+  res.render('promo_views/microcourses', { layout: 'mainlayout' });
 });
 
 router.get('/peercoaching', (req, res) => {
-    res.render('promo_views/peercoaching', {
-        layout: 'mainlayout'
-    });
+  res.render('promo_views/peercoaching', { layout: 'mainlayout' });
 });
 
 router.get('/privacypolicy', (req, res) => {
-    res.render('promo_views/privacypolicy', {
-        layout: 'mainlayout'
-    });
+  res.render('promo_views/privacypolicy', { layout: 'mainlayout' });
 });
 
-// --- Terms & Conditions (GET) ---
-// --- Terms & Conditions (GET) ---
-router.get('/termsconditions', (req, res) => {
+// ------------------------------------------------------------
+// Terms & Conditions
+// ------------------------------------------------------------
+
+// GET: Terms page (must be csurf-protected so the form can generate a token)
+router.get('/termsconditions', csrfProtection, (req, res) => {
   const u = res.locals.user || req.user || null;
-
-  // ✅ Default next must be a REAL dashboard route in your app (no /dashboard/)
-  const defaultNext =
-    u?.membershipType === 'leader' ? '/dashboard/leader#contribute' :
-    u?.membershipType === 'group_member' ? '/dashboard/groupmember#contribute' :
-    '/dashboard/member#contribute'; // change if your member dashboard route differs
-
-  const next = req.query.next || defaultNext;
+  const next = sanitizeNext(req.query.next, u);
 
   try {
     return res.render('promo_views/termsconditions', {
       layout: 'mainlayout',
       user: u,
       next,
-      csrfToken: req.csrfToken ? req.csrfToken() : null,
+      csrfToken: req.csrfToken(),
     });
   } catch (err) {
     console.error('Error rendering termsconditions:', err);
@@ -108,49 +129,41 @@ router.get('/termsconditions', (req, res) => {
   }
 });
 
-
-// --- Terms & Conditions (POST accept) ---
-router.post('/termsconditions/accept', async (req, res) => {
+// POST: Accept Terms (csurf-protected + role-safe redirect)
+router.post('/termsconditions/accept', csrfProtection, async (req, res) => {
   const u = res.locals.user || req.user || null;
 
-  const defaultNext =
-    u?.membershipType === 'leader' ? '/dashboard/leader#contribute' :
-    u?.membershipType === 'group_member' ? '/dashboard/groupmember#contribute' :
-    '/dashboard/member#contribute'; // change if your member dashboard route differs
-
-  const next = req.body.next || req.query.next || defaultNext;
+  const rawNext = req.body.next || req.query.next;
+  const next = sanitizeNext(rawNext, u);
 
   try {
-    // Must be logged in to accept
-    if (!req.user || !req.user._id) {
+    const userId = req.user?._id || req.user?.id;
+    if (!req.user || !userId) {
       return res.status(401).render('promo_views/termsconditions', {
         layout: 'mainlayout',
         user: null,
         next,
-        csrfToken: req.csrfToken ? req.csrfToken() : null,
+        csrfToken: req.csrfToken(),
         errorMessage: 'Please log in to accept the Terms &amp; Conditions.',
       });
     }
 
-    // Server-side validation (don’t rely only on HTML required attr)
     if (!req.body.acceptTerms) {
       return res.status(400).render('promo_views/termsconditions', {
         layout: 'mainlayout',
         user: u,
         next,
-        csrfToken: req.csrfToken ? req.csrfToken() : null,
+        csrfToken: req.csrfToken(),
         errorMessage: 'Please check the box to accept the Terms &amp; Conditions.',
       });
     }
 
-    // Persist acceptance (explicit model update — works even if req.user isn't a Mongoose doc)
     const updates = {
       termsAccepted: true,
       termsAcceptedAt: new Date(),
       termsVersion: 'v1',
     };
 
-    const userId = req.user._id;
     const type = req.user.membershipType;
 
     if (type === 'leader') {
@@ -160,6 +173,11 @@ router.post('/termsconditions/accept', async (req, res) => {
     } else {
       await Member.findByIdAndUpdate(userId, updates);
     }
+
+    // keep session user in sync
+    req.user.termsAccepted = true;
+    req.user.termsAcceptedAt = updates.termsAcceptedAt;
+    req.user.termsVersion = updates.termsVersion;
 
     return res.redirect(next);
 
@@ -172,7 +190,7 @@ router.post('/termsconditions/accept', async (req, res) => {
         layout: 'mainlayout',
         user: u,
         next,
-        csrfToken: req.csrfToken ? req.csrfToken() : null,
+        csrfToken: req.csrfToken(),
         errorMessage:
           'Your session has expired or the form took too long to submit. Please refresh and try again.',
       });
@@ -182,72 +200,53 @@ router.post('/termsconditions/accept', async (req, res) => {
       layout: 'mainlayout',
       user: u,
       next,
-      csrfToken: req.csrfToken ? req.csrfToken() : null,
+      csrfToken: req.csrfToken(),
       errorMessage: 'Could not save your terms acceptance. Please try again.',
     });
   }
 });
 
-
-
+// ------------------------------------------------------------
+// More promo routes
+// ------------------------------------------------------------
 router.get('/facilitation', (req, res) => {
-    res.render('promo_views/facilitation', {
-        layout: 'mainlayout'
-    });
+  res.render('promo_views/facilitation', { layout: 'mainlayout' });
 });
 
 router.get('/promptset_promo', (req, res) => {
-    res.render('promo_views/promptset_promo', {
-        layout: 'mainlayout'
-    });
+  res.render('promo_views/promptset_promo', { layout: 'mainlayout' });
 });
 
 router.get('/sample_article', (req, res) => {
-    res.render('promo_views/sample_article', {
-        layout: 'unitviewlayout'
-    });
+  res.render('promo_views/sample_article', { layout: 'unitviewlayout' });
 });
 
 router.get('/sample_video', (req, res) => {
-    res.render('promo_views/sample_video', {
-        layout: 'unitviewlayout'
-    });
+  res.render('promo_views/sample_video', { layout: 'unitviewlayout' });
 });
 
 router.get('/sample_promptset', (req, res) => {
-    res.render('promo_views/sample_promptset', {
-        layout: 'unitviewlayout'
-    });
+  res.render('promo_views/sample_promptset', { layout: 'unitviewlayout' });
 });
 
 router.get('/custom_services', (req, res) => {
-    res.render('promo_views/custom_services', {
-        layout: 'mainlayout'
-    });
+  res.render('promo_views/custom_services', { layout: 'mainlayout' });
 });
 
 router.get('/group_memberships', (req, res) => {
-    res.render('promo_views/group_memberships', {
-        layout: 'mainlayout'
-    });
+  res.render('promo_views/group_memberships', { layout: 'mainlayout' });
 });
 
 router.get('/sample_exercise', (req, res) => {
-    res.render('promo_views/sample_exercise', {
-        layout: 'mainlayout'
-    });
+  res.render('promo_views/sample_exercise', { layout: 'mainlayout' });
 });
 
 router.get('/sample_template', (req, res) => {
-    res.render('promo_views/sample_template', {
-        layout: 'mainlayout'
-    });
+  res.render('promo_views/sample_template', { layout: 'mainlayout' });
 });
 
 router.get('/sample_nugget', (req, res) => {
-    res.render('promo_views/sample_nugget', {
-        layout: 'mainlayout'
-    });
+  res.render('promo_views/sample_nugget', { layout: 'mainlayout' });
 });
 
 router.get('/sample_mission', (req, res) => {
@@ -261,20 +260,15 @@ router.get('/sample_upcoming', (req, res) => {
 router.get('/teach_me', twenniemapController.getTeachMe);
 
 router.get('/training_bingo', (req, res) => {
-    res.render('promo_views/training_bingo', {
-        layout: 'mainlayout'
-    });
+  res.render('promo_views/training_bingo', { layout: 'mainlayout' });
 });
 
 router.get('/enterprise_members', (req, res) => {
-    res.render('promo_views/enterprise_members', {
-        layout: 'mainlayout'
-    });
+  res.render('promo_views/enterprise_members', { layout: 'mainlayout' });
 });
 
 // ✅ Create Learning (orientation / instructional)
 router.get('/create_learning', (req, res) => {
-  // Use the already-hydrated locals from app.js
   const u = res.locals.user || req.user || null;
 
   const canContribute = !!u && (
@@ -295,6 +289,4 @@ router.get('/create_learning', (req, res) => {
   });
 });
 
-
-// Export the router
 module.exports = router;

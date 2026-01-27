@@ -16,7 +16,7 @@ const Nugget = require('../../models/unit_models/nugget');
 
 const unitFormController = require('../../controllers/unitformController');
 const ensureAuthenticated = require('../../middleware/ensureAuthenticated');
-const isDevelopment = process.env.NODE_ENV !== 'production';
+
 const uploadDocs = require('../../middleware/multerDocuments');
 const uploadImg = require('../../middleware/multerImages');
 const csrf = require('csurf');
@@ -90,7 +90,8 @@ const mainTopics = [
 
 router.get('/form_nugget', ensureAuthenticated, ensureCanContribute, unitFormController.getNuggetForm);
 
-router.get('/edit_nugget/:id', ensureAuthenticated, async (req, res) => {
+router.get('/edit_nugget/:id', ensureAuthenticated, csrfProtection, async (req, res) => {
+
   try {
     const { id } = req.params;
     console.log(`Edit form requested for nugget ID: ${id}`);
@@ -119,7 +120,7 @@ router.get('/edit_nugget/:id', ensureAuthenticated, async (req, res) => {
           image: nugget.createdBy?.profileImage || '/images/default-avatar.png',
         },
       },
-      csrfToken: isDevelopment ? null : req.csrfToken(),
+      csrfToken: req.csrfToken(),
     });
   } catch (error) {
     console.error(`Error loading edit form for nugget ID ${req.params.id}:`, error);
@@ -131,11 +132,8 @@ router.get('/edit_nugget/:id', ensureAuthenticated, async (req, res) => {
   }
 });
 
-router.post(
-  '/submit_nugget',
-  ensureAuthenticated,
-  unitFormController.submitNugget
-);
+router.post('/submit_nugget', ensureAuthenticated, csrfProtection, unitFormController.submitNugget);
+
 
 // =========================
 // Article Form Routes (existing)
@@ -143,7 +141,8 @@ router.post(
 
 router.get('/form_article', ensureAuthenticated, ensureCanContribute, unitFormController.getArticleForm);
 
-router.get('/edit_article/:id', ensureAuthenticated, async (req, res) => {
+router.get('/edit_article/:id', ensureAuthenticated, csrfProtection, async (req, res) => {
+
   try {
     const { id } = req.params;
     console.log(`Edit form requested for article ID: ${id}`);
@@ -184,7 +183,7 @@ router.get('/edit_article/:id', ensureAuthenticated, async (req, res) => {
       },
       word_count: wordCount,
       mainTopics,
-      csrfToken: isDevelopment ? null : req.csrfToken(),
+      csrfToken: req.csrfToken(),
     });
   } catch (error) {
     console.error(`Error loading edit form for article ID ${req.params.id}:`, error);
@@ -212,6 +211,7 @@ router.post(
       next(err);
     });
   },
+  csrfProtection,
   unitFormController.submitArticle
 );
 
@@ -229,7 +229,8 @@ router.get(
 );
 
 // GET: edit upcoming
-router.get('/edit_upcoming/:id', ensureAuthenticated, async (req, res) => {
+router.get('/edit_upcoming/:id', ensureAuthenticated, csrfProtection, async (req, res) => {
+
   try {
     const { id } = req.params;
     console.log(`Edit form requested for upcoming ID: ${id}`);
@@ -263,7 +264,7 @@ const unitTypes = [
       },
       mainTopics,
       unitTypes,
-      csrfToken: isDevelopment ? null : req.csrfToken(),
+      csrfToken: req.csrfToken(),
     });
   } catch (error) {
     console.error(`Error loading edit form for upcoming ID ${req.params.id}:`, error);
@@ -284,7 +285,7 @@ router.post(
       if (err && err.code === 'LIMIT_FILE_SIZE') {
         const unitTypes = [
           'article','video','interview','exercise','template',
-          'prompt_set','micro_course','micro_study','peer_coaching'
+          'promptset','nugget','mission'
         ];
         return res.status(400).render('unit_form_views/form_upcoming', {
           layout: 'unitformlayout',
@@ -297,8 +298,10 @@ router.post(
       next(err);
     });
   },
+  csrfProtection,
   unitFormController.submitUpcoming
 );
+
 
 // open correct form prefilled from an upcoming unit
 router.get('/prefill_from_upcoming/:unitType/:id',
@@ -312,7 +315,8 @@ router.get('/prefill_from_upcoming/:unitType/:id',
 router.get('/form_video', ensureAuthenticated, ensureCanContribute, unitFormController.getVideoForm);
 
 // Edit Video Route
-router.get('/edit_video/:id', ensureAuthenticated, async (req, res) => {
+router.get('/edit_video/:id', ensureAuthenticated, csrfProtection, async (req, res) => {
+
     try {
       const { id } = req.params;
       console.log(`Edit form requested for video ID: ${id}`);
@@ -416,7 +420,7 @@ router.get('/edit_video/:id', ensureAuthenticated, async (req, res) => {
         },
         mainTopics,
         secondaryTopics,
-        csrfToken: isDevelopment ? null : req.csrfToken(),
+        csrfToken: req.csrfToken(),
       });
       
     } catch (error) {
@@ -430,7 +434,8 @@ router.get('/edit_video/:id', ensureAuthenticated, async (req, res) => {
   });
   
 
-router.post('/submit_video', ensureAuthenticated, unitFormController.submitVideo);
+router.post('/submit_video', ensureAuthenticated, csrfProtection, unitFormController.submitVideo);
+
 
 // Interview Form Routes
 router.get(
@@ -440,7 +445,8 @@ router.get(
   unitFormController.getInterviewForm
 );
 
-router.get('/edit_interview/:id', ensureAuthenticated, async (req, res) => {
+router.get('/edit_interview/:id', ensureAuthenticated, csrfProtection, async (req, res) => {
+
     try {
         const { id } = req.params;
         console.log(`Edit form requested for interview ID: ${id}`);
@@ -533,7 +539,7 @@ router.get('/edit_interview/:id', ensureAuthenticated, async (req, res) => {
   'Workplace Culture'
 
             ],
-            csrfToken: isDevelopment ? null : req.csrfToken(),
+            csrfToken: req.csrfToken(),
         });
     } catch (error) {
         console.error(`Error loading edit form for interview ID ${req.params.id}:`, error);
@@ -545,7 +551,8 @@ router.get('/edit_interview/:id', ensureAuthenticated, async (req, res) => {
     }
 });
 
-router.post('/submit_interview', ensureAuthenticated, unitFormController.submitInterview);
+router.post('/submit_interview', ensureAuthenticated, csrfProtection, unitFormController.submitInterview);
+
 
 
 // Route to display the template form (Create New)
@@ -559,7 +566,8 @@ router.get(
 
 
 // Route to display the edit form for an existing template
-router.get('/edit_template/:id', ensureAuthenticated, async (req, res) => {
+router.get('/edit_template/:id', ensureAuthenticated, csrfProtection, async (req, res) => {
+
     try {
         const { id } = req.params;
         console.log(`Edit form requested for template ID: ${id}`); // Debugging log
@@ -648,7 +656,8 @@ router.get('/edit_template/:id', ensureAuthenticated, async (req, res) => {
             data: template.toObject(), // this makes everything accessible as data.xyz
             mainTopics,
             secondaryTopics,
-            csrfToken: isDevelopment ? null : req.csrfToken()
+            csrfToken: req.csrfToken()
+
           });
           
     } catch (error) {
@@ -681,7 +690,8 @@ router.get(
   unitFormController.getPromptForm
 );
 
-router.get('/edit_promptset/:id', ensureAuthenticated, async (req, res) => {
+router.get('/edit_promptset/:id', ensureAuthenticated, csrfProtection, async (req, res) => {
+
   try {
     const { id } = req.params;
     console.log(`Edit form requested for prompt set ID: ${id}`);
@@ -818,7 +828,7 @@ router.get('/edit_promptset/:id', ensureAuthenticated, async (req, res) => {
       secondaryTopics,
       frequencies,
       characteristics,
-      csrfToken: isDevelopment ? null : req.csrfToken(),
+      csrfToken: req.csrfToken(),
     });
   } catch (error) {
     console.error(`Error loading edit form for prompt set ID ${req.params.id}:`, error);
@@ -831,7 +841,8 @@ router.get('/edit_promptset/:id', ensureAuthenticated, async (req, res) => {
 });
 
 
-router.post('/submit_promptset', ensureAuthenticated, unitFormController.submitPromptSet);
+router.post('/submit_promptset', ensureAuthenticated, csrfProtection, unitFormController.submitPromptSet);
+
 
 // Exercise Routes
 router.get('/form_exercise', ensureAuthenticated, csrfProtection, unitFormController.getExerciseForm);
@@ -975,7 +986,7 @@ router.get('/edit_mission/:id', ensureAuthenticated, csrfProtection, async (req,
       layout: 'unitformlayout',
       data: mission.toObject(),
       mainTopics,
-      csrfToken: isDevelopment ? null : req.csrfToken(),
+      csrfToken: req.csrfToken(),
     });
   } catch (error) {
     console.error(`Error loading edit form for mission ID ${req.params.id}:`, error);

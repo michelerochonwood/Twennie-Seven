@@ -15,9 +15,13 @@ const Nugget = require('../models/unit_models/nugget');
 const Mission = require('../models/unit_models/mission'); // 👈 ADD THIS
 
 
+function dashboardHomeForUser(user) {
+  const type = user?.membershipType || user?.accessLevel;
 
-// Environment check for development mode
-const isDevelopment = process.env.NODE_ENV !== 'production';
+  if (type === 'leader') return '/dashboard/leader';
+  if (type === 'group_member') return '/dashboard/group-member';
+  return '/dashboard/member';
+}
 
 // Migrate tags from 'upcoming' → new unit, then delete the upcoming doc.
 // Called by each submit handler IFF fromUpcomingId exists.
@@ -52,7 +56,9 @@ function getCsrfToken(req) {
 // ✅ Require Terms acceptance before allowing any content submission/posting
 // ✅ Require Terms acceptance before allowing any content submission/posting
 function requireTermsForPosting(req, res) {
-  if (!req.user || !req.user._id) {
+  const userId = req.user?._id || req.user?.id;
+
+  if (!req.user || !userId) {
     res.status(401).render('unit_form_views/error', {
       layout: 'unitformlayout',
       title: 'Unauthorized',
@@ -63,7 +69,6 @@ function requireTermsForPosting(req, res) {
 
   if (req.user.termsAccepted === true) return true;
 
-  // ✅ Correct route: /termsconditions (NOT /terms)
   res.status(403).render('unit_form_views/error', {
     layout: 'unitformlayout',
     title: 'Terms Required',
@@ -74,6 +79,7 @@ function requireTermsForPosting(req, res) {
 
   return false;
 }
+
 
 
 
@@ -287,11 +293,17 @@ submitUnit: (Model, unitType, validateFunction) => async (req, res) => {
     }
 
     // ✅ Build payload (prefer explicit author.id from req.user)
-    const unitData = {
-      author: { id: req.user._id },
-      topic: req.body.topic || 'No topic specified',
-      ...req.body,
-    };
+const userId = req.user?._id || req.user?.id;
+
+const unitData = {
+  author: { id: userId },
+  main_topic: req.body.main_topic || req.body.topic || 'No topic specified',
+  ...req.body,
+};
+
+// optional: if topic exists but you don’t want it persisted:
+delete unitData.topic;
+
 
     // ✅ Create or update
     const unit = req.body._id
@@ -826,6 +838,7 @@ prefillFromUpcoming: async (req, res) => {
         characteristics,
         frequencies,
         fromUpcomingId,
+          dashboardLink: dashboardHomeForUser(req.user),
         csrfToken: getCsrfToken(req),
       });
     }
@@ -941,13 +954,15 @@ submitNugget: async (req, res) => {
       console.log('New nugget created successfully.');
     }
 
-    if (fromUpcomingId) {
-      await migrateAndDeleteUpcoming({
-        fromUpcomingId,
-        toItemId: nugget._id,
-        toUnitType: 'nugget',
-      });
-    }
+if (fromUpcomingId) {
+  await migrateAndDeleteUpcoming({
+    fromUpcomingId,
+    toItemId: nugget._id,
+    toUnitType: 'nugget',
+  });
+}
+
+
 
     // Make success template happy (it checks for *_title fields)
     const unitForSuccess = {
@@ -959,10 +974,7 @@ submitNugget: async (req, res) => {
     const createLink = `/unitform/form_nugget`;
 
     // ✅ Use real dashboard routes (no /dashboard)
-    const dashboardLink =
-      req.user?.membershipType === 'leader' ? '/dashboard/leader' :
-      req.user?.membershipType === 'group_member' ? '/dashboard/groupmember' :
-      '/dashboard/member';
+const dashboardLink = dashboardHomeForUser(req.user);
 
     return res.render('unit_form_views/unit_success', {
       layout: 'unitformlayout',
@@ -970,7 +982,7 @@ submitNugget: async (req, res) => {
       unit: unitForSuccess,
       viewLink,
       createLink,
-      dashboardLink,
+  dashboardLink: dashboardHomeForUser(req.user),
       csrfToken: getCsrfToken(req),
     });
 
@@ -1101,6 +1113,7 @@ if (wordCount < 800 || wordCount > 1200) {
     data: { ...req.body, article_body: cleanHtml },
     errorMessage: `Your article must be between 800 and 1200 words. Current word count: ${wordCount}.`,
     mainTopics,
+      dashboardLink: dashboardHomeForUser(req.user),
     csrfToken: getCsrfToken(req),
   });
 }
@@ -1174,20 +1187,24 @@ if (wordCount < 800 || wordCount > 1200) {
       console.log('New article created successfully.');
     }
 
-    // 🔁 If this came from an upcoming: migrate tags → article, then delete upcoming
-    if (fromUpcomingId) {
-      await migrateAndDeleteUpcoming({
-        fromUpcomingId,
-        toItemId: article._id,
-        toUnitType: 'article',
-      });
-    }
+// Nuggets don’t really have “published” in the same way.
+// If you still want safety, use a simple rule:
+if (fromUpcomingId) {
+  await migrateAndDeleteUpcoming({
+    fromUpcomingId,
+    toItemId: article._id,
+    toUnitType: 'article',
+  });
+}
+
+
 
     // ✅ Always show success page
     return res.render('unit_form_views/unit_success', {
       layout: 'unitformlayout',
       unitType: 'article',
       unit: article,
+        dashboardLink: dashboardHomeForUser(req.user),
       word_count: wordCount,
     });
   } catch (error) {
@@ -1305,6 +1322,7 @@ submitVideo: async (req, res) => {
       layout: 'unitformlayout',
       unitType: 'video',
       unit: video,
+        dashboardLink: dashboardHomeForUser(req.user),
       csrfToken: getCsrfToken(req),
     });
   } catch (error) {
@@ -1336,9 +1354,7 @@ submitVideo: async (req, res) => {
 submitInterview: async (req, res) => {
   try {
     // CSRF guard (keep your existing behavior)
-    if (!isDevelopment && !req.body._csrf) {
-      throw new Error('CSRF token is missing or invalid.');
-    }
+
 
     if (!req.user || !req.user._id) {
       throw new Error('User is not authenticated or missing user ID.');
@@ -1415,6 +1431,7 @@ submitInterview: async (req, res) => {
       layout: 'unitformlayout',
       unitType: 'interview',
       unit: interview,
+        dashboardLink: dashboardHomeForUser(req.user),
       csrfToken: getCsrfToken(req),
     });
   } catch (error) {
@@ -1531,11 +1548,8 @@ submitInterview: async (req, res) => {
 
 submitPromptSet: async (req, res) => {
   try {
-    // CSRF guard (match your existing pattern)
-    if (!isDevelopment && !req.body._csrf) {
-      console.error('CSRF validation failed: CSRF token is missing or invalid.');
-      throw new Error('CSRF token is missing or invalid.');
-    }
+
+
 
     if (!req.user || !req.user._id) {
       throw new Error('User is not authenticated or missing user ID.');
@@ -1649,6 +1663,7 @@ submitPromptSet: async (req, res) => {
 return res.render('unit_form_views/unit_success', {
   layout: 'unitformlayout',
   unitType: 'promptset',
+    dashboardLink: dashboardHomeForUser(req.user),
   unit: promptSet,
   csrfToken: getCsrfToken(req),
 });
@@ -1734,10 +1749,7 @@ return res.status(403).render('unit_form_views/error', {
   ];
 
   try {
-    // CSRF guard
-    if (!isDevelopment && !req.body._csrf) {
-      throw new Error('CSRF token is missing or invalid.');
-    }
+
     if (!req.user || !req.user._id) {
       throw new Error('User is not authenticated or missing user ID.');
     }
@@ -1844,8 +1856,9 @@ return res.status(403).render('unit_form_views/error', {
     return res.render('unit_form_views/unit_success', {
       layout: 'unitformlayout',
       unitType: 'exercise',
+        dashboardLink: dashboardHomeForUser(req.user),
       unit: exercise,
-      csrfToken: isDevelopment ? null : req.csrfToken(),
+      csrfToken: getCsrfToken(req),
     });
 
   } catch (error) {
@@ -1882,10 +1895,7 @@ return res.status(400).render('unit_form_views/form_exercise', {
 
    submitTemplate: async (req, res) => {
   try {
-    // CSRF guard
-    if (!isDevelopment && !req.body._csrf) {
-      throw new Error('CSRF token is missing or invalid.');
-    }
+
     if (!req.user || !req.user._id) {
       throw new Error('User is not authenticated or missing user ID.');
     }
@@ -2025,6 +2035,7 @@ return res.status(400).render('unit_form_views/form_exercise', {
 return res.render('unit_form_views/unit_success', {
   layout: 'unitformlayout',
   unitType: 'template',
+    dashboardLink: dashboardHomeForUser(req.user),
   unit: templateDoc,
   csrfToken: getCsrfToken(req),
 });
@@ -2108,10 +2119,7 @@ return res.render('unit_form_views/unit_success', {
   ];
 
   try {
-    // CSRF guard (match your existing pattern)
-    if (!isDevelopment && !req.body._csrf) {
-      throw new Error('CSRF token is missing or invalid.');
-    }
+
 
     if (!req.user || !req.user._id) {
       throw new Error('User is not authenticated or missing user ID.');
@@ -2336,6 +2344,7 @@ if (!why_it_matters?.trim()) errors.push('Please explain why this mission matter
       return res.status(400).render('unit_form_views/form_mission', {
         layout: 'unitformlayout',
         unitType: 'mission',
+          dashboardLink: dashboardHomeForUser(req.user),
         data: req.body,
         errorMessage: error.message,
         mainTopics,
