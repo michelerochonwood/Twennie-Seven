@@ -2061,8 +2061,8 @@ html, body {
 }
 
 .groupmember-sidebar .groupmember-profile-image-container {
-  width: 150px;
-  height: 150px;
+  width: 300px;
+  height: 300px;
   border: 2px solid #262262;
   border-radius: 99px;
 
@@ -2718,8 +2718,8 @@ html, body {
 }
 
 .leader-sidebar .leader-profile-image-container {
-  width: 150px;
-  height: 150px;
+  width: 300px;
+  height: 300px;
   border: 2px solid #262262;
   border-radius: 99px;
 }
@@ -3699,8 +3699,8 @@ html, body {
 }
 
 .member-sidebar .member-profile-image-container {
-  width: 112.5px; /* Reduced from 150px */
-  height: 112.5px;
+  width: 300px; /* Reduced from 150px */
+  height: 300px;
   border: 1.5px solid #262262; /* Reduced border */
   border-radius: 99px;
 }
