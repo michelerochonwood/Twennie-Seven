@@ -1084,3 +1084,8 @@ html, body {
   background: linear-gradient(to right, transparent, #cfcfe8, transparent);
   margin: 2.5rem 0;
 }
+
+.bluey-cta-img {
+  width: 200px;
+  height: auto;
+}

@@ -10,7 +10,7 @@ exports.getTeachMe = (req, res) => {
           src: "/images/topictreescreenshot.png",
           alt: "Topic tree",
           title: "Topic tree",
-          desc: "The topic tree is your first step. It shows how Twennie learning is organized - in three main spheres: project management, business development, and leadership. Under those are our seven topic categories: project management, business development and marketing, proposals, people management, technology, workplace culture, and AI. Categories are further broken down into individual topics like proposal strategy, managing scope, or leading change."
+          desc: "The topic tree is your first step. Twennie learning is organized in three main spheres: project management, business development, and leadership. Under those are Twennie's seven topic categories: project management, business development and marketing, proposals, people management, technology, workplace culture, and AI. Categories are further broken down into individual topics like proposal strategy, managing scope, or leading change."
         },
         {
           src: "/images/kpiviewscreenshot.png",
@@ -104,7 +104,7 @@ exports.getTeachMe = (req, res) => {
           src: "/images/singlemissionscreenshot.png",
           alt: "Single mission",
           title: "One mission",
-          desc: "This is one mission. It includes instructions, expectations, and projected outcomes. Leaders can assign missions to their group members. Anyone can complete a mission or create new custom missions for colleagues in the dashboard tab, 'contribute to my library.' You can even combine Twennie learning units with your own custom units to create hybrid missions! Twennie provides some sample missions for inspiration and guidance."
+          desc: "This is one mission. It includes instructions, expectations, and projected outcomes. Leaders can assign missions to their group members. Anyone can complete a mission or create new custom missions for colleagues in the dashboard tab, 'contribute to my library.' You can even combine Twennie learning units with your own custom units to create hybrid missions! Twennie provides some sample missions for inspiration and guidance - find these in Mission Control."
         }
       ]
     },
