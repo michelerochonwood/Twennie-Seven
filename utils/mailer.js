@@ -10,5 +10,16 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-module.exports = transporter;
+// Export a helper that loginController already expects
+async function sendMail({ to, subject, text, html }) {
+  return transporter.sendMail({
+    from: `"Twennie" <${process.env.MAIL_FROM || process.env.SMTP_USER}>`,
+    to,
+    subject,
+    text,
+    html,
+  });
+}
+
+module.exports = { sendMail };
 

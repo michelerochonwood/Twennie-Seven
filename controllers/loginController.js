@@ -358,7 +358,7 @@ handleResetPassword: async (req, res) => {
     }
 
     if (password.length < 8) {
-      return res.status(400).render('login_views/reset_password_view', {
+      return res.status(400).render('login_views/reset_password', {
         layout: 'mainlayout',
         title: 'Reset Password',
         csrfToken,
@@ -368,7 +368,7 @@ handleResetPassword: async (req, res) => {
     }
 
     if (password !== confirmPassword) {
-      return res.status(400).render('login_views/reset_password_view', {
+      return res.status(400).render('login_views/reset_password', {
         layout: 'mainlayout',
         title: 'Reset Password',
         csrfToken,
