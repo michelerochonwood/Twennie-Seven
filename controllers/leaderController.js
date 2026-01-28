@@ -392,15 +392,24 @@ return res.render('member_form_views/register_success', {
         });
       }
 
-      const groupMember = new GroupMember({
-        groupId: leader._id,
-        groupName: leader.groupName,
-        name,
-        email,
-        username: `member_${leader.members.length}_${leader.groupName.toLowerCase().replace(/\s+/g, '_')}`,
-        password: await bcrypt.hash('defaultPassword123', 10), // 🔒 hash it
-        topics: leader.topics,
-      });
+const groupMember = new GroupMember({
+  // ✅ REQUIRED by GroupMember schema
+  leader: leader._id,
+
+  // ✅ REQUIRED by GroupMember schema
+  groupName: leader.groupName,
+
+  // Optional but strongly recommended (matches your schema)
+  organization: leader.organization || null,
+  organizationName: leader.organizationName || '',
+
+  // Required user fields
+  name,
+  email,
+  username: `member_${leader.members.length}_${leader.groupName.toLowerCase().replace(/\s+/g, '_')}`,
+  password: await bcrypt.hash('defaultPassword123', 10),
+});
+
 
       const savedMember = await groupMember.save();
       leader.members.push(savedMember._id);
