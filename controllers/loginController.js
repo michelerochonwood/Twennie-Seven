@@ -237,7 +237,7 @@ requestPasswordReset: async (req, res) => {
 
   try {
     if (!email) {
-      return res.status(400).render('login_views/forgot_password_view', {
+      return res.status(400).render('login_views/forgot_password', {
         layout: 'mainlayout',
         title: 'Forgot Password',
         csrfToken,
@@ -249,7 +249,7 @@ requestPasswordReset: async (req, res) => {
 
     // Render success even if not found (security)
     if (!user) {
-      return res.render('login_views/forgot_password_view', {
+      return res.render('login_views/forgot_password', {
         layout: 'mainlayout',
         title: 'Forgot Password',
         csrfToken,
@@ -259,7 +259,7 @@ requestPasswordReset: async (req, res) => {
 
     // Block inactive users (optional)
     if (user.isActive === false) {
-      return res.render('login_views/forgot_password_view', {
+      return res.render('login_views/forgot_password', {
         layout: 'mainlayout',
         title: 'Forgot Password',
         csrfToken,
@@ -300,7 +300,7 @@ requestPasswordReset: async (req, res) => {
       `
     });
 
-    return res.render('login_views/forgot_password_view', {
+    return res.render('login_views/forgot_password', {
       layout: 'mainlayout',
       title: 'Forgot Password',
       csrfToken,
@@ -309,7 +309,7 @@ requestPasswordReset: async (req, res) => {
   } catch (err) {
     console.error('❌ requestPasswordReset error:', err);
     // Still show generic message
-    return res.render('login_views/forgot_password_view', {
+    return res.render('login_views/forgot_password', {
       layout: 'mainlayout',
       title: 'Forgot Password',
       csrfToken,
