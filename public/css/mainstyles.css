@@ -3255,8 +3255,7 @@ line-height: 1.5;
 }
 
 .bluey-cta-img {
-  width: 140px;
-  max-width: 40%;
+  width: 225px;
   margin-bottom: -20px;
   margin-top: -15px;
   z-index: 2;
@@ -7752,3 +7751,5 @@ margin-right: 5px; /* Space between icon and text */
 @media screen and (max-width: 400px) {
   .single_upcoming-container { padding: 0 1.5rem; }
 }
+
+
