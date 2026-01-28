@@ -220,7 +220,7 @@ showLoginForm: (req, res) => {
 
   // GET /auth/forgot-password
 showForgotPasswordForm: (req, res) => {
-  return res.render('login_views/forgot_password_view', {
+  return res.render('login_views/forgot_password', {
     layout: 'mainlayout',
     title: 'Forgot Password',
     csrfToken: req.csrfToken ? req.csrfToken() : null,
@@ -322,7 +322,7 @@ requestPasswordReset: async (req, res) => {
 showResetPasswordForm: async (req, res) => {
   const csrfToken = req.csrfToken ? req.csrfToken() : null;
   const tokenPlain = String(req.query.token || '');
-
+console.log("➡️ GET /auth/forgot-password hit");
   if (!tokenPlain) {
     return res.status(400).render('login_views/login_view', {
       layout: 'mainlayout',
@@ -332,8 +332,7 @@ showResetPasswordForm: async (req, res) => {
     });
   }
 
-  // We don't fully validate here (we validate on POST), but we can give nicer UX
-  return res.render('login_views/reset_password_view', {
+  return res.render('login_views/reset_password', {
     layout: 'mainlayout',
     title: 'Reset Password',
     csrfToken,
