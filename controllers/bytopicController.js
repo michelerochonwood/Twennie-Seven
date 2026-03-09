@@ -138,7 +138,7 @@ exports.getTopicView = async (req, res) => {
   'The Power of Purpose': 'thepowerofpurpose',
   'Tips and Tricks for Proposal Proofreading': 'tipsandtricksforproposalproofreading',
   'Turning a Project into a Business Development Powerhouse': 'turningaprojectintoabusinessdevelopmentpowerhouse',
-  'Un-Commoditizing Your Services by Delivering What Clients Truly Value': 'uncommoditizingyourservicesbydeliveringwhatclientstrulyvalue',
+  'UnCommoditizing Your Services by Delivering What Clients Truly Value': 'uncommoditizingyourservicesbydeliveringwhatclientstrulyvalue',
   'Using Lean in Project Management': 'usingleaninprojectmanagement',
   'When the Workload is Light': 'whentheworkloadislight',
   'Workplace Culture': 'workplaceculture'
