@@ -6,43 +6,38 @@
 
   <title>{{title}}</title>
 
-  {{!-- Google Consent Mode defaults (before any analytics) --}}
+  {{!-- Google Consent Mode defaults --}}
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){ dataLayer.push(arguments); }
 
     gtag('consent', 'default', {
-      security_storage: 'granted',                // for essential cookies
+      security_storage: 'granted',
       functionality_storage: {{#if consent.functional}}"granted"{{else}}"denied"{{/if}},
-      analytics_storage:    {{#if consent.analytics}}"granted"{{else}}"denied"{{/if}},
-      ad_storage:           "denied",             // set "granted" only if you add marketing consent
-      ad_user_data:         "denied",
-      ad_personalization:   "denied"
+      analytics_storage: {{#if consent.analytics}}"granted"{{else}}"denied"{{/if}},
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied"
     });
   </script>
 
-  {{!-- Load GA4 only when analytics consent is granted --}}
-  {{#if consent.analytics}}
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"></script>
-    <script>
-      gtag('js', new Date());
-      gtag('config', 'G-XXXXXXX', {
-        // GA4 anonymizes IP by default; add other config here if needed.
-        // 'allow_google_signals': false // keep false unless you have marketing consent
-      });
-    </script>
-  {{/if}}
+  {{!-- Google Analytics 4 --}}
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-4F1QSZP0ZK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+
+    gtag('js', new Date());
+    gtag('config', 'G-4F1QSZP0ZK');
+  </script>
 
   <!-- Global Navigation Styles -->
   <link rel="stylesheet" href="https://www.twennie.com/css/navigation.css?v={{timestamp}}">
-  <!-- Main Styles -->
   <link rel="stylesheet" href="https://www.twennie.com/css/mainstyles.css?v={{timestamp}}">
 
-  <!-- Mobile Navigation Scripts -->
   <script src="https://www.twennie.com/javascript/mobile-nav.js?v={{timestamp}}" defer></script>
   <script src="https://www.twennie.com/javascript/mobile-single-topic-nav.js?v={{timestamp}}" defer></script>
 
-  <!-- Ionicons -->
   <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 </head>
@@ -53,7 +48,6 @@
     {{{body}}}
   </main>
 
-  <!-- Home Page Animation Scripts -->
   <script src="https://www.twennie.com/javascript/animation/who-uses-twennie.js?v={{timestamp}}"></script>
   <script src="https://www.twennie.com/javascript/animation/wheel-animation.js?v={{timestamp}}"></script>
   <script src="https://www.twennie.com/javascript/animation/home-page-latest.js?v={{timestamp}}"></script>
@@ -65,32 +59,30 @@
   <script src="https://www.twennie.com/javascript/animation/homepagewave.js?v={{timestamp}}"></script>
   <script src="https://www.twennie.com/javascript/topics/topic_tabs.js?v={{timestamp}}"></script>
 
-  <!-- External Library -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <script>
-  (function () {
-    const rail = document.querySelector('.topic-sidebar');
-    if (!rail) return;
+    (function () {
+      const rail = document.querySelector('.topic-sidebar');
+      if (!rail) return;
 
-    const path = location.pathname.replace(/\/+$/, '').toLowerCase();
-    rail.querySelectorAll('a[href]').forEach(a => {
-      let href = a.getAttribute('href');
-      if (!href) return;
-      href = href.replace(/\/+$/, '').toLowerCase();
-      if (href === path) {
-        a.setAttribute('aria-current', 'page');
-        a.querySelector('.sidebar-item')?.classList.add('is-active');
-      }
-    });
-  })();
-</script>
+      const path = location.pathname.replace(/\/+$/, '').toLowerCase();
+      rail.querySelectorAll('a[href]').forEach(a => {
+        let href = a.getAttribute('href');
+        if (!href) return;
+        href = href.replace(/\/+$/, '').toLowerCase();
+        if (href === path) {
+          a.setAttribute('aria-current', 'page');
+          a.querySelector('.sidebar-item')?.classList.add('is-active');
+        }
+      });
+    })();
+  </script>
 
   <footer>
     {{> mainpartials/footer}}
   </footer>
 
-    {{!-- Cookie banner (shows only until twennieConsent exists) --}}
   {{> mainpartials/cookie_banner}}
 </body>
 </html>

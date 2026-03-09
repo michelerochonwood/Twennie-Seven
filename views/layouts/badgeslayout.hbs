@@ -5,29 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{title}}</title>
 
-  {{!-- views/shared/consent_analytics.hbs --}}
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){ dataLayer.push(arguments); }
-
-  gtag('consent', 'default', {
-    security_storage: 'granted',
-    functionality_storage: {{#if consent.functional}}"granted"{{else}}"denied"{{/if}},
-    analytics_storage:    {{#if consent.analytics}}"granted"{{else}}"denied"{{/if}},
-    ad_storage:           "denied",
-    ad_user_data:         "denied",
-    ad_personalization:   "denied"
-  });
-</script>
-
-{{#if consent.analytics}}
-  <script async src="https://www.googletagmanager.com/gtag/js?id={{GA_ID}}"></script>
+  {{!-- Google Consent Mode defaults --}}
   <script>
-    gtag('js', new Date());
-    gtag('config', '{{GA_ID}}');
-  </script>
-{{/if}}
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
 
+    gtag('consent', 'default', {
+      security_storage: 'granted',
+      functionality_storage: {{#if consent.functional}}"granted"{{else}}"denied"{{/if}},
+      analytics_storage: {{#if consent.analytics}}"granted"{{else}}"denied"{{/if}},
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied"
+    });
+  </script>
+
+  {{!-- Google Analytics 4 --}}
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-4F1QSZP0ZK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+
+    gtag('js', new Date());
+    gtag('config', 'G-4F1QSZP0ZK');
+  </script>
 
   <!-- Navigation Styles -->
   <link rel="stylesheet" href="https://www.twennie.com/css/navigation.css">
@@ -37,8 +38,6 @@
 
   <!-- JavaScript for Mobile Navigation -->
   <script src="/javascript/mobile-nav.js" defer></script>
-
-
 
   <!-- Ionicons CDN -->
   <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
@@ -52,13 +51,11 @@
     {{{body}}}
   </main>
 
-  <!-- NO BADGES.JS here anymore -->
-  <!-- NO BADGETABS.JS here anymore -->
-
   <footer>
     {{> mainpartials/footer}}
   </footer>
 
+  {{> mainpartials/cookie_banner}}
 </body>
 </html>
 

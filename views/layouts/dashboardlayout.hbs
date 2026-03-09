@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +10,7 @@
   {{!-- <style>html.fouc body{visibility:hidden;}</style>
   <script>document.documentElement.classList.add('fouc');</script> --}}
 
-  {{!-- Consent + Analytics --}}
+  {{!-- Google Consent Mode defaults --}}
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){ dataLayer.push(arguments); }
@@ -16,22 +18,24 @@
     gtag('consent', 'default', {
       security_storage: 'granted',
       functionality_storage: {{#if consent.functional}}"granted"{{else}}"denied"{{/if}},
-      analytics_storage:    {{#if consent.analytics}}"granted"{{else}}"denied"{{/if}},
-      ad_storage:           "denied",
-      ad_user_data:         "denied",
-      ad_personalization:   "denied"
+      analytics_storage: {{#if consent.analytics}}"granted"{{else}}"denied"{{/if}},
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied"
     });
   </script>
 
-  {{#if consent.analytics}}
-    <script async src="https://www.googletagmanager.com/gtag/js?id={{GA_ID}}"></script>
-    <script>
-      gtag('js', new Date());
-      gtag('config', '{{GA_ID}}');
-    </script>
-  {{/if}}
+  {{!-- Google Analytics 4 --}}
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-4F1QSZP0ZK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
 
-  {{!-- CSS (local + preloaded to reduce FOUC) --}}
+    gtag('js', new Date());
+    gtag('config', 'G-4F1QSZP0ZK');
+  </script>
+
+  {{!-- CSS --}}
   <link rel="preload" href="/css/navigation.css?v={{timestamp}}" as="style">
   <link rel="stylesheet" href="/css/navigation.css?v={{timestamp}}">
 
@@ -53,12 +57,10 @@
   </script> --}}
 </head>
 
-
 <body class="dashboard-body" style="margin-bottom: 200px">
   {{> mainpartials/header}}
 
   <main class="main-content">
-    
     {{#if error}}
       <div class="dashboard-alert error">{{error}}</div>
     {{/if}}
@@ -77,27 +79,31 @@
   <script src="/javascript/dashboard/dashboard_tabs.js?v={{timestamp}}"></script>
   <script src="/javascript/dashboard/topicdashboard.js?v={{timestamp}}"></script>
 
-  <!-- External library (no cache busting needed) -->
+  <!-- External library -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <script>
-  (function () {
-    const rail = document.querySelector('.topic-sidebar');
-    if (!rail) return;
+    (function () {
+      const rail = document.querySelector('.topic-sidebar');
+      if (!rail) return;
 
-    const path = location.pathname.replace(/\/+$/, '').toLowerCase();
-    rail.querySelectorAll('a[href]').forEach(a => {
-      let href = a.getAttribute('href');
-      if (!href) return;
-      href = href.replace(/\/+$/, '').toLowerCase();
-      if (href === path) {
-        a.setAttribute('aria-current', 'page');
-        a.querySelector('.sidebar-item')?.classList.add('is-active');
-      }
-    });
-  })();
-</script>
+      const path = location.pathname.replace(/\/+$/, '').toLowerCase();
+      rail.querySelectorAll('a[href]').forEach(a => {
+        let href = a.getAttribute('href');
+        if (!href) return;
+        href = href.replace(/\/+$/, '').toLowerCase();
+        if (href === path) {
+          a.setAttribute('aria-current', 'page');
+          a.querySelector('.sidebar-item')?.classList.add('is-active');
+        }
+      });
+    })();
+  </script>
 
-  {{> mainpartials/footer}}
+  <footer>
+    {{> mainpartials/footer}}
+  </footer>
+
+  {{> mainpartials/cookie_banner}}
 </body>
 </html>
