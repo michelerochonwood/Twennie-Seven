@@ -137,6 +137,24 @@ termsVersion: {
   type: String,
   default: "v1",
 },
+
+// ---------- Stripe / Billing ----------
+stripeCustomerId: { type: String, trim: true },
+stripeSubscriptionId: { type: String, trim: true },
+
+subscriptionStatus: {
+  type: String,
+  enum: ['active', 'canceled', 'pending', 'cancel_at_period_end'],
+  default: 'pending'
+},
+
+paymentStatus: {
+  type: String,
+  enum: ['pending', 'paid', 'cancelled'],
+  default: 'pending'
+},
+
+cancelAt: { type: Date },
 }, {
   timestamps: true
 });
