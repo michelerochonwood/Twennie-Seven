@@ -820,15 +820,26 @@ viewVideo: async (req, res) => {
       });
     }
 
-    const authorId = (video.author?.id || video.author)?.toString();
-    const author = await resolveAuthorById(authorId);
+    const authorId = (
+      video.author?.id ||
+      video.author ||
+      video.createdBy ||
+      video.submittedBy ||
+      null
+    )?.toString();
+
+    const author = authorId
+      ? await resolveAuthorById(authorId)
+      : { name: 'Unknown Author', image: '/images/default-avatar.png' };
 
     const currentUserId = (req.user?._id || req.user?.id)?.toString();
     const currentMembership = req.user?.membershipType || req.user?.accessLevel || null;
 
     const isOwner = !!(currentUserId && authorId && currentUserId === authorId);
 
-    const { authorOrg, authorTeamId } = await getAuthorOrgTeam(authorId);
+    const { authorOrg, authorTeamId } = authorId
+      ? await getAuthorOrgTeam(authorId)
+      : { authorOrg: null, authorTeamId: null };
 
     let isAuthorizedToViewFullContent = false;
     let isOrgMatch = false;
@@ -862,7 +873,7 @@ viewVideo: async (req, res) => {
 
       _id: video._id.toString(),
       unitType: 'video',
-      video_title: video.video_title,
+      video_title: video.video_title || video.title || 'Untitled Video',
       short_summary: video.short_summary,
       full_summary: video.full_summary,
       video_content: video.video_content || '',
