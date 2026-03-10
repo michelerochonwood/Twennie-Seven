@@ -52,7 +52,7 @@ const TOPIC_ENUM = [
   'The Power of Purpose',
   'Tips and Tricks for Proposal Proofreading',
   'Turning a Project into a Business Development Powerhouse',
-  'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
+  'UnCommoditizing Your Services by Delivering What Clients Truly Value',
   'Using Lean in Project Management',
   'When the Workload is Light',
   'Workplace Culture'
