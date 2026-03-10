@@ -40,15 +40,20 @@
           </svg>
         </div>
 
-        {{#if documentUploads}}
-          <div class="single_template-documents">
-            {{#each documentUploads}}
-              <a href="{{this.url}}" target="_blank" rel="noopener" class="single_template-download-btn" download>
-                Download {{filename}}
-              </a>
-            {{/each}}
-          </div>
-        {{/if}}
+{{#if documentUploads}}
+  <div class="single_template-documents">
+    {{#each documentUploads}}
+      <a
+        href="{{this.url}}"
+        class="single_template-download-btn"
+        download="{{this.filename}}"
+        rel="nofollow"
+      >
+        Download {{this.filename}}
+      </a>
+    {{/each}}
+  </div>
+{{/if}}
       </div>
     {{else}}
       <div class="single_template-download">
