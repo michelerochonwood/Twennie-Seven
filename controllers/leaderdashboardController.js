@@ -72,6 +72,26 @@ function getModelByUnitType(type) {
 
 
 function normalizeUnitType(unit) {
+  // 1. Prefer explicit stored unit type if present
+  if (unit.unit_type) {
+    const t = String(unit.unit_type).toLowerCase().trim();
+
+    if ([
+      'article',
+      'video',
+      'promptset',
+      'interview',
+      'exercise',
+      'template',
+      'upcoming',
+      'nugget',
+      'mission'
+    ].includes(t)) {
+      return t;
+    }
+  }
+
+  // 2. Fall back to legacy title-field detection
   if (unit.article_title)   return 'article';
   if (unit.video_title)     return 'video';
   if (unit.promptset_title) return 'promptset';
@@ -79,7 +99,23 @@ function normalizeUnitType(unit) {
   if (unit.exercise_title)  return 'exercise';
   if (unit.template_title)  return 'template';
   if (unit.mission_title)   return 'mission';
-if (unit.title && (unit.discipline || unit.client || unit.region)) return 'nugget';
+
+  // 3. Upcoming / nugget fallback
+  if (unit.title && (unit.discipline || unit.client || unit.region)) return 'nugget';
+  if (unit.title && unit.projected_release_at) return 'upcoming';
+
+  // 4. Mongoose model-name fallback
+  const modelName = unit.constructor?.modelName?.toLowerCase?.();
+  if (modelName === 'article') return 'article';
+  if (modelName === 'video') return 'video';
+  if (modelName === 'promptset') return 'promptset';
+  if (modelName === 'interview') return 'interview';
+  if (modelName === 'exercise') return 'exercise';
+  if (modelName === 'template') return 'template';
+  if (modelName === 'upcoming') return 'upcoming';
+  if (modelName === 'nugget') return 'nugget';
+  if (modelName === 'mission') return 'mission';
+
   return 'unknown';
 }
 
