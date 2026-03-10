@@ -69,10 +69,26 @@
       </fieldset>
 
       <!-- Optional feedback -->
-      <div class="form-field" style="margin: 16px 0;">
-        <label for="cancel-reason"><strong>Optional:</strong> why are you cancelling?</label>
-        <textarea id="cancel-reason" name="reason" rows="4" placeholder="Your feedback helps us improve." style="width:75%; border-radius:8px; padding:10px;"></textarea>
-      </div>
+<div class="form-field" style="margin:16px 0; text-align:center;">
+  <label for="cancel-reason" style="display:block; margin-bottom:8px;">
+    <strong>Optional:</strong> why are you cancelling?
+  </label>
+
+  <textarea
+    id="cancel-reason"
+    name="reason"
+    rows="4"
+    placeholder="Your feedback helps us improve."
+    style="
+      width:75%;
+      max-width:600px;
+      margin:0 auto;
+      display:block;
+      border-radius:8px;
+      padding:10px;
+    "
+  ></textarea>
+</div>
 
       <button type="submit" class="make-member-button" style="background-color:#aa2e2e">
         confirm cancellation
