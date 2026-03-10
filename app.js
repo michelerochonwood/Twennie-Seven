@@ -225,7 +225,7 @@ app.use((req, res, next) => {
   const skipPaths = [
     '/member/group/verify-registration-code',
     '/badges/pick',
-    '/webhooks/stripe', // verified by Stripe signature
+    '/webhooks/webhook', // verified by Stripe signature
   ];
   const csrfExemptDeletes = [/^\/promptsetregistration\/unregister\/[\w\d]+$/];
   const contentType = req.headers['content-type'] || '';
