@@ -146,64 +146,59 @@
     const paidNote = document.getElementById('paid-redirect-note');
     const redirectTarget = document.getElementById('redirectTarget');
 
-    // Reset visibility
     contributorTerms.classList.add('hidden');
     paidNote.classList.add('hidden');
     contributorAgreement.required = false;
-    redirectTarget.value = 'form'; // default
+    redirectTarget.value = 'form';
 
     if (value === 'contributor_individual') {
       contributorTerms.classList.remove('hidden');
       contributorAgreement.required = true;
-      redirectTarget.value = 'form'; // stays on form
+      redirectTarget.value = 'form';
     } else if (value === 'paid_individual') {
       paidNote.classList.remove('hidden');
-      redirectTarget.value = 'payment'; // request redirect on server
+      redirectTarget.value = 'payment';
     }
   }
 
-function togglePasswordVisibility() {
-  const input = document.getElementById("password");
-  const icon = document.getElementById("toggleIcon");
-  if (input.type === "password") {
-    input.type = "text";
-    icon.name = "eye-off-outline";
-  } else {
-    input.type = "password";
-    icon.name = "eye-outline";
-  }
-}
+  function togglePasswordVisibility() {
+    const input = document.getElementById('password');
+    const icon = document.getElementById('toggleIcon');
 
-document.querySelector('#username').addEventListener('blur', async function () {
-  const username = this.value;
-  const res = await fetch(`/check-username?username=${encodeURIComponent(username)}`);
-  const data = await res.json();
-  const msg = document.querySelector('#username-message');
-  if (!data.available) {
-    msg.textContent = 'That username is already taken. Try something unique like Brian-Warrior1.';
-    msg.style.color = 'red';
-  } else {
-    msg.textContent = 'Username is available!';
-    msg.style.color = 'green';
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.name = 'eye-off-outline';
+    } else {
+      input.type = 'password';
+      icon.name = 'eye-outline';
+    }
   }
 
-  try {
-  const newMember = new Member(req.body);
-  await newMember.save();
-  res.redirect('/success');
-} catch (err) {
-  if (err.code === 11000 && err.keyPattern && err.keyPattern.username) {
-    return res.status(400).render('register', {
-      errorMessage: 'Username already in use. Please choose another one like Brian-Warrior1.'
-    });
-  }
-  console.error(err);
-  res.status(500).render('register', {
-    errorMessage: 'An unexpected error occurred. Please try again.'
+  document.querySelector('#username').addEventListener('blur', async function () {
+    const username = this.value.trim();
+    const msg = document.querySelector('#username-message');
+
+    if (!username) {
+      msg.textContent = '';
+      return;
+    }
+
+    try {
+      const res = await fetch(`/check-username?username=${encodeURIComponent(username)}`);
+      const data = await res.json();
+
+      if (!data.available) {
+        msg.textContent = 'That username is already taken. Try something unique like Brian-Warrior1.';
+        msg.style.color = 'red';
+      } else {
+        msg.textContent = 'Username is available!';
+        msg.style.color = 'green';
+      }
+    } catch (err) {
+      console.error('Username check failed:', err);
+      msg.textContent = '';
+    }
   });
-}
-});
-
 </script>
 
 
