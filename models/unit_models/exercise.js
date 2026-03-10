@@ -155,10 +155,23 @@ const exerciseSchema = new mongoose.Schema({
       'Another format - please contact Twennie administrators',
     ],
   },
-  document_uploads: {
-    type: [String],
-    validate: [arr => arr.length <= 3, 'You may upload up to 3 documents only.'],
-  },
+document_uploads: {
+  type: [
+    {
+      url: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+      filename: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+    }
+  ],
+  validate: [arr => arr.length <= 3, 'You may upload up to 3 documents only.'],
+},
   time_required: {
     type: String,
     enum: ['15 mins', '30 mins', '1 hour', '1.5 hours'],

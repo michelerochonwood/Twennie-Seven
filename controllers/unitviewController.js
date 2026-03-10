@@ -1331,13 +1331,53 @@ viewExercise: async (req, res) => {
     // 6) ✅ Org Admin suggestion context (this is what you were missing in other unit types)
     const adminSuggest = await buildOrgLeaderListForAdmin(req);
 
-    // 7) Normalize document uploads for the view (your HBS expects array of strings)
-    const rawDocs = exercise.document_uploads;
-    const document_uploads = Array.isArray(rawDocs)
-      ? rawDocs.filter(Boolean)
-      : rawDocs
-        ? [rawDocs]
-        : [];
+// 7) Normalize document uploads for the view
+const rawDocs = Array.isArray(exercise.document_uploads)
+  ? exercise.document_uploads.filter(Boolean)
+  : exercise.document_uploads
+    ? [exercise.document_uploads]
+    : [];
+
+const extensionMap = {
+  'MS Word': '.docx',
+  'MS Excel': '.xlsx',
+  'MS PowerPoint': '.pptx',
+  'PDF': '.pdf',
+  'Mural': '.pdf'
+};
+
+const fallbackExt = extensionMap[exercise.file_format] || '';
+
+const document_uploads = rawDocs.map((doc, index) => {
+  // Support both old string format and future object format
+  const url = typeof doc === 'string' ? doc : (doc?.url || '');
+  let filename = typeof doc === 'object' && doc?.filename ? doc.filename : '';
+
+  // If no filename stored, try to extract it from the URL
+  if (!filename && url) {
+    try {
+      const parsed = new URL(url, 'https://www.twennie.com');
+      filename = decodeURIComponent(parsed.pathname.split('/').pop() || '');
+    } catch {
+      filename = decodeURIComponent((url.split('?')[0].split('/').pop()) || '');
+    }
+  }
+
+  // If still no name, create one
+  if (!filename) {
+    filename = `${exercise.exercise_title || 'exercise-download'}-${index + 1}`;
+  }
+
+  // If the filename has no extension, add one based on file_format
+  if (!/\.[a-z0-9]+$/i.test(filename) && fallbackExt) {
+    filename += fallbackExt;
+  }
+
+  return {
+    url,
+    filename
+  };
+});
 
     // 8) Render
     return res.render('unit_views/single_exercise', {

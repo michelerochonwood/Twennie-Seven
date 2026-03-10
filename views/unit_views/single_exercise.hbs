@@ -23,17 +23,18 @@
 
     {{#if document_uploads}}
       <div class="single_exercise-documents" id="exerciseDocs-{{_id}}">
-        {{#each document_uploads}}
-          {{!-- Keep href as-is; JS will set the visible text and filename exactly --}}
-          <a
-            href="{{this}}"
-            class="single_exercise-download-btn download-link"
-            data-src="{{this}}"
-            rel="nofollow"
-          >
-            Download file
-          </a>
-        {{/each}}
+{{#each document_uploads}}
+  <a
+    href="{{this.url}}"
+    class="single_exercise-download-btn download-link"
+    data-src="{{this.url}}"
+    data-filename="{{this.filename}}"
+    download="{{this.filename}}"
+    rel="nofollow"
+  >
+    Download {{this.filename}}
+  </a>
+{{/each}}
       </div>
     {{/if}}
   </div>
@@ -253,14 +254,12 @@
   }
 
   function toggleSuggestNoteField(checkbox) {
-  const leaderId = checkbox.value;
-  const selector = `textarea[name="suggestTo[${leaderId}][note]"]`;
-  const textarea = document.querySelector(selector);
-  if (textarea) textarea.style.display = checkbox.checked ? 'block' : 'none';
-}
+    const leaderId = checkbox.value;
+    const selector = `textarea[name="suggestTo[${leaderId}][note]"]`;
+    const textarea = document.querySelector(selector);
+    if (textarea) textarea.style.display = checkbox.checked ? 'block' : 'none';
+  }
 
-
-  // Prompt for tag name and submit the form as a normal POST
   function promptAndSubmitTag(formId) {
     const form = document.getElementById(formId);
     if (!form) return;
@@ -270,91 +269,18 @@
     if (!entered) return;
     input.value = entered.trim();
     if (!input.value) return;
-    // optional: prevent double-clicks
     const btn = form.querySelector('.tag-this-unit-link');
     if (btn) btn.disabled = true;
-    form.submit(); // controller will redirect back with ?tag=ok
+    form.submit();
   }
 
-
-  // Delegate clicks for tag actions
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.tag-action');
     if (!btn) return;
     const action = btn.dataset.action;
     if (action === 'complete') return markTagComplete(btn.dataset.tag);
-    if (action === 'remove')   return removeTagFromUnit(btn.dataset.tag, btn.dataset.item, btn.dataset.type);
+    if (action === 'remove') return removeTagFromUnit(btn.dataset.tag, btn.dataset.item, btn.dataset.type);
   });
-
-
-   (function () {
-    const container = document.getElementById('exerciseDocs-{{_id}}');
-    if (!container) return;
-
-    const links = container.querySelectorAll('a.download-link');
-
-    links.forEach((a) => {
-      const raw = a.getAttribute('data-src') || a.getAttribute('href') || '';
-
-      // Try robust URL parsing; fall back gracefully if it fails
-      let filename = '';
-
-      try {
-        const url = new URL(raw, window.location.origin);
-
-        // 1) Start with the last path segment
-        filename = url.pathname.split('/').pop() || '';
-
-        // 2) Decode any % escapes
-        filename = decodeURIComponent(filename);
-
-        // 3) Some CDNs add a filename in query params; prefer those if present
-        const qp = url.searchParams;
-        const candidate =
-          qp.get('filename') ||
-          qp.get('attname') ||
-          qp.get('file') ||
-          qp.get('name') ||
-          // Sometimes content disposition appears in query; try to extract filename="..."
-          (function () {
-            const cd = qp.get('response-content-disposition') || qp.get('content-disposition');
-            if (!cd) return null;
-            const m = /filename\*?=(?:UTF-8'')?"?([^";]+)"?/i.exec(cd);
-            return m ? m[1] : null;
-          })();
-
-        if (candidate && candidate.trim()) {
-          const c = decodeURIComponent(candidate.trim());
-          // Prefer the candidate if it looks like a proper filename (has a dot extension)
-          if (c.includes('.')) filename = c;
-        }
-
-        // 4) If we still somehow don't have a name, make a safe fallback
-        if (!filename) filename = 'download';
-
-        // 5) Ensure we keep the extension if present; do not strip it
-        // If there is no dot at all, we leave it as-is (we can't infer MIME reliably client-side)
-
-        // Set user-visible text with extension
-        a.textContent = `Download ${filename}`;
-
-        // Critical: set the download attribute to preserve name+extension in the user's Downloads
-        a.setAttribute('download', filename);
-
-        // Keep href intact; remove target to let the download attribute take effect reliably
-        a.setAttribute('href', url.toString());
-        a.removeAttribute('target');
-      } catch (e) {
-        // Fallback if URL() fails (e.g., malformed or protocol-relative oddities)
-        const path = raw.split('?')[0] || '';
-        const pieces = path.split('/');
-        filename = decodeURIComponent(pieces[pieces.length - 1] || 'download');
-
-        a.textContent = `Download ${filename}`;
-        a.setAttribute('download', filename);
-        a.removeAttribute('target');
-      }
-    }); 
 </script>
 
 
