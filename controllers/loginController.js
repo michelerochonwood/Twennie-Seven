@@ -34,11 +34,17 @@ async function findUserWithTypeByEmail(emailLower) {
 
 // Try each user type by email (member uses 'email', leader uses 'groupLeaderEmail')
 async function findUserByEmailAllTypes(emailLower) {
-  return (
-    (await Member.findOne({ email: emailLower })) ||
-    (await Leader.findOne({ groupLeaderEmail: emailLower })) ||
-    (await GroupMember.findOne({ email: emailLower }))
-  );
+  const [member, leader, groupMember] = await Promise.all([
+    Member.findOne({ email: emailLower }),
+    Leader.findOne({ groupLeaderEmail: emailLower }),
+    GroupMember.findOne({ email: emailLower })
+  ]);
+
+  // Prefer an active account if multiple records exist
+  const matches = [leader, member, groupMember].filter(Boolean);
+  const activeMatch = matches.find(user => user.isActive !== false);
+
+  return activeMatch || matches[0] || null;
 }
 
 // Disallow login for inactive accounts
