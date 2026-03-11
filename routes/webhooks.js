@@ -3,7 +3,6 @@ const express = require('express');
 const router = express.Router();
 const Stripe = require('stripe');
 
-// Use the same env var everywhere in your app
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: '2023-10-16'
 });
@@ -12,19 +11,31 @@ const Member = require('../models/member_models/member');
 const Leader = require('../models/member_models/leader');
 const GroupMember = require('../models/member_models/group_member');
 
-// IMPORTANT: raw body ONLY for this route
+// Stripe requires raw body for signature verification.
+// IMPORTANT:
+// - This route path is /stripe
+// - If mounted with app.use('/webhooks', webhookRoutes),
+//   the full endpoint URL in Stripe must be:
+//   https://www.twennie.com/webhooks/stripe
 router.post('/stripe', express.raw({ type: 'application/json' }), async (req, res) => {
+  console.log('🔥 Incoming request to /webhooks/stripe');
+
   const sig = req.headers['stripe-signature'];
+  const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+  if (!endpointSecret) {
+    console.error('❌ STRIPE_WEBHOOK_SECRET is not set.');
+    return res.status(500).send('Webhook secret not configured.');
+  }
+
   let event;
 
   try {
-    event = stripe.webhooks.constructEvent(
-      req.body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET
-    );
+    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+    console.log('🔥 Stripe webhook received:', event.type);
   } catch (err) {
-    console.error('❌ Webhook signature verification failed:', err.message);
+    console.error('⚠️ Webhook signature verification failed.');
+    console.error('Stripe Error:', err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
@@ -32,69 +43,113 @@ router.post('/stripe', express.raw({ type: 'application/json' }), async (req, re
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object;
-        console.log(`✅ checkout.session.completed: ${session.id}`);
 
-        if (session.mode !== 'subscription') break;
+        console.log('🔥 checkout.session.completed payload', {
+          sessionId: session.id,
+          mode: session.mode,
+          metadata: session.metadata,
+          subscription: session.subscription,
+          customer: session.customer,
+          subscription_details: session.subscription_details
+        });
+
+        if (session.mode !== 'subscription') {
+          console.log(`ℹ️ Ignoring non-subscription checkout session: ${session.id}`);
+          break;
+        }
 
         const subId = session.subscription || null;
         const customerId = session.customer || null;
 
-        // Support both naming styles just in case
-        const memberId = session.metadata?.memberId || session.metadata?.member_id || null;
-        const leaderId = session.metadata?.leaderId || session.metadata?.leader_id || null;
+        const memberId =
+          session.metadata?.memberId ||
+          session.metadata?.member_id ||
+          session.subscription_details?.metadata?.memberId ||
+          session.subscription_details?.metadata?.member_id ||
+          null;
 
-        // Paid individual
-        if (memberId) {
-          await Member.findByIdAndUpdate(memberId, {
-            $set: {
-              stripeCustomerId: customerId,
-              stripeSubscriptionId: subId,
-              paymentStatus: 'paid',
-              subscriptionStatus: 'active',
-              isActive: true,
-              cancelAt: null
-            }
+        const leaderId =
+          session.metadata?.leaderId ||
+          session.metadata?.leader_id ||
+          session.subscription_details?.metadata?.leaderId ||
+          session.subscription_details?.metadata?.leader_id ||
+          null;
+
+        console.log('🔥 Resolved IDs from checkout session', {
+          memberId,
+          leaderId
+        });
+
+        if (!memberId && !leaderId) {
+          console.warn('⚠️ No memberId or leaderId found in checkout session metadata', {
+            sessionId: session.id,
+            metadata: session.metadata,
+            subscription_details: session.subscription_details
           });
-
-          console.log(`✅ Member updated from checkout.session.completed: ${memberId}`);
+          break;
         }
 
-        // Leader / seat-based subscription
+        if (memberId) {
+          const updatedMember = await Member.findByIdAndUpdate(
+            memberId,
+            {
+              $set: {
+                stripeCustomerId: customerId,
+                stripeSubscriptionId: subId,
+                paymentStatus: 'paid',
+                subscriptionStatus: 'active',
+                isActive: true,
+                cancelAt: null
+              }
+            },
+            { new: true }
+          );
+
+          if (updatedMember) {
+            console.log(`✅ Member updated from checkout.session.completed: ${memberId}`);
+          } else {
+            console.warn(`⚠️ No Member found for checkout.session.completed: ${memberId}`);
+          }
+        }
+
         if (leaderId) {
           const leader = await Leader.findById(leaderId).populate('members');
 
-          if (leader) {
-            let stripeSubscriptionItemId = leader.stripeSubscriptionItemId || null;
-            let stripePriceId = leader.stripePriceId || null;
+          if (!leader) {
+            console.warn(`⚠️ No Leader found for checkout.session.completed: ${leaderId}`);
+            break;
+          }
 
-            if (subId) {
-              const sub = await stripe.subscriptions.retrieve(subId, {
-                expand: ['items.data.price']
-              });
+          let stripeSubscriptionItemId = leader.stripeSubscriptionItemId || null;
+          let stripePriceId = leader.stripePriceId || null;
 
-              const seatItem = sub.items?.data?.[0] || null;
-              stripeSubscriptionItemId = seatItem?.id || null;
-              stripePriceId = seatItem?.price?.id || process.env.STRIPE_PRICE_SEAT || null;
+          if (subId) {
+            const sub = await stripe.subscriptions.retrieve(subId, {
+              expand: ['items.data.price']
+            });
 
-              leader.subscriptionStatus = sub.status === 'active' ? 'active' : 'pending';
-            }
+            const seatItem = sub.items?.data?.[0] || null;
+            stripeSubscriptionItemId = seatItem?.id || null;
+            stripePriceId = seatItem?.price?.id || process.env.STRIPE_PRICE_SEAT || null;
 
-            leader.stripeCustomerId = customerId;
-            leader.stripeSubscriptionId = subId;
-            leader.stripeSubscriptionItemId = stripeSubscriptionItemId;
-            leader.stripePriceId = stripePriceId;
-            leader.paymentStatus = 'paid';
-            leader.isActive = true;
-            leader.cancelAt = null;
-            leader.lastSeatQuantity = typeof leader.getSeatQuantity === 'function'
+            leader.subscriptionStatus = sub.status === 'active' ? 'active' : 'pending';
+          }
+
+          leader.stripeCustomerId = customerId;
+          leader.stripeSubscriptionId = subId;
+          leader.stripeSubscriptionItemId = stripeSubscriptionItemId;
+          leader.stripePriceId = stripePriceId;
+          leader.paymentStatus = 'paid';
+          leader.isActive = true;
+          leader.cancelAt = null;
+          leader.lastSeatQuantity =
+            typeof leader.getSeatQuantity === 'function'
               ? leader.getSeatQuantity()
               : (leader.members?.length || 0);
-            leader.lastSeatSyncAt = new Date();
+          leader.lastSeatSyncAt = new Date();
 
-            await leader.save();
-
-            console.log(`✅ Leader updated from checkout.session.completed: ${leaderId}`);
-          }
+          await leader.save();
+          console.log(`✅ Leader updated from checkout.session.completed: ${leaderId}`);
         }
 
         break;
@@ -105,7 +160,7 @@ router.post('/stripe', express.raw({ type: 'application/json' }), async (req, re
         const subscriptionId = invoice.subscription || null;
         const customerId = invoice.customer || null;
 
-        console.log(`✅ invoice.payment_succeeded: subscription=${subscriptionId}`);
+        console.log(`✅ invoice.payment_succeeded: subscription=${subscriptionId}, customer=${customerId}`);
 
         const memberUpdated = await Member.findOneAndUpdate(
           {
@@ -148,6 +203,8 @@ router.post('/stripe', express.raw({ type: 'application/json' }), async (req, re
 
         if (leaderUpdated) {
           console.log(`✅ Leader marked paid from invoice: ${leaderUpdated._id}`);
+        } else {
+          console.log('ℹ️ No member or leader matched invoice.payment_succeeded');
         }
 
         break;
@@ -157,24 +214,21 @@ router.post('/stripe', express.raw({ type: 'application/json' }), async (req, re
         const sub = event.data.object;
         console.log(`ℹ️ customer.subscription.updated: ${sub.id}`);
 
-        // First try leader because leaders have seat item handling
         const leader = await Leader.findOne({ stripeSubscriptionId: sub.id }).populate('members');
 
         if (leader) {
-          const update = {
-            stripeCustomerId: sub.customer || null,
-            stripeSubscriptionId: sub.id,
-            subscriptionStatus: sub.cancel_at_period_end ? 'cancel_at_period_end' : (sub.status || 'active'),
-            cancelAt: sub.cancel_at ? new Date(sub.cancel_at * 1000) : null
-          };
+          leader.stripeCustomerId = sub.customer || null;
+          leader.stripeSubscriptionId = sub.id;
+          leader.subscriptionStatus = sub.cancel_at_period_end
+            ? 'cancel_at_period_end'
+            : (sub.status || 'active');
+          leader.cancelAt = sub.cancel_at ? new Date(sub.cancel_at * 1000) : null;
 
-          Object.assign(leader, update);
-
-          // Safety net: enforce DB seat count
           if (leader.stripeSubscriptionItemId) {
-            const shouldBe = typeof leader.getSeatQuantity === 'function'
-              ? leader.getSeatQuantity()
-              : (leader.members?.length || 0);
+            const shouldBe =
+              typeof leader.getSeatQuantity === 'function'
+                ? leader.getSeatQuantity()
+                : (leader.members?.length || 0);
 
             const item = sub.items?.data?.find(i => i.id === leader.stripeSubscriptionItemId);
             const current = item?.quantity;
@@ -202,7 +256,9 @@ router.post('/stripe', express.raw({ type: 'application/json' }), async (req, re
             $set: {
               stripeCustomerId: sub.customer || null,
               stripeSubscriptionId: sub.id,
-              subscriptionStatus: sub.cancel_at_period_end ? 'cancel_at_period_end' : (sub.status || 'active'),
+              subscriptionStatus: sub.cancel_at_period_end
+                ? 'cancel_at_period_end'
+                : (sub.status || 'active'),
               cancelAt: sub.cancel_at ? new Date(sub.cancel_at * 1000) : null
             }
           },
@@ -211,6 +267,8 @@ router.post('/stripe', express.raw({ type: 'application/json' }), async (req, re
 
         if (memberUpdated) {
           console.log(`✅ Member subscription updated: ${memberUpdated._id}`);
+        } else {
+          console.log(`ℹ️ No member matched customer.subscription.updated: ${sub.id}`);
         }
 
         break;
@@ -219,14 +277,18 @@ router.post('/stripe', express.raw({ type: 'application/json' }), async (req, re
       case 'invoice.upcoming': {
         const invoice = event.data.object;
         const subscriptionId = invoice.subscription || null;
+
+        console.log(`ℹ️ invoice.upcoming: subscription=${subscriptionId}`);
+
         if (!subscriptionId) break;
 
         const leader = await Leader.findOne({ stripeSubscriptionId: subscriptionId }).populate('members');
 
         if (leader?.stripeSubscriptionItemId) {
-          const shouldBe = typeof leader.getSeatQuantity === 'function'
-            ? leader.getSeatQuantity()
-            : (leader.members?.length || 0);
+          const shouldBe =
+            typeof leader.getSeatQuantity === 'function'
+              ? leader.getSeatQuantity()
+              : (leader.members?.length || 0);
 
           const sub = await stripe.subscriptions.retrieve(subscriptionId);
           const item = sub.items?.data?.find(i => i.id === leader.stripeSubscriptionItemId);
@@ -249,10 +311,9 @@ router.post('/stripe', express.raw({ type: 'application/json' }), async (req, re
         break;
       }
 
-      case 'customer.subscription.deleted':
-      case 'customer.subscription.canceled': {
+      case 'customer.subscription.deleted': {
         const sub = event.data.object;
-        console.log(`⚠️ customer.subscription.deleted/canceled: ${sub.id}`);
+        console.log(`⚠️ customer.subscription.deleted: ${sub.id}`);
 
         const memberUpdated = await Member.findOneAndUpdate(
           { stripeSubscriptionId: sub.id },
@@ -295,6 +356,8 @@ router.post('/stripe', express.raw({ type: 'application/json' }), async (req, re
           );
 
           console.log(`✅ Group members deactivated for leader ${leaderUpdated._id}`);
+        } else {
+          console.log(`ℹ️ No member or leader matched customer.subscription.deleted: ${sub.id}`);
         }
 
         break;
