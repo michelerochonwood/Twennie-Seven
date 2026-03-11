@@ -140,19 +140,25 @@
     </small>
 
     <!-- Industry -->
-    <div class="form-field">
-      <label for="industry">Industry</label>
-      <select id="industry" name="industry" required>
-        <option value="">Please select your industry</option>
-        {{#each [
-          "Engineering","Architecture","Project Management","Information Technology(IT)",
-          "Web Design","Construction","Technology","Community Planning/Landscape Architecture",
-          "Land Development","Telecommunications","E-Commerce","Edtech","Other"
-        ]}}
-          <option value="{{this}}" {{#if (eq this ../user.industry)}}selected{{/if}}>{{this}}</option>
-        {{/each}}
-      </select>
-    </div>
+<div class="form-field">
+  <label for="industry">Industry</label>
+  <select id="industry" name="industry" required>
+    <option value="">Please select your industry</option>
+    <option value="Engineering" {{#if (eq user.industry "Engineering")}}selected{{/if}}>Engineering</option>
+    <option value="Architecture" {{#if (eq user.industry "Architecture")}}selected{{/if}}>Architecture</option>
+    <option value="Project Management" {{#if (eq user.industry "Project Management")}}selected{{/if}}>Project Management</option>
+    <option value="Information Technology(IT)" {{#if (eq user.industry "Information Technology(IT)")}}selected{{/if}}>Information Technology(IT)</option>
+    <option value="Web Design" {{#if (eq user.industry "Web Design")}}selected{{/if}}>Web Design</option>
+    <option value="Construction" {{#if (eq user.industry "Construction")}}selected{{/if}}>Construction</option>
+    <option value="Technology" {{#if (eq user.industry "Technology")}}selected{{/if}}>Technology</option>
+    <option value="Community Planning/Landscape Architecture" {{#if (eq user.industry "Community Planning/Landscape Architecture")}}selected{{/if}}>Community Planning/Landscape Architecture</option>
+    <option value="Land Development" {{#if (eq user.industry "Land Development")}}selected{{/if}}>Land Development</option>
+    <option value="Telecommunications" {{#if (eq user.industry "Telecommunications")}}selected{{/if}}>Telecommunications</option>
+    <option value="E-Commerce" {{#if (eq user.industry "E-Commerce")}}selected{{/if}}>E-Commerce</option>
+    <option value="Edtech" {{#if (eq user.industry "Edtech")}}selected{{/if}}>Edtech</option>
+    <option value="Other" {{#if (eq user.industry "Other")}}selected{{/if}}>Other</option>
+  </select>
+</div>
 
     <div class="form-field">
       <label for="username">Username</label>
@@ -190,15 +196,21 @@
       Group leaders must start memberships for all members of their group...
     </p>
 
-    <div class="leader-form-field">
-      <label for="group-size">Number of Members</label>
-      <select id="group-size" name="groupSize" required>
-        <option value="">Select group size</option>
-        {{#each [2,3,4,5,6,7,8,9,10]}}
-          <option value="{{this}}">{{this}} members</option>
-        {{/each}}
-      </select>
-    </div>
+<div class="leader-form-field">
+  <label for="group-size">Number of Members</label>
+  <select id="group-size" name="groupSize" required>
+    <option value="">Select group size</option>
+    <option value="2" {{#if (eq user.groupSize 2)}}selected{{/if}}>2 members</option>
+    <option value="3" {{#if (eq user.groupSize 3)}}selected{{/if}}>3 members</option>
+    <option value="4" {{#if (eq user.groupSize 4)}}selected{{/if}}>4 members</option>
+    <option value="5" {{#if (eq user.groupSize 5)}}selected{{/if}}>5 members</option>
+    <option value="6" {{#if (eq user.groupSize 6)}}selected{{/if}}>6 members</option>
+    <option value="7" {{#if (eq user.groupSize 7)}}selected{{/if}}>7 members</option>
+    <option value="8" {{#if (eq user.groupSize 8)}}selected{{/if}}>8 members</option>
+    <option value="9" {{#if (eq user.groupSize 9)}}selected{{/if}}>9 members</option>
+    <option value="10" {{#if (eq user.groupSize 10)}}selected{{/if}}>10 members</option>
+  </select>
+</div>
 
     <!-- Member Details Placeholder -->
     <div class="individual-members-container">
