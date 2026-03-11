@@ -127,15 +127,13 @@
   >
 </div>
 
-    <div class="form-field">
-      <label for="country">Country</label>
-      <select id="country" name="country" autocomplete="country">
-<select id="country" name="country" autocomplete="country">
-  <option value="CA" {{#if (eq user.billingAddress.country "CA")}}selected{{/if}}>Canada</option>
-  <option value="US" {{#if (eq user.billingAddress.country "US")}}selected{{/if}}>United States</option>
-</select>
-      </select>
-    </div>
+<div class="form-field">
+  <label for="country">Country</label>
+  <select id="country" name="country" autocomplete="country">
+    <option value="CA" {{#if user.billingAddress.country}}{{#if (eq user.billingAddress.country "CA")}}selected{{/if}}{{else}}selected{{/if}}>Canada</option>
+    <option value="US" {{#if (eq user.billingAddress.country "US")}}selected{{/if}}>United States</option>
+  </select>
+</div>
 
     <small class="form-instructions">
       At checkout, you'll confirm billing details. Stripe will securely save the final address to your account.
@@ -148,10 +146,8 @@
         <option value="">Please select your industry</option>
         {{#each [
           "Engineering","Architecture","Project Management","Information Technology(IT)",
-          "Web Design","Construction","Technology","AI and Robotics",
-          "Social Media/Digital Advertising","Community Planning/Landscape Architecture",
-          "Land Development","Telecommunications","E-Commerce","Cybersecurity",
-          "Fintech","Edtech","Energy and Utilities","Manufacturing","Other"
+          "Web Design","Construction","Technology","Community Planning/Landscape Architecture",
+          "Land Development","Telecommunications","E-Commerce","Edtech","Other"
         ]}}
           <option value="{{this}}" {{#if (eq this ../user.industry)}}selected{{/if}}>{{this}}</option>
         {{/each}}
