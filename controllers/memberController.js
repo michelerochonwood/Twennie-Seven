@@ -156,33 +156,41 @@ createMember: async (req, res) => {
     if (accessLevel === 'paid_individual') {
       const successBase = getSuccessBase(req);
 
-      const session = await stripe.checkout.sessions.create({
-        mode: 'subscription',
-        payment_method_types: ['card'],
-        line_items: [
-          {
-            price_data: {
-              currency: 'cad',
-              unit_amount: 1700, // $17.00 CAD monthly
-              recurring: { interval: 'month' },
-              product_data: { name: 'Twennie Paid Individual Membership' },
-            },
-            quantity: 1,
-          },
-        ],
-        automatic_tax: { enabled: true },
-        billing_address_collection: 'required',
-        customer_email: email,
-        subscription_data: {
-          metadata: {
-            memberId: newMember._id.toString(),
-            accessLevel: 'paid_individual',
-            membershipType: 'member',
-          },
-        },
-        success_url: `${successBase}/member/payment/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${successBase}/member/payment/cancel`,
-      });
+const session = await stripe.checkout.sessions.create({
+  mode: 'subscription',
+  payment_method_types: ['card'],
+  line_items: [
+    {
+      price_data: {
+        currency: 'cad',
+        unit_amount: 1700,
+        recurring: { interval: 'month' },
+        product_data: { name: 'Twennie Paid Individual Membership' },
+      },
+      quantity: 1,
+    },
+  ],
+  automatic_tax: { enabled: true },
+  billing_address_collection: 'required',
+  customer_email: email,
+
+  metadata: {
+    memberId: newMember._id.toString(),
+    accessLevel: 'paid_individual',
+    membershipType: 'member',
+  },
+
+  subscription_data: {
+    metadata: {
+      memberId: newMember._id.toString(),
+      accessLevel: 'paid_individual',
+      membershipType: 'member',
+    },
+  },
+
+  success_url: `${successBase}/member/payment/success?session_id={CHECKOUT_SESSION_ID}`,
+  cancel_url: `${successBase}/member/payment/cancel`,
+});
 
       return res.redirect(303, session.url);
     }

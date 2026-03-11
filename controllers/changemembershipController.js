@@ -115,7 +115,7 @@ module.exports = {
       doc.isActive = false;
 
       if ('subscriptionStatus' in doc) {
-        doc.subscriptionStatus = 'cancelled';
+        doc.subscriptionStatus = 'canceled';
       }
       if ('paymentStatus' in doc) {
         doc.paymentStatus = 'cancelled';
@@ -136,7 +136,7 @@ module.exports = {
         doc.subscriptionStatus = 'cancel_at_period_end';
       }
       if ('paymentStatus' in doc) {
-        doc.paymentStatus = 'active';
+        doc.paymentStatus = 'paid';
       }
       if ('cancelAt' in doc) {
         doc.cancelAt = cancelAt || null;

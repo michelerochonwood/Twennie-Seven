@@ -32,8 +32,15 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
         const session = event.data.object;
         console.log(`✅ Checkout completed for session: ${session.id}`);
 
-        const memberId = session.metadata?.memberId || null;
-        const leaderId = session.metadata?.leaderId || null;
+const memberId =
+  session.metadata?.memberId ||
+  session.subscription_details?.metadata?.memberId ||
+  null;
+
+const leaderId =
+  session.metadata?.leaderId ||
+  session.subscription_details?.metadata?.leaderId ||
+  null;
 
         if (memberId) {
           await Member.findByIdAndUpdate(memberId, {
