@@ -19,66 +19,84 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
 
   let event;
 
-  try {
-    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
-  } catch (err) {
-    console.log('🔥 Stripe webhook received:', event.type);
-    console.error('⚠️ Webhook signature verification failed.');
-    console.error('Stripe Error:', err.message);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
-  }
+try {
+  event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+  console.log('🔥 Stripe webhook received:', event.type);
+} catch (err) {
+  console.error('⚠️ Webhook signature verification failed.');
+  console.error('Stripe Error:', err.message);
+  return res.status(400).send(`Webhook Error: ${err.message}`);
+}
 
   try {
     switch (event.type) {
-      case 'checkout.session.completed': {
-        console.log('🔥 checkout.session.completed payload', {
-  sessionId: session.id,
-  metadata: session.metadata,
-  subscription: session.subscription,
-  customer: session.customer,
-  subscription_details: session.subscription_details
-});
-        const session = event.data.object;
-        console.log(`✅ Checkout completed for session: ${session.id}`);
+case 'checkout.session.completed': {
+  const session = event.data.object;
 
-const memberId =
-  session.metadata?.memberId ||
-  session.subscription_details?.metadata?.memberId ||
-  null;
+  console.log('🔥 checkout.session.completed payload', {
+    sessionId: session.id,
+    metadata: session.metadata,
+    subscription: session.subscription,
+    customer: session.customer,
+    subscription_details: session.subscription_details
+  });
 
-const leaderId =
-  session.metadata?.leaderId ||
-  session.subscription_details?.metadata?.leaderId ||
-  null;
+  console.log(`✅ Checkout completed for session: ${session.id}`);
 
-        if (memberId) {
-          await Member.findByIdAndUpdate(memberId, {
-            $set: {
-              stripeCustomerId: session.customer || null,
-              stripeSubscriptionId: session.subscription || null,
-              paymentStatus: 'paid',
-              subscriptionStatus: 'active',
-              isActive: true
-            }
-          });
-          console.log(`✅ Member updated from checkout.session.completed: ${memberId}`);
-        }
+  const memberId =
+    session.metadata?.memberId ||
+    session.subscription_details?.metadata?.memberId ||
+    null;
 
-        if (leaderId) {
-          await Leader.findByIdAndUpdate(leaderId, {
-            $set: {
-              stripeCustomerId: session.customer || null,
-              stripeSubscriptionId: session.subscription || null,
-              paymentStatus: 'paid',
-              subscriptionStatus: 'active',
-              isActive: true
-            }
-          });
-          console.log(`✅ Leader updated from checkout.session.completed: ${leaderId}`);
-        }
+  const leaderId =
+    session.metadata?.leaderId ||
+    session.subscription_details?.metadata?.leaderId ||
+    null;
 
-        break;
+  console.log('🔥 Resolved IDs from checkout session', {
+    memberId,
+    leaderId
+  });
+
+  if (!memberId && !leaderId) {
+  console.warn('⚠️ No memberId or leaderId found in checkout session metadata', {
+    sessionId: session.id,
+    metadata: session.metadata,
+    subscription_details: session.subscription_details
+  });
+}
+
+const updatedMember = await Member.findByIdAndUpdate(memberId, {
+  $set: {
+    stripeCustomerId: session.customer || null,
+    stripeSubscriptionId: session.subscription || null,
+    paymentStatus: 'paid',
+    subscriptionStatus: 'active',
+    isActive: true
+  }
+}, { new: true });
+
+if (updatedMember) {
+  console.log(`✅ Member updated from checkout.session.completed: ${memberId}`);
+} else {
+  console.warn(`⚠️ No Member found for checkout.session.completed: ${memberId}`);
+}
+
+  if (leaderId) {
+    await Leader.findByIdAndUpdate(leaderId, {
+      $set: {
+        stripeCustomerId: session.customer || null,
+        stripeSubscriptionId: session.subscription || null,
+        paymentStatus: 'paid',
+        subscriptionStatus: 'active',
+        isActive: true
       }
+    });
+    console.log(`✅ Leader updated from checkout.session.completed: ${leaderId}`);
+  }
+
+  break;
+}
 
       case 'invoice.payment_succeeded': {
         const invoice = event.data.object;
