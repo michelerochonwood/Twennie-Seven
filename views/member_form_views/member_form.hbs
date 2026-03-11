@@ -26,7 +26,7 @@
         <li>If you need further information about submitting library units or the contributor membership option, contact Twennie at <a href="mailto:info@twennie.com">info@twennie.com</a>.</li>
       </ul>
 <div class="checkbox-wrapper">
-  <input type="checkbox" id="contributorAgreement" name="contributorAgreement" required>
+<input type="checkbox" id="contributorAgreement" name="contributorAgreement">
   <label for="contributorAgreement">I have read and understand these conditions.</label>
 </div>
     </div>
@@ -184,7 +184,7 @@
     }
 
     try {
-      const res = await fetch(`/check-username?username=${encodeURIComponent(username)}`);
+      const res = await fetch(`/member/check-username?username=${encodeURIComponent(username)}`);
       const data = await res.json();
 
       if (!data.available) {
