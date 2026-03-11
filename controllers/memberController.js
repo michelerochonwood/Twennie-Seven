@@ -59,17 +59,21 @@ const {
   redirectTarget,
 } = req.body;
 
-    // Normalize access level defensively (handles arrays & aliases)
-    const accessLevel = normalizeAccessLevel(rawAccessLevel);
+// Normalize access level defensively (handles arrays & aliases)
+const accessLevel = normalizeAccessLevel(rawAccessLevel);
 
-    // Log a minimal trace (don’t log password)
-    console.log('Received registration data:', {
-      name,
-      username,
-      email,
-      accessLevel,
-      redirectTarget,
-    });
+// Normalize username/email for duplicate check + save
+const normalizedUsername = username.trim().toLowerCase();
+const normalizedEmail = email.trim().toLowerCase();
+
+// Log a minimal trace (don’t log password)
+console.log('Received registration data:', {
+  name,
+  username: normalizedUsername,
+  email: normalizedEmail,
+  accessLevel,
+  redirectTarget,
+});
 
     // Run your existing validator (coerce the access level for it too)
     const bodyForValidation = { ...req.body, accessLevel };
@@ -193,7 +197,7 @@ const session = await stripe.checkout.sessions.create({
   ],
   automatic_tax: { enabled: true },
   billing_address_collection: 'required',
-  customer_email: email,
+customer_email: normalizedEmail,
 
   metadata: {
     memberId: newMember._id.toString(),
