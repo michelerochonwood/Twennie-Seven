@@ -22,6 +22,7 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
   try {
     event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
   } catch (err) {
+    console.log('🔥 Stripe webhook received:', event.type);
     console.error('⚠️ Webhook signature verification failed.');
     console.error('Stripe Error:', err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
@@ -30,6 +31,13 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
   try {
     switch (event.type) {
       case 'checkout.session.completed': {
+        console.log('🔥 checkout.session.completed payload', {
+  sessionId: session.id,
+  metadata: session.metadata,
+  subscription: session.subscription,
+  customer: session.customer,
+  subscription_details: session.subscription_details
+});
         const session = event.data.object;
         console.log(`✅ Checkout completed for session: ${session.id}`);
 
