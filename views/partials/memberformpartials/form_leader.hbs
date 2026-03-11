@@ -67,66 +67,73 @@
       You can set up your organization as a Twennie member organization after registration.
     </p>
 
-    <!-- Billing Address (optional, saved if provided) -->
-    <div class="form-field">
-      <label for="line1">Street Address</label>
-      <input
-        type="text"
-        id="line1"
-        name="line1"
-        placeholder="123 Main St"
-        autocomplete="address-line1"
-      >
-    </div>
+<!-- Billing Address (optional, saved if provided) -->
+<div class="form-field">
+  <label for="line1">Street Address</label>
+  <input
+    type="text"
+    id="line1"
+    name="line1"
+    value="{{user.billingAddress.line1}}"
+    placeholder="123 Main St"
+    autocomplete="address-line1"
+  >
+</div>
 
-    <div class="form-field">
-      <label for="line2">Apartment / Suite (optional)</label>
-      <input
-        type="text"
-        id="line2"
-        name="line2"
-        placeholder="Unit 5B"
-        autocomplete="address-line2"
-      >
-    </div>
+<div class="form-field">
+  <label for="line2">Apartment / Suite (optional)</label>
+  <input
+    type="text"
+    id="line2"
+    name="line2"
+    value="{{user.billingAddress.line2}}"
+    placeholder="Unit 5B"
+    autocomplete="address-line2"
+  >
+</div>
 
-    <div class="form-field">
-      <label for="city">City</label>
-      <input
-        type="text"
-        id="city"
-        name="city"
-        autocomplete="address-level2"
-      >
-    </div>
+<div class="form-field">
+  <label for="city">City</label>
+  <input
+    type="text"
+    id="city"
+    name="city"
+    value="{{user.billingAddress.city}}"
+    autocomplete="address-level2"
+  >
+</div>
 
-    <div class="form-field">
-      <label for="province">Province / State</label>
-      <input
-        type="text"
-        id="province"
-        name="province"
-        placeholder="ON"
-        autocomplete="address-level1"
-      >
-    </div>
+<div class="form-field">
+  <label for="province">Province / State</label>
+  <input
+    type="text"
+    id="province"
+    name="province"
+    value="{{user.billingAddress.province}}"
+    placeholder="ON"
+    autocomplete="address-level1"
+  >
+</div>
 
-    <div class="form-field">
-      <label for="postalCode">Postal Code</label>
-      <input
-        type="text"
-        id="postalCode"
-        name="postalCode"
-        placeholder="A1A 1A1"
-        autocomplete="postal-code"
-      >
-    </div>
+<div class="form-field">
+  <label for="postalCode">Postal Code</label>
+  <input
+    type="text"
+    id="postalCode"
+    name="postalCode"
+    value="{{user.billingAddress.postalCode}}"
+    placeholder="A1A 1A1"
+    autocomplete="postal-code"
+  >
+</div>
 
     <div class="form-field">
       <label for="country">Country</label>
       <select id="country" name="country" autocomplete="country">
-        <option value="CA" selected>Canada</option>
-        <option value="US">United States</option>
+<select id="country" name="country" autocomplete="country">
+  <option value="CA" {{#if (eq user.billingAddress.country "CA")}}selected{{/if}}>Canada</option>
+  <option value="US" {{#if (eq user.billingAddress.country "US")}}selected{{/if}}>United States</option>
+</select>
       </select>
     </div>
 
@@ -231,10 +238,10 @@
     </div>
 
     <!-- Payment Note -->
-    <div class="form-field" id="group-payment-placeholder">
-      <p><strong>Payment Reminder:</strong> You’ll be redirected to a payment page...</p>
-      <p>If your organization prefers to be invoiced, <a href="mailto:info@twennie.com">contact Twennie</a>.</p>
-    </div>
+<div class="form-field" id="group-payment-placeholder">
+  <p><strong>Payment Reminder:</strong> Once you submit this form, you’ll be redirected to Stripe to complete payment securely. Your payment will cover <strong>all registered group members</strong>.</p>
+  <p>If your organization prefers to be invoiced, <a href="mailto:info@twennie.com">contact Twennie</a> before registering to arrange billing.</p>
+</div>
 
     <!-- Hidden Submission Info -->
     <input type="hidden" name="redirectTarget" value="payment">

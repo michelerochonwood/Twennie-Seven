@@ -26,6 +26,30 @@ const GroupMember = require('./models/member_models/group_member');
 
 dotenv.config();
 
+if (process.env.NODE_ENV === 'production') {
+  const originalLog = console.log;
+
+  console.log = (...args) => {
+    const sanitized = args.map(arg => {
+      if (arg && typeof arg === 'object') {
+        const clone = { ...arg };
+
+        delete clone.password;
+        delete clone.secretEnc;
+        delete clone.secretIv;
+        delete clone.secretTag;
+        delete clone.recoveryCodes;
+        delete clone.resetPasswordToken;
+
+        return clone;
+      }
+      return arg;
+    });
+
+    originalLog(...sanitized);
+  };
+}
+
 const app = express();
 
 /* ------------------------------------------------------------------

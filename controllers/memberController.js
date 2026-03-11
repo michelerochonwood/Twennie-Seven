@@ -38,20 +38,26 @@ createMember: async (req, res) => {
 
   try {
     // Destructure from body
-    const {
-      name,
-      professionalTitle,
-      organization,
-      industry,
-      username,
-      email,
-      password,
-      topic1,
-      topic2,
-      topic3,
-      accessLevel: rawAccessLevel,
-      redirectTarget, // used later for clarity; not security-critical
-    } = req.body;
+const {
+  name,
+  professionalTitle,
+  organization,
+  industry,
+  username,
+  email,
+  password,
+  topic1,
+  topic2,
+  topic3,
+  line1,
+  line2,
+  city,
+  province,
+  postalCode,
+  country,
+  accessLevel: rawAccessLevel,
+  redirectTarget,
+} = req.body;
 
     // Normalize access level defensively (handles arrays & aliases)
     const accessLevel = normalizeAccessLevel(rawAccessLevel);
@@ -78,7 +84,14 @@ createMember: async (req, res) => {
     }
 
     // Uniqueness check on username OR email
-    const existing = await Member.findOne({ $or: [{ username }, { email }] }).lean();
+const existing = await Member.findOne({
+  $or: [
+    { username: normalizedUsername },
+    { email: normalizedEmail }
+  ]
+}).lean();
+
+
     if (existing) {
       return res.status(400).render('member_form_views/member_form', {
         layout: 'memberformlayout',
@@ -96,18 +109,26 @@ createMember: async (req, res) => {
       topic1 || topic2 || topic3 ? { topic1: topic1 || '', topic2: topic2 || '', topic3: topic3 || '' } : undefined;
 
     // Create and save Member
-    const newMember = new Member({
-      name,
-      professionalTitle,
-      organization,
-      industry,
-      username,
-      email,
-      password: hashedPassword,
-      topics,
-      accessLevel,              // <-- normalized string
-      membershipType: 'member', // per your schema
-    });
+const newMember = new Member({
+  name,
+  professionalTitle,
+  organization,
+  industry,
+  username: normalizedUsername,
+  email: normalizedEmail,
+  password: hashedPassword,
+  topics,
+  billingAddress: {
+    line1: line1?.trim() || '',
+    line2: line2?.trim() || '',
+    city: city?.trim() || '',
+    province: province?.trim() || '',
+    postalCode: postalCode?.trim() || '',
+    country: country?.trim() || 'CA'
+  },
+  accessLevel,
+  membershipType: 'member',
+});
 
     try {
       await newMember.save();

@@ -145,11 +145,11 @@ isAdmin: {
     trim: true
   },
 
-  paymentStatus: {
-    type: String,
-    enum: ['pending', 'paid'],
-    default: 'pending'
-  },
+paymentStatus: {
+  type: String,
+  enum: ['pending', 'paid', 'cancelled'],
+  default: 'pending'
+},
 
   createdAt: {
     type: Date,
@@ -188,11 +188,13 @@ isAdmin: {
     default: 'active_members'
   },
 
-  subscriptionStatus: {
-    type: String,
-    enum: ['active', 'canceled', 'pending'], // US spelling for Stripe parity
-    default: 'pending'
-  },
+subscriptionStatus: {
+  type: String,
+  enum: ['active', 'canceled', 'pending', 'cancel_at_period_end'],
+  default: 'pending'
+},
+
+cancelAt: { type: Date },
 
   // ---------- Email preferences ----------
   emailPreferenceLevel: {

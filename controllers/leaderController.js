@@ -115,7 +115,8 @@ const {
   topic1, topic2, topic3,
   members,
   registration_code,
-  redirectTarget
+  redirectTarget,
+  organizationOptOut
 } = req.body;
 
 
@@ -142,7 +143,7 @@ const leader = new Leader({
 
   // Organization is created later via success-page flow
   organization: null,
-  organizationOptOut: false,
+  organizationOptOut: organizationOptOut === 'true' || organizationOptOut === true || organizationOptOut === 'on',
   organizationName: '',
 
   industry,
@@ -153,7 +154,8 @@ const leader = new Leader({
   topics: { topic1, topic2, topic3 },
   members: [],
   registration_code,
-  billingAddress: { line1, line2, city, province, postalCode, country }
+  billingAddress: { line1, line2, city, province, postalCode, country },
+
 });
 
 
@@ -305,18 +307,33 @@ const gm = new GroupMember({
 
         // Success/cancel URLs
         const successBase = getSuccessBase(req);
-        const session = await stripe.checkout.sessions.create({
-          customer: customer.id,
-          payment_method_types: ['card'],
-          mode: 'subscription',
-          line_items: [{ price: price.id, quantity: 1 }],
-          automatic_tax: { enabled: true },
-          billing_address_collection: 'required',
-          // Let Checkout collect + save address & name to the Customer
-          customer_update: { address: 'auto', name: 'auto' },
-          success_url: `${successBase}/member/payment/success?session_id={CHECKOUT_SESSION_ID}`,
-          cancel_url:  `${successBase}/member/payment/cancel`
-        });
+const session = await stripe.checkout.sessions.create({
+  customer: customer.id,
+  payment_method_types: ['card'],
+  mode: 'subscription',
+  line_items: [{ price: price.id, quantity: 1 }],
+  automatic_tax: { enabled: true },
+  billing_address_collection: 'required',
+  customer_update: { address: 'auto', name: 'auto' },
+
+metadata: {
+  leaderId: savedLeader._id.toString(),
+  groupName: savedLeader.groupName,
+  seats: String(seats),
+  members: String(count)
+},
+subscription_data: {
+  metadata: {
+    leaderId: savedLeader._id.toString(),
+    groupName: savedLeader.groupName,
+    seats: String(seats),
+    members: String(count)
+  }
+},
+
+  success_url: `${successBase}/member/payment/success?session_id={CHECKOUT_SESSION_ID}`,
+  cancel_url: `${successBase}/member/payment/cancel`
+});
 
         console.log(`✅ Stripe session created: ${session.id} | seats=${seats} amount=${unitAmount}`);
         return res.redirect(303, session.url);
@@ -377,57 +394,78 @@ return res.render('member_form_views/register_success', {
   },
 
   // Handle submission of the add group member form
-  addGroupMember: async (req, res) => {
-    try {
-      const { leaderId } = req.params;
-      const { name, email } = req.body;
+addGroupMember: async (req, res) => {
+  try {
+    const { leaderId } = req.params;
+    const rawName = req.body.name || '';
+    const rawEmail = req.body.email || '';
 
-      const leader = await Leader.findById(leaderId);
+    const name = rawName.trim();
+    const email = rawEmail.trim().toLowerCase();
 
-      if (!leader) {
-        return res.status(404).render('member_form_views/error', {
-          layout: 'mainlayout',
-          title: 'Leader Not Found',
-          errorMessage: 'The specified leader does not exist.',
-        });
-      }
-
-const groupMember = new GroupMember({
-  // ✅ REQUIRED by GroupMember schema
-  leader: leader._id,
-
-  // ✅ REQUIRED by GroupMember schema
-  groupName: leader.groupName,
-
-  // Optional but strongly recommended (matches your schema)
-  organization: leader.organization || null,
-  organizationName: leader.organizationName || '',
-
-  // Required user fields
-  name,
-  email,
-  username: `member_${leader.members.length}_${leader.groupName.toLowerCase().replace(/\s+/g, '_')}`,
-  password: await bcrypt.hash('defaultPassword123', 10),
-});
-
-
-      const savedMember = await groupMember.save();
-      leader.members.push(savedMember._id);
-      await leader.save();
-
-      // Redirect to the dashboard
-// Redirect to the success page for a clean GET
-return res.redirect(`/leader/${leader._id}/add_group_member/success?memberId=${savedMember._id.toString()}`);
-
-    } catch (err) {
-      console.error('Error adding group member:', err.message);
-      return res.status(500).render('member_form_views/error', {
+    if (!name || !email) {
+      return res.status(400).render('member_form_views/error', {
         layout: 'mainlayout',
-        title: 'Error',
-        errorMessage: 'An error occurred while adding the group member.',
+        title: 'Validation Error',
+        errorMessage: 'Name and email are required.'
       });
     }
-  },
+
+    const leader = await Leader.findById(leaderId);
+
+    if (!leader) {
+      return res.status(404).render('member_form_views/error', {
+        layout: 'mainlayout',
+        title: 'Leader Not Found',
+        errorMessage: 'The specified leader does not exist.'
+      });
+    }
+
+    // Prevent exceeding declared group size
+    if (Array.isArray(leader.members) && leader.members.length >= leader.groupSize) {
+      return res.status(400).render('member_form_views/error', {
+        layout: 'mainlayout',
+        title: 'Group Full',
+        errorMessage: 'This group already has the maximum number of members.'
+      });
+    }
+
+    // Prevent duplicate group member email
+    const existingMember = await GroupMember.findOne({ email }).lean();
+    if (existingMember) {
+      return res.status(400).render('member_form_views/error', {
+        layout: 'mainlayout',
+        title: 'Duplicate Email',
+        errorMessage: 'That email address is already in use by another group member.'
+      });
+    }
+
+    const groupMember = new GroupMember({
+      leader: leader._id,
+      groupId: leader._id,
+      groupName: leader.groupName,
+      organization: leader.organization || null,
+      organizationName: leader.organizationName || '',
+      name,
+      email,
+      username: `member_${leader.members.length}_${leader.groupName.toLowerCase().replace(/\s+/g, '_')}`,
+      password: await bcrypt.hash('defaultPassword123', 10),
+    });
+
+    const savedMember = await groupMember.save();
+    leader.members.push(savedMember._id);
+    await leader.save();
+
+    return res.redirect(`/leader/${leader._id}/add_group_member/success?memberId=${savedMember._id.toString()}`);
+  } catch (err) {
+    console.error('Error adding group member:', err.message);
+    return res.status(500).render('member_form_views/error', {
+      layout: 'mainlayout',
+      title: 'Error',
+      errorMessage: 'An error occurred while adding the group member.'
+    });
+  }
+},
 
   // Utility to update members list for all leaders
   updateMembers: async () => {
@@ -627,30 +665,35 @@ createOrganization: async (req, res) => {
       });
     }
 
-    const cleanName = String(name).trim();
-    const baseSlug = slugifyOrgName(cleanName);
-    const slug = await buildUniqueSlug(baseSlug);
-    const domainList = parseDomains(domains);
+const cleanName = String(name).trim();
+const domainList = parseDomains(domains);
 
-    const org = await Organization.create({
-      name: cleanName,
-      slug,
-      industry: industry ? String(industry).trim() : undefined,
-      domains: domainList
-    });
+const org = await Organization.findById(leader.organization);
 
-    // Attach to leader
-    leader.organization = org._id;
-    leader.organizationName = org.name; // cache
-    leader.organizationOptOut = false;
-    await leader.save();
+if (!org) {
+  return res.status(404).render('member_form_views/error', {
+    layout: 'memberformlayout',
+    title: 'Not Found',
+    errorMessage: 'The organization record could not be found.'
+  });
+}
 
-    // Optional: keep group profile consistent
-    await GroupProfile.updateOne(
-      { groupId: leader._id },
-      { $set: { organization: org._id } }
-    );
+org.name = cleanName;
+org.industry = industry ? String(industry).trim() : undefined;
+org.domains = domainList;
 
+await org.save();
+
+leader.organizationName = org.name;
+leader.organizationOptOut = false;
+await leader.save();
+
+await GroupProfile.updateOne(
+  { groupId: leader._id },
+  { $set: { organization: org._id } }
+);
+
+req.session.organizationJustCreatedName = org.name;
 return res.redirect('/dashboard/leader/organization/success');
   } catch (err) {
     console.error('Error creating organization:', err);

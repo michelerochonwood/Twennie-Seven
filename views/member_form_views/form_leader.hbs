@@ -114,7 +114,7 @@
 
     <div class="form-field">
       <label for="group-leader-email">Group Leader Email Address</label>
-      <input type="text" id="group-leader-email" name="groupLeaderEmail" required>
+      <input type="email" id="group-leader-email" name="groupLeaderEmail" required>
     </div>
 
 <div class="form-field password-toggle-container">
@@ -174,13 +174,13 @@
     </div>
 
     <!-- Payment Note -->
-    <div class="form-field" id="group-payment-placeholder">
-      <p><strong>Payment Reminder:</strong> Once you submit this form, you’ll be redirected to a placeholder page for payment. Your payment will cover <strong>all registered group members</strong>.</p>
-      <p>If your organization prefers to be invoiced, please <a href="mailto:info@twennie.com">contact Twennie</a> before registering to arrange billing.</p>
-    </div>
+<div class="form-field" id="group-payment-placeholder">
+  <p><strong>Payment Reminder:</strong> Once you submit this form, you’ll be redirected to Stripe to complete payment securely. Your payment will cover <strong>all registered group members</strong>.</p>
+  <p>If your organization prefers to be invoiced, please <a href="mailto:info@twennie.com">contact Twennie</a> before registering to arrange billing.</p>
+</div>
 
     <!-- Hidden Submission Info -->
-    <input type="hidden" name="accessLevel" value="paid_leader">
+    <input type="hidden" name="accessLevel" value="leader">
     <input type="hidden" name="redirectTarget" value="payment">
 
     <!-- Submit Button -->

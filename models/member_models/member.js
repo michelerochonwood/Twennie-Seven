@@ -26,17 +26,11 @@ const memberSchema = new mongoose.Schema({
       'Web Design',
       'Construction',
       'Technology',
-      'AI and Robotics',
-      'Social Media/Digital Advertising',
       'Community Planning/Landscape Architecture',
       'Land Development',
-      'Telecommunications',
       'E-Commerce',
-      'Cybersecurity',
       'Fintech',
       'Edtech',
-      'Energy and Utilities',
-      'Manufacturing',
       'Other'
     ]
   },
@@ -136,6 +130,15 @@ termsAcceptedAt: {
 termsVersion: {
   type: String,
   default: "v1",
+},
+
+billingAddress: {
+  line1: { type: String, trim: true },
+  line2: { type: String, trim: true },
+  city: { type: String, trim: true },
+  province: { type: String, trim: true },
+  postalCode: { type: String, trim: true },
+  country: { type: String, trim: true, default: 'CA' }
 },
 
 // ---------- Stripe / Billing ----------
