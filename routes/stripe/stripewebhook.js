@@ -8,6 +8,7 @@ const GroupMember = require('../models/member_models/group_member');
 
 // Stripe requires raw body for signature verification
 router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+  console.log('🔥 Incoming request to /webhooks/webhook');
   const sig = req.headers['stripe-signature'];
   const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
