@@ -539,6 +539,45 @@ changeToLeader: async (req, res) => {
     // Deactivate original individual member record
     await Member.findByIdAndUpdate(freshMember._id, { isActive: false });
 
+    // Create leader profile from existing member profile if available
+const existingMemberProfile = await MemberProfile.findOne({ memberId: user._id }).lean();
+
+await LeaderProfile.findOneAndUpdate(
+  { leaderId: newLeader._id },
+  {
+    $setOnInsert: {
+      leaderId: newLeader._id,
+      name: existingMemberProfile?.name || newLeader.groupLeaderName,
+      professionalTitle: existingMemberProfile?.professionalTitle || newLeader.professionalTitle,
+      profileImage: existingMemberProfile?.profileImage || '/images/default-avatar.png',
+      biography: existingMemberProfile?.biography || '',
+      goals: existingMemberProfile?.goals || '',
+      groupLeadershipGoals: '',
+      topics: existingMemberProfile?.topics || {}
+    }
+  },
+  { upsert: true, new: true, setDefaultsOnInsert: true }
+);
+
+// Ensure group profile also exists
+await GroupProfile.findOneAndUpdate(
+  { groupId: newLeader._id },
+  {
+    $setOnInsert: {
+      groupId: newLeader._id,
+      groupName: newLeader.groupName,
+      groupLeaderName: newLeader.groupLeaderName,
+      organization: newLeader.organization || null,
+      groupSize: newLeader.groupSize,
+      groupGoals: '',
+      groupTopics: existingMemberProfile?.topics || {},
+      members: [],
+      groupImage: '/images/default-group.png'
+    }
+  },
+  { upsert: true, new: true, setDefaultsOnInsert: true }
+);
+
     req.session.user = {
       id: newLeader._id.toString(),
       username: newLeader.username,
