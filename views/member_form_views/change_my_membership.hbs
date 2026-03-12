@@ -6,16 +6,59 @@
   <section class="current-membership">
     <h2>your current membership</h2>
     <p><strong>membership type:</strong> {{user.membershipType}}</p>
-    <p>Below are the membership options available to you. Choose an option to continue.</p>
+
+    {{#ifEquals user.membershipType "group_member"}}
+      <p>
+        As a group member, your membership is managed by your group leader. The options below will explain how group memberships work.
+      </p>
+    {{else}}
+      <p>Below are the membership options available to you. Choose an option to continue.</p>
+    {{/ifEquals}}
   </section>
 
   <section class="membership-buttons">
-    <button class="membership-button" type="button" onclick="showForm('free')">free membership</button>
-    <button class="membership-button" type="button" onclick="showForm('individual')">paid membership</button>
-    <button class="membership-button" type="button" onclick="showForm('leader')">leader</button>
-    <button class="membership-button" type="button" onclick="showForm('group')">group member</button>
-    <button class="membership-button" type="button" onclick="showForm('cancel')">cancel membership</button>
+    {{#ifEquals user.membershipType "group_member"}}
+      <button class="membership-button" type="button" onclick="showForm('group-member-info')">free membership</button>
+      <button class="membership-button" type="button" onclick="showForm('group-member-info')">paid membership</button>
+      <button class="membership-button" type="button" onclick="showForm('group-member-info')">leader</button>
+      <button class="membership-button" type="button" onclick="showForm('group-member-info')">group member</button>
+      <button class="membership-button" type="button" onclick="showForm('group-member-info')">cancel membership</button>
+    {{else}}
+      <button class="membership-button" type="button" onclick="showForm('free')">free membership</button>
+      <button class="membership-button" type="button" onclick="showForm('individual')">paid membership</button>
+      <button class="membership-button" type="button" onclick="showForm('leader')">leader</button>
+      <button class="membership-button" type="button" onclick="showForm('group')">group member</button>
+      <button class="membership-button" type="button" onclick="showForm('cancel')">cancel membership</button>
+    {{/ifEquals}}
   </section>
+
+  {{#ifEquals user.membershipType "group_member"}}
+    <section id="group-member-info-form-section" class="hidden">
+      <div class="group-member-instructions" style="margin-top: 30px;">
+        <h3>group membership information</h3>
+
+        <p>
+          Your Twennie membership is currently tied to a group account managed by your leader. Because of that, you cannot change or cancel this membership from this page.
+        </p>
+
+        <p>
+          <strong>Group members cannot cancel their own memberships.</strong> If your access needs to end, your group leader must remove or deactivate you from the organization’s group membership.
+        </p>
+
+        <p>
+          If you are leaving your organization but want to continue using Twennie, you will need to start a new <strong>individual membership</strong> using a separate registration.
+        </p>
+
+        <p>
+          This is important because group memberships may include access to learning content that belongs to or is protected for a specific organization. Once someone is no longer part of that organization, they should not continue to have access to that protected content — even if they originally created some of it while they were a group member.
+        </p>
+
+        <p>
+          To continue on Twennie independently, please sign up for an individual membership. If you have questions about leaving your group or preserving your access appropriately, contact your group leader or email <a href="mailto:info@twennie.com">info@twennie.com</a>.
+        </p>
+      </div>
+    </section>
+  {{/ifEquals}}
 
   <!-- Paid Individual -->
   <section id="individual-form-section" class="hidden">
@@ -26,8 +69,12 @@
   <section id="group-form-section" class="hidden">
     <div class="group-member-instructions">
       <h3>group membership instructions</h3>
-      <p>Group memberships must be created by a group leader. If your leader has already registered your group, they will send you a link or registration code. You cannot join a group on your own from this page.</p>
-      <p>If you’d like to become a group leader, select the Leader option above.</p>
+      <p>
+        Group memberships must be created by a group leader. If your leader has already registered your group, they will send you a link or registration code. You cannot join a group on your own from this page.
+      </p>
+      <p>
+        If you’d like to become a group leader, select the Leader option above.
+      </p>
     </div>
   </section>
 
@@ -47,7 +94,6 @@
       <input type="hidden" name="_csrf" value="{{csrfToken}}">
       <h3 style="margin-top: 40px">We're sorry to see you go.</h3>
 
-      <!-- Cancellation options -->
       <fieldset class="form-section" style="margin: 16px 0;">
         <legend>cancellation options</legend>
 
@@ -68,9 +114,8 @@
         </p>
       </fieldset>
 
-      <!-- Optional feedback -->
-<div class="form-field" style="margin:16px 0; text-align:center;">
-  <label for="cancel-reason" style="display:block; margin-bottom:8px;">
+<div class="form-field" style="margin:16px auto; text-align:center; max-width:700px;">
+  <label for="cancel-reason" style="display:block; margin-bottom:8px; text-align:center;">
     <strong>Optional:</strong> why are you cancelling?
   </label>
 
@@ -80,12 +125,13 @@
     rows="4"
     placeholder="Your feedback helps us improve."
     style="
-      width:75%;
+      width:100%;
       max-width:600px;
       margin:0 auto;
       display:block;
       border-radius:8px;
       padding:10px;
+      box-sizing:border-box;
     "
   ></textarea>
 </div>
@@ -103,11 +149,12 @@
 
 <script>
   function showForm(type) {
-    const sections = ['individual', 'group', 'leader', 'free', 'cancel'];
+    const sections = ['individual', 'group', 'leader', 'free', 'cancel', 'group-member-info'];
     sections.forEach(sec => {
       const el = document.getElementById(`${sec}-form-section`);
       if (el) el.classList.add('hidden');
     });
+
     const target = document.getElementById(`${type}-form-section`);
     if (target) target.classList.remove('hidden');
   }
