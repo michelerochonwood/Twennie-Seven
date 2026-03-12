@@ -6,10 +6,11 @@ const CancelledMember = require('../models/member_models/cancelledmember');
 const Member = require('../models/member_models/member');
 const Leader = require('../models/member_models/leader');
 const GroupMember = require('../models/member_models/group_member');
-const CancelledMember = require('../models/member_models/cancelledmember');
-const Member = require('../models/member_models/member');
-const Leader = require('../models/member_models/leader');
-const GroupMember = require('../models/member_models/group_member');
+
+const MemberProfile = require('../models/profile_models/member_profile');
+const LeaderProfile = require('../models/profile_models/leader_profile');
+const GroupProfile = require('../models/profile_models/group_profile');
+
 
 const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
 
