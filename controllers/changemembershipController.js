@@ -10,6 +10,7 @@ const GroupMember = require('../models/member_models/group_member');
 const MemberProfile = require('../models/profile_models/member_profile');
 const LeaderProfile = require('../models/profile_models/leader_profile');
 const GroupProfile = require('../models/profile_models/group_profile');
+const { sendMail } = require('../utils/mailer');
 
 
 const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
@@ -33,10 +34,10 @@ module.exports = {
   },
 
   // Cancel Membership (Option A)
-  cancelMembership: async (req, res) => {
+ cancelMembership: async (req, res) => {
   try {
     const user = req.user;
-    const reason = req.body.reason || '';
+    const reason = (req.body.reason || '').trim();
     const mode = req.body.mode === 'immediate' ? 'immediate' : 'period_end';
 
     if (!user) {
@@ -47,7 +48,12 @@ module.exports = {
       });
     }
 
-    const ModelsByType = { member: Member, leader: Leader, group_member: GroupMember };
+    const ModelsByType = {
+      member: Member,
+      leader: Leader,
+      group_member: GroupMember
+    };
+
     const Model = ModelsByType[user.membershipType];
     const doc = Model ? await Model.findById(user._id) : null;
 
@@ -62,7 +68,6 @@ module.exports = {
     let cancelAt = null;
     const subId = doc?.stripeSubscriptionId || null;
 
-    // If this is a paid account and we have no Stripe subscription id, stop here.
     const looksPaid =
       user.membershipType === 'leader' ||
       user.accessLevel === 'paid_individual' ||
@@ -82,18 +87,18 @@ module.exports = {
       });
     }
 
-    // Cancel / schedule cancel in Stripe first
+    // Cancel or schedule cancellation in Stripe first
     if (subId) {
       if (mode === 'immediate') {
         await stripe.subscriptions.cancel(subId);
         console.log('✅ Stripe subscription cancelled immediately:', subId);
       } else {
-        const s = await stripe.subscriptions.update(subId, {
+        const subscription = await stripe.subscriptions.update(subId, {
           cancel_at_period_end: true
         });
 
-        if (s.cancel_at) {
-          cancelAt = new Date(s.cancel_at * 1000);
+        if (subscription.cancel_at) {
+          cancelAt = new Date(subscription.cancel_at * 1000);
         }
 
         console.log('✅ Stripe subscription set to cancel at period end:', {
@@ -103,12 +108,12 @@ module.exports = {
       }
     }
 
-    // Archive the cancellation only after Stripe succeeds
+    // Archive cancellation after Stripe succeeds
     await new CancelledMember({
       originalId: user._id,
-      name: user.name || user.groupLeaderName,
-      username: user.username,
-      email: user.email || user.groupLeaderEmail,
+      name: user.name || user.groupLeaderName || user.username || 'Unknown User',
+      username: user.username || '',
+      email: user.email || user.groupLeaderEmail || '',
       membershipType: user.membershipType,
       accessLevel: user.accessLevel || null,
       wasLeader: user.membershipType === 'leader',
@@ -129,12 +134,11 @@ module.exports = {
         doc.cancelAt = null;
       }
 
-      // Optional: downgrade individual paid members immediately
       if (user.membershipType === 'member' && 'accessLevel' in doc) {
         doc.accessLevel = 'free_individual';
       }
     } else {
-      // period_end: keep account active until Stripe actually ends it
+      // Keep account active until Stripe actually ends it
       doc.isActive = true;
 
       if ('subscriptionStatus' in doc) {
@@ -158,22 +162,59 @@ module.exports = {
       );
     }
 
+    // Email notification to Twennie
+    try {
+      const cancelingName = user.name || user.groupLeaderName || user.username || 'Unknown User';
+      const cancelingEmail = user.email || user.groupLeaderEmail || 'Unknown Email';
+
+      await sendMail({
+        to: 'info@twennie.com',
+        subject: `Twennie membership cancellation: ${cancelingName}`,
+        text: `
+A membership cancellation was submitted on Twennie.
+
+Name: ${cancelingName}
+Email: ${cancelingEmail}
+Membership Type: ${user.membershipType}
+Access Level: ${user.accessLevel || 'N/A'}
+Cancellation Mode: ${mode}
+Subscription ID: ${subId || 'None found'}
+Effective Cancel Date: ${cancelAt ? cancelAt.toISOString() : 'Immediate or not provided'}
+Reason: ${reason || 'No reason provided'}
+        `.trim(),
+        html: `
+          <p>A membership cancellation was submitted on Twennie.</p>
+          <p><strong>Name:</strong> ${cancelingName}</p>
+          <p><strong>Email:</strong> ${cancelingEmail}</p>
+          <p><strong>Membership Type:</strong> ${user.membershipType}</p>
+          <p><strong>Access Level:</strong> ${user.accessLevel || 'N/A'}</p>
+          <p><strong>Cancellation Mode:</strong> ${mode}</p>
+          <p><strong>Subscription ID:</strong> ${subId || 'None found'}</p>
+          <p><strong>Effective Cancel Date:</strong> ${cancelAt ? cancelAt.toLocaleString('en-CA') : 'Immediate or not provided'}</p>
+          <p><strong>Reason:</strong><br>${(reason || 'No reason provided').replace(/\n/g, '<br>')}</p>
+        `
+      });
+
+      console.log('✅ Cancellation notification email sent.');
+    } catch (mailErr) {
+      console.error('❌ Failed to send cancellation notification email:', mailErr);
+    }
+
     req.logout?.(() => {});
     req.session.destroy(() => {
-      res.render('member_form_views/cancel_success', {
+      return res.render('member_form_views/cancel_success', {
         layout: 'memberformlayout',
-        title: (mode === 'immediate') ? 'Subscription Cancelled' : 'Cancellation Scheduled',
-        when: (mode === 'immediate') ? 'cancelled' : 'cancellation scheduled',
+        title: mode === 'immediate' ? 'Subscription Cancelled' : 'Cancellation Scheduled',
+        when: mode === 'immediate' ? 'cancelled' : 'cancellation scheduled',
         cancelAt: cancelAt ? cancelAt.toLocaleString('en-CA') : null,
         subscriptionId: subId || null,
         dashboardPath: '/',
         supportEmail: 'info@twennie.com'
       });
     });
-
   } catch (err) {
     console.error('❌ Error cancelling membership:', err);
-    res.status(500).render('member_form_views/error', {
+    return res.status(500).render('member_form_views/error', {
       layout: 'memberformlayout',
       title: 'Error Cancelling Membership',
       errorMessage: 'An error occurred while cancelling your membership. Please try again.'
