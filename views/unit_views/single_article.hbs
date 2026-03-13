@@ -164,27 +164,28 @@
 
 
         {{!-- Notes --}}
-        {{#if isGroupMemberOrLeader}}
-          <div class="single_article-notes-container">
-            <h3 class="single_article-notes-title">record notes</h3>
-            <p class="single_article-notes-instructions">
-              Record notes on this article. Consider how it relates to your work and how it might change your approach. These notes will be part of your Twennie learning record. (Keep your learning data hygienic - only post notes on a unit once you've completed all the tasks.)
-            </p>
+{{!-- Notes --}}
+{{#if isGroupMemberOrLeaderOrMember}}
+  <div class="single_article-notes-container">
+    <h3 class="single_article-notes-title">record notes</h3>
+    <p class="single_article-notes-instructions">
+      Record notes on this article. Consider how it relates to your work and how it might change your approach. These notes will be part of your Twennie learning record. (Keep your learning data hygienic - only post notes on a unit once you've completed all the tasks.)
+    </p>
 
-            <form action="/notes/submit" method="POST" class="single_article-notes-form">
-              <input type="hidden" name="_csrf" value="{{csrfToken}}">
-              <input type="hidden" name="unitId" value="{{_id}}">
-              <input type="hidden" name="unitType" value="article">
-              <input type="hidden" name="main_topic" value="{{main_topic}}">
-              <input type="hidden" name="secondary_topic" value="{{sub_topic}}">
+    <form action="/notes/submit" method="POST" class="single_article-notes-form">
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+      <input type="hidden" name="unitId" value="{{_id}}">
+      <input type="hidden" name="unitType" value="article">
+      <input type="hidden" name="main_topic" value="{{main_topic}}">
+      <input type="hidden" name="secondary_topic" value="{{sub_topic}}">
 
-              <textarea name="note_content" class="single_article-notes-textarea" rows="5" maxlength="1000"
-                        placeholder="Write your notes here..."></textarea>
+      <textarea name="note_content" class="single_article-notes-textarea" rows="5" maxlength="1000"
+                placeholder="Write your notes here..."></textarea>
 
-              <button type="submit" class="single_article-notes-submit">submit notes</button>
-            </form>
-          </div>
-        {{/if}}
+      <button type="submit" class="single_article-notes-submit">submit notes</button>
+    </form>
+  </div>
+{{/if}}
       </div>
     {{else}}
       <div class="single_article-toggle" onclick="toggleArticleContent(this)" data-authorized="false">

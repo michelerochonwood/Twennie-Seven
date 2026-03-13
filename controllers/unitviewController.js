@@ -709,7 +709,11 @@ viewArticle: async (req, res) => {
     const author = await resolveAuthorById(authorId);
 
     const currentUserId = (req.user?._id || req.user?.id)?.toString();
-    const currentMembership = req.user?.membershipType || req.user?.accessLevel || null;
+    const currentMembership = req.user?.membershipType || null;
+
+    const isLeader = currentMembership === 'leader';
+    const isGroupMember = currentMembership === 'group_member';
+    const isMember = currentMembership === 'member';
 
     const isOwner = !!(currentUserId && authorId && currentUserId === authorId);
 
@@ -744,7 +748,7 @@ viewArticle: async (req, res) => {
     const articleImage = article.image?.url || '/images/default-article.png';
 
     // ✅ Leader assign + org admin suggest
-    const { isLeader, groupMembers, leaderId, leaderName } = await getLeaderAssignContext(req);
+    const { groupMembers, leaderId, leaderName } = await getLeaderAssignContext(req);
     const adminSuggest = await buildOrgLeaderListForAdmin(req);
 
     return res.render('unit_views/single_article', {
@@ -771,9 +775,14 @@ viewArticle: async (req, res) => {
       isOwner,
       isAuthorizedToViewFullContent,
       isAuthenticated: !!req.user,
+
       isLeader,
-      isGroupMemberOrLeader: isLeader || currentMembership === 'group_member',
-      isGroupMemberOrMember: currentMembership === 'group_member' || currentMembership === 'member',
+      isGroupMember,
+      isMember,
+
+      isGroupMemberOrLeader: isLeader || isGroupMember,
+      isGroupMemberOrMember: isGroupMember || isMember,
+      isGroupMemberOrLeaderOrMember: isLeader || isGroupMember || isMember,
 
       ...adminSuggest,
       suggestionSuccess: req.query.suggested === '1',
@@ -801,12 +810,9 @@ viewArticle: async (req, res) => {
 
 
 
-
-
       
     
-    
-viewVideo: async (req, res) => {
+   viewVideo: async (req, res) => {
   try {
     const { id } = req.params;
     console.log(`🎥 Fetching video with ID: ${id}`);
@@ -833,7 +839,11 @@ viewVideo: async (req, res) => {
       : { name: 'Unknown Author', image: '/images/default-avatar.png' };
 
     const currentUserId = (req.user?._id || req.user?.id)?.toString();
-    const currentMembership = req.user?.membershipType || req.user?.accessLevel || null;
+    const currentMembership = req.user?.membershipType || null;
+
+    const isLeader = currentMembership === 'leader';
+    const isGroupMember = currentMembership === 'group_member';
+    const isMember = currentMembership === 'member';
 
     const isOwner = !!(currentUserId && authorId && currentUserId === authorId);
 
@@ -865,7 +875,7 @@ viewVideo: async (req, res) => {
 
     const embedLink = convertYouTubeToEmbed(video.video_content);
 
-    const { isLeader, groupMembers, leaderId, leaderName } = await getLeaderAssignContext(req);
+    const { groupMembers, leaderId, leaderName } = await getLeaderAssignContext(req);
     const adminSuggest = await buildOrgLeaderListForAdmin(req);
 
     return res.render('unit_views/single_video', {
@@ -892,9 +902,14 @@ viewVideo: async (req, res) => {
       isOwner,
       isAuthorizedToViewFullContent,
       isAuthenticated: !!req.user,
+
       isLeader,
-      isGroupMemberOrLeader: isLeader || currentMembership === 'group_member',
-      isGroupMemberOrMember: currentMembership === 'group_member' || currentMembership === 'member',
+      isGroupMember,
+      isMember,
+
+      isGroupMemberOrLeader: isLeader || isGroupMember,
+      isGroupMemberOrMember: isGroupMember || isMember,
+      isGroupMemberOrLeaderOrMember: isLeader || isGroupMember || isMember,
 
       ...adminSuggest,
       suggestionSuccess: req.query.suggested === '1',
@@ -927,8 +942,6 @@ viewVideo: async (req, res) => {
     
     
     
-
-
 viewInterview: async (req, res) => {
   try {
     const { id } = req.params;
@@ -947,7 +960,11 @@ viewInterview: async (req, res) => {
     const author = await resolveAuthorById(authorId);
 
     const currentUserId = (req.user?._id || req.user?.id)?.toString();
-    const currentMembership = req.user?.membershipType || req.user?.accessLevel || null;
+    const currentMembership = req.user?.membershipType || null;
+
+    const isLeader = currentMembership === 'leader';
+    const isGroupMember = currentMembership === 'group_member';
+    const isMember = currentMembership === 'member';
 
     const isOwner = !!(currentUserId && authorId && currentUserId === authorId);
 
@@ -974,7 +991,7 @@ viewInterview: async (req, res) => {
 
     const embedLink = convertYouTubeToEmbed(interview.video_link);
 
-    const { isLeader, groupMembers, leaderId, leaderName } = await getLeaderAssignContext(req);
+    const { groupMembers, leaderId, leaderName } = await getLeaderAssignContext(req);
     const adminSuggest = await buildOrgLeaderListForAdmin(req);
 
     return res.render('unit_views/single_interview', {
@@ -1001,9 +1018,14 @@ viewInterview: async (req, res) => {
       isOwner,
       isAuthorizedToViewFullContent,
       isAuthenticated: typeof req.isAuthenticated === 'function' ? req.isAuthenticated() : !!req.user,
+
       isLeader,
-      isGroupMemberOrLeader: isLeader || currentMembership === 'group_member',
-      isGroupMemberOrMember: currentMembership === 'group_member' || currentMembership === 'member',
+      isGroupMember,
+      isMember,
+
+      isGroupMemberOrLeader: isLeader || isGroupMember,
+      isGroupMemberOrMember: isGroupMember || isMember,
+      isGroupMemberOrLeaderOrMember: isLeader || isGroupMember || isMember,
 
       ...adminSuggest,
       suggestionSuccess: req.query.suggested === '1',
@@ -1258,11 +1280,15 @@ viewExercise: async (req, res) => {
 
     // 3) Current user helpers
     const currentUserId = (req.user?._id || req.user?.id)?.toString();
-    const currentMembership = req.user?.membershipType || req.user?.accessLevel || null;
+    const currentMembership = req.user?.membershipType || null;
+
+    const isLeader = currentMembership === 'leader';
+    const isGroupMember = currentMembership === 'group_member';
+    const isMember = currentMembership === 'member';
 
     const isOwner = !!(currentUserId && authorId && currentUserId === authorId);
 
-    // 4) Access control (same pattern you used elsewhere)
+    // 4) Access control
     let authorOrg = null;
     let authorGroupId = null;
 
@@ -1273,7 +1299,7 @@ viewExercise: async (req, res) => {
 
     if (authorAsLeader) {
       authorOrg = authorAsLeader.organization || null;
-      authorGroupId = authorAsLeader._id; // leaders anchor to own id
+      authorGroupId = authorAsLeader._id;
     } else if (authorAsGroupMember) {
       authorOrg = authorAsGroupMember.organization || null;
       authorGroupId = authorAsGroupMember.groupId || null;
@@ -1309,7 +1335,6 @@ viewExercise: async (req, res) => {
     });
 
     // 5) Leader context for assignment UI
-    const isLeader = currentMembership === 'leader';
     let groupMembers = [];
     let leaderId = undefined;
     let leaderName = undefined;
@@ -1328,62 +1353,57 @@ viewExercise: async (req, res) => {
       }
     }
 
-    // 6) ✅ Org Admin suggestion context (this is what you were missing in other unit types)
+    // 6) Org Admin suggestion context
     const adminSuggest = await buildOrgLeaderListForAdmin(req);
 
-// 7) Normalize document uploads for the view
-const rawDocs = Array.isArray(exercise.document_uploads)
-  ? exercise.document_uploads.filter(Boolean)
-  : exercise.document_uploads
-    ? [exercise.document_uploads]
-    : [];
+    // 7) Normalize document uploads for the view
+    const rawDocs = Array.isArray(exercise.document_uploads)
+      ? exercise.document_uploads.filter(Boolean)
+      : exercise.document_uploads
+        ? [exercise.document_uploads]
+        : [];
 
-const extensionMap = {
-  'MS Word': '.docx',
-  'MS Excel': '.xlsx',
-  'MS PowerPoint': '.pptx',
-  'PDF': '.pdf',
-  'Mural': '.pdf'
-};
+    const extensionMap = {
+      'MS Word': '.docx',
+      'MS Excel': '.xlsx',
+      'MS PowerPoint': '.pptx',
+      'PDF': '.pdf',
+      'Mural': '.pdf'
+    };
 
-const fallbackExt = extensionMap[exercise.file_format] || '';
+    const fallbackExt = extensionMap[exercise.file_format] || '';
 
-const document_uploads = rawDocs.map((doc, index) => {
-  // Support both old string format and future object format
-  const url = typeof doc === 'string' ? doc : (doc?.url || '');
-  let filename = typeof doc === 'object' && doc?.filename ? doc.filename : '';
+    const document_uploads = rawDocs.map((doc, index) => {
+      const url = typeof doc === 'string' ? doc : (doc?.url || '');
+      let filename = typeof doc === 'object' && doc?.filename ? doc.filename : '';
 
-  // If no filename stored, try to extract it from the URL
-  if (!filename && url) {
-    try {
-      const parsed = new URL(url, 'https://www.twennie.com');
-      filename = decodeURIComponent(parsed.pathname.split('/').pop() || '');
-    } catch {
-      filename = decodeURIComponent((url.split('?')[0].split('/').pop()) || '');
-    }
-  }
+      if (!filename && url) {
+        try {
+          const parsed = new URL(url, 'https://www.twennie.com');
+          filename = decodeURIComponent(parsed.pathname.split('/').pop() || '');
+        } catch {
+          filename = decodeURIComponent((url.split('?')[0].split('/').pop()) || '');
+        }
+      }
 
-  // If still no name, create one
-  if (!filename) {
-    filename = `${exercise.exercise_title || 'exercise-download'}-${index + 1}`;
-  }
+      if (!filename) {
+        filename = `${exercise.exercise_title || 'exercise-download'}-${index + 1}`;
+      }
 
-  // If the filename has no extension, add one based on file_format
-  if (!/\.[a-z0-9]+$/i.test(filename) && fallbackExt) {
-    filename += fallbackExt;
-  }
+      if (!/\.[a-z0-9]+$/i.test(filename) && fallbackExt) {
+        filename += fallbackExt;
+      }
 
-  return {
-    url,
-    filename
-  };
-});
+      return {
+        url,
+        filename
+      };
+    });
 
     // 8) Render
     return res.render('unit_views/single_exercise', {
       layout: 'unitviewlayout',
 
-      // identity & content
       _id: exercise._id.toString(),
       unitType: 'exercise',
       exercise_title: exercise.exercise_title,
@@ -1393,37 +1413,36 @@ const document_uploads = rawDocs.map((doc, index) => {
       file_format: exercise.file_format,
       document_uploads,
 
-      // creator card
       creator: {
         name: creator?.name || 'Unknown Creator',
         image: creator?.image || '/images/default-avatar.png',
       },
 
-      // topics
       main_topic: exercise.main_topic,
       secondary_topics: exercise.secondary_topics || [],
       sub_topic: exercise.sub_topic,
 
-      // flags
       isOwner,
       isAuthorizedToViewFullContent,
       isAuthenticated: !!req.user,
-      isLeader,
-      isGroupMemberOrLeader: isLeader || currentMembership === 'group_member',
-      isGroupMemberOrMember: currentMembership === 'group_member' || currentMembership === 'member',
 
-      // ✅ Admin suggest vars (top-level)
+      isLeader,
+      isGroupMember,
+      isMember,
+
+      isGroupMemberOrLeader: isLeader || isGroupMember,
+      isGroupMemberOrMember: isGroupMember || isMember,
+      isGroupMemberOrLeaderOrMember: isLeader || isGroupMember || isMember,
+
       ...adminSuggest,
-// ✅ Suggestion success banner (after redirect back)
-suggestionSuccess: req.query.suggested === '1',
-suggestedUnitId: req.query.unitId || '',
-suggestedUnitType: req.query.unitType || '',
-      // leader-only assignment data
+      suggestionSuccess: req.query.suggested === '1',
+      suggestedUnitId: req.query.unitId || '',
+      suggestedUnitType: req.query.unitType || '',
+
       groupMembers,
       leaderId,
       leaderName: leaderName || req.user?.username || 'You',
 
-      // CSRF
       csrfToken: typeof req.csrfToken === 'function' ? req.csrfToken() : null,
     });
 
@@ -1439,13 +1458,11 @@ suggestedUnitType: req.query.unitType || '',
 
 
 
-
     
     
     
     
-    
-viewTemplate: async (req, res) => {
+ viewTemplate: async (req, res) => {
   try {
     const { id } = req.params;
     console.log(`📄 Fetching template with ID: ${id}`);
@@ -1460,7 +1477,7 @@ viewTemplate: async (req, res) => {
       });
     }
 
-    // 2) Resolve author (profile for name/image) + id for access checks
+    // 2) Resolve author
     const authorIdRaw = template.author?.id || template.author;
     const authorId = authorIdRaw ? authorIdRaw.toString() : null;
     const author = await resolveAuthorById(authorId);
@@ -1475,11 +1492,15 @@ viewTemplate: async (req, res) => {
 
     // 3) Ownership & current user
     const currentUserId = (req.user?._id || req.user?.id)?.toString();
-    const currentMembership = req.user?.membershipType || req.user?.accessLevel || null;
+    const currentMembership = req.user?.membershipType || null;
+
+    const isLeader = currentMembership === 'leader';
+    const isGroupMember = currentMembership === 'group_member';
+    const isMember = currentMembership === 'member';
 
     const isOwner = !!(currentUserId && authorId && currentUserId === authorId);
 
-    // 4) Access control: fetch author's org/team from real doc
+    // 4) Access control
     let authorOrg = null;
     let authorGroupId = null;
 
@@ -1490,7 +1511,7 @@ viewTemplate: async (req, res) => {
 
     if (authorAsLeader) {
       authorOrg = authorAsLeader.organization || null;
-      authorGroupId = authorAsLeader._id; // leaders use their own id for team checks
+      authorGroupId = authorAsLeader._id;
     } else if (authorAsGroupMember) {
       authorOrg = authorAsGroupMember.organization || null;
       authorGroupId = authorAsGroupMember.groupId || null;
@@ -1518,7 +1539,7 @@ viewTemplate: async (req, res) => {
       isAuthorizedToViewFullContent = isOwner || isOrgMatch || isTeamMatch;
     }
 
-    console.log("🔒 Access breakdown (template):", {
+    console.log('🔒 Access breakdown (template):', {
       isOwner,
       isOrgMatch,
       isTeamMatch,
@@ -1526,7 +1547,6 @@ viewTemplate: async (req, res) => {
     });
 
     // 5) Leader context for assignments
-    const isLeader = currentMembership === 'leader';
     let groupMembers = [];
     let leaderId;
     let leaderName;
@@ -1545,10 +1565,10 @@ viewTemplate: async (req, res) => {
       }
     }
 
-    // 6) ✅ Org Admin suggestion context
+    // 6) Org Admin suggestion context
     const adminSuggest = await buildOrgLeaderListForAdmin(req);
 
-    // 7) Normalize document uploads → [{ url, filename }]
+    // 7) Normalize document uploads
     const toFilename = (u) => {
       try {
         const last = (u || '').split('/').pop() || 'download';
@@ -1579,7 +1599,6 @@ viewTemplate: async (req, res) => {
     return res.render('unit_views/single_template', {
       layout: 'unitviewlayout',
 
-      // identity & content
       _id: template._id.toString(),
       unitType: 'template',
       template_title: template.template_title,
@@ -1588,37 +1607,36 @@ viewTemplate: async (req, res) => {
       template_content: template.template_content,
       documentUploads,
 
-      // author card
       author: {
         name: author.name || 'Unknown Author',
         image: author.image || '/images/default-avatar.png',
       },
 
-      // topics
       main_topic: template.main_topic,
       secondary_topics: template.secondary_topics || [],
       sub_topic: template.sub_topic,
 
-      // flags
       isOwner,
       isAuthorizedToViewFullContent,
       isAuthenticated: !!req.user,
-      isLeader,
-      isGroupMemberOrLeader: isLeader || currentMembership === 'group_member',
-      isGroupMemberOrMember: currentMembership === 'group_member' || currentMembership === 'member',
 
-      // ✅ Admin suggest vars (top-level)
+      isLeader,
+      isGroupMember,
+      isMember,
+
+      isGroupMemberOrLeader: isLeader || isGroupMember,
+      isGroupMemberOrMember: isGroupMember || isMember,
+      isGroupMemberOrLeaderOrMember: isLeader || isGroupMember || isMember,
+
       ...adminSuggest,
-// ✅ Suggestion success banner (after redirect back)
-suggestionSuccess: req.query.suggested === '1',
-suggestedUnitId: req.query.unitId || '',
-suggestedUnitType: req.query.unitType || '',
-      // leader-only assignment data
+      suggestionSuccess: req.query.suggested === '1',
+      suggestedUnitId: req.query.unitId || '',
+      suggestedUnitType: req.query.unitType || '',
+
       groupMembers,
       leaderId,
       leaderName: leaderName || req.user?.username || 'You',
 
-      // CSRF
       csrfToken: typeof req.csrfToken === 'function' ? req.csrfToken() : null,
     });
 
