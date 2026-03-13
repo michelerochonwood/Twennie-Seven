@@ -55,7 +55,7 @@
       {{#if completedPromptSets.length}}
         <div class="member-progress-completed-grid" style="overflow: hidden;">
           {{#each completedPromptSets}}
-            <a href="/reports/mycompletedpromptsets-individual#promptset-{{@index}}" class="member-progress-completed-card-link">
+            <a href="/reports/mycompletedpromptsets-individual#promptset-{{this.promptSetId}}" class="member-progress-completed-card-link">
               <div class="member-progress-completed-card" style="padding: 1rem; min-height: auto;">
                 <h3 class="member-progress-completed-title">{{this.promptSetTitle}}</h3>
                 <p class="member-progress-completed-main-topic">{{this.mainTopic}}</p>
