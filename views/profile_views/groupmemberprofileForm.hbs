@@ -91,54 +91,28 @@
     </div>
 
     <!-- Topic Selection Instructions -->
-    <p class="groupmember-topic-instructions">
-      Your leader has chosen three topics for your group (shown above).  
-      You can also choose <strong>three topics of your own</strong> from the dropdowns below.  
-      <strong>Your selections will not change the group’s topics.</strong>
-    </p>
+<!-- Topics (Dropdowns) -->
+<div class="form-field">
+  <p>Having a top three topics helps you navigate to your favorite subjects more quickly.</p>
 
-    <!-- Personal Topics (Editable) -->
-    <div class="form-field">
-      <label for="topic1">Your Topic 1</label>
-      <select id="topic1" name="topics[topic1]" required>
-        {{#each allTopics}}
-          <option 
-            value="{{this}}" 
-            {{#if (eq this ../profile.topics.topic1)}}selected{{/if}}
-          >
-            {{this}}
-          </option>
-        {{/each}}
-      </select>
-    </div>
+  {{> unitformpartials/topicdropdownprofiles
+      fieldId="topic1"
+      fieldName="topics[topic1]"
+      label="topic 1"
+      selectedValue=profile.topics.topic1}}
 
-    <div class="form-field">
-      <label for="topic2">Your Topic 2</label>
-      <select id="topic2" name="topics[topic2]" required>
-        {{#each allTopics}}
-          <option 
-            value="{{this}}" 
-            {{#if (eq this ../profile.topics.topic2)}}selected{{/if}}
-          >
-            {{this}}
-          </option>
-        {{/each}}
-      </select>
-    </div>
+  {{> unitformpartials/topicdropdownprofiles
+      fieldId="topic2"
+      fieldName="topics[topic2]"
+      label="topic 2"
+      selectedValue=profile.topics.topic2}}
 
-    <div class="form-field">
-      <label for="topic3">Your Topic 3</label>
-      <select id="topic3" name="topics[topic3]" required>
-        {{#each allTopics}}
-          <option 
-            value="{{this}}" 
-            {{#if (eq this ../profile.topics.topic3)}}selected{{/if}}
-          >
-            {{this}}
-          </option>
-        {{/each}}
-      </select>
-    </div>
+  {{> unitformpartials/topicdropdownprofiles
+      fieldId="topic3"
+      fieldName="topics[topic3]"
+      label="topic 3"
+      selectedValue=profile.topics.topic3}}
+</div>
 
     <!-- Submit Button -->
     <div class="form-buttons">

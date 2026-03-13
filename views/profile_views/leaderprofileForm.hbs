@@ -100,33 +100,28 @@
       >{{profile.groupLeadershipGoals}}</textarea>
     </div>
 
-    <!-- Topics -->
-    <div class="form-field">
-      <label for="topic1">Topic 1</label>
-      <select id="topic1" name="topics[topic1]">
-        {{#each allTopics}}
-          <option value="{{this}}" {{#if (eq this ../profile.topics.topic1)}}selected{{/if}}>{{this}}</option>
-        {{/each}}
-      </select>
-    </div>
+<!-- Topics (Dropdowns) -->
+<div class="form-field">
+  <p>Having a top three topics helps you navigate to your favorite subjects more quickly.</p>
 
-    <div class="form-field">
-      <label for="topic2">Topic 2</label>
-      <select id="topic2" name="topics[topic2]">
-        {{#each allTopics}}
-          <option value="{{this}}" {{#if (eq this ../profile.topics.topic2)}}selected{{/if}}>{{this}}</option>
-        {{/each}}
-      </select>
-    </div>
+  {{> unitformpartials/topicdropdownprofiles
+      fieldId="topic1"
+      fieldName="topics[topic1]"
+      label="topic 1"
+      selectedValue=profile.topics.topic1}}
 
-    <div class="form-field">
-      <label for="topic3">Topic 3</label>
-      <select id="topic3" name="topics[topic3]">
-        {{#each allTopics}}
-          <option value="{{this}}" {{#if (eq this ../profile.topics.topic3)}}selected{{/if}}>{{this}}</option>
-        {{/each}}
-      </select>
-    </div>
+  {{> unitformpartials/topicdropdownprofiles
+      fieldId="topic2"
+      fieldName="topics[topic2]"
+      label="topic 2"
+      selectedValue=profile.topics.topic2}}
+
+  {{> unitformpartials/topicdropdownprofiles
+      fieldId="topic3"
+      fieldName="topics[topic3]"
+      label="topic 3"
+      selectedValue=profile.topics.topic3}}
+</div>
 
     <!-- Submit and Cancel -->
     <div class="form-buttons">
