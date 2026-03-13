@@ -8,6 +8,7 @@ const Interview = require('../models/unit_models/interview');
 const Exercise  = require('../models/unit_models/exercise');
 const Template  = require('../models/unit_models/template');
 const Mission   = require('../models/unit_models/mission');
+const Member      = require('../models/member_models/member');
 
 const GroupMember = require('../models/member_models/group_member');
 const Leader      = require('../models/member_models/leader');
@@ -40,6 +41,7 @@ async function resolveUnitAndType(unitId) {
 }
 
 // 1️⃣ CREATE / UPSERT NOTE (Submission Form Handler)
+// 1️⃣ CREATE / UPSERT NOTE (Submission Form Handler)
 exports.createNote = async (req, res) => {
   try {
     const userId = req.user?._id || req.user?.id;
@@ -47,22 +49,23 @@ exports.createNote = async (req, res) => {
 
     const {
       unitId,
-      unitType,         // preferred; your views pass this
-      main_topic,       // optional; view often supplies
-      secondary_topic,  // optional; view often supplies
+      unitType,
+      main_topic,
+      secondary_topic,
       note_content
     } = req.body;
 
     if (!unitId) return res.status(400).send('Missing unitId.');
 
-    // Must be group member or leader to submit notes
-    const [isGroupMember, isLeader] = await Promise.all([
+    // Allow leaders, group members, and individual members
+    const [isGroupMember, isLeader, isMember] = await Promise.all([
       GroupMember.exists({ _id: userId }),
-      Leader.exists({ _id: userId })
+      Leader.exists({ _id: userId }),
+      Member.exists({ _id: userId })
     ]);
 
-    if (!isGroupMember && !isLeader) {
-      return res.status(403).send('Unauthorized: Only group members and leaders can submit notes.');
+    if (!isGroupMember && !isLeader && !isMember) {
+      return res.status(403).send('Unauthorized: Only members, group members, and leaders can submit notes.');
     }
 
     // Resolve topics/unit type if the form didn't provide them
@@ -77,7 +80,6 @@ exports.createNote = async (req, res) => {
       if (!effectiveUnitType)  effectiveUnitType  = type;
       if (!effectiveMainTopic) effectiveMainTopic = unit.main_topic ?? null;
 
-      // Preserve the single-field behavior used in your note forms.
       if (!effectiveSecondary) {
         if (typeof unit.secondary_topic === 'string') {
           effectiveSecondary = unit.secondary_topic;
@@ -107,33 +109,35 @@ exports.createNote = async (req, res) => {
     );
 
     /**
-     * ✅ Mark the corresponding leader assignment as completed for THIS member and THIS unit.
-     * We mark completion immediately after saving the note, which preserves your rule:
-     * "The unit shows as completed only once the group member has submitted notes."
+     * Mark corresponding leader assignment as completed for this user + unit.
+     * This only matters for users who can actually receive assignments:
+     * group members and leaders.
      */
-    await Tag.updateMany(
-      {
-        'assignedTo.member': new mongoose.Types.ObjectId(userId),
-        associatedUnits: {
-          $elemMatch: {
-            item: new mongoose.Types.ObjectId(unitId),
-            ...(effectiveUnitType ? { unitType: effectiveUnitType } : {})
+    if (isGroupMember || isLeader) {
+      await Tag.updateMany(
+        {
+          'assignedTo.member': new mongoose.Types.ObjectId(userId),
+          associatedUnits: {
+            $elemMatch: {
+              item: new mongoose.Types.ObjectId(unitId),
+              ...(effectiveUnitType ? { unitType: effectiveUnitType } : {})
+            }
           }
+        },
+        {
+          $set: { 'assignedTo.$[ass].completedAt': new Date() }
+        },
+        {
+          arrayFilters: [{ 'ass.member': new mongoose.Types.ObjectId(userId) }]
         }
-      },
-      {
-        $set: { 'assignedTo.$[ass].completedAt': new Date() }
-      },
-      {
-        arrayFilters: [{ 'ass.member': new mongoose.Types.ObjectId(userId) }]
-      }
-    );
+      );
+    }
 
     /**
-     * ✅ If this note belongs to a mission, mark that mission as completed for this user.
-     * Completion is on the honor system: "submit notes only once you've finished the mission."
+     * If this note belongs to a mission, mark that mission as completed for this user.
+     * This only matters for roles that use missions.
      */
-    if (effectiveUnitType === 'mission') {
+    if (effectiveUnitType === 'mission' && (isGroupMember || isLeader)) {
       const mission = await Mission.findById(unitId);
       if (mission) {
         const alreadyCompleted = Array.isArray(mission.completions)
@@ -145,8 +149,8 @@ exports.createNote = async (req, res) => {
         if (!alreadyCompleted) {
           mission.completions = mission.completions || [];
           mission.completions.push({
-            member:      userId,
-            notes:       content || undefined,
+            member: userId,
+            notes: content || undefined,
             completed_at: new Date()
           });
           await mission.save();
@@ -154,7 +158,9 @@ exports.createNote = async (req, res) => {
       }
     }
 
-    const dashboardLink = isGroupMember ? '/dashboard/groupmember' : '/dashboard/leader';
+    let dashboardLink = '/dashboard/member';
+    if (isGroupMember) dashboardLink = '/dashboard/groupmember';
+    if (isLeader) dashboardLink = '/dashboard/leader';
 
     return res.render('unit_views/unitnotessuccess', {
       layout: 'unitviewlayout',
@@ -223,6 +229,33 @@ exports.getNotesByGroupMember = async (req, res) => {
 
   } catch (error) {
     console.error('❌ Error fetching notes for group member:', error);
+    return res.status(500).send('Error retrieving notes.');
+  }
+};
+
+// 4️⃣ GET NOTES FOR INDIVIDUAL MEMBERS (Their Own Notes)
+exports.getNotesByMember = async (req, res) => {
+  try {
+    const memberId = req.user?._id || req.user?.id;
+    if (!memberId) return res.status(401).send('Unauthorized: Please log in.');
+
+    // Ensure the requester is an individual member
+    const member = await Member.findById(memberId).select('_id');
+    if (!member) {
+      return res.status(403).send('Unauthorized: Only individual members can view these notes.');
+    }
+
+    const notes = await Note.find({ memberID: memberId })
+      .populate(
+        'unitID',
+        'article_title video_title interview_title exercise_title template_title mission_title'
+      )
+      .sort({ createdAt: -1 });
+
+    return res.render('member_notes_view', { layout: 'memberlayout', notes });
+
+  } catch (error) {
+    console.error('❌ Error fetching notes for individual member:', error);
     return res.status(500).send('Error retrieving notes.');
   }
 };
