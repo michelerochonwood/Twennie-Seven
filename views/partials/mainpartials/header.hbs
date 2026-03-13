@@ -36,12 +36,21 @@
             <li>
               <a href="{{dashboardLink}}">Dashboard</a>
             </li>
-            <li>
-              <a href="/missioncontrol">Mission Control</a>
-            </li>
-            <li>
-              <a href="/unitviews/mine">The Mine</a>
-            </li>
+<li>
+  {{#if (or (eq user.membershipType "leader") (eq user.membershipType "group_member"))}}
+    <a href="/missioncontrol">Mission Control</a>
+  {{else}}
+    <a href="/missioncontrol_upgrade">Mission Control</a>
+  {{/if}}
+</li>
+
+<li>
+  {{#if (or (eq user.membershipType "leader") (eq user.membershipType "group_member"))}}
+    <a href="/unitviews/mine">The Mine</a>
+  {{else}}
+    <a href="/themine_upgrade">The Mine</a>
+  {{/if}}
+</li>
             <li>
               <a href="/create_learning">Create Learning</a>
             </li>
@@ -142,16 +151,25 @@
       </a>
 
       <!-- Mission Control -->
-      <a href="/missioncontrol" class="nav-square">
-        <img src="https://www.twennie.com/icons/missioncontrolicon.svg" alt="Mission Control">
-        <span class="nav-text">mission control</span>
-      </a>
+<!-- Mission Control -->
+<!-- Mission Control -->
+{{#if (or (eq user.membershipType "leader") (eq user.membershipType "group_member"))}}
+  <a href="/missioncontrol" class="nav-square">
+{{else}}
+  <a href="/missioncontrol_upgrade" class="nav-square">
+{{/if}}
+    <img src="https://www.twennie.com/icons/missioncontrolicon.svg" alt="Mission Control">
+    <span class="nav-text">mission control</span>
+  </a>
 
-      <!-- The Mine (logged-in only) -->
-      <a href="/unitviews/mine" class="nav-square">
-        <img src="https://www.twennie.com/icons/mineicon.svg" alt="The Mine">
-        <span class="nav-text">the mine</span>
-      </a>
+{{#if (or (eq user.membershipType "leader") (eq user.membershipType "group_member"))}}
+  <a href="/unitviews/mine" class="nav-square">
+{{else}}
+  <a href="/themine_upgrade" class="nav-square">
+{{/if}}
+    <img src="https://www.twennie.com/icons/mineicon.svg" alt="The Mine">
+    <span class="nav-text">the mine</span>
+  </a>
 
       <a href="/latest" class="nav-square">
         <img src="https://www.twennie.com/icons/latesticon.svg" alt="Latest">

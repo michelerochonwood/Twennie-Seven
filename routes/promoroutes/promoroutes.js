@@ -240,6 +240,14 @@ router.get('/group_memberships', (req, res) => {
   res.render('promo_views/group_memberships', { layout: 'mainlayout' });
 });
 
+router.get('/themine_upgrade', (req, res) => {
+  res.render('promo_views/themine_upgrade', { layout: 'mainlayout' });
+});
+
+router.get('/missioncontrol_upgrade', (req, res) => {
+  res.render('promo_views/missioncontrol_upgrade', { layout: 'mainlayout' });
+});
+
 router.get('/sample_exercise', (req, res) => {
   res.render('promo_views/sample_exercise', { layout: 'mainlayout' });
 });
