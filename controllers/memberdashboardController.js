@@ -32,21 +32,20 @@ async function fetchTaggedUnits(userId) {
     const tags = await Tag.find({ createdBy: userId }).lean();
     if (!tags.length) return [];
 
-    // Build a list of unit fetch targets by type
     const unitMap = {
       article: [],
       video: [],
       promptset: [],
       interview: [],
       exercise: [],
-      template: []
+      template: [],
+      upcoming: []
     };
 
-    // Build a tag lookup for later association
-    const tagLookup = new Map(); // key: `${itemId}-${unitType}`, value: tagId
+    const tagLookup = new Map(); // key: `${itemId}-${unitType}` => tagId
 
     tags.forEach(tag => {
-      tag.associatedUnits.forEach(({ item, unitType }) => {
+      (tag.associatedUnits || []).forEach(({ item, unitType }) => {
         if (unitMap[unitType]) {
           unitMap[unitType].push(item.toString());
           tagLookup.set(`${item.toString()}-${unitType}`, tag._id.toString());
@@ -54,14 +53,36 @@ async function fetchTaggedUnits(userId) {
       });
     });
 
-    const [articles, videos, promptSets, interviews, exercises, templates] = await Promise.all([
+    const [articles, videos, promptSets, interviews, exercises, templates, upcomings] = await Promise.all([
       Article.find({ _id: { $in: unitMap.article } }).lean(),
       Video.find({ _id: { $in: unitMap.video } }).lean(),
       PromptSet.find({ _id: { $in: unitMap.promptset } }).lean(),
       Interview.find({ _id: { $in: unitMap.interview } }).lean(),
       Exercise.find({ _id: { $in: unitMap.exercise } }).lean(),
-      Template.find({ _id: { $in: unitMap.template } }).lean()
+      Template.find({ _id: { $in: unitMap.template } }).lean(),
+      Upcoming.find({ _id: { $in: unitMap.upcoming } }).lean()
     ]);
+
+    const buildViewPath = (type, id) => {
+      switch (type) {
+        case 'article':
+          return `/unitviews/articles/view/${id}`;
+        case 'video':
+          return `/unitviews/videos/view/${id}`;
+        case 'promptset':
+          return `/unitviews/promptsets/view/${id}`;
+        case 'interview':
+          return `/unitviews/interviews/view/${id}`;
+        case 'exercise':
+          return `/unitviews/exercises/view/${id}`;
+        case 'template':
+          return `/unitviews/templates/view/${id}`;
+        case 'upcoming':
+          return `/unitviews/upcomings/view/${id}`;
+        default:
+          return '#';
+      }
+    };
 
     const tagResult = (units, type, titleField) =>
       units.map(unit => ({
@@ -69,7 +90,8 @@ async function fetchTaggedUnits(userId) {
         title: unit[titleField] || `Untitled ${type}`,
         mainTopic: unit.main_topic || "No topic",
         _id: unit._id,
-        tagId: tagLookup.get(`${unit._id.toString()}-${type}`)
+        tagId: tagLookup.get(`${unit._id.toString()}-${type}`),
+        viewPath: buildViewPath(type, unit._id)
       }));
 
     return [
@@ -78,7 +100,8 @@ async function fetchTaggedUnits(userId) {
       ...tagResult(promptSets, 'promptset', 'promptset_title'),
       ...tagResult(interviews, 'interview', 'interview_title'),
       ...tagResult(exercises, 'exercise', 'exercise_title'),
-      ...tagResult(templates, 'template', 'template_title')
+      ...tagResult(templates, 'template', 'template_title'),
+      ...tagResult(upcomings, 'upcoming', 'title')
     ];
 
   } catch (error) {
@@ -435,6 +458,7 @@ const completedIds = new Set(
 // ------------- COMPLETED (mapped for view) -------------
 // (Needed for memberCounts.progress and the completed list)
 formattedCompletedSets = completedRecords.map(record => ({
+  promptSetId: record.promptSetId?._id?.toString() || '',
   promptSetTitle: record.promptSetId?.promptset_title || 'Unknown Title',
   frequency: record.promptSetId?.suggested_frequency,
   mainTopic: record.promptSetId?.main_topic || 'No Topic',
@@ -612,7 +636,7 @@ return res.render("member_dashboard", {
   mfaStatus,
 
   memberUnits,
-  recentTaggedUnits: await fetchTaggedUnits(id),
+recentTaggedUnits: memberTaggedUnits,
 
   // prompts
   registeredPromptSets,

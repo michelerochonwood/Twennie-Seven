@@ -14,6 +14,7 @@ const Mission = require('../models/unit_models/mission');
 const Upcoming = require('../models/unit_models/upcoming');
 const Nugget   = require('../models/unit_models/nugget');
 const Tag = require('../models/tag'); 
+const Member = require('../models/member_models/member');
 
 
 
@@ -1250,6 +1251,249 @@ const getMyLearningNotesReport = async (req, res) => {
     return res.status(500).send("Server error");
   }
 };
+''
+// ✅ Fetch Individual Member's Own Completed Prompt Sets Report
+// Shape matches views/report_views/mycompletedpromptsets_individual.hbs
+const getMyCompletedPromptSetsReportIndividual = async (req, res) => {
+  try {
+    console.log("✅ Fetching Individual Member Completed Prompt Sets Report…");
+
+    const safeArray = (v) => (Array.isArray(v) ? v : []);
+    const safeString = (v) => (v == null ? "" : String(v));
+    const toIdString = (v) => (v && typeof v.toString === "function" ? v.toString() : "");
+    const sortAZ = (a, b) => safeString(a).localeCompare(safeString(b));
+
+    const memberId = toIdString(req.user?._id || req.user?.id || req.session?.user?.id);
+
+    if (!memberId) {
+      return res.status(403).render("member_form_views/error", {
+        layout: "memberformlayout",
+        title: "Access denied",
+        errorMessage: "Could not determine your member account."
+      });
+    }
+
+    const memberDoc = await Member.findById(memberId)
+      .select("_id name")
+      .lean();
+
+    if (!memberDoc) {
+      return res.status(403).render("member_form_views/error", {
+        layout: "memberformlayout",
+        title: "Access denied",
+        errorMessage: "Individual member account not found."
+      });
+    }
+
+    const progresses = await PromptSetProgress.find({ memberId: memberDoc._id })
+      .populate("promptSetId")
+      .lean();
+
+    const completions = await PromptSetCompletion.find({ memberId: memberDoc._id })
+      .select("memberId promptSetId completedAt createdAt updatedAt")
+      .lean();
+
+    const completionByPromptSetId = new Map(
+      safeArray(completions).map(c => [
+        toIdString(c.promptSetId),
+        c
+      ])
+    );
+
+    const TOTAL_PROMPTS = 21; // Prompt0 through Prompt20
+
+    const promptSetsCompletedReports = safeArray(progresses)
+      .filter(prog => prog.promptSetId)
+      .map(prog => {
+        const ps = prog.promptSetId;
+        const psId = toIdString(ps._id);
+
+        const prompts = Array.from({ length: TOTAL_PROMPTS }, (_, idx) => {
+          const headlineKey = `prompt_headline${idx}`;
+          const textKey = `Prompt${idx}`;
+
+          return {
+            promptHeadline: ps?.[headlineKey] || `Prompt ${idx}`,
+            promptText: ps?.[textKey] || ""
+          };
+        });
+
+        const notesArr = safeArray(prog.notes);
+        const promptNotes = Array.from({ length: TOTAL_PROMPTS }, (_, idx) => {
+          const content = safeString(notesArr[idx]).trim();
+          return {
+            notes: content ? [{ content }] : []
+          };
+        });
+
+        const completion = completionByPromptSetId.get(psId);
+        const dateCompleted =
+          completion?.completedAt ||
+          prog.updatedAt ||
+          prog.createdAt ||
+          completion?.createdAt ||
+          null;
+
+        return {
+          promptSetId: psId,
+          promptSetTitle: ps.promptset_title || "Unknown Prompt Set",
+          main_topic: ps.main_topic || "",
+          secondary_topics: safeArray(ps.secondary_topics),
+          purpose: ps.purpose || "",
+          dateCompleted,
+          prompts,
+          promptNotes
+        };
+      })
+      .sort((a, b) => sortAZ(a.promptSetTitle, b.promptSetTitle));
+
+    return res.render("report_views/mycompletedpromptsets_individual", {
+      layout: "dashboardlayout",
+      isMyCompletedPromptSetsIndividual: true,
+      promptSetsCompletedReports
+    });
+  } catch (err) {
+    console.error("❌ Error loading Individual Member Completed Prompt Sets Report:", err);
+    return res.status(500).send("Server error");
+  }
+};
+
+// ✅ Fetch Individual Member's Learning Notes Report
+// Includes notes on standard learning units only:
+// Article, Video, Interview, Exercise, Template
+// Excludes Prompt Sets (separate report), Missions, Nuggets, Upcoming
+const getMyLearningNotesReportIndividual = async (req, res) => {
+  try {
+    console.log("✅ Fetching Individual Member Learning Notes Report…");
+
+    const safeArray = (v) => (Array.isArray(v) ? v : []);
+    const safeString = (v) => (v == null ? "" : String(v));
+    const toIdString = (v) => (v && typeof v.toString === "function" ? v.toString() : "");
+
+    const memberId = toIdString(req.user?._id || req.user?.id || req.session?.user?.id);
+
+    if (!memberId) {
+      return res.status(403).render("member_form_views/error", {
+        layout: "memberformlayout",
+        title: "Access denied",
+        errorMessage: "Could not determine your member account."
+      });
+    }
+
+    const memberDoc = await Member.findById(memberId)
+      .select("_id name")
+      .lean();
+
+    if (!memberDoc) {
+      return res.status(403).render("member_form_views/error", {
+        layout: "memberformlayout",
+        title: "Access denied",
+        errorMessage: "Individual member account not found."
+      });
+    }
+
+    const notes = await Notes.find({ memberID: memberDoc._id })
+      .sort({ createdAt: 1 })
+      .lean();
+
+    if (!notes.length) {
+      return res.render("report_views/mylearningnotes_individual", {
+        layout: "dashboardlayout",
+        isMyLearningNotesIndividual: true,
+        myLearningNotesReports: []
+      });
+    }
+
+    const uniqueUnitIds = Array.from(
+      new Set(
+        safeArray(notes)
+          .map(n => toIdString(n.unitID))
+          .filter(Boolean)
+      )
+    );
+
+    const detailsByUnitId = new Map();
+
+    await Promise.all(
+      uniqueUnitIds.map(async (unitId) => {
+        try {
+          const details = await resolveUnitDetails(unitId);
+          detailsByUnitId.set(unitId, details || {});
+        } catch (err) {
+          console.warn("⚠️ Could not resolve unit details for individual member note:", unitId, err?.message);
+          detailsByUnitId.set(unitId, {});
+        }
+      })
+    );
+
+    const allowedUnitTypes = new Set([
+      "article",
+      "video",
+      "interview",
+      "exercise",
+      "template"
+    ]);
+
+    const byUnit = new Map();
+
+    for (const note of notes) {
+      const unitId = toIdString(note.unitID);
+      if (!unitId) continue;
+
+      const details = detailsByUnitId.get(unitId) || {};
+      const unitType = safeString(details.unitType).trim();
+      const unitTypeLower = unitType.toLowerCase();
+
+      if (!allowedUnitTypes.has(unitTypeLower)) continue;
+
+      if (!byUnit.has(unitId)) {
+        byUnit.set(unitId, {
+          unitId,
+          unitTitle: details.unitTitle || "Unknown Unit",
+          unitType: unitType || "Unknown",
+          main_topic: details.main_topic || "",
+          secondary_topics: safeArray(details.secondary_topics),
+          notes: []
+        });
+      }
+
+      byUnit.get(unitId).notes.push({
+        content: note.note_content || "",
+        dateSubmitted: note.createdAt || note.updatedAt || null
+      });
+    }
+
+    const myLearningNotesReports = Array.from(byUnit.values())
+      .map(unit => {
+        unit.notes = safeArray(unit.notes).sort((a, b) => {
+          const ad = a.dateSubmitted ? new Date(a.dateSubmitted) : new Date(0);
+          const bd = b.dateSubmitted ? new Date(b.dateSubmitted) : new Date(0);
+          return ad - bd;
+        });
+
+        unit.latestNoteDate =
+          unit.notes.length > 0
+            ? unit.notes[unit.notes.length - 1].dateSubmitted
+            : null;
+
+        return unit;
+      })
+      .sort((a, b) => {
+        const ad = a.latestNoteDate ? new Date(a.latestNoteDate) : new Date(0);
+        const bd = b.latestNoteDate ? new Date(b.latestNoteDate) : new Date(0);
+        return bd - ad;
+      });
+
+    return res.render("report_views/mylearningnotes_individual", {
+      layout: "dashboardlayout",
+      isMyLearningNotesIndividual: true,
+      myLearningNotesReports
+    });
+  } catch (err) {
+    console.error("❌ Error loading Individual Member Learning Notes Report:", err);
+    return res.status(500).send("Server error");
+  }
+};
 
 
 
@@ -1259,5 +1503,7 @@ module.exports = {
   getPromptSetsCompletedReport,
   getUnitsCompletedReport,
   getMyCompletedPromptSetsReport,
-  getMyLearningNotesReport
+  getMyLearningNotesReport,
+  getMyCompletedPromptSetsReportIndividual,
+  getMyLearningNotesReportIndividual
 };

@@ -3,38 +3,54 @@
 
 <section class="tagged-units-section">
   <h2 class="tagged-units-title">tagged library units</h2>
-  <div class="tagged-units-grid">
-    {{#each recentTaggedUnits}}
-      <div class="tagged-unit-card">
-        <div class="tagged-unit-icon">
-          <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
-        </div>
 
-        <div class="tagged-unit-info">
-          <h3 class="tagged-unit-title">{{title}}</h3>
-          <p class="tagged-unit-topic">{{mainTopic}}</p>
-          {{#if (eq unitType "upcoming")}}
-            <p class="tagged-unit-status">🚧 coming soon</p>
-          {{/if}}
-        </div>
+  <div class="group-member-tagged-subsection">
+    <h3 class="group-member-tagged-subtitle">my tagged units</h3>
 
-        <a href="/unitviews/{{capitalize unitType}}s/view/{{_id}}" class="tagged-unit-link">
-          view unit
-        </a>
+    <div class="tagged-units-grid">
+      {{#if recentTaggedUnits.length}}
+        {{#each recentTaggedUnits}}
+          <div class="tagged-unit-card">
+            <div class="tagged-unit-icon">
+              <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
+            </div>
 
-        {{!-- Only render remove if we have a tagId (defensive) --}}
-        {{#if tagId}}
-          <button
-            class="tag-remove-btn"
-            onclick="removeTag('{{tagId}}', '{{_id}}', '{{unitType}}')">
-            remove tag
-          </button>
-        {{/if}}
-      </div>
-    {{else}}
-      <p class="tagged-no-units">You have no tagged units.</p>
-    {{/each}}
+            <div class="tagged-unit-info">
+              <h3 class="tagged-unit-title">{{title}}</h3>
+
+              {{#if mainTopic}}
+                <p class="tagged-unit-topic">{{mainTopic}}</p>
+              {{/if}}
+
+              {{#if (eq unitType "upcoming")}}
+                <p class="tagged-unit-status">🚧 coming soon</p>
+              {{/if}}
+            </div>
+
+            <div class="tagged-unit-actions">
+              <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
+
+              {{#if tagId}}
+                <button
+                  class="tagged-unit-link"
+                  onclick="removeTag('{{tagId}}', '{{_id}}', '{{unitType}}')">
+                  remove tag
+                </button>
+              {{/if}}
+            </div>
+          </div>
+        {{/each}}
+      {{else}}
+        <p class="tagged-no-units">You have no tagged units.</p>
+      {{/if}}
+    </div>
   </div>
+
+<div class="member-progress-report-button-container" style="margin-top: 1.5rem;">
+  <a href="/reports/mylearningnotes-individual" class="member-progress-report-button">
+    view my learning notes
+  </a>
+</div>
 </section>
 
 <script>
@@ -43,14 +59,17 @@
   }
 
   async function removeTag(tagId, unitId, unitType) {
-    if (!tagId) return; // defensive: nothing to remove
+    if (!tagId) return;
     if (!confirm("Are you sure you want to remove this tag?")) return;
 
     try {
       const response = await fetch(`/tags/remove/${tagId}/${unitId}/${unitType}`, {
         method: 'DELETE',
-        headers: { 'X-CSRF-Token': getCsrfToken() }
+        headers: {
+          'X-CSRF-Token': getCsrfToken()
+        }
       });
+
       const result = await response.json().catch(() => ({}));
 
       if (response.ok) {
@@ -64,9 +83,6 @@
     }
   }
 </script>
-
-
-
 
 
 

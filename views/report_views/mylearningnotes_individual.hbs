@@ -1,0 +1,77 @@
+{{#*inline "title"}}My Learning Notes | Twennie{{/inline}}
+
+<section class="dashboard-section">
+  <h1 class="dashboard-section-title">My Learning Notes</h1>
+
+  <div class="table-container">
+    <table class="dashboard-library-table">
+      <thead>
+        <tr>
+          <th class="dashboard-library-header">unit title</th>
+          <th class="dashboard-library-header">unit type</th>
+          <th class="dashboard-library-header">topics</th>
+          <th class="dashboard-library-header">notes</th>
+          <th class="dashboard-library-header">latest note</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {{#each myLearningNotesReports}}
+          <tr class="dashboard-library-row">
+            <td class="dashboard-library-cell">
+              {{this.unitTitle}}
+            </td>
+
+            <td class="dashboard-library-cell">
+              {{this.unitType}}
+            </td>
+
+            <td class="dashboard-library-cell">
+              {{#if this.main_topic}}
+                <div class="multi-record-item">{{this.main_topic}}</div>
+              {{else}}
+                <span class="no-data">No main topic</span>
+              {{/if}}
+
+              {{#each this.secondary_topics}}
+                <div class="multi-record-item">{{this}}</div>
+              {{else}}
+                <span class="no-data">No secondary topics</span>
+              {{/each}}
+            </td>
+
+            <td class="dashboard-library-cell">
+              {{#each this.notes}}
+                <div class="multi-record-item" style="margin-bottom: 0.75rem;">
+                  <div>{{this.content}}</div>
+
+                  {{#if this.dateSubmitted}}
+                    <div style="font-size: 0.85rem; opacity: 0.75; margin-top: 0.25rem;">
+                      {{formatDate this.dateSubmitted}}
+                    </div>
+                  {{/if}}
+                </div>
+              {{else}}
+                <span class="no-data">No notes</span>
+              {{/each}}
+            </td>
+
+            <td class="dashboard-library-cell">
+              {{#if this.latestNoteDate}}
+                {{formatDate this.latestNoteDate}}
+              {{else}}
+                <span class="no-data">No date</span>
+              {{/if}}
+            </td>
+          </tr>
+        {{else}}
+          <tr>
+            <td colspan="5" class="no-data">
+              You haven’t created any learning notes yet.
+            </td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+</section>
