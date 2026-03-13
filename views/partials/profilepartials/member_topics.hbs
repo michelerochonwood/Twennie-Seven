@@ -1,50 +1,102 @@
 {{!-- PROFILE VERSION: Topics shown in the member profile --}}
 <div class="member-profile-topics-container">
-    <h3 class="member-profile-topics-title">my topics</h3>
-<p>These topics provide some focus for your learning in key areas of interest. Having a top three topics streamlines navigation through the library.</p>
-    <div class="member-profile-topics-grid">
-        {{#if member.selectedTopics.topic1.title}}
-            <div class="member-profile-topic-card" data-topic-id="{{member.selectedTopics.topic1.slug}}">
-                <div class="member-profile-topic-title">{{member.selectedTopics.topic1.title}}</div>
-                <ul class="member-profile-topic-subtopics">
-                    {{#each member.selectedTopics.topic1.subtopics}}
-                        <li>{{this}}</li>
-                    {{else}}
-                        <li>No subtopics available</li>
-                    {{/each}}
-                </ul>
-                <a href="/membertopics/{{member.selectedTopics.topic2.viewName}}" class="member-profile-topic-review">review this topic</a>
-            </div>
-        {{/if}}
+  <h3 class="member-profile-topics-title">my topics</h3>
 
-        {{#if member.selectedTopics.topic2}}
-            <div class="member-profile-topic-card" data-topic-id="{{member.selectedTopics.topic2.slug}}">
-                <div class="member-profile-topic-title">{{member.selectedTopics.topic2.title}}</div>
-                <ul class="member-profile-topic-subtopics">
-                    {{#each member.selectedTopics.topic2.subtopics}}
-                        <li>{{this}}</li>
-                    {{else}}
-                        <li>No subtopics available</li>
-                    {{/each}}
-                </ul>
-                <a href="/membertopics/{{member.selectedTopics.topic1.viewName}}" class="member-profile-topic-review">review this topic</a>
-            </div>
-        {{/if}}
+  <p>
+    These topics provide some focus for your learning in key areas of interest.
+    Having a top three topics streamlines navigation through the library.
+  </p>
 
-        {{#if member.selectedTopics.topic3}}
-            <div class="member-profile-topic-card" data-topic-id="{{member.selectedTopics.topic3.slug}}">
-                <div class="member-profile-topic-title">{{member.selectedTopics.topic3.title}}</div>
-                <ul class="member-profile-topic-subtopics">
-                    {{#each member.selectedTopics.topic3.subtopics}}
-                        <li>{{this}}</li>
-                    {{else}}
-                        <li>No subtopics available</li>
-                    {{/each}}
-                </ul>
-                <a href="/membertopics/{{member.selectedTopics.topic3.viewName}}" class="member-profile-topic-review">review this topic</a>
-            </div>
+  <div class="member-profile-topics-grid">
+
+    {{#if member.selectedTopics.topic1.title}}
+      <div class="member-profile-topic-card" data-topic-id="{{member.selectedTopics.topic1.slug}}">
+        <div class="member-profile-topic-title">{{member.selectedTopics.topic1.title}}</div>
+        <ul class="member-profile-topic-subtopics">
+          {{#each member.selectedTopics.topic1.subtopics}}
+            <li>{{this}}</li>
+          {{else}}
+            <li>No subtopics available</li>
+          {{/each}}
+        </ul>
+
+        {{#if member.selectedTopics.topic1.viewName}}
+          <a href="/membertopics/{{member.selectedTopics.topic1.viewName}}" class="member-profile-topic-review">
+            review this topic
+          </a>
         {{/if}}
-    </div>
+      </div>
+    {{/if}}
+
+    {{#if member.selectedTopics.topic2.title}}
+      <div class="member-profile-topic-card" data-topic-id="{{member.selectedTopics.topic2.slug}}">
+        <div class="member-profile-topic-title">{{member.selectedTopics.topic2.title}}</div>
+        <ul class="member-profile-topic-subtopics">
+          {{#each member.selectedTopics.topic2.subtopics}}
+            <li>{{this}}</li>
+          {{else}}
+            <li>No subtopics available</li>
+          {{/each}}
+        </ul>
+
+        {{#if member.selectedTopics.topic2.viewName}}
+          <a href="/membertopics/{{member.selectedTopics.topic2.viewName}}" class="member-profile-topic-review">
+            review this topic
+          </a>
+        {{/if}}
+      </div>
+    {{/if}}
+
+    {{#if member.selectedTopics.topic3.title}}
+      <div class="member-profile-topic-card" data-topic-id="{{member.selectedTopics.topic3.slug}}">
+        <div class="member-profile-topic-title">{{member.selectedTopics.topic3.title}}</div>
+        <ul class="member-profile-topic-subtopics">
+          {{#each member.selectedTopics.topic3.subtopics}}
+            <li>{{this}}</li>
+          {{else}}
+            <li>No subtopics available</li>
+          {{/each}}
+        </ul>
+
+        {{#if member.selectedTopics.topic3.viewName}}
+          <a href="/membertopics/{{member.selectedTopics.topic3.viewName}}" class="member-profile-topic-review">
+            review this topic
+          </a>
+        {{/if}}
+      </div>
+    {{/if}}
+
+  </div>
+
+  <div class="member-profile-topics-form-container">
+    <h4 class="member-profile-topics-form-title">update my top three topics</h4>
+
+<form action="/profile/topics" method="POST" class="member-profile-topics-form">
+  <input type="hidden" name="_csrf" value="{{csrfToken}}">
+
+  <div class="member-profile-topics-form-grid">
+    {{> unitformpartials/topicdropdownprofiles.hbs
+        fieldId="topic1"
+        fieldName="topics[topic1]"
+        label="topic 1"
+        selectedValue=member.selectedTopics.topic1.title}}
+
+    {{> unitformpartials/topicdropdownprofiles.hbs
+        fieldId="topic2"
+        fieldName="topics[topic2]"
+        label="topic 2"
+        selectedValue=member.selectedTopics.topic2.title}}
+
+    {{> unitformpartials/topicdropdownprofiles.hbs
+        fieldId="topic3"
+        fieldName="topics[topic3]"
+        label="topic 3"
+        selectedValue=member.selectedTopics.topic3.title}}
+  </div>
+
+  <button type="submit" class="form-button submit-button">save topics</button>
+</form>
+  </div>
 </div>
 
 

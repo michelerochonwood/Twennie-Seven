@@ -1,0 +1,80 @@
+<div class="member-profile-topic-select">
+  <label for="{{fieldId}}">{{label}}</label>
+  <select id="{{fieldId}}" name="{{fieldName}}" class="member-profile-topic-dropdown">
+    <option value="">Select a topic…</option>
+
+    <optgroup label="Project Management">
+      <option value="Analytics in Project Management" {{#if (eq selectedValue "Analytics in Project Management")}}selected{{/if}}>Analytics in Project Management</option>
+      <option value="Candid Communication" {{#if (eq selectedValue "Candid Communication")}}selected{{/if}}>Candid Communication</option>
+      <option value="Closing a Project Strategically" {{#if (eq selectedValue "Closing a Project Strategically")}}selected{{/if}}>Closing a Project Strategically</option>
+      <option value="Integrated Project Delivery or IPD" {{#if (eq selectedValue "Integrated Project Delivery or IPD")}}selected{{/if}}>Integrated Project Delivery or IPD</option>
+      <option value="Managing Scope So It Doesnt Manage You" {{#if (eq selectedValue "Managing Scope So It Doesnt Manage You")}}selected{{/if}}>Managing Scope So It Doesnt Manage You</option>
+      <option value="Rescuing a Project That Has Gone Off the Rails" {{#if (eq selectedValue "Rescuing a Project That Has Gone Off the Rails")}}selected{{/if}}>Rescuing a Project That Has Gone Off the Rails</option>
+      <option value="Risk Management" {{#if (eq selectedValue "Risk Management")}}selected{{/if}}>Risk Management</option>
+      <option value="The First 10 Days of a Project" {{#if (eq selectedValue "The First 10 Days of a Project")}}selected{{/if}}>The First 10 Days of a Project</option>
+      <option value="Using Lean in Project Management" {{#if (eq selectedValue "Using Lean in Project Management")}}selected{{/if}}>Using Lean in Project Management</option>
+    </optgroup>
+
+    <optgroup label="BD &amp; Marketing">
+      <option value="Business Development in Technical Services" {{#if (eq selectedValue "Business Development in Technical Services")}}selected{{/if}}>Business Development in Technical Services</option>
+      <option value="Business Development Metrics" {{#if (eq selectedValue "Business Development Metrics")}}selected{{/if}}>Business Development Metrics</option>
+      <option value="Client Experience" {{#if (eq selectedValue "Client Experience")}}selected{{/if}}>Client Experience</option>
+      <option value="Client Interactions" {{#if (eq selectedValue "Client Interactions")}}selected{{/if}}>Client Interactions</option>
+      <option value="Cross Selling in Multi-Disciplinary Firms" {{#if (eq selectedValue "Cross Selling in Multi-Disciplinary Firms")}}selected{{/if}}>Cross Selling in Multi-Disciplinary Firms</option>
+      <option value="Finding Projects Before they Become RFPs" {{#if (eq selectedValue "Finding Projects Before they Become RFPs")}}selected{{/if}}>Finding Projects Before they Become RFPs</option>
+      <option value="Program Management" {{#if (eq selectedValue "Program Management")}}selected{{/if}}>Program Management</option>
+      <option value="Pull Marketing" {{#if (eq selectedValue "Pull Marketing")}}selected{{/if}}>Pull Marketing</option>
+      <option value="Pursuing the Right Projects for Your Firm and Your Team" {{#if (eq selectedValue "Pursuing the Right Projects for Your Firm and Your Team")}}selected{{/if}}>Pursuing the Right Projects for Your Firm and Your Team</option>
+      <option value="Social Media, Advertising, and Other Mysteries" {{#if (eq selectedValue "Social Media, Advertising, and Other Mysteries")}}selected{{/if}}>Social Media, Advertising, and Other Mysteries</option>
+      <option value="Storytelling in Technical Marketing" {{#if (eq selectedValue "Storytelling in Technical Marketing")}}selected{{/if}}>Storytelling in Technical Marketing</option>
+      <option value="Turning a Project into a Business Development Powerhouse" {{#if (eq selectedValue "Turning a Project into a Business Development Powerhouse")}}selected{{/if}}>Turning a Project into a Business Development Powerhouse</option>
+      <option value="UnCommoditizing Your Services by Delivering What Clients Truly Value" {{#if (eq selectedValue "UnCommoditizing Your Services by Delivering What Clients Truly Value")}}selected{{/if}}>UnCommoditizing Your Services by Delivering What Clients Truly Value</option>
+    </optgroup>
+
+    <optgroup label="Proposals">
+      <option value="Conducting Color Reviews of Proposals" {{#if (eq selectedValue "Conducting Color Reviews of Proposals")}}selected{{/if}}>Conducting Color Reviews of Proposals</option>
+      <option value="Designing a Proposal Process" {{#if (eq selectedValue "Designing a Proposal Process")}}selected{{/if}}>Designing a Proposal Process</option>
+      <option value="Making a Proposal Easy to Read, Skim, and Evaluate" {{#if (eq selectedValue "Making a Proposal Easy to Read, Skim, and Evaluate")}}selected{{/if}}>Making a Proposal Easy to Read, Skim, and Evaluate</option>
+      <option value="Proposal Management" {{#if (eq selectedValue "Proposal Management")}}selected{{/if}}>Proposal Management</option>
+      <option value="Proposal Strategy" {{#if (eq selectedValue "Proposal Strategy")}}selected{{/if}}>Proposal Strategy</option>
+      <option value="Tips and Tricks for Proposal Proofreading" {{#if (eq selectedValue "Tips and Tricks for Proposal Proofreading")}}selected{{/if}}>Tips and Tricks for Proposal Proofreading</option>
+    </optgroup>
+
+    <optgroup label="People Management">
+      <option value="Career Development in Technical Services" {{#if (eq selectedValue "Career Development in Technical Services")}}selected{{/if}}>Career Development in Technical Services</option>
+      <option value="Employee Experience" {{#if (eq selectedValue "Employee Experience")}}selected{{/if}}>Employee Experience</option>
+      <option value="Leadership in Technical Consulting" {{#if (eq selectedValue "Leadership in Technical Consulting")}}selected{{/if}}>Leadership in Technical Consulting</option>
+      <option value="Leading Change" {{#if (eq selectedValue "Leading Change")}}selected{{/if}}>Leading Change</option>
+      <option value="Leading Groups on Twennie" {{#if (eq selectedValue "Leading Groups on Twennie")}}selected{{/if}}>Leading Groups on Twennie</option>
+      <option value="Non-Technical Roles in Technical Environments" {{#if (eq selectedValue "Non-Technical Roles in Technical Environments")}}selected{{/if}}>Non-Technical Roles in Technical Environments</option>
+      <option value="Soft Skills in Technical Environments" {{#if (eq selectedValue "Soft Skills in Technical Environments")}}selected{{/if}}>Soft Skills in Technical Environments</option>
+      <option value="When the Workload is Light" {{#if (eq selectedValue "When the Workload is Light")}}selected{{/if}}>When the Workload is Light</option>
+    </optgroup>
+
+    <optgroup label="Technology">
+      <option value="Client Feedback Software" {{#if (eq selectedValue "Client Feedback Software")}}selected{{/if}}>Client Feedback Software</option>
+      <option value="CRM Software" {{#if (eq selectedValue "CRM Software")}}selected{{/if}}>CRM Software</option>
+      <option value="Project Management Software" {{#if (eq selectedValue "Project Management Software")}}selected{{/if}}>Project Management Software</option>
+    </optgroup>
+
+    <optgroup label="Workplace Culture">
+      <option value="Emotional Intelligence" {{#if (eq selectedValue "Emotional Intelligence")}}selected{{/if}}>Emotional Intelligence</option>
+      <option value="Mental Health in Consulting Environments" {{#if (eq selectedValue "Mental Health in Consulting Environments")}}selected{{/if}}>Mental Health in Consulting Environments</option>
+      <option value="People Before Profit" {{#if (eq selectedValue "People Before Profit")}}selected{{/if}}>People Before Profit</option>
+      <option value="Remote and Hybrid Work" {{#if (eq selectedValue "Remote and Hybrid Work")}}selected{{/if}}>Remote and Hybrid Work</option>
+      <option value="Social Entrepreneurship" {{#if (eq selectedValue "Social Entrepreneurship")}}selected{{/if}}>Social Entrepreneurship</option>
+      <option value="Team Building in Technical Consulting" {{#if (eq selectedValue "Team Building in Technical Consulting")}}selected{{/if}}>Team Building in Technical Consulting</option>
+      <option value="The Advantage of Failure" {{#if (eq selectedValue "The Advantage of Failure")}}selected{{/if}}>The Advantage of Failure</option>
+      <option value="The Pareto Principle" {{#if (eq selectedValue "The Pareto Principle")}}selected{{/if}}>The Pareto Principle</option>
+      <option value="The Power of Play in the Workplace" {{#if (eq selectedValue "The Power of Play in the Workplace")}}selected{{/if}}>The Power of Play in the Workplace</option>
+      <option value="The Power of Purpose" {{#if (eq selectedValue "The Power of Purpose")}}selected{{/if}}>The Power of Purpose</option>
+      <option value="Workplace Culture" {{#if (eq selectedValue "Workplace Culture")}}selected{{/if}}>Workplace Culture</option>
+    </optgroup>
+
+    <optgroup label="AI">
+      <option value="AI in Adult Learning" {{#if (eq selectedValue "AI in Adult Learning")}}selected{{/if}}>AI in Adult Learning</option>
+      <option value="AI in Consulting" {{#if (eq selectedValue "AI in Consulting")}}selected{{/if}}>AI in Consulting</option>
+      <option value="AI in Project Management" {{#if (eq selectedValue "AI in Project Management")}}selected{{/if}}>AI in Project Management</option>
+    </optgroup>
+  </select>
+</div>

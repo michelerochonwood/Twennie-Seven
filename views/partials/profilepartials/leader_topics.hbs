@@ -1,55 +1,94 @@
 {{!-- PROFILE VERSION: Topics shown in the leader profile --}}
 <div class="leader-profile-topics-container">
-    <h3 class="leader-profile-topics-title">my topics</h3>
+  <h3 class="leader-profile-topics-title">my topics</h3>
 
-    <div class="leader-profile-topics-grid">
-        {{#if leader.selectedTopics.topic1.title}}
-            <div class="leader-profile-topic-card" data-topic-id="{{leader.selectedTopics.topic1.slug}}">
-                <div class="leader-profile-topic-title">{{leader.selectedTopics.topic1.title}}</div>
-                <ul class="leader-profile-topic-subtopics">
-                    {{#each leader.selectedTopics.topic1.subtopics}}
-                        <li>{{this}}</li>
-                    {{else}}
-                        <li>No subtopics available</li>
-                    {{/each}}
-                </ul>
-                <a href="/membertopics/{{selectedTopics.topic1.viewName}}" class="leader-profile-topic-review">review this topic</a>
+  <p>
+    These topics help focus your learning and make it easier to navigate Twennie around the areas most relevant to your work and leadership.
+  </p>
 
-
-
-            </div>
+  <div class="leader-profile-topics-grid">
+    {{#if leader.selectedTopics.topic1.title}}
+      <div class="leader-profile-topic-card" data-topic-id="{{leader.selectedTopics.topic1.slug}}">
+        <div class="leader-profile-topic-title">{{leader.selectedTopics.topic1.title}}</div>
+        <ul class="leader-profile-topic-subtopics">
+          {{#each leader.selectedTopics.topic1.subtopics}}
+            <li>{{this}}</li>
+          {{else}}
+            <li>No subtopics available</li>
+          {{/each}}
+        </ul>
+        {{#if leader.selectedTopics.topic1.viewName}}
+          <a href="/membertopics/{{leader.selectedTopics.topic1.viewName}}" class="leader-profile-topic-review">
+            review this topic
+          </a>
         {{/if}}
+      </div>
+    {{/if}}
 
-        {{#if leader.selectedTopics.topic2.title}}
-            <div class="leader-profile-topic-card" data-topic-id="{{leader.selectedTopics.topic2.slug}}">
-                <div class="leader-profile-topic-title">{{leader.selectedTopics.topic2.title}}</div>
-                <ul class="leader-profile-topic-subtopics">
-                    {{#each leader.selectedTopics.topic2.subtopics}}
-                        <li>{{this}}</li>
-                    {{else}}
-                        <li>No subtopics available</li>
-                    {{/each}}
-                </ul>
-                <a href="/membertopics/{{selectedTopics.topic2.viewName}}" class="leader-profile-topic-review">review this topic</a>
-
-
-            </div>
+    {{#if leader.selectedTopics.topic2.title}}
+      <div class="leader-profile-topic-card" data-topic-id="{{leader.selectedTopics.topic2.slug}}">
+        <div class="leader-profile-topic-title">{{leader.selectedTopics.topic2.title}}</div>
+        <ul class="leader-profile-topic-subtopics">
+          {{#each leader.selectedTopics.topic2.subtopics}}
+            <li>{{this}}</li>
+          {{else}}
+            <li>No subtopics available</li>
+          {{/each}}
+        </ul>
+        {{#if leader.selectedTopics.topic2.viewName}}
+          <a href="/membertopics/{{leader.selectedTopics.topic2.viewName}}" class="leader-profile-topic-review">
+            review this topic
+          </a>
         {{/if}}
+      </div>
+    {{/if}}
 
-        {{#if leader.selectedTopics.topic3.title}}
-            <div class="leader-profile-topic-card" data-topic-id="{{leader.selectedTopics.topic3.slug}}">
-                <div class="leader-profile-topic-title">{{leader.selectedTopics.topic3.title}}</div>
-                <ul class="leader-profile-topic-subtopics">
-                    {{#each leader.selectedTopics.topic3.subtopics}}
-                        <li>{{this}}</li>
-                    {{else}}
-                        <li>No subtopics available</li>
-                    {{/each}}
-                </ul>
-                <a href="/membertopics/{{selectedTopics.topic3.viewName}}" class="leader-profile-topic-review">review this topic</a>
-
-
-            </div>
+    {{#if leader.selectedTopics.topic3.title}}
+      <div class="leader-profile-topic-card" data-topic-id="{{leader.selectedTopics.topic3.slug}}">
+        <div class="leader-profile-topic-title">{{leader.selectedTopics.topic3.title}}</div>
+        <ul class="leader-profile-topic-subtopics">
+          {{#each leader.selectedTopics.topic3.subtopics}}
+            <li>{{this}}</li>
+          {{else}}
+            <li>No subtopics available</li>
+          {{/each}}
+        </ul>
+        {{#if leader.selectedTopics.topic3.viewName}}
+          <a href="/membertopics/{{leader.selectedTopics.topic3.viewName}}" class="leader-profile-topic-review">
+            review this topic
+          </a>
         {{/if}}
-    </div>
+      </div>
+    {{/if}}
+  </div>
+
+  <div class="leader-profile-topics-form-container">
+    <h4 class="leader-profile-topics-form-title">update my top three topics</h4>
+
+    <form action="/profile/topics" method="POST" class="leader-profile-topics-form">
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+
+      <div class="leader-profile-topics-form-grid">
+        {{> unitformpartials/topicdropdownprofiles
+            fieldId="topic1"
+            fieldName="topics[topic1]"
+            label="topic 1"
+            selectedValue=leader.selectedTopics.topic1.title}}
+
+        {{> unitformpartials/topicdropdownprofiles
+            fieldId="topic2"
+            fieldName="topics[topic2]"
+            label="topic 2"
+            selectedValue=leader.selectedTopics.topic2.title}}
+
+        {{> unitformpartials/topicdropdownprofiles
+            fieldId="topic3"
+            fieldName="topics[topic3]"
+            label="topic 3"
+            selectedValue=leader.selectedTopics.topic3.title}}
+      </div>
+
+      <button type="submit" class="form-button submit-button">save topics</button>
+    </form>
+  </div>
 </div>
