@@ -218,7 +218,9 @@ exports.createTag = async (req, res) => {
 
     // HTML success flows
 // HTML success flows
+// HTML success flows
 const isLeader = userModel === 'leader';
+
 if (fromForm && isLeader && normalizedAssignedTo.length > 0) {
   // Resolve assigned member names (GroupMembers are the normal assignees)
   const assignedIds = normalizedAssignedTo.map(a => a.member).filter(Boolean);
@@ -235,26 +237,26 @@ if (fromForm && isLeader && normalizedAssignedTo.length > 0) {
   const unitLabel = unitLabelFromType(itemType);
   const unitTitle = await getUnitTitle(itemType, itemId);
 
-  // Render the shared success view with the variables it needs
   return res.render('unit_views/assign_success', {
     layout: 'unitviewlayout',
     title: 'Assignment Successful',
-
-    // New generic fields (template supports these)
     unitLabel,
     unitTitle,
-
-    // Old prompt set field (template supports this too, but we’ll populate it anyway)
     promptSetTitle: unitTitle,
-
     assignedNames,
-    skippedLimitNames: [], // Tag assignments don't enforce a 3-active limit here
-    skippedDupesNames: []  // Tag assignments don't dedupe per-member here
+    skippedLimitNames: [],
+    skippedDupesNames: []
   });
 }
 
+// Standard HTML form submission (member/group member/leader quick-tag)
+if (fromForm) {
+  const back = req.get('referer');
+  return res.redirect(back ? `${back}${back.includes('?') ? '&' : '?'}tag=ok` : '/dashboard/member');
+}
 
-    return res.status(200).json({ message: 'Tag saved successfully.', tag });
+// Non-HTML / AJAX
+return res.status(200).json({ message: 'Tag saved successfully.', tag });
 
   } catch (error) {
     console.error('❌ Error creating tag:', error);
