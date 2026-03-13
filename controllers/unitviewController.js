@@ -662,6 +662,8 @@ viewMineDisciplines: async (req, res) => {
         image: creator?.image || '/images/default-avatar.png',
       },
 
+      tagSuccess: req.query.tag === 'ok',
+
       // Flags
       isOwner,
       isAuthenticated: !!req.user,
@@ -779,6 +781,7 @@ viewArticle: async (req, res) => {
       isLeader,
       isGroupMember,
       isMember,
+      tagSuccess: req.query.tag === 'ok',
 
       isGroupMemberOrLeader: isLeader || isGroupMember,
       isGroupMemberOrMember: isGroupMember || isMember,
@@ -906,6 +909,7 @@ viewArticle: async (req, res) => {
       isLeader,
       isGroupMember,
       isMember,
+      tagSuccess: req.query.tag === 'ok',
 
       isGroupMemberOrLeader: isLeader || isGroupMember,
       isGroupMemberOrMember: isGroupMember || isMember,
@@ -1022,6 +1026,8 @@ viewInterview: async (req, res) => {
       isLeader,
       isGroupMember,
       isMember,
+
+      tagSuccess: req.query.tag === 'ok',
 
       isGroupMemberOrLeader: isLeader || isGroupMember,
       isGroupMemberOrMember: isGroupMember || isMember,
@@ -1430,6 +1436,10 @@ viewExercise: async (req, res) => {
       isGroupMember,
       isMember,
 
+      
+
+      tagSuccess: req.query.tag === 'ok',
+
       isGroupMemberOrLeader: isLeader || isGroupMember,
       isGroupMemberOrMember: isGroupMember || isMember,
       isGroupMemberOrLeaderOrMember: isLeader || isGroupMember || isMember,
@@ -1624,6 +1634,8 @@ viewExercise: async (req, res) => {
       isGroupMember,
       isMember,
 
+      tagSuccess: req.query.tag === 'ok',
+
       isGroupMemberOrLeader: isLeader || isGroupMember,
       isGroupMemberOrMember: isGroupMember || isMember,
       isGroupMemberOrLeaderOrMember: isLeader || isGroupMember || isMember,
@@ -1733,6 +1745,8 @@ viewUpcoming: async (req, res) => {
       groupMembers,
       leaderId: leaderId || req.user?._id?.toString(),
       leaderName: leaderName || req.user?.username || 'You',
+
+      tagSuccess: req.query.tag === 'ok',
 
       // publish
       canPublish,
