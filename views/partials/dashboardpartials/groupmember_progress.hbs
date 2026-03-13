@@ -1,5 +1,41 @@
 <div class="groupmember-progress-container" style="overflow: hidden; padding-bottom: 2rem;">
 
+  <style>
+    .groupmember-progress-completed-card{
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      background: #ffffff;
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      margin-bottom: 1rem;
+    }
+
+    .groupmember-progress-completed-card:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .groupmember-progress-completed-card:visited,
+    .groupmember-progress-completed-card:active,
+    .groupmember-progress-completed-card:focus{
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .groupmember-progress-completed-card-title{
+      margin: 0 0 0.5rem 0;
+    }
+
+    .groupmember-progress-completed-card-text{
+      margin: 0;
+    }
+  </style>
+
   {{#if currentPromptSets.length}}
     <h2 class="groupmember-progress-current-title">current prompt sets</h2>
     <div class="groupmember-progress-current">
@@ -7,12 +43,11 @@
         <div class="groupmember-progress-grid">
           <h2 class="groupmember-progress-title">{{this.promptSetTitle}}</h2>
 
-          <!-- Progress SVG -->
           <img 
-              src="/promptprogress/promptprogress{{increment @index}}-{{this.promptIndex}}.svg"
-              alt="Progress Pie Chart" 
-              class="groupmember-progress-svg"
-              data-progress="{{this.promptIndex}}"
+            src="/promptprogress/promptprogress{{increment @index}}-{{this.promptIndex}}.svg"
+            alt="Progress Pie Chart" 
+            class="groupmember-progress-svg"
+            data-progress="{{this.promptIndex}}"
           >
 
           <p class="groupmember-progress-target">
@@ -29,7 +64,13 @@
     {{#if completedPromptSets.length}}
       <div class="groupmember-progress-completed-grid" style="overflow: hidden;">
         {{#each completedPromptSets}}
-          <!-- card content -->
+          <a href="/reports/mycompletedpromptsets#promptset-{{@index}}" class="groupmember-progress-completed-card">
+            <h3 class="groupmember-progress-completed-card-title">{{this.promptSetTitle}}</h3>
+
+            <p class="groupmember-progress-completed-card-text">
+              you completed all prompts in this set
+            </p>
+          </a>
         {{/each}}
       </div>
     {{else}}
@@ -38,19 +79,16 @@
       </p>
     {{/if}}
 
-    <!-- Button always shown -->
     <div class="member-progress-report-button-container">
-      <a href="/reports/groupmypromptsets" class="member-progress-report-button">
+      <a href="/reports/mycompletedpromptsets" class="member-progress-report-button">
         view my completed prompts
       </a>
     </div>
   </div>
 
-  <!-- Layout reset to protect later tabs -->
   <div style="height: 1px; clear: both;"></div>
 
 </div>
-
 
 
 
