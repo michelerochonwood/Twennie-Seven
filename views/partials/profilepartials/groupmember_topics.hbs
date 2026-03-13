@@ -62,33 +62,6 @@
     {{/if}}
   </div>
 
-  <div class="groupmember-profile-topics-form-container">
-    <h4 class="groupmember-profile-topics-form-title">update my top three topics</h4>
 
-    <form action="/profile/topics" method="POST" class="groupmember-profile-topics-form">
-      <input type="hidden" name="_csrf" value="{{csrfToken}}">
-
-      <div class="groupmember-profile-topics-form-grid">
-        {{> unitformpartials/topicdropdownprofiles
-            fieldId="topic1"
-            fieldName="topics[topic1]"
-            label="topic 1"
-            selectedValue=selectedTopics.topic1.title}}
-
-        {{> unitformpartials/topicdropdownprofiles
-            fieldId="topic2"
-            fieldName="topics[topic2]"
-            label="topic 2"
-            selectedValue=selectedTopics.topic2.title}}
-
-        {{> unitformpartials/topicdropdownprofiles
-            fieldId="topic3"
-            fieldName="topics[topic3]"
-            label="topic 3"
-            selectedValue=selectedTopics.topic3.title}}
-      </div>
-
-      <button type="submit" class="form-button submit-button">save topics</button>
-    </form>
   </div>
 </div>
