@@ -75,19 +75,19 @@
   <input type="hidden" name="_csrf" value="{{csrfToken}}">
 
   <div class="member-profile-topics-form-grid">
-    {{> unitformpartials/topicdropdownprofiles.hbs
+    {{> unitformpartials/topicdropdownprofiles
         fieldId="topic1"
         fieldName="topics[topic1]"
         label="topic 1"
         selectedValue=member.selectedTopics.topic1.title}}
 
-    {{> unitformpartials/topicdropdownprofiles.hbs
+    {{> unitformpartials/topicdropdownprofiles
         fieldId="topic2"
         fieldName="topics[topic2]"
         label="topic 2"
         selectedValue=member.selectedTopics.topic2.title}}
 
-    {{> unitformpartials/topicdropdownprofiles.hbs
+    {{> unitformpartials/topicdropdownprofiles
         fieldId="topic3"
         fieldName="topics[topic3]"
         label="topic 3"
