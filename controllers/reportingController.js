@@ -1110,7 +1110,146 @@ return {
 
 
 
+// ✅ Fetch Group Member's Learning Notes Report
+// Includes notes on standard learning units only:
+// Article, Video, Interview, Exercise, Template
+// Excludes Prompt Sets (separate report), Missions, Nuggets, Upcoming
+const getMyLearningNotesReport = async (req, res) => {
+  try {
+    console.log("✅ Fetching My Learning Notes Report…");
 
+    const safeArray = (v) => (Array.isArray(v) ? v : []);
+    const safeString = (v) => (v == null ? "" : String(v));
+    const toIdString = (v) => (v && typeof v.toString === "function" ? v.toString() : "");
+    const sortAZ = (a, b) => safeString(a).localeCompare(safeString(b));
+
+    const memberId = toIdString(req.user?._id || req.user?.id || req.session?.user?.id);
+
+    if (!memberId) {
+      return res.status(403).render("member_form_views/error", {
+        layout: "memberformlayout",
+        title: "Access denied",
+        errorMessage: "Could not determine your member account."
+      });
+    }
+
+    const memberDoc = await GroupMember.findById(memberId)
+      .select("_id name")
+      .lean();
+
+    if (!memberDoc) {
+      return res.status(403).render("member_form_views/error", {
+        layout: "memberformlayout",
+        title: "Access denied",
+        errorMessage: "Group member account not found."
+      });
+    }
+
+    const notes = await Notes.find({ memberID: memberDoc._id })
+      .sort({ createdAt: 1 })
+      .lean();
+
+    if (!notes.length) {
+      return res.render("report_views/mylearningnotes", {
+        layout: "dashboardlayout",
+        isMyLearningNotes: true,
+        myLearningNotesReports: []
+      });
+    }
+
+    // Resolve all unit metadata once
+    const uniqueUnitIds = Array.from(
+      new Set(
+        safeArray(notes)
+          .map(n => toIdString(n.unitID))
+          .filter(Boolean)
+      )
+    );
+
+    const detailsByUnitId = new Map();
+
+    await Promise.all(
+      uniqueUnitIds.map(async (unitId) => {
+        try {
+          const details = await resolveUnitDetails(unitId);
+          detailsByUnitId.set(unitId, details || {});
+        } catch (err) {
+          console.warn("⚠️ Could not resolve unit details for:", unitId, err?.message);
+          detailsByUnitId.set(unitId, {});
+        }
+      })
+    );
+
+    // Only include these unit types
+    const allowedUnitTypes = new Set([
+      "article",
+      "video",
+      "interview",
+      "exercise",
+      "template"
+    ]);
+
+    // Group notes by unit
+    const byUnit = new Map();
+
+    for (const note of notes) {
+      const unitId = toIdString(note.unitID);
+      if (!unitId) continue;
+
+      const details = detailsByUnitId.get(unitId) || {};
+      const unitType = safeString(details.unitType).trim();
+      const unitTypeLower = unitType.toLowerCase();
+
+      if (!allowedUnitTypes.has(unitTypeLower)) continue;
+
+      if (!byUnit.has(unitId)) {
+        byUnit.set(unitId, {
+          unitId,
+          unitTitle: details.unitTitle || "Unknown Unit",
+          unitType: unitType || "Unknown",
+          main_topic: details.main_topic || "",
+          secondary_topics: safeArray(details.secondary_topics),
+          notes: []
+        });
+      }
+
+      byUnit.get(unitId).notes.push({
+        content: note.note_content || "",
+        dateSubmitted: note.createdAt || note.updatedAt || null
+      });
+    }
+
+    const myLearningNotesReports = Array.from(byUnit.values())
+      .map(unit => {
+        unit.notes = safeArray(unit.notes).sort((a, b) => {
+          const ad = a.dateSubmitted ? new Date(a.dateSubmitted) : new Date(0);
+          const bd = b.dateSubmitted ? new Date(b.dateSubmitted) : new Date(0);
+          return ad - bd;
+        });
+
+        unit.latestNoteDate =
+          unit.notes.length > 0
+            ? unit.notes[unit.notes.length - 1].dateSubmitted
+            : null;
+
+        return unit;
+      })
+      .sort((a, b) => {
+        const ad = a.latestNoteDate ? new Date(a.latestNoteDate) : new Date(0);
+        const bd = b.latestNoteDate ? new Date(b.latestNoteDate) : new Date(0);
+        return bd - ad;
+      });
+
+    return res.render("report_views/mylearningnotes", {
+      layout: "dashboardlayout",
+      isMyLearningNotes: true,
+      myLearningNotesReports
+    });
+  } catch (err) {
+    console.error("❌ Error loading My Learning Notes Report:", err);
+    return res.status(500).send("Server error");
+  }
+};
 
 
 
@@ -1119,5 +1258,6 @@ module.exports = {
   getNuggetsMonitoredReport,
   getPromptSetsCompletedReport,
   getUnitsCompletedReport,
-  getMyCompletedPromptSetsReport
+  getMyCompletedPromptSetsReport,
+  getMyLearningNotesReport
 };
