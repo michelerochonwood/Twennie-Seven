@@ -2,6 +2,8 @@
 <div class="profile-form-container">
   <h2 class="profile-form-title">Twennie profile survey</h2>
 
+  <p>At the moment, no one can see your profile on Twennie unless you are in a group. Leaders can see the profiles of their group members. In the future, Twennie wants to explore how profiles can help our members. This survey is designed to help us understand your needs. Tell us what you think!</p>
+
   <form action="/profile/survey/submit" method="POST">
     {{#if csrfToken}}
       <input type="hidden" name="_csrf" value="{{csrfToken}}">
