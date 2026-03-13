@@ -241,11 +241,11 @@ router.get('/group_memberships', (req, res) => {
 });
 
 router.get('/themine_upgrade', (req, res) => {
-  res.render('promo_views/themine_upgrade', { layout: 'mainlayout' });
+  res.render('promo_views/group_upgrade_required_themine', { layout: 'mainlayout' });
 });
 
 router.get('/missioncontrol_upgrade', (req, res) => {
-  res.render('promo_views/missioncontrol_upgrade', { layout: 'mainlayout' });
+  res.render('promo_views/group_upgrade_required_mission', { layout: 'mainlayout' });
 });
 
 router.get('/sample_exercise', (req, res) => {
