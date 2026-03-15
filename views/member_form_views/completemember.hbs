@@ -29,13 +29,41 @@
 
 <div class="completegroupmemberform-field password-toggle-container">
   <label for="password">Choose a Password*</label>
+
   <div class="password-wrapper">
-    <input type="password" id="password" name="password" required minlength="6">
+    <input
+      type="password"
+      id="password"
+      name="password"
+      required
+      minlength="12"
+      pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{12,}$"
+    >
     <span class="toggle-password" onclick="togglePasswordVisibility()">
       <ion-icon id="toggleIcon" name="eye-outline"></ion-icon>
     </span>
   </div>
-  <span class="help-text">Minimum 6 characters.</span>
+
+  <small class="help-text">
+    <strong>Password requirements:</strong><br>
+    • At least 12 characters<br>
+    • At least one uppercase letter<br>
+    • At least one lowercase letter<br>
+    • At least one number<br>
+    • At least one special character
+  </small>
+</div>
+
+<div class="completegroupmemberform-field">
+  <label for="confirmPassword">Confirm Password*</label>
+  <input
+    type="password"
+    id="confirmPassword"
+    name="confirmPassword"
+    required
+    minlength="12"
+    pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{12,}$"
+  >
 </div>
         </div>
 
@@ -51,9 +79,11 @@
 </div>
 
 <script>
-  function togglePasswordVisibility() {
-    const input = document.getElementById("password");
-    const icon = document.getElementById("toggleIcon");
+  function togglePasswordVisibility(fieldId = "password", iconId = "toggleIcon") {
+    const input = document.getElementById(fieldId);
+    const icon = document.getElementById(iconId);
+    if (!input || !icon) return;
+
     if (input.type === "password") {
       input.type = "text";
       icon.name = "eye-off-outline";
@@ -62,4 +92,35 @@
       icon.name = "eye-outline";
     }
   }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("completegroupmembergroup-member-form");
+    const passwordInput = document.getElementById("password");
+    const confirmPasswordInput = document.getElementById("confirmPassword");
+
+    if (!form || !passwordInput || !confirmPasswordInput) return;
+
+    function validatePasswordMatch() {
+      const password = passwordInput.value;
+      const confirmPassword = confirmPasswordInput.value;
+
+      confirmPasswordInput.setCustomValidity("");
+
+      if (confirmPassword && password !== confirmPassword) {
+        confirmPasswordInput.setCustomValidity("Passwords do not match.");
+      }
+    }
+
+    passwordInput.addEventListener("input", validatePasswordMatch);
+    confirmPasswordInput.addEventListener("input", validatePasswordMatch);
+
+    form.addEventListener("submit", function (e) {
+      validatePasswordMatch();
+
+      if (!form.checkValidity()) {
+        e.preventDefault();
+        form.reportValidity();
+      }
+    });
+  });
 </script>

@@ -150,10 +150,8 @@
     <option value="Information Technology(IT)" {{#if (eq user.industry "Information Technology(IT)")}}selected{{/if}}>Information Technology(IT)</option>
     <option value="Web Design" {{#if (eq user.industry "Web Design")}}selected{{/if}}>Web Design</option>
     <option value="Construction" {{#if (eq user.industry "Construction")}}selected{{/if}}>Construction</option>
-    <option value="Technology" {{#if (eq user.industry "Technology")}}selected{{/if}}>Technology</option>
     <option value="Community Planning/Landscape Architecture" {{#if (eq user.industry "Community Planning/Landscape Architecture")}}selected{{/if}}>Community Planning/Landscape Architecture</option>
     <option value="Land Development" {{#if (eq user.industry "Land Development")}}selected{{/if}}>Land Development</option>
-    <option value="Telecommunications" {{#if (eq user.industry "Telecommunications")}}selected{{/if}}>Telecommunications</option>
     <option value="E-Commerce" {{#if (eq user.industry "E-Commerce")}}selected{{/if}}>E-Commerce</option>
     <option value="Edtech" {{#if (eq user.industry "Edtech")}}selected{{/if}}>Edtech</option>
     <option value="Other" {{#if (eq user.industry "Other")}}selected{{/if}}>Other</option>
@@ -182,15 +180,19 @@
       >
     </div>
 
-    <div class="form-field password-toggle-container">
-      <label for="password">Password</label>
-      <div class="password-wrapper">
-        <input type="password" name="password" required>
-        <span class="toggle-password" onclick="togglePasswordVisibility(this)">
-          <ion-icon name="eye-outline"></ion-icon>
-        </span>
-      </div>
-    </div>
+<div class="form-field password-toggle-container">
+  <label for="password">Password</label>
+  <div class="password-wrapper">
+    <input type="password" id="password" name="password" required>
+    <span class="toggle-password" onclick="togglePasswordVisibility(this)">
+      <ion-icon name="eye-outline"></ion-icon>
+    </span>
+  </div>
+
+  <small class="form-instructions">
+    Create a strong password using at least 12 characters, including an uppercase letter, a lowercase letter, a number, and a special character.
+  </small>
+</div>
 
     <p style="width: 50%; text-align: center;">
       Group leaders must start memberships for all members of their group...

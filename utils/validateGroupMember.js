@@ -31,14 +31,47 @@ module.exports.validateGroupMemberData = (data) => {
   }
 
   // Password (optional; only if provided)
-  if (data.password !== undefined) {
-    const p = String(data.password);
-    if (p.trim() === "") {
-      errors.push("Password cannot be empty if provided.");
-    } else if (p.length < 6) {
-      errors.push("Password must be at least 6 characters.");
+// Password (optional; only if provided)
+if (data.password !== undefined) {
+  const p = String(data.password);
+
+  if (p.trim() === "") {
+    errors.push("Password cannot be empty if provided.");
+  } else {
+    if (p.length < 12) {
+      errors.push("Password must be at least 12 characters.");
+    }
+
+    if (!/[a-z]/.test(p)) {
+      errors.push("Password must include at least one lowercase letter.");
+    }
+
+    if (!/[A-Z]/.test(p)) {
+      errors.push("Password must include at least one uppercase letter.");
+    }
+
+    if (!/[0-9]/.test(p)) {
+      errors.push("Password must include at least one number.");
+    }
+
+    if (!/[^A-Za-z0-9]/.test(p)) {
+      errors.push("Password must include at least one special character.");
+    }
+
+    const weakPasswords = new Set([
+      'password',
+      'password123',
+      'defaultpassword123',
+      '12345678',
+      'qwerty123',
+      'admin123'
+    ]);
+
+    if (weakPasswords.has(p.toLowerCase())) {
+      errors.push("Please choose a stronger password.");
     }
   }
+}
 
   // ----- Topics are OPTIONAL -----
   // Accept either:

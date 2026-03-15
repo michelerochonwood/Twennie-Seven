@@ -70,11 +70,44 @@ module.exports.validateLeaderData = (data) => {
     errors.push("Please enter a valid email address.");
   }
 
-  if (!data.password || data.password.trim() === "") {
-    errors.push("Password is required.");
-  } else if (data.password.length < 6) {
-    errors.push("Password must be at least 6 characters.");
+if (!data.password || data.password.trim() === "") {
+  errors.push("Password is required.");
+} else {
+  const password = data.password;
+
+  if (password.length < 12) {
+    errors.push("Password must be at least 12 characters.");
   }
+
+  if (!/[a-z]/.test(password)) {
+    errors.push("Password must include at least one lowercase letter.");
+  }
+
+  if (!/[A-Z]/.test(password)) {
+    errors.push("Password must include at least one uppercase letter.");
+  }
+
+  if (!/[0-9]/.test(password)) {
+    errors.push("Password must include at least one number.");
+  }
+
+  if (!/[^A-Za-z0-9]/.test(password)) {
+    errors.push("Password must include at least one special character.");
+  }
+
+  const weakPasswords = new Set([
+    'password',
+    'password123',
+    'defaultpassword123',
+    '12345678',
+    'qwerty123',
+    'admin123'
+  ]);
+
+  if (weakPasswords.has(password.toLowerCase())) {
+    errors.push("Please choose a stronger password.");
+  }
+}
 
   // ------------------------------------------------------------
   // Group size (2–10)

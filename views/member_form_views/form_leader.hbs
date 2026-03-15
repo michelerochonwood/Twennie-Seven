@@ -119,11 +119,16 @@
   <label for="password">Password</label>
   <div class="password-wrapper">
     <input type="password" id="password" name="password" required>
-    <span class="toggle-password" onclick="togglePasswordVisibility()">
-      <ion-icon id="toggleIcon" name="eye-outline"></ion-icon>
+    <span class="toggle-password" onclick="togglePasswordVisibility(this)">
+      <ion-icon name="eye-outline"></ion-icon>
     </span>
   </div>
+
+  <small class="form-instructions">
+    Create a strong password using at least 12 characters, including an uppercase letter, a lowercase letter, a number, and a special character.
+  </small>
 </div>
+
 <p style="width: 50%; text-align: center;">Group leaders must start memberships for all members of their group. Select the number of members and enter their names and email addresses. Each of your group members will then log in and complete their registration using the unique registration code you've given them.</p>
     <div class="leader-form-field">
       <label for="group-size">Number of Members</label>

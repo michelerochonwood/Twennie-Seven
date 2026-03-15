@@ -123,11 +123,39 @@
 <div class="form-field password-toggle-container">
   <label for="password">Password</label>
   <div class="password-wrapper">
-    <input type="password" id="password" name="password" required>
+    <input
+      type="password"
+      id="password"
+      name="password"
+      required
+      minlength="12"
+      pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{12,}$"
+    >
     <span class="toggle-password" onclick="togglePasswordVisibility()">
       <ion-icon id="toggleIcon" name="eye-outline"></ion-icon>
     </span>
   </div>
+
+  <small class="form-instructions">
+    <strong>Password requirements:</strong><br>
+    • At least 12 characters<br>
+    • At least one uppercase letter<br>
+    • At least one lowercase letter<br>
+    • At least one number<br>
+    • At least one special character
+  </small>
+</div>
+
+<div class="form-field">
+  <label for="confirmPassword">Confirm Password</label>
+  <input
+    type="password"
+    id="confirmPassword"
+    name="confirmPassword"
+    required
+    minlength="12"
+    pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{12,}$"
+  >
 </div>
 
 
@@ -165,6 +193,8 @@
     const input = document.getElementById('password');
     const icon = document.getElementById('toggleIcon');
 
+    if (!input || !icon) return;
+
     if (input.type === 'password') {
       input.type = 'text';
       icon.name = 'eye-off-outline';
@@ -174,29 +204,67 @@
     }
   }
 
-  document.querySelector('#username').addEventListener('blur', async function () {
-    const username = this.value.trim();
-    const msg = document.querySelector('#username-message');
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('member-form');
+    const passwordInput = document.getElementById('password');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    const usernameInput = document.getElementById('username');
+    const msg = document.getElementById('username-message');
 
-    if (!username) {
-      msg.textContent = '';
-      return;
+    function validatePasswordMatch() {
+      if (!passwordInput || !confirmPasswordInput) return;
+
+      const password = passwordInput.value;
+      const confirmPassword = confirmPasswordInput.value;
+
+      confirmPasswordInput.setCustomValidity('');
+
+      if (confirmPassword && password !== confirmPassword) {
+        confirmPasswordInput.setCustomValidity('Passwords do not match.');
+      }
     }
 
-    try {
-      const res = await fetch(`/member/check-username?username=${encodeURIComponent(username)}`);
-      const data = await res.json();
+    if (passwordInput && confirmPasswordInput) {
+      passwordInput.addEventListener('input', validatePasswordMatch);
+      confirmPasswordInput.addEventListener('input', validatePasswordMatch);
+    }
 
-      if (!data.available) {
-        msg.textContent = 'That username is already taken. Try something unique like Brian-Warrior1.';
-        msg.style.color = 'red';
-      } else {
-        msg.textContent = 'Username is available!';
-        msg.style.color = 'green';
-      }
-    } catch (err) {
-      console.error('Username check failed:', err);
-      msg.textContent = '';
+    if (form) {
+      form.addEventListener('submit', function (e) {
+        validatePasswordMatch();
+
+        if (!form.checkValidity()) {
+          e.preventDefault();
+          form.reportValidity();
+        }
+      });
+    }
+
+    if (usernameInput && msg) {
+      usernameInput.addEventListener('blur', async function () {
+        const username = this.value.trim();
+
+        if (!username) {
+          msg.textContent = '';
+          return;
+        }
+
+        try {
+          const res = await fetch(`/member/check-username?username=${encodeURIComponent(username)}`);
+          const data = await res.json();
+
+          if (!data.available) {
+            msg.textContent = 'That username is already taken. Try something unique like Brian-Warrior1.';
+            msg.style.color = 'red';
+          } else {
+            msg.textContent = 'Username is available!';
+            msg.style.color = 'green';
+          }
+        } catch (err) {
+          console.error('Username check failed:', err);
+          msg.textContent = '';
+        }
+      });
     }
   });
 </script>
