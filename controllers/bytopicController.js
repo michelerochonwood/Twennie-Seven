@@ -400,12 +400,31 @@ const sectionedUnits = [
   }
 ];
 
+const seenUnitIds = new Set();
+
+const dedupedSectionedUnits = sectionedUnits.map(section => {
+  const dedupedUnits = section.units.filter(unit => {
+    const uniqueKey = unit._id
+      ? String(unit._id)
+      : `${unit.type}:${unit.title}:${unit.authorId || 'no-author'}`;
+
+    if (seenUnitIds.has(uniqueKey)) return false;
+    seenUnitIds.add(uniqueKey);
+    return true;
+  });
+
+  return {
+    ...section,
+    units: dedupedUnits
+  };
+});
+
 res.render('bytopic_views/bytopic_view', {
   layout: 'bytopiclayout',
   title: topic.title,
   shortSummary: topic.shortSummary,
   longSummary: topic.longSummary,
-  sectionedUnits
+  sectionedUnits: dedupedSectionedUnits
 });
 
 
