@@ -4,98 +4,132 @@
   {{#if csrfToken}}
     <input type="hidden" name="_csrf" value="{{csrfToken}}">
   {{/if}}
-      <!-- Centered Image -->
-    <div style="text-align: center; margin-bottom: 1.5rem;">
-      <img src="/images/leaderbluey_2.png" alt="Leader Membership" style="max-height: 200px;">
-    </div>
+
+  <input type="hidden" name="accessLevel" value="leader">
+  <input type="hidden" name="redirectTarget" value="payment">
+
+  <div class="membership-hero-image-wrap">
+    <img src="/images/leaderbluey_2.png" alt="Leader Membership" class="membership-hero-image">
+  </div>
 
   <div class="leader-form-container">
     <h1 class="form-title">group leader membership form</h1>
 
-    <!-- Group Information -->
     <div class="form-field">
       <label for="group-name">Group Name</label>
-      <input type="text" id="group-name" name="groupName" placeholder="Hint: you'll want a fun name, like the Marshmallow Spartans or the Zen Mechanics." required>
+      <input
+        type="text"
+        id="group-name"
+        name="groupName"
+        placeholder="Hint: you'll want a fun name, like the Marshmallow Spartans or the Zen Mechanics."
+        required
+      >
     </div>
 
     <div class="form-field">
       <label for="group-leader-name">Group Leader Name</label>
-      <input type="text" id="group-leader-name" name="groupLeaderName" placeholder="Your full name, or the name by which your team knows you, first and last." required>
+      <input
+        type="text"
+        id="group-leader-name"
+        name="groupLeaderName"
+        placeholder="Your full name, or the name by which your team knows you, first and last."
+        required
+      >
     </div>
 
     <div class="form-field">
-      <label for="professionalTitle">Professional Title</label>
-      <input type="text" id="professional-title" name="professionalTitle" placeholder="This should be the title by which your organization knows you." required>
+      <label for="professional-title">Professional Title</label>
+      <input
+        type="text"
+        id="professional-title"
+        name="professionalTitle"
+        placeholder="This should be the title by which your organization knows you."
+        required
+      >
     </div>
 
-<div class="checkbox-wrapper" style="display:flex; align-items:center; gap:0.6rem; width:80%; margin: 0 auto;">
-  <input
-    type="checkbox"
-    id="organizationOptOut"
-    name="organizationOptOut"
-    value="true"
-    style="margin:0;"
-  >
-  <label
-    for="organizationOptOut"
-    style="margin:0; font-weight:500; color:#4e50a2; cursor:pointer;"
-  >
-    keep my organization anonymous
-  </label>
-</div>
+    <div class="checkbox-wrapper">
+      <input
+        type="checkbox"
+        id="organizationOptOut"
+        name="organizationOptOut"
+        value="true"
+      >
+      <label for="organizationOptOut">keep my organization anonymous</label>
+    </div>
 
-<p class="form-instructions" style="width: 80%; margin: 0 auto;">
-  You can set up your organization as a Twennie member organization after registration.
-</p>
+    <p class="form-instructions">
+      You can set up your organization as a Twennie member organization after registration.
+    </p>
 
-    <!-- Billing Address (optional, saved if provided) -->
-<div class="form-field">
-  <label for="line1">Street Address</label>
-  <input type="text" id="line1" name="line1" placeholder="An address is required for billing. It will not be used for any other purpose." autocomplete="address-line1">
-</div>
-
-<div class="form-field">
-  <label for="line2">Apartment / Suite (optional)</label>
-  <input type="text" id="line2" name="line2" placeholder="Unit 5B" autocomplete="address-line2">
-</div>
-
-<div class="form-field">
-  <label for="city">City</label>
-  <input type="text" id="city" name="city" autocomplete="address-level2">
-</div>
-
-<div class="form-field">
-  <label for="province">Province / State</label>
-  <input type="text" id="province" name="province" placeholder="ON" autocomplete="address-level1">
-</div>
-
-<div class="form-field">
-  <label for="postalCode">Postal Code</label>
-  <input type="text" id="postalCode" name="postalCode" placeholder="A1A 1A1" autocomplete="postal-code">
-</div>
-
-<div class="form-field">
-  <label for="country">Country</label>
-  <select id="country" name="country" autocomplete="country">
-    <option value="CA" selected>Canada</option>
-    <option value="US">United States</option>
-  </select>
-</div>
-
-<small class="form-instructions">
-  At checkout, you'll confirm billing details. Stripe will securely save the final address to your account.
-</small>
-
-
-    <!-- Industry field -->
     <div class="form-field">
+      <label for="line1">Street Address</label>
+      <input
+        type="text"
+        id="line1"
+        name="line1"
+        placeholder="An address is required for billing. It will not be used for any other purpose."
+        autocomplete="address-line1"
+      >
+    </div>
+
+    <div class="form-field">
+      <label for="line2">Apartment / Suite (optional)</label>
+      <input
+        type="text"
+        id="line2"
+        name="line2"
+        placeholder="Unit 5B"
+        autocomplete="address-line2"
+      >
+    </div>
+
+    <div class="form-field">
+      <label for="city">City</label>
+      <input type="text" id="city" name="city" autocomplete="address-level2">
+    </div>
+
+    <div class="form-field">
+      <label for="province">Province / State</label>
+      <input
+        type="text"
+        id="province"
+        name="province"
+        placeholder="ON"
+        autocomplete="address-level1"
+      >
+    </div>
+
+    <div class="form-field">
+      <label for="postalCode">Postal Code</label>
+      <input
+        type="text"
+        id="postalCode"
+        name="postalCode"
+        placeholder="A1A 1A1"
+        autocomplete="postal-code"
+      >
+    </div>
+
+    <div class="form-field">
+      <label for="country">Country</label>
+      <select id="country" name="country" autocomplete="country">
+        <option value="CA" selected>Canada</option>
+        <option value="US">United States</option>
+      </select>
+      <small class="form-instructions">
+        At checkout, you'll confirm billing details. Stripe will securely save the final address to your account.
+      </small>
+    </div>
+
+    <div class="form-field-industry">
       <label for="industry">Industry</label>
       <select id="industry" name="industry" required>
         <option value="">Please select your industry</option>
         <option value="Engineering">Engineering</option>
         <option value="Architecture">Architecture</option>
         <option value="Project Management">Project Management</option>
-        <option value="Information Technology(IT)">Information Technology(IT)</option>
+        <option value="Information Technology(IT)">Information Technology (IT)</option>
         <option value="Web Design">Web Design</option>
         <option value="Construction">Construction</option>
         <option value="Community Planning/Landscape Architecture">Community Planning/Landscape Architecture</option>
@@ -107,29 +141,56 @@
 
     <div class="form-field">
       <label for="username">Username</label>
-      <input type="text" id="username" name="username" placeholder="Choose a username for login" required>
+      <input
+        type="text"
+        id="username"
+        name="username"
+        placeholder="Choose a username for login"
+        required
+      >
+      <span id="username-message" class="form-help-inline"></span>
     </div>
 
     <div class="form-field">
       <label for="group-leader-email">Group Leader Email Address</label>
-      <input type="email" id="group-leader-email" name="groupLeaderEmail" required>
+      <input
+        type="email"
+        id="group-leader-email"
+        name="groupLeaderEmail"
+        required
+      >
     </div>
 
-<div class="form-field password-toggle-container">
-  <label for="password">Password</label>
-  <div class="password-wrapper">
-    <input type="password" id="password" name="password" required>
-    <span class="toggle-password" onclick="togglePasswordVisibility(this)">
-      <ion-icon name="eye-outline"></ion-icon>
-    </span>
-  </div>
+    <div class="form-field password-toggle-container">
+      <label for="password">Password</label>
+      <div class="password-wrapper">
+        <input
+          type="password"
+          id="password"
+          name="password"
+          required
+          minlength="12"
+          pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{12,}$"
+        >
+        <button
+          type="button"
+          class="toggle-password-btn"
+          onclick="togglePasswordVisibility()"
+          aria-label="Show or hide password"
+        >
+          <ion-icon id="toggleIcon" name="eye-outline"></ion-icon>
+        </button>
+      </div>
 
-  <small class="form-instructions">
-    Create a strong password using at least 12 characters, including an uppercase letter, a lowercase letter, a number, and a special character.
-  </small>
-</div>
+      <small class="form-instructions">
+        Create a strong password using at least 12 characters, including an uppercase letter, a lowercase letter, a number, and a special character.
+      </small>
+    </div>
 
-<p style="width: 50%; text-align: center;">Group leaders must start memberships for all members of their group. Select the number of members and enter their names and email addresses. Each of your group members will then log in and complete their registration using the unique registration code you've given them.</p>
+    <p class="form-instructions leader-group-members-note">
+      Group leaders must start memberships for all members of their group. Select the number of members and enter their names and email addresses. Each of your group members will then log in and complete their registration using the unique registration code you've given them.
+    </p>
+
     <div class="leader-form-field">
       <label for="group-size">Number of Members</label>
       <select id="group-size" name="groupSize" required>
@@ -146,7 +207,6 @@
       </select>
     </div>
 
-    <!-- Individual Member Details -->
     <div class="individual-members-container">
       <h3>Individual Group Members</h3>
       <div id="members-grid" class="members-grid">
@@ -156,7 +216,13 @@
 
     <div class="form-field">
       <label for="registration-code">Create a Registration Code</label>
-      <input type="text" id="registration-code" name="registration_code" placeholder="Create a unique code for your team" required>
+      <input
+        type="text"
+        id="registration-code"
+        name="registration_code"
+        placeholder="Create a unique code for your team"
+        required
+      >
       <small class="form-instructions">
         <strong>How to Create a Registration Code:</strong><br>
         - Must be <strong>at least 8 characters</strong> long.<br>
@@ -169,62 +235,59 @@
     </div>
 
     <div class="form-toggle">
-  <label for="membership-terms-toggle" class="form-toggle-label">
-    <input type="checkbox" id="membership-terms-toggle" onclick="toggleMembershipTerms()">
-    view membership terms
-  </label>
-</div>
+      <label for="membership-terms-toggle" class="form-toggle-label">
+        <input type="checkbox" id="membership-terms-toggle" onclick="toggleMembershipTerms()">
+        view membership terms
+      </label>
+    </div>
 
-<div id="membership-terms-box" class="membership-terms-box hidden">
-  <h3 class="membership-terms-title">membership terms</h3>
+    <div id="membership-terms-box" class="membership-terms-box hidden">
+      <h3 class="membership-terms-title">membership terms</h3>
 
-  <p>
-    By registering as a Twennie member, you agree to use the platform for professional learning,
-    collaboration, and development in a respectful and lawful manner.
-  </p>
+      <p>
+        By registering as a Twennie member, you agree to use the platform for professional learning,
+        collaboration, and development in a respectful and lawful manner.
+      </p>
 
-  <ul class="membership-terms-list">
-    <li>You are responsible for keeping your login credentials secure.</li>
-    <li>You agree not to share your account with another person.</li>
-    <li>You agree to participate respectfully and professionally on the platform.</li>
-    <li>You may not upload or share confidential, proprietary, or unauthorized third-party information.</li>
-    <li>Your access level determines which features, reports, groups, and learning tools are available to you.</li>
-    <li>Paid memberships renew and are billed according to the plan selected at checkout unless cancelled.</li>
-    <li>Twennie may suspend or terminate accounts used in violation of platform rules or applicable law.</li>
-    <li>Twennie may update platform features, membership benefits, and terms from time to time.</li>
-  </ul>
+      <ul class="membership-terms-list">
+        <li>You are responsible for keeping your login credentials secure.</li>
+        <li>You agree not to share your account with another person.</li>
+        <li>You agree to participate respectfully and professionally on the platform.</li>
+        <li>You may not upload or share confidential, proprietary, or unauthorized third-party information.</li>
+        <li>Your access level determines which features, reports, groups, and learning tools are available to you.</li>
+        <li>Paid memberships renew and are billed according to the plan selected at checkout unless cancelled.</li>
+        <li>Twennie may suspend or terminate accounts used in violation of platform rules or applicable law.</li>
+        <li>Twennie may update platform features, membership benefits, and terms from time to time.</li>
+      </ul>
 
-  <p>
-    By completing registration, you acknowledge that you have read and agree to these membership terms.
-  </p>
-</div>
+      <p>
+        By completing registration, you acknowledge that you have read and agree to these membership terms.
+      </p>
+    </div>
 
-<div class="checkbox-wrapper membership-checkbox">
-  <input type="checkbox" id="membershipAgreement" name="membershipAgreement" value="true" required>
-  <label for="membershipAgreement">I have read and agree to the membership terms.</label>
-</div>
+    <div class="checkbox-wrapper membership-checkbox">
+      <input type="checkbox" id="membershipAgreement" name="membershipAgreement" value="true" required>
+      <label for="membershipAgreement">I have read and agree to the membership terms.</label>
+    </div>
 
-
-
-    <!-- Group Agreement -->
     <div class="form-toggle">
       <label for="group-agreement-toggle" class="form-toggle-label">
-        <input type="checkbox" id="group-agreement-toggle" name="group_agreement" value="true" required>
+        <input
+          type="checkbox"
+          id="group-agreement-toggle"
+          name="group_agreement"
+          value="true"
+          required
+        >
         I agree to fulfill the responsibilities of a group leader according to the Twennie guidelines and our group agreement.
       </label>
     </div>
 
-    <!-- Payment Note -->
-<div class="form-field" id="group-payment-placeholder">
-  <p><strong>Payment Reminder:</strong> Once you submit this form, you’ll be redirected to Stripe to complete payment securely. Your payment will cover <strong>all registered group members</strong>.</p>
-  <p>If your organization prefers to be invoiced, please <a href="mailto:info@twennie.com">contact Twennie</a> before registering to arrange billing.</p>
-</div>
+    <div class="form-field" id="group-payment-placeholder">
+      <p><strong>Payment Reminder:</strong> Once you submit this form, you’ll be redirected to Stripe to complete payment securely. Your payment will cover <strong>all registered group members</strong>.</p>
+      <p>If your organization prefers to be invoiced, please <a href="mailto:info@twennie.com">contact Twennie</a> before registering to arrange billing.</p>
+    </div>
 
-    <!-- Hidden Submission Info -->
-    <input type="hidden" name="accessLevel" value="leader">
-    <input type="hidden" name="redirectTarget" value="payment">
-
-    <!-- Submit Button -->
     <button type="submit" class="make-member-button">
       make me a Twennie group leader
     </button>
@@ -235,14 +298,17 @@
 
 <script>
   function togglePasswordVisibility() {
-    const input = document.getElementById("password");
-    const icon = document.getElementById("toggleIcon");
-    if (input.type === "password") {
-      input.type = "text";
-      icon.name = "eye-off-outline";
+    const input = document.getElementById('password');
+    const icon = document.getElementById('toggleIcon');
+
+    if (!input || !icon) return;
+
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.name = 'eye-off-outline';
     } else {
-      input.type = "password";
-      icon.name = "eye-outline";
+      input.type = 'password';
+      icon.name = 'eye-outline';
     }
   }
 
@@ -251,63 +317,37 @@
     if (!box) return;
     box.classList.toggle('hidden');
   }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const usernameInput = document.getElementById('username');
+    const msg = document.getElementById('username-message');
+
+    if (usernameInput && msg) {
+      usernameInput.addEventListener('blur', async function () {
+        const username = this.value.trim();
+
+        msg.textContent = '';
+        msg.classList.remove('form-help-error', 'form-help-success');
+
+        if (!username) return;
+
+        try {
+          const res = await fetch(`/member/check-username?username=${encodeURIComponent(username)}`);
+          const data = await res.json();
+
+          if (!data.available) {
+            msg.textContent = 'That username is already taken. Try something unique.';
+            msg.classList.add('form-help-error');
+          } else {
+            msg.textContent = 'Username is available!';
+            msg.classList.add('form-help-success');
+          }
+        } catch (err) {
+          console.error('Username check failed:', err);
+          msg.textContent = '';
+          msg.classList.remove('form-help-error', 'form-help-success');
+        }
+      });
+    }
+  });
 </script>
-
-<style>
-.checkbox-wrapper {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.6rem;
-  margin-top: 1rem;
-}
-
-.checkbox-wrapper input[type="checkbox"] {
-  margin-top: 0.2rem;
-  flex-shrink: 0;
-}
-
-.checkbox-wrapper label {
-  line-height: 1.4;
-}
-  .membership-form input[type="checkbox"] {
-  width: auto;
-  height: auto;
-  display: inline-block;
-}
-  .membership-checkbox {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.6rem;
-  margin-top: 1rem;
-}
-
-.membership-checkbox input[type="checkbox"] {
-  margin-top: 0.2rem;
-  flex-shrink: 0;
-}
-
-.membership-checkbox label {
-  line-height: 1.4;
-  cursor: pointer;
-}
-  .membership-terms-box.hidden {
-    display: none;
-  }
-
-  .membership-terms-box {
-    margin: 1rem 0 1.5rem 0;
-    padding: 1rem 1.25rem;
-    background: #f7f7fb;
-    border: 1px solid #d8d8ea;
-    border-radius: 10px;
-  }
-
-  .membership-terms-title {
-    margin-top: 0;
-    color: #262262;
-  }
-
-  .membership-terms-list {
-    margin: 0.75rem 0 0.75rem 1.25rem;
-  }
-</style>
