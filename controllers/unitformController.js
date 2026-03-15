@@ -585,13 +585,13 @@ submitUpcoming: async (req, res) => {
     }
 
     // Normalize optional secondary topics into array
-    const parsedSecondaryTopics =
-      Array.isArray(secondary_topics)
-        ? secondary_topics.filter(Boolean)
-        : (typeof secondary_topics === 'string' && secondary_topics.trim() !== '')
-          ? [secondary_topics.trim()]
-          : [];
+let parsedSecondaryTopics = [];
 
+if (Array.isArray(secondary_topics)) {
+  parsedSecondaryTopics = secondary_topics.filter(topic => typeof topic === 'string' && topic.trim() !== '');
+} else if (typeof secondary_topics === 'string' && secondary_topics.trim() !== '') {
+  parsedSecondaryTopics = [secondary_topics.trim()];
+}
     const ALLOWED_STATUS = ['in production', 'released', 'cancelled'];
     const safeStatus = ALLOWED_STATUS.includes(status) ? status : 'in production';
 
@@ -1090,6 +1090,10 @@ submitArticle: async (req, res) => {
       // 👇 comes from the hidden input in the form when launched via “publish now”
       fromUpcomingId,
     } = req.body;
+
+    console.log('RAW req.body.secondary_topics:', req.body.secondary_topics);
+console.log('TYPE of req.body.secondary_topics:', typeof req.body.secondary_topics);
+console.log('IS ARRAY:', Array.isArray(req.body.secondary_topics));
 
     if (!req.user || !req.user._id) {
       throw new Error('User is not authenticated or missing user ID.');
