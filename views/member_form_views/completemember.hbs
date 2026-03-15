@@ -74,6 +74,44 @@
             </div>
         </div>
 
+       <div class="form-toggle">
+  <label for="membership-terms-toggle" class="form-toggle-label">
+    <input type="checkbox" id="membership-terms-toggle" onclick="toggleMembershipTerms()">
+    view membership terms
+  </label>
+</div>
+
+<div id="membership-terms-box" class="membership-terms-box hidden">
+  <h3 class="membership-terms-title">membership terms</h3>
+
+  <p>
+    By registering as a Twennie member, you agree to use the platform for professional learning,
+    collaboration, and development in a respectful and lawful manner.
+  </p>
+
+  <ul class="membership-terms-list">
+    <li>You are responsible for keeping your login credentials secure.</li>
+    <li>You agree not to share your account with another person.</li>
+    <li>You agree to participate respectfully and professionally on the platform.</li>
+    <li>You may not upload or share confidential, proprietary, or unauthorized third-party information.</li>
+    <li>Your access level determines which features, reports, groups, and learning tools are available to you.</li>
+    <li>Paid memberships renew and are billed according to the plan selected at checkout unless cancelled.</li>
+    <li>Twennie may suspend or terminate accounts used in violation of platform rules or applicable law.</li>
+    <li>Twennie may update platform features, membership benefits, and terms from time to time.</li>
+  </ul>
+
+  <p>
+    By completing registration, you acknowledge that you have read and agree to these membership terms.
+  </p>
+</div>
+
+<div class="checkbox-wrapper">
+  <input type="checkbox" id="membershipAgreement" name="membershipAgreement" value="true" required>
+  <label for="membershipAgreement">I have read and agree to the membership terms.</label>
+</div>
+
+
+
         <button type="submit" class="submit-button">complete registration</button>
     </form>
 </div>
@@ -123,4 +161,33 @@
       }
     });
   });
+
+  function toggleMembershipTerms() {
+    const box = document.getElementById('membership-terms-box');
+    if (!box) return;
+    box.classList.toggle('hidden');
+  }
 </script>
+
+<style>
+  .membership-terms-box.hidden {
+    display: none;
+  }
+
+  .membership-terms-box {
+    margin: 1rem 0 1.5rem 0;
+    padding: 1rem 1.25rem;
+    background: #f7f7fb;
+    border: 1px solid #d8d8ea;
+    border-radius: 10px;
+  }
+
+  .membership-terms-title {
+    margin-top: 0;
+    color: #262262;
+  }
+
+  .membership-terms-list {
+    margin: 0.75rem 0 0.75rem 1.25rem;
+  }
+</style> 

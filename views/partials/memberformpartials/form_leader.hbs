@@ -239,6 +239,7 @@
       </small>
     </div>
 
+
     <!-- Group Agreement -->
     <div class="form-toggle">
       <label for="group-agreement-toggle" class="form-toggle-label">
@@ -281,4 +282,33 @@
       icon.name = "eye-outline";
     }
   }
+
+  function toggleMembershipTerms() {
+    const box = document.getElementById('membership-terms-box');
+    if (!box) return;
+    box.classList.toggle('hidden');
+  }
 </script>
+
+<style>
+  .membership-terms-box.hidden {
+    display: none;
+  }
+
+  .membership-terms-box {
+    margin: 1rem 0 1.5rem 0;
+    padding: 1rem 1.25rem;
+    background: #f7f7fb;
+    border: 1px solid #d8d8ea;
+    border-radius: 10px;
+  }
+
+  .membership-terms-title {
+    margin-top: 0;
+    color: #262262;
+  }
+
+  .membership-terms-list {
+    margin: 0.75rem 0 0.75rem 1.25rem;
+  }
+</style>

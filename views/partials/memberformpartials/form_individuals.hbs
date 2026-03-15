@@ -137,15 +137,81 @@
       <input type="email" id="email" name="email" value="{{user.email}}" required>
     </div>
 
-    <div class="form-field password-toggle-container">
-      <label for="password">Password</label>
-      <div class="password-wrapper">
-        <input type="password" id="password" name="password" required>
-        <span class="toggle-password" onclick="togglePasswordVisibility()">
-          <ion-icon id="toggleIcon" name="eye-outline"></ion-icon>
-        </span>
-      </div>
-    </div>
+<div class="form-field password-toggle-container">
+  <label for="password">Password</label>
+  <div class="password-wrapper">
+    <input
+      type="password"
+      id="password"
+      name="password"
+      required
+      minlength="12"
+      pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{12,}$"
+    >
+    <span class="toggle-password" onclick="togglePasswordVisibility()">
+      <ion-icon id="toggleIcon" name="eye-outline"></ion-icon>
+    </span>
+  </div>
+
+  <small class="form-instructions">
+    <strong>Password requirements:</strong><br>
+    • At least 12 characters<br>
+    • At least one uppercase letter<br>
+    • At least one lowercase letter<br>
+    • At least one number<br>
+    • At least one special character
+  </small>
+</div>
+
+<div class="form-field">
+  <label for="confirmPassword">Confirm Password</label>
+  <input
+    type="password"
+    id="confirmPassword"
+    name="confirmPassword"
+    required
+    minlength="12"
+    pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{12,}$"
+  >
+</div>
+
+<div class="form-toggle">
+  <label for="membership-terms-toggle" class="form-toggle-label">
+    <input type="checkbox" id="membership-terms-toggle" onclick="toggleMembershipTerms()">
+    view membership terms
+  </label>
+</div>
+
+<div id="membership-terms-box" class="membership-terms-box hidden">
+  <h3 class="membership-terms-title">membership terms</h3>
+
+  <p>
+    By registering as a Twennie member, you agree to use the platform for professional learning,
+    collaboration, and development in a respectful and lawful manner.
+  </p>
+
+  <ul class="membership-terms-list">
+    <li>You are responsible for keeping your login credentials secure.</li>
+    <li>You agree not to share your account with another person.</li>
+    <li>You agree to participate respectfully and professionally on the platform.</li>
+    <li>You may not upload or share confidential, proprietary, or unauthorized third-party information.</li>
+    <li>Your access level determines which features, reports, groups, and learning tools are available to you.</li>
+    <li>Paid memberships renew and are billed according to the plan selected at checkout unless cancelled.</li>
+    <li>Twennie may suspend or terminate accounts used in violation of platform rules or applicable law.</li>
+    <li>Twennie may update platform features, membership benefits, and terms from time to time.</li>
+  </ul>
+
+  <p>
+    By completing registration, you acknowledge that you have read and agree to these membership terms.
+  </p>
+</div>
+
+<div class="checkbox-wrapper">
+  <input type="checkbox" id="membershipAgreement" name="membershipAgreement" value="true" required>
+  <label for="membershipAgreement">I have read and agree to the membership terms.</label>
+</div>
+
+
 
     <!-- Submit -->
     <button type="submit" id="make-member-button" class="make-member-button">
@@ -155,52 +221,135 @@
 </form>
 
 <script>
-function handleAccessLevelChange(value) {
-  const contributorTerms = document.getElementById('contributor-terms');
-  const contributorAgreement = document.getElementById('contributorAgreement');
-  const paidNote = document.getElementById('paid-redirect-note');
-  const redirectTarget = document.getElementById('redirectTarget');
+  function handleAccessLevelChange(value) {
+    const contributorTerms = document.getElementById('contributor-terms');
+    const contributorAgreement = document.getElementById('contributorAgreement');
+    const paidNote = document.getElementById('paid-redirect-note');
+    const redirectTarget = document.getElementById('redirectTarget');
 
-  contributorTerms?.classList.add('hidden');
-  paidNote?.classList.add('hidden');
-  contributorAgreement?.removeAttribute('required');
-  redirectTarget.value = 'form';
+    contributorTerms.classList.add('hidden');
+    paidNote.classList.add('hidden');
+    contributorAgreement.required = false;
+    redirectTarget.value = 'form';
 
-  if (value === 'contributor_individual') {
-    contributorTerms?.classList.remove('hidden');
-    contributorAgreement?.setAttribute('required', 'required');
-  } else if (value === 'paid_individual') {
-    paidNote?.classList.remove('hidden');
-    redirectTarget.value = 'payment';
+    if (value === 'contributor_individual') {
+      contributorTerms.classList.remove('hidden');
+      contributorAgreement.required = true;
+      redirectTarget.value = 'form';
+    } else if (value === 'paid_individual') {
+      paidNote.classList.remove('hidden');
+      redirectTarget.value = 'payment';
+    }
   }
-}
 
-function togglePasswordVisibility() {
-  const input = document.getElementById("password");
-  const icon = document.getElementById("toggleIcon");
-  if (input.type === "password") {
-    input.type = "text";
-    icon.name = "eye-off-outline";
-  } else {
-    input.type = "password";
-    icon.name = "eye-outline";
-  }
-}
+  function togglePasswordVisibility() {
+    const input = document.getElementById('password');
+    const icon = document.getElementById('toggleIcon');
 
-document.querySelector('#username').addEventListener('blur', async function () {
-  const username = this.value;
-  const res = await fetch(`/member/check-username?username=${encodeURIComponent(username)}`);
-  const data = await res.json();
-  const msg = document.querySelector('#username-message');
-  if (!data.available) {
-    msg.textContent = 'That username is already taken. Try something unique like Brian-Warrior1.';
-    msg.style.color = 'red';
-  } else {
-    msg.textContent = 'Username is available!';
-    msg.style.color = 'green';
+    if (!input || !icon) return;
+
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.name = 'eye-off-outline';
+    } else {
+      input.type = 'password';
+      icon.name = 'eye-outline';
+    }
   }
-});
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('member-form');
+    const passwordInput = document.getElementById('password');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    const usernameInput = document.getElementById('username');
+    const msg = document.getElementById('username-message');
+
+    function validatePasswordMatch() {
+      if (!passwordInput || !confirmPasswordInput) return;
+
+      const password = passwordInput.value;
+      const confirmPassword = confirmPasswordInput.value;
+
+      confirmPasswordInput.setCustomValidity('');
+
+      if (confirmPassword && password !== confirmPassword) {
+        confirmPasswordInput.setCustomValidity('Passwords do not match.');
+      }
+    }
+
+    if (passwordInput && confirmPasswordInput) {
+      passwordInput.addEventListener('input', validatePasswordMatch);
+      confirmPasswordInput.addEventListener('input', validatePasswordMatch);
+    }
+
+    if (form) {
+      form.addEventListener('submit', function (e) {
+        validatePasswordMatch();
+
+        if (!form.checkValidity()) {
+          e.preventDefault();
+          form.reportValidity();
+        }
+      });
+    }
+
+    if (usernameInput && msg) {
+      usernameInput.addEventListener('blur', async function () {
+        const username = this.value.trim();
+
+        if (!username) {
+          msg.textContent = '';
+          return;
+        }
+
+        try {
+          const res = await fetch(`/member/check-username?username=${encodeURIComponent(username)}`);
+          const data = await res.json();
+
+          if (!data.available) {
+            msg.textContent = 'That username is already taken. Try something unique like Brian-Warrior1.';
+            msg.style.color = 'red';
+          } else {
+            msg.textContent = 'Username is available!';
+            msg.style.color = 'green';
+          }
+        } catch (err) {
+          console.error('Username check failed:', err);
+          msg.textContent = '';
+        }
+      });
+    }
+  });
+
+  function toggleMembershipTerms() {
+    const box = document.getElementById('membership-terms-box');
+    if (!box) return;
+    box.classList.toggle('hidden');
+  }
 </script>
+
+<style>
+  .membership-terms-box.hidden {
+    display: none;
+  }
+
+  .membership-terms-box {
+    margin: 1rem 0 1.5rem 0;
+    padding: 1rem 1.25rem;
+    background: #f7f7fb;
+    border: 1px solid #d8d8ea;
+    border-radius: 10px;
+  }
+
+  .membership-terms-title {
+    margin-top: 0;
+    color: #262262;
+  }
+
+  .membership-terms-list {
+    margin: 0.75rem 0 0.75rem 1.25rem;
+  }
+</style>
 
 <style>
 .hidden {
