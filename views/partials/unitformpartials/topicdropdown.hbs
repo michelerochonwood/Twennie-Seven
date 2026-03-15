@@ -12,7 +12,7 @@
     </select>
 
     <label for="secondary-topic">Secondary Topic</label>
-    <select id="secondary-topic" name="secondary_topics">
+    <select id="secondary-topic" name="secondary_topics[]">
       <option value="">None</option>
       {{#if data.secondary_topics.[0]}}
         <option value="{{data.secondary_topics.[0]}}" selected="selected">{{data.secondary_topics.[0]}}</option>
