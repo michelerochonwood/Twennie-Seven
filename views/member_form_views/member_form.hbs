@@ -189,7 +189,7 @@
   </p>
 </div>
 
-<div class="checkbox-wrapper">
+<div class="checkbox-wrapper membership-checkbox">
   <input type="checkbox" id="membershipAgreement" name="membershipAgreement" value="true" required>
   <label for="membershipAgreement">I have read and agree to the membership terms.</label>
 </div>
@@ -312,6 +312,22 @@
 </script>
 
 <style>
+  .membership-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.membership-checkbox input[type="checkbox"] {
+  margin-top: 0.2rem;
+  flex-shrink: 0;
+}
+
+.membership-checkbox label {
+  line-height: 1.4;
+  cursor: pointer;
+}
   .membership-terms-box.hidden {
     display: none;
   }
