@@ -2,41 +2,21 @@
 
 <form id="member-form" action="/member/form" method="POST" class="membership-form">
   <input type="hidden" name="_csrf" value="{{csrfToken}}">
-  <input type="hidden" name="redirectTarget" id="redirectTarget" value="form">
+  <input type="hidden" name="redirectTarget" id="redirectTarget" value="payment">
   <input type="hidden" name="accessLevel" value="paid_individual">
-<div class="individual-form-container">
 
-  <!-- Centered Bluey1 Image -->
-  <div style="text-align: center; margin-bottom: 1.5rem;">
-    <img src="/images/bluey1.png" alt="Individual Membership" style="max-height: 200px;">
-  </div>
+  <div class="individual-form-container">
 
-  <h1 class="form-title">individual membership form</h1>
-
-    <!-- Access Level Selection -->
-
-
-
-    <!-- Contributor Agreement -->
-    <div id="contributor-terms" class="form-field hidden">
-      <p><strong>Contributor Agreement</strong></p>
-      <ul>
-        <li>To maintain a contributor membership, members must submit one library unit per month. All submitted units are subject to the approval of Twennie administrators.</li>
-        <li>Instructions for submitting units are available in each submission form.</li>
-        <li>If you need further information about submitting library units or the contributor membership option, contact Twennie at <a href="mailto:info@twennie.com">info@twennie.com</a>.</li>
-      </ul>
-<div class="checkbox-wrapper">
-<input type="checkbox" id="contributorAgreement" name="contributorAgreement">
-  <label for="contributorAgreement">I have read and understand these conditions.</label>
-</div>
+    <div class="membership-hero-image-wrap">
+      <img src="/images/bluey1.png" alt="Individual Membership" class="membership-hero-image">
     </div>
 
-    <!-- Hidden redirect notice for paid members -->
-    <div id="paid-redirect-note" class="form-field hidden">
+    <h1 class="form-title">individual membership form</h1>
+
+    <div id="paid-redirect-note" class="form-field">
       <p>You will be redirected to the payment page to complete your membership.</p>
     </div>
 
-    <!-- EXISTING FIELDS -->
     <div class="form-field">
       <label for="name">Full Name</label>
       <input type="text" id="name" name="name" required>
@@ -52,44 +32,65 @@
       <input type="text" id="organization" name="organization">
     </div>
 
-    <!-- Billing Address (optional) -->
-<div class="form-field">
-  <label for="line1">Street Address</label>
-  <input type="text" id="line1" name="line1" placeholder="An address is required for billing. It will not be used for any other purpose." autocomplete="address-line1">
-</div>
+    <div class="form-field">
+      <label for="line1">Street Address</label>
+      <input
+        type="text"
+        id="line1"
+        name="line1"
+        placeholder="An address is required for billing. It will not be used for any other purpose."
+        autocomplete="address-line1"
+      >
+    </div>
 
-<div class="form-field">
-  <label for="line2">Apartment / Suite (optional)</label>
-  <input type="text" id="line2" name="line2" placeholder="Unit 5B" autocomplete="address-line2">
-</div>
+    <div class="form-field">
+      <label for="line2">Apartment / Suite (optional)</label>
+      <input
+        type="text"
+        id="line2"
+        name="line2"
+        placeholder="Unit 5B"
+        autocomplete="address-line2"
+      >
+    </div>
 
-<div class="form-field">
-  <label for="city">City</label>
-  <input type="text" id="city" name="city" autocomplete="address-level2">
-</div>
+    <div class="form-field">
+      <label for="city">City</label>
+      <input type="text" id="city" name="city" autocomplete="address-level2">
+    </div>
 
-<div class="form-field">
-  <label for="province">Province / State</label>
-  <input type="text" id="province" name="province" placeholder="ON" autocomplete="address-level1">
-</div>
+    <div class="form-field">
+      <label for="province">Province / State</label>
+      <input
+        type="text"
+        id="province"
+        name="province"
+        placeholder="ON"
+        autocomplete="address-level1"
+      >
+    </div>
 
-<div class="form-field">
-  <label for="postalCode">Postal Code</label>
-  <input type="text" id="postalCode" name="postalCode" placeholder="A1A 1A1" autocomplete="postal-code">
-</div>
+    <div class="form-field">
+      <label for="postalCode">Postal Code</label>
+      <input
+        type="text"
+        id="postalCode"
+        name="postalCode"
+        placeholder="A1A 1A1"
+        autocomplete="postal-code"
+      >
+    </div>
 
-<div class="form-field">
-  <label for="country">Country</label>
-  <select id="country" name="country" autocomplete="country">
-    <option value="CA" selected>Canada</option>
-    <option value="US">United States</option>
-  </select>
-</div>
-
-<small class="form-instructions">
-  At checkout, you'll confirm billing details. Stripe will securely save the final address to your account.
-</small>
-
+    <div class="form-field">
+      <label for="country">Country</label>
+      <select id="country" name="country" autocomplete="country">
+        <option value="CA" selected>Canada</option>
+        <option value="US">United States</option>
+      </select>
+      <small class="form-instructions">
+        At checkout, you'll confirm billing details. Stripe will securely save the final address to your account.
+      </small>
+    </div>
 
     <div class="form-field-industry">
       <label for="industry">Industry</label>
@@ -98,7 +99,7 @@
         <option value="Engineering">Engineering</option>
         <option value="Architecture">Architecture</option>
         <option value="Project Management">Project Management</option>
-        <option value="Information Technology(IT)">Information Technology(IT)</option>
+        <option value="Information Technology(IT)">Information Technology (IT)</option>
         <option value="Web Design">Web Design</option>
         <option value="Construction">Construction</option>
         <option value="Community Planning/Landscape Architecture">Community Planning/Landscape Architecture</option>
@@ -111,8 +112,8 @@
 
     <div class="form-field">
       <label for="username">Username (how you prefer to be addressed on twennie.com)</label>
-<input type="text" name="username" id="username" required>
-<span id="username-message"></span>
+      <input type="text" name="username" id="username" required>
+      <span id="username-message" class="form-help-inline"></span>
     </div>
 
     <div class="form-field">
@@ -120,83 +121,85 @@
       <input type="email" id="email" name="email" required>
     </div>
 
-<div class="form-field password-toggle-container">
-  <label for="password">Password</label>
-  <div class="password-wrapper">
-    <input
-      type="password"
-      id="password"
-      name="password"
-      required
-      minlength="12"
-      pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{12,}$"
-    >
-    <span class="toggle-password" onclick="togglePasswordVisibility()">
-      <ion-icon id="toggleIcon" name="eye-outline"></ion-icon>
-    </span>
-  </div>
+    <div class="form-field password-toggle-container">
+      <label for="password">Password</label>
+      <div class="password-wrapper">
+        <input
+          type="password"
+          id="password"
+          name="password"
+          required
+          minlength="12"
+          pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{12,}$"
+        >
+        <button
+          type="button"
+          class="toggle-password-btn"
+          onclick="togglePasswordVisibility()"
+          aria-label="Show or hide password"
+        >
+          <ion-icon id="toggleIcon" name="eye-outline"></ion-icon>
+        </button>
+      </div>
 
-  <small class="form-instructions">
-    <strong>Password requirements:</strong><br>
-    • At least 12 characters<br>
-    • At least one uppercase letter<br>
-    • At least one lowercase letter<br>
-    • At least one number<br>
-    • At least one special character
-  </small>
-</div>
+      <small class="form-instructions">
+        <strong>Password requirements:</strong><br>
+        • At least 12 characters<br>
+        • At least one uppercase letter<br>
+        • At least one lowercase letter<br>
+        • At least one number<br>
+        • At least one special character
+      </small>
+    </div>
 
-<div class="form-field">
-  <label for="confirmPassword">Confirm Password</label>
-  <input
-    type="password"
-    id="confirmPassword"
-    name="confirmPassword"
-    required
-    minlength="12"
-    pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{12,}$"
-  >
-</div>
+    <div class="form-field">
+      <label for="confirmPassword">Confirm Password</label>
+      <input
+        type="password"
+        id="confirmPassword"
+        name="confirmPassword"
+        required
+        minlength="12"
+        pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{12,}$"
+      >
+    </div>
 
-<div class="form-toggle">
-  <label for="membership-terms-toggle" class="form-toggle-label">
-    <input type="checkbox" id="membership-terms-toggle" onclick="toggleMembershipTerms()">
-    view membership terms
-  </label>
-</div>
+    <div class="form-toggle membership-terms-toggle-row">
+      <label for="membership-terms-toggle" class="form-toggle-label">
+        <input type="checkbox" id="membership-terms-toggle" onclick="toggleMembershipTerms()">
+        view membership terms
+      </label>
+    </div>
 
-<div id="membership-terms-box" class="membership-terms-box hidden">
-  <h3 class="membership-terms-title">membership terms</h3>
+    <div id="membership-terms-box" class="membership-terms-box hidden">
+      <h3 class="membership-terms-title">membership terms</h3>
 
-  <p>
-    By registering as a Twennie member, you agree to use the platform for professional learning,
-    collaboration, and development in a respectful and lawful manner.
-  </p>
+      <p>
+        By registering as a Twennie member, you agree to use the platform for professional learning,
+        collaboration, and development in a respectful and lawful manner.
+      </p>
 
-  <ul class="membership-terms-list">
-    <li>You are responsible for keeping your login credentials secure.</li>
-    <li>You agree not to share your account with another person.</li>
-    <li>You agree to participate respectfully and professionally on the platform.</li>
-    <li>You may not upload or share confidential, proprietary, or unauthorized third-party information.</li>
-    <li>Your access level determines which features, reports, groups, and learning tools are available to you.</li>
-    <li>Paid memberships renew and are billed according to the plan selected at checkout unless cancelled.</li>
-    <li>Twennie may suspend or terminate accounts used in violation of platform rules or applicable law.</li>
-    <li>Twennie may update platform features, membership benefits, and terms from time to time.</li>
-  </ul>
+      <ul class="membership-terms-list">
+        <li>You are responsible for keeping your login credentials secure.</li>
+        <li>You agree not to share your account with another person.</li>
+        <li>You agree to participate respectfully and professionally on the platform.</li>
+        <li>You may not upload or share confidential, proprietary, or unauthorized third-party information.</li>
+        <li>Your access level determines which features, reports, groups, and learning tools are available to you.</li>
+        <li>Paid memberships renew and are billed according to the plan selected at checkout unless cancelled.</li>
+        <li>Twennie may suspend or terminate accounts used in violation of platform rules or applicable law.</li>
+        <li>Twennie may update platform features, membership benefits, and terms from time to time.</li>
+      </ul>
 
-  <p>
-    By completing registration, you acknowledge that you have read and agree to these membership terms.
-  </p>
-</div>
+      <p>
+        By completing registration, you acknowledge that you have read and agree to these membership terms.
+      </p>
+    </div>
 
-<div class="checkbox-wrapper membership-checkbox">
-  <input type="checkbox" id="membershipAgreement" name="membershipAgreement" value="true" required>
-  <label for="membershipAgreement">I have read and agree to the membership terms.</label>
-</div>
+    <div class="checkbox-wrapper membership-agreement-row">
+      <input type="checkbox" id="membershipAgreement" name="membershipAgreement" value="true" required>
+      <label for="membershipAgreement">I have read and agree to the membership terms.</label>
+    </div>
 
-
-
-    <!-- Submit -->
     <button type="submit" id="make-member-button" class="make-member-button">
       make me a member
     </button>
@@ -204,27 +207,6 @@
 </form>
 
 <script>
-  function handleAccessLevelChange(value) {
-    const contributorTerms = document.getElementById('contributor-terms');
-    const contributorAgreement = document.getElementById('contributorAgreement');
-    const paidNote = document.getElementById('paid-redirect-note');
-    const redirectTarget = document.getElementById('redirectTarget');
-
-    contributorTerms.classList.add('hidden');
-    paidNote.classList.add('hidden');
-    contributorAgreement.required = false;
-    redirectTarget.value = 'form';
-
-    if (value === 'contributor_individual') {
-      contributorTerms.classList.remove('hidden');
-      contributorAgreement.required = true;
-      redirectTarget.value = 'form';
-    } else if (value === 'paid_individual') {
-      paidNote.classList.remove('hidden');
-      redirectTarget.value = 'payment';
-    }
-  }
-
   function togglePasswordVisibility() {
     const input = document.getElementById('password');
     const icon = document.getElementById('toggleIcon');
@@ -238,6 +220,12 @@
       input.type = 'password';
       icon.name = 'eye-outline';
     }
+  }
+
+  function toggleMembershipTerms() {
+    const box = document.getElementById('membership-terms-box');
+    if (!box) return;
+    box.classList.toggle('hidden');
   }
 
   document.addEventListener('DOMContentLoaded', function () {
@@ -280,10 +268,10 @@
       usernameInput.addEventListener('blur', async function () {
         const username = this.value.trim();
 
-        if (!username) {
-          msg.textContent = '';
-          return;
-        }
+        msg.textContent = '';
+        msg.classList.remove('form-help-error', 'form-help-success');
+
+        if (!username) return;
 
         try {
           const res = await fetch(`/member/check-username?username=${encodeURIComponent(username)}`);
@@ -291,65 +279,17 @@
 
           if (!data.available) {
             msg.textContent = 'That username is already taken. Try something unique like Brian-Warrior1.';
-            msg.style.color = 'red';
+            msg.classList.add('form-help-error');
           } else {
             msg.textContent = 'Username is available!';
-            msg.style.color = 'green';
+            msg.classList.add('form-help-success');
           }
         } catch (err) {
           console.error('Username check failed:', err);
           msg.textContent = '';
+          msg.classList.remove('form-help-error', 'form-help-success');
         }
       });
     }
   });
-
-  function toggleMembershipTerms() {
-    const box = document.getElementById('membership-terms-box');
-    if (!box) return;
-    box.classList.toggle('hidden');
-  }
 </script>
-
-<style>
-  .membership-checkbox {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.6rem;
-  margin-top: 1rem;
-}
-
-.membership-checkbox input[type="checkbox"] {
-  margin-top: 0.2rem;
-  flex-shrink: 0;
-}
-
-.membership-checkbox label {
-  line-height: 1.4;
-  cursor: pointer;
-}
-  .membership-terms-box.hidden {
-    display: none;
-  }
-
-  .membership-terms-box {
-    margin: 1rem 0 1.5rem 0;
-    padding: 1rem 1.25rem;
-    background: #f7f7fb;
-    border: 1px solid #d8d8ea;
-    border-radius: 10px;
-  }
-
-  .membership-terms-title {
-    margin-top: 0;
-    color: #262262;
-  }
-
-  .membership-terms-list {
-    margin: 0.75rem 0 0.75rem 1.25rem;
-  }
-
-  .hidden {
-    display: none;
-  }
-</style>

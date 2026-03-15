@@ -219,13 +219,6 @@ html, body {
   margin: 0;
 }
 
-.checkbox-wrapper label {
-  font-weight: 500;
-  color: #4e50a2;
-  font-size: 1rem;
-  width: 100%;
-  margin-left: -150px;
-}
 
 .individual-form-container,
 .group-form-container,
@@ -1622,4 +1615,144 @@ html, body {
   margin-bottom: 10px;
   text-align: center;
   font-weight: 500;
+}
+
+
+
+/* --------------------------------------------------
+   Membership form cleanup: shared utility styles
+-------------------------------------------------- */
+
+.membership-hero-image-wrap {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.membership-hero-image {
+  max-height: 200px;
+  width: auto;
+  display: inline-block;
+}
+
+.form-help-inline {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.95rem;
+}
+
+.form-help-error {
+  color: red;
+}
+
+.form-help-success {
+  color: green;
+}
+
+/* --------------------------------------------------
+   Password field cleanup
+-------------------------------------------------- */
+
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding-right: 3.25rem;
+}
+
+.toggle-password-btn {
+  position: absolute;
+  right: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  color: #4e50a2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggle-password-btn ion-icon {
+  font-size: 1.35rem;
+}
+
+/* --------------------------------------------------
+   Membership terms / checkbox cleanup
+-------------------------------------------------- */
+
+.checkbox-wrapper {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 0.65rem;
+  width: 80%;
+  margin-top: 1rem;
+  font-family: "Figtree";
+}
+
+.checkbox-wrapper input[type="checkbox"] {
+  accent-color: #4e50a2;
+  transform: scale(1.15);
+  margin: 0.2rem 0 0 0;
+  width: auto !important;
+  height: auto;
+  flex: 0 0 auto;
+  position: static;
+}
+
+.checkbox-wrapper label {
+  font-weight: 500;
+  color: #4e50a2;
+  font-size: 1rem;
+  width: auto;
+  margin-left: 0;
+  line-height: 1.4;
+  display: block;
+  cursor: pointer;
+}
+
+.membership-terms-toggle-row,
+.membership-agreement-row {
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.membership-terms-box {
+  width: 80%;
+  margin: 1rem auto 1.5rem auto;
+  padding: 1rem 1.25rem;
+  background: #f7f7fb;
+  border: 1px solid #d8d8ea;
+  border-radius: 10px;
+  font-family: "Figtree";
+}
+
+.membership-terms-box.hidden {
+  display: none;
+}
+
+.membership-terms-title {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  color: #262262;
+}
+
+.membership-terms-list {
+  margin: 0.75rem 0 0.75rem 1.25rem;
+  padding-left: 0.25rem;
+}
+
+.membership-terms-list li {
+  margin-bottom: 0.45rem;
+}
+
+.hidden {
+  display: none;
 }
