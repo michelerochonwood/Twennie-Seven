@@ -293,6 +293,19 @@ if (leaderDoc) {
   peersByGroupName.forEach(p => myGroupAuthorIds.add(String(p._id)));
 }
 
+console.log('leaderDoc:', leaderDoc ? {
+  _id: String(leaderDoc._id),
+  groupName: leaderDoc.groupName
+} : null);
+
+console.log('groupMemberDoc:', groupMemberDoc ? {
+  _id: String(groupMemberDoc._id),
+  leader: groupMemberDoc.leader ? String(groupMemberDoc.leader) : null,
+  groupName: groupMemberDoc.groupName
+} : null);
+
+console.log('myGroupAuthorIds:', [...myGroupAuthorIds]);
+
 // Build an organization key for the current viewer
 const me = leaderDoc || groupMemberDoc || memberDoc || {};
 const myOrgKey =
