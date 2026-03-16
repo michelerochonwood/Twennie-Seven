@@ -1158,7 +1158,7 @@ const editOrganizationProfile = async (req, res) => {
       return res.status(403).send("Unauthorized");
     }
 
-return res.status(500).render("profile_views/organizationProfileForm", {
+return res.status(500).render("profile_views/organizationprofileForm", {
       layout: "profilelayout",
       profile: {
         organizationId: organization._id,
