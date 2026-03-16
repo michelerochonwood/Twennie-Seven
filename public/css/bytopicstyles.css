@@ -492,8 +492,8 @@ html, body {
   font-size: 0.7rem;
 }
 .bytopic-author-image {
-  width: 65px;
-  height: 65px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   border: 2px solid #4e50a2;
 }
