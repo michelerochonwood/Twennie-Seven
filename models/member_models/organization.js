@@ -1,57 +1,42 @@
 const mongoose = require('mongoose');
 
-const organizationProfileSchema = new mongoose.Schema(
+const organizationSchema = new mongoose.Schema(
   {
-    organizationId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Organization',
+    name: {
+      type: String,
       required: true,
+      trim: true
+    },
+
+    slug: {
+      type: String,
+      required: true,
+      trim: true,
+      lowercase: true,
       unique: true
     },
 
-    adminLeaderId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Leader',
-      required: true
-    },
-
-    logo: {
-      public_id: { type: String, default: null },
-      url: { type: String, default: '/images/default-organization-logo.png' }
-    },
-
-    bannerImage: {
-      public_id: { type: String, default: null },
-      url: { type: String, default: null }
-    },
-
-    shortDescription: {
+    industry: {
       type: String,
-      trim: true,
-      maxlength: 500
+      trim: true
     },
 
-    website: {
-      type: String,
-      trim: true,
-      maxlength: 250
-    },
+    domains: [
+      {
+        type: String,
+        trim: true,
+        lowercase: true
+      }
+    ],
 
-    primaryColor: {
-      type: String,
-      trim: true,
-      maxlength: 20
-    },
-
-    secondaryColor: {
-      type: String,
-      trim: true,
-      maxlength: 20
+    isActive: {
+      type: Boolean,
+      default: true
     }
   },
   { timestamps: true }
 );
 
 module.exports =
-  mongoose.models.OrganizationProfile ||
-  mongoose.model('OrganizationProfile', organizationProfileSchema);
+  mongoose.models.Organization ||
+  mongoose.model('Organization', organizationSchema);
