@@ -265,28 +265,32 @@ let myGroupAuthorIds = new Set();
 
 if (leaderDoc) {
   myGroupAuthorIds.add(String(leaderDoc._id));
-const groupMembersForLeader = await GroupMember.find({ leader: leaderDoc._id })
-  .select('_id')
-  .lean();
 
-  if (!groupMembersForLeader.length && leaderDoc.groupName) {
-    const byGroupName = await GroupMember.find({ groupName: leaderDoc.groupName }).select('_id').lean();
-    byGroupName.forEach(m => myGroupAuthorIds.add(String(m._id)));
-  } else {
-    groupMembersForLeader.forEach(m => myGroupAuthorIds.add(String(m._id)));
-  }
+  const [groupMembersForLeader, byGroupName] = await Promise.all([
+    GroupMember.find({ leader: leaderDoc._id }).select('_id').lean(),
+    leaderDoc.groupName
+      ? GroupMember.find({ groupName: leaderDoc.groupName }).select('_id').lean()
+      : Promise.resolve([])
+  ]);
+
+  groupMembersForLeader.forEach(m => myGroupAuthorIds.add(String(m._id)));
+  byGroupName.forEach(m => myGroupAuthorIds.add(String(m._id)));
+
 } else if (groupMemberDoc) {
-if (groupMemberDoc.leader) myGroupAuthorIds.add(String(groupMemberDoc.leader));
-myGroupAuthorIds.add(String(groupMemberDoc._id));
+  if (groupMemberDoc.leader) myGroupAuthorIds.add(String(groupMemberDoc.leader));
+  myGroupAuthorIds.add(String(groupMemberDoc._id));
 
-const peers = await GroupMember.find(
-  groupMemberDoc.leader
-    ? { leader: groupMemberDoc.leader }
-    : (groupMemberDoc.groupName ? { groupName: groupMemberDoc.groupName } : { _id: null })
-).select('_id').lean();
+  const [peersByLeader, peersByGroupName] = await Promise.all([
+    groupMemberDoc.leader
+      ? GroupMember.find({ leader: groupMemberDoc.leader }).select('_id').lean()
+      : Promise.resolve([]),
+    groupMemberDoc.groupName
+      ? GroupMember.find({ groupName: groupMemberDoc.groupName }).select('_id').lean()
+      : Promise.resolve([])
+  ]);
 
-
-  peers.forEach(p => myGroupAuthorIds.add(String(p._id)));
+  peersByLeader.forEach(p => myGroupAuthorIds.add(String(p._id)));
+  peersByGroupName.forEach(p => myGroupAuthorIds.add(String(p._id)));
 }
 
 // Build an organization key for the current viewer
