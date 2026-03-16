@@ -26,6 +26,7 @@ const OrganizationJoinRequest = require('../models/member_models/organization_jo
 const Organization = require('../models/member_models/organization');
 const mongoose = require('mongoose');
 const UnitSuggestion = require('../models/unit_models/unit_suggestion');
+const OrganizationProfile = require('../models/profile_models/organization_profile');
 
 
 
