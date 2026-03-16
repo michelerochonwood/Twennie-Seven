@@ -14,6 +14,7 @@ const MemberProfile = require('../models/profile_models/member_profile');
 const GroupMemberProfile = require('../models/profile_models/groupmember_profile');
 const LeaderProfile = require('../models/profile_models/leader_profile');
 const Upcoming = require('../models/unit_models/upcoming'); 
+const OrganizationProfile = require('../models/profile_models/organization_profile');
 
 
 
@@ -21,52 +22,116 @@ const Upcoming = require('../models/unit_models/upcoming');
 // Resolves an author's display name and profile image based on their role.
 // Leaders, Group Members, and Members are stored in separate models by design.
 // Leaders use `groupLeaderName` instead of `name`, so we map it manually here for consistency.
+
 async function resolveAuthorById(authorId) {
   try {
-    // Leader profile by leaderId
     let profile = await LeaderProfile.findOne({ leaderId: authorId })
       .select('profileImage name')
       .lean();
+
     if (profile) {
       return {
         name: profile.name || 'Leader',
-        image: normalizeImg(profile.profileImage)
+        image: profile.profileImage || '/images/default-avatar.png'
       };
     }
 
-    // Group Member profile by groupMemberId  ✅ FIXED KEY
     profile = await GroupMemberProfile.findOne({ groupMemberId: authorId })
       .select('profileImage name')
       .lean();
+
     if (profile) {
       return {
         name: profile.name || 'Group Member',
-        image: normalizeImg(profile.profileImage)
+        image: profile.profileImage || '/images/default-avatar.png'
       };
     }
 
-    // Individual Member profile by memberId
     profile = await MemberProfile.findOne({ memberId: authorId })
       .select('profileImage name')
       .lean();
+
     if (profile) {
       return {
         name: profile.name || 'Member',
-        image: normalizeImg(profile.profileImage)
+        image: profile.profileImage || '/images/default-avatar.png'
       };
     }
   } catch (error) {
     console.error('Error resolving author profile:', error);
   }
 
-  return { name: 'Unknown Author', image: '/images/default-avatar.png' };
+  return {
+    name: 'Unknown Author',
+    image: '/images/default-avatar.png'
+  };
 }
 
-// Ensure local paths are absolute (handles '/uploads/...' vs 'uploads/...')
-function normalizeImg(img) {
-  if (!img) return '/images/default-avatar.png';
-  if (/^https?:\/\//i.test(img)) return img;
-  return img.startsWith('/') ? img : `/${img}`;
+async function resolveAuthorAndOrgById(authorId) {
+  const author = await resolveAuthorById(authorId);
+
+  let organizationId = null;
+  let organizationName = '';
+  let organizationLogo = '/images/default-organization-logo.png';
+
+  try {
+    let leader = await Leader.findById(authorId)
+      .select('organization organizationName')
+      .lean();
+
+    if (leader) {
+      organizationId = leader.organization || null;
+      organizationName = leader.organizationName || '';
+    } else {
+      let groupMember = await GroupMember.findById(authorId)
+        .select('organization organizationName groupId leader')
+        .lean();
+
+      if (groupMember) {
+        organizationId = groupMember.organization || null;
+        organizationName = groupMember.organizationName || '';
+
+        if (!organizationId && (groupMember.leader || groupMember.groupId)) {
+          const parentLeader = await Leader.findById(groupMember.leader || groupMember.groupId)
+            .select('organization organizationName')
+            .lean();
+
+          if (parentLeader) {
+            organizationId = parentLeader.organization || null;
+            organizationName = parentLeader.organizationName || '';
+          }
+        }
+      } else {
+        const member = await Member.findById(authorId)
+          .select('organization organizationName')
+          .lean();
+
+        if (member) {
+          organizationId = member.organization || null;
+          organizationName = member.organizationName || '';
+        }
+      }
+    }
+
+    if (organizationId) {
+      const orgProfile = await OrganizationProfile.findOne({ organizationId })
+        .select('logo')
+        .lean();
+
+      if (orgProfile?.logo?.url) {
+        organizationLogo = orgProfile.logo.url;
+      }
+    }
+  } catch (error) {
+    console.error('Error resolving organization for author:', error);
+  }
+
+  return {
+    ...author,
+    organizationId,
+    organizationName,
+    organizationLogo
+  };
 }
 
 
@@ -87,67 +152,11 @@ exports.getTopicView = async (req, res) => {
             throw new Error('Invalid topics.json format: "topics" should be an array.');
         }
 
-        const topicMappings = {
-  'AI in Adult Learning': 'aiinadultlearning',
-  'AI in Consulting': 'aiinconsulting',
-  'AI in Project Management': 'aiinprojectmanagement',
-  'Analytics in Project Management': 'analyticsinprojectmanagement',
-  'Business Development in Technical Services': 'businessdevelopmentintechnicalservices',
-  'Business Development Metrics': 'businessdevelopmentmetrics',
-  'Candid Communication': 'candidcommunication',
-  'Career Development in Technical Services': 'careerdevelopmentintechnicalservices',
-  'Client Experience': 'clientexperience',
-  'Client Feedback Software': 'clientfeedbacksoftware',
-  'Client Interactions': 'clientinteractions',
-  'Closing a Project Strategically': 'closingaprojectstrategically',
-  'Conducting Color Reviews of Proposals': 'conductingcolorreviewsofproposals',
-  'CRM Software': 'crmsoftware',
-  'Cross Selling in Multi-Disciplinary Firms': 'crosssellinginmultidisciplinaryfirms',
-  'Designing a Proposal Process': 'designingaproposalprocess',
-  'Emotional Intelligence': 'emotionalintelligence',
-  'Employee Experience': 'employeeexperience',
-  'Finding Projects Before they Become RFPs': 'findingprojectsbeforetheybecomerfps',
-  'Integrated Project Delivery or IPD': 'integratedprojectdeliveryoripd',
-  'Leadership in Technical Consulting': 'leadershipintechnicalconsulting',
-  'Leading Change': 'leadingchange',
-  'Leading Groups on Twennie': 'leadinggroupsontwennie',
-  'Making a Proposal Easy to Read, Skim, and Evaluate': 'makingaproposaleasytoreadskimandevaluate',
-  'Managing Scope So It Doesnt Manage You': 'managingscopesoitdoesntmanageyou',
-  'Mental Health in Consulting Environments': 'mentalhealthinconsultingenvironments',
-  'Non-Technical Roles in Technical Environments': 'nontechnicalrolesintechnicalenvironments',
-  'People Before Profit': 'peoplebeforeprofit',
-  'Program Management': 'programmanagement',
-  'Project Management': 'projectmanagement',
-  'Project Management Software': 'projectmanagementsoftware',
-  'Proposal Management': 'proposalmanagement',
-  'Proposal Strategy': 'proposalstrategy',
-  'Pull Marketing': 'pullmarketing',
-  'Pursuing the Right Projects for Your Firm and Your Team': 'pursuingtherightprojects',
-  'Remote and Hybrid Work': 'remoteandhybridwork',
-  'Rescuing a Project That Has Gone Off the Rails': 'rescuingaprojectthathasgoneofftherails',
-  'Risk Management': 'riskmanagement',
-  'Social Entrepreneurship': 'socialentrepreneurship',
-  'Social Media, Advertising, and Other Mysteries': 'socialmediaadvertisingandothermysteries',
-  'Soft Skills in Technical Environments': 'softskillsintechnicalenvironments',
-  'Storytelling in Technical Marketing': 'storytellingintechnicalmarketing',
-  'Team Building in Technical Consulting': 'teambuilding',
-  'The Advantage of Failure': 'theadvantageoffailure',
-  'The First 10 Days of a Project': 'thefirst10daysofaproject',
-  'The Pareto Principle': 'theparetoprinciple',
-  'The Power of Play in the Workplace': 'thepowerofplayintheworkplace',
-  'The Power of Purpose': 'thepowerofpurpose',
-  'Tips and Tricks for Proposal Proofreading': 'tipsandtricksforproposalproofreading',
-  'Turning a Project into a Business Development Powerhouse': 'turningaprojectintoabusinessdevelopmentpowerhouse',
-  'UnCommoditizing Your Services by Delivering What Clients Truly Value': 'uncommoditizingyourservicesbydeliveringwhatclientstrulyvalue',
-  'Using Lean in Project Management': 'usingleaninprojectmanagement',
-  'When the Workload is Light': 'whentheworkloadislight',
-  'Workplace Culture': 'workplaceculture'
 
-        };
 
-        const originalTopicTitle = Object.keys(topicMappings).find(
-            (title) => topicMappings[title] === normalizedTopic
-        );
+const originalTopicTitle = topicsData.topics.find(
+  (t) => t.title.toLowerCase().replace(/[^a-z0-9]/g, '') === normalizedTopic
+)?.title;
 
         if (!originalTopicTitle) {
             console.error(`Topic not found for normalized title: ${normalizedTopic}`);
@@ -226,15 +235,24 @@ const libraryUnits = await Promise.all(
       unit.author ||
       null;
 
-    const author = authorId
-      ? await resolveAuthorById(authorId)
-      : { name: 'Unknown Author', image: '/images/default-avatar.png' };
-
-    return {
-      ...unit,
-      authorName: author.name,
-      authorImage: author.image || '/images/default-avatar.png',
+const author = authorId
+  ? await resolveAuthorAndOrgById(authorId)
+  : {
+      name: 'Unknown Author',
+      image: '/images/default-avatar.png',
+      organizationId: null,
+      organizationName: '',
+      organizationLogo: '/images/default-organization-logo.png'
     };
+
+return {
+  ...unit,
+  authorName: author.name,
+  authorImage: author.image || '/images/default-avatar.png',
+  organizationId: author.organizationId,
+  organizationName: author.organizationName,
+  organizationLogo: author.organizationLogo
+};
   })
 );
 

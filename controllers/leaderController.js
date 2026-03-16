@@ -7,6 +7,7 @@ const LeaderProfile = require('../models/profile_models/leader_profile');
 const GroupProfile = require('../models/profile_models/group_profile');
 const Organization = require('../models/member_models/organization');
 const OrganizationJoinRequest = require('../models/member_models/organization_join_request');
+const OrganizationProfile = require('../models/profile_models/organization_profile');
 
 
 const bcrypt = require('bcrypt');
@@ -623,7 +624,6 @@ deleteGroupMember: async (req, res) => {
 // Create Organization + attach to logged-in leader
 createOrganization: async (req, res) => {
   try {
-    // You’re storing a lightweight session snapshot in createLeader
     const leaderId = req.session?.user?.id;
     if (!leaderId) {
       return res.status(401).render('member_form_views/error', {
@@ -642,7 +642,6 @@ createOrganization: async (req, res) => {
       });
     }
 
-    // Guard: leaders who already have an org shouldn’t create a second one accidentally
     if (leader.organization && !leader.organizationOptOut) {
       return res.status(400).render('member_form_views/error', {
         layout: 'memberformlayout',
@@ -659,46 +658,71 @@ createOrganization: async (req, res) => {
         title: 'Registration Successful',
         username: leader.username,
         user: leader,
-        dashboardLink: "/dashboard/leader",
+        dashboardLink: '/dashboard/leader',
         csrfToken: req.csrfToken ? req.csrfToken() : null,
         orgErrorMessage: 'Organization name is required.'
       });
     }
 
-const cleanName = String(name).trim();
-const domainList = parseDomains(domains);
+    const cleanName = String(name).trim();
+    const domainList = parseDomains(domains);
+    const baseSlug = slugifyOrgName(cleanName);
+    const slug = await buildUniqueSlug(baseSlug);
 
-const org = await Organization.findById(leader.organization);
+    // 1) Create organization
+    const org = await Organization.create({
+      name: cleanName,
+      slug,
+      industry: industry ? String(industry).trim() : undefined,
+      domains: domainList
+    });
 
-if (!org) {
-  return res.status(404).render('member_form_views/error', {
-    layout: 'memberformlayout',
-    title: 'Not Found',
-    errorMessage: 'The organization record could not be found.'
-  });
-}
+    // 2) Ensure organization profile exists
+    const orgProfile = await OrganizationProfile.findOneAndUpdate(
+      { organizationId: org._id },
+      {
+        $setOnInsert: {
+          organizationId: org._id,
+          adminLeaderId: leader._id,
+          logo: {
+            public_id: null,
+            url: '/images/default-organization-logo.png'
+          },
+          bannerImage: {
+            public_id: null,
+            url: null
+          },
+          shortDescription: '',
+          website: '',
+          primaryColor: '',
+          secondaryColor: ''
+        }
+      },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
 
-org.name = cleanName;
-org.industry = industry ? String(industry).trim() : undefined;
-org.domains = domainList;
+    console.log(`✅ Organization created: ${org._id}`);
+    console.log(`✅ Organization Profile ensured: ${orgProfile._id}`);
 
-await org.save();
+    // 3) Attach org to leader
+    leader.organization = org._id;
+    leader.organizationName = org.name;
+    leader.organizationOptOut = false;
+    leader.isAdmin = true;
+    await leader.save();
 
-leader.organizationName = org.name;
-leader.organizationOptOut = false;
-await leader.save();
+    // 4) Keep group profile in sync
+    await GroupProfile.updateOne(
+      { groupId: leader._id },
+      { $set: { organization: org._id } }
+    );
 
-await GroupProfile.updateOne(
-  { groupId: leader._id },
-  { $set: { organization: org._id } }
-);
+    req.session.organizationJustCreatedName = org.name;
 
-req.session.organizationJustCreatedName = org.name;
-return res.redirect('/dashboard/leader/organization/success');
+    return res.redirect('/dashboard/leader/organization/success');
   } catch (err) {
     console.error('Error creating organization:', err);
 
-    // Best-effort: show success page with an inline error so they don’t feel “kicked out”
     try {
       const leaderId = req.session?.user?.id;
       const leader = leaderId ? await Leader.findById(leaderId).lean() : null;
@@ -708,7 +732,7 @@ return res.redirect('/dashboard/leader/organization/success');
         title: 'Registration Successful',
         username: leader?.username || '',
         user: leader,
-        dashboardLink: "/dashboard/leader",
+        dashboardLink: '/dashboard/leader',
         csrfToken: req.csrfToken ? req.csrfToken() : null,
         orgErrorMessage: 'An error occurred while creating your organization. Please try again.'
       });
@@ -792,28 +816,32 @@ updateOrganization: async (req, res) => {
     const cleanName = String(name).trim();
     const domainList = parseDomains(domains);
 
-const org = await Organization.create({
-  name: cleanName,
-  slug,
-  industry: industry ? String(industry).trim() : undefined,
-  domains: domainList
-});
+    const org = await Organization.findById(leader.organization);
+    if (!org) {
+      return res.status(404).render('member_form_views/error', {
+        layout: 'memberformlayout',
+        title: 'Not Found',
+        errorMessage: 'The organization record could not be found.'
+      });
+    }
 
-// Attach to leader
-leader.organization = org._id;
-leader.organizationName = org.name; // cache
-leader.organizationOptOut = false;
-await leader.save();
+    // Update slug only if the name changed
+    if (org.name !== cleanName) {
+      const baseSlug = slugifyOrgName(cleanName);
+      org.slug = await buildUniqueSlug(baseSlug);
+    }
 
-// Optional: keep group profile consistent
-await GroupProfile.updateOne(
-  { groupId: leader._id },
-  { $set: { organization: org._id } }
-);
+    org.name = cleanName;
+    org.industry = industry ? String(industry).trim() : '';
+    org.domains = domainList;
 
-// ✅ store for success view + redirect to success notification
-req.session.organizationJustCreatedName = org.name;
-return res.redirect('/dashboard/leader/organization/success');
+    await org.save();
+
+    leader.organizationName = org.name;
+    await leader.save();
+
+    req.session.organizationJustCreatedName = org.name;
+    return res.redirect('/dashboard/leader/organization/success');
 
   } catch (err) {
     console.error('Error updating organization:', err);

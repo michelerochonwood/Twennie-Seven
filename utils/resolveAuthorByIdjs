@@ -1,0 +1,141 @@
+const Leader = require('../models/member_models/leader');
+const GroupMember = require('../models/member_models/group_member');
+const Member = require('../models/member_models/member');
+
+const LeaderProfile = require('../models/profile_models/leader_profile');
+const GroupMemberProfile = require('../models/profile_models/groupmember_profile');
+const MemberProfile = require('../models/profile_models/member_profile');
+const OrganizationProfile = require('../models/profile_models/organization_profile');
+
+async function resolveAuthorById(authorId) {
+  try {
+    if (!authorId) {
+      return {
+        name: 'Unknown Author',
+        image: '/images/default-avatar.png',
+        organizationId: null,
+        organizationName: '',
+        organizationLogo: '/images/default-organization-logo.png'
+      };
+    }
+
+    // 1) Try Leader
+    const leader = await Leader.findById(authorId)
+      .select('groupLeaderName organization organizationName')
+      .lean();
+
+    if (leader) {
+      const profile = await LeaderProfile.findOne({ leaderId: authorId })
+        .select('profileImage name')
+        .lean();
+
+      let organizationLogo = '/images/default-organization-logo.png';
+
+      if (leader.organization) {
+        const orgProfile = await OrganizationProfile.findOne({ organizationId: leader.organization })
+          .select('logo')
+          .lean();
+
+        if (orgProfile?.logo?.url) {
+          organizationLogo = orgProfile.logo.url;
+        }
+      }
+
+      return {
+        name: profile?.name || leader.groupLeaderName || 'Leader',
+        image: profile?.profileImage || '/images/default-avatar.png',
+        organizationId: leader.organization || null,
+        organizationName: leader.organizationName || '',
+        organizationLogo
+      };
+    }
+
+    // 2) Try Group Member
+    const groupMember = await GroupMember.findById(authorId)
+      .select('name organization organizationName groupId leader')
+      .lean();
+
+    if (groupMember) {
+      const profile = await GroupMemberProfile.findOne({ groupMemberId: authorId })
+        .select('profileImage name')
+        .lean();
+
+      let organizationId = groupMember.organization || null;
+      let organizationName = groupMember.organizationName || '';
+      let organizationLogo = '/images/default-organization-logo.png';
+
+      // fallback to parent leader if old group-member records do not carry org info
+      if (!organizationId && (groupMember.leader || groupMember.groupId)) {
+        const parentLeader = await Leader.findById(groupMember.leader || groupMember.groupId)
+          .select('organization organizationName')
+          .lean();
+
+        if (parentLeader) {
+          organizationId = parentLeader.organization || null;
+          organizationName = parentLeader.organizationName || '';
+        }
+      }
+
+      if (organizationId) {
+        const orgProfile = await OrganizationProfile.findOne({ organizationId })
+          .select('logo')
+          .lean();
+
+        if (orgProfile?.logo?.url) {
+          organizationLogo = orgProfile.logo.url;
+        }
+      }
+
+      return {
+        name: profile?.name || groupMember.name || 'Group Member',
+        image: profile?.profileImage || '/images/default-avatar.png',
+        organizationId,
+        organizationName,
+        organizationLogo
+      };
+    }
+
+    // 3) Try Member
+    const member = await Member.findById(authorId)
+      .select('name organization organizationName')
+      .lean();
+
+    if (member) {
+      const profile = await MemberProfile.findOne({ memberId: authorId })
+        .select('profileImage name')
+        .lean();
+
+      let organizationLogo = '/images/default-organization-logo.png';
+
+      if (member.organization) {
+        const orgProfile = await OrganizationProfile.findOne({ organizationId: member.organization })
+          .select('logo')
+          .lean();
+
+        if (orgProfile?.logo?.url) {
+          organizationLogo = orgProfile.logo.url;
+        }
+      }
+
+      return {
+        name: profile?.name || member.name || 'Member',
+        image: profile?.profileImage || '/images/default-avatar.png',
+        organizationId: member.organization || null,
+        organizationName: member.organizationName || '',
+        organizationLogo
+      };
+    }
+  } catch (error) {
+    console.error('Error resolving author:', error);
+  }
+
+  return {
+    name: 'Unknown Author',
+    image: '/images/default-avatar.png',
+    organizationId: null,
+    organizationName: '',
+    organizationLogo: '/images/default-organization-logo.png'
+  };
+}
+
+module.exports = resolveAuthorById;

@@ -2,11 +2,13 @@ const MemberProfile = require("../models/profile_models/member_profile");
 const LeaderProfile = require("../models/profile_models/leader_profile");
 const GroupMemberProfile = require("../models/profile_models/groupmember_profile");
 const GroupProfile = require("../models/profile_models/group_profile");
+const OrganizationProfile = require("../models/profile_models/organization_profile");
 const path = require("path");
 const fs = require("fs");
 const Member = require("../models/member_models/member"); // ✅ Import Member model
 const Leader = require("../models/member_models/leader");
 const GroupMember = require("../models/member_models/group_member");
+const Organization = require("../models/member_models/organization");
 const Article = require('../models/unit_models/article');
 const Video = require('../models/unit_models/video');
 const PromptSet = require('../models/unit_models/promptset');
@@ -16,113 +18,65 @@ const Template = require('../models/unit_models/template');
 const Badge = require('../models/prompt_models/promptsetcompletion');
 const cloudinary = require('../utils/cloudinary'); // or your exact path
 const ProfileSurvey = require("../models/profile_models/profile_survey");
+const topics = require("../config/topics");
 
 
 
 
-        const topicMappings = {
-            'AI in Consulting': 'aiinconsulting',
-            'AI in Project Management': 'aiinprojectmanagement',
-            'AI in Adult Learning': 'aiinadultlearning',
-            'Project Management': 'projectmanagement',
-            'Workplace Culture': 'workplaceculture',
-            'The Pareto Principle': 'theparetoprinciple',
-            'Career Development in Technical Services': 'careerdevelopmentintechnicalservices',
-            'Soft Skills in Technical Environments': 'softskillsintechnicalenvironments',
-            'Business Development in Technical Services': 'businessdevelopmentintechnicalservices',
-            'Finding Projects Before they Become RFPs': 'findingprojectsbeforetheybecomerfps',
-            'Un-Commoditizing Your Services by Delivering What Clients Truly Value': 'uncommoditizingyourservicesbydeliveringwhatclientstrulyvalue',
-            'Proposal Management': 'proposalmanagement',
-            'Proposal Strategy': 'proposalstrategy',
-            'Storytelling in Technical Marketing': 'storytellingintechnicalmarketing',
-            'Client Experience': 'clientexperience',
-            'Social Media, Advertising, and Other Mysteries': 'socialmediaadvertisingandothermysteries',
-            'Emotional Intelligence': 'emotionalintelligence',
-            'Diversity and Inclusion in Consulting': 'diversityandinclusioninconsulting',
-            'People Before Profit': 'peoplebeforeprofit',
-            'Non-Technical Roles in Technical Environments': 'nontechnicalrolesintechnicalenvironments',
-            'Leadership in Technical Services': 'leadershipintechnicalservices',
-            'The Advantage of Failure': 'theadvantageoffailure',
-            'Social Entrepreneurship': 'socialentrepreneurship',
-            'Employee Experience': 'employeeexperience',
-            'Project Management Software': 'projectmanagementsoftware',
-            'CRM Platforms': 'crmplatforms',
-            'Client Feedback Software': 'clientfeedbacksoftware',
-            'Mental Health in Consulting Environments': 'mentalhealthinconsultingenvironments',
-            'Remote or Hybrid Work': 'remoteorhybridwork',
-            'Four Day Work Week': 'fourdayworkweek',
-            'The Power of Play in the Workplace': 'thepowerofplayintheworkplace',
-            'Team Building in Technical Consulting': 'teambuildingintechnicalconsulting',
-        };
-
-const topicViewMappings = {
-    'aiinconsulting': 'single_topic_aiconsulting',
-    'aiinadultlearning': 'single_topic_ailearn',
-    'aiinprojectmanagement': 'single_topic_aiprojectmgmt',
-    'businessdevelopmentintechnicalservices': 'single_topic_bd',
-    'findingprojectsbeforetheybecomerfps': 'findingprojectsbeforetheybecomerfps',
-    'un-commoditizingyourservicesbydeliveringwhatclientstrulyvalue': 'uncommoditizingyourservicesbydeliveringwhatclientstrulyvalue',
-    'careerdevelopmentintechnicalservices': 'single_topic_careerdev',
-    'clientexperience': 'single_topic_clientex',
-    'clientfeedbacksoftware': 'single_topic_clientfeedback',
-    'crmplatforms': 'single_topic_crm',
-    'diversityandinclusioninconsulting': 'single_topic_diversity',
-    'emotionalintelligence': 'single_topic_emotionali',
-    'employeeexperience': 'single_topic_employeeex',
-    'theadvantageoffailure': 'single_topic_failure',
-    'fourdayworkweek': 'single_topic_fourday',
-    'leadershipintechnicalservices': 'single_topic_leadership',
-    'mentalhealthinconsultingenvironments': 'single_topic_mental',
-    'nontechnicalrolesintechnicalenvironments': 'single_topic_nontechnical',
-    'theparetoprinciple': 'single_topic_pareto',
-    'peoplebeforeprofit': 'single_topic_peoplebefore',
-    'thepowerofplayintheworkplace': 'single_topic_play',
-    'projectmanagementsoftware': 'single_topic_pmsoftware',
-    'projectmanagement': 'single_topic_projectmgmt',
-    'proposalmanagement': 'single_topic_proposalmgmt',
-    'proposalstrategy': 'single_topic_proposalstrat',
-    'remoteorhybridwork': 'single_topic_remote',
-    'socialentrepreneurship': 'single_topic_social',
-    'socialmediaadvertisingandothermysteries': 'single_topic_socialmedia',
-    'softskillsintechnicalenvironments': 'single_topic_softskills',
-    'storytellingintechnicalmarketing': 'single_topic_storytelling',
-    'teambuildingintechnicalconsulting': 'single_topic_teambuilding',
-    'workplaceculture': 'single_topic_workplaceculture'
-};
 
 // ✅ Utility: Check Profile Ownership
+// ✅ Utility: Check Profile Ownership
 const checkProfileOwnership = (req, profileOwnerId) => {
-    const userId = req.user?._id || req.user?.id;
-    return userId?.toString() === profileOwnerId?.toString();
+  const userId = req.user?._id || req.user?.id;
+  return userId?.toString() === profileOwnerId?.toString();
 };
 
 function getAllTopics() {
-    const topicsFilePath = path.join(__dirname, "../public/data/topics.json");
-    if (!fs.existsSync(topicsFilePath)) {
-        console.error("topics.json file is missing.");
-        return [];
-    }
-
-    const topicsData = JSON.parse(fs.readFileSync(topicsFilePath, "utf8"));
-    return topicsData.topics.map(topic => topic.title);
+  return topics;
 }
 
 function getSubtopics(topicTitle) {
-    const topicsFilePath = path.join(__dirname, "../public/data/topics.json");
-    if (!fs.existsSync(topicsFilePath)) {
-        console.error("topics.json file is missing.");
-        return [];
-    }
+  const topicsFilePath = path.join(__dirname, "../public/data/topics.json");
 
-    const topicsData = JSON.parse(fs.readFileSync(topicsFilePath, "utf8"));
-    const topic = topicsData.topics.find(t => t.title === topicTitle);
-    return topic ? topic.subtopics : [];
+  if (!fs.existsSync(topicsFilePath)) {
+    console.error("topics.json file is missing.");
+    return [];
+  }
+
+  const topicsData = JSON.parse(fs.readFileSync(topicsFilePath, "utf8"));
+  const topic = topicsData.topics.find(t => t.title === topicTitle);
+
+  return topic ? topic.subtopics : [];
+}
+
+function slugifyTopic(title = "") {
+  return String(title).toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+function buildSelectedTopic(topicTitle) {
+  if (!topicTitle) return null;
+
+  return {
+    title: topicTitle,
+    subtopics: getSubtopics(topicTitle) || [],
+    slug: slugifyTopic(topicTitle)
+  };
 }
 
 async function resolveAuthorById(authorId) {
-    let author = await GroupMember.findById(authorId).select('name profileImage') ||
-                 await Leader.findById(authorId).select('groupLeaderName profileImage');
-    return author ? { name: author.name || author.groupLeaderName, image: author.profileImage } : { name: 'Unknown Author', image: null };
+  const author =
+    await GroupMember.findById(authorId).select("name profileImage").lean() ||
+    await Leader.findById(authorId).select("groupLeaderName profileImage").lean();
+
+  return author
+    ? {
+        name: author.name || author.groupLeaderName,
+        image: author.profileImage || "/images/default-avatar.png"
+      }
+    : {
+        name: "Unknown Author",
+        image: "/images/default-avatar.png"
+      };
 }
 
 
@@ -212,20 +166,10 @@ const viewMemberProfile = async (req, res) => {
       };
   
       // ✅ DRY loop to structure selected topics
-      const selectedTopics = ["topic1", "topic2", "topic3"].reduce((acc, key) => {
-        const title = topics[key];
-        acc[key] = title
-          ? {
-              title,
-              subtopics: getSubtopics(title) || [],
-              slug: topicMappings[title] || "unknown-topic",
-              viewName: topicMappings[title]
-                ? topicViewMappings[topicMappings[title]]
-                : "not_found"
-            }
-          : null;
-        return acc;
-      }, {});
+const selectedTopics = ["topic1", "topic2", "topic3"].reduce((acc, key) => {
+  acc[key] = buildSelectedTopic(topics[key]);
+  return acc;
+}, {});
   
       console.log("✅ Member Selected Topics:", selectedTopics);
   
@@ -478,20 +422,10 @@ const viewLeaderProfile = async (req, res) => {
       console.log("✅ Leader Earned Badges:", JSON.stringify(leaderBadges, null, 2));
   
       // ✅ Selected topics using DRY reduce
-      const selectedTopics = ["topic1", "topic2", "topic3"].reduce((acc, key) => {
-        const title = topics[key];
-        acc[key] = title
-          ? {
-              title,
-              subtopics: getSubtopics(title) || [],
-              slug: topicMappings[title] || "unknown-topic",
-              viewName: topicMappings[title]
-                ? topicViewMappings[topicMappings[title]]
-                : "not_found"
-            }
-          : null;
-        return acc;
-      }, {});
+const selectedTopics = ["topic1", "topic2", "topic3"].reduce((acc, key) => {
+  acc[key] = buildSelectedTopic(topics[key]);
+  return acc;
+}, {});
   
       console.log("✅ Selected Topics for Leader:", JSON.stringify(selectedTopics));
   
@@ -679,20 +613,10 @@ const viewGroupMemberProfile = async (req, res) => {
     };
 
     // ✅ Build selected topics with mapping info
-    const selectedTopics = ["topic1", "topic2", "topic3"].reduce((acc, key) => {
-      const topicTitle = leaderTopics[key];
-      acc[key] = topicTitle
-        ? {
-            title: topicTitle,
-            subtopics: getSubtopics(topicTitle) || [],
-            slug: topicMappings[topicTitle] || "unknown-topic",
-            viewName: topicMappings[topicTitle]
-              ? topicViewMappings[topicMappings[topicTitle]]
-              : "not_found"
-          }
-        : null;
-      return acc;
-    }, {});
+const selectedTopics = ["topic1", "topic2", "topic3"].reduce((acc, key) => {
+  acc[key] = buildSelectedTopic(leaderTopics[key]);
+  return acc;
+}, {});
 
     // ✅ Fetch badge records (used for both badges and completions)
     const badgeRecords = await Badge.find({ memberId: groupMember._id })
@@ -897,20 +821,10 @@ const viewGroupProfile = async (req, res) => {
   
       // ✅ Topic structure (DRY)
       const topics = leader.topics || {};
-      const selectedTopics = ["topic1", "topic2", "topic3"].reduce((acc, key) => {
-        const title = topics[key];
-        acc[key] = title
-          ? {
-              title,
-              subtopics: getSubtopics(title) || [],
-              slug: topicMappings[title] || "unknown-topic",
-              viewName: topicMappings[title]
-                ? topicViewMappings[topicMappings[title]]
-                : "not_found"
-            }
-          : null;
-        return acc;
-      }, {});
+const selectedTopics = ["topic1", "topic2", "topic3"].reduce((acc, key) => {
+  acc[key] = buildSelectedTopic(topics[key]);
+  return acc;
+}, {});
   
       console.log("✅ Selected Topics for Group:", selectedTopics);
   
@@ -1147,7 +1061,191 @@ const viewGroupProfile = async (req, res) => {
   
   
 
+const viewOrganizationProfile = async (req, res) => {
+  try {
+    const { id } = req.params;
 
+    const [organization, profile, leaders] = await Promise.all([
+      Organization.findById(id).lean(),
+      OrganizationProfile.findOne({ organizationId: id }).lean(),
+      Leader.find({
+        organization: id,
+        organizationOptOut: { $ne: true },
+        isActive: true
+      })
+        .select("_id groupName groupLeaderName members")
+        .lean()
+    ]);
+
+    if (!organization) {
+      return res.status(404).render("member_form_views/error", {
+        layout: "mainlayout",
+        title: "Not Found",
+        errorMessage: "Organization not found."
+      });
+    }
+
+    const leaderIds = leaders.map(l => l._id);
+
+    const groupProfiles = await GroupProfile.find({ groupId: { $in: leaderIds } })
+      .select("groupId groupImage")
+      .lean();
+
+    const imgByGroupId = new Map(
+      groupProfiles.map(p => [p.groupId.toString(), p.groupImage])
+    );
+
+    const orgGroups = leaders.map(l => ({
+      _id: l._id,
+      groupName: l.groupName || "Unnamed group",
+      groupLeaderName: l.groupLeaderName || "Leader",
+      groupImage: imgByGroupId.get(l._id.toString()) || "/images/default-group.png",
+      memberCount: Array.isArray(l.members) ? l.members.length : 0
+    }));
+
+    const currentUserId = req.user?._id || req.user?.id;
+    const canEdit =
+      !!currentUserId &&
+      profile &&
+      String(profile.adminLeaderId) === String(currentUserId);
+
+    return res.render("profile_views/organization_profile", {
+      layout: "profilelayout",
+      organization: {
+        organizationId: organization._id,
+        name: organization.name,
+        industry: organization.industry || "",
+        logo: profile?.logo || { url: "/images/default-organization-logo.png" },
+        bannerImage: profile?.bannerImage || {},
+        shortDescription: profile?.shortDescription || "",
+        website: profile?.website || "",
+        primaryColor: profile?.primaryColor || "",
+        secondaryColor: profile?.secondaryColor || ""
+      },
+      orgGroups,
+      canEdit
+    });
+  } catch (error) {
+    console.error("❌ Error fetching organization profile:", error);
+    return res.status(500).send("Internal Server Error");
+  }
+};
+
+const editOrganizationProfile = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const currentUserId = req.user?._id || req.user?.id;
+
+    const [organization, profile] = await Promise.all([
+      Organization.findById(id).lean(),
+      OrganizationProfile.findOne({ organizationId: id }).lean()
+    ]);
+
+    if (!organization || !profile) {
+      return res.status(404).render("member_form_views/error", {
+        layout: "mainlayout",
+        title: "Not Found",
+        errorMessage: "Organization profile not found."
+      });
+    }
+
+    if (String(profile.adminLeaderId) !== String(currentUserId)) {
+      return res.status(403).send("Unauthorized");
+    }
+
+    return res.render("profile_views/organization_profile_form", {
+      layout: "profilelayout",
+      profile: {
+        organizationId: organization._id,
+        name: organization.name,
+        industry: organization.industry || "",
+        logo: profile.logo || { url: "/images/default-organization-logo.png" },
+        bannerImage: profile.bannerImage || {},
+        shortDescription: profile.shortDescription || "",
+        website: profile.website || "",
+        primaryColor: profile.primaryColor || "",
+        secondaryColor: profile.secondaryColor || ""
+      },
+      csrfToken: req.csrfToken ? req.csrfToken() : null
+    });
+  } catch (error) {
+    console.error("❌ Error loading organization edit form:", error);
+    return res.status(500).send("Internal Server Error");
+  }
+};
+
+const updateOrganizationProfile = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const currentUserId = req.user?._id || req.user?.id;
+
+    const [organization, profile] = await Promise.all([
+      Organization.findById(id),
+      OrganizationProfile.findOne({ organizationId: id })
+    ]);
+
+    if (!organization || !profile) {
+      return res.status(404).render("member_form_views/error", {
+        layout: "mainlayout",
+        title: "Not Found",
+        errorMessage: "Organization profile not found."
+      });
+    }
+
+    if (String(profile.adminLeaderId) !== String(currentUserId)) {
+      return res.status(403).send("Unauthorized");
+    }
+
+    const {
+      name,
+      industry,
+      website,
+      shortDescription,
+      primaryColor,
+      secondaryColor
+    } = req.body;
+
+    organization.name = String(name || "").trim();
+    organization.industry = String(industry || "").trim();
+    await organization.save();
+
+    profile.shortDescription = String(shortDescription || "").trim();
+    profile.website = String(website || "").trim();
+    profile.primaryColor = String(primaryColor || "").trim();
+    profile.secondaryColor = String(secondaryColor || "").trim();
+
+    if (req.file && req.file.mimetype.startsWith("image/")) {
+      const buffer = req.file.buffer;
+      const base64 = buffer.toString("base64");
+      const dataUri = `data:${req.file.mimetype};base64,${base64}`;
+
+      const result = await cloudinary.uploader.upload(dataUri, {
+        folder: "twennie_organization_profiles"
+      });
+
+      profile.logo = {
+        public_id: result.public_id,
+        url: result.secure_url
+      };
+    }
+
+    await profile.save();
+
+    await Leader.updateMany(
+      { organization: organization._id },
+      { $set: { organizationName: organization.name } }
+    );
+
+    return res.redirect(`/profile/organization/${organization._id}`);
+  } catch (error) {
+    console.error("❌ Error updating organization profile:", error);
+    return res.status(500).render("profile_views/organization_profile_form", {
+      layout: "profilelayout",
+      profile: req.body,
+      errorMessage: "An error occurred while saving the organization profile. Please try again."
+    });
+  }
+};
 
 
 // =========================
@@ -1155,20 +1253,25 @@ const viewGroupProfile = async (req, res) => {
 // =========================
 
 module.exports = {
-    viewMemberProfile,
-    viewLeaderProfile,
-    viewGroupMemberProfile,
-    viewGroupProfile,
-    editMemberProfile,
-    updateMemberProfile,
-    editLeaderProfile,
-    updateLeaderProfile,
-    editGroupMemberProfile,
-    updateGroupMemberProfile,
-    editGroupProfile,
-    updateGroupProfile,
-    submitProfileSurvey,
-    showProfileSurveyForm
+  viewMemberProfile,
+  viewLeaderProfile,
+  viewGroupMemberProfile,
+  viewGroupProfile,
+  viewOrganizationProfile,
+
+  editMemberProfile,
+  updateMemberProfile,
+  editLeaderProfile,
+  updateLeaderProfile,
+  editGroupMemberProfile,
+  updateGroupMemberProfile,
+  editGroupProfile,
+  updateGroupProfile,
+  editOrganizationProfile,
+  updateOrganizationProfile,
+
+  submitProfileSurvey,
+  showProfileSurveyForm
 };
 
 

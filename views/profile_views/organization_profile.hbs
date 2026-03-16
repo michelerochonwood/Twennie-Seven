@@ -1,0 +1,104 @@
+{{#*inline "title"}}Organization Profile | Twennie{{/inline}}
+
+<div class="profile-main">
+
+  <aside class="profile-sidebar">
+    <img
+      src="{{#if organization.logo.url}}{{organization.logo.url}}{{else}}/images/default-organization-logo.png{{/if}}"
+      alt="{{organization.name}} logo"
+      class="profile-image"
+    >
+
+    <h2 class="profile-name">{{organization.name}}</h2>
+
+    {{#if organization.industry}}
+      <p class="profile-title">{{organization.industry}}</p>
+    {{/if}}
+
+    {{#if organization.website}}
+      <p class="profile-title">
+        <a href="{{organization.website}}" target="_blank" rel="noopener noreferrer">
+          visit website
+        </a>
+      </p>
+    {{/if}}
+
+    {{#if canEdit}}
+      <a href="/profile/organization/{{organization.organizationId}}/edit" class="profile-edit-btn">
+        edit organization profile
+      </a>
+    {{/if}}
+  </aside>
+
+  <div class="profile-tabs-container">
+    <button class="profile-tab active" data-tab="about">
+      <span class="tab-title">about this organization</span>
+      <div class="tab-arrow"></div>
+    </button>
+
+    <button class="profile-tab" data-tab="leaders">
+      <span class="tab-title">leaders + groups</span>
+      <div class="tab-arrow"></div>
+    </button>
+  </div>
+
+  <div class="profile-content">
+    <div class="profile-tab-content active" id="about">
+      <div class="profile-section-card">
+        <h3>organization overview</h3>
+
+        {{#if organization.shortDescription}}
+          <p>{{organization.shortDescription}}</p>
+        {{else}}
+          <p>This organization has not added a description yet.</p>
+        {{/if}}
+      </div>
+    </div>
+
+    <div class="profile-tab-content" id="leaders">
+      <div class="profile-section-card">
+        <h3>leaders + groups</h3>
+
+        {{#if orgGroups.length}}
+          <div class="profile-group-grid">
+            {{#each orgGroups}}
+              <div class="profile-group-card">
+                <img
+                  src="{{#if this.groupImage}}{{this.groupImage}}{{else}}/images/default-group.png{{/if}}"
+                  alt="{{this.groupName}}"
+                  class="profile-group-card-image"
+                >
+                <h4>{{this.groupName}}</h4>
+                <p>{{this.groupLeaderName}}</p>
+                <p>{{this.memberCount}} members</p>
+              </div>
+            {{/each}}
+          </div>
+        {{else}}
+          <p>No groups are currently connected to this organization.</p>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const tabButtons = document.querySelectorAll(".profile-tab");
+    const tabContents = document.querySelectorAll(".profile-tab-content");
+
+    tabButtons.forEach(button => {
+      button.addEventListener("click", function () {
+        const target = this.getAttribute("data-tab");
+
+        tabButtons.forEach(btn => btn.classList.remove("active"));
+        tabContents.forEach(content => content.classList.remove("active"));
+
+        this.classList.add("active");
+        const activeContent = document.getElementById(target);
+        if (activeContent) activeContent.classList.add("active");
+      });
+    });
+  });
+</script>

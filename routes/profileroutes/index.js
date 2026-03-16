@@ -48,6 +48,16 @@ router.post('/upload-profile', uploadImages.single('profileImage'), async (req, 
   }
 });
 
+router.get("/organization/:id", profileController.viewOrganizationProfile);
+
+router.get("/organization/:id/edit", ensureAuthenticated, profileController.editOrganizationProfile);
+router.post(
+  "/organization/:id/update",
+  ensureAuthenticated,
+  uploadImages.single("profileImage"),
+  profileController.updateOrganizationProfile
+);
+
 module.exports = router;
 
 

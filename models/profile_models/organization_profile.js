@@ -4,25 +4,37 @@ const organizationProfileSchema = new mongoose.Schema(
   {
     organizationId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Organization',
       required: true,
+      ref: 'Organization',
       unique: true
     },
 
     adminLeaderId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Leader',
-      required: true
+      required: true,
+      ref: 'Leader'
     },
 
     logo: {
-      public_id: { type: String, default: null },
-      url: { type: String, default: '/images/default-organization-logo.png' }
+      public_id: {
+        type: String,
+        default: null
+      },
+      url: {
+        type: String,
+        default: '/images/default-organization-logo.png'
+      }
     },
 
     bannerImage: {
-      public_id: { type: String, default: null },
-      url: { type: String, default: null }
+      public_id: {
+        type: String,
+        default: null
+      },
+      url: {
+        type: String,
+        default: null
+      }
     },
 
     shortDescription: {
@@ -49,9 +61,13 @@ const organizationProfileSchema = new mongoose.Schema(
       maxlength: 20
     }
   },
-  { timestamps: true }
+  {
+    timestamps: true
+  }
 );
 
-module.exports =
+const OrganizationProfile =
   mongoose.models.OrganizationProfile ||
   mongoose.model('OrganizationProfile', organizationProfileSchema);
+
+module.exports = OrganizationProfile;

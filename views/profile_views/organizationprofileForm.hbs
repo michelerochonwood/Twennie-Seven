@@ -1,0 +1,105 @@
+{{#*inline "title"}}Organization Profile Form | Twennie{{/inline}}
+
+<div class="profile-form-container">
+
+  <h2 class="profile-form-title">edit organization profile</h2>
+
+  <form
+    action="/profile/organization/{{profile.organizationId}}/update"
+    method="POST"
+    enctype="multipart/form-data"
+  >
+    {{#if csrfToken}}
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    {{/if}}
+
+    {{#if profile.logo.url}}
+      <div class="form-field">
+        <label>Current Organization Logo</label>
+        <img
+          src="{{profile.logo.url}}"
+          alt="Organization Logo"
+          style="width: 120px; height: auto; border-radius: 8px; margin-top: 8px;"
+        >
+      </div>
+    {{/if}}
+
+    <div class="form-field">
+      <label for="logo">Upload New Organization Logo</label>
+      <input
+        type="file"
+        id="logo"
+        name="profileImage"
+        accept="image/*"
+      >
+      <p class="form-hint">Image will be uploaded to Cloudinary when you save.</p>
+    </div>
+
+    <div class="form-field">
+      <label for="name">Organization Name</label>
+      <input
+        type="text"
+        id="name"
+        name="name"
+        value="{{profile.name}}"
+        required
+      >
+    </div>
+
+    <div class="form-field">
+      <label for="industry">Industry</label>
+      <input
+        type="text"
+        id="industry"
+        name="industry"
+        value="{{profile.industry}}"
+      >
+    </div>
+
+    <div class="form-field">
+      <label for="website">Website</label>
+      <input
+        type="text"
+        id="website"
+        name="website"
+        value="{{profile.website}}"
+      >
+    </div>
+
+    <div class="form-field">
+      <label for="shortDescription">Short Description</label>
+      <textarea
+        id="shortDescription"
+        name="shortDescription"
+      >{{profile.shortDescription}}</textarea>
+    </div>
+
+    <div class="form-field">
+      <label for="primaryColor">Primary Color</label>
+      <input
+        type="text"
+        id="primaryColor"
+        name="primaryColor"
+        value="{{profile.primaryColor}}"
+        placeholder="#4e50a2"
+      >
+    </div>
+
+    <div class="form-field">
+      <label for="secondaryColor">Secondary Color</label>
+      <input
+        type="text"
+        id="secondaryColor"
+        name="secondaryColor"
+        value="{{profile.secondaryColor}}"
+        placeholder="#262262"
+      >
+    </div>
+
+    <div class="form-buttons">
+      <button type="submit" class="form-button submit-button">save changes</button>
+      <a href="/profile/organization/{{profile.organizationId}}" class="form-button save-button">cancel</a>
+    </div>
+
+  </form>
+</div>
