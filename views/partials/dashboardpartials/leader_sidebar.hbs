@@ -17,7 +17,7 @@
       <div class="leader-profile-info">
         <h2 class="leader-profile-name">{{leader.groupLeaderName}}</h2>
 <p class="leader-profile-title">
-  {{#if adminMode}}Organization Administrator{{else}}Group Leader{{/if}}
+  {{#if adminMode}}Organization Administrator Dashboard{{else}}Group Leader Dashboard{{/if}}
 </p>
 
         <a
@@ -27,13 +27,25 @@
           my leader profile
         </a>
 
-        <button
-          type="button"
-          class="leader-profile-btn"
-          onclick="window.location.href='/profile/group/{{leader._id}}'"
-        >
-          {{leader.groupName}} profile
-        </button>
+<button
+  type="button"
+  class="leader-profile-btn"
+  onclick="window.location.href='/profile/group/{{leader._id}}'"
+>
+  {{leader.groupName}} profile
+</button>
+
+{{#if adminMode}}
+{{#if leader.organization}}
+<button
+  type="button"
+  class="leader-profile-btn"
+  onclick="window.location.href='/profile/organization/{{leader.organization}}'"
+>
+  {{leader.organizationName}} profile
+</button>
+{{/if}}
+{{/if}}
 
         <!-- Teach Me Button -->
 <a href="/teach_me" class="leader-profile-btn" style="margin-top: 0.75rem;">
