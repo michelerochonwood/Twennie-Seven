@@ -1458,61 +1458,57 @@ return res.render('leader_dashboard', {
   layout: 'dashboardlayout',
   title: 'Leader Dashboard',
   adminMode: false,
-csrfToken: req.csrfToken ? req.csrfToken() : null,
-leader: {
-  ...userData,
-  hasOrg,
-  organizationName: userData.organizationName || '',
-  members: resolvedGroupMembers,
-  profileImage: leaderProfile?.profileImage || '/images/default-avatar.png',
-  groupImage: groupProfile?.groupImage || '/images/defaultgroupavatar.jpg'
-},
-suggestedOrg,
-orgGroups,
+  csrfToken: req.csrfToken ? req.csrfToken() : null,
+
+  leader: {
+    ...userData,
+    hasOrg,
+    organizationName: userData.organizationName || '',
+    members: resolvedGroupMembers,
+    profileImage: leaderProfile?.profileImage || '/images/default-avatar.png',
+    groupImage: groupProfile?.groupImage || '/images/defaultgroupavatar.jpg'
+  },
+
+  organizationId: userData.organization ? userData.organization.toString() : null,
+  suggestedOrg,
+  orgGroups,
 
   leaderGroupMembers: resolvedGroupMembers,
   maxGroupSize: userData.maxGroupSize,
-  // Library + group units
   leaderUnits,
   groupMemberUnits,
 
-  // Assignment data
-  leaderAssignedUnits,         // raw assigned units, if you still need them
+  leaderAssignedUnits,
   leaderAssignmentsOpen,
   leaderAssignmentsCompleted,
-assignedPromptSets,
+  assignedPromptSets,
 
-  // Prompt set data
   registeredPromptSets: leaderPrompts,
   promptSchedules,
   currentPromptSets,
   completedPromptSets: formattedCompletedSets,
-    groupCompletedPromptSets,
+  groupCompletedPromptSets,
 
-  // Topics / suggestions
   selectedTopics,
   topicsEmpty,
   topicSuggestions,
 
   leaderSuggestedUnits,
 
-  // Account / email prefs
   leaderAccount,
   emailPreferenceLevel,
 
-  // ✅ TAGGED / ASSIGNED UNITS (new + existing)
-  leaderSelfTaggedUnits,              // blended, all self-tagged (for backwards compat)
-  leaderSelfTaggedNonMissionUnits,    // NEW: self-tagged non-mission units
-  leaderSelfTaggedMissions,           // NEW: self-tagged missions
+  leaderSelfTaggedUnits,
+  leaderSelfTaggedNonMissionUnits,
+  leaderSelfTaggedMissions,
 
-  leaderAssignedNonNuggetUnits,       // existing blended non-nuggets
-  leaderAssignedNonMissionUnits,      // NEW: assigned non-mission, non-nugget
-  leaderAssignedMissions,             // NEW: assigned missions
-  leaderAssignedNuggets,              // existing assigned nuggets
+  leaderAssignedNonNuggetUnits,
+  leaderAssignedNonMissionUnits,
+  leaderAssignedMissions,
+  leaderAssignedNuggets,
 
   leaderAssignedNuggetsGrouped,
 
-  // MFA + tab badges
   mfaStatus,
   leaderCounts,
   leaderBadges,

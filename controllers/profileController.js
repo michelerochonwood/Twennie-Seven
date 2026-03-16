@@ -1064,18 +1064,23 @@ const selectedTopics = ["topic1", "topic2", "topic3"].reduce((acc, key) => {
 const viewOrganizationProfile = async (req, res) => {
   try {
     const { id } = req.params;
+    console.log("🔍 Organization profile route param id:", id);
 
-    const [organization, profile, leaders] = await Promise.all([
-      Organization.findById(id).lean(),
-      OrganizationProfile.findOne({ organizationId: id }).lean(),
-      Leader.find({
-        organization: id,
-        organizationOptOut: { $ne: true },
-        isActive: true
-      })
-        .select("_id groupName groupLeaderName members")
-        .lean()
-    ]);
+    const organization = await Organization.findById(id).lean();
+    console.log("🔍 Organization found:", organization ? organization._id : null);
+
+    const profile = await OrganizationProfile.findOne({ organizationId: id }).lean();
+    console.log("🔍 Organization profile found:", profile ? profile._id : null);
+
+    const leaders = await Leader.find({
+      organization: id,
+      organizationOptOut: { $ne: true },
+      isActive: true
+    })
+      .select("_id groupName groupLeaderName members")
+      .lean();
+
+    console.log("🔍 Leaders found:", leaders.length);
 
     if (!organization) {
       return res.status(404).render("member_form_views/error", {

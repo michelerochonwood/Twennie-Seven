@@ -37,11 +37,11 @@
 </button>
 
 {{#if adminMode}}
-{{#if leader.organization}}
+{{#if organizationId}}
 <button
   type="button"
   class="leader-profile-btn"
-  onclick="window.location.href='/profile/organization/{{leader.organization}}'"
+  onclick="window.location.href='/profile/organization/{{organizationId}}'"
 >
   {{leader.organizationName}} profile
 </button>
