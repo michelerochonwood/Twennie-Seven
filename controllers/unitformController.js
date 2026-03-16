@@ -13,7 +13,7 @@ const Tag = require('../models/tag');
 console.log('unitFormController loaded');
 const Nugget = require('../models/unit_models/nugget');
 const Mission = require('../models/unit_models/mission'); // 👈 ADD THIS
-const topics = require('../../config/topics');
+const topics = require('../config/topics');
 
 function dashboardHomeForUser(user) {
   const type = user?.membershipType || user?.accessLevel;
