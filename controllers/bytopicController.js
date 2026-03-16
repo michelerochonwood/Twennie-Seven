@@ -320,19 +320,59 @@ async function getAuthorOrgKey(authorId) {
   const key = String(authorId);
   if (authorOrgKeyCache.has(key)) return authorOrgKeyCache.get(key);
 
-  let aLeader = null, aGM = null, aMember = null;
+  let aLeader = null;
+  let aGM = null;
+  let aMember = null;
+
   try {
-    aLeader = await Leader.findById(authorId).select('organizationId organization email').lean();
-    if (!aLeader) aGM = await GroupMember.findById(authorId).select('organizationId organization email').lean();
-    if (!aLeader && !aGM) aMember = await Member.findById(authorId).select('organizationId organization email').lean();
+    aLeader = await Leader.findById(authorId)
+      .select('organizationId organization organizationName email')
+      .lean();
+
+    if (!aLeader) {
+      aGM = await GroupMember.findById(authorId)
+        .select('organizationId organization organizationName email groupId leader')
+        .lean();
+    }
+
+    if (!aLeader && !aGM) {
+      aMember = await Member.findById(authorId)
+        .select('organizationId organization organizationName email')
+        .lean();
+    }
   } catch (_) { /* ignore */ }
 
-  const doc = aLeader || aGM || aMember || {};
-const orgKey =
-  doc.organization ? String(doc.organization) :
-  normalize(doc.organizationId) ||
-  emailDomain(doc.email) ||
-  null;
+  // Direct org from the author record
+  let doc = aLeader || aGM || aMember || {};
+  let orgKey =
+    normalize(doc.organization) ||
+    normalize(doc.organizationId) ||
+    normalize(doc.organizationName) ||
+    emailDomain(doc.email) ||
+    null;
+
+  // Fallback: if author is a group member with no org fields,
+  // inherit org from their leader/group record
+  if (!orgKey && aGM) {
+    try {
+      const gmLeaderId = aGM.leader || aGM.groupId || null;
+
+      if (gmLeaderId) {
+        const parentLeader = await Leader.findById(gmLeaderId)
+          .select('organizationId organization organizationName email')
+          .lean();
+
+        if (parentLeader) {
+          orgKey =
+            normalize(parentLeader.organization) ||
+            normalize(parentLeader.organizationId) ||
+            normalize(parentLeader.organizationName) ||
+            emailDomain(parentLeader.email) ||
+            null;
+        }
+      }
+    } catch (_) { /* ignore */ }
+  }
 
   authorOrgKeyCache.set(key, orgKey);
   return orgKey;
