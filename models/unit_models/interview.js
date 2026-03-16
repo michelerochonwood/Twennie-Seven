@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const topics = require('../config/topics');
+const topics = require('../../config/topics');
 
 const interviewSchema = new mongoose.Schema({
     status: {

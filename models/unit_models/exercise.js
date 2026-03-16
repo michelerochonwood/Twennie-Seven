@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const topics = require('../config/topics');
+const topics = require('../../config/topics');
 
 const exerciseSchema = new mongoose.Schema({
   status: {

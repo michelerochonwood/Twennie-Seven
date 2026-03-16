@@ -1,6 +1,6 @@
 // models/library_models/upcoming_unit.js
 const mongoose = require('mongoose');
-const topics = require('../config/topics');
+const topics = require('../../config/topics');
 
 
 
