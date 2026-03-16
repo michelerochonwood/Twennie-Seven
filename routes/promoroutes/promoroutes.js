@@ -256,6 +256,10 @@ router.get('/sample_template', (req, res) => {
   res.render('promo_views/sample_template', { layout: 'mainlayout' });
 });
 
+router.get('/sample_interview', (req, res) => {
+  res.render('sample_views/sample_interview', { layout: 'mainlayout' });
+});
+
 router.get('/sample_nugget', (req, res) => {
   res.render('promo_views/sample_nugget', { layout: 'mainlayout' });
 });
