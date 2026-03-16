@@ -1388,7 +1388,7 @@ const leaderAssignedNuggetsGrouped = groupAssignedNuggets(leaderAssignedNuggets)
 // --- Membership tab: prepare leader account & email preference for view ---
 // --- Membership tab: prepare leader account & email preference for view ---
 const rawPref = userData?.emailPreferenceLevel ?? userData?.email_preference_level;
-const emailPreferenceLevel = [1, 2, 3].includes(Number(rawPref)) ? Number(rawPref) : 1;
+const emailPreferenceLevel = [1, 2].includes(Number(rawPref)) ? Number(rawPref) : 1;
 
 const leaderAccount = {
   name: userData?.groupLeaderName || 'Leader',
@@ -1616,7 +1616,7 @@ updateEmailPreferences: async (req, res) => {
     if (!leaderId) return res.redirect('/auth/login');
 
     let level = parseInt(req.body.email_preference_level, 10);
-    if (![1, 2, 3].includes(level)) level = 1;
+    if (![1, 2].includes(level)) level = 1;
 
     const result = await Leader.findByIdAndUpdate(
       leaderId,

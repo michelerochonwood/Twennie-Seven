@@ -101,7 +101,7 @@ const memberSchema = new mongoose.Schema({
   // --- New fields for account & email preferences ---
   emailPreferenceLevel: {
     type: Number,
-    enum: [1, 2, 3],  // 1=minimal, 2=updates, 3=all including promos/events
+    enum: [1, 2],  // 1=minimal, 2=updates, 3=all including promos/events
     default: 1
   },
   emailPreferencesUpdatedAt: {

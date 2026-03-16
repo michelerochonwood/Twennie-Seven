@@ -562,7 +562,7 @@ const topicsEmpty =
 
 console.log("🔍 Selected Topics for Member Dashboard:", selectedTopics);
 
-const emailPreferenceLevel = [1, 2, 3].includes(Number(userData?.emailPreferenceLevel))
+const emailPreferenceLevel = [1, 2].includes(Number(userData?.emailPreferenceLevel))
   ? Number(userData.emailPreferenceLevel)
   : 1;
 
@@ -676,7 +676,7 @@ recentTaggedUnits: memberTaggedUnits,
       if (!memberId) return res.redirect('/auth/login');
 
       let level = parseInt(req.body.email_preference_level, 10);
-      if (![1, 2, 3].includes(level)) level = 1;
+      if (![1, 2].includes(level)) level = 1;
 
       const result = await Member.findByIdAndUpdate(
         memberId,

@@ -128,7 +128,8 @@
   <input type="hidden" name="_csrf" value="{{csrfToken}}">
 
   <div class="email-preference-cards">
-    <!-- Level 1 -->
+    
+    <!-- Level 1: Security Only -->
     <label class="email-pref-card">
       <input
         id="m_email_pref_1"
@@ -138,13 +139,17 @@
         {{#if (eq emailPreferenceLevel 1)}}checked{{/if}}
       >
       <div class="email-pref-content">
-        <h4>Level 1 <span>(Minimal)</span></h4>
-        <p>Only essential emails for account security and password resets.</p>
-
+        <h4>security emails only</h4>
+        <p>Only essential emails related to your account and security.</p>
+        <ul>
+          <li>account changes</li>
+          <li>password resets</li>
+          <li>security alerts</li>
+        </ul>
       </div>
     </label>
 
-    <!-- Level 2 -->
+    <!-- Level 2: All Emails -->
     <label class="email-pref-card">
       <input
         id="m_email_pref_2"
@@ -154,27 +159,17 @@
         {{#if (eq emailPreferenceLevel 2)}}checked{{/if}}
       >
       <div class="email-pref-content">
-        <h4>Level 2 <span>(Updates)</span></h4>
-        <p>Get updates about new content and platform improvements.</p>
-
+        <h4>all emails</h4>
+        <p>Stay informed with everything happening on Twennie.</p>
+        <ul>
+          <li>account updates</li>
+          <li>new units in your favorite topics</li>
+          <li>platform updates</li>
+          <li>learning events and updates</li>
+        </ul>
       </div>
     </label>
 
-    <!-- Level 3 -->
-    <label class="email-pref-card">
-      <input
-        id="m_email_pref_3"
-        type="radio"
-        name="email_preference_level"
-        value="3"
-        {{#if (eq emailPreferenceLevel 3)}}checked{{/if}}
-      >
-      <div class="email-pref-content">
-        <h4>Level 3 <span>(All Access)</span></h4>
-        <p>Receive all Twennie updates, events, and exclusive offers.</p>
-
-      </div>
-    </label>
   </div>
 
   <div class="group-membership-button-container">

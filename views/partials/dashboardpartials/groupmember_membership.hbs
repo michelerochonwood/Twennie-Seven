@@ -113,65 +113,51 @@
 
     <!-- Column 2: Email preferences -->
     <div class="group-membership-column">
-      <p class="group-membership-access-title">email notifications</p>
+<p class="group-membership-access-title">email notifications</p>
 
-      <form action="/dashboard/groupmember/account/email-preferences" method="POST" novalidate>
-        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+<form action="/dashboard/groupmember/account/email-preferences" method="POST" novalidate>
+  <input type="hidden" name="_csrf" value="{{csrfToken}}">
 
-        <ul class="group-membership-access-list">
-          <!-- Level 1 -->
-          <li>
-            <div class="group-membership-line" style="display:flex; gap:.5rem; align-items:flex-start;">
-              <input id="gm_email_pref_1" type="radio" name="email_preference_level" value="1" {{#if (eq emailPreferenceLevel 1)}}checked{{/if}}>
-              <label for="gm_email_pref_1">
-                <span class="group-membership-label">Level 1</span>
-              </label>
-            </div>
-            <ul class="group-preference-list">
-              <li>changes to account</li>
-              <li>password resets only</li>
-            </ul>
-          </li>
+  <ul class="group-membership-access-list">
+    
+    <!-- Level 1: Security Emails Only -->
+    <li>
+      <div class="group-membership-line" style="display:flex; gap:.5rem; align-items:flex-start;">
+        <input id="gm_email_pref_1" type="radio" name="email_preference_level" value="1" {{#if (eq emailPreferenceLevel 1)}}checked{{/if}}>
+        <label for="gm_email_pref_1">
+          <span class="group-membership-label">security emails only</span>
+        </label>
+      </div>
+      <ul class="group-preference-list">
+        <li>account changes</li>
+        <li>password resets</li>
+        <li>security alerts</li>
+      </ul>
+    </li>
 
-          <!-- Level 2 -->
-          <li>
-            <div class="group-membership-line" style="display:flex; gap:.5rem; align-items:flex-start;">
-              <input id="gm_email_pref_2" type="radio" name="email_preference_level" value="2" {{#if (eq emailPreferenceLevel 2)}}checked{{/if}}>
-              <label for="gm_email_pref_2">
-                <span class="group-membership-label">Level 2</span>
-              </label>
-            </div>
-            <ul class="group-preference-list">
-              <li>changes to account</li>
-              <li>password resets</li>
-              <li>new units in my favorite topics</li>
-              <li>changes to the Twennie platform</li>
-            </ul>
-          </li>
+    <!-- Level 2: All Emails -->
+    <li>
+      <div class="group-membership-line" style="display:flex; gap:.5rem; align-items:flex-start;">
+        <input id="gm_email_pref_2" type="radio" name="email_preference_level" value="2" {{#if (eq emailPreferenceLevel 2)}}checked{{/if}}>
+        <label for="gm_email_pref_2">
+          <span class="group-membership-label">all emails</span>
+        </label>
+      </div>
+      <ul class="group-preference-list">
+        <li>account changes</li>
+        <li>password resets</li>
+        <li>new units in my favorite topics</li>
+        <li>changes to the Twennie platform</li>
+        <li>learning updates and events</li>
+      </ul>
+    </li>
 
-          <!-- Level 3 -->
-          <li>
-            <div class="group-membership-line" style="display:flex; gap:.5rem; align-items:flex-start;">
-              <input id="gm_email_pref_3" type="radio" name="email_preference_level" value="3" {{#if (eq emailPreferenceLevel 3)}}checked{{/if}}>
-              <label for="gm_email_pref_3">
-                <span class="group-membership-label">Level 3</span>
-              </label>
-            </div>
-            <ul class="group-preference-list">
-              <li>changes to account</li>
-              <li>password resets</li>
-              <li>new units in my favorite topics</li>
-              <li>changes to the Twennie platform</li>
-              <li>upcoming learning events on Twennie</li>
-              <li>promotional offers from Twennie</li>
-            </ul>
-          </li>
-        </ul>
+  </ul>
 
-        <div class="group-membership-button-container">
-          <button type="submit" class="group-membership-btn">save my email preferences</button>
-        </div>
-      </form>
+  <div class="group-membership-button-container">
+    <button type="submit" class="group-membership-btn">save my email preferences</button>
+  </div>
+</form>
     </div>
   </div>
 </section>

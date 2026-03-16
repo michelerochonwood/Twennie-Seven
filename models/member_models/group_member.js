@@ -85,7 +85,7 @@ const groupMemberSchema = new mongoose.Schema({
   // Email preferences
   emailPreferenceLevel: {
     type: Number,
-    enum: [1, 2, 3],
+    enum: [1, 2],
     default: 1
   },
   emailPreferencesUpdatedAt: { type: Date },

@@ -199,7 +199,7 @@ cancelAt: { type: Date },
   // ---------- Email preferences ----------
   emailPreferenceLevel: {
     type: Number,
-    enum: [1, 2, 3], // 1=minimal, 2=product updates, 3=events+promotions
+    enum: [1, 2], // 1=minimal, 2=product updates, 3=events+promotions
     default: 1
   },
   emailPreferencesUpdatedAt: { type: Date },
