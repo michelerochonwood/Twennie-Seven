@@ -1098,7 +1098,7 @@ html, body {
 
 .bytopic-card-top-badges {
   position: absolute;
-  top: -1.35rem;
+  top: -1.5rem;
   right: 1rem;
   left: auto;
   transform: none;
@@ -1117,7 +1117,7 @@ html, body {
 
 .bytopic-card-author-badge {
   z-index: 2;
-  margin-right: -0.9rem;
+  margin-right: -1rem;
 }
 
 .bytopic-card-org-badge {
