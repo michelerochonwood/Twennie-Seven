@@ -110,12 +110,24 @@ const resolveUnitDetails = async (unitID) => {
 
 
 
-function baseRenderData(req) {
+async function baseRenderData(req) {
+  const leader = await Leader.findById(req.user?._id || req.user?.id)
+    .select([
+      '_id',
+      'groupLeaderName',
+      'groupName',
+      'profileImage',
+      'organization',
+      'organizationName',
+      'isAdmin'
+    ].join(' '))
+    .lean();
+
   return {
     layout: 'dashboardlayout',
     title: 'Leader Dashboard',
     adminMode: true,
-    leader: req.user,
+    leader,
     csrfToken: req.csrfToken ? req.csrfToken() : null
   };
 }
@@ -895,59 +907,59 @@ async function buildAdminPayload(orgId) {
 // Controller
 // -----------------------------
 const orgadminController = {
-  async myOrganization(req, res, next) {
-    try {
-      const orgId = await getOrgIdForAdmin(req);
-      if (!orgId) return res.redirect('/dashboard/leader');
+async myOrganization(req, res, next) {
+  try {
+    const orgId = await getOrgIdForAdmin(req);
+    if (!orgId) return res.redirect('/dashboard/leader');
 
-      const payload = await buildAdminPayload(orgId);
+    const payload = await buildAdminPayload(orgId);
 
-      return res.render('leader_dashboard', {
-        ...baseRenderData(req),
-        adminTab: 'my-organization',
-        ...payload
-      });
-    } catch (err) {
-      console.error('Org admin myOrganization error:', err);
-      return next(err);
-    }
-  },
+    return res.render('leader_dashboard', {
+      ...(await baseRenderData(req)),
+      adminTab: 'my-organization',
+      ...payload
+    });
+  } catch (err) {
+    console.error('Org admin myOrganization error:', err);
+    return next(err);
+  }
+},
 
-  async groupsLeaders(req, res, next) {
-    try {
-      const orgId = await getOrgIdForAdmin(req);
-      if (!orgId) return res.redirect('/dashboard/leader');
+async groupsLeaders(req, res, next) {
+  try {
+    const orgId = await getOrgIdForAdmin(req);
+    if (!orgId) return res.redirect('/dashboard/leader');
 
-      const payload = await buildAdminPayload(orgId);
+    const payload = await buildAdminPayload(orgId);
 
-      return res.render('leader_dashboard', {
-        ...baseRenderData(req),
-        adminTab: 'groups-leaders',
-        ...payload
-      });
-    } catch (err) {
-      console.error('Org admin groupsLeaders error:', err);
-      return next(err);
-    }
-  },
+    return res.render('leader_dashboard', {
+      ...(await baseRenderData(req)),
+      adminTab: 'groups-leaders',
+      ...payload
+    });
+  } catch (err) {
+    console.error('Org admin groupsLeaders error:', err);
+    return next(err);
+  }
+},
 
-  async requests(req, res, next) {
-    try {
-      const orgId = await getOrgIdForAdmin(req);
-      if (!orgId) return res.redirect('/dashboard/leader');
+async requests(req, res, next) {
+  try {
+    const orgId = await getOrgIdForAdmin(req);
+    if (!orgId) return res.redirect('/dashboard/leader');
 
-      const payload = await buildAdminPayload(orgId);
+    const payload = await buildAdminPayload(orgId);
 
-      return res.render('leader_dashboard', {
-        ...baseRenderData(req),
-        adminTab: 'requests',
-        ...payload
-      });
-    } catch (err) {
-      console.error('Org admin requests error:', err);
-      return next(err);
-    }
-  },
+    return res.render('leader_dashboard', {
+      ...(await baseRenderData(req)),
+      adminTab: 'requests',
+      ...payload
+    });
+  } catch (err) {
+    console.error('Org admin requests error:', err);
+    return next(err);
+  }
+},
 
 async suggestions(req, res, next) {
   try {
@@ -959,7 +971,6 @@ async suggestions(req, res, next) {
     const adminId = req.user?._id;
     if (!adminId) return res.redirect('/dashboard/leader');
 
-    // ✅ My Suggestions (created by this admin, within this org)
     const rawMySuggestions = await UnitSuggestion.find({
       organization: orgId,
       suggestedBy: adminId
@@ -967,7 +978,6 @@ async suggestions(req, res, next) {
       .sort({ createdAt: -1 })
       .lean();
 
-    // Resolve leader recipient names in one query
     const leaderIds = [...new Set(
       rawMySuggestions
         .map(s => s.leaderId?.toString?.())
@@ -991,11 +1001,9 @@ async suggestions(req, res, next) {
       const leaderIdStr = s.leaderId?.toString?.() || '';
       const leaderName = leaderIdStr ? (leaderNameById.get(leaderIdStr) || 'Leader') : '';
 
-      // ✅ prevent broken links if unitId is missing
       const hasUnit = Boolean(s.unitId);
       const viewPath = hasUnit ? viewPathForUnit(s.unitType, s.unitId) : null;
 
-      // ✅ acknowledgement state (supports either field name)
       const acknowledgedAt = s.acknowledgedAt || s.seenAt || null;
       const isAcknowledged = Boolean(acknowledgedAt) || s.status === 'acknowledged';
 
@@ -1008,22 +1016,16 @@ async suggestions(req, res, next) {
         note: s.note || '',
         status: s.status || 'pending',
         suggestedAtFormatted: s.createdAt ? fmtDate(s.createdAt) : '',
-
-        // ✅ optional link
         viewPath,
-
-        // ✅ for the partial (array for future multi-leader support)
         leaderId: leaderIdStr,
         suggestedToNames: leaderName ? [leaderName] : [],
-
-        // ✅ admin dashboard status display
         isAcknowledged,
         acknowledgedAtFormatted: acknowledgedAt ? fmtDate(acknowledgedAt) : ''
       };
     });
 
     return res.render('leader_dashboard', {
-      ...baseRenderData(req),
+      ...(await baseRenderData(req)),
       adminTab: 'suggestions',
       ...payload,
       mySuggestions
@@ -1043,12 +1045,10 @@ async companyLibrary(req, res, next) {
     if (!orgId) return res.redirect('/dashboard/leader');
 
     const payload = await buildAdminPayload(orgId);
-
-    // ✅ NEW: libraries for every leader + their group
     const orgLeaderLibraries = await buildOrgLeaderLibraries(orgId);
 
     return res.render('leader_dashboard', {
-      ...baseRenderData(req),
+      ...(await baseRenderData(req)),
       adminTab: 'company-library',
       ...payload,
       orgLeaderLibraries
@@ -1060,23 +1060,23 @@ async companyLibrary(req, res, next) {
 },
 
 
-  async reports(req, res, next) {
-    try {
-      const orgId = await getOrgIdForAdmin(req);
-      if (!orgId) return res.redirect('/dashboard/leader');
+async reports(req, res, next) {
+  try {
+    const orgId = await getOrgIdForAdmin(req);
+    if (!orgId) return res.redirect('/dashboard/leader');
 
-      const payload = await buildAdminPayload(orgId);
+    const payload = await buildAdminPayload(orgId);
 
-      return res.render('leader_dashboard', {
-        ...baseRenderData(req),
-        adminTab: 'reports',
-        ...payload
-      });
-    } catch (err) {
-      console.error('Org admin reports error:', err);
-      return next(err);
-    }
-  },
+    return res.render('leader_dashboard', {
+      ...(await baseRenderData(req)),
+      adminTab: 'reports',
+      ...payload
+    });
+  } catch (err) {
+    console.error('Org admin reports error:', err);
+    return next(err);
+  }
+},
 
   // ADMIN: Approve a join request
   async approveJoinRequest(req, res) {
