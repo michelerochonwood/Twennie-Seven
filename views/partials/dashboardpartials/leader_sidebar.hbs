@@ -45,6 +45,16 @@
 >
   {{leader.organizationName}} profile
 </button>
+{{else}}
+  {{#if leader.organization}}
+  <button
+    type="button"
+    class="leader-profile-btn"
+    onclick="window.location.href='/profile/organization/{{leader.organization}}'"
+  >
+    {{leader.organizationName}} profile
+  </button>
+  {{/if}}
 {{/if}}
 {{/if}}
 
