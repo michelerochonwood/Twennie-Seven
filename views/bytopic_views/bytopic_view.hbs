@@ -92,6 +92,14 @@
 
 {{#unless (eq this.type "upcoming")}}
   <div class="bytopic-card-top-badges">
+    <div class="bytopic-card-top-badge bytopic-card-author-badge">
+      <img
+        src="{{#if authorImage}}{{authorImage}}{{else}}/images/default-avatar.png{{/if}}"
+        alt="{{authorName}}"
+        class="bytopic-card-author-mini"
+      >
+    </div>
+
     {{#if organizationId}}
       <div class="bytopic-card-top-badge bytopic-card-org-badge">
         <a href="/profile/organization/{{organizationId}}" class="bytopic-card-org-link">
@@ -103,14 +111,6 @@
         </a>
       </div>
     {{/if}}
-
-    <div class="bytopic-card-top-badge bytopic-card-author-badge">
-      <img
-        src="{{#if authorImage}}{{authorImage}}{{else}}/images/default-avatar.png{{/if}}"
-        alt="{{authorName}}"
-        class="bytopic-card-author-mini"
-      >
-    </div>
   </div>
 {{/unless}}
 
