@@ -423,27 +423,7 @@ html, body {
   overflow: visible; /* ensure corner badges aren't clipped */
 }
 
-/* ---- Card (outer) ---- */
-.bytopic-library-unit-card {
-  background-color: #d0cfcf;
-  border-radius: 20px;
-  height: 350px;
-  transition: height 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;       /* anchor for absolute badge */
-  margin-bottom: 1.5rem;
-  overflow: visible;        /* allow badge to hang out */
-  z-index: 1;               /* base stacking so badges layer correctly */
-}
-.bytopic-library-unit-card:hover,
-.bytopic-library-unit-card.active {
-  z-index: 2;               /* lift above neighbors on hover/expand */
-}
-.bytopic-library-unit-card.active {
-  height: auto;
-}
+
 
 /* ---- Card (inner wrapper for clipping + radius) ---- */
 .bytopic-card-inner {
@@ -1088,4 +1068,73 @@ html, body {
 .bluey-cta-img {
   width: 200px;
   height: auto;
+}
+
+
+
+.bytopic-library-unit-card {
+  background-color: #d0cfcf;
+  border-radius: 20px;
+  height: 350px;
+  transition: height 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  margin-top: 2.5rem;
+  margin-bottom: 1.5rem;
+  overflow: visible;
+  z-index: 1;
+}
+
+.bytopic-library-unit-card:hover,
+.bytopic-library-unit-card.active {
+  z-index: 2;
+}
+
+.bytopic-library-unit-card.active {
+  height: auto;
+}
+
+.bytopic-card-top-badges {
+  position: absolute;
+  top: -2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.75rem;
+  z-index: 6;
+  pointer-events: none;
+  width: calc(100% - 2rem);
+}
+
+.bytopic-card-top-badge {
+  pointer-events: auto;
+}
+
+.bytopic-card-org-link {
+  display: inline-flex;
+  text-decoration: none;
+}
+
+.bytopic-card-org-logo {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 14px;
+  padding: 0.35rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+.bytopic-card-author-mini {
+  width: 58px;
+  height: 58px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
 }

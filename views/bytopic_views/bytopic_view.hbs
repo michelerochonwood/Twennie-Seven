@@ -85,11 +85,34 @@
       {{#if this.units.length}}
         <div class="bytopic-library-units-grid">
           {{#each this.units}}
-<article class="bytopic-library-unit-card" data-unit-id="{{_id}}">
+<article class="bytopic-library-unit-card{{#if (eq this.type "upcoming")}} bytopic-upcoming-card{{/if}}" data-unit-id="{{_id}}">
   {{#if (eq this.type "upcoming")}}
-    <!-- Upcoming corner badge -->
     <img src="/icons/upcomingsvg.svg" alt="" aria-hidden="true" class="bytopic-upcoming-badge">
   {{/if}}
+
+{{#unless (eq this.type "upcoming")}}
+  <div class="bytopic-card-top-badges">
+    {{#if organizationId}}
+      <div class="bytopic-card-top-badge bytopic-card-org-badge">
+        <a href="/profile/organization/{{organizationId}}" class="bytopic-card-org-link">
+          <img
+            src="{{#if organizationLogo}}{{organizationLogo}}{{else}}/images/default-organization-logo.png{{/if}}"
+            alt="{{#if organizationName}}{{organizationName}}{{else}}Organization{{/if}} logo"
+            class="bytopic-card-org-logo"
+          >
+        </a>
+      </div>
+    {{/if}}
+
+    <div class="bytopic-card-top-badge bytopic-card-author-badge">
+      <img
+        src="{{#if authorImage}}{{authorImage}}{{else}}/images/default-avatar.png{{/if}}"
+        alt="{{authorName}}"
+        class="bytopic-card-author-mini"
+      >
+    </div>
+  </div>
+{{/unless}}
 
   <!-- Inner wrapper preserves rounded-corner clipping -->
   <div class="bytopic-card-inner">
