@@ -3,22 +3,8 @@
 
   <!-- Hidden real fields that are actually submitted -->
   <div style="position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;">
-    <label for="main-topic">Main Topic</label>
-    <select id="main-topic" name="main_topic">
-      <option value="">Please select a main topic</option>
-      {{#if data.main_topic}}
-        <option value="{{data.main_topic}}" selected="selected">{{data.main_topic}}</option>
-      {{/if}}
-    </select>
-
-    <label for="secondary-topic">Secondary Topic</label>
-<label for="secondary-topic">Secondary Topic</label>
-<select id="secondary-topic" name="secondary_topics[]">
-  <option value="">None</option>
-  {{#if data.secondary_topics.[0]}}
-    <option value="{{data.secondary_topics.[0]}}" selected="selected">{{data.secondary_topics.[0]}}</option>
-  {{/if}}
-</select>
+    <input type="hidden" id="main-topic" name="main_topic" value="{{data.main_topic}}">
+    <input type="hidden" id="secondary-topic" name="secondary_topics[]" value="{{data.secondary_topics.[0]}}">
   </div>
 
   <!-- VISIBLE: Main Topic -->
@@ -256,11 +242,10 @@
   </div>
 </div>
 
-
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    const realMainTopicSelect = document.querySelector('select[name="main_topic"]');
-    const realSecondaryTopicSelect = document.querySelector('select[name="secondary_topics"]');
+    const realMainTopicInput = document.getElementById('main-topic');
+    const realSecondaryTopicInput = document.getElementById('secondary-topic');
 
     const mainSelects = document.querySelectorAll('.main-topic-select');
     const secondarySelects = document.querySelectorAll('.secondary-topic-select');
@@ -280,24 +265,8 @@
         const chosen = this.value || "";
         clearOther(mainSelects, this);
 
-        if (!realMainTopicSelect) return;
-
-        // Reset options
-        realMainTopicSelect.innerHTML = "";
-
-        if (chosen) {
-          const opt = document.createElement("option");
-          opt.value = chosen;
-          opt.textContent = chosen;
-          realMainTopicSelect.appendChild(opt);
-          realMainTopicSelect.value = chosen;
-        } else {
-          const opt = document.createElement("option");
-          opt.value = "";
-          opt.textContent = "Please select a main topic";
-          realMainTopicSelect.appendChild(opt);
-          realMainTopicSelect.value = "";
-        }
+        if (!realMainTopicInput) return;
+        realMainTopicInput.value = chosen;
       });
     });
 
@@ -307,19 +276,13 @@
         const chosen = this.value || "";
         clearOther(secondarySelects, this);
 
-        if (!realSecondaryTopicSelect) return;
-
-        realSecondaryTopicSelect.innerHTML = "";
-        const opt = document.createElement("option");
-        opt.value = chosen;
-        opt.textContent = chosen || "None";
-        realSecondaryTopicSelect.appendChild(opt);
-        realSecondaryTopicSelect.value = chosen;
+        if (!realSecondaryTopicInput) return;
+        realSecondaryTopicInput.value = chosen;
       });
     });
 
     // PRE-POPULATE MAIN TOPIC ON EDIT
-    if (existingMainTopic && realMainTopicSelect) {
+    if (existingMainTopic && realMainTopicInput) {
       mainSelects.forEach(select => {
         Array.from(select.options).forEach(opt => {
           if (opt.value === existingMainTopic) {
@@ -328,16 +291,11 @@
         });
       });
 
-      realMainTopicSelect.innerHTML = "";
-      const opt = document.createElement("option");
-      opt.value = existingMainTopic;
-      opt.textContent = existingMainTopic;
-      realMainTopicSelect.appendChild(opt);
-      realMainTopicSelect.value = existingMainTopic;
+      realMainTopicInput.value = existingMainTopic;
     }
 
     // PRE-POPULATE SECONDARY TOPIC ON EDIT
-    if (existingSecondaryTopic && realSecondaryTopicSelect) {
+    if (existingSecondaryTopic && realSecondaryTopicInput) {
       secondarySelects.forEach(select => {
         Array.from(select.options).forEach(opt => {
           if (opt.value === existingSecondaryTopic) {
@@ -346,12 +304,7 @@
         });
       });
 
-      realSecondaryTopicSelect.innerHTML = "";
-      const opt = document.createElement("option");
-      opt.value = existingSecondaryTopic;
-      opt.textContent = existingSecondaryTopic;
-      realSecondaryTopicSelect.appendChild(opt);
-      realSecondaryTopicSelect.value = existingSecondaryTopic;
+      realSecondaryTopicInput.value = existingSecondaryTopic;
     }
   });
 </script>
