@@ -13,7 +13,7 @@ const Tag = require('../models/tag');
 console.log('unitFormController loaded');
 const Nugget = require('../models/unit_models/nugget');
 const Mission = require('../models/unit_models/mission'); // 👈 ADD THIS
-
+const topics = require('../../config/topics');
 
 function dashboardHomeForUser(user) {
   const type = user?.membershipType || user?.accessLevel;
@@ -93,62 +93,7 @@ const createGetFormHandler = (unitType, viewPath, { requireTerms = false } = {})
       if (!requireTermsForPosting(req, res)) return;
     }
 
-    const mainTopics = [
-      'AI in Consulting',
-      'AI in Learning',
-      'AI in Project Management',
-      'Analytics in Project Management',
-      'Business Development in Technical Services',
-      'Business Development Metrics',
-      'Candid Communication',
-      'Career Development in Technical Services',
-      'Client Experience',
-      'Client Feedback Software',
-      'Client Interactions',
-      'Closing a Project Strategically',
-      'Conducting Color Reviews of Proposals',
-      'Cross Selling in Multi-Disciplinary Firms',
-      'CRM Platforms',
-      'Designing a Proposal Process',
-      'Emotional Intelligence',
-      'Employee Experience',
-      'Finding Projects Before they Become RFPs',
-      'Integrated Project Delivery or IPD',
-      'Leadership in Technical Consulting',
-      'Leading Change',
-      'Leading Groups on Twennie',
-      'Making a Proposal Easy to Read, Skim, and Evaluate',
-      'Managing Scope So It Doesnt Manage You',
-      'Mental Health in Consulting Environments',
-      'Non-Technical Roles in Technical Environments',
-      'People Before Profit',
-      'Program Management',
-      'Project Management',
-      'Project Management Software',
-      'Proposal Management',
-      'Proposal Strategy',
-      'Pull Marketing',
-      'Pursuing the Right Projects for Your Firm and Your Team',
-      'Remote and Hybrid Work',
-      'Rescuing a Project That Has Gone Off the Rails',
-      'Risk Management',
-      'Social Entrepreneurship',
-      'Social Media, Advertising, and Other Mysteries',
-      'Soft Skills in Technical Environments',
-      'Storytelling in Technical Marketing',
-      'Team Building in Consulting',
-      'The Advantage of Failure',
-      'The First 10 Days of a Project',
-      'The Pareto Principle',
-      'The Power of Play in the Workplace',
-      'The Power of Purpose',
-      'Tips and Tricks for Proposal Proofreading',
-      'Turning a Project into a Business Development Powerhouse',
-      'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
-      'Using Lean in Project Management',
-      'When the Workload is Light',
-      'Workplace Culture'
-    ];
+const mainTopics = require('../config/topics');
 
     return res.render(`unit_form_views/${viewPath}`, {
       layout: 'unitformlayout',
@@ -181,62 +126,7 @@ getMissionForm: (req, res) => {
     // ✅ Gate form access (not just submission)
     if (!requireTermsForPosting(req, res)) return;
 
-    const mainTopics = [
-      'AI in Consulting',
-      'AI in Learning',
-      'AI in Project Management',
-      'Analytics in Project Management',
-      'Business Development in Technical Services',
-      'Business Development Metrics',
-      'Candid Communication',
-      'Career Development in Technical Services',
-      'Client Experience',
-      'Client Feedback Software',
-      'Client Interactions',
-      'Closing a Project Strategically',
-      'Conducting Color Reviews of Proposals',
-      'Cross Selling in Multi-Disciplinary Firms',
-      'CRM Platforms',
-      'Designing a Proposal Process',
-      'Emotional Intelligence',
-      'Employee Experience',
-      'Finding Projects Before they Become RFPs',
-      'Integrated Project Delivery or IPD',
-      'Leadership in Technical Consulting',
-      'Leading Change',
-      'Leading Groups on Twennie',
-      'Making a Proposal Easy to Read, Skim, and Evaluate',
-      'Managing Scope So It Doesnt Manage You',
-      'Mental Health in Consulting Environments',
-      'Non-Technical Roles in Technical Environments',
-      'People Before Profit',
-      'Program Management',
-      'Project Management',
-      'Project Management Software',
-      'Proposal Management',
-      'Proposal Strategy',
-      'Pull Marketing',
-      'Pursuing the Right Projects for Your Firm and Your Team',
-      'Remote and Hybrid Work',
-      'Rescuing a Project That Has Gone Off the Rails',
-      'Risk Management',
-      'Social Entrepreneurship',
-      'Social Media, Advertising, and Other Mysteries',
-      'Soft Skills in Technical Environments',
-      'Storytelling in Technical Marketing',
-      'Team Building in Consulting',
-      'The Advantage of Failure',
-      'The First 10 Days of a Project',
-      'The Pareto Principle',
-      'The Power of Play in the Workplace',
-      'The Power of Purpose',
-      'Tips and Tricks for Proposal Proofreading',
-      'Turning a Project into a Business Development Powerhouse',
-      'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
-      'Using Lean in Project Management',
-      'When the Workload is Light',
-      'Workplace Culture'
-    ];
+const mainTopics = require('../config/topics');
 
     const fromUpcomingId = req.query.fromUpcomingId || '';
 
@@ -402,62 +292,7 @@ getUpcomingForm: (req, res) => {
     // ✅ Gate form access (not just submission)
     if (!requireTermsForPosting(req, res)) return;
 
-    const mainTopics = [
-      'AI in Consulting',
-      'AI in Learning',
-      'AI in Project Management',
-      'Analytics in Project Management',
-      'Business Development in Technical Services',
-      'Business Development Metrics',
-      'Candid Communication',
-      'Career Development in Technical Services',
-      'Client Experience',
-      'Client Feedback Software',
-      'Client Interactions',
-      'Closing a Project Strategically',
-      'Conducting Color Reviews of Proposals',
-      'Cross Selling in Multi-Disciplinary Firms',
-      'CRM Platforms',
-      'Designing a Proposal Process',
-      'Emotional Intelligence',
-      'Employee Experience',
-      'Finding Projects Before they Become RFPs',
-      'Integrated Project Delivery or IPD',
-      'Leadership in Technical Consulting',
-      'Leading Change',
-      'Leading Groups on Twennie',
-      'Making a Proposal Easy to Read, Skim, and Evaluate',
-      'Managing Scope So It Doesnt Manage You',
-      'Mental Health in Consulting Environments',
-      'Non-Technical Roles in Technical Environments',
-      'People Before Profit',
-      'Program Management',
-      'Project Management',
-      'Project Management Software',
-      'Proposal Management',
-      'Proposal Strategy',
-      'Pull Marketing',
-      'Pursuing the Right Projects for Your Firm and Your Team',
-      'Remote and Hybrid Work',
-      'Rescuing a Project That Has Gone Off the Rails',
-      'Risk Management',
-      'Social Entrepreneurship',
-      'Social Media, Advertising, and Other Mysteries',
-      'Soft Skills in Technical Environments',
-      'Storytelling in Technical Marketing',
-      'Team Building in Consulting',
-      'The Advantage of Failure',
-      'The First 10 Days of a Project',
-      'The Pareto Principle',
-      'The Power of Play in the Workplace',
-      'The Power of Purpose',
-      'Tips and Tricks for Proposal Proofreading',
-      'Turning a Project into a Business Development Powerhouse',
-      'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
-      'Using Lean in Project Management',
-      'When the Workload is Light',
-      'Workplace Culture'
-    ];
+const mainTopics = require('../config/topics');
 
     const unitTypes = [
       'article','video','interview','exercise','template',
@@ -484,62 +319,7 @@ getUpcomingForm: (req, res) => {
 // ---- submitUpcoming (rewritten for consistency: req.user only) ----
 submitUpcoming: async (req, res) => {
   try {
-    const mainTopics = [
-      'AI in Consulting',
-      'AI in Learning',
-      'AI in Project Management',
-      'Analytics in Project Management',
-      'Business Development in Technical Services',
-      'Business Development Metrics',
-      'Candid Communication',
-      'Career Development in Technical Services',
-      'Client Experience',
-      'Client Feedback Software',
-      'Client Interactions',
-      'Closing a Project Strategically',
-      'Conducting Color Reviews of Proposals',
-      'Cross Selling in Multi-Disciplinary Firms',
-      'CRM Platforms',
-      'Designing a Proposal Process',
-      'Emotional Intelligence',
-      'Employee Experience',
-      'Finding Projects Before they Become RFPs',
-      'Integrated Project Delivery or IPD',
-      'Leadership in Technical Consulting',
-      'Leading Change',
-      'Leading Groups on Twennie',
-      'Making a Proposal Easy to Read, Skim, and Evaluate',
-      'Managing Scope So It Doesnt Manage You',
-      'Mental Health in Consulting Environments',
-      'Non-Technical Roles in Technical Environments',
-      'People Before Profit',
-      'Program Management',
-      'Project Management',
-      'Project Management Software',
-      'Proposal Management',
-      'Proposal Strategy',
-      'Pull Marketing',
-      'Pursuing the Right Projects for Your Firm and Your Team',
-      'Remote and Hybrid Work',
-      'Rescuing a Project That Has Gone Off the Rails',
-      'Risk Management',
-      'Social Entrepreneurship',
-      'Social Media, Advertising, and Other Mysteries',
-      'Soft Skills in Technical Environments',
-      'Storytelling in Technical Marketing',
-      'Team Building in Consulting',
-      'The Advantage of Failure',
-      'The First 10 Days of a Project',
-      'The Pareto Principle',
-      'The Power of Play in the Workplace',
-      'The Power of Purpose',
-      'Tips and Tricks for Proposal Proofreading',
-      'Turning a Project into a Business Development Powerhouse',
-      'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
-      'Using Lean in Project Management',
-      'When the Workload is Light',
-      'Workplace Culture'
-    ];
+const mainTopics = require('../config/topics');
 
     const unitTypes = [
       'article','video','interview','exercise','template',
@@ -588,10 +368,17 @@ submitUpcoming: async (req, res) => {
 let parsedSecondaryTopics = [];
 
 if (Array.isArray(secondary_topics)) {
-  parsedSecondaryTopics = secondary_topics.filter(topic => typeof topic === 'string' && topic.trim() !== '');
+  parsedSecondaryTopics = secondary_topics.filter(
+    topic => typeof topic === 'string' && topic.trim() !== ''
+  );
 } else if (typeof secondary_topics === 'string' && secondary_topics.trim() !== '') {
   parsedSecondaryTopics = [secondary_topics.trim()];
 }
+
+console.log('req.body.secondary_topics raw:', req.body.secondary_topics);
+console.log('Array.isArray(req.body.secondary_topics):', Array.isArray(req.body.secondary_topics));
+console.log('typeof req.body.secondary_topics:', typeof req.body.secondary_topics);
+console.log('parsedSecondaryTopics:', parsedSecondaryTopics);
     const ALLOWED_STATUS = ['in production', 'released', 'cancelled'];
     const safeStatus = ALLOWED_STATUS.includes(status) ? status : 'in production';
 
@@ -714,62 +501,7 @@ prefillFromUpcoming: async (req, res) => {
       });
     }
 
-    const mainTopics = [
-      'AI in Consulting',
-      'AI in Learning',
-      'AI in Project Management',
-      'Analytics in Project Management',
-      'Business Development in Technical Services',
-      'Business Development Metrics',
-      'Candid Communication',
-      'Career Development in Technical Services',
-      'Client Experience',
-      'Client Feedback Software',
-      'Client Interactions',
-      'Closing a Project Strategically',
-      'Conducting Color Reviews of Proposals',
-      'Cross Selling in Multi-Disciplinary Firms',
-      'CRM Platforms',
-      'Designing a Proposal Process',
-      'Emotional Intelligence',
-      'Employee Experience',
-      'Finding Projects Before they Become RFPs',
-      'Integrated Project Delivery or IPD',
-      'Leadership in Technical Consulting',
-      'Leading Change',
-      'Leading Groups on Twennie',
-      'Making a Proposal Easy to Read, Skim, and Evaluate',
-      'Managing Scope So It Doesnt Manage You',
-      'Mental Health in Consulting Environments',
-      'Non-Technical Roles in Technical Environments',
-      'People Before Profit',
-      'Program Management',
-      'Project Management',
-      'Project Management Software',
-      'Proposal Management',
-      'Proposal Strategy',
-      'Pull Marketing',
-      'Pursuing the Right Projects for Your Firm and Your Team',
-      'Remote and Hybrid Work',
-      'Rescuing a Project That Has Gone Off the Rails',
-      'Risk Management',
-      'Social Entrepreneurship',
-      'Social Media, Advertising, and Other Mysteries',
-      'Soft Skills in Technical Environments',
-      'Storytelling in Technical Marketing',
-      'Team Building in Consulting',
-      'The Advantage of Failure',
-      'The First 10 Days of a Project',
-      'The Pareto Principle',
-      'The Power of Play in the Workplace',
-      'The Power of Purpose',
-      'Tips and Tricks for Proposal Proofreading',
-      'Turning a Project into a Business Development Powerhouse',
-      'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
-      'Using Lean in Project Management',
-      'When the Workload is Light',
-      'Workplace Culture'
-    ];
+const mainTopics = require('../config/topics');
 
     // Image fallback
     const image = upcoming.image?.url
@@ -1012,62 +744,8 @@ const dashboardLink = dashboardHomeForUser(req.user);
 
 submitArticle: async (req, res) => {
   try {
-    const mainTopics = [
-  'AI in Consulting',
-  'AI in Learning',
-  'AI in Project Management',
-  'Analytics in Project Management',
-  'Business Development in Technical Services',
-  'Business Development Metrics',
-  'Candid Communication',
-  'Career Development in Technical Services',
-  'Client Experience',
-  'Client Feedback Software',
-  'Client Interactions',
-  'Closing a Project Strategically',
-  'Conducting Color Reviews of Proposals',
-  'Cross Selling in Multi-Disciplinary Firms',
-  'CRM Platforms',
-  'Designing a Proposal Process',
-  'Emotional Intelligence',
-  'Employee Experience',
-  'Finding Projects Before they Become RFPs',
-  'Integrated Project Delivery or IPD',
-  'Leadership in Technical Consulting',
-  'Leading Change',
-  'Leading Groups on Twennie',
-  'Making a Proposal Easy to Read, Skim, and Evaluate',
-  'Managing Scope So It Doesnt Manage You',
-  'Mental Health in Consulting Environments',
-  'Non-Technical Roles in Technical Environments',
-  'People Before Profit',
-  'Program Management',
-  'Project Management',
-  'Project Management Software',
-  'Proposal Management',
-  'Proposal Strategy',
-  'Pull Marketing',
-  'Pursuing the Right Projects for Your Firm and Your Team',
-  'Remote and Hybrid Work',
-  'Rescuing a Project That Has Gone Off the Rails',
-  'Risk Management',
-  'Social Entrepreneurship',
-  'Social Media, Advertising, and Other Mysteries',
-  'Soft Skills in Technical Environments',
-  'Storytelling in Technical Marketing',
-  'Team Building in Consulting',
-  'The Advantage of Failure',
-  'The First 10 Days of a Project',
-  'The Pareto Principle',
-  'The Power of Play in the Workplace',
-  'The Power of Purpose',
-  'Tips and Tricks for Proposal Proofreading',
-  'Turning a Project into a Business Development Powerhouse',
-  'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
-  'Using Lean in Project Management',
-  'When the Workload is Light',
-  'Workplace Culture'
-    ];
+ 
+    const mainTopics = require('../config/topics');
 
     console.log('Incoming file:', req.file);
 
@@ -1123,35 +801,44 @@ if (wordCount < 800 || wordCount > 1200) {
 }
 
 
-    // checkboxes
-    const booleanFields = [
-      'clarify_topic',
-      'produce_deliverables',
-      'new_ideas',
-      'include_results',
-      'permission',
-    ];
-    const normalizedBooleans = {};
-    for (const field of booleanFields) normalizedBooleans[field] = req.body[field] === 'on';
+// checkboxes
+const booleanFields = [
+  'clarify_topic',
+  'produce_deliverables',
+  'new_ideas',
+  'include_results',
+  'permission',
+];
+const normalizedBooleans = {};
+for (const field of booleanFields) normalizedBooleans[field] = req.body[field] === 'on';
 
-    // secondary topic (single optional)
-    const parsedSecondaryTopics =
-      secondary_topics && typeof secondary_topics === 'string' && secondary_topics.trim() !== ''
-        ? [secondary_topics]
-        : [];
+// secondary topic (single optional)
+let parsedSecondaryTopics = [];
 
-    const articleData = {
-      article_title,
-      main_topic,
-      secondary_topics: parsedSecondaryTopics,
-      sub_topic,
-      article_body: cleanHtml,
-      short_summary,
-      full_summary,
-      visibility,
-      author: { id: req.user._id },
-      ...normalizedBooleans,
-    };
+if (Array.isArray(secondary_topics)) {
+  parsedSecondaryTopics = secondary_topics.filter(
+    topic => typeof topic === 'string' && topic.trim() !== ''
+  );
+} else if (typeof secondary_topics === 'string' && secondary_topics.trim() !== '') {
+  parsedSecondaryTopics = [secondary_topics.trim()];
+}
+
+console.log('parsedSecondaryTopics:', parsedSecondaryTopics);
+
+const articleData = {
+  article_title,
+  main_topic,
+  secondary_topics: parsedSecondaryTopics,
+  sub_topic,
+  article_body: cleanHtml,
+  short_summary,
+  full_summary,
+  visibility,
+  author: { id: req.user._id },
+  ...normalizedBooleans,
+};
+
+console.log('FINAL secondary_topics being saved:', articleData.secondary_topics);
 
     // image upload (optional)
     if (req.file) {
@@ -1460,76 +1147,47 @@ submitInterview: async (req, res) => {
 
 
     
- getPromptForm: async (req, res) => {
+getPromptForm: async (req, res) => {
   try {
     console.log('New prompt set form requested');
 
-    // ✅ Gate form access (not just submission)
     if (!requireTermsForPosting(req, res)) return;
 
-    // Load existing data if editing; otherwise, use an empty object
     const existingData = req.promptSet || {};
-
-    // Retrieve any selected badge from the session (if a badge was chosen)
     const selectedBadge = req.session.selectedBadge || {};
 
-    // Attach the badge to the data (so the form will display it)
     existingData.badge = selectedBadge;
-
-    // Clear the badge from the session so that a new blank form won’t pre-fill a badge
     req.session.selectedBadge = null;
+
+    const mainTopics = require('../config/topics');
+    const secondaryTopics = require('../config/topics');
 
     return res.render('unit_form_views/form_promptset', {
       layout: 'unitformlayout',
       data: existingData,
-      mainTopics: [
-        'AI in Consulting','AI in Learning','AI in Project Management','Analytics in Project Management',
-        'Business Development in Technical Services','Business Development Metrics','Candid Communication',
-        'Career Development in Technical Services','Client Experience','Client Feedback Software',
-        'Client Interactions','Closing a Project Strategically','Conducting Color Reviews of Proposals',
-        'Cross Selling in Multi-Disciplinary Firms','CRM Platforms','Designing a Proposal Process',
-        'Emotional Intelligence','Employee Experience','Finding Projects Before they Become RFPs',
-        'Integrated Project Delivery or IPD','Leadership in Technical Consulting','Leading Change',
-        'Leading Groups on Twennie','Making a Proposal Easy to Read, Skim, and Evaluate',
-        'Managing Scope So It Doesnt Manage You','Mental Health in Consulting Environments',
-        'Non-Technical Roles in Technical Environments','People Before Profit','Program Management',
-        'Project Management','Project Management Software','Proposal Management','Proposal Strategy',
-        'Pull Marketing','Pursuing the Right Projects for Your Firm and Your Team','Remote and Hybrid Work',
-        'Rescuing a Project That Has Gone Off the Rails','Risk Management','Social Entrepreneurship',
-        'Social Media, Advertising, and Other Mysteries','Soft Skills in Technical Environments',
-        'Storytelling in Technical Marketing','Team Building in Consulting','The Advantage of Failure',
-        'The First 10 Days of a Project','The Pareto Principle','The Power of Play in the Workplace',
-        'The Power of Purpose','Tips and Tricks for Proposal Proofreading',
-        'Turning a Project into a Business Development Powerhouse',
-        'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
-        'Using Lean in Project Management','When the Workload is Light','Workplace Culture'
-      ],
-      secondaryTopics: [
-        'AI in Consulting','AI in Learning','AI in Project Management','Analytics in Project Management',
-        'Business Development in Technical Services','Business Development Metrics','Candid Communication',
-        'Career Development in Technical Services','Client Experience','Client Feedback Software',
-        'Client Interactions','Closing a Project Strategically','Conducting Color Reviews of Proposals',
-        'Cross Selling in Multi-Disciplinary Firms','CRM Platforms','Designing a Proposal Process',
-        'Emotional Intelligence','Employee Experience','Finding Projects Before they Become RFPs',
-        'Integrated Project Delivery or IPD','Leadership in Technical Consulting','Leading Change',
-        'Leading Groups on Twennie','Making a Proposal Easy to Read, Skim, and Evaluate',
-        'Managing Scope So It Doesnt Manage You','Mental Health in Consulting Environments',
-        'Non-Technical Roles in Technical Environments','People Before Profit','Program Management',
-        'Project Management','Project Management Software','Proposal Management','Proposal Strategy',
-        'Pull Marketing','Pursuing the Right Projects for Your Firm and Your Team','Remote and Hybrid Work',
-        'Rescuing a Project That Has Gone Off the Rails','Risk Management','Social Entrepreneurship',
-        'Social Media, Advertising, and Other Mysteries','Soft Skills in Technical Environments',
-        'Storytelling in Technical Marketing','Team Building in Consulting','The Advantage of Failure',
-        'The First 10 Days of a Project','The Pareto Principle','The Power of Play in the Workplace',
-        'The Power of Purpose','Tips and Tricks for Proposal Proofreading',
-        'Turning a Project into a Business Development Powerhouse',
-        'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
-        'Using Lean in Project Management','When the Workload is Light','Workplace Culture'
-      ],
+      mainTopics,
+      secondaryTopics,
       characteristics: [
-        'educational','motivational','provocative','fun','hilarious','silly','competitive','restorative',
-        'energizing','relationship-building','team building','stress-relieving','insightful','calming',
-        'reassuring','encouraging','creative','imaginative','heart-warming','other'
+        'educational',
+        'motivational',
+        'provocative',
+        'fun',
+        'hilarious',
+        'silly',
+        'competitive',
+        'restorative',
+        'energizing',
+        'relationship-building',
+        'team building',
+        'stress-relieving',
+        'insightful',
+        'calming',
+        'reassuring',
+        'encouraging',
+        'creative',
+        'imaginative',
+        'heart-warming',
+        'other'
       ],
       frequencies: ['daily', 'weekly', 'monthly', 'quarterly'],
       csrfToken: getCsrfToken(req),
@@ -1695,63 +1353,8 @@ return res.status(403).render('unit_form_views/error', {
 
       
  submitExercise: async (req, res) => {
-  const mainTopics = [
-  'AI in Consulting',
-  'AI in Learning',
-  'AI in Project Management',
-  'Analytics in Project Management',
-  'Business Development in Technical Services',
-  'Business Development Metrics',
-  'Candid Communication',
-  'Career Development in Technical Services',
-  'Client Experience',
-  'Client Feedback Software',
-  'Client Interactions',
-  'Closing a Project Strategically',
-  'Conducting Color Reviews of Proposals',
-  'Cross Selling in Multi-Disciplinary Firms',
-  'CRM Platforms',
-  'Designing a Proposal Process',
-  'Emotional Intelligence',
-  'Employee Experience',
-  'Finding Projects Before they Become RFPs',
-  'Integrated Project Delivery or IPD',
-  'Leadership in Technical Consulting',
-  'Leading Change',
-  'Leading Groups on Twennie',
-  'Making a Proposal Easy to Read, Skim, and Evaluate',
-  'Managing Scope So It Doesnt Manage You',
-  'Mental Health in Consulting Environments',
-  'Non-Technical Roles in Technical Environments',
-  'People Before Profit',
-  'Program Management',
-  'Project Management',
-  'Project Management Software',
-  'Proposal Management',
-  'Proposal Strategy',
-  'Pull Marketing',
-  'Pursuing the Right Projects for Your Firm and Your Team',
-  'Remote and Hybrid Work',
-  'Rescuing a Project That Has Gone Off the Rails',
-  'Risk Management',
-  'Social Entrepreneurship',
-  'Social Media, Advertising, and Other Mysteries',
-  'Soft Skills in Technical Environments',
-  'Storytelling in Technical Marketing',
-  'Team Building in Consulting',
-  'The Advantage of Failure',
-  'The First 10 Days of a Project',
-  'The Pareto Principle',
-  'The Power of Play in the Workplace',
-  'The Power of Purpose',
-  'Tips and Tricks for Proposal Proofreading',
-  'Turning a Project into a Business Development Powerhouse',
-  'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
-  'Using Lean in Project Management',
-  'When the Workload is Light',
-  'Workplace Culture'
-  ];
 
+const mainTopics = require('../config/topics');
   try {
 
     if (!req.user || !req.user._id) {
@@ -2065,62 +1668,8 @@ return res.render('unit_form_views/unit_success', {
 },
 
   submitMission: async (req, res) => {
-  const mainTopics = [
-  'AI in Consulting',
-  'AI in Learning',
-  'AI in Project Management',
-  'Analytics in Project Management',
-  'Business Development in Technical Services',
-  'Business Development Metrics',
-  'Candid Communication',
-  'Career Development in Technical Services',
-  'Client Experience',
-  'Client Feedback Software',
-  'Client Interactions',
-  'Closing a Project Strategically',
-  'Conducting Color Reviews of Proposals',
-  'Cross Selling in Multi-Disciplinary Firms',
-  'CRM Platforms',
-  'Designing a Proposal Process',
-  'Emotional Intelligence',
-  'Employee Experience',
-  'Finding Projects Before they Become RFPs',
-  'Integrated Project Delivery or IPD',
-  'Leadership in Technical Consulting',
-  'Leading Change',
-  'Leading Groups on Twennie',
-  'Making a Proposal Easy to Read, Skim, and Evaluate',
-  'Managing Scope So It Doesnt Manage You',
-  'Mental Health in Consulting Environments',
-  'Non-Technical Roles in Technical Environments',
-  'People Before Profit',
-  'Program Management',
-  'Project Management',
-  'Project Management Software',
-  'Proposal Management',
-  'Proposal Strategy',
-  'Pull Marketing',
-  'Pursuing the Right Projects for Your Firm and Your Team',
-  'Remote and Hybrid Work',
-  'Rescuing a Project That Has Gone Off the Rails',
-  'Risk Management',
-  'Social Entrepreneurship',
-  'Social Media, Advertising, and Other Mysteries',
-  'Soft Skills in Technical Environments',
-  'Storytelling in Technical Marketing',
-  'Team Building in Consulting',
-  'The Advantage of Failure',
-  'The First 10 Days of a Project',
-  'The Pareto Principle',
-  'The Power of Play in the Workplace',
-  'The Power of Purpose',
-  'Tips and Tricks for Proposal Proofreading',
-  'Turning a Project into a Business Development Powerhouse',
-  'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
-  'Using Lean in Project Management',
-  'When the Workload is Light',
-  'Workplace Culture'
-  ];
+
+    const mainTopics = require('../config/topics');
 
   try {
 
