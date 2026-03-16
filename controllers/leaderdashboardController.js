@@ -1446,13 +1446,16 @@ if (Array.isArray(assignedPromptSets) && assignedPromptSets[0]) {
 
 
 
+let organizationLogo = null;
 
+if (userData.organization) {
+  const orgProfile = await OrganizationProfile
+    .findOne({ organizationId: userData.organization })
+    .select('logo')
+    .lean();
 
-
-
-console.log("🔍 dashboard organizationId:", userData.organization ? userData.organization.toString() : null);
-
-console.log("🔍 dashboard adminMode source isAdmin:", userData.isAdmin);
+  organizationLogo = orgProfile?.logo?.url || null;
+}
 
 return res.render('leader_dashboard', {
   layout: 'dashboardlayout',
@@ -1472,6 +1475,7 @@ return res.render('leader_dashboard', {
   organizationId: userData.organization ? userData.organization.toString() : null,
   suggestedOrg,
   orgGroups,
+  organizationLogo,
 
   leaderGroupMembers: resolvedGroupMembers,
   maxGroupSize: userData.maxGroupSize,
