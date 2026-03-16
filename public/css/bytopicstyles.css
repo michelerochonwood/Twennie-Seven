@@ -1138,3 +1138,13 @@ html, body {
   background: #fff;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
 }
+
+.bytopic-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding-bottom: 2.5rem;
+  margin-top: 5.25rem;
+  position: relative;
+}
