@@ -158,7 +158,7 @@ getNuggetForm: (req, res) => {
     });
   } catch (error) {
     console.error('Error rendering nugget form:', error);
-    return res.status(500).send('Error rendering nugget form.');
+    return res.status(500).send('Error rendering the nugget form.');
   }
 },
 
@@ -197,7 +197,7 @@ delete unitData.topic;
 
     // ✅ Create or update
     const unit = req.body._id
-      ? await Model.findByIdAndUpdate(req.body._id, unitData, {
+      ? await Model.findByIdAndUpdate(req.body._id, unitData, {   
           new: true,
           runValidators: true,
         })
