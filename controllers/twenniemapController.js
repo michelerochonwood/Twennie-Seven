@@ -60,7 +60,7 @@ exports.getTeachMe = (req, res) => {
 
     {
       key: "mine",
-      title: "monitor project opportunities",
+      title: "the Mine - monitor project opportunities",
       subtitle: "Track nuggets by client, region, or discipline.",
       images: [
         {
@@ -85,8 +85,8 @@ exports.getTeachMe = (req, res) => {
     },
     {
       key: "missions",
-      title: "package learning and tasks...then assign",
-      subtitle: "Assign missions and track completion.",
+      title: "Mission Control - package learning and tasks...then assign",
+      subtitle: "assign missions and track completion.",
       images: [
         {
           src: "/images/missioncontrolscreenshot.png",

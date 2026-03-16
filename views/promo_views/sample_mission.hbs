@@ -118,17 +118,24 @@
       <section class="white-container">
         <h2 class="single_mission-section-title">Related Twennie learning units</h2>
 
-        <ul class="single_mission-learning-units">
-          <li class="single_mission-learning-unit">
-            <a class="single_mission-learning-unit-link" href="#" aria-disabled="true">
-              <img class="single_mission-learning-unit-icon" src="/icons/video.svg" alt="">
-              <div>
-                <div class="single_mission-learning-unit-type">video</div>
-                <div class="single_mission-learning-unit-title">What is Pull Marketing? How is it Done in Technical Services?</div>
-              </div>
-            </a>
-          </li>
-        </ul>
+<ul class="single_mission-learning-units">
+  <li class="single_mission-learning-unit">
+    <div
+      class="single_mission-learning-unit-link disabled-link"
+      role="link"
+      aria-disabled="true"
+      tabindex="-1"
+    >
+      <img class="single_mission-learning-unit-icon" src="/icons/video.svg" alt="">
+      <div>
+        <div class="single_mission-learning-unit-type">video</div>
+        <div class="single_mission-learning-unit-title">
+          What is Pull Marketing? How is it Done in Technical Services?
+        </div>
+      </div>
+    </div>
+  </li>
+</ul>
       </section>
 
       <!-- Badge -->
@@ -187,3 +194,11 @@
   </aside>
 
 </div>
+
+<style>
+  .disabled-link {
+  cursor: default;
+  pointer-events: none;
+  opacity: 0.7;
+}
+</style>
