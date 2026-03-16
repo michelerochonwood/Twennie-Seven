@@ -24,6 +24,7 @@ const Mission   = require('../models/unit_models/mission');
 const Nugget    = require('../models/unit_models/nugget');
 const GroupMember = require('../models/member_models/group_member');
 const Upcoming = require('../models/unit_models/upcoming');
+const OrganizationProfile = require('../models/profile_models/organization_profile');
 
 
 // -----------------------------
@@ -123,11 +124,24 @@ async function baseRenderData(req) {
     ].join(' '))
     .lean();
 
+  let organizationLogo = null;
+
+  if (leader?.organization) {
+    const orgProfile = await OrganizationProfile.findOne({
+      organizationId: leader.organization
+    })
+      .select('logo')
+      .lean();
+
+    organizationLogo = orgProfile?.logo?.url || null;
+  }
+
   return {
     layout: 'dashboardlayout',
     title: 'Leader Dashboard',
     adminMode: true,
     leader,
+    organizationLogo,
     csrfToken: req.csrfToken ? req.csrfToken() : null
   };
 }

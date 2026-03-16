@@ -7,21 +7,7 @@
 <!-- Profile Image -->
 <div class="leader-profile-image-container">
   <img
-    src="
-      {{#if adminMode}}
-        {{#if organizationLogo}}
-          {{organizationLogo}}
-        {{else}}
-          /images/default-organization-logo.png
-        {{/if}}
-      {{else}}
-        {{#if leader.profileImage}}
-          {{leader.profileImage}}
-        {{else}}
-          /images/default-avatar.png
-        {{/if}}
-      {{/if}}
-    "
+    src="{{#if adminMode}}{{#if organizationLogo}}{{organizationLogo}}{{else}}/images/default-organization-logo.png{{/if}}{{else}}{{#if leader.profileImage}}{{leader.profileImage}}{{else}}/images/default-avatar.png{{/if}}{{/if}}"
     alt="Profile photo"
     class="leader-profile-image"
   >
