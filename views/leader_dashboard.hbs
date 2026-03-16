@@ -22,7 +22,7 @@
           </a>
         {{else}}
           <a class="dashboard-tab" href="/dashboard/leader/org-admin/my-organization" style="text-decoration:none;">
-            <span class="tab-title">organization admin</span>
+            <span class="tab-title">switch to admin dashboard</span>
             <div class="tab-arrow"></div>
           </a>
         {{/if}}
@@ -39,15 +39,7 @@
 
         <!-- Admin Tab Navigation -->
         <div class="dashboard-tabs-container dashboard-tabs-container--admin" data-tabs-scope="admin">
-          <button
-            class="dashboard-tab {{#if (eq adminTab "my-organization")}}active{{/if}}"
-            type="button"
-            data-tab="admin-my-organization"
-            data-href="/dashboard/leader/org-admin/my-organization"
-          >
-            <span class="tab-title">my organization</span>
-            <div class="tab-arrow"></div>
-          </button>
+
 
           <button
             class="dashboard-tab {{#if (eq adminTab "groups-leaders")}}active{{/if}}"
@@ -60,12 +52,22 @@
           </button>
 
           <button
+            class="dashboard-tab {{#if (eq adminTab "my-organization")}}active{{/if}}"
+            type="button"
+            data-tab="admin-my-organization"
+            data-href="/dashboard/leader/org-admin/my-organization"
+          >
+            <span class="tab-title">my organization stats</span>
+            <div class="tab-arrow"></div>
+          </button>
+
+          <button
             class="dashboard-tab {{#if (eq adminTab "requests")}}active{{/if}}"
             type="button"
             data-tab="admin-requests"
             data-href="/dashboard/leader/org-admin/requests"
           >
-            <span class="tab-title">requests to join</span>
+            <span class="tab-title">requests from leaders to join</span>
             <div class="tab-arrow"></div>
           </button>
 
@@ -85,7 +87,7 @@
             data-tab="admin-company-library"
             data-href="/dashboard/leader/org-admin/company-library"
           >
-            <span class="tab-title">company library units</span>
+            <span class="tab-title">organization's library units</span>
             <div class="tab-arrow"></div>
           </button>
 
@@ -95,7 +97,7 @@
             data-tab="admin-reports"
             data-href="/dashboard/leader/org-admin/reports"
           >
-            <span class="tab-title">organization reports</span>
+            <span class="tab-title">organization's reports</span>
             <div class="tab-arrow"></div>
           </button>
         </div>
@@ -187,13 +189,13 @@
         </button>
 
         <button class="dashboard-tab" type="button" data-tab="tagged" data-count="{{leaderCounts.tagged}}">
-          <span class="tab-title">my team's learning and assignments</span>
+          <span class="tab-title">my group's learning and assignments</span>
           {{#if leaderBadges.tagged}}<span class="tab-dot"></span>{{/if}}
           <div class="tab-arrow"></div>
         </button>
 
         <button class="dashboard-tab" type="button" data-tab="missions" data-count="{{leaderCounts.missions}}">
-          <span class="tab-title">my team's missions</span>
+          <span class="tab-title">my group's missions</span>
           {{#if leaderBadges.missions}}<span class="tab-dot"></span>{{/if}}
           <div class="tab-arrow"></div>
         </button>
