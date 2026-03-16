@@ -1450,9 +1450,9 @@ if (Array.isArray(assignedPromptSets) && assignedPromptSets[0]) {
 
 
 
+console.log("🔍 dashboard organizationId:", userData.organization ? userData.organization.toString() : null);
 
-
-
+console.log("🔍 dashboard adminMode source isAdmin:", userData.isAdmin);
 
 return res.render('leader_dashboard', {
   layout: 'dashboardlayout',
