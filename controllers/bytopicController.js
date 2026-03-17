@@ -373,16 +373,16 @@ async function getAuthorOrgKey(authorId) {
     }
   } catch (_) { /* ignore */ }
 
-  let doc = aLeader || aGM || aMember || {};
+  const doc = aLeader || aGM || aMember || {};
+
+  // STEP 1: use explicit org fields only
   let orgKey =
     normalize(doc.organization) ||
     normalize(doc.organizationId) ||
     normalize(doc.organizationName) ||
-    emailDomain(doc.email) ||
     null;
 
-  // Fallback: if author is a group member with no org fields,
-  // inherit org from their leader/group record
+  // STEP 2: if group member has no org fields, inherit from leader/group
   if (!orgKey && aGM) {
     try {
       const gmLeaderId = aGM.leader || aGM.groupId || null;
@@ -397,12 +397,11 @@ async function getAuthorOrgKey(authorId) {
             normalize(parentLeader.organization) ||
             normalize(parentLeader.organizationId) ||
             normalize(parentLeader.organizationName) ||
-            emailDomain(parentLeader.email) ||
             null;
         }
       }
 
-      // Fallback 2: inherit by groupName
+      // optional extra fallback: match by groupName if needed
       if (!orgKey && aGM.groupName) {
         const parentLeaderByGroupName = await Leader.findOne({ groupName: aGM.groupName })
           .select('organizationId organization organizationName email groupName')
@@ -413,11 +412,15 @@ async function getAuthorOrgKey(authorId) {
             normalize(parentLeaderByGroupName.organization) ||
             normalize(parentLeaderByGroupName.organizationId) ||
             normalize(parentLeaderByGroupName.organizationName) ||
-            emailDomain(parentLeaderByGroupName.email) ||
             null;
         }
       }
     } catch (_) { /* ignore */ }
+  }
+
+  // STEP 3: optional final fallback to email domain
+  if (!orgKey) {
+    orgKey = emailDomain(doc.email) || null;
   }
 
   authorOrgKeyCache.set(key, orgKey);
