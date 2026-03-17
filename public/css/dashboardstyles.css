@@ -2786,6 +2786,25 @@ html, body {
 
 }
 
+.leader-topic-suggestion-single {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.leader-topic-suggestion-single h5 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #262262;
+  margin-bottom: 0.5rem;
+}
+
+.leader-topic-suggestion-single p {
+  font-size: 0.85rem;
+  color: #333;
+  line-height: 1.5;
+}
+
 .leader-membership-tab {
   text-align: center;
   font-family: "Figtree";
