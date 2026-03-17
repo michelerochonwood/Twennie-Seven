@@ -439,6 +439,17 @@ if (myOrgKey) {
   for (const aid of uniqAuthorIds) {
     orgKeyMap.set(aid, await getAuthorOrgKey(aid));
   }
+    // 🔍 DEBUG LOGS — PUT THEM HERE
+  console.log('myOrgKey:', myOrgKey);
+  console.log('orgKeyMap:', Object.fromEntries(orgKeyMap));
+
+  console.log('org unit check:', libraryUnits.map(u => ({
+    title: u.title,
+    authorId: String(u.authorId),
+    visibility: u.visibility,
+    orgKey: orgKeyMap.get(String(u.authorId))
+  })));
+
   orgLibraryUnits = libraryUnits.filter(u => {
     const vis = u.visibility || 'all_members';
     if (!['organization_only', 'all_members'].includes(vis)) return false;
