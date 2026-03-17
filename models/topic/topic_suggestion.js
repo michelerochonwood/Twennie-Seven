@@ -15,14 +15,11 @@ const TopicSuggestionSchema = new mongoose.Schema({
   email: { type: String, required: true },
   groupName: { type: String },
   topicTitle: { type: String, required: true },
-  paragraph1: { type: String, required: true },
-  paragraph2: { type: String, required: true },
-  paragraph3: { type: String, required: true },
+  description: { type: String, required: true },
   submittedAt: { type: Date, default: Date.now },
   approved: { type: Boolean, default: false },
   approvalDate: { type: Date },
   expectedLibraryDate: { type: Date }
 });
-
 
 module.exports = mongoose.model('TopicSuggestion', TopicSuggestionSchema);

@@ -1,53 +1,34 @@
-<h2 class="form-header">suggest a new topic</h2>
-<div class="suggest-topic-form">
-  <form action="/topics/suggest" method="POST">
-    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+<!-- ✅ Topic Suggestion Section -->
+<div class="leader-topic-suggestion-card">
+  {{#if topicSuggestions.length}}
+    {{#each topicSuggestions}}
+      <h4 class="leader-topic-suggestion-title">suggested new topic: {{this.topicTitle}}</h4>
+      <p class="leader-topic-suggestion-meta">
+        Submitted on {{formatDate this.submittedAt}} |
+        {{#if this.approved}}
+          <span class="approved">✅ Approved</span><br>
+          Estimated library release: {{formatDate this.expectedLibraryDate}}
+        {{else}}
+          <span class="pending">🕓 Approval pending</span>
+        {{/if}}
+      </p>
 
-    <div class="form-field">
-      <label for="name">your name</label>
-      <input type="text" id="name" name="name" value="{{user.name}}" required>
+      <div class="leader-topic-suggestion-single">
+        <h5>Why should this topic be added to Twennie’s library?</h5>
+        <p>{{this.description}}</p>
+      </div>
+    {{/each}}
+  {{else}}
+    <h4 class="leader-topic-suggestion-title">No Suggestions Yet</h4>
+    <p class="leader-topic-suggestion-meta">You have not suggested any new topics for Twennie’s library.</p>
+  {{/if}}
+
+  <!-- ✅ Always show suggest-a-topic call-to-action -->
+  <div class="topic-grid-center" style="margin-top: 30px;">
+    <div class="topic-item">
+      <h3>suggest a new topic</h3>
+      <p>Have an idea that would benefit Twennie members? We’d love to hear it. Use the form to propose a new topic for future learning content. Your topic will not be connected to your username or profile. It will become part of Twennie’s shared topic library.</p>
+      <a href="/topics/suggest" class="suggest-topic-button">submit a topic</a>
     </div>
-
-    <div class="form-field">
-      <label for="email">your email</label>
-      <input type="email" id="email" name="email" value="{{user.email}}" required>
-    </div>
-
-    {{#if user.groupName}}
-    <div class="form-field">
-      <label for="groupName">group name</label>
-      <input type="text" id="groupName" name="groupName" value="{{user.groupName}}">
-    </div>
-    {{/if}}
-
-    <div class="form-field">
-      <label for="topicTitle">new topic title</label>
-      <input type="text" id="topicTitle" name="topicTitle" required>
-    </div>
-
-<div class="form-field">
-  <label for="paragraph1">paragraph 1</label>
-  <textarea id="paragraph1" name="paragraph1" required></textarea>
-  <p>Tell us about the history of your topic. How has it evolved? Why is it especially important now?</p> 
-  <p class="form-helper-text">Suggested: 75–150 words</p>
+  </div>
 </div>
-
-<div class="form-field">
-  <label for="paragraph2">paragraph 2</label>
-  <textarea id="paragraph2" name="paragraph2" required></textarea>
-  <p>Tell us about how your topic fits in the world of technical services. Who is affected and why?</p>
-  <p class="form-helper-text">Suggested: 75–150 words</p>
-</div>
-
-<div class="form-field">
-  <label for="paragraph3">paragraph 3</label>
-  <textarea id="paragraph3" name="paragraph3" required></textarea>
-  <p>Tell us about the future of your topic. How will it develop over time? How will it affect working technical professionals?</p>
-  <p class="form-helper-text">Suggested: 75–150 words</p>
-</div>
-
-  <p>Once you submit your topic suggestion, it will appear in your dashboard. You can check under the <em>my favorite topics</em> tab for the status of your topic.</p>
-    <button type="submit" class="submit-topic-btn">submit topic suggestion</button>
-  </form>
-</div>
-

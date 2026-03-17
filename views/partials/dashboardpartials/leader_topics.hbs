@@ -68,6 +68,7 @@
 </div>
 
 <!-- ✅ Topic Suggestion Section with Headings -->
+<!-- ✅ Topic Suggestion Section -->
 <div class="leader-topic-suggestion-card">
   {{#if topicSuggestions.length}}
     {{#each topicSuggestions}}
@@ -81,19 +82,10 @@
           <span class="pending">🕓 Approval pending</span>
         {{/if}}
       </p>
-      <div class="leader-topic-suggestion-grid">
-        <div class="leader-topic-suggestion-col">
-          <h5>1. How has this topic evolved? Why is it especially important now?</h5>
-          <p>{{this.paragraph1}}</p>
-        </div>
-        <div class="leader-topic-suggestion-col">
-          <h5>2. How does this topic fit in the world of technical services?</h5>
-          <p>{{this.paragraph2}}</p>
-        </div>
-        <div class="leader-topic-suggestion-col">
-          <h5>3. What is the future of this topic?</h5>
-          <p>{{this.paragraph3}}</p>
-        </div>
+
+      <div class="leader-topic-suggestion-single">
+        <h5>Why should this topic be added to Twennie’s library?</h5>
+        <p>{{this.description}}</p>
       </div>
     {{/each}}
   {{else}}
@@ -101,11 +93,11 @@
     <p class="leader-topic-suggestion-meta">You have not suggested any new topics for Twennie’s library.</p>
   {{/if}}
 
-  <!-- Always show suggest-a-topic call-to-action -->
+  <!-- ✅ Always show suggest-a-topic call-to-action -->
   <div class="topic-grid-center" style="margin-top: 30px;">
     <div class="topic-item">
       <h3>suggest a new topic</h3>
-      <p>Have an idea that would benefit Twennie members? We’d love to hear it. Use the form to propose a new topic for future learning content. (Your topic will not be connected to your username or profile. It will become part of all Twennie topics.)</p>
+      <p>Have an idea that would benefit Twennie members? We’d love to hear it. Use the form to propose a new topic for future learning content. Your topic will not be connected to your username or profile. It will become part of Twennie’s shared topic library.</p>
       <a href="/topics/suggest" class="suggest-topic-button">submit a topic</a>
     </div>
   </div>
