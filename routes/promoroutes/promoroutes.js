@@ -257,7 +257,7 @@ router.get('/sample_template', (req, res) => {
 });
 
 router.get('/sample_interview', (req, res) => {
-  res.render('sample_views/sample_interview', { layout: 'mainlayout' });
+  res.render('promo_views/sample_interview', { layout: 'mainlayout' });
 });
 
 router.get('/sample_nugget', (req, res) => {
