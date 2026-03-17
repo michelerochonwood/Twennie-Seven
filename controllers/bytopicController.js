@@ -76,7 +76,7 @@ async function resolveAuthorAndOrgById(authorId) {
 
   try {
     let leader = await Leader.findById(authorId)
-      .select('organization organizationName')
+      .select('organization organizationName groupName email')
       .lean();
 
     if (leader) {
@@ -84,16 +84,17 @@ async function resolveAuthorAndOrgById(authorId) {
       organizationName = leader.organizationName || '';
     } else {
       let groupMember = await GroupMember.findById(authorId)
-        .select('organization organizationName groupId leader')
+        .select('organization organizationName groupId leader groupName email')
         .lean();
 
       if (groupMember) {
         organizationId = groupMember.organization || null;
         organizationName = groupMember.organizationName || '';
 
+        // Fallback 1: inherit from linked leader/group id
         if (!organizationId && (groupMember.leader || groupMember.groupId)) {
           const parentLeader = await Leader.findById(groupMember.leader || groupMember.groupId)
-            .select('organization organizationName')
+            .select('organization organizationName groupName email')
             .lean();
 
           if (parentLeader) {
@@ -101,9 +102,21 @@ async function resolveAuthorAndOrgById(authorId) {
             organizationName = parentLeader.organizationName || '';
           }
         }
+
+        // Fallback 2: inherit from leader by matching groupName
+        if (!organizationId && groupMember.groupName) {
+          const parentLeaderByGroupName = await Leader.findOne({ groupName: groupMember.groupName })
+            .select('organization organizationName groupName email')
+            .lean();
+
+          if (parentLeaderByGroupName) {
+            organizationId = parentLeaderByGroupName.organization || null;
+            organizationName = parentLeaderByGroupName.organizationName || '';
+          }
+        }
       } else {
         const member = await Member.findById(authorId)
-          .select('organization organizationName')
+          .select('organization organizationName email')
           .lean();
 
         if (member) {
@@ -344,12 +357,12 @@ async function getAuthorOrgKey(authorId) {
 
   try {
     aLeader = await Leader.findById(authorId)
-      .select('organizationId organization organizationName email')
+      .select('organizationId organization organizationName email groupName')
       .lean();
 
     if (!aLeader) {
       aGM = await GroupMember.findById(authorId)
-        .select('organizationId organization organizationName email groupId leader')
+        .select('organizationId organization organizationName email groupId leader groupName')
         .lean();
     }
 
@@ -360,7 +373,6 @@ async function getAuthorOrgKey(authorId) {
     }
   } catch (_) { /* ignore */ }
 
-  // Direct org from the author record
   let doc = aLeader || aGM || aMember || {};
   let orgKey =
     normalize(doc.organization) ||
@@ -377,7 +389,7 @@ async function getAuthorOrgKey(authorId) {
 
       if (gmLeaderId) {
         const parentLeader = await Leader.findById(gmLeaderId)
-          .select('organizationId organization organizationName email')
+          .select('organizationId organization organizationName email groupName')
           .lean();
 
         if (parentLeader) {
@@ -386,6 +398,22 @@ async function getAuthorOrgKey(authorId) {
             normalize(parentLeader.organizationId) ||
             normalize(parentLeader.organizationName) ||
             emailDomain(parentLeader.email) ||
+            null;
+        }
+      }
+
+      // Fallback 2: inherit by groupName
+      if (!orgKey && aGM.groupName) {
+        const parentLeaderByGroupName = await Leader.findOne({ groupName: aGM.groupName })
+          .select('organizationId organization organizationName email groupName')
+          .lean();
+
+        if (parentLeaderByGroupName) {
+          orgKey =
+            normalize(parentLeaderByGroupName.organization) ||
+            normalize(parentLeaderByGroupName.organizationId) ||
+            normalize(parentLeaderByGroupName.organizationName) ||
+            emailDomain(parentLeaderByGroupName.email) ||
             null;
         }
       }
