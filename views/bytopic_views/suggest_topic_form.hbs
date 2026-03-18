@@ -1,76 +1,75 @@
 {{#*inline "title"}}Suggest a Topic | Twennie{{/inline}}
 
-<div class="topic-suggestion-page">
-  <div class="topic-suggestion-container">
-    <h1 class="topic-suggestion-title">suggest a topic</h1>
-    <p class="topic-suggestion-intro">
-      Have an idea for a Twennie library unit? Tell us what topic would help you, your team, or your organization most.
-    </p>
+<div class="topics-main">
+  <h1 class="form-title">suggest a topic</h1>
 
-    <form action="/topics/suggest" method="POST" class="topic-suggestion-form">
-      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+  <form action="/topics/suggest" method="POST" class="suggest-topic-form">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
 
-      <div class="topic-suggestion-field">
-        <label for="name">your name</label>
+    <div class="form-field">
+      <label for="name">your name</label>
+      <input
+        type="text"
+        id="name"
+        name="name"
+        value="{{user.name}}"
+        required
+      >
+    </div>
+
+    <div class="form-field">
+      <label for="email">your email</label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        value="{{user.email}}"
+        required
+      >
+    </div>
+
+    {{#if user.groupName}}
+      <div class="form-field">
+        <label for="groupName">group name</label>
         <input
           type="text"
-          id="name"
-          name="name"
-          value="{{user.name}}"
-          required
+          id="groupName"
+          name="groupName"
+          value="{{user.groupName}}"
         >
       </div>
+    {{else}}
+      <input type="hidden" name="groupName" value="">
+    {{/if}}
 
-      <div class="topic-suggestion-field">
-        <label for="email">your email</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          value="{{user.email}}"
-          required
-        >
-      </div>
+    <div class="form-field">
+      <label for="topicTitle">topic title</label>
+      <input
+        type="text"
+        id="topicTitle"
+        name="topicTitle"
+        placeholder="Example: leading better kickoff meetings"
+        required
+      >
+      <p class="form-helper-text">
+        Give your idea a short, clear title.
+      </p>
+    </div>
 
-      {{#if user.groupName}}
-        <div class="topic-suggestion-field">
-          <label for="groupName">group / organization</label>
-          <input
-            type="text"
-            id="groupName"
-            name="groupName"
-            value="{{user.groupName}}"
-          >
-        </div>
-      {{else}}
-        <input type="hidden" name="groupName" value="">
-      {{/if}}
+    <div class="form-field">
+      <label for="description">description</label>
+      <textarea
+        id="description"
+        name="description"
+        rows="8"
+        placeholder="Describe the topic, why it matters, and how it could help Twennie members."
+        required
+      ></textarea>
+      <p class="form-helper-text">
+        Tell us what this topic should cover and why it would be useful to Twennie's community of learners.
+      </p>
+    </div>
 
-      <div class="topic-suggestion-field">
-        <label for="topicTitle">topic title</label>
-        <input
-          type="text"
-          id="topicTitle"
-          name="topicTitle"
-          placeholder="Example: How to Lead Better Proposal Kickoff Meetings"
-          required
-        >
-      </div>
-
-      <div class="topic-suggestion-field">
-        <label for="description">describe the topic</label>
-        <textarea
-          id="description"
-          name="description"
-          rows="10"
-          placeholder="Tell us what this topic is, why it matters, what problem it would solve, and how it could help members."
-          required
-        ></textarea>
-      </div>
-
-      <div class="topic-suggestion-actions">
-        <button type="submit" class="topic-suggestion-submit-btn">submit suggested topic</button>
-      </div>
-    </form>
-  </div>
+    <button type="submit" class="submit-topic-btn">submit topic suggestion</button>
+  </form>
 </div>
