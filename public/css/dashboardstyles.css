@@ -3700,6 +3700,17 @@ html, body {
   }
 }
 
+
+
+.leader-nugget-assigned-list,
+.leader-nugget-assigned-row,
+.leader-assigned-row-left,
+.leader-nugget-row-actions {
+  border-top: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
 .leader-nugget-divider {
   width: 100%;
   height: 1px;
