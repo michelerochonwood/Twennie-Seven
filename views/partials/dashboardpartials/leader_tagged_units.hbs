@@ -3,7 +3,9 @@
 
 {{!-- =========================
      1) SELF-TAGGED (NON-MISSION)
-     expects: leaderSelfTaggedNonMissionUnits = [{ _id, title, mainTopic, unitType, tagId, viewPath }]
+     expects: leaderSelfTaggedNonMissionUnits = [
+       { _id, title, mainTopic, unitType, tagId, viewPath, completedAtFormatted }
+     ]
      ========================= --}}
 <section class="tagged-units-section">
   <h2 class="tagged-units-title">my self-assigned library units</h2>
@@ -18,6 +20,12 @@
           <div class="tagged-unit-info">
             <h3 class="tagged-unit-title">{{title}}</h3>
             {{#if mainTopic}}<p class="tagged-unit-topic">{{mainTopic}}</p>{{/if}}
+
+            {{#if completedAtFormatted}}
+              <p class="leader-assigned-status">✅ completed <span class="muted">({{completedAtFormatted}})</span></p>
+            {{else}}
+              <p class="leader-assigned-status">⏳ pending</p>
+            {{/if}}
           </div>
 
           <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
@@ -25,7 +33,7 @@
 
             <button class="tagged-unit-link"
               onclick="removeTagFromUnit('{{tagId}}','{{_id}}','{{unitType}}')">
-              remove from this unit
+              unassign
             </button>
           </div>
         </div>
@@ -136,36 +144,41 @@
                 <div class="leader-assigned-list leader-nugget-assigned-list">
                   {{#if this.assignments.length}}
 
-                    {{#each this.assignments}}
-                      <div class="leader-assigned-row leader-nugget-assigned-row">
+{{#each this.assignments}}
+  <div class="leader-assigned-row leader-nugget-assigned-row">
 
-                        <div class="leader-assigned-row-left">
-                          <p class="leader-assigned-to">assigned to: {{this.assignedToName}}</p>
+    <!-- TOP DIVIDER -->
+    <div class="leader-nugget-divider"></div>
 
-                          {{#if this.assignedCompletedAtFormatted}}
-                            <p class="leader-assigned-status">✅ closed <span class="muted">({{this.assignedCompletedAtFormatted}})</span></p>
-                          {{else}}
-                            <p class="leader-assigned-status">⏳ monitoring</p>
-                          {{/if}}
+    <div class="leader-assigned-row-left">
+      <p class="leader-assigned-to">assigned to: {{this.assignedToName}}</p>
 
-                          {{#if this.assignedInstructions}}
-                            <p class="leader-assigned-instructions"><em>{{this.assignedInstructions}}</em></p>
-                          {{/if}}
-                        </div>
+      {{#if this.assignedCompletedAtFormatted}}
+        <p class="leader-assigned-status">✅ closed <span class="muted">({{this.assignedCompletedAtFormatted}})</span></p>
+      {{else}}
+        <p class="leader-assigned-status">⏳ monitoring</p>
+      {{/if}}
 
-                        <div class="leader-assigned-row-actions leader-nugget-row-actions">
-                          {{!-- per-member unassign --}}
-                          <button
-                            type="button"
-                            class="tagged-unit-link"
-                            onclick="unassignAssignedNugget('{{this.tagId}}','{{this.assignedToId}}')"
-                          >
-                            unassign
-                          </button>
-                        </div>
+      {{#if this.assignedInstructions}}
+        <p class="leader-assigned-instructions"><em>{{this.assignedInstructions}}</em></p>
+      {{/if}}
+    </div>
 
-                      </div>
-                    {{/each}}
+    <div class="leader-assigned-row-actions leader-nugget-row-actions">
+      <button
+        type="button"
+        class="tagged-unit-link"
+        onclick="unassignAssignedNugget('{{this.tagId}}','{{this.assignedToId}}')"
+      >
+        unassign
+      </button>
+    </div>
+
+    <!-- BOTTOM DIVIDER -->
+    <div class="leader-nugget-divider"></div>
+
+  </div>
+{{/each}}
 
                   {{else}}
                     <p class="tagged-no-units">No members are currently assigned to this nugget.</p>

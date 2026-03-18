@@ -20,21 +20,7 @@
   {{#if adminMode}}Organization Administrator Dashboard{{else}}Group Leader Dashboard{{/if}}
 </p>
 
-        <a
-          href="/profile/leader/{{leader._id}}"
-          class="leader-profile-btn"
-        >
-          my leader profile
-        </a>
 
-
-<button
-  type="button"
-  class="leader-profile-btn"
-  onclick="window.location.href='/profile/group/{{leader._id}}'"
->
-  {{leader.groupName}} profile
-</button>
 
 {{#if adminMode}}
 {{#if leader.organization}}

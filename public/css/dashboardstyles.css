@@ -3700,6 +3700,13 @@ html, body {
   }
 }
 
+.leader-nugget-divider {
+  width: 100%;
+  height: 1px;
+  background-color: #262262;
+  margin: 10px 0;
+}
+
 
 
 
