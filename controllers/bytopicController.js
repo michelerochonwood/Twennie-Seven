@@ -640,7 +640,7 @@ exports.showTopicSuggestionForm = async (req, res) => {
 };
 
 exports.submitTopicSuggestion = async (req, res) => {
-    const { name, email, groupName, topicTitle, paragraph1, paragraph2, paragraph3 } = req.body;
+    const { name, email, groupName, topicTitle, description } = req.body;
     const { user } = req.session;
 
     if (!user) {
@@ -659,9 +659,7 @@ exports.submitTopicSuggestion = async (req, res) => {
             email,
             groupName,
             topicTitle,
-            paragraph1,
-            paragraph2,
-            paragraph3
+            description
         });
 
         await suggestion.save();

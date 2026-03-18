@@ -1,34 +1,76 @@
-<!-- ✅ Topic Suggestion Section -->
-<div class="leader-topic-suggestion-card">
-  {{#if topicSuggestions.length}}
-    {{#each topicSuggestions}}
-      <h4 class="leader-topic-suggestion-title">suggested new topic: {{this.topicTitle}}</h4>
-      <p class="leader-topic-suggestion-meta">
-        Submitted on {{formatDate this.submittedAt}} |
-        {{#if this.approved}}
-          <span class="approved">✅ Approved</span><br>
-          Estimated library release: {{formatDate this.expectedLibraryDate}}
-        {{else}}
-          <span class="pending">🕓 Approval pending</span>
-        {{/if}}
-      </p>
+{{#*inline "title"}}Suggest a Topic | Twennie{{/inline}}
 
-      <div class="leader-topic-suggestion-single">
-        <h5>Why should this topic be added to Twennie’s library?</h5>
-        <p>{{this.description}}</p>
+<div class="topic-suggestion-page">
+  <div class="topic-suggestion-container">
+    <h1 class="topic-suggestion-title">suggest a topic</h1>
+    <p class="topic-suggestion-intro">
+      Have an idea for a Twennie library unit? Tell us what topic would help you, your team, or your organization most.
+    </p>
+
+    <form action="/topics/suggest" method="POST" class="topic-suggestion-form">
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+
+      <div class="topic-suggestion-field">
+        <label for="name">your name</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          value="{{user.name}}"
+          required
+        >
       </div>
-    {{/each}}
-  {{else}}
-    <h4 class="leader-topic-suggestion-title">No Suggestions Yet</h4>
-    <p class="leader-topic-suggestion-meta">You have not suggested any new topics for Twennie’s library.</p>
-  {{/if}}
 
-  <!-- ✅ Always show suggest-a-topic call-to-action -->
-  <div class="topic-grid-center" style="margin-top: 30px;">
-    <div class="topic-item">
-      <h3>suggest a new topic</h3>
-      <p>Have an idea that would benefit Twennie members? We’d love to hear it. Use the form to propose a new topic for future learning content. Your topic will not be connected to your username or profile. It will become part of Twennie’s shared topic library.</p>
-      <a href="/topics/suggest" class="suggest-topic-button">submit a topic</a>
-    </div>
+      <div class="topic-suggestion-field">
+        <label for="email">your email</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          value="{{user.email}}"
+          required
+        >
+      </div>
+
+      {{#if user.groupName}}
+        <div class="topic-suggestion-field">
+          <label for="groupName">group / organization</label>
+          <input
+            type="text"
+            id="groupName"
+            name="groupName"
+            value="{{user.groupName}}"
+          >
+        </div>
+      {{else}}
+        <input type="hidden" name="groupName" value="">
+      {{/if}}
+
+      <div class="topic-suggestion-field">
+        <label for="topicTitle">topic title</label>
+        <input
+          type="text"
+          id="topicTitle"
+          name="topicTitle"
+          placeholder="Example: How to Lead Better Proposal Kickoff Meetings"
+          required
+        >
+      </div>
+
+      <div class="topic-suggestion-field">
+        <label for="description">describe the topic</label>
+        <textarea
+          id="description"
+          name="description"
+          rows="10"
+          placeholder="Tell us what this topic is, why it matters, what problem it would solve, and how it could help members."
+          required
+        ></textarea>
+      </div>
+
+      <div class="topic-suggestion-actions">
+        <button type="submit" class="topic-suggestion-submit-btn">submit suggested topic</button>
+      </div>
+    </form>
   </div>
 </div>
