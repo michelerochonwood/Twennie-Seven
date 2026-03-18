@@ -22,6 +22,7 @@ const DashboardSeen = require('../models/dashboard_seen');
 const Nugget = require('../models/unit_models/nugget'); // ✅ NEW
 const GroupProfile = require('../models/profile_models/group_profile'); // ✅ NEW
 const Mission = require('../models/unit_models/mission'); // ✅ NEW
+const Note = require('../models/notes/notes');
 
 
 
@@ -690,18 +691,41 @@ console.log(`Total prompt sets found for member ${id}: ${memberRegistrations.len
 const allTaggedUnits = await fetchTaggedUnits(id);
 
 // ✅ 1) Self-tagged (all unit types, including upcoming + nuggets)
-const groupMemberSelfTaggedUnits = allTaggedUnits
-  .filter(u => u.tagIdCreator === id.toString())
-  .map(u => ({
+const groupMemberSelfTaggedRaw = allTaggedUnits
+  .filter(u => u.tagIdCreator === id.toString());
+
+const groupMemberSelfTaggedUnitIds = groupMemberSelfTaggedRaw.map(u => u._id);
+
+const groupMemberNotes = groupMemberSelfTaggedUnitIds.length
+  ? await Note.find({
+      memberID: id,
+      unitID: { $in: groupMemberSelfTaggedUnitIds }
+    })
+      .select('unitID updatedAt createdAt')
+      .lean()
+  : [];
+
+const groupMemberNoteByUnitId = new Map(
+  groupMemberNotes.map(n => [
+    n.unitID.toString(),
+    n.updatedAt || n.createdAt || null
+  ])
+);
+
+const groupMemberSelfTaggedUnits = groupMemberSelfTaggedRaw.map(u => {
+  const completedAt = groupMemberNoteByUnitId.get(u._id.toString()) || null;
+
+  return {
     ...u,
-    completedAtFormatted: u.completedAt
-      ? new Date(u.completedAt).toLocaleDateString('en-CA', {
+    completedAtFormatted: completedAt
+      ? new Date(completedAt).toLocaleDateString('en-CA', {
           year: 'numeric',
           month: 'short',
           day: '2-digit'
         })
       : ''
-  }));
+  };
+});
 
 // ✅ 2) Leader-assigned (all unit types, including upcoming + nuggets)
 const assignedRaw = allTaggedUnits
