@@ -216,6 +216,7 @@ return {
   _id: unit._id,
   tagId: tag._id ? tag._id.toString() : null,
   assignedCount,
+  completedAt: tag.completedAt || null,
   viewPath: viewPathFor(type, unit._id)
 };
 
@@ -237,15 +238,16 @@ return {
       const tag = tagByKey.get(key) || {};
       const assignedCount = Array.isArray(tag.assignedTo) ? tag.assignedTo.length : 0;
 
-      results.push({
-        unitType: 'nugget',
-        title: n.title || 'Untitled nugget',
-        mainTopic: n.discipline || n.client || n.region || 'No classification',
-        _id: n._id,
-        tagId: tag._id ? tag._id.toString() : null,
-        assignedCount,
-        viewPath: `/unitviews/nuggets/view/${n._id}`
-      });
+results.push({
+  unitType: 'nugget',
+  title: n.title || 'Untitled nugget',
+  mainTopic: n.discipline || n.client || n.region || 'No classification',
+  _id: n._id,
+  tagId: tag._id ? tag._id.toString() : null,
+  assignedCount,
+  completedAt: tag.completedAt || null,
+  viewPath: `/unitviews/nuggets/view/${n._id}`
+});
     });
 
     // Missions: title is `mission_title`, topic is `main_topic`
@@ -265,20 +267,19 @@ missions.forEach(m => {
     m.badgeImage ||
     getMissionBadgePath(category);
 
-  results.push({
-    unitType: 'mission',
-    title: m.mission_title || 'Untitled mission',
-    mainTopic: m.main_topic || 'No topic',
-    _id: m._id,
-    tagId: tag._id ? tag._id.toString() : null,
-    assignedCount,
-    viewPath: `/unitviews/missions/view/${m._id}`,
-
-    // ✅ NEW: badge display fields for the partial
-    category,
-    badge_name: m.badge_name || '',
-    badgeImagePath
-  });
+results.push({
+  unitType: 'mission',
+  title: m.mission_title || 'Untitled mission',
+  mainTopic: m.main_topic || 'No topic',
+  _id: m._id,
+  tagId: tag._id ? tag._id.toString() : null,
+  assignedCount,
+  completedAt: tag.completedAt || null,
+  viewPath: `/unitviews/missions/view/${m._id}`,
+  category,
+  badge_name: m.badge_name || '',
+  badgeImagePath
+});
 });
 
 
@@ -1160,7 +1161,19 @@ if (progressRecords.length > 0) {
 const allLeaderTaggedUnits = await fetchTaggedUnits(id);
 
 // Only self-tags (no assignments) count toward "my tagged units"
-const leaderSelfTaggedUnits = allLeaderTaggedUnits.filter(u => u.assignedCount === 0);
+const leaderSelfTaggedUnits = allLeaderTaggedUnits
+  .filter(u => u.assignedCount === 0)
+  .map(u => ({
+    ...u,
+    completedAtFormatted: u.completedAt
+      ? new Date(u.completedAt).toLocaleDateString('en-CA', {
+          year: 'numeric',
+          month: 'short',
+          day: '2-digit'
+        })
+      : ''
+  }));
+
 const leaderTaggedCountAll = allLeaderTaggedUnits.length;
 
 // ✅ Split self-tagged units into missions vs non-missions

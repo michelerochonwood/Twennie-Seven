@@ -22,13 +22,21 @@
                 <div class="tagged-unit-info">
                   <h3 class="tagged-unit-title">{{title}}</h3>
                   {{#if mainTopic}}<p class="tagged-unit-topic">{{mainTopic}}</p>{{/if}}
+
+                  {{#if completedAtFormatted}}
+                    <p class="leader-assigned-status">✅ completed <span class="muted">({{completedAtFormatted}})</span></p>
+                  {{else}}
+                    <p class="leader-assigned-status">⏳ pending</p>
+                  {{/if}}
                 </div>
 
                 <div class="tagged-unit-actions">
                   <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
-                  <button class="tagged-unit-link"
-                          onclick="removeSelfTag('{{tagId}}','{{_id}}','{{unitType}}')">
-                    remove assignment
+                  <button
+                    class="tagged-unit-link"
+                    onclick="removeSelfTag('{{tagId}}','{{_id}}','{{unitType}}')"
+                  >
+                    unassign
                   </button>
                 </div>
               </div>
@@ -88,112 +96,23 @@
     </div>
   </div>
 
-  <div class="member-progress-report-button-container" style="margin-bottom: 1.5rem;">
-    <a href="/reports/mylearningnotes" class="member-progress-report-button">
-      view my learning notes
-    </a>
-  </div>
-
   <div class="tagged-section-divider" aria-hidden="true"></div>
 
   {{!-- =====================================================
-       3) MY TAGGED NUGGETS (WITH SVG WAVE)
+       3) MY LEARNING NOTES REPORT
        ===================================================== --}}
   <div class="group-member-tagged-subsection">
-    <h3 class="group-member-tagged-subtitle">my self-assigned nuggets</h3>
+    <h3 class="group-member-tagged-subtitle">my learning notes</h3>
 
-    <div class="tagged-units-grid">
-      {{#if groupMemberTaggedNuggets.length}}
-        {{#each groupMemberTaggedNuggets}}
-          <div class="leader-assigned-unit-card leader-nugget-card">
-            <div class="leader-nugget-card-inner">
-
-              <!-- SVG wave -->
-              <div class="leader-nugget-card-svg-header">
-                <img src="/icons/goldsvg.svg" alt="" aria-hidden="true">
-              </div>
-
-              <div class="leader-nugget-card-content">
-                <div class="tagged-unit-icon">
-                  <img src="/icons/nuggeticon.svg" alt="nugget icon" style="width: 70px">
-                </div>
-
-                <div class="tagged-unit-info">
-                  <h3 class="tagged-unit-title">{{title}}</h3>
-                  {{#if mainTopic}}<p class="tagged-unit-topic">{{mainTopic}}</p>{{/if}}
-                </div>
-
-                <div class="tagged-unit-actions">
-                  <a href="{{viewPath}}" class="tagged-unit-link">view nugget</a>
-                  <button class="tagged-unit-link"
-                          onclick="removeSelfTag('{{tagId}}','{{_id}}','nugget')">
-                    remove assignment
-                  </button>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        {{/each}}
-      {{else}}
-        <p class="tagged-no-units">You have not self-assigned any nuggets.</p>
-      {{/if}}
-    </div>
-  </div>
-
-  <div class="tagged-section-divider" aria-hidden="true"></div>
-
-  {{!-- =====================================================
-       4) MY ASSIGNED NUGGETS (WITH SVG WAVE)
-       ===================================================== --}}
-  <div class="group-member-tagged-subsection">
-    <h3 class="group-member-tagged-subtitle">my leader-assigned nuggets</h3>
-
-    <div class="tagged-units-grid">
-      {{#if groupMemberAssignedNuggets.length}}
-        {{#each groupMemberAssignedNuggets}}
-          <div class="leader-assigned-unit-card leader-nugget-card">
-            <div class="leader-nugget-card-inner">
-
-              <!-- SVG wave -->
-              <div class="leader-nugget-card-svg-header">
-                <img src="/icons/goldsvg.svg" alt="" aria-hidden="true">
-              </div>
-
-              <div class="leader-nugget-card-content">
-                <div class="tagged-unit-icon">
-                  <img src="/icons/nuggeticon.svg" alt="nugget icon" style="width: 70px">
-                </div>
-
-                <div class="tagged-unit-info">
-                  <h3 class="tagged-unit-title">{{title}}</h3>
-                  {{#if client}}<p class="tagged-unit-topic">client: {{client}}</p>{{/if}}
-                  {{#if region}}<p class="tagged-unit-topic">region: {{region}}</p>{{/if}}
-                  {{#if discipline}}<p class="tagged-unit-topic">discipline: {{discipline}}</p>{{/if}}
-                  {{#if leaderName}}<p class="tagged-unit-meta">assigned by: {{leaderName}}</p>{{/if}}
-
-                  {{#if assignedInstructions}}
-                    <p class="tagged-unit-instructions"><em>instructions:</em> {{assignedInstructions}}</p>
-                  {{/if}}
-
-                  {{#if assignedCompletedAtFormatted}}
-                    <p class="leader-assigned-status">✅ closed <span class="muted">({{assignedCompletedAtFormatted}})</span></p>
-                  {{else}}
-                    <p class="leader-assigned-status">⏳ monitoring</p>
-                  {{/if}}
-                </div>
-
-                <div class="tagged-unit-actions">
-                  <a href="{{viewPath}}" class="tagged-unit-link">view nugget</a>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        {{/each}}
-      {{else}}
-        <p class="tagged-no-units">You have no nuggets assigned by your leader.</p>
-      {{/if}}
+    <div class="member-progress-report-button-container" style="margin-bottom: 1.5rem; text-align:center;">
+      <a href="/reports/mylearningnotes" class="member-progress-report-image-link">
+        <img
+          src="/images/libraryunitsreport.png"
+          alt="View my learning notes"
+          class="member-progress-report-image"
+          style="max-width: 240px; width: 100%; height: auto;"
+        >
+      </a>
     </div>
   </div>
 

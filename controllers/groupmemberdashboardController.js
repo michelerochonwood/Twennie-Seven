@@ -691,7 +691,17 @@ const allTaggedUnits = await fetchTaggedUnits(id);
 
 // ✅ 1) Self-tagged (all unit types, including upcoming + nuggets)
 const groupMemberSelfTaggedUnits = allTaggedUnits
-  .filter(u => u.tagIdCreator === id.toString());
+  .filter(u => u.tagIdCreator === id.toString())
+  .map(u => ({
+    ...u,
+    completedAtFormatted: u.completedAt
+      ? new Date(u.completedAt).toLocaleDateString('en-CA', {
+          year: 'numeric',
+          month: 'short',
+          day: '2-digit'
+        })
+      : ''
+  }));
 
 // ✅ 2) Leader-assigned (all unit types, including upcoming + nuggets)
 const assignedRaw = allTaggedUnits

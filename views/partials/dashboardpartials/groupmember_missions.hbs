@@ -1,17 +1,138 @@
 <meta name="csrf-token" content="{{csrfToken}}">
 
 <section class="group-member-tagged-units-section">
-  <h2 class="tagged-units-title">missions</h2>
+  <h2 class="tagged-units-title">my nuggets and missions</h2>
 
   {{!-- =========================
-       1) MY TAGGED MISSIONS
+       1) MY SELF-ASSIGNED NUGGETS
+       ========================= --}}
+  <div class="group-member-tagged-subsection">
+    <h3 class="group-member-tagged-subtitle">my self-assigned nuggets</h3>
+
+    <div class="tagged-units-grid">
+      {{#if groupMemberTaggedNuggets.length}}
+        {{#each groupMemberTaggedNuggets}}
+          <div class="leader-assigned-unit-card leader-nugget-card">
+            <div class="leader-nugget-card-inner">
+
+              <div class="leader-nugget-card-svg-header">
+                <img
+                  src="/icons/goldsvg.svg"
+                  alt=""
+                  aria-hidden="true"
+                  class="leader-nugget-card-svg-image"
+                >
+              </div>
+
+              <div class="leader-nugget-card-content">
+                <div class="tagged-unit-icon">
+                  <img src="/icons/nuggeticon.svg" alt="nugget icon" style="width: 70px; height: auto;">
+                </div>
+
+                <div class="tagged-unit-info">
+                  <h3 class="tagged-unit-title">{{title}}</h3>
+                  {{#if client}}<p class="tagged-unit-topic">client: {{client}}</p>{{/if}}
+                  {{#if region}}<p class="tagged-unit-topic">region: {{region}}</p>{{/if}}
+                  {{#if discipline}}<p class="tagged-unit-topic">discipline: {{discipline}}</p>{{/if}}
+
+                  {{#if completedAtFormatted}}
+                    <p class="leader-assigned-status">✅ closed <span class="muted">({{completedAtFormatted}})</span></p>
+                  {{else}}
+                    <p class="leader-assigned-status">⏳ monitoring</p>
+                  {{/if}}
+                </div>
+
+                <div class="tagged-unit-actions">
+                  <a href="{{viewPath}}" class="tagged-unit-link">view nugget</a>
+                  <button
+                    class="tagged-unit-link"
+                    onclick="removeSelfTag('{{tagId}}','{{_id}}','nugget')"
+                  >
+                    unassign
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        {{/each}}
+      {{else}}
+        <p class="tagged-no-units">You have not self-assigned any nuggets.</p>
+      {{/if}}
+    </div>
+  </div>
+
+  <div class="tagged-section-divider" aria-hidden="true"></div>
+
+  {{!-- =========================
+       2) MY LEADER-ASSIGNED NUGGETS
+       ========================= --}}
+  <div class="group-member-tagged-subsection">
+    <h3 class="group-member-tagged-subtitle">my leader-assigned nuggets</h3>
+
+    <div class="tagged-units-grid">
+      {{#if groupMemberAssignedNuggets.length}}
+        {{#each groupMemberAssignedNuggets}}
+          <div class="leader-assigned-unit-card leader-nugget-card">
+            <div class="leader-nugget-card-inner">
+
+              <div class="leader-nugget-card-svg-header">
+                <img
+                  src="/icons/goldsvg.svg"
+                  alt=""
+                  aria-hidden="true"
+                  class="leader-nugget-card-svg-image"
+                >
+              </div>
+
+              <div class="leader-nugget-card-content">
+                <div class="tagged-unit-icon">
+                  <img src="/icons/nuggeticon.svg" alt="nugget icon" style="width: 70px; height: auto;">
+                </div>
+
+                <div class="tagged-unit-info">
+                  <h3 class="tagged-unit-title">{{title}}</h3>
+                  {{#if client}}<p class="tagged-unit-topic">client: {{client}}</p>{{/if}}
+                  {{#if region}}<p class="tagged-unit-topic">region: {{region}}</p>{{/if}}
+                  {{#if discipline}}<p class="tagged-unit-topic">discipline: {{discipline}}</p>{{/if}}
+                  {{#if leaderName}}<p class="tagged-unit-meta">assigned by: {{leaderName}}</p>{{/if}}
+
+                  {{#if assignedInstructions}}
+                    <p class="tagged-unit-instructions"><em>instructions:</em> {{assignedInstructions}}</p>
+                  {{/if}}
+
+                  {{#if assignedCompletedAtFormatted}}
+                    <p class="leader-assigned-status">✅ closed <span class="muted">({{assignedCompletedAtFormatted}})</span></p>
+                  {{else}}
+                    <p class="leader-assigned-status">⏳ monitoring</p>
+                  {{/if}}
+                </div>
+
+                <div class="tagged-unit-actions">
+                  <a href="{{viewPath}}" class="tagged-unit-link">view nugget</a>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        {{/each}}
+      {{else}}
+        <p class="tagged-no-units">You have no nuggets assigned by your leader.</p>
+      {{/if}}
+    </div>
+  </div>
+
+  <div class="tagged-section-divider" aria-hidden="true"></div>
+
+  {{!-- =========================
+       3) MY TAGGED MISSIONS
        expects: groupMemberTaggedMissions = [{
          _id, title, mainTopic, tagId, viewPath,
-         badge_name, badgeImagePath
+         badge_name, badgeImagePath, completedAtFormatted
        }]
        ========================= --}}
   <div class="group-member-tagged-subsection">
-    <h3 class="group-member-tagged-subtitle">my tagged missions</h3>
+    <h3 class="group-member-tagged-subtitle">my self-assigned missions</h3>
 
     <div class="tagged-units-grid">
       {{#if groupMemberTaggedMissions.length}}
@@ -25,7 +146,12 @@
               <h3 class="tagged-unit-title">{{title}}</h3>
               {{#if mainTopic}}<p class="tagged-unit-topic">{{mainTopic}}</p>{{/if}}
 
-              {{!-- Mission badge (optional) --}}
+              {{#if completedAtFormatted}}
+                <p class="leader-assigned-status">✅ completed <span class="muted">({{completedAtFormatted}})</span></p>
+              {{else}}
+                <p class="leader-assigned-status">⏳ pending</p>
+              {{/if}}
+
               {{#if badgeImagePath}}
                 <div class="mission-badge-row">
                   <img src="{{badgeImagePath}}" alt="{{badge_name}}" class="mission-badge-icon">
@@ -42,13 +168,13 @@
               <button
                 class="tagged-unit-link"
                 onclick="removeSelfTag('{{tagId}}','{{_id}}','mission')">
-                remove tag
+                unassign
               </button>
             </div>
           </div>
         {{/each}}
       {{else}}
-        <p class="tagged-no-units">You have not tagged any missions.</p>
+        <p class="tagged-no-units">You have not self-assigned any missions.</p>
       {{/if}}
     </div>
   </div>
@@ -56,16 +182,10 @@
   <div class="tagged-section-divider" aria-hidden="true"></div>
 
   {{!-- =========================
-       2) MY ASSIGNED MISSIONS
-       expects: groupMemberAssignedMissions = [{
-         _id, title, mainTopic, tagId, leaderName,
-         assignedInstructions, assignedCompletedAtFormatted,
-         viewPath,
-         badge_name, badgeImagePath
-       }]
+       4) MY ASSIGNED MISSIONS
        ========================= --}}
   <div class="group-member-tagged-subsection" style="margin-top:20px;">
-    <h3 class="group-member-tagged-subtitle">my assigned missions</h3>
+    <h3 class="group-member-tagged-subtitle">my leader-assigned missions</h3>
 
     <div class="tagged-units-grid">
       {{#if groupMemberAssignedMissions.length}}
@@ -90,7 +210,6 @@
                 <p class="leader-assigned-status">⏳ pending</p>
               {{/if}}
 
-              {{!-- Mission badge (optional) --}}
               {{#if badgeImagePath}}
                 <div class="mission-badge-row">
                   <img src="{{badgeImagePath}}" alt="{{badge_name}}" class="mission-badge-icon">
@@ -114,56 +233,53 @@
 
   <div class="tagged-section-divider" aria-hidden="true"></div>
 
-{{!-- =========================
-     3) MISSION BADGES (COMPLETED MISSIONS)
-     expects: @root.missionBadges = [{ missionId, title, completed_at, badgePath, badgeName }]
-     ========================= --}}
-<div class="group-member-tagged-subsection" style="margin-top:20px;">
-  <h3 class="group-member-tagged-subtitle">mission badges</h3>
+  {{!-- =========================
+       5) MISSION BADGES
+       ========================= --}}
+  <div class="group-member-tagged-subsection" style="margin-top:20px;">
+    <h3 class="group-member-tagged-subtitle">mission badges</h3>
 
-  {{#if @root.missionBadges.length}}
-    <div class="gm-mission-badges-grid">
-      {{#each @root.missionBadges}}
-        <article class="gm-mission-badge-card">
-          <div class="gm-mission-badge-inner">
+    {{#if @root.missionBadges.length}}
+      <div class="gm-mission-badges-grid">
+        {{#each @root.missionBadges}}
+          <article class="gm-mission-badge-card">
+            <div class="gm-mission-badge-inner">
 
-            <div class="gm-mission-badge-top">
-              <img
-                src="{{badgePath}}"
-                alt="{{badgeName}} badge"
-                class="gm-mission-badge-img"
-              >
-            </div>
+              <div class="gm-mission-badge-top">
+                <img
+                  src="{{badgePath}}"
+                  alt="{{badgeName}} badge"
+                  class="gm-mission-badge-img"
+                >
+              </div>
 
-            <div class="gm-mission-badge-body">
-              <p class="gm-mission-badge-congrats">
-                🎉 <strong>Congratulations!</strong><br>
-                You earned the <strong>{{badgeName}}</strong> badge!
-              </p>
-
-              {{#if completed_at}}
-                <p class="gm-mission-badge-date">
-                  completed {{formatDate completed_at "MMM D, YYYY"}}
+              <div class="gm-mission-badge-body">
+                <p class="gm-mission-badge-congrats">
+                  🎉 <strong>Congratulations!</strong><br>
+                  You earned the <strong>{{badgeName}}</strong> badge!
                 </p>
-              {{/if}}
 
-              <a href="/unitviews/missions/view/{{missionId}}" class="gm-mission-badge-link">
-                view mission
-              </a>
+                {{#if completed_at}}
+                  <p class="gm-mission-badge-date">
+                    completed {{formatDate completed_at "MMM D, YYYY"}}
+                  </p>
+                {{/if}}
+
+                <a href="/unitviews/missions/view/{{missionId}}" class="gm-mission-badge-link">
+                  view mission
+                </a>
+              </div>
+
             </div>
-
-          </div>
-        </article>
-      {{/each}}
-    </div>
-  {{else}}
-    <p class="tagged-no-units" style="text-align:center;">
-      You haven’t completed any missions yet. Once you finish a mission and submit notes, your badge will appear here.
-    </p>
-  {{/if}}
-</div>
-
-
+          </article>
+        {{/each}}
+      </div>
+    {{else}}
+      <p class="tagged-no-units" style="text-align:center;">
+        You haven’t completed any missions yet. Once you finish a mission and submit notes, your badge will appear here.
+      </p>
+    {{/if}}
+  </div>
 
 </section>
 
@@ -188,7 +304,6 @@
     }
   }
 
-  // 🔵 Auto-mark the "missions" tab as seen when this partial loads
   (async function markMissionsSeenOnce() {
     try {
       const count = Number('{{@root.gmCounts.missions}}') || 0;
