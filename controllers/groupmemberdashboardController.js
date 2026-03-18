@@ -490,7 +490,7 @@ let completedPromptSets = [];
             //members of a group are meant to show in the group member dashboard as cards - it is important that none of this changed because the group members are located based on the leader of the group - if you are rewriting anything in this renderdashboard, make sure to rewrite it exactly as you see it here. 
     
 const userData = await GroupMember.findById(id)
-  .select('name email username profileImage professionalTitle organization groupId leader emailPreferenceLevel mfa.enabled mfa.method mfa.recoveryCodes mfa.updatedAt')
+  .select('name email username profileImage professionalTitle organization groupId leader emailPreferenceLevel termsAccepted mfa.enabled mfa.method mfa.recoveryCodes mfa.updatedAt')
   .lean();
 
 if (!userData) {
@@ -1116,13 +1116,18 @@ return res.render('groupmember_dashboard', {
 
   mfaStatus,
 
-groupMember: {
-  ...groupMemberObj, // ✅ plain group member data (group image is on `group`)
-  profileImage: groupMemberProfile?.profileImage || '/images/default-avatar.png'
-},
-  group,              // ✅ NEW: use this in templates instead of groupId
-groupMembers,
-maxGroupSize: leaderDoc.groupSize,
+  user: {
+    ...groupMemberObj,
+    termsAccepted: !!userData?.termsAccepted
+  },
+
+  groupMember: {
+    ...groupMemberObj,
+    profileImage: groupMemberProfile?.profileImage || '/images/default-avatar.png'
+  },
+  group,
+  groupMembers,
+  maxGroupSize: leaderDoc.groupSize,
   groupMemberUnits,
   registeredPromptSets: groupmemberPrompts,
   promptSchedules,
@@ -1135,22 +1140,17 @@ maxGroupSize: leaderDoc.groupSize,
   groupMemberAccount,
   emailPreferenceLevel,
   groupLibraryUnits,
-    missionBadges,
+  missionBadges,
 
-  // tagged / assigned unit buckets
-  groupMemberSelfTaggedUnits,    // blended self-tagged, all types
-  groupMemberAssignedUnits,      // blended leader-assigned, all types
-
-  groupMemberTaggedNuggets,      // ✅ tagged nuggets
-  groupMemberAssignedNuggets,    // ✅ assigned nuggets
-
-  groupMemberTaggedMissions,     // ✅ tagged missions
-  groupMemberAssignedMissions,   // ✅ assigned missions
-
+  groupMemberSelfTaggedUnits,
+  groupMemberAssignedUnits,
+  groupMemberTaggedNuggets,
+  groupMemberAssignedNuggets,
+  groupMemberTaggedMissions,
+  groupMemberAssignedMissions,
   groupMemberSelfTaggedNonMissionUnits,
   groupMemberAssignedNonMissionUnits,
 
-  // counts + badges for green dots
   gmCounts,
   gmBadges
 });
