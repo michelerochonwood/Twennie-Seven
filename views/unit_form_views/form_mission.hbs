@@ -76,7 +76,7 @@
       </div>
 
       <div class="form-field">
-        <label for="purpose">Mission Purpose</label>
+        <label for="purpose">Mission Purpose and Summary</label>
         <textarea
           id="purpose"
           name="purpose"
@@ -84,21 +84,10 @@
           required
         >{{data.purpose}}</textarea>
         <p class="form-hint">
-          Describe what this mission is meant to achieve.
+          Describe what this mission is meant to achieve. What tasks are involved and who might support the process? How does the mission contribute to the goals of the organization? Aim for about 250 words.
         </p>
       </div>
 
-      <div class="form-field">
-        <label for="summary">Mission Summary</label>
-        <textarea
-          id="summary"
-          name="summary"
-          rows="4"
-        >{{data.summary}}</textarea>
-        <p class="form-hint">
-          A clear short summary someone can read quickly to understand the mission.
-        </p>
-      </div>
 
       <div class="form-field">
         <label for="additional_instructions">
@@ -111,7 +100,7 @@
           rows="5"
         >{{data.additional_instructions}}</textarea>
         <p class="form-hint">
-          Use this as a catch-all for extra context, background, requests, guidance, or anything else people should know.
+          Use this as a catch-all for extra context, background, requests, guidance, budgets, job numbers or anything else people should know.
         </p>
       </div>
 
@@ -156,8 +145,8 @@
       <section class="mission-learning-units">
         <h2 class="mission-learning-units-title">Twennie learning units (optional)</h2>
         <p class="mission-learning-units-help">
-          Attach up to six Twennie learning units that support this mission.
-          Start typing a keyword and choose from the list.
+          Does your mission include learning? If so, attach up to six Twennie learning units that support this mission.
+          Start typing a keyword from the unit title and choose from the list. 
         </p>
 
         <div class="mission-learning-units-search" style="width: 80%; border-radius: 50px">
@@ -187,7 +176,7 @@
       <div class="form-field">
         <label>Task Instructions <span style="font-weight: normal; font-size: 0.85em;">(optional)</span></label>
         <p class="form-hint">
-          Break the mission into sections. Use a heading for each section and put each instruction on a new line.
+          Break the mission into task lists or phases. If it only includes one phase, use only this section. Otherwise, add more. Use a heading for each section and put each instruction on a new line.
         </p>
 
         <div id="tasks-container">
