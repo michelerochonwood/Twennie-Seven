@@ -4,40 +4,55 @@
     <!-- Profile Info -->
     <div class="profile-information-container">
 
-<!-- Profile Image -->
-<div class="leader-profile-image-container">
-  <img
-    src="{{#if adminMode}}{{#if organizationLogo}}{{organizationLogo}}{{else}}/images/default-organization-logo.png{{/if}}{{else}}{{#if leader.profileImage}}{{leader.profileImage}}{{else}}/images/default-avatar.png{{/if}}{{/if}}"
-    alt="Profile photo"
-    class="leader-profile-image"
-  >
-</div>
+      <!-- Profile Image -->
+      <div class="leader-profile-image-container">
+        <img
+          src="{{#if adminMode}}{{#if organizationLogo}}{{organizationLogo}}{{else}}/images/default-organization-logo.png{{/if}}{{else}}{{#if leader.profileImage}}{{leader.profileImage}}{{else}}/images/default-avatar.png{{/if}}{{/if}}"
+          alt="Profile photo"
+          class="leader-profile-image"
+        >
+      </div>
 
       <!-- Name and Buttons -->
       <div class="leader-profile-info">
         <h2 class="leader-profile-name">{{leader.groupLeaderName}}</h2>
-<p class="leader-profile-title">
-  {{#if adminMode}}Organization Administrator Dashboard{{else}}Group Leader Dashboard{{/if}}
-</p>
+        <p class="leader-profile-title">
+          {{#if adminMode}}Organization Administrator Dashboard{{else}}Group Leader Dashboard{{/if}}
+        </p>
 
+        {{#unless adminMode}}
+          <a
+            href="/profile/leader/{{leader._id}}"
+            class="leader-profile-btn"
+          >
+            my leader profile
+          </a>
 
+          <button
+            type="button"
+            class="leader-profile-btn"
+            onclick="window.location.href='/profile/group/{{leader._id}}'"
+          >
+            {{leader.groupName}} profile
+          </button>
+        {{/unless}}
 
-{{#if adminMode}}
-{{#if leader.organization}}
-<button
-  type="button"
-  class="leader-profile-btn"
-  onclick="window.location.href='/profile/organization/{{leader.organization}}'"
->
-  {{leader.organizationName}} profile
-</button>
-{{/if}}
-{{/if}}
+        {{#if adminMode}}
+          {{#if leader.organization}}
+            <button
+              type="button"
+              class="leader-profile-btn"
+              onclick="window.location.href='/profile/organization/{{leader.organization}}'"
+            >
+              {{leader.organizationName}} profile
+            </button>
+          {{/if}}
+        {{/if}}
 
         <!-- Teach Me Button -->
-<a href="/teach_me" class="leader-profile-btn" style="margin-top: 0.75rem;">
-  how does Twennie work?
-</a>
+        <a href="/teach_me" class="leader-profile-btn" style="margin-top: 0.75rem;">
+          how does Twennie work?
+        </a>
       </div>
     </div>
 
@@ -77,8 +92,6 @@
         </a>
       </div>
     </div>
-
-
 
   </div>
 </aside>
