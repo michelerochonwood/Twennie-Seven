@@ -352,21 +352,15 @@ async function renderMissionList(req, res, options) {
 // Helper: build mission data from form body
 function buildMissionDataFromBody(req) {
   return {
-    // CORE STATUS / VISIBILITY
     status: req.body.status || 'one time mission',
     visibility: req.body.visibility || 'organization_only',
 
-    // TITLES + CORE NARRATIVE
     mission_title: req.body.mission_title,
+    badge_name: req.body.badge_name,
     purpose: req.body.purpose,
-    why_it_matters: req.body.why_it_matters,
-    background: req.body.background || '',
+    summary: req.body.summary || '',
+    additional_instructions: req.body.additional_instructions || '',
 
-    // ✅ NEW: SUMMARIES FOR CARDS
-    short_purpose: req.body.short_purpose || '',
-    full_summary: req.body.full_summary || '',
-
-    // DETAILS
     department_requesting: req.body.department_requesting || '',
     open_to: req.body.open_to || '',
     timeframe: req.body.timeframe || '',
@@ -375,18 +369,19 @@ function buildMissionDataFromBody(req) {
     budget_amount: req.body.budget_amount || '',
     due_date: req.body.due_date || null,
 
-    // APPROVALS / TASKS / CONTACTS / CHECKLIST
-    approvals_required: req.body.approvals_required || [],
-    task_instructions: req.body.task_instructions || [],
-    contacts: req.body.contacts || [],
+    task_instructions: Array.isArray(req.body.task_instructions)
+      ? req.body.task_instructions
+      : (req.body.task_instructions || []),
+
     deliverables_checklist: Array.isArray(req.body.deliverables_checklist)
       ? req.body.deliverables_checklist
       : (req.body.deliverables_checklist
-          ? String(req.body.deliverables_checklist).split('\n').map(s => s.trim()).filter(Boolean)
+          ? String(req.body.deliverables_checklist)
+              .split('\n')
+              .map(s => s.trim())
+              .filter(Boolean)
           : []),
 
-    // TOPIC + CATEGORY
-    main_topic: req.body.main_topic || 'When the Workload is Light',
     category: req.body.category || 'internal_improvement',
   };
 }
@@ -510,9 +505,9 @@ module.exports = {
         'organized, compliant, and prepared when things get busy again.',
     }),
 
-      communityMissions: (req, res) =>
+  communityMissions: (req, res) =>
     renderMissionList(req, res, {
-      category: 'other',
+      category: 'community',
       viewName: 'unit_views/missions_community',
       pageTitle: 'Community Missions',
       shortSummary: 'Missions that encourage giving and community involvement.',

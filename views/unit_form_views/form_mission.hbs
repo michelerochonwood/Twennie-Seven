@@ -1,11 +1,6 @@
 {{!-- views/unitform_views/form_mission.hbs --}}
 {{#*inline "title"}}Create a Mission | Twennie{{/inline}}
 
-{{!-- If you later create mission instructions, you can add:
-{{> mainpartials/missioninstructions_partial}}
---}}
-
-<!-- near the top of every form_* file -->
 <input type="hidden" name="fromUpcomingId" value="{{fromUpcomingId}}">
 
 <div class="contribute-wave-divider">
@@ -28,7 +23,6 @@
       <input type="hidden" name="_csrf" value="{{csrfToken}}">
       <input type="hidden" name="_id" value="{{data._id}}">
 
-      <!-- BASIC INFO -->
       <div class="form-field">
         <label for="mission-title">Mission Title</label>
         <input
@@ -40,27 +34,22 @@
         >
       </div>
 
-<div class="form-field">
-  <label for="badge-name">Give your mission badge a name</label>
-  <input
-    type="text"
-    id="badge-name"
-    name="badge_name"
-    value="{{data.badge_name}}"
-    required
-    maxlength="60"
-    placeholder="e.g., Client Whisperer 1, Scope Guardian, Research Runner"
-  >
-  <p class="form-hint">
-    This name appears on the badge when someone completes the mission. 
-  </p>
-</div>
+      <div class="form-field">
+        <label for="badge-name">Give your mission badge a name</label>
+        <input
+          type="text"
+          id="badge-name"
+          name="badge_name"
+          value="{{data.badge_name}}"
+          required
+          maxlength="60"
+          placeholder="e.g., Client Whisperer, Scope Guardian, Research Runner"
+        >
+        <p class="form-hint">
+          This name appears on the badge when someone completes the mission.
+        </p>
+      </div>
 
-
-      {{!-- TOPIC: missions still sit inside a topic, so reuse the topic dropdown --}}
-      {{> unitformpartials/topicdropdown }}
-
-      <!-- CATEGORY -->
       <div class="form-field">
         <label for="category">Mission Category</label>
         <select id="category" name="category" required>
@@ -77,38 +66,6 @@
         </select>
       </div>
 
-<section class="mission-learning-units">
-  <h2 class="mission-learning-units-title">Twennie learning units (optional)</h2>
-  <p class="mission-learning-units-help">
-    Attach up to six Twennie learning units that support this mission.
-    Start typing a keyword (like "proposal" or "portfolio") and choose from the list.
-  </p>
-
-  <div class="mission-learning-units-search" style="width: 80%; border-radius: 50px">
-    <label for="twennie-unit-search">Search for a unit</label>
-    <input
-      id="twennie-unit-search"
-      type="text"
-      name="twennie_unit_search"
-      autocomplete="off"
-      placeholder="Type a keyword to find units..."
-    >
-    <div id="twennie-unit-search-results"
-         class="mission-learning-units-results"
-         aria-live="polite"></div>
-  </div>
-
-  <div class="mission-learning-units-selected">
-    <h3>Selected units (max 6)</h3>
-    <div id="twennie-selected-units" class="mission-learning-units-chips"></div>
-  </div>
-
-  {{!-- Hidden inputs for the selected units will be inserted here by JS --}}
-  <div id="twennie-units-hidden-inputs"></div>
-</section>
-
-
-      <!-- STATUS -->
       <div class="form-field" style="margin-top: 10px">
         <label for="status">Mission Status</label>
         <select id="status" name="status" required>
@@ -118,7 +75,6 @@
         </select>
       </div>
 
-      <!-- PURPOSE / WHY / BACKGROUND -->
       <div class="form-field">
         <label for="purpose">Mission Purpose</label>
         <textarea
@@ -128,70 +84,42 @@
           required
         >{{data.purpose}}</textarea>
         <p class="form-hint">
-          Describe what this mission is intended to achieve. Aim for about <strong>80–150 words</strong>.
+          Describe what this mission is meant to achieve.
         </p>
       </div>
 
       <div class="form-field">
-        <label for="why-it-matters">Why This Mission Matters</label>
+        <label for="summary">Mission Summary</label>
         <textarea
-          id="why-it-matters"
-          name="why_it_matters"
+          id="summary"
+          name="summary"
           rows="4"
-          required
-        >{{data.why_it_matters}}</textarea>
+        >{{data.summary}}</textarea>
         <p class="form-hint">
-          Explain the impact of this mission on your team, organization, or clients. Aim for <strong>100–180 words</strong>.
+          A clear short summary someone can read quickly to understand the mission.
         </p>
       </div>
 
       <div class="form-field">
-        <label for="background">Background <span style="font-weight: normal; font-size: 0.85em;">(optional)</span></label>
-        <textarea
-          id="background"
-          name="background"
-          rows="4"
-        >{{data.background}}</textarea>
-        <p class="form-hint">
-          Provide any context, history, or drivers behind this mission. Aim for up to <strong>~200 words</strong>.
-        </p>
-      </div>
-
-      <!-- SUMMARIES FOR CARDS / LIST VIEWS -->
-      <div class="form-field">
-        <label for="short-purpose">
-          Short Mission Summary
-          <span style="font-weight: normal; font-size: 0.85em;">(appears under the title in mission cards)</span>
+        <label for="additional_instructions">
+          Additional Instructions
+          <span style="font-weight: normal; font-size: 0.85em;">(optional)</span>
         </label>
         <textarea
-          id="short-purpose"
-          name="short_purpose"
-          rows="3"
-        >{{data.short_purpose}}</textarea>
+          id="additional_instructions"
+          name="additional_instructions"
+          rows="5"
+        >{{data.additional_instructions}}</textarea>
         <p class="form-hint">
-          A brief mission summary in plain language. Aim for about <strong>25–35 words</strong>.
+          Use this as a catch-all for extra context, background, requests, guidance, or anything else people should know.
         </p>
       </div>
 
       <div class="form-field">
-        <label for="full-summary">
-          Full Mission Summary
-          <span style="font-weight: normal; font-size: 0.85em;">(Finish this sentence: Your mission, should you choose to accept it, is to...)</span>
+        <label for="department_requesting">
+          Requesting Department
+          <span style="font-weight: normal; font-size: 0.85em;">(optional)</span>
         </label>
-        <textarea
-          id="full-summary"
-          name="full_summary"
-          rows="4"
-        >{{data.full_summary}}</textarea>
-        <p class="form-hint">
-          A clear, complete description that helps someone quickly decide whether to take on this mission.
-          Aim for <strong>80–120 words</strong>.
-        </p>
-      </div>
-
-      <!-- DETAILS -->
-      <div class="form-field">
-        <label for="department_requesting">Requesting Department <span style="font-weight: normal; font-size: 0.85em;">(optional)</span></label>
         <input
           type="text"
           id="department_requesting"
@@ -201,18 +129,24 @@
       </div>
 
       <div class="form-field">
-        <label for="open_to">Who Is This Mission Open To? <span style="font-weight: normal; font-size: 0.85em;">(optional)</span></label>
+        <label for="open_to">
+          Who Is This Mission Open To?
+          <span style="font-weight: normal; font-size: 0.85em;">(optional)</span>
+        </label>
         <input
           type="text"
           id="open_to"
           name="open_to"
           value="{{data.open_to}}"
-          placeholder="e.g., All project managers, Marketing team, Any BD leads"
+          placeholder="e.g., all project managers, marketing team, any BD leads"
         >
       </div>
 
       <div class="form-field">
-        <label for="timeframe">Timeframe <span style="font-weight: normal; font-size: 0.85em;">(optional)</span></label>
+        <label for="timeframe">
+          Timeframe
+          <span style="font-weight: normal; font-size: 0.85em;">(optional)</span>
+        </label>
         <input
           type="text"
           id="timeframe"
@@ -223,7 +157,10 @@
       </div>
 
       <div class="form-field">
-        <label for="estimated_effort_hours">Estimated Effort (hours) <span style="font-weight: normal; font-size: 0.85em;">(optional)</span></label>
+        <label for="estimated_effort_hours">
+          Estimated Effort (hours)
+          <span style="font-weight: normal; font-size: 0.85em;">(optional)</span>
+        </label>
         <input
           type="number"
           id="estimated_effort_hours"
@@ -232,13 +169,13 @@
           step="0.5"
           value="{{data.estimated_effort_hours}}"
         >
-        <p class="form-hint">
-          Provide your best estimate. It doesn’t have to be perfect.
-        </p>
       </div>
 
       <div class="form-field">
-        <label for="job_number">Job Number <span style="font-weight: normal; font-size: 0.85em;">(optional)</span></label>
+        <label for="job_number">
+          Job Number
+          <span style="font-weight: normal; font-size: 0.85em;">(optional)</span>
+        </label>
         <input
           type="text"
           id="job_number"
@@ -248,7 +185,10 @@
       </div>
 
       <div class="form-field">
-        <label for="budget_amount">Budget Amount <span style="font-weight: normal; font-size: 0.85em;">(optional)</span></label>
+        <label for="budget_amount">
+          Budget Amount
+          <span style="font-weight: normal; font-size: 0.85em;">(optional)</span>
+        </label>
         <input
           type="text"
           id="budget_amount"
@@ -259,7 +199,10 @@
       </div>
 
       <div class="form-field">
-        <label for="due_date">Due Date <span style="font-weight: normal; font-size: 0.85em;">(optional)</span></label>
+        <label for="due_date">
+          Due Date
+          <span style="font-weight: normal; font-size: 0.85em;">(optional)</span>
+        </label>
         <input
           type="date"
           id="due_date"
@@ -268,7 +211,6 @@
         >
       </div>
 
-      <!-- VISIBILITY -->
       <div class="form-field">
         <label>Who can access this mission?</label>
         <div class="visibility-toggle-row">
@@ -305,67 +247,41 @@
         </div>
       </div>
 
-      <!-- APPROVALS REQUIRED -->
-      <div class="form-field">
-        <label>Approvals Required <span style="font-weight: normal; font-size: 0.85em;">(optional)</span></label>
-        <p class="form-hint">List any roles/people who must approve this mission before or after work begins.</p>
+      <section class="mission-learning-units">
+        <h2 class="mission-learning-units-title">Twennie learning units (optional)</h2>
+        <p class="mission-learning-units-help">
+          Attach up to six Twennie learning units that support this mission.
+          Start typing a keyword and choose from the list.
+        </p>
 
-        <div id="approvals-container">
-          {{#if data.approvals_required.length}}
-            {{#each data.approvals_required}}
-              <div class="dynamic-row approval-row">
-                <input
-                  type="text"
-                  name="approvals_required[{{@index}}][role]"
-                  placeholder="Role (e.g., Department Head)"
-                  value="{{role}}"
-                >
-                <input
-                  type="text"
-                  name="approvals_required[{{@index}}][name]"
-                  placeholder="Name"
-                  value="{{name}}"
-                >
-                <input
-                  type="email"
-                  name="approvals_required[{{@index}}][email]"
-                  placeholder="Email"
-                  value="{{email}}"
-                >
-                <button type="button" class="form-button small-button remove-approval">remove</button>
-              </div>
-            {{/each}}
-          {{else}}
-            <div class="dynamic-row approval-row">
-              <input
-                type="text"
-                name="approvals_required[0][role]"
-                placeholder="Role (e.g., Department Head)"
-              >
-              <input
-                type="text"
-                name="approvals_required[0][name]"
-                placeholder="Name"
-              >
-              <input
-                type="email"
-                name="approvals_required[0][email]"
-                placeholder="Email"
-              >
-              <button type="button" class="form-button small-button remove-approval">remove</button>
-            </div>
-          {{/if}}
+        <div class="mission-learning-units-search" style="width: 80%; border-radius: 50px">
+          <label for="twennie-unit-search">Search for a unit</label>
+          <input
+            id="twennie-unit-search"
+            type="text"
+            name="twennie_unit_search"
+            autocomplete="off"
+            placeholder="Type a keyword to find units..."
+          >
+          <div
+            id="twennie-unit-search-results"
+            class="mission-learning-units-results"
+            aria-live="polite"
+          ></div>
         </div>
 
-        <button type="button" id="add-approval" class="form-button secondary-button">add another approval</button>
-      </div>
+        <div class="mission-learning-units-selected">
+          <h3>Selected units (max 6)</h3>
+          <div id="twennie-selected-units" class="mission-learning-units-chips"></div>
+        </div>
 
-      <!-- TASK INSTRUCTIONS -->
+        <div id="twennie-units-hidden-inputs"></div>
+      </section>
+
       <div class="form-field">
         <label>Task Instructions <span style="font-weight: normal; font-size: 0.85em;">(optional)</span></label>
         <p class="form-hint">
-          Break the mission into sections. Use each “Heading” to label a part of the work (e.g., “Scheduling”, “Interview Guide”)
-          and put the instructions as bullet-style lines. Each section can be <strong>2–8 bullet-style lines</strong>.
+          Break the mission into sections. Use a heading for each section and put each instruction on a new line.
         </p>
 
         <div id="tasks-container">
@@ -407,80 +323,13 @@
         <button type="button" id="add-task" class="form-button secondary-button">add another section</button>
       </div>
 
-      <!-- CONTACTS -->
-      <div class="form-field">
-        <label>Contacts <span style="font-weight: normal; font-size: 0.85em;">(optional)</span></label>
-        <p class="form-hint">Who can people contact with questions while working on this mission?</p>
-
-        <div id="contacts-container">
-          {{#if data.contacts.length}}
-            {{#each data.contacts}}
-              <div class="dynamic-row contact-row">
-                <input
-                  type="text"
-                  name="contacts[{{@index}}][role]"
-                  placeholder="Role (e.g., Mission Lead)"
-                  value="{{role}}"
-                >
-                <input
-                  type="text"
-                  name="contacts[{{@index}}][name]"
-                  placeholder="Name"
-                  value="{{name}}"
-                >
-                <input
-                  type="email"
-                  name="contacts[{{@index}}][email]"
-                  placeholder="Email"
-                  value="{{email}}"
-                >
-                <input
-                  type="text"
-                  name="contacts[{{@index}}][phone]"
-                  placeholder="Phone"
-                  value="{{phone}}"
-                >
-                <button type="button" class="form-button small-button remove-contact">remove</button>
-              </div>
-            {{/each}}
-          {{else}}
-            <div class="dynamic-row contact-row">
-              <input
-                type="text"
-                name="contacts[0][role]"
-                placeholder="Role (e.g., Mission Lead)"
-              >
-              <input
-                type="text"
-                name="contacts[0][name]"
-                placeholder="Name"
-              >
-              <input
-                type="email"
-                name="contacts[0][email]"
-                placeholder="Email"
-              >
-              <input
-                type="text"
-                name="contacts[0][phone]"
-                placeholder="Phone"
-              >
-              <button type="button" class="form-button small-button remove-contact">remove</button>
-            </div>
-          {{/if}}
-        </div>
-
-        <button type="button" id="add-contact" class="form-button secondary-button">add another contact</button>
-      </div>
-
-      <!-- DELIVERABLES CHECKLIST -->
       <div class="form-field">
         <label for="deliverables_checklist">
-          Deliverables Checklist <span style="font-weight: normal; font-size: 0.85em;">(optional)</span>
+          Deliverables Checklist
+          <span style="font-weight: normal; font-size: 0.85em;">(optional)</span>
         </label>
         <p class="form-hint">
-          List the deliverables people should produce. Put each deliverable on a new line
-          (e.g., “Draft interview guide”, “Summary memo”, “Updated client list”). Aim for <strong>3–10 items</strong>.
+          Put each deliverable on a new line.
         </p>
         <textarea
           id="deliverables_checklist"
@@ -490,9 +339,6 @@
 {{/each}}</textarea>
       </div>
 
-
-
-      <!-- BUTTONS -->
       <div class="form-buttons">
         {{#if data._id}}
           <button
@@ -520,38 +366,6 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    // ---- APPROVALS ----
-    var approvalsContainer = document.getElementById('approvals-container');
-    var addApprovalBtn = document.getElementById('add-approval');
-
-    function getApprovalIndex() {
-      return approvalsContainer.querySelectorAll('.approval-row').length;
-    }
-
-    if (addApprovalBtn) {
-      addApprovalBtn.addEventListener('click', function () {
-        var idx = getApprovalIndex();
-        var row = document.createElement('div');
-        row.className = 'dynamic-row approval-row';
-        row.innerHTML =
-          '<input type="text" name="approvals_required[' + idx + '][role]" placeholder="Role (e.g., Department Head)">' +
-          '<input type="text" name="approvals_required[' + idx + '][name]" placeholder="Name">' +
-          '<input type="email" name="approvals_required[' + idx + '][email]" placeholder="Email">' +
-          '<button type="button" class="form-button small-button remove-approval">remove</button>';
-        approvalsContainer.appendChild(row);
-      });
-    }
-
-    if (approvalsContainer) {
-      approvalsContainer.addEventListener('click', function (e) {
-        if (e.target.classList.contains('remove-approval')) {
-          var row = e.target.closest('.approval-row');
-          if (row) row.remove();
-        }
-      });
-    }
-
-    // ---- TASK INSTRUCTIONS ----
     var tasksContainer = document.getElementById('tasks-container');
     var addTaskBtn = document.getElementById('add-task');
 
@@ -580,40 +394,7 @@
         }
       });
     }
-
-    // ---- CONTACTS ----
-    var contactsContainer = document.getElementById('contacts-container');
-    var addContactBtn = document.getElementById('add-contact');
-
-    function getContactIndex() {
-      return contactsContainer.querySelectorAll('.contact-row').length;
-    }
-
-    if (addContactBtn) {
-      addContactBtn.addEventListener('click', function () {
-        var idx = getContactIndex();
-        var row = document.createElement('div');
-        row.className = 'dynamic-row contact-row';
-        row.innerHTML =
-          '<input type="text" name="contacts[' + idx + '][role]" placeholder="Role (e.g., Mission Lead)">' +
-          '<input type="text" name="contacts[' + idx + '][name]" placeholder="Name">' +
-          '<input type="email" name="contacts[' + idx + '][email]" placeholder="Email">' +
-          '<input type="text" name="contacts[' + idx + '][phone]" placeholder="Phone">' +
-          '<button type="button" class="form-button small-button remove-contact">remove</button>';
-        contactsContainer.appendChild(row);
-      });
-    }
-
-    if (contactsContainer) {
-      contactsContainer.addEventListener('click', function (e) {
-        if (e.target.classList.contains('remove-contact')) {
-          var row = e.target.closest('.contact-row');
-          if (row) row.remove();
-        }
-      });
-    }
   });
-
 
   (function () {
     const searchInput = document.getElementById('twennie-unit-search');
@@ -626,16 +407,14 @@
     }
 
     const MAX_UNITS = 6;
-    let selectedUnits = []; // { value, label, unit_type, unit_id }
+    let selectedUnits = [];
     let searchTimeout = null;
 
     function renderSelectedUnits() {
-      // Clear chips + hidden inputs
       selectedContainer.innerHTML = '';
       hiddenInputsContainer.innerHTML = '';
 
       selectedUnits.forEach((u) => {
-        // Chip UI
         const chip = document.createElement('button');
         chip.type = 'button';
         chip.className = 'mission-unit-chip';
@@ -649,11 +428,10 @@
 
         selectedContainer.appendChild(chip);
 
-        // Hidden input for form submission
         const hidden = document.createElement('input');
         hidden.type = 'hidden';
         hidden.name = 'twennie_units[]';
-        hidden.value = u.value; // e.g. "article:65f..."
+        hidden.value = u.value;
         hiddenInputsContainer.appendChild(hidden);
       });
     }
@@ -729,10 +507,9 @@
 
       searchTimeout = setTimeout(() => {
         performSearch(query);
-      }, 250); // simple debounce
+      }, 250);
     });
 
-    // Hide results if user clicks outside the results or input
     document.addEventListener('click', (evt) => {
       if (!resultsContainer.contains(evt.target) && evt.target !== searchInput) {
         resultsContainer.style.display = 'none';
@@ -740,7 +517,5 @@
     });
   })();
 </script>
-
-
 
 {{> mainpartials/footer}}

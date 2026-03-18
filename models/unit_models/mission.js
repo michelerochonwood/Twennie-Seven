@@ -22,42 +22,27 @@ const missionSchema = new mongoose.Schema({
   },
 
   badge_name: {
-  type: String,
-  required: true,
-  trim: true,
-  maxlength: 60
-},
+    type: String,
+    required: true,
+    trim: true,
+    maxlength: 60
+  },
 
-  // --- CORE NARRATIVE FIELDS ---
   purpose: {
     type: String,
     required: true,
   },
 
-  why_it_matters: {
-    type: String,
-    required: true,
-  },
-
-  background: {
-    type: String,
-    required: false,
-  },
-
-  // --- SUMMARIES FOR CARDS / LIST VIEWS ---
-  // Short summary shown under the title in the mission cards
-  short_purpose: {
+  summary: {
     type: String,
     trim: true,
   },
 
-  // Full summary shown when the card is expanded
-  full_summary: {
+  additional_instructions: {
     type: String,
     trim: true,
   },
 
-  // --- DETAILS ---
   department_requesting: String,
 
   open_to: {
@@ -65,41 +50,18 @@ const missionSchema = new mongoose.Schema({
     required: false,
   },
 
-  timeframe: String,            // e.g. "8 weeks"
-  estimated_effort_hours: Number, // optional conversion to hours
+  timeframe: String,
+  estimated_effort_hours: Number,
   job_number: String,
   budget_amount: String,
 
-  approvals_required: [{
-    role: String,
-    name: String,
-    email: String,
-  }],
-
-  // --- TASK INSTRUCTIONS ---
   task_instructions: [{
-    heading: String,        // "Scheduling", "Interview Guide"
-    instructions: [String], // bullet list
+    heading: String,
+    instructions: [String],
   }],
 
-  // --- CONTACTS ---
-  contacts: [{
-    role: String,
-    name: String,
-    email: String,
-    phone: String,
-  }],
-
-  // --- CHECKLIST ---
   deliverables_checklist: [String],
 
-  // The mission is in one topic only
-  main_topic: {
-    type: String,
-    default: 'When the Workload is Light',
-  },
-
-  // --- CATEGORY CLASSIFICATIONS ---
   category: {
     type: String,
     enum: [
@@ -116,7 +78,6 @@ const missionSchema = new mongoose.Schema({
     default: 'internal_improvement',
   },
 
-  // --- COMPLETION RECORDS ---
   completions: [{
     member: { type: mongoose.Schema.Types.ObjectId, ref: 'Member' },
     notes: String,
@@ -129,13 +90,13 @@ const missionSchema = new mongoose.Schema({
   }],
 
   twennie_learning_units: [{
-  unit_id: { type: mongoose.Schema.Types.ObjectId, required: true },
-  unit_type: {
-    type: String,
-    enum: ['article', 'video', 'interview', 'promptset', 'exercise', 'template', 'nugget', 'mission'],
-    required: true
-  }
-}],
+    unit_id: { type: mongoose.Schema.Types.ObjectId, required: true },
+    unit_type: {
+      type: String,
+      enum: ['article', 'video', 'interview', 'promptset', 'exercise', 'template', 'nugget', 'mission'],
+      required: true
+    }
+  }],
 
   created_by: {
     type: mongoose.Schema.Types.ObjectId,
@@ -160,4 +121,3 @@ missionSchema.pre('save', function (next) {
 });
 
 module.exports = mongoose.model('Mission', missionSchema);
-
