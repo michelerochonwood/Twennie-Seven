@@ -2,7 +2,7 @@
   <div class="contribution-container">
 
     <!-- Centered Image -->
-    <div style="text-align: center; margin-bottom: -20px; margin-top: -60px;">
+    <div style="text-align: center; margin-bottom: -20px; margin-top: -40px;">
       <img src="/images/blueyteacher.png" alt="Bluey Teacher" style="max-width: 200px;">
     </div>
 
@@ -16,9 +16,9 @@
       learn by unleashing your inner teacher
     </p>
 
-    <!-- Benefits Description -->
     <p class="contributor-benefits">
-      Are you a writer? A coach? A videographer? A trainer? Twennie enables you to develop these skills, practice, and share learning with other professionals.
+      Are you a writer? A coach? A videographer? A trainer? Twennie enables you to develop these skills,
+      practice, and share learning with other professionals.
     </p>
 
     {{!-- =========================================================
@@ -37,11 +37,8 @@
             before you contribute, you must agree to Twennie’s terms &amp; conditions for contributing library content
           </p>
 
-          {{!-- IMPORTANT: use your REAL dashboard route here (leader example below) --}}
           <a
             href="/termsconditions?next=/dashboard/groupmember#contribute"
-
-
             class="contribute-btn"
             style="display:inline-block; text-decoration:none;"
           >
@@ -54,18 +51,14 @@
         </div>
       {{/unless}}
 
-{{#if user.termsAccepted}}
+      {{#if user.termsAccepted}}
 
-  <!-- Toggle Button -->
-  <button class="contribute-btn js-toggle-contribute" type="button">
-    I want to contribute to the library
-  </button>
+        <button id="toggleContribute" class="contribute-btn" type="button">
+          I want to contribute to the library
+        </button>
 
-
-  <!-- Hidden Contribution Grid -->
-  <div class="contribution-grid js-contribution-grid" style="display: none;">
-    <!-- ... keep all your unit cards exactly as-is ... -->
-
+        <!-- All unit cards live inside this grid and are hidden/shown by the toggle -->
+        <div id="contributionGrid" class="contribution-grid" hidden>
 
           <!-- Article -->
           <a href="/unitform/form_article" class="unit-card" aria-label="Create an article">
@@ -168,36 +161,6 @@
 
         </div>
 
-        <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const section = document.getElementById('contribute');
-      if (!section) return;
-
-      const toggleBtn = section.querySelector('.js-toggle-contribute');
-      const grid = section.querySelector('.js-contribution-grid');
-
-      if (toggleBtn && grid) {
-        toggleBtn.addEventListener('click', () => {
-          const isHidden = grid.style.display === 'none' || !grid.style.display;
-          grid.style.display = isHidden ? 'grid' : 'none';
-        });
-      }
-
-      // Auto-open if returning with #contribute
-      if (window.location.hash !== '#contribute') return;
-
-      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-      if (!toggleBtn || !grid) return;
-
-      try { toggleBtn.click(); } catch (e) { grid.style.display = 'grid'; }
-
-      try {
-        history.replaceState(null, '', window.location.pathname + window.location.search);
-      } catch (e) {}
-    });
-        </script>
-
       {{/if}}
 
     {{else}}
@@ -220,5 +183,58 @@
 
   </div>
 </section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const toggleBtn = document.getElementById('toggleContribute');
+    const grid = document.getElementById('contributionGrid');
+    const section = document.getElementById('contribute');
+
+    // If terms not accepted, these won't exist
+    if (!toggleBtn || !grid) return;
+
+    const STORAGE_KEY = 'twennie_groupmember_contribute_grid_open';
+
+    function setOpen(isOpen) {
+      grid.hidden = !isOpen;
+      toggleBtn.setAttribute('aria-expanded', String(isOpen));
+
+      try {
+        sessionStorage.setItem(STORAGE_KEY, isOpen ? '1' : '0');
+      } catch (e) {}
+    }
+
+    function isOpen() {
+      return !grid.hidden;
+    }
+
+    let initialOpen = false;
+    try {
+      const saved = sessionStorage.getItem(STORAGE_KEY);
+      if (saved === '1') initialOpen = true;
+      if (saved === '0') initialOpen = false;
+    } catch (e) {}
+
+    grid.style.display = '';
+    grid.hidden = !initialOpen;
+
+    toggleBtn.setAttribute('type', 'button');
+    toggleBtn.setAttribute('aria-controls', 'contributionGrid');
+    toggleBtn.setAttribute('aria-expanded', String(initialOpen));
+
+    toggleBtn.addEventListener('click', () => {
+      setOpen(!isOpen());
+    });
+
+    if (window.location.hash === '#contribute') {
+      if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setOpen(true);
+
+      try {
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+      } catch (e) {}
+    }
+  });
+</script>
 
 
