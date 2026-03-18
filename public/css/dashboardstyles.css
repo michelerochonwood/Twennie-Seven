@@ -3719,7 +3719,11 @@ html, body {
 }
 
 
-
+.leader-nugget-card .leader-nugget-assigned-list > * {
+  border-top: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
 
 /*------------------------------------------------------------------------------*/
 
