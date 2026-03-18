@@ -308,12 +308,19 @@ if (leaderDoc) {
   byGroupName.forEach(m => myGroupAuthorIds.add(String(m._id)));
 
 } else if (groupMemberDoc) {
-  if (groupMemberDoc.leader) myGroupAuthorIds.add(String(groupMemberDoc.leader));
+  const leaderId = groupMemberDoc.leader || groupMemberDoc.groupId || null;
+
+  if (leaderId) myGroupAuthorIds.add(String(leaderId));
   myGroupAuthorIds.add(String(groupMemberDoc._id));
 
   const [peersByLeader, peersByGroupName] = await Promise.all([
-    groupMemberDoc.leader
-      ? GroupMember.find({ leader: groupMemberDoc.leader }).select('_id').lean()
+    leaderId
+      ? GroupMember.find({
+          $or: [
+            { leader: leaderId },
+            { groupId: leaderId }
+          ]
+        }).select('_id').lean()
       : Promise.resolve([]),
     groupMemberDoc.groupName
       ? GroupMember.find({ groupName: groupMemberDoc.groupName }).select('_id').lean()
@@ -339,10 +346,51 @@ console.log('myGroupAuthorIds:', [...myGroupAuthorIds]);
 
 // Build an organization key for the current viewer
 const me = leaderDoc || groupMemberDoc || memberDoc || {};
-const myOrgKey =
+
+let myOrgKey =
   me.organization ? String(me.organization) :
   normalize(me.organizationId) ||
-  emailDomain(me.email);
+  normalize(me.organizationName) ||
+  null;
+
+// If viewer is a group member with no direct org, inherit from leader/group
+if (!myOrgKey && groupMemberDoc) {
+  const leaderId = groupMemberDoc.leader || groupMemberDoc.groupId || null;
+
+  if (leaderId) {
+    const parentLeader = await Leader.findById(leaderId)
+      .select('organization organizationId organizationName email')
+      .lean();
+
+    if (parentLeader) {
+      myOrgKey =
+        (parentLeader.organization ? String(parentLeader.organization) : null) ||
+        normalize(parentLeader.organizationId) ||
+        normalize(parentLeader.organizationName) ||
+        null;
+    }
+  }
+
+  // extra fallback: match by groupName
+  if (!myOrgKey && groupMemberDoc.groupName) {
+    const parentLeaderByGroupName = await Leader.findOne({ groupName: groupMemberDoc.groupName })
+      .select('organization organizationId organizationName email')
+      .lean();
+
+    if (parentLeaderByGroupName) {
+      myOrgKey =
+        (parentLeaderByGroupName.organization ? String(parentLeaderByGroupName.organization) : null) ||
+        normalize(parentLeaderByGroupName.organizationId) ||
+        normalize(parentLeaderByGroupName.organizationName) ||
+        null;
+    }
+  }
+}
+
+// absolute last resort only
+if (!myOrgKey) {
+  myOrgKey = emailDomain(me.email);
+}
 
 // We’ll cache author org keys so we don’t keep hitting the DB
 const authorOrgKeyCache = new Map();
