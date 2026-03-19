@@ -56,46 +56,47 @@
       </div>
     </div>
 
-    <!-- Report Grid -->
-    <div class="report-grid-container">
-      <h2 class="leader-profile-title" style="font-size: 1rem; margin-bottom: -20px;">
-        {{leader.groupName}} Report Center
-      </h2>
+    {{#unless adminMode}}
+      <!-- Report Grid -->
+      <div class="report-grid-container">
+        <h2 class="leader-profile-title" style="font-size: 1rem; margin-bottom: -20px;">
+          {{leader.groupName}} Report Center
+        </h2>
 
-      <div class="leader-report-grid">
-        <a href="/reports/memberengagement" class="report-link">
-          <img
-            src="/images/memberengagementreport.png"
-            alt="Member Engagement Report"
-          >
-        </a>
+        <div class="leader-report-grid">
+          <a href="/reports/memberengagement" class="report-link">
+            <img
+              src="/images/memberengagementreport.png"
+              alt="Member Engagement Report"
+            >
+          </a>
 
-        <a href="/reports/nuggetsmonitored" class="report-link">
-          <img
-            src="/images/nuggetsreport.png"
-            alt="Nuggets Being Monitored Report"
-          >
-        </a>
+          <a href="/reports/nuggetsmonitored" class="report-link">
+            <img
+              src="/images/nuggetsreport.png"
+              alt="Nuggets Being Monitored Report"
+            >
+          </a>
 
-        <a href="/reports/promptsetscompleted" class="report-link">
-          <img
-            src="/images/promptsetsreport.png"
-            alt="Prompt Sets Report"
-          >
-        </a>
+          <a href="/reports/promptsetscompleted" class="report-link">
+            <img
+              src="/images/promptsetsreport.png"
+              alt="Prompt Sets Report"
+            >
+          </a>
 
-        <a href="/reports/unitscompleted" class="report-link">
-          <img
-            src="/images/libraryunitsreport.png"
-            alt="Library Units Report"
-          >
-        </a>
+          <a href="/reports/unitscompleted" class="report-link">
+            <img
+              src="/images/libraryunitsreport.png"
+              alt="Library Units Report"
+            >
+          </a>
+        </div>
       </div>
-    </div>
+    {{/unless}}
 
   </div>
 </aside>
-
 
 
 
