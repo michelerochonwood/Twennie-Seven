@@ -1,27 +1,26 @@
 {{!-- views/unitform_views/form_mission.hbs --}}
 {{#*inline "title"}}Create a Mission | Twennie{{/inline}}
 
+
+
 <input type="hidden" name="fromUpcomingId" value="{{fromUpcomingId}}">
 
-    <!-- YouTube iframe (src is set only after click) -->
+<div class="form-mission-video-wrapper">
+  <div class="form-mission-video-container">
     <iframe
-      data-src="https://www.youtube.com/embed/tUnOLnUaV5o?autoplay=1"
-      src="about:blank"
+      src="https://www.youtube.com/embed/tUnOLnUaV5o"
       title="Mission Control intro video"
       frameborder="0"
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
       allowfullscreen
-      style="
-        position: absolute;
-        inset: 0;
-        width: 80%;
-        height: 80%;
-        display: none;
-      "
+      class="form-mission-video-embed"
     ></iframe>
-            <p class="form-hint">
-          Before creating a mission, watch this video. It provides guidance and tips for creating successful missions based on what you want to achieve.
-        </p>
+  </div>
+
+  <p class="form-hint form-mission-video-hint">
+    Before creating a mission, watch this video. It provides guidance and tips for creating successful missions based on what you want to achieve.
+  </p>
+</div>
 
 <div class="contribute-wave-divider">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 160">
