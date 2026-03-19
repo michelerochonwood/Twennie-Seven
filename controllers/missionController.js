@@ -1,5 +1,3 @@
-// controllers/missionController.js
-
 const Mission = require('../models/unit_models/mission');
 const Member = require('../models/member_models/member');
 const Leader = require('../models/member_models/leader');
@@ -26,7 +24,47 @@ function normalizeImg(img) {
   return img.startsWith('/') ? img : '/' + img;
 }
 
-// Mirror topic controller: resolve author/creator from *profile* models
+async function resolveCreatorById(authorId) {
+  try {
+    let profile = await LeaderProfile.findOne({ leaderId: authorId })
+      .select('profileImage name')
+      .lean();
+
+    if (profile) {
+      return {
+        name: profile.name || 'Leader',
+        image: normalizeImg(profile.profileImage),
+      };
+    }
+
+    profile = await GroupMemberProfile.findOne({ groupMemberId: authorId })
+      .select('profileImage name')
+      .lean();
+
+    if (profile) {
+      return {
+        name: profile.name || 'Group Member',
+        image: normalizeImg(profile.profileImage),
+      };
+    }
+
+    profile = await MemberProfile.findOne({ memberId: authorId })
+      .select('profileImage name')
+      .lean();
+
+    if (profile) {
+      return {
+        name: profile.name || 'Member',
+        image: normalizeImg(profile.profileImage),
+      };
+    }
+  } catch (err) {
+    console.error('Error resolving mission creator profile:', err);
+  }
+
+  return { name: 'Unknown Creator', image: '/images/default-avatar.png' };
+}
+
 async function resolveCreatorAndOrgById(authorId) {
   const creator = await resolveCreatorById(authorId);
 
@@ -36,7 +74,7 @@ async function resolveCreatorAndOrgById(authorId) {
 
   try {
     let leader = await Leader.findById(authorId)
-      .select('organization organizationName groupName email')
+      .select('organization organizationName email groupName')
       .lean();
 
     if (leader) {
@@ -53,7 +91,7 @@ async function resolveCreatorAndOrgById(authorId) {
 
         if (!organizationId && (groupMember.leader || groupMember.groupId)) {
           const parentLeader = await Leader.findById(groupMember.leader || groupMember.groupId)
-            .select('organization organizationName groupName email')
+            .select('organization organizationName email groupName')
             .lean();
 
           if (parentLeader) {
@@ -64,7 +102,7 @@ async function resolveCreatorAndOrgById(authorId) {
 
         if (!organizationId && groupMember.groupName) {
           const parentLeaderByGroupName = await Leader.findOne({ groupName: groupMember.groupName })
-            .select('organization organizationName groupName email')
+            .select('organization organizationName email groupName')
             .lean();
 
           if (parentLeaderByGroupName) {
@@ -352,130 +390,53 @@ async function renderMissionList(req, res, options) {
 
     const creatorMetaCache = new Map();
 
-    async function getCreatorMeta(authorId) {
-      const cacheKey = String(authorId);
-      if (creatorMetaCache.has(cacheKey)) {
-        return creatorMetaCache.get(cacheKey);
-      }
 
-      const creator = await resolveCreatorById(authorId);
 
-      let organizationId = null;
-      let organizationName = '';
-      let organizationLogo = '/images/default-organization-logo.png';
 
-      try {
-        let leader = await Leader.findById(authorId)
-          .select('organization organizationName groupName email')
-          .lean();
+async function getCreatorMeta(authorId) {
+  const key = String(authorId);
+  if (creatorMetaCache.has(key)) return creatorMetaCache.get(key);
 
-        if (leader) {
-          organizationId = leader.organization || null;
-          organizationName = leader.organizationName || '';
-        } else {
-          let gm = await GroupMember.findById(authorId)
-            .select('organization organizationName groupId leader groupName email')
-            .lean();
+  const meta = await resolveCreatorAndOrgById(authorId);
+  creatorMetaCache.set(key, meta);
+  return meta;
+}
 
-          if (gm) {
-            organizationId = gm.organization || null;
-            organizationName = gm.organizationName || '';
+async function enrichList(list) {
+  const result = [];
 
-            if (!organizationId && (gm.leader || gm.groupId)) {
-              const parentLeader = await Leader.findById(gm.leader || gm.groupId)
-                .select('organization organizationName')
-                .lean();
+  for (const m of list) {
+    let creatorName = 'Unknown Creator';
+    let creatorImage = '/images/default-avatar.png';
+    let organizationId = null;
+    let organizationName = '';
+    let organizationLogo = '/images/default-organization-logo.png';
 
-              if (parentLeader) {
-                organizationId = parentLeader.organization || null;
-                organizationName = parentLeader.organizationName || '';
-              }
-            }
-
-            if (!organizationId && gm.groupName) {
-              const parentLeaderByGroupName = await Leader.findOne({
-                groupName: gm.groupName,
-              })
-                .select('organization organizationName')
-                .lean();
-
-              if (parentLeaderByGroupName) {
-                organizationId = parentLeaderByGroupName.organization || null;
-                organizationName = parentLeaderByGroupName.organizationName || '';
-              }
-            }
-          } else {
-            const member = await Member.findById(authorId)
-              .select('organization organizationName')
-              .lean();
-
-            if (member) {
-              organizationId = member.organization || null;
-              organizationName = member.organizationName || '';
-            }
-          }
-        }
-
-        if (organizationId && typeof OrganizationProfile !== 'undefined') {
-          const orgProfile = await OrganizationProfile.findOne({ organizationId })
-            .select('logo')
-            .lean();
-
-          if (orgProfile?.logo?.url) {
-            organizationLogo = orgProfile.logo.url;
-          }
-        }
-      } catch (err) {
-        console.error('Error resolving mission creator organization:', err);
-      }
-
-      const meta = {
-        name: creator.name || 'Unknown Creator',
-        image: creator.image || '/images/default-avatar.png',
-        organizationId,
-        organizationName,
-        organizationLogo,
-      };
-
-      creatorMetaCache.set(cacheKey, meta);
-      return meta;
+    if (m.authorId) {
+      const meta = await getCreatorMeta(m.authorId);
+      creatorName = meta.name;
+      creatorImage = meta.image;
+      organizationId = meta.organizationId || null;
+      organizationName = meta.organizationName || '';
+      organizationLogo = meta.organizationLogo || '/images/default-organization-logo.png';
     }
 
-    async function enrichList(list) {
-      const enriched = [];
+    result.push({
+      ...m,
+      creatorName,
+      creatorImage,
+      organizationId,
+      organizationName,
+      organizationLogo,
+      loggedIn,
+      isLeaderOrGroupMember: leaderOrGroup,
+      isPaid,
+      isFree,
+    });
+  }
 
-      for (const mission of list) {
-        let creatorName = 'Unknown Creator';
-        let creatorImage = '/images/default-avatar.png';
-        let organizationId = null;
-        let organizationName = '';
-        let organizationLogo = '/images/default-organization-logo.png';
-
-        if (mission.authorId) {
-          const meta = await getCreatorMeta(mission.authorId);
-          creatorName = meta.name;
-          creatorImage = meta.image;
-          organizationId = meta.organizationId;
-          organizationName = meta.organizationName;
-          organizationLogo = meta.organizationLogo;
-        }
-
-        enriched.push({
-          ...mission,
-          creatorName,
-          creatorImage,
-          organizationId,
-          organizationName,
-          organizationLogo,
-          loggedIn,
-          isLeaderOrGroupMember: leaderOrGroup,
-          isPaid,
-          isFree,
-        });
-      }
-
-      return enriched;
-    }
+  return result;
+}
 
     const myMissionsEnriched = await enrichList(myMissions);
     const groupMissionsEnriched = await enrichList(groupMissions);
