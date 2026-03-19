@@ -16,6 +16,7 @@ const MemberProfile = require('../models/profile_models/member_profile');
 const sanitizeHtml = require('sanitize-html');
 const UpcomingUnit = require('../models/unit_models/upcoming'); // models/unit_models/upcoming.js
 const Nugget = require('../models/unit_models/nugget'); // add this at the top with other models
+const OrganizationProfile = require('../models/profile_models/organization_profile');
 
 function isPaidMember(req) {
   const t = req.user?.accessLevel || req.user?.membershipType;
@@ -110,7 +111,145 @@ if (profile) {
   };
 }
 
+async function resolveCreatorAndOrgById(authorId) {
+  const creator = await resolveAuthorById(authorId);
 
+  let organizationId = null;
+  let organizationName = '';
+  let organizationLogo = '/images/default-organization-logo.png';
+
+  try {
+    let leader = await Leader.findById(authorId)
+      .select('organization organizationName email groupName')
+      .lean();
+
+    if (leader) {
+      organizationId = leader.organization || null;
+      organizationName = leader.organizationName || '';
+    } else {
+      let groupMember = await GroupMember.findById(authorId)
+        .select('organization organizationName groupId leader groupName email')
+        .lean();
+
+      if (groupMember) {
+        organizationId = groupMember.organization || null;
+        organizationName = groupMember.organizationName || '';
+
+        if (!organizationId && (groupMember.leader || groupMember.groupId)) {
+          const parentLeader = await Leader.findById(groupMember.leader || groupMember.groupId)
+            .select('organization organizationName email groupName')
+            .lean();
+
+          if (parentLeader) {
+            organizationId = parentLeader.organization || null;
+            organizationName = parentLeader.organizationName || '';
+          }
+        }
+
+        if (!organizationId && groupMember.groupName) {
+          const parentLeaderByGroupName = await Leader.findOne({ groupName: groupMember.groupName })
+            .select('organization organizationName email groupName')
+            .lean();
+
+          if (parentLeaderByGroupName) {
+            organizationId = parentLeaderByGroupName.organization || null;
+            organizationName = parentLeaderByGroupName.organizationName || '';
+          }
+        }
+      } else {
+        const member = await Member.findById(authorId)
+          .select('organization organizationName email')
+          .lean();
+
+        if (member) {
+          organizationId = member.organization || null;
+          organizationName = member.organizationName || '';
+        }
+      }
+    }
+
+    if (organizationId) {
+      const orgProfile = await OrganizationProfile.findOne({ organizationId })
+        .select('logo')
+        .lean();
+
+      if (orgProfile?.logo?.url) {
+        organizationLogo = orgProfile.logo.url;
+      }
+    }
+  } catch (error) {
+    console.error('Error resolving organization for nugget creator:', error);
+  }
+
+  return {
+    ...creator,
+    organizationId,
+    organizationName,
+    organizationLogo
+  };
+}
+
+async function enrichNuggetsForCards(nuggets, req) {
+  const user = req.user || null;
+  const loggedIn = !!user;
+  const membershipType = user?.membershipType || null;
+  const accessLevel = user?.accessLevel || null;
+
+  const isLeaderOrGroupMember =
+    membershipType === 'leader' || membershipType === 'group_member';
+
+  const isPaid =
+    isLeaderOrGroupMember ||
+    (membershipType === 'member' &&
+      (accessLevel === 'paid_individual' || accessLevel === 'contributor_individual'));
+
+  const isFree =
+    membershipType === 'member' && accessLevel === 'free_individual';
+
+  const creatorCache = new Map();
+
+  async function getCreatorMeta(createdBy) {
+    const key = String(createdBy || '');
+    if (!key) {
+      return {
+        name: 'Unknown Author',
+        image: '/images/default-avatar.png',
+        organizationId: null,
+        organizationName: '',
+        organizationLogo: '/images/default-organization-logo.png'
+      };
+    }
+
+    if (creatorCache.has(key)) return creatorCache.get(key);
+
+    const meta = await resolveCreatorAndOrgById(key);
+    creatorCache.set(key, meta);
+    return meta;
+  }
+
+  const enriched = [];
+
+  for (const nugget of nuggets) {
+    const createdBy = nugget.createdBy?.toString?.() || String(nugget.createdBy || '');
+    const creatorMeta = await getCreatorMeta(createdBy);
+
+    enriched.push({
+      ...nugget,
+      creatorName: creatorMeta.name || 'Unknown Author',
+      creatorImage: creatorMeta.image || '/images/default-avatar.png',
+      organizationId: creatorMeta.organizationId || null,
+      organizationName: creatorMeta.organizationName || '',
+      organizationLogo: creatorMeta.organizationLogo || '/images/default-organization-logo.png',
+
+      loggedIn,
+      isLeaderOrGroupMember,
+      isPaid,
+      isFree
+    });
+  }
+
+  return enriched;
+}
 
 async function buildOrgLeaderListForAdmin(req) {
   const userId = req.user?._id || req.user?.id;
@@ -238,7 +377,6 @@ viewMineClients: async (req, res) => {
       });
     }
 
-    // Only nuggets with client + createdBy
     const nuggets = await Nugget.find({
       client: { $exists: true, $ne: '' },
       createdBy: { $exists: true, $ne: null },
@@ -249,71 +387,79 @@ viewMineClients: async (req, res) => {
     console.log('[viewMineClients] nuggets count (client & createdBy):', nuggets.length);
 
     const meId = (req.user?._id || req.user?.id || '').toString();
-    console.log('[viewMineClients] meId:', meId);
 
-    // Resolve my group/org (best effort)
-    let myGroupId = null, myOrg = null;
+    let myGroupId = null;
+    let myOrg = null;
+
     if (meId) {
       const [meAsLeader, meAsGroupMember, meAsMember] = await Promise.all([
         Leader.findById(meId).select('_id organization').lean(),
         GroupMember.findById(meId).select('_id organization leader').lean(),
         Member.findById(meId).select('_id organization').lean(),
       ]);
+
       if (meAsLeader) {
         myGroupId = meAsLeader._id?.toString() || null;
-        myOrg     = meAsLeader.organization || null;
+        myOrg = meAsLeader.organization || null;
       } else if (meAsGroupMember) {
         myGroupId = meAsGroupMember.leader ? meAsGroupMember.leader.toString() : null;
-        myOrg     = meAsGroupMember.organization || null;
+        myOrg = meAsGroupMember.organization || null;
       } else if (meAsMember) {
-        myOrg     = meAsMember.organization || null;
+        myOrg = meAsMember.organization || null;
       }
     }
-    console.log('[viewMineClients] myGroupId:', myGroupId, 'myOrg:', myOrg);
 
-    // Build creator maps
     const creatorIds = [...new Set(nuggets.map(n => n.createdBy?.toString()).filter(Boolean))];
-    let orgByCreator = Object.create(null);
-    let groupByCreator = Object.create(null);
+    const orgByCreator = Object.create(null);
+    const groupByCreator = Object.create(null);
 
     if (creatorIds.length) {
       const [leaders, groupMembers] = await Promise.all([
         Leader.find({ _id: { $in: creatorIds } }).select('_id organization').lean(),
         GroupMember.find({ _id: { $in: creatorIds } }).select('_id organization leader').lean(),
       ]);
+
       leaders.forEach(doc => {
         const id = doc._id.toString();
-        orgByCreator[id]   = doc.organization || orgByCreator[id] || null;
-        groupByCreator[id] = doc._id.toString(); // leader anchors to own id
+        orgByCreator[id] = doc.organization || orgByCreator[id] || null;
+        groupByCreator[id] = doc._id.toString();
       });
+
       groupMembers.forEach(doc => {
         const id = doc._id.toString();
-        orgByCreator[id]   = doc.organization || orgByCreator[id] || null;
+        orgByCreator[id] = doc.organization || orgByCreator[id] || null;
         groupByCreator[id] = (doc.leader && doc.leader.toString()) || groupByCreator[id] || null;
       });
     }
 
-    // Partition
-    const createdByMe = meId ? nuggets.filter(n => n.createdBy?.toString() === meId) : [];
-    const createdByMyGroup = myGroupId
+    const createdByMeRaw = meId ? nuggets.filter(n => n.createdBy?.toString() === meId) : [];
+    const createdByMyGroupRaw = myGroupId
       ? nuggets.filter(n => groupByCreator[n.createdBy?.toString()] === myGroupId)
       : [];
-    const createdByMyOrg = myOrg
+    const createdByMyOrgRaw = myOrg
       ? nuggets.filter(n => orgByCreator[n.createdBy?.toString()] === myOrg)
       : [];
-    const fromAllMembers = nuggets;
+    const fromAllMembersRaw = nuggets;
 
-    console.log('[viewMineClients] buckets => me:', createdByMe.length,
-      'group:', createdByMyGroup.length, 'org:', createdByMyOrg.length, 'all:', fromAllMembers.length);
+    const [
+      createdByMe,
+      createdByMyGroup,
+      createdByMyOrg,
+      fromAllMembers
+    ] = await Promise.all([
+      enrichNuggetsForCards(createdByMeRaw, req),
+      enrichNuggetsForCards(createdByMyGroupRaw, req),
+      enrichNuggetsForCards(createdByMyOrgRaw, req),
+      enrichNuggetsForCards(fromAllMembersRaw, req),
+    ]);
 
     const sectionedNuggets = [
-      { sectionTitle: 'Created by Me',              nuggets: createdByMe,      emptyMessage: 'No client nuggets created by you yet.' },
-      { sectionTitle: 'Created by My Group',        nuggets: createdByMyGroup, emptyMessage: 'No client nuggets from your group yet.' },
-      { sectionTitle: 'Created by My Organization', nuggets: createdByMyOrg,   emptyMessage: 'No client nuggets from your organization yet.' },
-      { sectionTitle: 'From All Members',           nuggets: fromAllMembers,   emptyMessage: 'No client nuggets available.' },
+      { sectionTitle: 'Created by Me', nuggets: createdByMe, emptyMessage: 'No client nuggets created by you yet.' },
+      { sectionTitle: 'Created by My Group', nuggets: createdByMyGroup, emptyMessage: 'No client nuggets from your group yet.' },
+      { sectionTitle: 'Created by My Organization', nuggets: createdByMyOrg, emptyMessage: 'No client nuggets from your organization yet.' },
+      { sectionTitle: 'From All Members', nuggets: fromAllMembers, emptyMessage: 'No client nuggets available.' },
     ];
 
-    console.log('[viewMineClients] rendering client_view');
     return res.render('unit_views/client_view', {
       layout: 'unitviewlayout',
       pageTitle: 'Nuggets by Client',
@@ -351,7 +497,6 @@ viewMineRegions: async (req, res) => {
       });
     }
 
-    // Only nuggets with region + createdBy
     const nuggets = await Nugget.find({
       region: { $exists: true, $ne: '' },
       createdBy: { $exists: true, $ne: null },
@@ -362,10 +507,8 @@ viewMineRegions: async (req, res) => {
     console.log('[viewMineRegions] nuggets count (region & createdBy):', nuggets.length);
 
     const meId = (req.user?._id || req.user?.id || '').toString();
-    console.log('[viewMineRegions] meId:', meId);
 
-    // Resolve my group leader id + my org
-    let myGroupId = null; // leader id that anchors my group
+    let myGroupId = null;
     let myOrg = null;
 
     if (meId) {
@@ -376,7 +519,7 @@ viewMineRegions: async (req, res) => {
       ]);
 
       if (meAsLeader) {
-        myGroupId = meAsLeader._id?.toString() || null; // leader anchors own group
+        myGroupId = meAsLeader._id?.toString() || null;
         myOrg = meAsLeader.organization || null;
       } else if (meAsGroupMember) {
         myGroupId = meAsGroupMember.leader ? meAsGroupMember.leader.toString() : null;
@@ -386,11 +529,7 @@ viewMineRegions: async (req, res) => {
       }
     }
 
-    console.log('[viewMineRegions] myGroupId:', myGroupId, 'myOrg:', myOrg);
-
-    // Build creator maps: orgByCreator + groupByCreator (group = leader id)
     const creatorIds = [...new Set(nuggets.map(n => n.createdBy?.toString()).filter(Boolean))];
-
     const orgByCreator = Object.create(null);
     const groupByCreator = Object.create(null);
 
@@ -403,7 +542,7 @@ viewMineRegions: async (req, res) => {
       leaders.forEach(doc => {
         const id = doc._id.toString();
         orgByCreator[id] = doc.organization || orgByCreator[id] || null;
-        groupByCreator[id] = id; // leader anchors to own id
+        groupByCreator[id] = id;
       });
 
       groupMembers.forEach(doc => {
@@ -413,30 +552,34 @@ viewMineRegions: async (req, res) => {
       });
     }
 
-    // Partition
-    const createdByMe = meId ? nuggets.filter(n => n.createdBy?.toString() === meId) : [];
-
-    const createdByMyGroup = myGroupId
+    const createdByMeRaw = meId ? nuggets.filter(n => n.createdBy?.toString() === meId) : [];
+    const createdByMyGroupRaw = myGroupId
       ? nuggets.filter(n => groupByCreator[n.createdBy?.toString()] === myGroupId)
       : [];
-
-    const createdByMyOrg = myOrg
+    const createdByMyOrgRaw = myOrg
       ? nuggets.filter(n => orgByCreator[n.createdBy?.toString()] === myOrg)
       : [];
+    const fromAllMembersRaw = nuggets;
 
-    const fromAllMembers = nuggets;
-
-    console.log('[viewMineRegions] buckets => me:', createdByMe.length,
-      'group:', createdByMyGroup.length, 'org:', createdByMyOrg.length, 'all:', fromAllMembers.length);
+    const [
+      createdByMe,
+      createdByMyGroup,
+      createdByMyOrg,
+      fromAllMembers
+    ] = await Promise.all([
+      enrichNuggetsForCards(createdByMeRaw, req),
+      enrichNuggetsForCards(createdByMyGroupRaw, req),
+      enrichNuggetsForCards(createdByMyOrgRaw, req),
+      enrichNuggetsForCards(fromAllMembersRaw, req),
+    ]);
 
     const sectionedNuggets = [
-      { sectionTitle: 'Created by Me',              nuggets: createdByMe,      emptyMessage: 'No region nuggets created by you yet.' },
-      { sectionTitle: 'Created by My Group',        nuggets: createdByMyGroup, emptyMessage: 'No region nuggets from your group yet.' },
-      { sectionTitle: 'Created by My Organization', nuggets: createdByMyOrg,   emptyMessage: 'No region nuggets from your organization yet.' },
-      { sectionTitle: 'From All Members',           nuggets: fromAllMembers,   emptyMessage: 'No region nuggets available.' },
+      { sectionTitle: 'Created by Me', nuggets: createdByMe, emptyMessage: 'No region nuggets created by you yet.' },
+      { sectionTitle: 'Created by My Group', nuggets: createdByMyGroup, emptyMessage: 'No region nuggets from your group yet.' },
+      { sectionTitle: 'Created by My Organization', nuggets: createdByMyOrg, emptyMessage: 'No region nuggets from your organization yet.' },
+      { sectionTitle: 'From All Members', nuggets: fromAllMembers, emptyMessage: 'No region nuggets available.' },
     ];
 
-    console.log('[viewMineRegions] rendering region_view');
     return res.render('unit_views/region_view', {
       layout: 'unitviewlayout',
       pageTitle: 'Nuggets by Region',
@@ -470,7 +613,6 @@ viewMineDisciplines: async (req, res) => {
       });
     }
 
-    // Only nuggets with discipline + createdBy
     const nuggets = await Nugget.find({
       discipline: { $exists: true, $ne: '' },
       createdBy: { $exists: true, $ne: null },
@@ -481,10 +623,8 @@ viewMineDisciplines: async (req, res) => {
     console.log('[viewMineDisciplines] nuggets count (discipline & createdBy):', nuggets.length);
 
     const meId = (req.user?._id || req.user?.id || '').toString();
-    console.log('[viewMineDisciplines] meId:', meId);
 
-    // Resolve my group leader id + my org
-    let myGroupId = null; // leader id that anchors my group
+    let myGroupId = null;
     let myOrg = null;
 
     if (meId) {
@@ -505,11 +645,7 @@ viewMineDisciplines: async (req, res) => {
       }
     }
 
-    console.log('[viewMineDisciplines] myGroupId:', myGroupId, 'myOrg:', myOrg);
-
-    // Build creator maps: orgByCreator + groupByCreator (group = leader id)
     const creatorIds = [...new Set(nuggets.map(n => n.createdBy?.toString()).filter(Boolean))];
-
     const orgByCreator = Object.create(null);
     const groupByCreator = Object.create(null);
 
@@ -522,7 +658,7 @@ viewMineDisciplines: async (req, res) => {
       leaders.forEach(doc => {
         const id = doc._id.toString();
         orgByCreator[id] = doc.organization || orgByCreator[id] || null;
-        groupByCreator[id] = id; // leader anchors to own id
+        groupByCreator[id] = id;
       });
 
       groupMembers.forEach(doc => {
@@ -532,30 +668,34 @@ viewMineDisciplines: async (req, res) => {
       });
     }
 
-    // Partition
-    const createdByMe = meId ? nuggets.filter(n => n.createdBy?.toString() === meId) : [];
-
-    const createdByMyGroup = myGroupId
+    const createdByMeRaw = meId ? nuggets.filter(n => n.createdBy?.toString() === meId) : [];
+    const createdByMyGroupRaw = myGroupId
       ? nuggets.filter(n => groupByCreator[n.createdBy?.toString()] === myGroupId)
       : [];
-
-    const createdByMyOrg = myOrg
+    const createdByMyOrgRaw = myOrg
       ? nuggets.filter(n => orgByCreator[n.createdBy?.toString()] === myOrg)
       : [];
+    const fromAllMembersRaw = nuggets;
 
-    const fromAllMembers = nuggets;
-
-    console.log('[viewMineDisciplines] buckets => me:', createdByMe.length,
-      'group:', createdByMyGroup.length, 'org:', createdByMyOrg.length, 'all:', fromAllMembers.length);
+    const [
+      createdByMe,
+      createdByMyGroup,
+      createdByMyOrg,
+      fromAllMembers
+    ] = await Promise.all([
+      enrichNuggetsForCards(createdByMeRaw, req),
+      enrichNuggetsForCards(createdByMyGroupRaw, req),
+      enrichNuggetsForCards(createdByMyOrgRaw, req),
+      enrichNuggetsForCards(fromAllMembersRaw, req),
+    ]);
 
     const sectionedNuggets = [
-      { sectionTitle: 'Created by Me',              nuggets: createdByMe,      emptyMessage: 'No discipline nuggets created by you yet.' },
-      { sectionTitle: 'Created by My Group',        nuggets: createdByMyGroup, emptyMessage: 'No discipline nuggets from your group yet.' },
-      { sectionTitle: 'Created by My Organization', nuggets: createdByMyOrg,   emptyMessage: 'No discipline nuggets from your organization yet.' },
-      { sectionTitle: 'From All Members',           nuggets: fromAllMembers,   emptyMessage: 'No discipline nuggets available.' },
+      { sectionTitle: 'Created by Me', nuggets: createdByMe, emptyMessage: 'No discipline nuggets created by you yet.' },
+      { sectionTitle: 'Created by My Group', nuggets: createdByMyGroup, emptyMessage: 'No discipline nuggets from your group yet.' },
+      { sectionTitle: 'Created by My Organization', nuggets: createdByMyOrg, emptyMessage: 'No discipline nuggets from your organization yet.' },
+      { sectionTitle: 'From All Members', nuggets: fromAllMembers, emptyMessage: 'No discipline nuggets available.' },
     ];
 
-    console.log('[viewMineDisciplines] rendering discipline_view');
     return res.render('unit_views/discipline_view', {
       layout: 'unitviewlayout',
       pageTitle: 'Nuggets by Discipline',
