@@ -24,6 +24,27 @@ function normalizeImg(img) {
   return img.startsWith('/') ? img : '/' + img;
 }
 
+function dedupeSectionedMissions(sectionedMissions) {
+  const seenMissionIds = new Set();
+
+  return sectionedMissions.map(section => {
+    const dedupedMissions = (section.missions || []).filter(mission => {
+      const uniqueKey = mission._id
+        ? String(mission._id)
+        : `${mission.mission_title || 'untitled'}:${mission.authorId || 'no-author'}`;
+
+      if (seenMissionIds.has(uniqueKey)) return false;
+      seenMissionIds.add(uniqueKey);
+      return true;
+    });
+
+    return {
+      ...section,
+      missions: dedupedMissions
+    };
+  });
+}
+
 async function resolveCreatorById(authorId) {
   try {
     let profile = await LeaderProfile.findOne({ leaderId: authorId })
@@ -443,7 +464,7 @@ async function enrichList(list) {
     const orgMissionsEnriched = await enrichList(orgMissions);
     const twennieMissionsEnriched = await enrichList(twennieMissions);
 
-    const sectionedMissions = [
+    const sectionedMissions = dedupeSectionedMissions([
       {
         sectionTitle: 'missions I created',
         missions: myMissionsEnriched,
@@ -468,7 +489,7 @@ async function enrichList(list) {
         emptyMessage:
           'Twennie will be publishing missions for this category soon. Check back to see new ideas for how to spend slow periods strategically.',
       },
-    ];
+    ]);
 
     return res.render(viewName, {
       layout: 'unitviewlayout',
