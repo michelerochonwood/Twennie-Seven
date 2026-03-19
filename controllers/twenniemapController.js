@@ -86,7 +86,7 @@ exports.getTeachMe = (req, res) => {
     {
       key: "missions",
       title: "Mission Control - package learning and tasks...then assign",
-      subtitle: "assign missions and track completion.",
+      subtitle: "Assign missions and track completion.",
       images: [
         {
           src: "/images/missioncontrolscreenshot.png",
