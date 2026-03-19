@@ -14,7 +14,33 @@
       <p class="bytopic-long-summary">{{longSummary}}</p>
     {{/if}}
 
-    {{!-- sectionedMissions is an array of { sectionTitle, missions, emptyMessage } --}}
+    <hr class="bytopic-key-divider">
+
+    <!-- Mission Card SVG Key -->
+    <div class="bytopic-unit-key" aria-label="Mission card key">
+      <div class="bytopic-unit-key-item">
+        <span class="bytopic-unit-key-label">mission</span>
+        <img src="/icons/onyxsvg.svg"
+             alt=""
+             aria-hidden="true"
+             class="bytopic-unit-key-svg">
+      </div>
+    </div>
+
+    <hr class="bytopic-key-divider">
+
+    <!-- Mission Type Key -->
+    <div class="bytopic-unit-type-key" aria-label="Mission type key">
+      <div class="bytopic-unit-type-key-item">
+        <img src="/images/missionicon.png" alt="" aria-hidden="true" style="width: 55px; height: auto">
+        <div class="bytopic-unit-type-desc">
+          A structured assignment designed to turn light workload periods into purposeful learning, research, business development, or improvement work.
+        </div>
+      </div>
+    </div>
+
+    <hr class="bytopic-key-divider">
+
     {{#each sectionedMissions}}
       <h2 class="bytopic-section-title">{{this.sectionTitle}}</h2>
       <hr class="bytopic-section-divider">
@@ -23,97 +49,119 @@
         <div class="bytopic-library-units-grid">
           {{#each this.missions}}
             <article class="bytopic-library-unit-card" data-mission-id="{{_id}}">
-              <!-- Inner wrapper preserves rounded-corner clipping -->
+
+              <div class="bytopic-card-top-badges">
+                <div class="bytopic-card-top-badge bytopic-card-author-badge">
+                  <img
+                    src="{{#if creatorImage}}{{creatorImage}}{{else}}/images/default-avatar.png{{/if}}"
+                    alt="{{creatorName}}"
+                    class="bytopic-card-author-mini"
+                  >
+                </div>
+
+                {{#if organizationId}}
+                  <div class="bytopic-card-top-badge bytopic-card-org-badge">
+                    <a href="/profile/organization/{{organizationId}}" class="bytopic-card-org-link">
+                      <img
+                        src="{{#if organizationLogo}}{{organizationLogo}}{{else}}/images/default-organization-logo.png{{/if}}"
+                        alt="{{#if organizationName}}{{organizationName}}{{else}}Organization{{/if}} logo"
+                        class="bytopic-card-org-logo"
+                      >
+                    </a>
+                  </div>
+                {{/if}}
+              </div>
+
               <div class="bytopic-card-inner">
 
                 <!-- Mission SVG Header -->
                 <div class="bytopic-card-svg-header">
-                  <img src="/icons/onyxsvg.svg"
-                       alt=""
-                       aria-hidden="true"
-                       class="bytopic-card-svg-image">
+                  <img
+                    src="/icons/onyxsvg.svg"
+                    alt=""
+                    aria-hidden="true"
+                    class="bytopic-card-svg-image"
+                  >
                 </div>
 
                 <!-- Card Content -->
                 <div class="bytopic-card-content">
-                  <!-- Always-visible content: icon, title, fun label, toggle -->
+
+                  <!-- Always-visible content -->
                   <div class="bytopic-visible-content">
                     <div class="bytopic-unit-type-icon-container">
-                      <!-- Culture & Play mission icon -->
-                      <img src="/images/missionicon.png"
-                           alt="Culture and play mission icon"
-                           class="bytopic-unit-type-icon">
+                      <img
+                        src="/images/missionicon.png"
+                        alt="Culture and play mission icon"
+                        class="bytopic-unit-type-icon"
+                      >
                     </div>
 
                     <div class="bytopic-unit-title-container">
-                      <h2 class="bytopic-unit-title">
-                        {{mission_title}}
-                      </h2>
+                      <h2 class="bytopic-unit-title">{{mission_title}}</h2>
                     </div>
 
                     <p class="mission-label">
                       Your mission, should you choose to accept it, is to…
                     </p>
-
-                    <!-- Expand Toggle -->
-                    <button
-                      class="bytopic-expand-toggle"
-                      type="button"
-                      onclick="toggleCard(this)"
-                      aria-expanded="false"
-                      aria-label="Toggle mission details">
-                      <svg class="expand-arrow"
-                           xmlns="http://www.w3.org/2000/svg"
-                           viewBox="0 0 331.65 100.99"
-                           aria-hidden="true"
-                           focusable="false">
-                        <defs>
-                          <style>.cls-1 { fill: #4e50a2; }</style>
-                        </defs>
-                        <polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/>
-                      </svg>
-                    </button>
                   </div>
+
+                  <!-- Expand Toggle -->
+                  <button
+                    class="bytopic-expand-toggle"
+                    type="button"
+                    onclick="toggleCard(this)"
+                    aria-expanded="false"
+                    aria-label="Toggle mission details"
+                  >
+                    <svg
+                      class="expand-arrow"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 331.65 100.99"
+                      aria-hidden="true"
+                      focusable="false"
+                    >
+                      <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
+                      <polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/>
+                    </svg>
+                  </button>
 
                   <!-- Expandable content -->
                   <div class="bytopic-hidden-content" style="display:none;">
-                    {{!-- Creator block --}}
-                    <div class="mission-creator-block">
-                      <div class="mission-creator-label">
-                        CREATOR
-                      </div>
-
-                      <div class="mission-creator-image-container">
-                        <img src="{{creatorImage}}"
-                             alt="Creator image"
-                             class="mission-creator-image">
-                      </div>
-
-                      <div class="mission-creator-name-container">
-                        <span class="mission-creator-name">
-                          {{creatorName}}
-                        </span>
-                      </div>
+                    <div class="bytopic-author-label">
+                      CREATOR
                     </div>
 
-                    {{!-- Mission full summary --}}
-                    {{#if full_summary}}
-                      <p class="mission-full-summary">
-                        {{full_summary}}
-                      </p>
-                    {{/if}}
+                    <div class="bytopic-author-image-container">
+                      <img
+                        src="{{#if creatorImage}}{{creatorImage}}{{else}}/images/default-avatar.png{{/if}}"
+                        alt="{{creatorName}}"
+                        class="bytopic-author-image"
+                      >
+                    </div>
 
-                    <!-- CTA – membership-aware -->
+                    <div class="bytopic-author-name-container">
+                      <span class="bytopic-author-name">{{creatorName}}</span>
+                    </div>
+
+                    <div class="bytopic-unit-summary-container">
+                      <p class="bytopic-unit-long-summary">
+                        {{#if summary}}
+                          {{summary}}
+                        {{else}}
+                          {{purpose}}
+                        {{/if}}
+                      </p>
+                    </div>
+
                     <div class="bytopic-unit-review-container mission-cta-container">
                       {{#if loggedIn}}
                         {{#if isLeaderOrGroupMember}}
-                          <a href="/unitviews/missions/view/{{_id}}"
-                             class="bytopic-unit-review-btn">
+                          <a href="/unitviews/missions/view/{{_id}}" class="bytopic-unit-review-btn">
                             review this unit
                           </a>
                         {{else if isPaid}}
-                          <a href="/unitviews/missions/view/{{_id}}"
-                             class="bytopic-unit-review-btn">
+                          <a href="/unitviews/missions/view/{{_id}}" class="bytopic-unit-review-btn">
                             review this unit
                           </a>
                         {{else}}
@@ -127,30 +175,38 @@
                         </div>
                       {{/if}}
                     </div>
-                  </div> <!-- /.bytopic-hidden-content -->
-                </div> <!-- /.bytopic-card-content -->
-              </div> <!-- /.bytopic-card-inner -->
+                  </div>
+
+                </div>
+              </div>
             </article>
           {{/each}}
         </div>
       {{else}}
         <div class="bytopic-empty-section-message">
-          {{#if this.emptyMessage}}<p>{{this.emptyMessage}}</p>{{/if}}
+          {{#if this.emptyMessage}}
+            <p>{{this.emptyMessage}}</p>
+          {{/if}}
         </div>
       {{/if}}
     {{/each}}
+  </div>
+
+  <!-- Right Topics Column -->
+  <div class="bytopic-page">
+    {{> topicpartials/topics_column_partial}}
   </div>
 </div>
 
 <script>
   function toggleCard(el) {
-    var card = el.closest('.bytopic-library-unit-card');
+    const card = el.closest('.bytopic-library-unit-card');
     if (!card) return;
 
-    var content = card.querySelector('.bytopic-hidden-content');
+    const content = card.querySelector('.bytopic-hidden-content');
     if (!content) return;
 
-    var isOpen = card.classList.contains('active');
+    const isOpen = card.classList.contains('active');
     card.classList.toggle('active', !isOpen);
     el.setAttribute('aria-expanded', String(!isOpen));
     content.style.display = isOpen ? 'none' : 'flex';

@@ -8,6 +8,7 @@ const GroupMember = require('../models/member_models/group_member');
 const MemberProfile = require('../models/profile_models/member_profile');
 const GroupMemberProfile = require('../models/profile_models/groupmember_profile');
 const LeaderProfile = require('../models/profile_models/leader_profile');
+const OrganizationProfile = require('../models/profile_models/organization_profile');
 
 function isPaidMember(req) {
   const t = req.user?.accessLevel || req.user?.membershipType;
@@ -26,60 +27,95 @@ function normalizeImg(img) {
 }
 
 // Mirror topic controller: resolve author/creator from *profile* models
-async function resolveCreatorById(authorId) {
+async function resolveCreatorAndOrgById(authorId) {
+  const creator = await resolveCreatorById(authorId);
+
+  let organizationId = null;
+  let organizationName = '';
+  let organizationLogo = '/images/default-organization-logo.png';
+
   try {
-    // Leader profile by leaderId
-    let profile = await LeaderProfile.findOne({ leaderId: authorId })
-      .select('profileImage name')
+    let leader = await Leader.findById(authorId)
+      .select('organization organizationName groupName email')
       .lean();
-    if (profile) {
-      return {
-        name: profile.name || 'Leader',
-        image: normalizeImg(profile.profileImage),
-      };
+
+    if (leader) {
+      organizationId = leader.organization || null;
+      organizationName = leader.organizationName || '';
+    } else {
+      let groupMember = await GroupMember.findById(authorId)
+        .select('organization organizationName groupId leader groupName email')
+        .lean();
+
+      if (groupMember) {
+        organizationId = groupMember.organization || null;
+        organizationName = groupMember.organizationName || '';
+
+        if (!organizationId && (groupMember.leader || groupMember.groupId)) {
+          const parentLeader = await Leader.findById(groupMember.leader || groupMember.groupId)
+            .select('organization organizationName groupName email')
+            .lean();
+
+          if (parentLeader) {
+            organizationId = parentLeader.organization || null;
+            organizationName = parentLeader.organizationName || '';
+          }
+        }
+
+        if (!organizationId && groupMember.groupName) {
+          const parentLeaderByGroupName = await Leader.findOne({ groupName: groupMember.groupName })
+            .select('organization organizationName groupName email')
+            .lean();
+
+          if (parentLeaderByGroupName) {
+            organizationId = parentLeaderByGroupName.organization || null;
+            organizationName = parentLeaderByGroupName.organizationName || '';
+          }
+        }
+      } else {
+        const member = await Member.findById(authorId)
+          .select('organization organizationName email')
+          .lean();
+
+        if (member) {
+          organizationId = member.organization || null;
+          organizationName = member.organizationName || '';
+        }
+      }
     }
 
-    // Group Member profile by groupMemberId
-    profile = await GroupMemberProfile.findOne({ groupMemberId: authorId })
-      .select('profileImage name')
-      .lean();
-    if (profile) {
-      return {
-        name: profile.name || 'Group Member',
-        image: normalizeImg(profile.profileImage),
-      };
-    }
+    if (organizationId) {
+      const orgProfile = await OrganizationProfile.findOne({ organizationId })
+        .select('logo')
+        .lean();
 
-    // Individual Member profile by memberId
-    profile = await MemberProfile.findOne({ memberId: authorId })
-      .select('profileImage name')
-      .lean();
-    if (profile) {
-      return {
-        name: profile.name || 'Member',
-        image: normalizeImg(profile.profileImage),
-      };
+      if (orgProfile?.logo?.url) {
+        organizationLogo = orgProfile.logo.url;
+      }
     }
-  } catch (err) {
-    console.error('Error resolving mission creator profile:', err);
+  } catch (error) {
+    console.error('Error resolving organization for mission creator:', error);
   }
 
-  return { name: 'Unknown Creator', image: '/images/default-avatar.png' };
+  return {
+    ...creator,
+    organizationId,
+    organizationName,
+    organizationLogo
+  };
 }
-
 // Generic helper for category pages
 // Generic helper for category pages (rewritten cleanly; uses GroupMember.leader + org ObjectId matching)
 async function renderMissionList(req, res, options) {
   const {
-    category,    // schema category: 'learning', 'research', etc.
-    viewName,    // e.g. 'unit_views/missions_learning'
-    pageTitle,   // {{title}} in the view
+    category,
+    viewName,
+    pageTitle,
     shortSummary,
     longSummary,
   } = options;
 
   try {
-    // Gate: missions are paid-only
     if (!isPaidMember(req)) {
       return res.status(403).render('unit_views/error', {
         layout: 'unitviewlayout',
@@ -88,27 +124,30 @@ async function renderMissionList(req, res, options) {
       });
     }
 
-    // ----- BASIC USER / MEMBERSHIP CONTEXT -----
     const user = req.user || null;
     const loggedIn = !!user;
     const membershipType = user?.membershipType || null;
     const accessLevel = user?.accessLevel || null;
+    const userId = (user?._id || user?.id)?.toString() || null;
 
-    const leaderOrGroup = membershipType === 'leader' || membershipType === 'group_member';
+    const leaderOrGroup =
+      membershipType === 'leader' || membershipType === 'group_member';
+
     const paidIndividual =
       membershipType === 'member' &&
-      (accessLevel === 'paid_individual' || accessLevel === 'contributor_individual');
-    const freeIndividual = membershipType === 'member' && accessLevel === 'free_individual';
+      (accessLevel === 'paid_individual' ||
+        accessLevel === 'contributor_individual');
+
+    const freeIndividual =
+      membershipType === 'member' && accessLevel === 'free_individual';
 
     const isPaid = leaderOrGroup || paidIndividual;
     const isFree = freeIndividual;
 
-    // 1) Fetch all missions in this category
     let missions = await Mission.find({ category })
       .sort({ created_at: -1 })
       .lean();
 
-    // 2) Normalize creator + visibility
     missions = missions.map((m) => ({
       ...m,
       authorId:
@@ -117,186 +156,331 @@ async function renderMissionList(req, res, options) {
         m.author ||
         m.createdBy ||
         m.created_by ||
-        null, // ✅ mission schema uses created_by
+        null,
       visibility: m.visibility || 'all_members',
     }));
 
-    // ---- BEGIN: segmentation by authorship + visibility ----
+    const normalize = (value) =>
+      (value || '').toString().trim().toLowerCase();
 
-    const userId = (req.user?._id || req.user?.id)?.toString() || null;
-
-    const normalize = (s) => (s || '').toString().trim().toLowerCase();
-    const emailDomain = (e) => {
-      if (!e || !e.includes('@')) return null;
-      return e.split('@').pop().toLowerCase();
+    const emailDomain = (email) => {
+      if (!email || !String(email).includes('@')) return null;
+      return String(email).split('@').pop().toLowerCase();
     };
 
-    // Load current user role docs to derive group + org
     let leaderDoc = null;
     let groupMemberDoc = null;
     let memberDoc = null;
 
-    try {
-      if (userId) {
+    if (userId) {
+      try {
         leaderDoc = await Leader.findById(userId).lean();
-        if (!leaderDoc) groupMemberDoc = await GroupMember.findById(userId).lean();
-        if (!leaderDoc && !groupMemberDoc) memberDoc = await Member.findById(userId).lean();
+        if (!leaderDoc) {
+          groupMemberDoc = await GroupMember.findById(userId).lean();
+        }
+        if (!leaderDoc && !groupMemberDoc) {
+          memberDoc = await Member.findById(userId).lean();
+        }
+      } catch (err) {
+        console.error('Error loading current mission viewer:', err);
       }
-    } catch (_) {
-      // ignore
     }
 
-    // Group roster (leader + members) using GroupMember.leader
     const myGroupAuthorIds = new Set();
 
     if (leaderDoc) {
       myGroupAuthorIds.add(String(leaderDoc._id));
 
-      const groupMembersForLeader = await GroupMember.find({ leader: leaderDoc._id })
+      const membersByLeader = await GroupMember.find({ leader: leaderDoc._id })
         .select('_id')
         .lean();
 
-      if (!groupMembersForLeader.length && leaderDoc.groupName) {
-        // fallback: same groupName
-        const byGroupName = await GroupMember.find({ groupName: leaderDoc.groupName })
+      if (membersByLeader.length) {
+        membersByLeader.forEach((m) => myGroupAuthorIds.add(String(m._id)));
+      } else if (leaderDoc.groupName) {
+        const membersByGroupName = await GroupMember.find({
+          groupName: leaderDoc.groupName,
+        })
           .select('_id')
           .lean();
-        byGroupName.forEach(m => myGroupAuthorIds.add(String(m._id)));
-      } else {
-        groupMembersForLeader.forEach(m => myGroupAuthorIds.add(String(m._id)));
+
+        membersByGroupName.forEach((m) => myGroupAuthorIds.add(String(m._id)));
       }
     } else if (groupMemberDoc) {
-      if (groupMemberDoc.leader) myGroupAuthorIds.add(String(groupMemberDoc.leader));
+      if (groupMemberDoc.leader) {
+        myGroupAuthorIds.add(String(groupMemberDoc.leader));
+      }
+
       myGroupAuthorIds.add(String(groupMemberDoc._id));
 
-      const peers = await GroupMember.find(
-        groupMemberDoc.leader
-          ? { leader: groupMemberDoc.leader }
-          : (groupMemberDoc.groupName ? { groupName: groupMemberDoc.groupName } : { _id: null })
-      )
-        .select('_id')
-        .lean();
+      const peerQuery = groupMemberDoc.leader
+        ? { leader: groupMemberDoc.leader }
+        : groupMemberDoc.groupName
+          ? { groupName: groupMemberDoc.groupName }
+          : null;
 
-      peers.forEach(p => myGroupAuthorIds.add(String(p._id)));
+      if (peerQuery) {
+        const peers = await GroupMember.find(peerQuery).select('_id').lean();
+        peers.forEach((p) => myGroupAuthorIds.add(String(p._id)));
+      }
     }
 
-    // Org key (ObjectId-first, then legacy)
     const me = leaderDoc || groupMemberDoc || memberDoc || {};
     const myOrgKey =
-      me.organization ? String(me.organization) :
-      normalize(me.organizationId) ||
-      emailDomain(me.email);
+      me.organization
+        ? String(me.organization)
+        : normalize(me.organizationId) || emailDomain(me.email) || null;
 
-    // Cache author org keys
     const authorOrgKeyCache = new Map();
 
     async function getAuthorOrgKey(authorId) {
-      const key = String(authorId);
-      if (authorOrgKeyCache.has(key)) return authorOrgKeyCache.get(key);
+      const cacheKey = String(authorId);
+      if (authorOrgKeyCache.has(cacheKey)) {
+        return authorOrgKeyCache.get(cacheKey);
+      }
 
-      let aLeader = null, aGM = null, aMember = null;
+      let aLeader = null;
+      let aGroupMember = null;
+      let aMember = null;
+
       try {
-        aLeader = await Leader.findById(authorId).select('organization organizationName email')
-        if (!aLeader) aGM = await GroupMember.findById(authorId).select('organization organizationName email')
-        if (!aLeader && !aGM) aMember = await Member.findById(authorId).select('organization organizationName email')
-      } catch (_) { /* ignore */ }
+        aLeader = await Leader.findById(authorId)
+          .select('organization organizationId organizationName email leader groupId groupName')
+          .lean();
 
-      const doc = aLeader || aGM || aMember || {};
-      const orgKey =
-        doc.organization ? String(doc.organization) :
-        normalize(doc.organizationId) ||
-        emailDomain(doc.email) ||
-        null;
+        if (!aLeader) {
+          aGroupMember = await GroupMember.findById(authorId)
+            .select('organization organizationId organizationName email leader groupId groupName')
+            .lean();
+        }
 
-      authorOrgKeyCache.set(key, orgKey);
+        if (!aLeader && !aGroupMember) {
+          aMember = await Member.findById(authorId)
+            .select('organization organizationId organizationName email')
+            .lean();
+        }
+      } catch (err) {
+        console.error('Error resolving mission author org key:', err);
+      }
+
+      let doc = aLeader || aGroupMember || aMember || {};
+
+      let orgKey =
+        doc.organization
+          ? String(doc.organization)
+          : normalize(doc.organizationId) || emailDomain(doc.email) || null;
+
+      if (!orgKey && aGroupMember) {
+        try {
+          const parentLeaderId = aGroupMember.leader || aGroupMember.groupId || null;
+
+          if (parentLeaderId) {
+            const parentLeader = await Leader.findById(parentLeaderId)
+              .select('organization organizationId organizationName email')
+              .lean();
+
+            if (parentLeader) {
+              orgKey =
+                parentLeader.organization
+                  ? String(parentLeader.organization)
+                  : normalize(parentLeader.organizationId) ||
+                    emailDomain(parentLeader.email) ||
+                    null;
+            }
+          }
+
+          if (!orgKey && aGroupMember.groupName) {
+            const parentLeaderByGroupName = await Leader.findOne({
+              groupName: aGroupMember.groupName,
+            })
+              .select('organization organizationId organizationName email')
+              .lean();
+
+            if (parentLeaderByGroupName) {
+              orgKey =
+                parentLeaderByGroupName.organization
+                  ? String(parentLeaderByGroupName.organization)
+                  : normalize(parentLeaderByGroupName.organizationId) ||
+                    emailDomain(parentLeaderByGroupName.email) ||
+                    null;
+            }
+          }
+        } catch (err) {
+          console.error('Error resolving parent leader org key:', err);
+        }
+      }
+
+      authorOrgKeyCache.set(cacheKey, orgKey);
       return orgKey;
     }
 
-    // 1) missions I created
     const myMissions = missions.filter(
-      (m) => userId && m.authorId && String(m.authorId) === String(userId)
+      (m) => userId && m.authorId && String(m.authorId) === userId
     );
 
-    // 2) missions created by my team
-    const groupMissions = missions.filter((m) =>
-      m.authorId ? myGroupAuthorIds.has(String(m.authorId)) : false
+    const groupMissions = missions.filter(
+      (m) => m.authorId && myGroupAuthorIds.has(String(m.authorId))
     );
 
-    // 3) missions created by my organization (visibility allows it)
     let orgMissions = [];
     if (myOrgKey) {
-      const uniqAuthorIds = [
-        ...new Set(missions.map(m => (m.authorId ? String(m.authorId) : null)).filter(Boolean)),
+      const uniqueAuthorIds = [
+        ...new Set(
+          missions.map((m) => (m.authorId ? String(m.authorId) : null)).filter(Boolean)
+        ),
       ];
 
       const orgKeyMap = new Map();
-      for (const aid of uniqAuthorIds) {
+      for (const aid of uniqueAuthorIds) {
         orgKeyMap.set(aid, await getAuthorOrgKey(aid));
       }
 
       orgMissions = missions.filter((m) => {
-        const vis = m.visibility || 'all_members';
-        if (!['organization_only', 'all_members'].includes(vis)) return false;
+        const visibility = m.visibility || 'all_members';
+        if (!['organization_only', 'all_members'].includes(visibility)) {
+          return false;
+        }
+
         const authorOrgKey = orgKeyMap.get(String(m.authorId));
         return !!authorOrgKey && authorOrgKey === myOrgKey;
       });
-    } else {
-      orgMissions = [];
     }
 
-    // 4) Twennie missions (globally visible)
     const twennieMissions = missions.filter(
       (m) => (m.visibility || 'all_members') === 'all_members'
     );
 
-    // ---- END: segmentation ----
-
-    // ---- BEGIN: enrich missions with creator + membership flags ----
-
     const creatorMetaCache = new Map();
 
     async function getCreatorMeta(authorId) {
-      const key = String(authorId);
-      if (creatorMetaCache.has(key)) return creatorMetaCache.get(key);
+      const cacheKey = String(authorId);
+      if (creatorMetaCache.has(cacheKey)) {
+        return creatorMetaCache.get(cacheKey);
+      }
 
-      const meta = await resolveCreatorById(authorId);
-      creatorMetaCache.set(key, meta);
+      const creator = await resolveCreatorById(authorId);
+
+      let organizationId = null;
+      let organizationName = '';
+      let organizationLogo = '/images/default-organization-logo.png';
+
+      try {
+        let leader = await Leader.findById(authorId)
+          .select('organization organizationName groupName email')
+          .lean();
+
+        if (leader) {
+          organizationId = leader.organization || null;
+          organizationName = leader.organizationName || '';
+        } else {
+          let gm = await GroupMember.findById(authorId)
+            .select('organization organizationName groupId leader groupName email')
+            .lean();
+
+          if (gm) {
+            organizationId = gm.organization || null;
+            organizationName = gm.organizationName || '';
+
+            if (!organizationId && (gm.leader || gm.groupId)) {
+              const parentLeader = await Leader.findById(gm.leader || gm.groupId)
+                .select('organization organizationName')
+                .lean();
+
+              if (parentLeader) {
+                organizationId = parentLeader.organization || null;
+                organizationName = parentLeader.organizationName || '';
+              }
+            }
+
+            if (!organizationId && gm.groupName) {
+              const parentLeaderByGroupName = await Leader.findOne({
+                groupName: gm.groupName,
+              })
+                .select('organization organizationName')
+                .lean();
+
+              if (parentLeaderByGroupName) {
+                organizationId = parentLeaderByGroupName.organization || null;
+                organizationName = parentLeaderByGroupName.organizationName || '';
+              }
+            }
+          } else {
+            const member = await Member.findById(authorId)
+              .select('organization organizationName')
+              .lean();
+
+            if (member) {
+              organizationId = member.organization || null;
+              organizationName = member.organizationName || '';
+            }
+          }
+        }
+
+        if (organizationId && typeof OrganizationProfile !== 'undefined') {
+          const orgProfile = await OrganizationProfile.findOne({ organizationId })
+            .select('logo')
+            .lean();
+
+          if (orgProfile?.logo?.url) {
+            organizationLogo = orgProfile.logo.url;
+          }
+        }
+      } catch (err) {
+        console.error('Error resolving mission creator organization:', err);
+      }
+
+      const meta = {
+        name: creator.name || 'Unknown Creator',
+        image: creator.image || '/images/default-avatar.png',
+        organizationId,
+        organizationName,
+        organizationLogo,
+      };
+
+      creatorMetaCache.set(cacheKey, meta);
       return meta;
     }
 
     async function enrichList(list) {
-      const result = [];
-      for (const m of list) {
+      const enriched = [];
+
+      for (const mission of list) {
         let creatorName = 'Unknown Creator';
         let creatorImage = '/images/default-avatar.png';
+        let organizationId = null;
+        let organizationName = '';
+        let organizationLogo = '/images/default-organization-logo.png';
 
-        if (m.authorId) {
-          const meta = await getCreatorMeta(m.authorId);
+        if (mission.authorId) {
+          const meta = await getCreatorMeta(mission.authorId);
           creatorName = meta.name;
           creatorImage = meta.image;
+          organizationId = meta.organizationId;
+          organizationName = meta.organizationName;
+          organizationLogo = meta.organizationLogo;
         }
 
-        result.push({
-          ...m,
+        enriched.push({
+          ...mission,
           creatorName,
           creatorImage,
-
-          // membership flags (mirroring bytopic injection)
+          organizationId,
+          organizationName,
+          organizationLogo,
           loggedIn,
           isLeaderOrGroupMember: leaderOrGroup,
           isPaid,
           isFree,
         });
       }
-      return result;
+
+      return enriched;
     }
 
     const myMissionsEnriched = await enrichList(myMissions);
     const groupMissionsEnriched = await enrichList(groupMissions);
     const orgMissionsEnriched = await enrichList(orgMissions);
     const twennieMissionsEnriched = await enrichList(twennieMissions);
-
-    // ---- END: enrich missions ----
 
     const sectionedMissions = [
       {
@@ -331,15 +515,13 @@ async function renderMissionList(req, res, options) {
       shortSummary,
       longSummary,
       sectionedMissions,
-
-      // root-level flags if you ever want @root.loggedIn etc.
       loggedIn,
       isLeaderOrGroupMember: leaderOrGroup,
       isPaid,
       isFree,
     });
   } catch (err) {
-    console.error('[' + category + ' missions] error:', err.stack || err.message);
+    console.error(`[${category} missions] error:`, err.stack || err.message || err);
     return res.status(500).render('unit_views/error', {
       layout: 'unitviewlayout',
       title: 'Error',
@@ -351,41 +533,63 @@ async function renderMissionList(req, res, options) {
 
 // Helper: build mission data from form body
 function buildMissionDataFromBody(req) {
+  let taskInstructions = [];
+
+  if (req.body.task_instructions) {
+    const rawTasks = Array.isArray(req.body.task_instructions)
+      ? req.body.task_instructions
+      : Object.values(req.body.task_instructions);
+
+    taskInstructions = rawTasks
+      .map((task) => {
+        const heading = (task.heading || '').trim();
+        const instructionsText = task.instructions || '';
+        const instructions = String(instructionsText)
+          .split(/\r?\n/)
+          .map((line) => line.trim())
+          .filter(Boolean);
+
+        return {
+          heading,
+          instructions,
+        };
+      })
+      .filter((task) => task.heading || task.instructions.length);
+  }
+
+  const deliverablesChecklist = req.body.deliverables_checklist
+    ? String(req.body.deliverables_checklist)
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter(Boolean)
+    : [];
+
   return {
     status: req.body.status || 'one time mission',
     visibility: req.body.visibility || 'organization_only',
 
-    mission_title: req.body.mission_title,
-    badge_name: req.body.badge_name,
-    purpose: req.body.purpose,
-    summary: req.body.summary || '',
-    additional_instructions: req.body.additional_instructions || '',
+    mission_title: (req.body.mission_title || '').trim(),
+    badge_name: (req.body.badge_name || '').trim(),
+    purpose: (req.body.purpose || '').trim(),
+    summary: (req.body.summary || '').trim(),
+    additional_instructions: (req.body.additional_instructions || '').trim(),
 
-    department_requesting: req.body.department_requesting || '',
-    open_to: req.body.open_to || '',
-    timeframe: req.body.timeframe || '',
-    estimated_effort_hours: req.body.estimated_effort_hours || null,
-    job_number: req.body.job_number || '',
-    budget_amount: req.body.budget_amount || '',
-    due_date: req.body.due_date || null,
+    department_requesting: (req.body.department_requesting || '').trim(),
+    open_to: (req.body.open_to || '').trim(),
+    timeframe: (req.body.timeframe || '').trim(),
+    estimated_effort_hours: req.body.estimated_effort_hours
+      ? Number(req.body.estimated_effort_hours)
+      : undefined,
+    job_number: (req.body.job_number || '').trim(),
+    budget_amount: (req.body.budget_amount || '').trim(),
+    due_date: req.body.due_date ? new Date(req.body.due_date) : undefined,
 
-    task_instructions: Array.isArray(req.body.task_instructions)
-      ? req.body.task_instructions
-      : (req.body.task_instructions || []),
-
-    deliverables_checklist: Array.isArray(req.body.deliverables_checklist)
-      ? req.body.deliverables_checklist
-      : (req.body.deliverables_checklist
-          ? String(req.body.deliverables_checklist)
-              .split('\n')
-              .map(s => s.trim())
-              .filter(Boolean)
-          : []),
+    task_instructions: taskInstructions,
+    deliverables_checklist: deliverablesChecklist,
 
     category: req.body.category || 'internal_improvement',
   };
 }
-
 
 
 module.exports = {
