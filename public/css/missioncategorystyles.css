@@ -1,0 +1,370 @@
+.mission-category-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 2rem;
+  align-items: start;
+}
+
+.mission-category-content {
+  min-width: 0;
+}
+
+.mission-has-right-rail {
+  width: 100%;
+}
+
+.mission-category-page {
+  min-width: 0;
+}
+
+.mission-category-title {
+  font-size: 2.2rem;
+  line-height: 1.1;
+  color: #262262;
+  margin: 0 0 0.9rem 0;
+  text-transform: lowercase;
+}
+
+.mission-category-short-summary {
+  font-size: 1.1rem;
+  line-height: 1.5;
+  color: #4e50a2;
+  font-weight: 600;
+  margin: 0 0 0.85rem 0;
+}
+
+.mission-category-long-summary {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #333;
+  margin: 0 0 1.5rem 0;
+}
+
+.mission-category-key-divider,
+.mission-category-section-divider {
+  border: none;
+  border-top: 1px solid #d6d6e8;
+  margin: 1.25rem 0;
+}
+
+.mission-category-unit-key,
+.mission-category-unit-type-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  align-items: center;
+}
+
+.mission-category-unit-key-item,
+.mission-category-unit-type-key-item {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.mission-category-unit-key-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #4e50a2;
+  text-transform: lowercase;
+}
+
+.mission-category-unit-key-svg {
+  width: 80px;
+  height: auto;
+  display: block;
+}
+
+.mission-category-unit-type-key-icon {
+  width: 55px;
+  height: auto;
+  display: block;
+}
+
+.mission-category-unit-type-desc {
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: #444;
+  max-width: 720px;
+}
+
+.mission-category-section-title {
+  font-size: 1.35rem;
+  color: #262262;
+  margin: 2rem 0 0.35rem 0;
+  text-transform: lowercase;
+}
+
+.mission-category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 2rem 1.5rem;
+  margin-top: 1.25rem;
+}
+
+.mission-category-card {
+  position: relative;
+  background: transparent;
+}
+
+.mission-category-card-top-badges {
+  position: absolute;
+  top: -10px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.mission-category-card-top-badge {
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+}
+
+.mission-category-card-author-mini,
+.mission-category-card-org-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.mission-category-card-org-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.mission-category-card-inner {
+  background: #fff;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(38, 34, 98, 0.08);
+  border: 1px solid rgba(78, 80, 162, 0.1);
+  min-height: 100%;
+}
+
+.mission-category-card-svg-header {
+  width: 100%;
+  line-height: 0;
+}
+
+.mission-category-card-svg-image {
+  width: 100%;
+  display: block;
+}
+
+.mission-category-card-content {
+  padding: 1.4rem 1.2rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.mission-category-visible-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.mission-category-unit-type-icon-container {
+  min-height: 78px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.35rem;
+}
+
+.mission-category-unit-type-icon {
+  width: 62px;
+  height: auto;
+  display: block;
+}
+
+.mission-category-unit-title-container {
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.4rem;
+}
+
+.mission-category-unit-title {
+  font-size: 1.15rem;
+  line-height: 1.3;
+  color: #262262;
+  margin: 0;
+}
+
+.mission-category-label {
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: #4e50a2;
+  font-style: italic;
+  margin: 0.2rem 0 0.9rem 0;
+}
+
+.mission-category-expand-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  margin-top: 0.2rem;
+}
+
+.mission-category-expand-arrow {
+  width: 34px;
+  height: auto;
+  transition: transform 0.2s ease;
+}
+
+.mission-category-card.active .mission-category-expand-arrow {
+  transform: rotate(180deg);
+}
+
+.mission-category-hidden-content {
+  width: 100%;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-top: 1rem;
+}
+
+.mission-category-author-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: #6d6e71;
+  font-weight: 700;
+  margin-bottom: 0.6rem;
+}
+
+.mission-category-author-image-container {
+  width: 78px;
+  height: 78px;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 0.6rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+.mission-category-author-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mission-category-author-name-container {
+  margin-bottom: 0.9rem;
+}
+
+.mission-category-author-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #262262;
+}
+
+.mission-category-summary-container {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.mission-category-long-text {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #333;
+  margin: 0;
+  text-align: left;
+}
+
+.mission-category-review-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.mission-category-cta-container {
+  margin-top: 0.5rem;
+}
+
+.mission-category-review-btn {
+  display: inline-block;
+  text-decoration: none;
+  background: #4e50a2;
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.72rem 1.1rem;
+  font-weight: 600;
+  font-size: 0.92rem;
+  line-height: 1.2;
+  text-align: center;
+  min-width: 180px;
+}
+
+.mission-category-review-btn:hover {
+  background: #262262;
+}
+
+.mission-category-cta-disabled {
+  background: #e7e7ef;
+  color: #777;
+  cursor: default;
+}
+
+.mission-category-empty-section-message {
+  background: #f8f8fc;
+  border: 1px solid #ececf5;
+  border-radius: 18px;
+  padding: 1.2rem 1.1rem;
+  color: #555;
+  line-height: 1.6;
+}
+
+@media (max-width: 1100px) {
+  .mission-category-container {
+    grid-template-columns: 1fr;
+  }
+
+  .mission-category-page {
+    order: 2;
+  }
+}
+
+@media (max-width: 640px) {
+  .mission-category-container {
+    padding: 1.25rem 1rem 3rem;
+  }
+
+  .mission-category-title {
+    font-size: 1.8rem;
+  }
+
+  .mission-category-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mission-category-card-top-badges {
+    left: 12px;
+    right: 12px;
+  }
+
+  .mission-category-card-top-badge {
+    width: 42px;
+    height: 42px;
+  }
+}
