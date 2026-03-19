@@ -1668,33 +1668,27 @@ return res.render('unit_form_views/unit_success', {
 },
 
   submitMission: async (req, res) => {
-
-    const mainTopics = require('../config/topics');
-
+    console.log('MISSION POST BODY:', req.body);
   try {
-
-
     if (!req.user || !req.user._id) {
       throw new Error('User is not authenticated or missing user ID.');
     }
 
     if (!requireTermsForPosting(req, res)) return;
 
-
     const isEdit = !!req.body._id;
     const userId = req.user._id;
-    const { fromUpcomingId } = req.body; // present in the form, not used yet
+    const { fromUpcomingId } = req.body;
 
     const {
       mission_title,
       badge_name,
       status,
       visibility,
-      main_topic,
       category,
       purpose,
-      why_it_matters,
-      background,
+      summary,
+      additional_instructions,
       department_requesting,
       open_to,
       timeframe,
@@ -1704,12 +1698,8 @@ return res.render('unit_form_views/unit_success', {
       due_date,
     } = req.body;
 
-    // --- Twennie learning units from hidden inputs (autocomplete chips) ---
-
-    
     let rawTwennieUnits = req.body.twennie_units || [];
 
-    // ensure it's always an array
     if (!Array.isArray(rawTwennieUnits)) {
       rawTwennieUnits = [rawTwennieUnits];
     }
@@ -1717,20 +1707,16 @@ return res.render('unit_form_views/unit_success', {
     const twennie_learning_units = rawTwennieUnits
       .filter(v => v && v.trim() !== '')
       .map(v => {
-        // v looks like "video:65f1..." or "article:6789..."
         const [unit_type, unit_id] = v.split(':');
         return { unit_type, unit_id };
       })
-      .slice(0, 6); // hard cap at 6
+      .filter(u => u.unit_type && u.unit_id)
+      .slice(0, 6);
 
-    // Basic validations
-
-const errors = [];
-if (!mission_title?.trim()) errors.push('Mission title is required.');
-if (!badge_name?.trim()) errors.push('Mission badge name is required.');
-if (!purpose?.trim()) errors.push('Mission purpose is required.');
-if (!why_it_matters?.trim()) errors.push('Please explain why this mission matters.');
-
+    const errors = [];
+    if (!mission_title?.trim()) errors.push('Mission title is required.');
+    if (!badge_name?.trim()) errors.push('Mission badge name is required.');
+    if (!purpose?.trim()) errors.push('Mission purpose is required.');
 
     if (errors.length) {
       return res.status(400).render('unit_form_views/form_mission', {
@@ -1738,28 +1724,10 @@ if (!why_it_matters?.trim()) errors.push('Please explain why this mission matter
         unitType: 'mission',
         data: req.body,
         errors,
-        mainTopics,
         csrfToken: getCsrfToken(req),
       });
     }
 
-    // ---- approvals_required ----
-    let approvalsRequired = [];
-    if (req.body.approvals_required) {
-      const rawApprovals = Array.isArray(req.body.approvals_required)
-        ? req.body.approvals_required
-        : Object.values(req.body.approvals_required);
-
-      approvalsRequired = rawApprovals
-        .map((a) => ({
-          role: (a.role || '').trim(),
-          name: (a.name || '').trim(),
-          email: (a.email || '').trim(),
-        }))
-        .filter((a) => a.role || a.name || a.email);
-    }
-
-    // ---- task_instructions ----
     let taskInstructions = [];
     if (req.body.task_instructions) {
       const rawTasks = Array.isArray(req.body.task_instructions)
@@ -1783,24 +1751,6 @@ if (!why_it_matters?.trim()) errors.push('Please explain why this mission matter
         .filter((t) => t.heading || t.instructions.length);
     }
 
-    // ---- contacts ----
-    let contacts = [];
-    if (req.body.contacts) {
-      const rawContacts = Array.isArray(req.body.contacts)
-        ? req.body.contacts
-        : Object.values(req.body.contacts);
-
-      contacts = rawContacts
-        .map((c) => ({
-          role: (c.role || '').trim(),
-          name: (c.name || '').trim(),
-          email: (c.email || '').trim(),
-          phone: (c.phone || '').trim(),
-        }))
-        .filter((c) => c.role || c.name || c.email || c.phone);
-    }
-
-    // ---- deliverables_checklist ----
     let deliverablesChecklist = [];
     if (req.body.deliverables_checklist) {
       deliverablesChecklist = req.body.deliverables_checklist
@@ -1811,42 +1761,24 @@ if (!why_it_matters?.trim()) errors.push('Please explain why this mission matter
 
     const baseData = {
       mission_title: (mission_title || '').trim(),
-        badge_name: (badge_name || '').trim(), // ✅ NEW
-
-      // status enum in schema: 'one time mission', 'on-going', 'intermittent'
+      badge_name: (badge_name || '').trim(),
       status: status || 'one time mission',
-
       visibility: visibility || 'organization_only',
-      main_topic: main_topic || 'When the Workload is Light',
       category: category || 'internal_improvement',
-
       purpose: (purpose || '').trim(),
-      why_it_matters: (why_it_matters || '').trim(),
-      background: (background || '').trim(),
-
-      // summaries for mission cards
-      short_purpose: (req.body.short_purpose || '').trim(),
-      full_summary: (req.body.full_summary || '').trim(),
-
+      summary: (summary || '').trim(),
+      additional_instructions: (additional_instructions || '').trim(),
       department_requesting: (department_requesting || '').trim(),
       open_to: (open_to || '').trim(),
       timeframe: (timeframe || '').trim(),
-
+      job_number: (job_number || '').trim(),
+      budget_amount: (budget_amount || '').trim(),
       estimated_effort_hours: estimated_effort_hours
         ? Number(estimated_effort_hours)
         : undefined,
-
-      job_number: (job_number || '').trim(),
-      budget_amount: (budget_amount || '').trim(),
-
-      approvals_required: approvalsRequired,
-      task_instructions: taskInstructions,
-      contacts,
-      deliverables_checklist: deliverablesChecklist,
-
       due_date: due_date ? new Date(due_date) : undefined,
-
-      // ✅ NEW: linked Twennie units
+      task_instructions: taskInstructions,
+      deliverables_checklist: deliverablesChecklist,
       twennie_learning_units,
     };
 
@@ -1872,8 +1804,6 @@ if (!why_it_matters?.trim()) errors.push('Please explain why this mission matter
 
     await mission.save();
 
-    // (Optional later) if you want: migrateAndDeleteUpcoming({ fromUpcomingId, toItemId: mission._id, toUnitType: 'mission' });
-
     return res.render('unit_form_views/unit_success', {
       layout: 'unitformlayout',
       unitType: 'mission',
@@ -1897,10 +1827,9 @@ if (!why_it_matters?.trim()) errors.push('Please explain why this mission matter
       return res.status(400).render('unit_form_views/form_mission', {
         layout: 'unitformlayout',
         unitType: 'mission',
-          dashboardLink: dashboardHomeForUser(req.user),
+        dashboardLink: dashboardHomeForUser(req.user),
         data: req.body,
         errorMessage: error.message,
-        mainTopics,
         csrfToken: getCsrfToken(req),
       });
     }
