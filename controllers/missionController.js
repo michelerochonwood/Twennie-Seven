@@ -472,10 +472,10 @@ async function enrichList(list) {
           'When you create missions, the ones you authored will show here. Use your missions to guide your own focus during light workloads.',
       },
       {
-        sectionTitle: 'missions created by my team',
+        sectionTitle: 'missions created by my group',
         missions: groupMissionsEnriched,
         emptyMessage:
-          "Once your group starts creating missions, you'll see them here. Use team missions to coordinate how your group spends slow periods.",
+          "Once your group starts creating missions, you'll see them here. Use group missions to coordinate how your group spends slow periods.",
       },
       {
         sectionTitle: 'missions created by my organization',

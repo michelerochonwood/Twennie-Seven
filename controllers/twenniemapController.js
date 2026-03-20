@@ -47,7 +47,7 @@ exports.getTeachMe = (req, res) => {
       src: "/images/createvideoscreenshot.png",
       alt: "Create a unit",
       title: "create units",
-      desc: "This is the unit creation form. Create content to share practical know-how with your team or the wider Twennie community, whichever is appropriate for the content."
+      desc: "This is the unit creation form. Create content to share practical know-how with your group or the wider Twennie community, whichever is appropriate for the content."
     },
     {
       src: "/images/mylibraryunitsscreenshot.png",
@@ -117,13 +117,13 @@ exports.getTeachMe = (req, res) => {
           src: "/images/reportcenterscreenshot.png",
           alt: "Report center",
           title: "Report center",
-          desc: "This is the Report Center, accessible to leaders only. It’s where leaders view group learning activity and completions.  Here you can see topics explored by your team, units completed, and badges earned. All notes your team has recorded on learning will show in these reports. Twennie can help you use AI to summarize these notes and plan future learning more strategically."
+          desc: "This is the Report Center, accessible to leaders only. It’s where leaders view group learning activity and completions.  Here you can see topics explored by your group, units completed, and badges earned. All notes your group has recorded on learning will show in these reports. Twennie can help you use AI to summarize these notes and plan future learning more strategically."
         },
         {
           src: "/images/onereportscreenshot.png",
           alt: "One report",
           title: "One report",
-          desc: "This is a Twennie report. It summarizes completions and notes so you can coach effectively as the team leader. The report center provides four report types: Member Engagement, Completed Prompt Sets, Completed Library Units, and Nuggets Assigned."
+          desc: "This is a Twennie report. It summarizes completions and notes so you can coach effectively as the group leader. The report center provides four report types: Member Engagement, Completed Prompt Sets, Completed Library Units, and Nuggets Assigned."
         }
       ]
     }
