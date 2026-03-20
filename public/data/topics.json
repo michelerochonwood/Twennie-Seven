@@ -751,6 +751,25 @@
     "leadership behaviors that make collaboration safe",
     "knowing when IPD adds value and when it does not"
   ]
+},
+
+{
+  "id": 220,
+  "title": "Conducting Market Research",
+  "shortSummary": "Strong firms don’t wait for RFPs—they see work coming years in advance. This topic teaches how to identify early signals, gather intelligence, and understand where your market is heading.",
+  "longSummary": "Conducting Market Research focuses on helping technical professionals move from reactive pursuit to proactive awareness. Instead of relying on late-stage procurement notices, this topic teaches how to detect early signals of upcoming work through public announcements, client conversations, and industry networks. It combines practical systems—such as RSS feeds and AI filtering—with human intelligence gathered directly from clients and trusted contacts. The emphasis is on building a repeatable approach to understanding where the market is going, not just where it is today. By developing a strong knowledge network and consistent research habits, teams can anticipate opportunities, position themselves earlier, and make more strategic decisions about where to invest their time and effort.",
+  "subtopics": [
+    "identifying early signals before procurement begins",
+    "using RSS feeds and AI to filter announcements",
+    "distinguishing real opportunities from noise",
+    "gathering intelligence directly from client conversations",
+    "asking strategic, open-ended questions during meetings",
+    "building and maintaining a knowledge network",
+    "understanding funding, stakeholders, and project drivers",
+    "tracking trends across sectors and regions",
+    "recording and organizing market intelligence",
+    "turning research into actionable business development steps"
+  ]
 }
 
 

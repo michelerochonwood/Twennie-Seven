@@ -557,6 +557,7 @@ const topicMappings = {
   'Client Interactions': 'clientinteractions',
   'Closing a Project Strategically': 'closingaprojectstrategically',
   'Conducting Color Reviews of Proposals': 'conductingcolorreviewsofproposals',
+  'Conducting Market Research': 'conductingmarketresearch',
   'CRM Software': 'crmsoftware',
   'Cross Selling in Multi-Disciplinary Firms': 'crosssellinginmultidisciplinaryfirms',
   'Designing a Proposal Process': 'designingaproposalprocess',
@@ -598,6 +599,8 @@ const topicMappings = {
   'Using Lean in Project Management': 'usingleaninprojectmanagement',
   'When the Workload is Light': 'whentheworkloadislight',
   'Workplace Culture': 'workplaceculture'
+
+
 };
 
 // Mapping topic slugs to their corresponding view filenames
@@ -615,6 +618,7 @@ const topicViewMappings = {
   'clientinteractions': 'single_topic_clientinteractions',
   'closingaprojectstrategically': 'single_topic_closing',
   'conductingcolorreviews': 'single_topic_colorreviews',
+  'conductingmarketresearch': 'single_topic_research',
   'crosssellinginmultidisciplinaryfirms': 'single_topic_crossselling',
   'crmplatforms': 'single_topic_crm',
   'designingaproposalprocess': 'single_topic_proposalprocess',

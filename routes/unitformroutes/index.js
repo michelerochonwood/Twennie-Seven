@@ -32,8 +32,8 @@ console.log('unitFormController:', unitFormController);
 
 // Shared topics list (kept inline here to mirror your file)
 const mainTopics = [
+  'AI in Adult Learning',
   'AI in Consulting',
-  'AI in Learning',
   'AI in Project Management',
   'Analytics in Project Management',
   'Business Development in Technical Services',
@@ -45,8 +45,9 @@ const mainTopics = [
   'Client Interactions',
   'Closing a Project Strategically',
   'Conducting Color Reviews of Proposals',
+  'Conducting Market Research',
   'Cross Selling in Multi-Disciplinary Firms',
-  'CRM Platforms',
+  'CRM Software',
   'Designing a Proposal Process',
   'Emotional Intelligence',
   'Employee Experience',
@@ -74,7 +75,7 @@ const mainTopics = [
   'Social Media, Advertising, and Other Mysteries',
   'Soft Skills in Technical Environments',
   'Storytelling in Technical Marketing',
-  'Team Building in Consulting',
+  'Team Building in Technical Consulting',
   'The Advantage of Failure',
   'The First 10 Days of a Project',
   'The Pareto Principle',
@@ -82,7 +83,7 @@ const mainTopics = [
   'The Power of Purpose',
   'Tips and Tricks for Proposal Proofreading',
   'Turning a Project into a Business Development Powerhouse',
-  'Un-Commoditizing Your Services by Delivering What Clients Truly Value',
+  'UnCommoditizing Your Services by Delivering What Clients Truly Value',
   'Using Lean in Project Management',
   'When the Workload is Light',
   'Workplace Culture'
