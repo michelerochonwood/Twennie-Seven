@@ -4622,6 +4622,12 @@ box-shadow: none !important;
    MEMBER GROUP PANEL
    ========================================= */
 
+.membergroup-section,
+.membergroup-section * {
+  text-align: left;
+  box-sizing: border-box;
+}
+
 .membergroup-section {
   background-color: rgb(240, 240, 240);
   border-radius: 20px;
@@ -4645,7 +4651,6 @@ box-shadow: none !important;
   padding: 2rem;
   max-width: 900px;
   margin: 0 auto;
-  box-sizing: border-box;
 }
 
 .membergroup-intro {
@@ -4662,12 +4667,14 @@ box-shadow: none !important;
   font-size: 1rem;
   line-height: 1.7;
   color: #333;
+  text-align: left;
   margin-bottom: 1rem;
 }
 
 .membergroup-benefits {
   margin-top: 1.5rem;
   padding-top: 1rem;
+  text-align: left;
 }
 
 .membergroup-benefits-title {
@@ -4677,6 +4684,7 @@ box-shadow: none !important;
   color: #262262;
   margin-bottom: 0.75rem;
   text-transform: lowercase;
+  text-align: left;
 }
 
 .membergroup-benefits-list {
@@ -4686,6 +4694,11 @@ box-shadow: none !important;
   font-size: 1rem;
   line-height: 1.8;
   color: #333;
+  text-align: left;
+}
+
+.membergroup-benefits-list li {
+  text-align: left;
 }
 
 .membergroup-note {
