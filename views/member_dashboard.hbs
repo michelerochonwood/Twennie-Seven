@@ -12,13 +12,13 @@
     <!-- Member Tab Navigation -->
     <div class="leader-dashboard-tab-groups">
 
-      <div class="leader-dashboard-tab-groups-row" data-tabs-scope="member">
+      <div class="leader-dashboard-tab-groups-row member-dashboard-tab-groups-row" data-tabs-scope="member">
 
         <!-- LEARNING -->
-        <div class="leader-dashboard-tab-group leader-dashboard-tab-group--learning">
+        <div class="leader-dashboard-tab-group leader-dashboard-tab-group--learning member-dashboard-tab-group member-dashboard-tab-group--learning">
           <h3 class="leader-dashboard-tab-group-title">learning</h3>
 
-          <div class="dashboard-tabs-container">
+          <div class="dashboard-tabs-container member-dashboard-tabs-container member-dashboard-tabs-container--learning">
             <button class="dashboard-tab" data-tab="topics">
               <span class="tab-title">my favorite topics</span>
               <div class="tab-arrow"></div>
@@ -41,14 +41,19 @@
               {{#if memberBadges.tagged}}<span class="tab-dot"></span>{{/if}}
               <div class="tab-arrow"></div>
             </button>
+
+            <button class="dashboard-tab" data-tab="missions">
+              <span class="tab-title">my missions and nuggets</span>
+              <div class="tab-arrow"></div>
+            </button>
           </div>
         </div>
 
         <!-- CUSTOM LIBRARY -->
-        <div class="leader-dashboard-tab-group leader-dashboard-tab-group--library">
+        <div class="leader-dashboard-tab-group leader-dashboard-tab-group--library member-dashboard-tab-group member-dashboard-tab-group--library">
           <h3 class="leader-dashboard-tab-group-title">my custom library content</h3>
 
-          <div class="dashboard-tabs-container">
+          <div class="dashboard-tabs-container member-dashboard-tabs-container member-dashboard-tabs-container--library">
             <button class="dashboard-tab" data-tab="contribute">
               <span class="tab-title">contribute to my library</span>
               <div class="tab-arrow"></div>
@@ -63,12 +68,17 @@
         </div>
 
         <!-- MEMBERSHIP -->
-        <div class="leader-dashboard-tab-group leader-dashboard-tab-group--membership">
+        <div class="leader-dashboard-tab-group leader-dashboard-tab-group--membership member-dashboard-tab-group member-dashboard-tab-group--membership">
           <h3 class="leader-dashboard-tab-group-title">manage membership</h3>
 
-          <div class="dashboard-tabs-container">
+          <div class="dashboard-tabs-container member-dashboard-tabs-container member-dashboard-tabs-container--membership">
             <button class="dashboard-tab active" data-tab="membership">
               <span class="tab-title">membership overview</span>
+              <div class="tab-arrow"></div>
+            </button>
+
+            <button class="dashboard-tab" data-tab="group">
+              <span class="tab-title">my group</span>
               <div class="tab-arrow"></div>
             </button>
           </div>
@@ -116,6 +126,14 @@
           csrfToken=csrfToken }}
     </div>
 
+    <div class="dashboard-tab-content" id="tagged">
+      {{> dashboardpartials/member_tagged_units }}
+    </div>
+
+    <div class="dashboard-tab-content" id="missions">
+      {{> dashboardpartials/member_missions }}
+    </div>
+
     <div class="dashboard-tab-content" id="contribute">
       {{> dashboardpartials/member_contribution }}
     </div>
@@ -124,8 +142,8 @@
       {{> dashboardpartials/member_mylibraryunits }}
     </div>
 
-    <div class="dashboard-tab-content" id="tagged">
-      {{> dashboardpartials/member_tagged_units }}
+    <div class="dashboard-tab-content" id="group">
+      {{> dashboardpartials/member_group }}
     </div>
 
   </div>
