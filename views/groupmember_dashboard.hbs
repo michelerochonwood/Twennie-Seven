@@ -9,65 +9,88 @@
   <!-- Main Content (Right) -->
   <div class="dashboard-main">
 
-    <!-- Tab Navigation -->
-    <div class="dashboard-tabs-container">
-      <button class="dashboard-tab active" data-tab="membership">
-        <span class="tab-title">membership overview</span>
-        <div class="tab-arrow"></div>
-      </button>
+    <!-- Group Member Tab Navigation -->
+    <div class="leader-dashboard-tab-groups">
 
-      <button class="dashboard-tab" data-tab="topics" data-count="{{gmCounts.topics}}">
-        <span class="tab-title">my favorite topics</span>
-        {{#if gmBadges.topics}}<span class="tab-dot"></span>{{/if}}
-        <div class="tab-arrow"></div>
-      </button>
+      <div class="leader-dashboard-tab-groups-row" data-tabs-scope="groupmember">
 
-      <button class="dashboard-tab" data-tab="group" data-count="{{gmCounts.group}}">
-        <span class="tab-title">my group members</span>
-        {{#if gmBadges.group}}<span class="tab-dot"></span>{{/if}}
-        <div class="tab-arrow"></div>
-      </button>
+        <!-- LEARNING -->
+        <div class="leader-dashboard-tab-group leader-dashboard-tab-group--learning">
+          <h3 class="leader-dashboard-tab-group-title">learning</h3>
 
-      <button class="dashboard-tab" data-tab="prompts" data-count="{{gmCounts.prompts}}">
-        <span class="tab-title">registered prompt sets</span>
-        {{#if gmBadges.prompts}}<span class="tab-dot"></span>{{/if}}
-        <div class="tab-arrow"></div>
-      </button>
+          <div class="dashboard-tabs-container">
+            <button class="dashboard-tab" data-tab="topics" data-count="{{gmCounts.topics}}">
+              <span class="tab-title">my favorite topics</span>
+              {{#if gmBadges.topics}}<span class="tab-dot"></span>{{/if}}
+              <div class="tab-arrow"></div>
+            </button>
 
-      <button class="dashboard-tab" data-tab="progress" data-count="{{gmCounts.progress}}">
-        <span class="tab-title">prompt set progress</span>
-        {{#if gmBadges.progress}}<span class="tab-dot"></span>{{/if}}
-        <div class="tab-arrow"></div>
-      </button>
+            <button class="dashboard-tab" data-tab="prompts" data-count="{{gmCounts.prompts}}">
+              <span class="tab-title">my prompt sets in progress</span>
+              {{#if gmBadges.prompts}}<span class="tab-dot"></span>{{/if}}
+              <div class="tab-arrow"></div>
+            </button>
+
+            <button class="dashboard-tab" data-tab="progress" data-count="{{gmCounts.progress}}">
+              <span class="tab-title">prompt set progress and completions</span>
+              {{#if gmBadges.progress}}<span class="tab-dot"></span>{{/if}}
+              <div class="tab-arrow"></div>
+            </button>
 
             <button class="dashboard-tab" data-tab="tagged" data-count="{{gmCounts.tagged}}">
-        <span class="tab-title">my learning and assignments</span>
-        {{#if gmBadges.tagged}}<span class="tab-dot"></span>{{/if}}
-        <div class="tab-arrow"></div>
-      </button>
+              <span class="tab-title">my learning and assignments</span>
+              {{#if gmBadges.tagged}}<span class="tab-dot"></span>{{/if}}
+              <div class="tab-arrow"></div>
+            </button>
 
-      {{!-- ✅ NEW: Missions tab --}}
-      <button class="dashboard-tab" data-tab="missions" data-count="{{gmCounts.missions}}">
-        <span class="tab-title">my nuggets and missions</span>
-        {{#if gmBadges.missions}}<span class="tab-dot"></span>{{/if}}
-        <div class="tab-arrow"></div>
-      </button>
+            <button class="dashboard-tab" data-tab="missions" data-count="{{gmCounts.missions}}">
+              <span class="tab-title">my nuggets and missions</span>
+              {{#if gmBadges.missions}}<span class="tab-dot"></span>{{/if}}
+              <div class="tab-arrow"></div>
+            </button>
+          </div>
+        </div>
 
-      <button class="dashboard-tab" data-tab="contribute">
-        <span class="tab-title">contribute to my library</span>
-        <div class="tab-arrow"></div>
-      </button>
+        <!-- CUSTOM LIBRARY -->
+        <div class="leader-dashboard-tab-group leader-dashboard-tab-group--library">
+          <h3 class="leader-dashboard-tab-group-title">my custom library content</h3>
 
-      <button class="dashboard-tab" data-tab="library" data-count="{{gmCounts.library}}">
-        <span class="tab-title">my library units</span>
-        {{#if gmBadges.library}}<span class="tab-dot"></span>{{/if}}
-        <div class="tab-arrow"></div>
-      </button>
+          <div class="dashboard-tabs-container">
+            <button class="dashboard-tab" data-tab="contribute">
+              <span class="tab-title">contribute to my library</span>
+              <div class="tab-arrow"></div>
+            </button>
 
+            <button class="dashboard-tab" data-tab="library" data-count="{{gmCounts.library}}">
+              <span class="tab-title">my library contributions</span>
+              {{#if gmBadges.library}}<span class="tab-dot"></span>{{/if}}
+              <div class="tab-arrow"></div>
+            </button>
+          </div>
+        </div>
 
+        <!-- MEMBERSHIP -->
+        <div class="leader-dashboard-tab-group leader-dashboard-tab-group--membership">
+          <h3 class="leader-dashboard-tab-group-title">manage membership</h3>
+
+          <div class="dashboard-tabs-container">
+            <button class="dashboard-tab active" data-tab="membership">
+              <span class="tab-title">membership overview</span>
+              <div class="tab-arrow"></div>
+            </button>
+
+            <button class="dashboard-tab" data-tab="group" data-count="{{gmCounts.group}}">
+              <span class="tab-title">my group members</span>
+              {{#if gmBadges.group}}<span class="tab-dot"></span>{{/if}}
+              <div class="tab-arrow"></div>
+            </button>
+          </div>
+        </div>
+
+      </div>
     </div>
 
-    <!-- Right Topics Column (fixed; reused partial) -->
+    <!-- Right Topics Column -->
     <div class="dashboard-page">
       {{> topicpartials/topics_column_partial}}
     </div>
@@ -97,11 +120,10 @@
       {{> dashboardpartials/groupmember_progress }}
     </div>
 
-        <div class="dashboard-tab-content" id="tagged">
+    <div class="dashboard-tab-content" id="tagged">
       {{> dashboardpartials/groupmember_tagged_units }}
     </div>
 
-    {{!-- ✅ NEW: Missions content --}}
     <div class="dashboard-tab-content" id="missions">
       {{> dashboardpartials/groupmember_missions }}
     </div>
@@ -114,43 +136,55 @@
       {{> dashboardpartials/groupmember_mylibraryunits }}
     </div>
 
-
-
   </div>
 </div>
 
 <script>
-  async function markSeenGroupMember(tab, count) {
-    try {
-      await fetch('/dashboard/groupmember/mark-seen', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-csrf-token': '{{csrfToken}}'
-        },
-        body: JSON.stringify({ tab, count: Number(count || 0) })
+  (function () {
+    const scopeRoot = document.querySelector('[data-tabs-scope="groupmember"]');
+    if (!scopeRoot) return;
+
+    const tabs = Array.from(scopeRoot.querySelectorAll('.dashboard-tab[data-tab]'));
+    const panels = Array.from(document.querySelectorAll('.dashboard-tab-content'));
+
+    function setActive(tabId) {
+      tabs.forEach(tab => tab.classList.toggle('active', tab.dataset.tab === tabId));
+      panels.forEach(panel => panel.classList.toggle('active', panel.id === tabId));
+    }
+
+    async function markSeenGroupMember(tab, count) {
+      try {
+        await fetch('/dashboard/groupmember/mark-seen', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-csrf-token': '{{csrfToken}}'
+          },
+          body: JSON.stringify({ tab, count: Number(count || 0) })
+        });
+      } catch (e) { /* no-op */ }
+    }
+
+    tabs.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        const count = btn.dataset.count || 0;
+
+        setActive(tab);
+
+        if (['group','topics','prompts','progress','missions','library','tagged'].includes(tab)) {
+          markSeenGroupMember(tab, count);
+
+          const dot = btn.querySelector('.tab-dot');
+          if (dot) dot.style.display = 'none';
+        }
       });
-    } catch (e) { /* no-op */ }
-  }
-
-  // When a tab is clicked (or activated), update seen
-  document.querySelectorAll('.dashboard-tab[data-tab]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const tab = btn.dataset.tab;
-      const count = btn.dataset.count || 0;
-
-      // ✅ Add 'missions' to the tracked list
-      if (['group','topics','prompts','progress','missions','library','tagged'].includes(tab)) {
-        markSeenGroupMember(tab, count);
-
-        // Optimistic UI: hide the dot immediately
-        const dot = btn.querySelector('.tab-dot');
-        if (dot) dot.style.display = 'none';
-      }
     });
-  });
-</script>
 
+    const preActive = tabs.find(t => t.classList.contains('active')) || tabs[0];
+    if (preActive) setActive(preActive.dataset.tab);
+  })();
+</script>
 
 
 
