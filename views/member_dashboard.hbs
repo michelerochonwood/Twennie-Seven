@@ -1,7 +1,5 @@
 {{#*inline "title"}}Member Dashboard | Twennie{{/inline}}
 
-
-
 <div class="dashboard-grid">
   <!-- Sidebar (Left) -->
   <div class="dashboard-sidebar">
@@ -10,51 +8,76 @@
 
   <!-- Main Content (Right) -->
   <div class="dashboard-main">
-    
-    <!-- Tab Navigation -->
-    <div class="dashboard-tabs-container">
-      <button class="dashboard-tab active" data-tab="membership">
-        <span class="tab-title">membership overview</span>
-        <div class="tab-arrow"></div>
-      </button>
 
-      <!-- (No dots for topics in member dashboard; not counted in controller) -->
-      <button class="dashboard-tab" data-tab="topics">
-        <span class="tab-title">my favorite topics</span>
-        <div class="tab-arrow"></div>
-      </button>
+    <!-- Member Tab Navigation -->
+    <div class="leader-dashboard-tab-groups">
 
-      <button class="dashboard-tab" data-tab="prompts" data-count="{{memberCounts.prompts}}">
-        <span class="tab-title">registered prompt sets</span>
-        {{#if memberBadges.prompts}}<span class="tab-dot"></span>{{/if}}
-        <div class="tab-arrow"></div>
-      </button>
+      <div class="leader-dashboard-tab-groups-row" data-tabs-scope="member">
 
-      <button class="dashboard-tab" data-tab="progress" data-count="{{memberCounts.progress}}">
-        <span class="tab-title">prompt set progress</span>
-        {{#if memberBadges.progress}}<span class="tab-dot"></span>{{/if}}
-        <div class="tab-arrow"></div>
-      </button>
+        <!-- LEARNING -->
+        <div class="leader-dashboard-tab-group leader-dashboard-tab-group--learning">
+          <h3 class="leader-dashboard-tab-group-title">learning</h3>
 
-      <button class="dashboard-tab" data-tab="contribute">
-        <span class="tab-title">contribute to the library</span>
-        <div class="tab-arrow"></div>
-      </button>
+          <div class="dashboard-tabs-container">
+            <button class="dashboard-tab" data-tab="topics">
+              <span class="tab-title">my favorite topics</span>
+              <div class="tab-arrow"></div>
+            </button>
 
-      <button class="dashboard-tab" data-tab="library" data-count="{{memberCounts.library}}">
-        <span class="tab-title">my library units</span>
-        {{#if memberBadges.library}}<span class="tab-dot"></span>{{/if}}
-        <div class="tab-arrow"></div>
-      </button>
+            <button class="dashboard-tab" data-tab="prompts" data-count="{{memberCounts.prompts}}">
+              <span class="tab-title">my prompt sets in progress</span>
+              {{#if memberBadges.prompts}}<span class="tab-dot"></span>{{/if}}
+              <div class="tab-arrow"></div>
+            </button>
 
-      <button class="dashboard-tab" data-tab="tagged" data-count="{{memberCounts.tagged}}">
-        <span class="tab-title">my tagged learning</span>
-        {{#if memberBadges.tagged}}<span class="tab-dot"></span>{{/if}}
-        <div class="tab-arrow"></div>
-      </button>
+            <button class="dashboard-tab" data-tab="progress" data-count="{{memberCounts.progress}}">
+              <span class="tab-title">prompt set progress and completions</span>
+              {{#if memberBadges.progress}}<span class="tab-dot"></span>{{/if}}
+              <div class="tab-arrow"></div>
+            </button>
+
+            <button class="dashboard-tab" data-tab="tagged" data-count="{{memberCounts.tagged}}">
+              <span class="tab-title">my learning and assignments</span>
+              {{#if memberBadges.tagged}}<span class="tab-dot"></span>{{/if}}
+              <div class="tab-arrow"></div>
+            </button>
+          </div>
+        </div>
+
+        <!-- CUSTOM LIBRARY -->
+        <div class="leader-dashboard-tab-group leader-dashboard-tab-group--library">
+          <h3 class="leader-dashboard-tab-group-title">my custom library content</h3>
+
+          <div class="dashboard-tabs-container">
+            <button class="dashboard-tab" data-tab="contribute">
+              <span class="tab-title">contribute to my library</span>
+              <div class="tab-arrow"></div>
+            </button>
+
+            <button class="dashboard-tab" data-tab="library" data-count="{{memberCounts.library}}">
+              <span class="tab-title">my library contributions</span>
+              {{#if memberBadges.library}}<span class="tab-dot"></span>{{/if}}
+              <div class="tab-arrow"></div>
+            </button>
+          </div>
+        </div>
+
+        <!-- MEMBERSHIP -->
+        <div class="leader-dashboard-tab-group leader-dashboard-tab-group--membership">
+          <h3 class="leader-dashboard-tab-group-title">manage membership</h3>
+
+          <div class="dashboard-tabs-container">
+            <button class="dashboard-tab active" data-tab="membership">
+              <span class="tab-title">membership overview</span>
+              <div class="tab-arrow"></div>
+            </button>
+          </div>
+        </div>
+
+      </div>
     </div>
 
-    <!-- Right Topics Column (fixed; reuses the same partial) -->
+    <!-- Right Topics Column -->
     <div class="dashboard-page">
       {{> topicpartials/topics_column_partial}}
     </div>
@@ -68,30 +91,30 @@
       {{> dashboardpartials/member_topics }}
     </div>
 
-<div class="dashboard-tab-content" id="prompts">
-  {{#if promptSet}}
-    <section class="member-prompt-section">
-      {{> dashboardpartials/member_prompt promptSet=promptSet }}
-    </section>
-  {{else}}
-    {{#ifEquals @root.member.accessLevel "free_individual"}}
-      <div style="text-align: center; margin-top: 2rem; font-style: italic; color: #4e50a2;">
-        To register for prompts, you must upgrade your membership.
-      </div>
-    {{else}}
-      <div style="text-align: center; margin-top: 2rem; color:#4e50a2;">
-        You don’t have an active prompt set yet. Visit the library to register your first set.
-      </div>
-    {{/ifEquals}}
-  {{/if}}
-</div>
+    <div class="dashboard-tab-content" id="prompts">
+      {{#if promptSet}}
+        <section class="member-prompt-section">
+          {{> dashboardpartials/member_prompt promptSet=promptSet }}
+        </section>
+      {{else}}
+        {{#ifEquals @root.member.accessLevel "free_individual"}}
+          <div style="text-align: center; margin-top: 2rem; font-style: italic; color: #4e50a2;">
+            To register for prompts, you must upgrade your membership.
+          </div>
+        {{else}}
+          <div style="text-align: center; margin-top: 2rem; color:#4e50a2;">
+            You don’t have an active prompt set yet. Visit the library to register your first set.
+          </div>
+        {{/ifEquals}}
+      {{/if}}
+    </div>
 
-<div class="dashboard-tab-content" id="progress">
-  {{> dashboardpartials/member_progress
-      currentPromptSets=currentPromptSets
-      completedPromptSets=completedPromptSets
-      csrfToken=csrfToken }}
-</div>
+    <div class="dashboard-tab-content" id="progress">
+      {{> dashboardpartials/member_progress
+          currentPromptSets=currentPromptSets
+          completedPromptSets=completedPromptSets
+          csrfToken=csrfToken }}
+    </div>
 
     <div class="dashboard-tab-content" id="contribute">
       {{> dashboardpartials/member_contribution }}
@@ -109,34 +132,49 @@
 </div>
 
 <script>
-  // Mark a tab as "seen" so green dots only show on increases
-  async function markSeenMember(tab, count){
-    try{
-      await fetch('/dashboard/member/mark-seen', {
-        method: 'POST',
-        headers: {
-          'Content-Type':'application/json',
-          'X-CSRF-Token': '{{csrfToken}}'
-        },
-        body: JSON.stringify({ tab, count: Number(count || 0), _csrf: '{{csrfToken}}' })
-      });
-    }catch(e){ /* no-op */ }
-  }
+  (function () {
+    const scopeRoot = document.querySelector('[data-tabs-scope="member"]');
+    if (!scopeRoot) return;
 
-  // When a tab is clicked (or activated), update seen for counted tabs
-  document.querySelectorAll('.dashboard-tab[data-tab]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const tab = btn.dataset.tab;
-      const count = btn.dataset.count || 0;
-      // Only tabs with counters participate in dots
-      if (['prompts','progress','library','tagged'].includes(tab)) {
-        markSeenMember(tab, count);
-        // Optimistic UI: hide the dot immediately
-        const dot = btn.querySelector('.tab-dot');
-        if (dot) dot.style.display = 'none';
-      }
+    const tabs = Array.from(scopeRoot.querySelectorAll('.dashboard-tab[data-tab]'));
+    const panels = Array.from(document.querySelectorAll('.dashboard-tab-content'));
+
+    function setActive(tabId) {
+      tabs.forEach(tab => tab.classList.toggle('active', tab.dataset.tab === tabId));
+      panels.forEach(panel => panel.classList.toggle('active', panel.id === tabId));
+    }
+
+    async function markSeenMember(tab, count) {
+      try {
+        await fetch('/dashboard/member/mark-seen', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': '{{csrfToken}}'
+          },
+          body: JSON.stringify({ tab, count: Number(count || 0), _csrf: '{{csrfToken}}' })
+        });
+      } catch (e) { /* no-op */ }
+    }
+
+    tabs.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        const count = btn.dataset.count || 0;
+
+        setActive(tab);
+
+        if (['prompts','progress','library','tagged'].includes(tab)) {
+          markSeenMember(tab, count);
+          const dot = btn.querySelector('.tab-dot');
+          if (dot) dot.style.display = 'none';
+        }
+      });
     });
-  });
+
+    const preActive = tabs.find(t => t.classList.contains('active')) || tabs[0];
+    if (preActive) setActive(preActive.dataset.tab);
+  })();
 </script>
 
 
