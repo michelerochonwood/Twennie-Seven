@@ -2,23 +2,20 @@
   <h2 class="groupsection-title">group overview</h2>
   <p class="groupsection-title2">{{groupMember.groupId.groupName}}</p>
 
-  {{!-- Group image under the name (fallback to default) --}}
   <div class="groupsection-groupimage-wrapper" style="display:flex; justify-content:center; margin: 10px 0 20px;">
     <div class="groupsection-groupimage" style="width:140px; height:140px; border-radius:999px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.08);">
       <img
-        src="{{#if groupMember.groupId.groupImage}}{{groupMember.groupId.groupImage}}{{else}}/images/default-avatar.png{{/if}}"
+        src="{{#if group.groupImage}}{{group.groupImage}}{{else}}/images/default-avatar.png{{/if}}"
         alt="{{groupMember.groupId.groupName}} group image"
         style="width:100%; height:100%; object-fit:cover; display:block;"
       >
     </div>
   </div>
 
-  {{!-- Group Member Count --}}
   <div class="groupsection-stats">
     <p>Total Members: {{groupMembers.length}} of possible {{maxGroupSize}}</p>
   </div>
 
-  {{!-- Group Members Grid --}}
   <div class="groupsection-grid">
     {{#each groupMembers}}
       <div class="groupsection-card">
@@ -44,7 +41,6 @@
       </div>
     {{/each}}
 
-    {{!-- Empty slots to visualize remaining capacity --}}
     {{#if (lt groupMembers.length maxGroupSize)}}
       {{#each (range groupMembers.length maxGroupSize)}}
         <div class="groupsection-card groupsection-empty">
@@ -60,7 +56,6 @@
     {{/if}}
   </div>
 </section>
-
 
 
 
