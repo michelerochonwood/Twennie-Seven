@@ -11,22 +11,17 @@
 
     {{!-- =========================================================
          ADMIN MODE TOGGLE (admins only)
-         - This is navigation between leader mode and org-admin mode
+         - Show ONLY in admin mode here
     ========================================================= --}}
     {{#if leader.isAdmin}}
-      <div class="dashboard-admin-toggle leader-dashboard-admin-switch">
-        {{#if adminMode}}
+      {{#if adminMode}}
+        <div class="dashboard-admin-toggle leader-dashboard-admin-switch">
           <a class="dashboard-tab" href="/dashboard/leader" style="text-decoration:none;">
             <span class="tab-title">← back to leader dashboard</span>
             <div class="tab-arrow"></div>
           </a>
-        {{else}}
-          <a class="dashboard-tab" href="/dashboard/leader/org-admin/my-organization" style="text-decoration:none;">
-            <span class="tab-title">switch to admin dashboard</span>
-            <div class="tab-arrow"></div>
-          </a>
-        {{/if}}
-      </div>
+        </div>
+      {{/if}}
     {{/if}}
 
     {{!-- =========================================================
@@ -157,6 +152,15 @@
 
       <!-- Leader Tab Navigation -->
       <div class="leader-dashboard-tab-groups">
+
+        {{#if leader.isAdmin}}
+          <div class="leader-dashboard-admin-switch">
+            <a class="dashboard-tab" href="/dashboard/leader/org-admin/my-organization" style="text-decoration:none;">
+              <span class="tab-title">switch to admin dashboard</span>
+              <div class="tab-arrow"></div>
+            </a>
+          </div>
+        {{/if}}
 
         <div class="leader-dashboard-tab-groups-row" data-tabs-scope="leader">
 
