@@ -1352,17 +1352,15 @@ return res.status(403).render('unit_form_views/error', {
 
 
       
- submitExercise: async (req, res) => {
+submitExercise: async (req, res) => {
+  const mainTopics = require('../config/topics');
 
-const mainTopics = require('../config/topics');
   try {
-
     if (!req.user || !req.user._id) {
       throw new Error('User is not authenticated or missing user ID.');
     }
 
     if (!requireTermsForPosting(req, res)) return;
-
 
     // Pull id + upcoming context; keep rest as payload
     const { _id, fromUpcomingId, ...exerciseData } = req.body;
@@ -1376,12 +1374,16 @@ const mainTopics = require('../config/topics');
       'time',
       'permission',
     ];
+
     booleanFields.forEach((field) => {
       exerciseData[field] = req.body[field] === 'on';
     });
 
-    // Optional: normalize a single secondary topic (string -> [string])
-    if (typeof exerciseData.secondary_topics === 'string' && exerciseData.secondary_topics.trim() !== '') {
+    // Normalize secondary topics
+    if (
+      typeof exerciseData.secondary_topics === 'string' &&
+      exerciseData.secondary_topics.trim() !== ''
+    ) {
       exerciseData.secondary_topics = [exerciseData.secondary_topics];
     } else if (!Array.isArray(exerciseData.secondary_topics)) {
       exerciseData.secondary_topics = [];
@@ -1390,40 +1392,76 @@ const mainTopics = require('../config/topics');
     // Attach author
     exerciseData.author = { id: req.user._id };
 
-    // Handle document uploads (multer sets req.files)
-    if (Array.isArray(req.files) && req.files.length > 0) {
-      const uploadPromises = req.files.map((file) => new Promise((resolve, reject) => {
-        const baseName = file.originalname.replace(/\.[^/.]+$/, '');
-        const stream = uploader.upload_stream(
-          {
-            folder: 'twennie_exercises',
-            resource_type: 'raw',
-            public_id: baseName, // keep the original base name
-            overwrite: true,
-          },
-          (error, result) => (error ? reject(error) : resolve(result?.secure_url || null))
-        );
-        if (file?.buffer) stream.end(file.buffer);
-        else resolve(null);
-      }));
+    // Handle document uploads
+    const uploadedFiles = Array.isArray(req.files)
+      ? req.files
+      : req.files?.document_uploads || [];
 
-      const documentUrls = (await Promise.all(uploadPromises)).filter(Boolean);
-      // append to existing or set new
-      if (Array.isArray(exerciseData.document_uploads) && exerciseData.document_uploads.length) {
-        exerciseData.document_uploads = [...exerciseData.document_uploads, ...documentUrls];
-      } else {
-        exerciseData.document_uploads = documentUrls;
-      }
+    if (uploadedFiles.length > 3) {
+      return res.status(400).render('unit_form_views/form_exercise', {
+        layout: 'unitformlayout',
+        data: req.body,
+        errorMessage: 'You may upload up to 3 documents only.',
+        mainTopics,
+        csrfToken: getCsrfToken(req),
+      });
+    }
+
+    if (uploadedFiles.length > 0) {
+      const uploadPromises = uploadedFiles.map((file) => {
+        return new Promise((resolve, reject) => {
+          const baseName = file.originalname.replace(/\.[^/.]+$/, '');
+          const safePublicId = `${Date.now()}-${baseName}`;
+
+          const stream = uploader.upload_stream(
+            {
+              folder: 'twennie_exercises',
+              resource_type: 'raw',
+              public_id: safePublicId,
+              overwrite: false,
+            },
+            (error, result) => {
+              if (error) return reject(error);
+
+              if (!result?.secure_url) {
+                return reject(new Error(`Cloudinary upload failed for file: ${file.originalname}`));
+              }
+
+              resolve({
+                url: result.secure_url,
+                filename: file.originalname,
+              });
+            }
+          );
+
+          if (file?.buffer) {
+            stream.end(file.buffer);
+          } else {
+            resolve(null);
+          }
+        });
+      });
+
+      const uploadedDocuments = (await Promise.all(uploadPromises)).filter(Boolean);
+
+      // For now, replace with newly uploaded documents.
+      // If editing and no new files are uploaded, existing docs remain untouched.
+      exerciseData.document_uploads = uploadedDocuments;
     }
 
     // Create or update
     let exercise;
+
     if (_id) {
       exercise = await Exercise.findByIdAndUpdate(_id, exerciseData, {
         new: true,
         runValidators: true,
       });
-      if (!exercise) throw new Error(`Exercise not found for ID ${_id}.`);
+
+      if (!exercise) {
+        throw new Error(`Exercise not found for ID ${_id}.`);
+      }
+
       console.log(`Exercise with ID ${_id} updated successfully.`);
     } else {
       exercise = new Exercise(exerciseData);
@@ -1440,11 +1478,10 @@ const mainTopics = require('../config/topics');
         exercise.is_published ??
         exerciseData.is_published;
 
-      // Accept common patterns: boolean true or status string "published"
       return status === true || String(status).toLowerCase() === 'published';
     })();
 
-    // 🔁 Only if this came from an Upcoming AND it's now published → migrate & delete Upcoming
+    // Only if this came from an Upcoming AND it's now published → migrate & delete Upcoming
     if (fromUpcomingId && isPublished) {
       try {
         await migrateAndDeleteUpcoming({
@@ -1459,11 +1496,11 @@ const mainTopics = require('../config/topics');
       }
     }
 
-    // ✅ Always render success page
+    // Success page
     return res.render('unit_form_views/unit_success', {
       layout: 'unitformlayout',
       unitType: 'exercise',
-        dashboardLink: dashboardHomeForUser(req.user),
+      dashboardLink: dashboardHomeForUser(req.user),
       unit: exercise,
       csrfToken: getCsrfToken(req),
     });
@@ -1471,15 +1508,14 @@ const mainTopics = require('../config/topics');
   } catch (error) {
     console.error('Error submitting exercise:', error);
 
-    // Validation error → re-render form with data + topics
     if (error.name === 'ValidationError') {
-return res.status(400).render('unit_form_views/form_exercise', {
-  layout: 'unitformlayout',
-  data: req.body,
-  errorMessage: error.message,
-  mainTopics,
-  csrfToken: getCsrfToken(req),
-});
+      return res.status(400).render('unit_form_views/form_exercise', {
+        layout: 'unitformlayout',
+        data: req.body,
+        errorMessage: error.message,
+        mainTopics,
+        csrfToken: getCsrfToken(req),
+      });
     }
 
     const isCsrfError = error.code === 'EBADCSRFTOKEN';
@@ -1487,7 +1523,8 @@ return res.status(400).render('unit_form_views/form_exercise', {
       return res.status(403).render('unit_form_views/error', {
         layout: 'unitformlayout',
         title: 'Session Expired',
-        errorMessage: 'Your session has expired or the form took too long to submit. Please refresh and try again.',
+        errorMessage:
+          'Your session has expired or the form took too long to submit. Please refresh and try again.',
       });
     }
 
