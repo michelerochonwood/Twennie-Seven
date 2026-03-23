@@ -3595,6 +3595,126 @@ html, body {
   text-align: left;
 }
 
+
+
+/* =========================================
+   LEADER DASHBOARD — GROUPED TAB CONTAINERS
+   ========================================= */
+
+/* Main tab area on leader dashboard */
+.leader-dashboard-tab-groups {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto 1.25rem auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+/* Keep the admin switch box on its own row above the grouped sections */
+.leader-dashboard-admin-switch {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.25rem;
+}
+
+/* Row holding the 3 grouped boxes */
+.leader-dashboard-tab-groups-row {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 2.2fr 1fr 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+/* Each shaded section box */
+.leader-dashboard-tab-group {
+  background-color: rgb(240, 240, 240); /* matches membership snapshot tone */
+  border-radius: 15px;
+  padding: 0.6rem 0.8rem 0.8rem 0.8rem;
+  box-sizing: border-box;
+}
+
+/* Section title inside each shaded box */
+.leader-dashboard-tab-group-title {
+  font-family: "Figtree";
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #262262;
+  text-align: center;
+  margin: 0 0 0.45rem 0;
+  line-height: 1.2;
+}
+
+/* Override the old single-row tab container only inside grouped boxes */
+.leader-dashboard-tab-group .dashboard-tabs-container {
+  width: 100%;
+  display: grid;
+  gap: 0.6rem;
+  margin-bottom: 0;
+  justify-content: center;
+}
+
+/* Learning section = 5 tabs */
+.leader-dashboard-tab-group--learning .dashboard-tabs-container {
+  grid-template-columns: repeat(5, 100px);
+}
+
+/* Custom library section = 2 tabs */
+.leader-dashboard-tab-group--library .dashboard-tabs-container {
+  grid-template-columns: repeat(2, 100px);
+}
+
+/* Membership section = 2 tabs */
+.leader-dashboard-tab-group--membership .dashboard-tabs-container {
+  grid-template-columns: repeat(2, 100px);
+}
+
+/* Keep tabs visually unchanged, but stop them stretching oddly in grid mode */
+.leader-dashboard-tab-group .dashboard-tab {
+  width: 100px;
+  height: 100px;
+  margin: 0;
+}
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
+
+@media screen and (max-width: 1300px) {
+  .leader-dashboard-tab-groups-row {
+    grid-template-columns: 1fr;
+  }
+
+  .leader-dashboard-admin-switch {
+    justify-content: center;
+  }
+
+  .leader-dashboard-tab-group--learning .dashboard-tabs-container,
+  .leader-dashboard-tab-group--library .dashboard-tabs-container,
+  .leader-dashboard-tab-group--membership .dashboard-tabs-container {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 100px));
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .leader-dashboard-tab-group {
+    padding: 0.75rem;
+  }
+
+  .leader-dashboard-tab-group .dashboard-tabs-container {
+    justify-content: center;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .leader-dashboard-tab-group .dashboard-tabs-container {
+    grid-template-columns: repeat(2, 100px) !important;
+  }
+}
+
 /* ✅ Wrapper container (if needed for layout) */
 .topic-grid-center {
   display: flex;

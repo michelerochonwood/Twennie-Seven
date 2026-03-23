@@ -14,7 +14,7 @@
          - This is navigation between leader mode and org-admin mode
     ========================================================= --}}
     {{#if leader.isAdmin}}
-      <div class="dashboard-admin-toggle" style="display:flex; justify-content:flex-end; margin-bottom: 0.75rem;">
+      <div class="dashboard-admin-toggle leader-dashboard-admin-switch">
         {{#if adminMode}}
           <a class="dashboard-tab" href="/dashboard/leader" style="text-decoration:none;">
             <span class="tab-title">← back to leader dashboard</span>
@@ -39,7 +39,6 @@
 
         <!-- Admin Tab Navigation -->
         <div class="dashboard-tabs-container dashboard-tabs-container--admin" data-tabs-scope="admin">
-
 
           <button
             class="dashboard-tab {{#if (eq adminTab "groups-leaders")}}active{{/if}}"
@@ -157,60 +156,84 @@
     {{else}}
 
       <!-- Leader Tab Navigation -->
-      <div class="dashboard-tabs-container" data-tabs-scope="leader">
+      <div class="leader-dashboard-tab-groups">
 
-        <button class="dashboard-tab active" type="button" data-tab="membership">
-          <span class="tab-title">membership overview</span>
-          <div class="tab-arrow"></div>
-        </button>
+        <div class="leader-dashboard-tab-groups-row" data-tabs-scope="leader">
 
-        <button class="dashboard-tab" type="button" data-tab="topics" data-count="{{leaderCounts.topics}}">
-          <span class="tab-title">my favorite topics</span>
-          {{#if leaderBadges.topics}}<span class="tab-dot"></span>{{/if}}
-          <div class="tab-arrow"></div>
-        </button>
+          <!-- LEARNING -->
+          <div class="leader-dashboard-tab-group leader-dashboard-tab-group--learning">
+            <h3 class="leader-dashboard-tab-group-title">learning</h3>
 
-        <button class="dashboard-tab" type="button" data-tab="group" data-count="{{leaderCounts.group}}">
-          <span class="tab-title">my group members</span>
-          {{#if leaderBadges.group}}<span class="tab-dot"></span>{{/if}}
-          <div class="tab-arrow"></div>
-        </button>
+            <div class="dashboard-tabs-container">
+              <button class="dashboard-tab" type="button" data-tab="topics" data-count="{{leaderCounts.topics}}">
+                <span class="tab-title">my favorite topics</span>
+                {{#if leaderBadges.topics}}<span class="tab-dot"></span>{{/if}}
+                <div class="tab-arrow"></div>
+              </button>
 
-        <button class="dashboard-tab" type="button" data-tab="prompts" data-count="{{leaderCounts.prompts}}">
-          <span class="tab-title">registered prompt sets</span>
-          {{#if leaderBadges.prompts}}<span class="tab-dot"></span>{{/if}}
-          <div class="tab-arrow"></div>
-        </button>
+              <button class="dashboard-tab" type="button" data-tab="prompts" data-count="{{leaderCounts.prompts}}">
+                <span class="tab-title">my prompt sets in progress</span>
+                {{#if leaderBadges.prompts}}<span class="tab-dot"></span>{{/if}}
+                <div class="tab-arrow"></div>
+              </button>
 
-        <button class="dashboard-tab" type="button" data-tab="progress" data-count="{{leaderCounts.progress}}">
-          <span class="tab-title">prompt set progress and completions</span>
-          {{#if leaderBadges.progress}}<span class="tab-dot"></span>{{/if}}
-          <div class="tab-arrow"></div>
-        </button>
+              <button class="dashboard-tab" type="button" data-tab="progress" data-count="{{leaderCounts.progress}}">
+                <span class="tab-title">prompt set progress and completions</span>
+                {{#if leaderBadges.progress}}<span class="tab-dot"></span>{{/if}}
+                <div class="tab-arrow"></div>
+              </button>
 
-        <button class="dashboard-tab" type="button" data-tab="tagged" data-count="{{leaderCounts.tagged}}">
-          <span class="tab-title">my group's learning and assignments</span>
-          {{#if leaderBadges.tagged}}<span class="tab-dot"></span>{{/if}}
-          <div class="tab-arrow"></div>
-        </button>
+              <button class="dashboard-tab" type="button" data-tab="tagged" data-count="{{leaderCounts.tagged}}">
+                <span class="tab-title">my group's learning and assignments</span>
+                {{#if leaderBadges.tagged}}<span class="tab-dot"></span>{{/if}}
+                <div class="tab-arrow"></div>
+              </button>
 
-        <button class="dashboard-tab" type="button" data-tab="missions" data-count="{{leaderCounts.missions}}">
-          <span class="tab-title">my group's missions</span>
-          {{#if leaderBadges.missions}}<span class="tab-dot"></span>{{/if}}
-          <div class="tab-arrow"></div>
-        </button>
+              <button class="dashboard-tab" type="button" data-tab="missions" data-count="{{leaderCounts.missions}}">
+                <span class="tab-title">my group's missions</span>
+                {{#if leaderBadges.missions}}<span class="tab-dot"></span>{{/if}}
+                <div class="tab-arrow"></div>
+              </button>
+            </div>
+          </div>
 
-        <button class="dashboard-tab" type="button" data-tab="contribute">
-          <span class="tab-title">contribute to my library</span>
-          <div class="tab-arrow"></div>
-        </button>
+          <!-- CUSTOM LIBRARY -->
+          <div class="leader-dashboard-tab-group leader-dashboard-tab-group--library">
+            <h3 class="leader-dashboard-tab-group-title">my custom library content</h3>
 
-        <button class="dashboard-tab" type="button" data-tab="library" data-count="{{leaderCounts.library}}">
-          <span class="tab-title">my library units</span>
-          {{#if leaderBadges.library}}<span class="tab-dot"></span>{{/if}}
-          <div class="tab-arrow"></div>
-        </button>
+            <div class="dashboard-tabs-container">
+              <button class="dashboard-tab" type="button" data-tab="contribute">
+                <span class="tab-title">contribute to my library</span>
+                <div class="tab-arrow"></div>
+              </button>
 
+              <button class="dashboard-tab" type="button" data-tab="library" data-count="{{leaderCounts.library}}">
+                <span class="tab-title">my library contributions</span>
+                {{#if leaderBadges.library}}<span class="tab-dot"></span>{{/if}}
+                <div class="tab-arrow"></div>
+              </button>
+            </div>
+          </div>
+
+          <!-- MEMBERSHIP -->
+          <div class="leader-dashboard-tab-group leader-dashboard-tab-group--membership">
+            <h3 class="leader-dashboard-tab-group-title">manage memberships</h3>
+
+            <div class="dashboard-tabs-container">
+              <button class="dashboard-tab active" type="button" data-tab="membership">
+                <span class="tab-title">membership overview</span>
+                <div class="tab-arrow"></div>
+              </button>
+
+              <button class="dashboard-tab" type="button" data-tab="group" data-count="{{leaderCounts.group}}">
+                <span class="tab-title">my group members</span>
+                {{#if leaderBadges.group}}<span class="tab-dot"></span>{{/if}}
+                <div class="tab-arrow"></div>
+              </button>
+            </div>
+          </div>
+
+        </div>
       </div>
 
       <!-- Right Topics Column -->
@@ -268,99 +291,91 @@
     {{!-- =========================================================
          ONE TAB SCRIPT (handles leader + admin, safely scoped)
     ========================================================= --}}
-<script>
-  (function () {
-    function initTabs(scopeName) {
-      const tabsContainer = document.querySelector(`[data-tabs-scope="${scopeName}"]`);
-      const panelsScope = document.querySelector(`[data-panels-scope="${scopeName}"]`);
-      const panelRoot = panelsScope || document;
+    <script>
+      (function () {
+        function initTabs(scopeName) {
+          const scopeRoot = document.querySelector(`[data-tabs-scope="${scopeName}"]`);
+          const panelsScope = document.querySelector(`[data-panels-scope="${scopeName}"]`);
+          const panelRoot = panelsScope || document;
 
-      if (!tabsContainer) return;
+          if (!scopeRoot) return;
 
-      const tabs = Array.from(tabsContainer.querySelectorAll('.dashboard-tab[data-tab]'));
-      if (!tabs.length) return;
+          const tabs = Array.from(scopeRoot.querySelectorAll('.dashboard-tab[data-tab]'));
+          if (!tabs.length) return;
 
-      function setActive(tabId) {
-        // Tabs
-        tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === tabId));
+          function setActive(tabId) {
+            tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === tabId));
 
-        // Panels
-        const panels = Array.from(panelRoot.querySelectorAll('.dashboard-tab-content'));
-        panels.forEach(p => p.classList.toggle('active', p.id === tabId));
-      }
+            const panels = Array.from(panelRoot.querySelectorAll('.dashboard-tab-content'));
+            panels.forEach(p => p.classList.toggle('active', p.id === tabId));
+          }
 
-      // Click handler
-      tabs.forEach(btn => {
-        btn.addEventListener('click', () => {
-          const tabId = btn.dataset.tab;
-          const href = btn.dataset.href;
+          tabs.forEach(btn => {
+            btn.addEventListener('click', () => {
+              const tabId = btn.dataset.tab;
+              const href = btn.dataset.href;
 
-          // ✅ ADMIN: do a real navigation so the server route can supply data (orgGroups, etc.)
-          if (scopeName === 'admin' && href) {
-            window.location.href = href;
+              if (scopeName === 'admin' && href) {
+                window.location.href = href;
+                return;
+              }
+
+              setActive(tabId);
+            });
+          });
+
+          const preActive = tabs.find(t => t.classList.contains('active')) || tabs[0];
+          if (preActive) setActive(preActive.dataset.tab);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+          initTabs('admin');
+          initTabs('leader');
+        });
+      })();
+    </script>
+
+    <!-- 
+    ✅ OPTIONAL: tiny client script (so the "thanks!" button works)
+    Put this in the leader dashboard page script area.
+    It assumes your thanks button has: data-suggestion-id="{{_id}}"
+    -->
+    <script>
+      async function leaderThanksSuggestion(btn) {
+        const id = btn?.dataset?.suggestionId;
+        if (!id) return;
+
+        btn.disabled = true;
+
+        try {
+          const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+          const res = await fetch(`/dashboard/leader/suggestions/${id}/thanks`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...(csrf ? { 'X-CSRF-Token': csrf } : {}) }
+          });
+          const data = await res.json().catch(() => ({}));
+
+          if (!res.ok || !data.ok) {
+            btn.disabled = false;
+            alert(data.message || 'Could not save. Please try again.');
             return;
           }
 
-          // ✅ LEADER: keep JS-only tabs (no reload)
-          setActive(tabId);
-        });
-      });
-
-      // Ensure something is active on load
-      const preActive = tabs.find(t => t.classList.contains('active')) || tabs[0];
-      if (preActive) setActive(preActive.dataset.tab);
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      initTabs('admin');
-      initTabs('leader');
-    });
-  })();
-</script>
-
-<!-- 
-✅ OPTIONAL: tiny client script (so the "thanks!" button works)
-Put this in the leader dashboard page script area.
-It assumes your thanks button has: data-suggestion-id="{{_id}}"
- -->
-<script>
-  async function leaderThanksSuggestion(btn) {
-    const id = btn?.dataset?.suggestionId;
-    if (!id) return;
-
-    btn.disabled = true;
-
-    try {
-      const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-      const res = await fetch(`/dashboard/leader/suggestions/${id}/thanks`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(csrf ? { 'X-CSRF-Token': csrf } : {}) }
-      });
-      const data = await res.json().catch(() => ({}));
-
-      if (!res.ok || !data.ok) {
-        btn.disabled = false;
-        alert(data.message || 'Could not save. Please try again.');
-        return;
+          location.reload();
+        } catch (e) {
+          console.error(e);
+          btn.disabled = false;
+          alert('Could not save. Please try again.');
+        }
       }
 
-      // simplest UX: reload so the card shows "seen"
-      location.reload();
-    } catch (e) {
-      console.error(e);
-      btn.disabled = false;
-      alert('Could not save. Please try again.');
-    }
-  }
-
-  document.addEventListener('click', (e) => {
-    const btn = e.target.closest('button[data-suggestion-id]');
-    if (!btn) return;
-    // only target the thanks button (you can add a class if needed)
-    if (btn.textContent.trim().toLowerCase() !== 'thanks!') return;
-    leaderThanksSuggestion(btn);
-  });
-</script>
+      document.addEventListener('click', (e) => {
+        const btn = e.target.closest('button[data-suggestion-id]');
+        if (!btn) return;
+        if (btn.textContent.trim().toLowerCase() !== 'thanks!') return;
+        leaderThanksSuggestion(btn);
+      });
+    </script>
 
     {{!-- =========================================================
          LEADER "MARK SEEN" SCRIPT (leader mode only)
