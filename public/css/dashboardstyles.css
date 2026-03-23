@@ -3679,6 +3679,13 @@ html, body {
   margin: 0;
 }
 
+.leader-dashboard-admin-switch {
+  width: 100%;
+  display: flex;
+  justify-content: center; /* or flex-start */
+  margin-bottom: 0.25rem;
+}
+
 /* =========================================
    RESPONSIVE
    ========================================= */
