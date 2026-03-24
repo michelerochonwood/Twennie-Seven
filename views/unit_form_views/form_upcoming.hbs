@@ -1,6 +1,25 @@
 {{#*inline "title"}}Create Upcoming Unit | Twennie{{/inline}}
 {{!-- Optionally: {{> mainpartials/upcominginstructions_partial}} --}}
 
+
+<div class="form-mission-video-wrapper">
+  <div class="form-mission-video-container">
+    <iframe
+      src="https://www.youtube.com/embed/B0Fy5DU_q8k"
+      title="Mission Control intro video"
+      frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen
+      class="form-mission-video-embed"
+      width="500"
+    ></iframe>
+  </div>
+
+
+  <p class="form-hint form-mission-video-hint">
+    Before creating an upcoming unit, watch this video. It provides guidance and tips for creating anticipation for new learning opportunities on Twennie.
+  </p>
+</div>
 <div class="contribute-wave-divider">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 160">
     <path fill="#939598" fill-opacity="1"
@@ -28,14 +47,14 @@
         <label for="image">Upload Image (optional)</label>
         <input type="file" id="image" name="image" accept="image/*">
         <p class="form-hint">
-          If no image is uploaded, a default will be used. If your image is larger than 5MB, the unit will not post and you will be rerouted back to this form.
+          An image creates some intrigue around your learning content. Pick something dynamic and exciting, but still related to your topic. If no image is uploaded, a default will be used. If your image is larger than 5MB, the unit will not post and you will be rerouted back to this form.
         </p>
       </div>
 
       <!-- Title -->
       <div class="form-field">
         <label for="title">Upcoming Unit Title</label>
-        <input type="text" id="title" name="title" value="{{data.title}}" required>
+        <input type="text" id="title" name="title" value="{{data.title}}" placeholder="Use your title to draw people in. Hint at a problem, then a solution they'll find in your learning unit." required>
       </div>
 
       <!-- Unit Type -->
@@ -60,7 +79,7 @@
       </div>
 
       <div class="form-field">
-        <label for="long-teaser">Long Teaser (max 90 words)</label>
+        <label for="long-teaser">Long Teaser (max 90 words) optional</label>
         <textarea id="long-teaser" name="long_teaser" maxlength="1000">{{data.long_teaser}}</textarea>
       </div>
 
