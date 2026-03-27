@@ -113,6 +113,22 @@ html, body {
   }
 }
 
+.home-video-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.what-is-twennie-video {
+  width: 100%;
+  max-width: 700px;
+  height: auto;
+  display: block;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
 
 /* Grid Layout for Left and Right Sections */
 .what-is-twennie-grid {
