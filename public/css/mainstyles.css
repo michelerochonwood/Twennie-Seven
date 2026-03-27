@@ -136,7 +136,7 @@ html, body {
   grid-template-columns: 1fr 1fr;
   gap: 20px;
   width: 90%;
-  max-width: 1300px;
+  max-width: 1500px;
   padding: 0 0 8.5rem 0;
 }
 /* Style for "what is Twennie?" link */
