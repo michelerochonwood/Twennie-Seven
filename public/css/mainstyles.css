@@ -121,8 +121,8 @@ html, body {
 }
 
 .what-is-twennie-video {
-  width: 100%;
-  max-width: 700px;
+  width: 90%;
+  max-width: 1000px;
   height: auto;
   display: block;
   border-radius: 14px;
@@ -199,14 +199,14 @@ html, body {
   color:#262262;
 }
 
+/* Right Section (Image & Testimonial) */
 .what-is-twennie-right {
   position: relative;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  height: auto;
-  overflow: visible;
-  font-style: normal;
+  justify-content: right;
+  height: 500px; /* Fixed height to prevent jumping */
+  overflow: hidden; /* Prevents layout shifting */
+  font-style: italic;
 }
 
 /* Ensure all images have the same size */
