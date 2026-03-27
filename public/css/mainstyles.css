@@ -75,7 +75,7 @@ html, body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 6rem 3rem 5rem 3rem;
+    padding: 6rem 2rem 5rem 2rem;
 }
 
 .twennie-tagline-animated {
@@ -122,7 +122,7 @@ html, body {
 
 .what-is-twennie-video {
   width: 90%;
-  max-width: 900px;
+  max-width: 1000px;
   height: auto;
   display: block;
   border-radius: 14px;
