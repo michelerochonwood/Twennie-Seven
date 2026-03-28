@@ -1528,6 +1528,8 @@ return res.render('leader_dashboard', {
 
   registeredPromptSets: leaderPrompts,
   promptSchedules,
+  promptSet: leaderPrompts[0] || null,
+  promptSchedule: promptSchedules[0] || null,
   currentPromptSets,
   completedPromptSets: formattedCompletedSets,
   groupCompletedPromptSets,
