@@ -3904,7 +3904,7 @@ margin-right: 5px; /* Space between icon and text */
   box-sizing: border-box;
 }
 
-.promo-contribution-title {
+.promo-contribution-title { 
   font-size: 1.4rem;
   font-weight: 800;
   margin-top: 100px;
@@ -3915,7 +3915,7 @@ margin-right: 5px; /* Space between icon and text */
   display: grid;
   grid-template-columns: repeat(9, auto);
   gap: 10px; /* Very small gap between cards */
-  margin-top: 60px;
+  margin-top: 40px;
   justify-content: center;
   align-items: end;
   position: relative;
