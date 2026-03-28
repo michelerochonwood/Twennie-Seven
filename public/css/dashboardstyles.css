@@ -1602,7 +1602,25 @@ html, body {
 }
 
 
+.leader-prompt-empty-state {
+  text-align: center;
+}
 
+.leader-prompt-empty-image {
+  display: block;
+  margin: 0 auto 1.5rem;
+  max-width: 220px;
+  width: 100%;
+  height: auto;
+}
+
+.leader-prompt-empty-message {
+  margin-bottom: 1rem;
+}
+
+.leader-prompt-empty-link {
+  text-decoration: none;
+}
 
 
 /* Leader Tagged & Assigned Units Section */
