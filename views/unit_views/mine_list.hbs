@@ -62,3 +62,91 @@
 </div>
 
 </div>
+
+
+<!-- ⭐️ Centered Video Frame Below -->
+<div style="display: flex; justify-content: center; margin: 40px 0;">
+  <div
+    class="youtube-poster-wrapper"
+    style="
+      position: relative;
+      width: 100%;
+      max-width: 800px;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      border-radius: 12px;
+      cursor: pointer;
+    "
+    onclick="
+      var poster = this.querySelector('.youtube-poster');
+      var iframe = this.querySelector('iframe');
+      if (poster) poster.style.display = 'none';
+      if (iframe) {
+        iframe.style.display = 'block';
+        if (!iframe.dataset.loaded) {
+          iframe.src = iframe.dataset.src;
+          iframe.dataset.loaded = 'true';
+        }
+      }
+    "
+  >
+    <!-- Poster -->
+    <img
+      src="/images/nuggetposter.png"
+      alt="video poster"
+      class="youtube-poster"
+      style="
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      "
+    />
+
+    <!-- Play Button -->
+    <div
+      style="
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        width: 90px;
+        height: 90px;
+        background: rgba(0,0,0,0.55);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+      "
+    >
+      <div
+        style="
+          width: 0;
+          height: 0;
+          border-left: 32px solid white;
+          border-top: 20px solid transparent;
+          border-bottom: 20px solid transparent;
+          margin-left: 6px;
+        "
+      ></div>
+    </div>
+
+    <!-- YouTube iframe (src is set only after click) -->
+    <iframe
+      data-src="https://www.youtube.com/embed/8kAkjSbz-us"
+      src="about:blank"
+      title="The Mine intro video"
+      frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen
+      style="
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: none;  
+      "
+    ></iframe>
+  </div>
+</div>
