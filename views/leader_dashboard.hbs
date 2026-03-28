@@ -262,15 +262,27 @@
       </div>
 
 <div class="dashboard-tab-content active" id="prompts">
-  {{#each registeredPromptSets}}
+  {{#if registeredPromptSets.length}}
+    {{#each registeredPromptSets}}
+      <section class="leader-prompt-section">
+        {{> dashboardpartials/leader_prompt
+            promptSet=this
+            promptSchedule=(lookup ../promptSchedules @index)
+            csrfToken=../csrfToken
+            assignedPromptCards=../assignedPromptCards
+        }}
+      </section>
+    {{/each}}
+  {{else}}
     <section class="leader-prompt-section">
       {{> dashboardpartials/leader_prompt
-          promptSet=this
-          csrfToken=../csrfToken
-          assignedPromptCards=../assignedPromptCards
+          promptSet=null
+          promptSchedule=null
+          csrfToken=csrfToken
+          assignedPromptCards=assignedPromptCards
       }}
     </section>
-  {{/each}}
+  {{/if}}
 </div>
 
       <div class="dashboard-tab-content" id="progress">
