@@ -566,8 +566,11 @@ html, body {
   margin-top: 3rem;
 }
 .bytopic-section-divider {
-  border: 2px dashed #dc176a;
-  margin: 2rem 0;
+  border: none;
+  height: 2px;
+  width: 100%;
+  background: linear-gradient(to right, transparent, #dc176a, transparent);
+  margin: 2.5rem 0;
 }
 
 /* ---- Empty Message ---- */
