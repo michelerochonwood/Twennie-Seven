@@ -170,11 +170,11 @@
 
             <div class="dashboard-tabs-container">
 
-               <button class="dashboard-tab" type="button" data-tab="prompts" data-count="{{leaderCounts.prompts}}">
-                <span class="tab-title" style="font-size:1rem; color:#9da0c9">complete a prompt</span>
-                {{#if leaderBadges.prompts}}<span class="tab-dot"></span>{{/if}}
-                <div class="tab-arrow"></div>
-              </button>
+<button class="dashboard-tab active" type="button" data-tab="prompts" data-count="{{leaderCounts.prompts}}">
+  <span class="tab-title" style="font-size:1rem; color:#9da0c9">complete a prompt</span>
+  {{#if leaderBadges.prompts}}<span class="tab-dot"></span>{{/if}}
+  <div class="tab-arrow"></div>
+</button>
 
 
 
@@ -227,10 +227,10 @@
             <h3 class="leader-dashboard-tab-group-title">manage memberships</h3>
 
             <div class="dashboard-tabs-container">
-              <button class="dashboard-tab active" type="button" data-tab="membership">
-                <span class="tab-title">membership overview</span>
-                <div class="tab-arrow"></div>
-              </button>
+<button class="dashboard-tab" type="button" data-tab="membership">
+  <span class="tab-title">membership overview</span>
+  <div class="tab-arrow"></div>
+</button>
 
               <button class="dashboard-tab" type="button" data-tab="group" data-count="{{leaderCounts.group}}">
                 <span class="tab-title">my group members</span>
@@ -249,9 +249,9 @@
       </div>
 
       <!-- Leader Panels -->
-      <div class="dashboard-tab-content active" id="membership">
-        {{> dashboardpartials/leader_membership }}
-      </div>
+<div class="dashboard-tab-content" id="membership">
+  {{> dashboardpartials/leader_membership }}
+</div>
 
       <div class="dashboard-tab-content" id="topics">
         {{> dashboardpartials/leader_topics }}
@@ -261,17 +261,17 @@
         {{> dashboardpartials/leader_group }}
       </div>
 
-      <div class="dashboard-tab-content" id="prompts">
-        {{#each registeredPromptSets}}
-          <section class="leader-prompt-section">
-            {{> dashboardpartials/leader_prompt
-                promptSet=this
-                csrfToken=../csrfToken
-                assignedPromptCards=../assignedPromptCards
-            }}
-          </section>
-        {{/each}}
-      </div>
+<div class="dashboard-tab-content active" id="prompts">
+  {{#each registeredPromptSets}}
+    <section class="leader-prompt-section">
+      {{> dashboardpartials/leader_prompt
+          promptSet=this
+          csrfToken=../csrfToken
+          assignedPromptCards=../assignedPromptCards
+      }}
+    </section>
+  {{/each}}
+</div>
 
       <div class="dashboard-tab-content" id="progress">
         {{> dashboardpartials/leader_progress }}

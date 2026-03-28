@@ -2,14 +2,14 @@
 {{!-- Reusable topics column for topic pages AND dashboards --}}
 
 <!-- Right sidebar -->
-<nav class="topic-sidebar" aria-label="topic navigation">
+<nav class="topic-sidebar collapsed" aria-label="topic navigation">
   <!-- Collapse Button (inside the rail, top-right to avoid clipping) -->
-  <button class="topic-sidebar-toggle" aria-label="Hide topics column" type="button">
+  <button class="topic-sidebar-toggle" type="button" aria-label="Hide topics column">
     <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
   </button>
 
   <div class="sidebar-section">
-    <div class="sidebar-heading topic-nav-label" style="font-size: 0.9rem">topic navigation</div>
+    <div class="sidebar-heading topic-nav-label" style="font-size: 0.9rem">topic shortcuts</div>
 
     <div class="sidebar-heading">PROJECT MANAGEMENT</div>
     <a href="/topics/single_topic_candid"><div class="sidebar-item">candid communication</div></a>
@@ -117,12 +117,19 @@
     // If reopen button isn't in DOM (some views), create it next to the sidebar.
     if (!reopen) {
       reopen = document.createElement('button');
-      reopen.className = 'topic-sidebar-reopen';
+      reopen.className = 'topic-sidebar-reopen visible';
       reopen.setAttribute('aria-label', 'Show topics column');
       reopen.type = 'button';
-      reopen.innerHTML = '<ion-icon name="chevron-back-outline" aria-hidden="true"></ion-icon>';
+      reopen.innerHTML = `
+        <ion-icon name="chevron-back-outline" aria-hidden="true"></ion-icon>
+        <span class="label">topic navigation</span>
+      `;
       sidebar.insertAdjacentElement('afterend', reopen);
     }
+
+    // Start hidden by default
+    sidebar.classList.add('collapsed');
+    reopen.classList.add('visible');
 
     toggle.addEventListener('click', () => {
       sidebar.classList.add('collapsed');
