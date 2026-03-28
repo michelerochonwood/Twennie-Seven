@@ -262,7 +262,9 @@
       </div>
 
 <div class="dashboard-tab-content active" id="prompts">
+
   {{#if registeredPromptSets.length}}
+
     {{#each registeredPromptSets}}
       <section class="leader-prompt-section">
         {{> dashboardpartials/leader_prompt
@@ -273,7 +275,9 @@
         }}
       </section>
     {{/each}}
+
   {{else}}
+
     <section class="leader-prompt-section">
       {{> dashboardpartials/leader_prompt
           promptSet=null
@@ -282,7 +286,9 @@
           assignedPromptCards=assignedPromptCards
       }}
     </section>
+
   {{/if}}
+
 </div>
 
       <div class="dashboard-tab-content" id="progress">

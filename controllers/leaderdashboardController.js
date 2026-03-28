@@ -36,17 +36,7 @@ function emailDomain(email = '') {
 }
 
 
-const leaderPromptCards = leaderPrompts.length
-  ? leaderPrompts.map((prompt, index) => ({
-      promptSet: prompt,
-      promptSchedule: promptSchedules[index] || null
-    }))
-  : [
-      {
-        promptSet: null,
-        promptSchedule: null
-      }
-    ];
+
 
 // Map mission categories to badge image filenames (without extension)
 const missionBadgeMap = {
@@ -1536,7 +1526,6 @@ return res.render('leader_dashboard', {
   leaderAssignmentsCompleted,
   assignedPromptSets,
 
-  leaderPromptCards,
 
   registeredPromptSets: leaderPrompts,
   promptSchedules,
