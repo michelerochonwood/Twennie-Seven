@@ -168,18 +168,14 @@
           <div class="leader-dashboard-tab-group leader-dashboard-tab-group--learning">
             <h3 class="leader-dashboard-tab-group-title">learning</h3>
 
-              <button class="dashboard-tab" type="button" data-tab="prompts" data-count="{{leaderCounts.prompts}}">
+            <div class="dashboard-tabs-container">
+
+               <button class="dashboard-tab" type="button" data-tab="prompts" data-count="{{leaderCounts.prompts}}">
                 <span class="tab-title" style="font-size:1rem; color:gold">complete a prompt</span>
                 {{#if leaderBadges.prompts}}<span class="tab-dot"></span>{{/if}}
                 <div class="tab-arrow"></div>
               </button>
 
-            <div class="dashboard-tabs-container">
-              <button class="dashboard-tab" type="button" data-tab="topics" data-count="{{leaderCounts.topics}}">
-                <span class="tab-title">my favorite topics</span>
-                {{#if leaderBadges.topics}}<span class="tab-dot"></span>{{/if}}
-                <div class="tab-arrow"></div>
-              </button>
 
 
               <button class="dashboard-tab" type="button" data-tab="progress" data-count="{{leaderCounts.progress}}">
@@ -197,6 +193,12 @@
               <button class="dashboard-tab" type="button" data-tab="missions" data-count="{{leaderCounts.missions}}">
                 <span class="tab-title">my group's missions</span>
                 {{#if leaderBadges.missions}}<span class="tab-dot"></span>{{/if}}
+                <div class="tab-arrow"></div>
+              </button>
+
+              <button class="dashboard-tab" type="button" data-tab="topics" data-count="{{leaderCounts.topics}}">
+                <span class="tab-title">my favorite topics</span>
+                {{#if leaderBadges.topics}}<span class="tab-dot"></span>{{/if}}
                 <div class="tab-arrow"></div>
               </button>
             </div>
