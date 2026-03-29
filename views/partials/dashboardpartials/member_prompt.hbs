@@ -1,108 +1,111 @@
 {{!-- views/partials/dashboardpartials/member_prompt.hbs --}}
 
-{{!-- Free members: show upgrade notice and stop --}}
+{{!-- FREE MEMBER STATE (UNCHANGED) --}}
 {{#if (eq @root.member.accessLevel "free_individual")}}
   <div class="member-prompt-upgrade" style="text-align:center;margin-top:2rem;font-style:italic;color:#4e50a2;">
     To register for prompts, you must upgrade your membership.
   </div>
 
-{{!-- Paid/contributor members with no active prompt set: show empty state --}}
+{{!-- ACTIVE PROMPT --}}
 {{else if promptSet}}
-  {{#with promptSet as |ps|}}
-  <div class="member-prompt-container" data-psid="{{ps.promptSetId}}" data-regid="{{ps.registrationId}}">
-    <!-- Meta ABOVE the card -->
-    <h2 class="member-prompt-title">{{ps.frequency}} prompt</h2>
 
-    <h5 class="member-prompt-set-title" style="font-size:1rem;">
-      <strong>{{ps.promptSetTitle}}</strong> - {{ps.mainTopic}}
-    </h5>
+<div class="leader-prompt-container">
+  <h2 class="leader-prompt-title">{{promptSet.frequency}} prompt</h2>
 
-    <p class="member-prompt-purpose">
-      <strong>Purpose of this prompt set:</strong> {{ps.purpose}}
+  <p class="leader-prompt-set-title">
+    <strong>{{promptSet.promptSetTitle}}</strong> - {{promptSet.mainTopic}}
+  </p>
+
+  <p class="leader-prompt-purpose">
+    <strong>Purpose of this prompt set:</strong> {{promptSet.purpose}}
+  </p>
+
+  {{#if (or ../memberPromptSchedule promptSet.promptSchedule)}}
+    <p class="leader-prompt-schedule">
+      To stay on schedule with this prompt set, Twennie recommends you complete this prompt by:
     </p>
 
-    {{!-- Schedule: prefer root memberPromptSchedule; fallback to ps.promptSchedule if present --}}
-    {{#if (or ../memberPromptSchedule ps.promptSchedule)}}
-      <p class="member-prompt-schedule">
-        To stay on schedule with this prompt set, Twennie recommends you complete this prompt by:
-      </p>
-      <p class="member-prompt-schedule-date">
-        {{#if ../memberPromptSchedule}}
-          {{../memberPromptSchedule.recommendedCompletionDate}}
-        {{else}}
-          {{ps.promptSchedule.recommendedCompletionDate}}
-        {{/if}}
-      </p>
-    {{/if}}
+    <p class="leader-prompt-schedule-date">
+      {{#if ../memberPromptSchedule}}
+        {{../memberPromptSchedule.recommendedCompletionDate}}
+      {{else}}
+        {{promptSet.promptSchedule.recommendedCompletionDate}}
+      {{/if}}
+    </p>
+  {{/if}}
 
-    <!-- CARD: only SVG banner + headline + prompt text -->
-    <div class="member-prompt-card">
-      <div class="member-prompt-border">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1224.99 153.32" aria-hidden="true" focusable="false">
-          <defs><style>.cls-777{fill:#4e50a2;}</style></defs>
-          <g>
-            <path class="cls-777" d="M149.91,136.71c-.06,0-.11,0-.17,0,.06,0,.11,0,.17,0Z"/>
-            <path class="cls-777" d="M109.06,90.03h-49.65c28.73-7.2,48.89-24.04,48.89-43.65C108.29,20.2,72.54.92,28.27.92,21,.92,14.68.28,7.69.28L.3,0h-.3l.64,149.68c31-6.8,68.57-11.39,108.41-14.03v-45.62Z"/>
-            <path class="cls-777" d="M1224.99,0L215,4.7c-68.86-.52-105.94,30.88-105.94,62.55,0,28.27,50.59,67.87,183.53,72.77h0c83.12,1.86,260.56-21.97,326.9-30.26,300.52-37.57,604.74,43.55,604.74,43.55l.76-153.32Z"/>
-          </g>
-        </svg>
-      </div>
-
-      <p class="member-prompt-headline">{{ps.promptHeadline}}</p>
-      <p class="member-prompt-text">{{ps.promptText}}</p>
+  <div class="leader-prompt-card">
+    <div class="leader-prompt-border">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1224.99 153.32">
+        <defs><style>.cls-777 { fill: #4e50a2; }</style></defs>
+        <g>
+          <path class="cls-777" d="M149.91,136.71c-.06,0-.11,0-.17,0,.06,0,.11,0,.17,0Z"/>
+          <path class="cls-777" d="M109.06,90.03h-49.65c28.73-7.2,48.89-24.04,48.89-43.65C108.29,20.2,72.54.92,28.27.92,21,.92,14.68.28,7.69.28L.3,0h-.3l.64,149.68c31-6.8,68.57-11.39,108.41-14.03v-45.62Z"/>
+          <path class="cls-777" d="M1224.99,0L215,4.7c-68.86-.52-105.94,30.88-105.94,62.55,0,28.27,50.59,67.87,183.53,72.77h0c83.12,1.86,260.56-21.97,326.9-30.26,300.52-37.57,604.74,43.55,604.74,43.55l.76-153.32Z"/>
+        </g>
+      </svg>
     </div>
 
-    {{!-- Interaction BELOW the card (use hasStarted so index 0 shows notes form) --}}
-    {{#if ps.hasStarted}}
-      <form action="/promptsetnotes/submit-prompt-notes" method="POST" class="member-prompt-form">
-        <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
-        <input type="hidden" name="promptSetId" value="{{ps.promptSetId}}">
-
-        <label for="notes-{{ps.promptSetId}}" class="member-prompt-notes-label">Record your notes here:</label>
-        <textarea name="notes" id="notes-{{ps.promptSetId}}" class="member-prompt-notes" placeholder="Write your notes here..." required></textarea>
-
-        {{#if (eq ps.promptIndex 20)}}
-          <p class="final-prompt-message">
-            <strong>Final Prompt!</strong> This is the last prompt in the set. Make sure to complete the prompt and add your final thoughts about what you learned and discovered!
-          </p>
-        {{/if}}
-
-        <button type="submit" class="member-prompt-submit">submit this prompt</button>
-      </form>
-    {{else}}
-      <form action="/promptsetstart/start" method="POST">
-        <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
-        <input type="hidden" name="promptSetId" value="{{ps.promptSetId}}">
-        <button type="submit" class="member-prompt-submit">get started completing prompts</button>
-      </form>
-    {{/if}}
-
-    <button class="member-unregister-btn" data-id="{{ps.registrationId}}">
-      unregister for this prompt set
-    </button>
+    <p class="leader-prompt-headline">{{promptSet.promptHeadline}}</p>
+    <p class="leader-prompt-text">{{promptSet.promptText}}</p>
   </div>
-  {{/with}}
 
+  {{#if promptSet.hasStarted}}
+    <form action="/promptsetnotes/submit-prompt-notes" method="POST">
+      <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
+      <input type="hidden" name="promptSetId" value="{{promptSet.promptSetId}}">
+
+      <label class="leader-prompt-notes-label">Record your notes here:</label>
+      <textarea name="notes" class="leader-prompt-notes" placeholder="Write your notes here..." required></textarea>
+
+      {{#if (eq promptSet.promptIndex 20)}}
+        <p class="final-prompt-message">
+          <strong>Final Prompt!</strong> This is the last prompt in the set. Make sure to complete the prompt and add your final thoughts about what you learned and discovered!
+        </p>
+      {{/if}}
+
+      <button type="submit" class="leader-prompt-submit">submit this prompt</button>
+    </form>
+  {{else}}
+    <form action="/promptsetstart/start" method="POST">
+      <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
+      <input type="hidden" name="promptSetId" value="{{promptSet.promptSetId}}">
+      <button type="submit" class="leader-prompt-submit">get started completing prompts</button>
+    </form>
+  {{/if}}
+
+  <button type="button" class="leader-unregister-btn" data-id="{{promptSet.registrationId}}">
+    unregister for this prompt set
+  </button>
+</div>
+
+{{!-- EMPTY STATE --}}
 {{else}}
-  <h2 class="member-assigned-title">
+
+  <h2 class="leader-assigned-title">
     You have no prompt sets in progress at the moment.
   </h2>
 
-  <div class="member-prompt-container member-prompt-empty-state">
+  <div class="leader-prompt-container leader-prompt-empty-state">
     <img
       src="/images/blueyplaying.png"
       alt="Bluey encouraging prompt set progress"
-      class="member-prompt-empty-image"
+      class="leader-prompt-empty-image"
     >
 
-    <p class="member-prompt-empty-message">
-      <b>Prompts are an excellent way to build skill over time.</b>
-    </p>
+      <p class="groupmember-prompt-empty-message">
+        <b>We have some fun prompt sets you might enjoy for stress relief and better mental health.</b>
+      </p>
 
-    <p class="member-prompt-empty-message">
-      We have some great prompt sets in topics across Twennie. Visit the library and register for one that interests you.
-    </p>
+      <p class="groupmember-prompt-empty-message">
+        Go to the
+        <a href="/bytopic/thepowerofplayintheworkplace" class="groupmember-prompt-empty-link">
+          The Power of Play in the Workplace
+        </a>
+        topic!
+      </p>
   </div>
+
 {{/if}}
 
 
