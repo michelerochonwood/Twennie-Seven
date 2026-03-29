@@ -1771,6 +1771,49 @@ html, body {
   max-width: 720px; /* optional: keeps it readable */
 }
 
+/* =========================================
+   LEADER ADMIN — MATCH GREY TAB SECTIONS
+   ========================================= */
+
+/* Switch (back / switch to admin) */
+.leader-dashboard-admin-switch {
+  background-color: rgb(240, 240, 240);
+  border-radius: 15px;
+  padding: 0.6rem 0.8rem 0.8rem 0.8rem;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto 0.75rem auto;
+}
+
+/* Center the button nicely inside */
+.leader-dashboard-admin-switch .dashboard-tab {
+  margin: 0 auto;
+}
+
+
+/* Admin tabs container (the row of admin tabs) */
+.dashboard-tabs-container--admin {
+  background-color: rgb(240, 240, 240);
+  border-radius: 15px;
+  padding: 0.6rem 0.8rem 0.8rem 0.8rem;
+  box-sizing: border-box;
+
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto 1rem auto;
+
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+
+/* Optional: keep spacing consistent with leader groups */
+.dashboard-tabs-container--admin .dashboard-tab {
+  margin: 0;
+}
+
 /* ================================
    Leader Dashboard — Nugget Cards
    Wave header flush to card edges
