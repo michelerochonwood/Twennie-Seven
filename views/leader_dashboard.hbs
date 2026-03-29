@@ -32,96 +32,68 @@
     {{#if adminMode}}
       {{#if leader.isAdmin}}
 
-<!-- Admin Tab Navigation -->
-<div class="leader-dashboard-tab-groups leader-dashboard-tab-groups--admin">
+        <!-- Admin Tab Navigation -->
+        <div class="dashboard-tabs-container dashboard-tabs-container--admin" data-tabs-scope="admin">
 
-  <div class="leader-dashboard-admin-switch">
-    <a class="dashboard-tab" href="/dashboard/leader" style="text-decoration:none;">
-      <span class="tab-title">← back to leader dashboard</span>
-      <div class="tab-arrow"></div>
-    </a>
-  </div>
+          <button
+            class="dashboard-tab {{#if (eq adminTab "groups-leaders")}}active{{/if}}"
+            type="button"
+            data-tab="admin-groups-leaders"
+            data-href="/dashboard/leader/org-admin/groups-leaders"
+          >
+            <span class="tab-title">my groups and leaders</span>
+            <div class="tab-arrow"></div>
+          </button>
 
-  <div class="leader-dashboard-tab-groups-row leader-dashboard-tab-groups-row--admin" data-tabs-scope="admin">
+          <button
+            class="dashboard-tab {{#if (eq adminTab "my-organization")}}active{{/if}}"
+            type="button"
+            data-tab="admin-my-organization"
+            data-href="/dashboard/leader/org-admin/my-organization"
+          >
+            <span class="tab-title">my organization stats</span>
+            <div class="tab-arrow"></div>
+          </button>
 
-    <!-- ORGANIZATION -->
-    <div class="leader-dashboard-tab-group leader-dashboard-tab-group--admin">
-      <h3 class="leader-dashboard-tab-group-title">organization</h3>
+          <button
+            class="dashboard-tab {{#if (eq adminTab "requests")}}active{{/if}}"
+            type="button"
+            data-tab="admin-requests"
+            data-href="/dashboard/leader/org-admin/requests"
+          >
+            <span class="tab-title">requests from leaders to join</span>
+            <div class="tab-arrow"></div>
+          </button>
 
-      <div class="dashboard-tabs-container dashboard-tabs-container--admin-group">
-        <button
-          class="dashboard-tab {{#if (eq adminTab "my-organization")}}active{{/if}}"
-          type="button"
-          data-tab="admin-my-organization"
-          data-href="/dashboard/leader/org-admin/my-organization"
-        >
-          <span class="tab-title">my organization stats</span>
-          <div class="tab-arrow"></div>
-        </button>
+          <button
+            class="dashboard-tab {{#if (eq adminTab "suggestions")}}active{{/if}}"
+            type="button"
+            data-tab="admin-suggestions"
+            data-href="/dashboard/leader/org-admin/suggestions"
+          >
+            <span class="tab-title">learning suggestions</span>
+            <div class="tab-arrow"></div>
+          </button>
 
-        <button
-          class="dashboard-tab {{#if (eq adminTab "requests")}}active{{/if}}"
-          type="button"
-          data-tab="admin-requests"
-          data-href="/dashboard/leader/org-admin/requests"
-        >
-          <span class="tab-title">requests from leaders to join</span>
-          <div class="tab-arrow"></div>
-        </button>
-      </div>
-    </div>
+          <button
+            class="dashboard-tab {{#if (eq adminTab "company-library")}}active{{/if}}"
+            type="button"
+            data-tab="admin-company-library"
+            data-href="/dashboard/leader/org-admin/company-library"
+          >
+            <span class="tab-title">organization's library units</span>
+            <div class="tab-arrow"></div>
+          </button>
 
-    <!-- PEOPLE -->
-    <div class="leader-dashboard-tab-group leader-dashboard-tab-group--admin">
-      <h3 class="leader-dashboard-tab-group-title">people</h3>
-
-      <div class="dashboard-tabs-container dashboard-tabs-container--admin-group">
-        <button
-          class="dashboard-tab {{#if (eq adminTab "groups-leaders")}}active{{/if}}"
-          type="button"
-          data-tab="admin-groups-leaders"
-          data-href="/dashboard/leader/org-admin/groups-leaders"
-        >
-          <span class="tab-title">my groups and leaders</span>
-          <div class="tab-arrow"></div>
-        </button>
-
-        <button
-          class="dashboard-tab {{#if (eq adminTab "suggestions")}}active{{/if}}"
-          type="button"
-          data-tab="admin-suggestions"
-          data-href="/dashboard/leader/org-admin/suggestions"
-        >
-          <span class="tab-title">learning suggestions</span>
-          <div class="tab-arrow"></div>
-        </button>
-      </div>
-    </div>
-
-    <!-- LIBRARY + REPORTING -->
-    <div class="leader-dashboard-tab-group leader-dashboard-tab-group--admin">
-      <h3 class="leader-dashboard-tab-group-title">library and reporting</h3>
-
-      <div class="dashboard-tabs-container dashboard-tabs-container--admin-group">
-        <button
-          class="dashboard-tab {{#if (eq adminTab "company-library")}}active{{/if}}"
-          type="button"
-          data-tab="admin-company-library"
-          data-href="/dashboard/leader/org-admin/company-library"
-        >
-          <span class="tab-title">organization's library units</span>
-          <div class="tab-arrow"></div>
-        </button>
-
-        <button
-          class="dashboard-tab {{#if (eq adminTab "reports")}}active{{/if}}"
-          type="button"
-          data-tab="admin-reports"
-          data-href="/dashboard/leader/org-admin/reports"
-        >
-          <span class="tab-title">organization's reports</span>
-          <div class="tab-arrow"></div>
-        </button>
+          <button
+            class="dashboard-tab {{#if (eq adminTab "reports")}}active{{/if}}"
+            type="button"
+            data-tab="admin-reports"
+            data-href="/dashboard/leader/org-admin/reports"
+          >
+            <span class="tab-title">organization's reports</span>
+            <div class="tab-arrow"></div>
+          </button>
         </div>
 
         <!-- Admin Content Panels -->
