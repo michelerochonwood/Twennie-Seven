@@ -5,7 +5,9 @@
   <div class="member-prompt-upgrade" style="text-align:center;margin-top:2rem;font-style:italic;color:#4e50a2;">
     To register for prompts, you must upgrade your membership.
   </div>
-{{else}}
+
+{{!-- Paid/contributor members with no active prompt set: show empty state --}}
+{{else if promptSet}}
   {{#with promptSet as |ps|}}
   <div class="member-prompt-container" data-psid="{{ps.promptSetId}}" data-regid="{{ps.registrationId}}">
     <!-- Meta ABOVE the card -->
@@ -80,8 +82,28 @@
     </button>
   </div>
   {{/with}}
-{{/if}}
 
+{{else}}
+  <h2 class="member-assigned-title">
+    You have no prompt sets in progress at the moment.
+  </h2>
+
+  <div class="member-prompt-container member-prompt-empty-state">
+    <img
+      src="/images/blueyplaying.png"
+      alt="Bluey encouraging prompt set progress"
+      class="member-prompt-empty-image"
+    >
+
+    <p class="member-prompt-empty-message">
+      <b>Prompts are an excellent way to build skill over time.</b>
+    </p>
+
+    <p class="member-prompt-empty-message">
+      We have some great prompt sets in topics across Twennie. Visit the library and register for one that interests you.
+    </p>
+  </div>
+{{/if}}
 
 
 

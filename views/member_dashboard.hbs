@@ -19,13 +19,8 @@
           <h3 class="leader-dashboard-tab-group-title">learning</h3>
 
           <div class="dashboard-tabs-container member-dashboard-tabs-container member-dashboard-tabs-container--learning">
-            <button class="dashboard-tab" data-tab="topics">
-              <span class="tab-title">my favorite topics</span>
-              <div class="tab-arrow"></div>
-            </button>
-
-            <button class="dashboard-tab" data-tab="prompts" data-count="{{memberCounts.prompts}}">
-              <span class="tab-title">my prompt sets in progress</span>
+            <button class="dashboard-tab active" data-tab="prompts" data-count="{{memberCounts.prompts}}">
+              <span class="tab-title" style="font-size:1rem; color:#9da0c9">complete a prompt</span>
               {{#if memberBadges.prompts}}<span class="tab-dot"></span>{{/if}}
               <div class="tab-arrow"></div>
             </button>
@@ -44,6 +39,11 @@
 
             <button class="dashboard-tab" data-tab="missions">
               <span class="tab-title">my missions and nuggets</span>
+              <div class="tab-arrow"></div>
+            </button>
+
+            <button class="dashboard-tab" data-tab="topics">
+              <span class="tab-title">my favorite topics</span>
               <div class="tab-arrow"></div>
             </button>
           </div>
@@ -72,7 +72,7 @@
           <h3 class="leader-dashboard-tab-group-title">manage membership</h3>
 
           <div class="dashboard-tabs-container member-dashboard-tabs-container member-dashboard-tabs-container--membership">
-            <button class="dashboard-tab active" data-tab="membership">
+            <button class="dashboard-tab" data-tab="membership">
               <span class="tab-title">membership overview</span>
               <div class="tab-arrow"></div>
             </button>
@@ -93,7 +93,7 @@
     </div>
 
     <!-- Tab Content -->
-    <div class="dashboard-tab-content active" id="membership">
+    <div class="dashboard-tab-content" id="membership">
       {{> dashboardpartials/member_membership }}
     </div>
 
@@ -101,21 +101,29 @@
       {{> dashboardpartials/member_topics }}
     </div>
 
-    <div class="dashboard-tab-content" id="prompts">
-      {{#if promptSet}}
-        <section class="member-prompt-section">
-          {{> dashboardpartials/member_prompt promptSet=promptSet }}
-        </section>
+    <div class="dashboard-tab-content active" id="prompts">
+      {{#if registeredPromptSets.length}}
+
+        {{#each registeredPromptSets}}
+          <section class="member-prompt-section">
+            {{> dashboardpartials/member_prompt
+                promptSet=this
+                promptSchedule=(lookup ../promptSchedules @index)
+                csrfToken=../csrfToken
+            }}
+          </section>
+        {{/each}}
+
       {{else}}
-        {{#ifEquals @root.member.accessLevel "free_individual"}}
-          <div style="text-align: center; margin-top: 2rem; font-style: italic; color: #4e50a2;">
-            To register for prompts, you must upgrade your membership.
-          </div>
-        {{else}}
-          <div style="text-align: center; margin-top: 2rem; color:#4e50a2;">
-            You don’t have an active prompt set yet. Visit the library to register your first set.
-          </div>
-        {{/ifEquals}}
+
+        <section class="member-prompt-section">
+          {{> dashboardpartials/member_prompt
+              promptSet=null
+              promptSchedule=null
+              csrfToken=csrfToken
+          }}
+        </section>
+
       {{/if}}
     </div>
 
