@@ -2,13 +2,13 @@
   <div class="contribution-container">
 
     <!-- Centered Image -->
-    <div style="text-align: center; margin-bottom: -20px; margin-top: -40px">
+    <div style="text-align: center; margin-bottom: -20px; margin-top: -40px;">
       <img src="/images/blueyteacher.png" alt="Bluey Teacher" style="max-width: 200px;">
     </div>
 
     <!-- Main Title -->
     <h2 class="dashboard-titles" style="text-align: center;">
-      add a unit to the library
+      add a unit to my library
     </h2>
 
     <!-- Subtitle -->
@@ -16,9 +16,9 @@
       learn by unleashing your inner teacher
     </p>
 
-    <!-- Description -->
     <p class="contributor-benefits">
-      Are you a writer? A coach? A videographer? A trainer? Twennie enables you to develop these skills, practice, and share learning with other professionals.
+      Are you a writer? A coach? A videographer? A trainer? Twennie enables you to develop these skills,
+      practice, and share learning with other professionals.
     </p>
 
     {{!-- =========================================================
@@ -47,20 +47,17 @@
           </a>
 
           <p style="margin: 0.75rem 0 0 0; font-size: 0.95rem; opacity: 0.85;">
-            once accepted, you’ll be able to post units to the library.
+            once accepted, you’ll be able to post units to your library.
           </p>
         </div>
       {{/unless}}
 
       {{#if user.termsAccepted}}
 
-        <!-- Button -->
-        <button id="toggleContribute" class="contribute-btn" type="button">
-          I want to contribute to the library
-        </button>
 
-        <!-- Hidden Grid -->
-        <div id="contributionGrid" class="contribution-grid" style="display: none;">
+
+        <!-- All unit cards live inside this grid and are hidden/shown by the toggle -->
+        <div id="contributionGrid" class="contribution-grid" hidden>
 
           <!-- Article -->
           <a href="/unitform/form_article" class="unit-card" aria-label="Create an article">
@@ -75,7 +72,7 @@
 
           <!-- Video -->
           <a href="/unitform/form_video" class="unit-card" aria-label="Create a video">
-            <div class="svg-container" style="padding-top: 8px; width: 40px;">
+            <div class="svg-container" style="padding-top: 8px; width: 40px">
               <img
                 src="/icons/video.svg"
                 alt="Video icon"
@@ -181,10 +178,16 @@
             const section = document.getElementById('contribute');
             if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
+            // If terms aren't accepted, these won't exist (by design)
             if (!toggleBtn || !grid) return;
 
-            try { toggleBtn.click(); } catch (e) { grid.style.display = 'grid'; }
+            try {
+              toggleBtn.click();
+            } catch (e) {
+              grid.style.display = 'grid';
+            }
 
+            // Clear hash so refresh doesn't re-open
             try {
               history.replaceState(null, '', window.location.pathname + window.location.search);
             } catch (e) {}
@@ -197,7 +200,7 @@
 
       <div class="terms-gate-card" style="margin: 1rem 0; padding: 1rem; border-radius: 12px; border: 1px solid rgba(0,0,0,0.12); text-align: center;">
         <p style="margin: 0 0 0.75rem 0; font-weight: 600;">
-          log in to contribute to the library
+          log in to contribute to your library
         </p>
 
         <a href="/login" class="contribute-btn" style="display:inline-block; text-decoration:none;">
@@ -213,3 +216,67 @@
 
   </div>
 </section>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const toggleBtn = document.getElementById('toggleContribute');
+    const grid = document.getElementById('contributionGrid');
+    const section = document.getElementById('contribute');
+
+    // If terms not accepted, these won't exist (by design)
+    if (!toggleBtn || !grid) return;
+
+    // --- helpers ---
+    const STORAGE_KEY = 'twennie_contribute_grid_open';
+
+    function setOpen(isOpen) {
+      grid.hidden = !isOpen;
+      toggleBtn.setAttribute('aria-expanded', String(isOpen));
+
+      // Optional: change button text
+      // toggleBtn.textContent = isOpen ? 'hide contribution options' : 'I want to contribute to my library';
+
+      try { sessionStorage.setItem(STORAGE_KEY, isOpen ? '1' : '0'); } catch (e) {}
+    }
+
+    function isOpen() {
+      return !grid.hidden;
+    }
+
+    // --- initial state ---
+    // Prefer session state, otherwise default to closed
+    let initialOpen = false;
+    try {
+      const saved = sessionStorage.getItem(STORAGE_KEY);
+      if (saved === '1') initialOpen = true;
+      if (saved === '0') initialOpen = false;
+    } catch (e) {}
+
+    // Use hidden attribute instead of style.display
+    // (if your HTML currently has style="display:none", we override it)
+    grid.style.display = ''; // let CSS control layout
+    grid.hidden = !initialOpen;
+
+    // ARIA setup
+    toggleBtn.setAttribute('type', 'button');
+    toggleBtn.setAttribute('aria-controls', 'contributionGrid');
+    toggleBtn.setAttribute('aria-expanded', String(initialOpen));
+
+    // --- click toggle ---
+    toggleBtn.addEventListener('click', () => {
+      setOpen(!isOpen());
+    });
+
+    // --- auto-open if arriving with #contribute ---
+    if (window.location.hash === '#contribute') {
+      if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setOpen(true);
+
+      // Clear hash so refresh doesn't keep reopening
+      try {
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+      } catch (e) {}
+    }
+  });
+</script>
