@@ -19,14 +19,9 @@
           <h3 class="leader-dashboard-tab-group-title">my learning</h3>
 
           <div class="dashboard-tabs-container">
-            <button class="dashboard-tab" data-tab="topics" data-count="{{gmCounts.topics}}">
-              <span class="tab-title">my favorite topics</span>
-              {{#if gmBadges.topics}}<span class="tab-dot"></span>{{/if}}
-              <div class="tab-arrow"></div>
-            </button>
 
-            <button class="dashboard-tab" data-tab="prompts" data-count="{{gmCounts.prompts}}">
-              <span class="tab-title">my prompt sets in progress</span>
+            <button class="dashboard-tab active" data-tab="prompts" data-count="{{gmCounts.prompts}}">
+              <span class="tab-title" style="font-size:1rem; color:#9da0c9">my prompt sets in progress</span>
               {{#if gmBadges.prompts}}<span class="tab-dot"></span>{{/if}}
               <div class="tab-arrow"></div>
             </button>
@@ -46,6 +41,12 @@
             <button class="dashboard-tab" data-tab="missions" data-count="{{gmCounts.missions}}">
               <span class="tab-title">my nuggets and missions</span>
               {{#if gmBadges.missions}}<span class="tab-dot"></span>{{/if}}
+              <div class="tab-arrow"></div>
+            </button>
+
+            <button class="dashboard-tab" data-tab="topics" data-count="{{gmCounts.topics}}">
+              <span class="tab-title">my favorite topics</span>
+              {{#if gmBadges.topics}}<span class="tab-dot"></span>{{/if}}
               <div class="tab-arrow"></div>
             </button>
           </div>
@@ -74,7 +75,7 @@
           <h3 class="leader-dashboard-tab-group-title">manage my membership</h3>
 
           <div class="dashboard-tabs-container">
-            <button class="dashboard-tab active" data-tab="membership">
+            <button class="dashboard-tab" data-tab="membership">
               <span class="tab-title">membership overview</span>
               <div class="tab-arrow"></div>
             </button>
@@ -96,7 +97,7 @@
     </div>
 
     <!-- Tab Content -->
-    <div class="dashboard-tab-content active" id="membership">
+    <div class="dashboard-tab-content" id="membership">
       {{> dashboardpartials/groupmember_membership }}
     </div>
 
@@ -108,12 +109,30 @@
       {{> dashboardpartials/groupmember_group }}
     </div>
 
-    <div class="dashboard-tab-content" id="prompts">
-      {{#each registeredPromptSets}}
+    <div class="dashboard-tab-content active" id="prompts">
+      {{#if registeredPromptSets.length}}
+
+        {{#each registeredPromptSets}}
+          <section class="groupmember-prompt-section">
+            {{> dashboardpartials/groupmember_prompt
+                promptSet=this
+                promptSchedule=(lookup ../promptSchedules @index)
+                csrfToken=../csrfToken
+            }}
+          </section>
+        {{/each}}
+
+      {{else}}
+
         <section class="groupmember-prompt-section">
-          {{> dashboardpartials/groupmember_prompt promptSet=this }}
+          {{> dashboardpartials/groupmember_prompt
+              promptSet=null
+              promptSchedule=null
+              csrfToken=csrfToken
+          }}
         </section>
-      {{/each}}
+
+      {{/if}}
     </div>
 
     <div class="dashboard-tab-content" id="progress">
