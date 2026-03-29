@@ -2541,7 +2541,26 @@ html, body {
 }
 
 
+/* Empty State for Registered Prompts Section */
+.groupmember-prompt-empty-state {
+  text-align: center;
+}
 
+.groupmember-prompt-empty-image {
+  display: block;
+  margin: 0 auto 1.5rem;
+  max-width: 220px;
+  width: 100%;
+  height: auto;
+}
+
+.groupmember-prompt-empty-message {
+  margin-bottom: 1rem;
+}
+
+.groupmember-prompt-empty-link {
+  text-decoration: none;
+}
 
 /* Group Topics Section */
 .groupmember-group-topics {

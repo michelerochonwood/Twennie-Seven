@@ -9,8 +9,28 @@
   {{else if promptSet}}
     {{> _gm_prompt_card promptSet=promptSet csrfToken=@root.csrfToken}}
   {{else}}
-    <div class="groupmember-prompt-empty">
-      <p>No prompt sets assigned yet.</p>
+    <h2 class="groupmember-assigned-title">
+      You have no prompt sets in progress at the moment.
+    </h2>
+
+    <div class="groupmember-prompt-container groupmember-prompt-empty-state">
+      <img
+        src="/images/blueyflex.png"
+        alt="Bluey encouraging prompt set progress"
+        class="groupmember-prompt-empty-image"
+      >
+
+      <p class="groupmember-prompt-empty-message">
+        <b>We have some fun prompt sets you might enjoy for stress relief and better mental health.</b>
+      </p>
+
+      <p class="groupmember-prompt-empty-message">
+        Go to the
+        <a href="/bytopic/thepowerofplayintheworkplace" class="groupmember-prompt-empty-link">
+          The Power of Play in the Workplace
+        </a>
+        topic!
+      </p>
     </div>
   {{/if}}
 </div>
