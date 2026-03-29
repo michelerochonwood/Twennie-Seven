@@ -4094,5 +4094,150 @@ label {
 
 
 
+/* ==========================================
+   HOME PAGE ONLY SUBFOOTER
+   ========================================== */
+
+.home-subfooter {
+  background-color: #262262;
+  color: white;
+  width: 100%;
+  padding: 4.5rem 0 2.5rem 0;
+}
+
+.home-subfooter-inner {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 8rem;
+  box-sizing: border-box;
+}
+
+.home-subfooter-grid {
+  display: grid;
+  grid-template-columns: 1.35fr 1.35fr 1fr 0.7fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+.home-subfooter-col {
+  min-width: 0;
+}
+
+.home-subfooter-col-wide {
+  min-width: 0;
+}
+
+.home-subfooter-col-narrow {
+  min-width: 0;
+}
+
+.home-subfooter-heading {
+  margin: 0 0 1rem 0;
+  font-family: "Figtree", sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: white;
+}
+
+.home-subfooter-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.home-subfooter-links li {
+  margin: 0;
+  padding: 0;
+}
+
+.home-subfooter-links a {
+  color: white;
+  text-decoration: none;
+  font-family: "Figtree", sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.4;
+  transition: opacity 0.2s ease;
+}
+
+.home-subfooter-links a:hover {
+  opacity: 0.75;
+  text-decoration: none;
+}
+
+.home-subfooter-divider {
+  width: 100%;
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.22);
+  margin: 3rem 0 2rem 0;
+}
+
+.home-subfooter-bottom {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.home-subfooter-contact-text {
+  margin: 0;
+  color: white;
+  font-family: "Figtree", sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.home-subfooter-contact-text a {
+  color: white;
+  text-decoration: none;
+}
+
+.home-subfooter-contact-text a:hover {
+  opacity: 0.75;
+  text-decoration: none;
+}
+
+/* Responsive */
+@media screen and (max-width: 1200px) {
+  .home-subfooter-inner {
+    padding: 0 5rem;
+  }
+
+  .home-subfooter-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+  }
+
+  .home-subfooter-bottom {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .home-subfooter-inner {
+    padding: 0 3rem;
+  }
+
+  .home-subfooter {
+    padding: 3.5rem 0 2rem 0;
+  }
+
+  .home-subfooter-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+@media screen and (max-width: 380px) {
+  .home-subfooter-inner {
+    padding: 0 1.5rem;
+  }
+}
+
+
+
 
 
