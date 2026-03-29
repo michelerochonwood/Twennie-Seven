@@ -1570,6 +1570,10 @@ html, body {
   font-weight: 800;
 }
 
+.leader-prompt-container leader-prompt-empty-state {
+  background-color: white;
+}
+
 /* progress layout */
 .leader-assigned-progress-wrap {
   display: grid;
