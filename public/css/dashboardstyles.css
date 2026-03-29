@@ -1809,6 +1809,83 @@ html, body {
 }
 
 
+/* =========================================
+   LEADER ADMIN — GROUPED TAB LAYOUT
+   ========================================= */
+
+.leader-dashboard-tab-groups--admin {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto 1.25rem auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.leader-dashboard-tab-groups-row--admin {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.leader-dashboard-tab-group--admin {
+  background-color: rgb(240, 240, 240);
+  border-radius: 15px;
+  padding: 0.6rem 0.8rem 0.8rem 0.8rem;
+  box-sizing: border-box;
+}
+
+.dashboard-tabs-container--admin-group {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 100px);
+  gap: 0.6rem;
+  justify-content: center;
+  margin-bottom: 0;
+}
+
+.dashboard-tabs-container--admin-group .dashboard-tab {
+  width: 100px;
+  height: 100px;
+  margin: 0;
+}
+
+.leader-dashboard-admin-switch {
+  background-color: rgb(240, 240, 240);
+  border-radius: 15px;
+  padding: 0.6rem 0.8rem 0.8rem 0.8rem;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto 0.25rem auto;
+  display: flex;
+  justify-content: center;
+}
+
+.leader-dashboard-admin-switch .dashboard-tab {
+  margin: 0 auto;
+}
+
+@media screen and (max-width: 1300px) {
+  .leader-dashboard-tab-groups-row--admin {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-tabs-container--admin-group {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 100px));
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .dashboard-tabs-container--admin-group {
+    grid-template-columns: repeat(2, 100px) !important;
+  }
+}
+
+
 /* Optional: keep spacing consistent with leader groups */
 .dashboard-tabs-container--admin .dashboard-tab {
   margin: 0;
