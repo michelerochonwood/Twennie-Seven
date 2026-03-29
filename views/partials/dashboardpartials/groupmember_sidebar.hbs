@@ -4,30 +4,43 @@
 
     <!-- Profile Image -->
     <div class="groupmember-profile-image-container">
-<img 
-  src="{{groupMember.profileImage}}" 
-  alt="{{groupMember.name}}'s Profile Photo" 
-  class="groupmember-profile-image"
->
+      <img 
+        src="{{#if groupMember.profileImage}}{{groupMember.profileImage}}{{else}}/images/default-avatar.png{{/if}}" 
+        alt="{{groupMember.name}}'s Profile Photo" 
+        class="groupmember-profile-image"
+      >
     </div>
 
     <!-- Profile Info -->
     <div class="groupmember-profile-info">
       <h2 class="groupmember-profile-name">{{groupMember.name}}</h2>
       <p class="groupmember-profile-title">Group Member</p>
+
       <a 
         href="/profile/groupmember/{{groupMember._id}}" 
         class="groupmember-profile-btn"
       >
         my profile
       </a>
+
+      <!-- Bluey CTA Image -->
+      <img 
+        src="/images/blueydown.png" 
+        alt="Bluey pointing down" 
+        class="bluey-cta-img" 
+        style="margin-bottom: 5px;"
+      >
+
+      <!-- Teach Me Button -->
+      <a href="/teach_me" class="groupmember-profile-btn" style="margin-top: 0.75rem;">
+        how does Twennie work?
+      </a>
+
     </div>
-    
 
   </div>
 
 </aside>
-
 
 
 
