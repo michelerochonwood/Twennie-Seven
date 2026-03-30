@@ -623,10 +623,48 @@ submitNugget: async (req, res) => {
     } = req.body;
 
     const errors = [];
+
     if (!title?.trim()) errors.push('Title is required.');
     if (!client?.trim()) errors.push('Client is required.');
     if (!horizon) errors.push('Horizon is required.');
     if (!sourceLabel?.trim()) errors.push('Original source label is required.');
+
+    const allowedKinds = ['article', 'video', 'interview', 'promptset', 'exercise', 'template'];
+
+    let parsedConnected = [];
+
+    if (connectedTwennieUnits) {
+      try {
+        const raw = typeof connectedTwennieUnits === 'string'
+          ? JSON.parse(connectedTwennieUnits)
+          : connectedTwennieUnits;
+
+        if (Array.isArray(raw)) {
+          parsedConnected = raw
+            .map(unit => {
+              if (!unit || typeof unit !== 'object') return null;
+
+              return {
+                kind: typeof unit.kind === 'string' ? unit.kind.trim() : '',
+                unitId: typeof unit.unitId === 'string' ? unit.unitId.trim() : String(unit.unitId || '').trim(),
+                note: typeof unit.note === 'string' ? unit.note.trim() : undefined
+              };
+            })
+            .filter(unit => unit && unit.kind && unit.unitId);
+        }
+      } catch (err) {
+        errors.push('There was a problem reading the selected Twennie learning units.');
+      }
+    }
+
+    if (parsedConnected.length > 6) {
+      errors.push('You can attach up to 6 Twennie learning units.');
+    }
+
+    const invalidKinds = parsedConnected.filter(unit => !allowedKinds.includes(unit.kind));
+    if (invalidKinds.length) {
+      errors.push('One or more selected learning units has an invalid unit type.');
+    }
 
     if (errors.length) {
       return res.status(400).render('unit_form_views/form_nugget', {
@@ -638,29 +676,16 @@ submitNugget: async (req, res) => {
       });
     }
 
-    // normalize connected units (textarea → array or objects)
-    let parsedConnected = [];
-    if (connectedTwennieUnits) {
-      try {
-        parsedConnected = JSON.parse(connectedTwennieUnits);
-      } catch {
-        parsedConnected = connectedTwennieUnits
-          .split(',')
-          .map(s => ({ kind: 'article', unitId: s.trim() }))
-          .filter(x => x.unitId);
-      }
-    }
-
     const nuggetData = {
       title: title.trim(),
       client: client.trim(),
       horizon,
       discipline: discipline?.trim(),
       region: region?.trim(),
-      estimatedValue: {
-        amount: estimatedValueAmount ? Number(estimatedValueAmount) : undefined,
-        currency: 'CAD'
-      },
+estimatedValue: {
+  amount: req.body.estimatedValue?.amount ? Number(req.body.estimatedValue.amount) : null,
+  currency: req.body.estimatedValue?.currency || 'CAD'
+},
       projectDeliveryType: projectDeliveryType || 'unknown',
       originalSource: {
         label: sourceLabel.trim(),
@@ -674,6 +699,7 @@ submitNugget: async (req, res) => {
     };
 
     let nugget;
+
     if (_id) {
       nugget = await Nugget.findByIdAndUpdate(_id, nuggetData, {
         new: true,
@@ -686,17 +712,14 @@ submitNugget: async (req, res) => {
       console.log('New nugget created successfully.');
     }
 
-if (fromUpcomingId) {
-  await migrateAndDeleteUpcoming({
-    fromUpcomingId,
-    toItemId: nugget._id,
-    toUnitType: 'nugget',
-  });
-}
+    if (fromUpcomingId) {
+      await migrateAndDeleteUpcoming({
+        fromUpcomingId,
+        toItemId: nugget._id,
+        toUnitType: 'nugget',
+      });
+    }
 
-
-
-    // Make success template happy (it checks for *_title fields)
     const unitForSuccess = {
       ...nugget.toObject(),
       nugget_title: nugget.title
@@ -705,16 +728,13 @@ if (fromUpcomingId) {
     const viewLink = `/unitviews/nuggets/view/${nugget._id}`;
     const createLink = `/unitform/form_nugget`;
 
-    // ✅ Use real dashboard routes (no /dashboard)
-const dashboardLink = dashboardHomeForUser(req.user);
-
     return res.render('unit_form_views/unit_success', {
       layout: 'unitformlayout',
       unitType: 'nugget',
       unit: unitForSuccess,
       viewLink,
       createLink,
-  dashboardLink: dashboardHomeForUser(req.user),
+      dashboardLink: dashboardHomeForUser(req.user),
       csrfToken: getCsrfToken(req),
     });
 

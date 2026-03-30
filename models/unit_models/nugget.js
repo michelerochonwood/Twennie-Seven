@@ -4,10 +4,17 @@ const ConnectedUnitSchema = new mongoose.Schema({
   kind: {
     type: String,
     enum: ['article', 'video', 'interview', 'promptset', 'exercise', 'template'],
+    required: true,
+    trim: true
+  },
+  unitId: {
+    type: mongoose.Schema.Types.ObjectId,
     required: true
   },
-  unitId: { type: mongoose.Schema.Types.ObjectId, required: true },
-  note: String
+  note: {
+    type: String,
+    trim: true
+  }
 }, { _id: false });
 
 const NuggetSchema = new mongoose.Schema({
@@ -21,10 +28,10 @@ const NuggetSchema = new mongoose.Schema({
   region: { type: String, trim: true },
 
   // Scale
-  estimatedValue: {
-    amount: { type: Number, min: 0 },
-    currency: { type: String, default: 'CAD' }
-  },
+estimatedValue: {
+  amount: { type: Number, min: 0, default: null },
+  currency: { type: String, default: 'CAD', trim: true }
+},
 
   // Delivery / procurement
   projectDeliveryType: {
@@ -43,12 +50,21 @@ const NuggetSchema = new mongoose.Schema({
   likelihood: { type: Number, min: 0, max: 100, default: 50 },
 
   // Cross-links
-  connectedTwennieUnits: [ConnectedUnitSchema],
+  connectedTwennieUnits: {
+    type: [ConnectedUnitSchema],
+    validate: {
+      validator: function (arr) {
+        return !arr || arr.length <= 3;
+      },
+      message: 'You can attach up to 3 Twennie learning units.'
+    },
+    default: []
+  },
 
   // Notes
   notes: { type: String, trim: true },
 
-  // 🔹 Ownership & visibility (needed for sections)
+  // Ownership & visibility
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Member', index: true },
   visibility: {
     type: String,

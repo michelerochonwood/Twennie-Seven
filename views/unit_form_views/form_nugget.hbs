@@ -18,7 +18,7 @@
 
 
   <p class="form-hint form-mission-video-hint">
-    Before creating a nugget, watch this video. It provides guidance and tips for creating successful nuggets based on what you want to achieve.
+    Before creating a nugget, watch this video. It provides guidance for creating successful nuggets based on what you want to achieve.
   </p>
 </div>
 
@@ -102,24 +102,31 @@
           <option value="Quebec"                            {{#ifEquals data.region "Quebec"}}selected{{/ifEquals}}>Quebec</option>
           <option value="Maritimes"                         {{#ifEquals data.region "Maritimes"}}selected{{/ifEquals}}>Maritimes</option>
           <option value="Nunavut, NWT, and the Yukon"       {{#ifEquals data.region "Nunavut, NWT, and the Yukon"}}selected{{/ifEquals}}>Nunavut, NWT, and the Yukon</option>
+          <option value="Other"                             {{#ifEquals data.discipline "Water and Wastewater"}}selected{{/ifEquals}}>Other</option>
         </select>
       </div>
 
       <!-- Estimated Value (range bucket) -->
-      <div class="form-field">
-        <label for="estimated-value-bucket">Estimated Value (CAD)</label>
-        <select id="estimated-value-bucket" name="estimatedValue.bucket">
-          <option value="">Select range</option>
-          <option value="<$100K"            {{#ifEquals data.estimatedValue.bucket "<$100K"}}selected{{/ifEquals}}>&lt;$100K</option>
-          <option value="$100K - $500K"     {{#ifEquals data.estimatedValue.bucket "$100K - $500K"}}selected{{/ifEquals}}>$100K - $500K</option>
-          <option value="$500K - $1M"       {{#ifEquals data.estimatedValue.bucket "$500K - $1M"}}selected{{/ifEquals}}>$500K - $1M</option>
-          <option value="$1M - $5M"         {{#ifEquals data.estimatedValue.bucket "$1M - $5M"}}selected{{/ifEquals}}>$1M - $5M</option>
-          <option value="$5M - $10M"        {{#ifEquals data.estimatedValue.bucket "$5M - $10M"}}selected{{/ifEquals}}>$5M - $10M</option>
-          <option value="$10M - $50M"       {{#ifEquals data.estimatedValue.bucket "$10M - $50M"}}selected{{/ifEquals}}>$10M - $50M</option>
-          <option value=">$50M"             {{#ifEquals data.estimatedValue.bucket ">$50M"}}selected{{/ifEquals}}>>&nbsp;$50M</option>
-        </select>
-        <input type="hidden" name="estimatedValue.currency" value="{{#if data.estimatedValue.currency}}{{data.estimatedValue.currency}}{{else}}CAD{{/if}}">
-      </div>
+<div class="form-field">
+  <label for="estimated-value-bucket">Estimated Value (CAD)</label>
+  <select id="estimated-value-bucket" name="estimatedValue.bucket">
+    <option value="">Select range</option>
+    <option value="<$100K"        {{#ifEquals data.estimatedValue.bucket "<$100K"}}selected{{/ifEquals}}>&lt;$100K</option>
+    <option value="$100K - $500K" {{#ifEquals data.estimatedValue.bucket "$100K - $500K"}}selected{{/ifEquals}}>$100K - $500K</option>
+    <option value="$500K - $1M"   {{#ifEquals data.estimatedValue.bucket "$500K - $1M"}}selected{{/ifEquals}}>$500K - $1M</option>
+    <option value="$1M - $5M"     {{#ifEquals data.estimatedValue.bucket "$1M - $5M"}}selected{{/ifEquals}}>$1M - $5M</option>
+    <option value="$5M - $10M"    {{#ifEquals data.estimatedValue.bucket "$5M - $10M"}}selected{{/ifEquals}}>$5M - $10M</option>
+    <option value="$10M - $50M"   {{#ifEquals data.estimatedValue.bucket "$10M - $50M"}}selected{{/ifEquals}}>$10M - $50M</option>
+    <option value=">$50M"         {{#ifEquals data.estimatedValue.bucket ">$50M"}}selected{{/ifEquals}}>&gt;$50M</option>
+    <option value="unknown"       {{#ifEquals data.estimatedValue.bucket "unknown"}}selected{{/ifEquals}}>unknown</option>
+  </select>
+
+  <input
+    type="hidden"
+    name="estimatedValue.currency"
+    value="{{#if data.estimatedValue.currency}}{{data.estimatedValue.currency}}{{else}}CAD{{/if}}"
+  >
+</div>
 
       <!-- Project Delivery Type -->
       <div class="form-field">
@@ -149,12 +156,36 @@
         <input type="number" id="likelihood" name="likelihood" value="{{data.likelihood}}" min="0" max="100" step="5">
       </div>
 
-      <!-- Connected Twennie Units -->
-      <div class="form-field">
-        <label for="connected-units">Connected Twennie Units</label>
-        <textarea id="connected-units" name="connectedTwennieUnits" placeholder="List related unit IDs or references here...">{{data.connectedTwennieUnits}}</textarea>
-        <p class="form-hint">Link any articles, videos, interviews, or prompt sets related to this nugget.</p>
-      </div>
+      <section class="mission-learning-units">
+        <h2 class="mission-learning-units-title">Twennie learning units (optional)</h2>
+        <p class="mission-learning-units-help">
+          Does your nugget include learning? If so, attach up to three Twennie learning units that support this nugget.
+          Start typing a keyword from the unit title and choose from the list. 
+        </p>
+
+        <div class="mission-learning-units-search" style="width: 80%; border-radius: 50px">
+          <label for="twennie-unit-search">Search for a unit</label>
+          <input
+            id="twennie-unit-search"
+            type="text"
+            name="twennie_unit_search"
+            autocomplete="off"
+            placeholder="Type a keyword to find units..."
+          >
+          <div
+            id="twennie-unit-search-results"
+            class="mission-learning-units-results"
+            aria-live="polite"
+          ></div>
+        </div>
+
+        <div class="mission-learning-units-selected">
+          <h3>Selected units (max 3)</h3>
+          <div id="twennie-selected-units" class="mission-learning-units-chips"></div>
+        </div>
+
+        <div id="twennie-units-hidden-inputs"></div>
+      </section>
 
       <!-- Notes -->
       <div class="form-field">
