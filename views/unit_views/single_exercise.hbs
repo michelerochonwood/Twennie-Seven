@@ -14,29 +14,29 @@
       </div>
     {{/if}}
 
-<!-- Download Section (gated) -->
-{{#if isAuthorizedToViewFullContent}}
-  <div class="single_exercise-download">
-    <div class="single_exercise-download-icon">
-      <!-- SVG icon omitted for brevity -->
-    </div>
+    <!-- Document Viewing Section (gated) -->
+    {{#if isAuthorizedToViewFullContent}}
+      {{#if document_uploads}}
+        <div class="single_exercise-download">
+          <div class="single_exercise-download-icon">
+            <!-- SVG icon omitted for brevity -->
+          </div>
 
-    {{#if document_uploads}}
-      <div class="single_exercise-documents" id="exerciseDocs-{{_id}}">
-{{#each document_uploads}}
-<a
-  href="{{this.url}}"
-  class="single_exercise-download-btn"
-  target="_blank"
-  rel="noopener"
->
-  View {{this.filename}}
-</a>
-{{/each}}
-      </div>
+          <div class="single_exercise-documents" id="exerciseDocs-{{_id}}">
+            {{#each document_uploads}}
+              <a
+                href="{{this.url}}"
+                class="single_exercise-download-btn"
+                target="_blank"
+                rel="noopener"
+              >
+                View {{this.filename}}
+              </a>
+            {{/each}}
+          </div>
+        </div>
+      {{/if}}
     {{/if}}
-  </div>
-{{/if}}
 
     <!-- Leader Assignment Form -->
     {{#if isLeader}}
@@ -101,60 +101,58 @@
     {{/if}}
 
     {{!-- Admin: suggest this unit to org leaders --}}
-{{#if isOrgAdmin}}
-  <div class="assign-tag-form white-container" style="margin-top:1.25rem;">
-        {{!-- ✅ SUCCESS MESSAGE --}}
-    {{#if (and suggestionSuccess (eq suggestedUnitId _id))}}
-      <div class="success-message" style="
-        margin-bottom:0.75rem;
-        padding:0.6rem 0.75rem;
-        background:#e9f7ef;
-        color:#0f5132;
-        border-radius:6px;
-        font-weight:600;
-      ">
-        ✅ Suggestions sent successfully.
+    {{#if isOrgAdmin}}
+      <div class="assign-tag-form white-container" style="margin-top:1.25rem;">
+        {{#if (and suggestionSuccess (eq suggestedUnitId _id))}}
+          <div class="success-message" style="
+            margin-bottom:0.75rem;
+            padding:0.6rem 0.75rem;
+            background:#e9f7ef;
+            color:#0f5132;
+            border-radius:6px;
+            font-weight:600;
+          ">
+            ✅ Suggestions sent successfully.
+          </div>
+        {{/if}}
+
+        <h4 class="assign-tag-title">Suggest this unit to organization leaders</h4>
+        <p class="groupsection-org-card-info" style="margin-top:0.25rem;">
+          Send a suggestion (with an optional note) to one or more leaders in your organization.
+        </p>
+
+        <form id="suggestExerciseForm-{{_id}}" action="/unitsuggestions/org-suggestions/create" method="POST">
+          <input type="hidden" name="_csrf" value="{{csrfToken}}">
+          <input type="hidden" name="unitId" value="{{_id}}">
+          <input type="hidden" name="unitType" value="exercise">
+
+          <fieldset class="assign-tag-members">
+            <legend class="assign-tag-legend">Select leaders and optionally add a note:</legend>
+
+            {{#each orgLeaders}}
+              <div class="assign-tag-member-block">
+                <label class="assign-tag-member-label">
+                  <input
+                    type="checkbox"
+                    name="suggestTo[{{_id}}][leader]"
+                    value="{{_id}}"
+                    onchange="toggleSuggestNoteField(this)">
+                  {{groupLeaderName}}{{#if groupName}} — {{groupName}}{{/if}}
+                </label>
+
+                <textarea
+                  class="assign-tag-instructions"
+                  name="suggestTo[{{_id}}][note]"
+                  placeholder="Optional note for {{groupLeaderName}}"
+                  style="display:none;"></textarea>
+              </div>
+            {{/each}}
+          </fieldset>
+
+          <button type="submit" class="form-button submit-button">send suggestions</button>
+        </form>
       </div>
     {{/if}}
-    <h4 class="assign-tag-title">Suggest this unit to organization leaders</h4>
-    <p class="groupsection-org-card-info" style="margin-top:0.25rem;">
-      Send a suggestion (with an optional note) to one or more leaders in your organization.
-    </p>
-
-<form id="suggestExerciseForm-{{_id}}" action="/unitsuggestions/org-suggestions/create" method="POST">
-
-      <input type="hidden" name="_csrf" value="{{csrfToken}}">
-      <input type="hidden" name="unitId" value="{{_id}}">
-      <input type="hidden" name="unitType" value="exercise">
-
-      <fieldset class="assign-tag-members">
-        <legend class="assign-tag-legend">Select leaders and optionally add a note:</legend>
-
-        {{#each orgLeaders}}
-          <div class="assign-tag-member-block">
-            <label class="assign-tag-member-label">
-              <input
-                type="checkbox"
-                name="suggestTo[{{_id}}][leader]"
-                value="{{_id}}"
-                onchange="toggleSuggestNoteField(this)">
-              {{groupLeaderName}}{{#if groupName}} — {{groupName}}{{/if}}
-            </label>
-
-            <textarea
-              class="assign-tag-instructions"
-              name="suggestTo[{{_id}}][note]"
-              placeholder="Optional note for {{groupLeaderName}}"
-              style="display:none;"></textarea>
-          </div>
-        {{/each}}
-      </fieldset>
-
-      <button type="submit" class="form-button submit-button">send suggestions</button>
-    </form>
-  </div>
-{{/if}}
-
 
     <!-- Quick Tag (Member/Group Member) -->
     {{#if isGroupMemberOrMember}}
@@ -163,11 +161,13 @@
           <input type="hidden" name="_csrf" value="{{csrfToken}}">
           <input type="hidden" name="itemId" value="{{_id}}">
           <input type="hidden" name="itemType" value="exercise">
-          <input type="hidden" name="tagName" value="Read Later">  {{!-- default, prompt will overwrite --}}
-          <button type="button"
-                  class="tag-this-unit-link"
-                  onclick="promptAndSubmitTag('exerciseTagForm-{{_id}}')"
-                  style="background:none;border:none;padding:0;cursor:pointer;">
+          <input type="hidden" name="tagName" value="Read Later">
+          <button
+            type="button"
+            class="tag-this-unit-link"
+            onclick="promptAndSubmitTag('exerciseTagForm-{{_id}}')"
+            style="background:none;border:none;padding:0;cursor:pointer;"
+          >
             tag this unit
             <svg class="tag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 39.48 36.66">
               <path class="cls-1" d="M38.77,21.12L16.05.56C15.65.19,15.13,0,14.59,0L2.12.16c-1.18.01-2.12.97-2.12,2.15v11.2c0,.63.28,1.24.77,1.64l24.95,21c.9.76,2.24.65,3.01-.24l10.23-11.8c.77-.88.69-2.22-.18-3ZM6.28,8.87c-1.57,0-2.84-1.27-2.84-2.84s1.27-2.84,2.84-2.84,2.84,1.27,2.84,2.84-1.27,2.84-2.84,2.84Z"/>
@@ -177,29 +177,33 @@
       </div>
     {{/if}}
 
-    
+    <!-- Notes Section -->
+    {{#if isGroupMemberOrLeaderOrMember}}
+      <div class="single_exercise-notes-container">
+        <h3 class="single_exercise-notes-title">complete this unit by recording notes</h3>
+        <p class="single_exercise-notes-instructions">
+          To complete this unit, record notes on this exercise. Consider how it relates to your work and how it might change your approach. Better yet, try the exercise with a group and write about the results. These notes will be part of your Twennie learning record. (Keep your learning data hygienic - only post notes on a unit once you've completed all the tasks.)
+        </p>
 
-<!-- Notes Section -->
-{{#if isGroupMemberOrLeaderOrMember}}
-  <div class="single_exercise-notes-container">
-    <h3 class="single_exercise-notes-title">complete this unit by recording notes</h3>
-    <p class="single_exercise-notes-instructions">
-      To complete this unit, record notes on this exercise. Consider how it relates to your work and how it might change your approach. Better yet, try the exercise with a group and write about the results. These notes will be part of your Twennie learning record. (Keep your learning data hygienic - only post notes on a unit once you've completed all the tasks.)
-    </p>
+        <form action="/notes/submit" method="POST" class="single_exercise-notes-form">
+          <input type="hidden" name="_csrf" value="{{csrfToken}}">
+          <input type="hidden" name="unitId" value="{{_id}}">
+          <input type="hidden" name="unitType" value="exercise">
+          <input type="hidden" name="main_topic" value="{{main_topic}}">
+          <input type="hidden" name="secondary_topic" value="{{sub_topic}}">
 
-    <form action="/notes/submit" method="POST" class="single_exercise-notes-form">
-      <input type="hidden" name="_csrf" value="{{csrfToken}}">
-      <input type="hidden" name="unitId" value="{{_id}}">
-      <input type="hidden" name="unitType" value="exercise">
-      <input type="hidden" name="main_topic" value="{{main_topic}}">
-      <input type="hidden" name="secondary_topic" value="{{sub_topic}}">
+          <textarea
+            name="note_content"
+            class="single_exercise-notes-textarea"
+            rows="5"
+            maxlength="1000"
+            placeholder="Write your notes here..."
+          ></textarea>
 
-      <textarea name="note_content" class="single_exercise-notes-textarea" rows="5" maxlength="1000" placeholder="Write your notes here..."></textarea>
-
-      <button type="submit" class="single_exercise-notes-submit">submit notes</button>
-    </form>
-  </div>
-{{/if}}
+          <button type="submit" class="single_exercise-notes-submit">submit notes</button>
+        </form>
+      </div>
+    {{/if}}
 
     <!-- Access notice (when gated) -->
     {{#unless isAuthorizedToViewFullContent}}
@@ -212,7 +216,7 @@
         </p>
       </div>
     {{/unless}}
-  </div> <!-- Closing .single_exercise-main -->
+  </div>
 
   <!-- Sidebar -->
   <aside class="single_exercise-sidebar">
@@ -280,6 +284,5 @@
     if (action === 'remove') return removeTagFromUnit(btn.dataset.tag, btn.dataset.item, btn.dataset.type);
   });
 </script>
-
 
 
