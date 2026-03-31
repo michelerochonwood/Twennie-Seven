@@ -24,16 +24,15 @@
     {{#if document_uploads}}
       <div class="single_exercise-documents" id="exerciseDocs-{{_id}}">
 {{#each document_uploads}}
-  <a
-    href="{{this.url}}"
-    class="single_exercise-download-btn download-link"
-    data-src="{{this.url}}"
-    data-filename="{{this.filename}}"
-    download="{{this.filename}}"
-    rel="nofollow"
-  >
-    Download {{this.filename}}
-  </a>
+<a
+  href="{{this.url}}"
+  class="single_exercise-download-btn"
+  download="{{this.filename}}"
+  target="_blank"
+  rel="noopener"
+>
+  Download {{this.filename}}
+</a>
 {{/each}}
       </div>
     {{/if}}

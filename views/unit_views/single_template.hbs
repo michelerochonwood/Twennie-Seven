@@ -43,14 +43,15 @@
 {{#if documentUploads}}
   <div class="single_template-documents">
     {{#each documentUploads}}
-      <a
-        href="{{this.url}}"
-        class="single_template-download-btn"
-        download="{{this.filename}}"
-        rel="nofollow"
-      >
-        Download {{this.filename}}
-      </a>
+<a
+  href="{{this.url}}"
+  class="single_template-download-btn"
+  download="{{this.filename}}"
+  target="_blank"
+  rel="noopener"
+>
+  Download {{this.filename}}
+</a>
     {{/each}}
   </div>
 {{/if}}
