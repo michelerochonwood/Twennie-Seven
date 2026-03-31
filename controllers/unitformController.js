@@ -1382,10 +1382,8 @@ submitExercise: async (req, res) => {
 
     if (!requireTermsForPosting(req, res)) return;
 
-    // Pull id + upcoming context; keep rest as payload
-    const { _id, fromUpcomingId, ...exerciseData } = req.body;
+    const { _id, fromUpcomingId, existing_document_uploads, ...exerciseData } = req.body;
 
-    // Checkbox "on" -> boolean
     const booleanFields = [
       'clarify_topic',
       'topics_and_enlightenment',
@@ -1399,7 +1397,6 @@ submitExercise: async (req, res) => {
       exerciseData[field] = req.body[field] === 'on';
     });
 
-    // Normalize secondary topics
     if (
       typeof exerciseData.secondary_topics === 'string' &&
       exerciseData.secondary_topics.trim() !== ''
@@ -1409,15 +1406,36 @@ submitExercise: async (req, res) => {
       exerciseData.secondary_topics = [];
     }
 
-    // Attach author
     exerciseData.author = { id: req.user._id };
 
-    // Handle document uploads
+    // Normalize existing docs passed back from edit form, if any
+    let preservedDocuments = [];
+    if (existing_document_uploads) {
+      try {
+        const parsed = typeof existing_document_uploads === 'string'
+          ? JSON.parse(existing_document_uploads)
+          : existing_document_uploads;
+
+        if (Array.isArray(parsed)) {
+          preservedDocuments = parsed
+            .filter(doc => doc && doc.url && doc.filename)
+            .map(doc => ({
+              url: String(doc.url).trim(),
+              filename: String(doc.filename).trim(),
+            }));
+        }
+      } catch (err) {
+        console.error('Could not parse existing_document_uploads:', err);
+      }
+    }
+
     const uploadedFiles = Array.isArray(req.files)
       ? req.files
       : req.files?.document_uploads || [];
 
-    if (uploadedFiles.length > 3) {
+    const totalDocumentCount = preservedDocuments.length + uploadedFiles.length;
+
+    if (totalDocumentCount > 3) {
       return res.status(400).render('unit_form_views/form_exercise', {
         layout: 'unitformlayout',
         data: req.body,
@@ -1427,11 +1445,17 @@ submitExercise: async (req, res) => {
       });
     }
 
+    let uploadedDocuments = [];
+
     if (uploadedFiles.length > 0) {
       const uploadPromises = uploadedFiles.map((file) => {
         return new Promise((resolve, reject) => {
-          const baseName = file.originalname.replace(/\.[^/.]+$/, '');
-          const safePublicId = `${Date.now()}-${baseName}`;
+          if (!file?.buffer || !file.originalname) {
+            return resolve(null);
+          }
+
+          const safeOriginalName = file.originalname.replace(/[^\w.\-]/g, '_');
+          const safePublicId = `${Date.now()}-${safeOriginalName}`;
 
           const stream = uploader.upload_stream(
             {
@@ -1444,7 +1468,9 @@ submitExercise: async (req, res) => {
               if (error) return reject(error);
 
               if (!result?.secure_url) {
-                return reject(new Error(`Cloudinary upload failed for file: ${file.originalname}`));
+                return reject(
+                  new Error(`Cloudinary upload failed for file: ${file.originalname}`)
+                );
               }
 
               resolve({
@@ -1454,22 +1480,20 @@ submitExercise: async (req, res) => {
             }
           );
 
-          if (file?.buffer) {
-            stream.end(file.buffer);
-          } else {
-            resolve(null);
-          }
+          stream.end(file.buffer);
         });
       });
 
-      const uploadedDocuments = (await Promise.all(uploadPromises)).filter(Boolean);
-
-      // For now, replace with newly uploaded documents.
-      // If editing and no new files are uploaded, existing docs remain untouched.
-      exerciseData.document_uploads = uploadedDocuments;
+      uploadedDocuments = (await Promise.all(uploadPromises)).filter(Boolean);
     }
 
-    // Create or update
+    // Keep existing docs if no new upload.
+    // If there are new uploads, append them to preserved docs.
+    exerciseData.document_uploads =
+      uploadedDocuments.length > 0
+        ? [...preservedDocuments, ...uploadedDocuments]
+        : preservedDocuments;
+
     let exercise;
 
     if (_id) {
@@ -1489,7 +1513,6 @@ submitExercise: async (req, res) => {
       console.log('New exercise created successfully.');
     }
 
-    // Determine "published" state robustly
     const isPublished = (() => {
       const status =
         (typeof exercise.status !== 'undefined' ? exercise.status : undefined) ??
@@ -1501,7 +1524,6 @@ submitExercise: async (req, res) => {
       return status === true || String(status).toLowerCase() === 'published';
     })();
 
-    // Only if this came from an Upcoming AND it's now published → migrate & delete Upcoming
     if (fromUpcomingId && isPublished) {
       try {
         await migrateAndDeleteUpcoming({
@@ -1512,11 +1534,9 @@ submitExercise: async (req, res) => {
         console.log(`Upcoming ${fromUpcomingId} migrated and deleted after publish.`);
       } catch (migrateErr) {
         console.error('Failed migrating/deleting upcoming during publish:', migrateErr);
-        // Non-fatal: continue; exercise itself is saved.
       }
     }
 
-    // Success page
     return res.render('unit_form_views/unit_success', {
       layout: 'unitformlayout',
       unitType: 'exercise',
@@ -1557,18 +1577,16 @@ submitExercise: async (req, res) => {
 },
 
 
-   submitTemplate: async (req, res) => {
+submitTemplate: async (req, res) => {
   try {
-
     if (!req.user || !req.user._id) {
       throw new Error('User is not authenticated or missing user ID.');
     }
 
     if (!requireTermsForPosting(req, res)) return;
 
-
     // Pull id + upcoming context; keep rest as payload
-    const { _id, fromUpcomingId, ...templateData } = req.body;
+    const { _id, fromUpcomingId, existing_document_uploads, ...templateData } = req.body;
 
     // Checkbox "on" -> boolean
     const booleanFields = [
@@ -1576,14 +1594,18 @@ submitExercise: async (req, res) => {
       'produce_deliverables',
       'new_ideas',
       'engaging',
-      'permission', // ⬅️ 'file_format' intentionally excluded
+      'permission',
     ];
+
     booleanFields.forEach((field) => {
       templateData[field] = req.body[field] === 'on';
     });
 
-    // Optional: normalize a single secondary topic (string -> [string])
-    if (typeof templateData.secondary_topics === 'string' && templateData.secondary_topics.trim() !== '') {
+    // Normalize secondary topics
+    if (
+      typeof templateData.secondary_topics === 'string' &&
+      templateData.secondary_topics.trim() !== ''
+    ) {
       templateData.secondary_topics = [templateData.secondary_topics];
     } else if (!Array.isArray(templateData.secondary_topics)) {
       templateData.secondary_topics = [];
@@ -1592,8 +1614,46 @@ submitExercise: async (req, res) => {
     // Attach author
     templateData.author = { id: req.user._id };
 
-    // For new templates, at least one file is required
-    if (!_id && (!req.files || req.files.length === 0)) {
+    // Normalize existing uploads passed back from edit form
+    let preservedDocuments = [];
+    if (existing_document_uploads) {
+      try {
+        const parsed = typeof existing_document_uploads === 'string'
+          ? JSON.parse(existing_document_uploads)
+          : existing_document_uploads;
+
+        if (Array.isArray(parsed)) {
+          preservedDocuments = parsed
+            .filter(doc => doc && doc.url && doc.filename)
+            .map(doc => ({
+              url: String(doc.url).trim(),
+              filename: String(doc.filename).trim(),
+              mimetype: doc.mimetype ? String(doc.mimetype).trim() : 'application/octet-stream',
+            }));
+        }
+      } catch (err) {
+        console.error('Could not parse existing_document_uploads:', err);
+      }
+    }
+
+    // Support either multer array style or named field style
+    const uploadedFiles = Array.isArray(req.files)
+      ? req.files
+      : req.files?.documentUploads || [];
+
+    const totalDocumentCount = preservedDocuments.length + uploadedFiles.length;
+
+    if (totalDocumentCount > 3) {
+      return res.status(400).render('unit_form_views/form_template', {
+        layout: 'unitformlayout',
+        data: req.body,
+        errorMessage: 'You may upload up to 3 documents only.',
+        csrfToken: getCsrfToken(req),
+      });
+    }
+
+    // For new templates, require at least one file
+    if (!_id && totalDocumentCount === 0) {
       return res.status(400).render('unit_form_views/error', {
         layout: 'unitformlayout',
         title: 'Missing File',
@@ -1601,73 +1661,86 @@ submitExercise: async (req, res) => {
       });
     }
 
-    // Upload any provided files (append on edit)
-    let uploadedFiles = [];
-    if (Array.isArray(req.files) && req.files.length > 0) {
-      uploadedFiles = await Promise.all(
-        req.files.map(
-          (file) =>
-            new Promise((resolve, reject) => {
-              const baseName = file.originalname.replace(/\.[^/.]+$/, '');
-              const stream = uploader.upload_stream(
-                {
-                  resource_type: 'raw',
-                  folder: 'twennie_templates',
-                  public_id: baseName,
-                  overwrite: true,
-                },
-                (error, result) => {
-                  if (error) return reject(new Error('Cloudinary upload failed: ' + error.message));
-                  resolve({
-                    filename: file.originalname,
-                    mimetype: file.mimetype,
-                    url: result.secure_url,
-                  });
-                }
-              );
+    let uploadedDocuments = [];
 
-              if (file?.buffer) {
-                const readable = new Readable();
-                readable._read = () => {};
-                readable.push(file.buffer);
-                readable.push(null);
-                readable.pipe(stream);
-              } else {
-                resolve(null);
+    if (uploadedFiles.length > 0) {
+      const uploadPromises = uploadedFiles.map((file) => {
+        return new Promise((resolve, reject) => {
+          if (!file?.buffer || !file.originalname) {
+            return resolve(null);
+          }
+
+          const safeOriginalName = file.originalname.replace(/[^\w.\-]/g, '_');
+          const safePublicId = `${Date.now()}-${safeOriginalName}`;
+
+          const stream = uploader.upload_stream(
+            {
+              resource_type: 'raw',
+              folder: 'twennie_templates',
+              public_id: safePublicId,
+              overwrite: false,
+            },
+            (error, result) => {
+              if (error) {
+                return reject(new Error('Cloudinary upload failed: ' + error.message));
               }
-            })
-        )
-      );
-      uploadedFiles = uploadedFiles.filter(Boolean);
+
+              if (!result?.secure_url) {
+                return reject(
+                  new Error(`Cloudinary upload failed for file: ${file.originalname}`)
+                );
+              }
+
+              resolve({
+                filename: file.originalname,
+                mimetype: file.mimetype || 'application/octet-stream',
+                url: result.secure_url,
+              });
+            }
+          );
+
+          stream.end(file.buffer);
+        });
+      });
+
+      uploadedDocuments = (await Promise.all(uploadPromises)).filter(Boolean);
     }
+
+    // Keep existing docs if no new uploads.
+    // If new uploads exist, append them to preserved docs.
+    const mergedUploads =
+      uploadedDocuments.length > 0
+        ? [...preservedDocuments, ...uploadedDocuments]
+        : preservedDocuments;
 
     let templateDoc;
 
     if (_id) {
-      // Edit: fetch current to preserve/append existing uploads
-      const existing = await Template.findById(_id);
-      if (!existing) throw new Error(`Template not found for ID ${_id}.`);
-
-      const mergedUploads =
-        uploadedFiles.length > 0
-          ? [ ...(existing.documentUploads || []), ...uploadedFiles ]
-          : existing.documentUploads || [];
-
       templateDoc = await Template.findByIdAndUpdate(
         _id,
-        { ...templateData, documentUploads: mergedUploads },
-        { new: true, runValidators: true }
+        {
+          ...templateData,
+          documentUploads: mergedUploads,
+        },
+        {
+          new: true,
+          runValidators: true,
+        }
       );
+
+      if (!templateDoc) {
+        throw new Error(`Template not found for ID ${_id}.`);
+      }
+
       console.log(`Template with ID ${_id} updated successfully.`);
     } else {
-      // Create: must have at least one upload (guarded above)
-      templateData.documentUploads = uploadedFiles;
+      templateData.documentUploads = mergedUploads;
       templateDoc = new Template(templateData);
       await templateDoc.save();
       console.log('New template created successfully.');
     }
 
-    // Determine "published" state robustly
+    // Determine published state robustly
     const isPublished = (() => {
       const status =
         (typeof templateDoc.status !== 'undefined' ? templateDoc.status : undefined) ??
@@ -1676,11 +1749,10 @@ submitExercise: async (req, res) => {
         templateDoc.is_published ??
         templateData.is_published;
 
-      // Accept common patterns: boolean true or status string "published"
       return status === true || String(status).toLowerCase() === 'published';
     })();
 
-    // 🔁 Only migrate/delete Upcoming if originated from Upcoming AND is now published
+    // Only migrate/delete Upcoming if originated from Upcoming AND is now published
     if (fromUpcomingId && isPublished) {
       try {
         await migrateAndDeleteUpcoming({
@@ -1691,18 +1763,17 @@ submitExercise: async (req, res) => {
         console.log(`Upcoming ${fromUpcomingId} migrated and deleted after publish.`);
       } catch (migrateErr) {
         console.error('Failed migrating/deleting upcoming during publish:', migrateErr);
-        // Non-fatal: continue; template itself is saved.
       }
     }
 
-    // ✅ Always render success page
-return res.render('unit_form_views/unit_success', {
-  layout: 'unitformlayout',
-  unitType: 'template',
-    dashboardLink: dashboardHomeForUser(req.user),
-  unit: templateDoc,
-  csrfToken: getCsrfToken(req),
-});
+    return res.render('unit_form_views/unit_success', {
+      layout: 'unitformlayout',
+      unitType: 'template',
+      dashboardLink: dashboardHomeForUser(req.user),
+      unit: templateDoc,
+      csrfToken: getCsrfToken(req),
+    });
+
   } catch (error) {
     console.error('Error submitting template:', error);
 
