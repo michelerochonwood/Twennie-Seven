@@ -129,6 +129,34 @@ html, body {
   box-shadow: 0 10px 30px rgba(0,0,0,0.15);
 }
 
+/* Two video layout */
+.interactive-video-wrapper.two-videos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Individual video block */
+.interactive-video-item {
+  text-align: center;
+}
+
+/* Titles under videos */
+.interactive-video-title {
+  color: white;
+  margin-top: 10px;
+  font-weight: 700;
+}
+
+/* Mobile: stack videos */
+@media screen and (max-width: 900px) {
+  .interactive-video-wrapper.two-videos {
+    grid-template-columns: 1fr;
+  }
+}
+
 
 /* Grid Layout for Left and Right Sections */
 .what-is-twennie-grid {
