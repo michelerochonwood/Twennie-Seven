@@ -1610,15 +1610,7 @@ submitTemplate: async (req, res) => {
 
     templateData.author = { id: req.user._id };
 
-    if (templateData.file_format !== 'pdf') {
-      return res.status(400).render('unit_form_views/form_template', {
-        layout: 'unitformlayout',
-        data: req.body,
-        errorMessage: 'Templates must be uploaded as PDF files only.',
-        csrfToken: getCsrfToken(req),
-      });
-    }
-
+    // Preserve existing uploads on edit
     let preservedDocuments = [];
     if (existing_document_uploads) {
       try {
@@ -1628,11 +1620,12 @@ submitTemplate: async (req, res) => {
 
         if (Array.isArray(parsed)) {
           preservedDocuments = parsed
-            .filter(doc => doc && doc.url && doc.filename)
+            .filter(doc => doc && doc.url && doc.filename && doc.role)
             .map(doc => ({
               url: String(doc.url).trim(),
               filename: String(doc.filename).trim(),
-              mimetype: doc.mimetype ? String(doc.mimetype).trim() : 'application/pdf',
+              mimetype: doc.mimetype ? String(doc.mimetype).trim() : 'application/octet-stream',
+              role: String(doc.role).trim(),
             }));
         }
       } catch (err) {
@@ -1640,91 +1633,160 @@ submitTemplate: async (req, res) => {
       }
     }
 
-    const uploadedFiles = Array.isArray(req.files)
-      ? req.files
-      : req.files?.document_uploads || [];
+    // Support multer field-based uploads:
+    // template_pdf = required view file
+    // template_working = optional editable file
+    const pdfFiles = req.files?.template_pdf || [];
+    const workingFiles = req.files?.template_working || [];
 
-    const totalDocumentCount = preservedDocuments.length + uploadedFiles.length;
-
-    if (totalDocumentCount > 1) {
+    if (pdfFiles.length > 1) {
       return res.status(400).render('unit_form_views/form_template', {
         layout: 'unitformlayout',
         data: req.body,
-        errorMessage: 'You may upload only 1 PDF document for a template.',
+        errorMessage: 'Please upload only one PDF view file.',
         csrfToken: getCsrfToken(req),
       });
     }
 
-    if (!_id && totalDocumentCount === 0) {
-      return res.status(400).render('unit_form_views/error', {
-        layout: 'unitformlayout',
-        title: 'Missing File',
-        errorMessage: 'Please upload your template PDF before submitting.',
-      });
-    }
-
-    const invalidFiles = uploadedFiles.filter(file =>
-      !(file.mimetype === 'application/pdf' || /\.pdf$/i.test(file.originalname))
-    );
-
-    if (invalidFiles.length > 0) {
+    if (workingFiles.length > 1) {
       return res.status(400).render('unit_form_views/form_template', {
         layout: 'unitformlayout',
         data: req.body,
-        errorMessage: 'Only PDF files are allowed for templates.',
+        errorMessage: 'Please upload only one working file.',
         csrfToken: getCsrfToken(req),
       });
     }
 
-    let uploadedDocuments = [];
+    const uploadedPdf = pdfFiles[0];
+    const uploadedWorking = workingFiles[0];
 
-    if (uploadedFiles.length > 0) {
-      const uploadPromises = uploadedFiles.map((file) => {
-        return new Promise((resolve, reject) => {
-          if (!file?.buffer || !file.originalname) {
-            return resolve(null);
-          }
+    const preservedView = preservedDocuments.find(doc => doc.role === 'view');
+    const preservedWorking = preservedDocuments.find(doc => doc.role === 'working');
 
-          const safeOriginalName = file.originalname.replace(/[^\w.\-]/g, '_');
-          const safePublicId = `${Date.now()}-${safeOriginalName}`;
+    // New template must always have a PDF view file
+    if (!_id && !uploadedPdf) {
+      return res.status(400).render('unit_form_views/form_template', {
+        layout: 'unitformlayout',
+        data: req.body,
+        errorMessage: 'Please upload a PDF view file for this template.',
+        csrfToken: getCsrfToken(req),
+      });
+    }
 
-          const stream = uploader.upload_stream(
-            {
-              resource_type: 'image',
-              folder: 'twennie_templates',
-              public_id: safePublicId,
-              overwrite: false,
-            },
-            (error, result) => {
-              if (error) {
-                return reject(new Error('Cloudinary upload failed: ' + error.message));
-              }
+    // On edit, must still end up with a PDF view file
+    if (_id && !uploadedPdf && !preservedView) {
+      return res.status(400).render('unit_form_views/form_template', {
+        layout: 'unitformlayout',
+        data: req.body,
+        errorMessage: 'A template must have one PDF view file.',
+        csrfToken: getCsrfToken(req),
+      });
+    }
 
-              if (!result?.secure_url) {
-                return reject(
-                  new Error(`Cloudinary upload failed for file: ${file.originalname}`)
-                );
-              }
+    // Validate uploaded PDF
+    if (
+      uploadedPdf &&
+      !(
+        uploadedPdf.mimetype === 'application/pdf' ||
+        /\.pdf$/i.test(uploadedPdf.originalname)
+      )
+    ) {
+      return res.status(400).render('unit_form_views/form_template', {
+        layout: 'unitformlayout',
+        data: req.body,
+        errorMessage: 'The view file must be a PDF.',
+        csrfToken: getCsrfToken(req),
+      });
+    }
 
-              resolve({
-                filename: file.originalname,
-                mimetype: file.mimetype || 'application/pdf',
-                url: result.secure_url,
-              });
-            }
-          );
+    // Validate uploaded working file
+    if (uploadedWorking) {
+      const allowedWorkingExtensions = /\.(doc|docx|xls|xlsx|ppt|pptx)$/i;
+      const allowedWorkingMimes = [
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/vnd.ms-powerpoint',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+      ];
 
-          stream.end(file.buffer);
+      const validWorkingFile =
+        allowedWorkingExtensions.test(uploadedWorking.originalname) ||
+        allowedWorkingMimes.includes(uploadedWorking.mimetype);
+
+      if (!validWorkingFile) {
+        return res.status(400).render('unit_form_views/form_template', {
+          layout: 'unitformlayout',
+          data: req.body,
+          errorMessage: 'The working file must be a Word, Excel, or PowerPoint file.',
+          csrfToken: getCsrfToken(req),
         });
-      });
-
-      uploadedDocuments = (await Promise.all(uploadPromises)).filter(Boolean);
+      }
     }
 
-    const mergedUploads =
-      uploadedDocuments.length > 0
-        ? [...preservedDocuments, ...uploadedDocuments]
-        : preservedDocuments;
+    const uploadToCloudinary = (file, { folder, resource_type, role }) => {
+      return new Promise((resolve, reject) => {
+        if (!file?.buffer || !file.originalname) {
+          return resolve(null);
+        }
+
+        const safeOriginalName = file.originalname.replace(/[^\w.\-]/g, '_');
+        const safePublicId = `${Date.now()}-${safeOriginalName}`;
+
+        const stream = uploader.upload_stream(
+          {
+            resource_type,
+            folder,
+            public_id: safePublicId,
+            overwrite: false,
+          },
+          (error, result) => {
+            if (error) {
+              return reject(new Error('Cloudinary upload failed: ' + error.message));
+            }
+
+            if (!result?.secure_url) {
+              return reject(
+                new Error(`Cloudinary upload failed for file: ${file.originalname}`)
+              );
+            }
+
+            resolve({
+              filename: file.originalname,
+              mimetype: file.mimetype || 'application/octet-stream',
+              url: result.secure_url,
+              role,
+            });
+          }
+        );
+
+        stream.end(file.buffer);
+      });
+    };
+
+    // Upload new files if provided
+    const uploadedViewDoc = uploadedPdf
+      ? await uploadToCloudinary(uploadedPdf, {
+          folder: 'twennie_templates',
+          resource_type: 'image',
+          role: 'view',
+        })
+      : null;
+
+    const uploadedWorkingDoc = uploadedWorking
+      ? await uploadToCloudinary(uploadedWorking, {
+          folder: 'twennie_templates',
+          resource_type: 'raw',
+          role: 'working',
+        })
+      : null;
+
+    // Build final uploads array
+    const finalViewDoc = uploadedViewDoc || preservedView || null;
+    const finalWorkingDoc = uploadedWorkingDoc || preservedWorking || null;
+
+    const finalDocumentUploads = [finalViewDoc, finalWorkingDoc].filter(Boolean);
 
     let templateDoc;
 
@@ -1733,7 +1795,7 @@ submitTemplate: async (req, res) => {
         _id,
         {
           ...templateData,
-          documentUploads: mergedUploads,
+          documentUploads: finalDocumentUploads,
         },
         {
           new: true,
@@ -1744,10 +1806,16 @@ submitTemplate: async (req, res) => {
       if (!templateDoc) {
         throw new Error(`Template not found for ID ${_id}.`);
       }
+
+      console.log(`Template with ID ${_id} updated successfully.`);
     } else {
-      templateData.documentUploads = mergedUploads;
-      templateDoc = new Template(templateData);
+      templateDoc = new Template({
+        ...templateData,
+        documentUploads: finalDocumentUploads,
+      });
+
       await templateDoc.save();
+      console.log('New template created successfully.');
     }
 
     const isPublished = (() => {
@@ -1768,6 +1836,7 @@ submitTemplate: async (req, res) => {
           toItemId: templateDoc._id,
           toUnitType: 'template',
         });
+        console.log(`Upcoming ${fromUpcomingId} migrated and deleted after publish.`);
       } catch (migrateErr) {
         console.error('Failed migrating/deleting upcoming during publish:', migrateErr);
       }
@@ -1783,6 +1852,15 @@ submitTemplate: async (req, res) => {
 
   } catch (error) {
     console.error('Error submitting template:', error);
+
+    if (error.name === 'ValidationError') {
+      return res.status(400).render('unit_form_views/form_template', {
+        layout: 'unitformlayout',
+        data: req.body,
+        errorMessage: error.message,
+        csrfToken: getCsrfToken(req),
+      });
+    }
 
     const isCsrfError = error.code === 'EBADCSRFTOKEN';
     if (isCsrfError) {
