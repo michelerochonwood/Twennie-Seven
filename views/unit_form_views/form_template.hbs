@@ -25,107 +25,94 @@
 
       <!-- Title -->
       <div class="form-field">
-        <label for="template-title">Template Title</label>
-        <input type="text" id="template-title" name="template_title" value="{{data.template_title}}" required>
+        <label>Template Title</label>
+        <input type="text" name="template_title" value="{{data.template_title}}" required>
       </div>
 
       {{> unitformpartials/topicdropdown }}
 
       <!-- Sub Topic -->
       <div class="form-field">
-        <label for="sub-topic">Sub Topic (Optional)</label>
-        <input type="text" id="sub-topic" name="sub_topic" value="{{data.sub_topic}}">
+        <label>Sub Topic (Optional)</label>
+        <input type="text" name="sub_topic" value="{{data.sub_topic}}">
       </div>
 
-      <!-- Existing files display -->
+      <!-- Existing Files -->
       {{#if data.documentUploads}}
         <div class="uploaded-files">
           {{#each data.documentUploads}}
             <p>
+              {{#ifEquals this.role "view"}}
+                📄 View File:
+              {{else}}
+                🛠️ Working File:
+              {{/ifEquals}}
+
               <a href="{{this.url}}" target="_blank" rel="noopener">
-                View {{this.filename}}
+                {{this.filename}}
               </a>
             </p>
           {{/each}}
         </div>
       {{/if}}
 
-      <!-- Upload -->
-<!-- PDF Upload (REQUIRED) -->
-<div class="form-field">
-  <label for="template_pdf">Upload Template (PDF – required)</label>
-  <input
-    type="file"
-    id="template_pdf"
-    name="template_pdf"
-    accept=".pdf,application/pdf"
-    required
-  >
-  <small>This PDF will be used for viewing in the browser.</small>
-</div>
+      <!-- PDF Upload -->
+      <div class="form-field">
+        <label>Upload Template (PDF – required for new templates)</label>
+        <input
+          type="file"
+          name="template_pdf"
+          accept=".pdf,application/pdf"
+          {{#unless data._id}}required{{/unless}}
+        >
+        <small>This file is used for viewing in the browser.</small>
+      </div>
 
-<!-- Working File Upload (OPTIONAL) -->
-<div class="form-field">
-  <label for="template_working">Upload Working File (optional)</label>
-  <input
-    type="file"
-    id="template_working"
-    name="template_working"
-    accept=".doc,.docx,.xls,.xlsx"
-  >
-  <small>Optional: upload a Word or Excel file for practical use.</small>
-</div>
+      <!-- Working File -->
+      <div class="form-field">
+        <label>Upload Working File (optional)</label>
+        <input
+          type="file"
+          name="template_working"
+          accept=".doc,.docx,.xls,.xlsx,.ppt,.pptx"
+        >
+        <small>Optional editable version.</small>
+      </div>
 
       <!-- File Format -->
       <div class="form-field">
         <label>File Format</label>
-        <div class="white-container">
-          <div class="toggle-group">
-            <label>
-              <input type="radio" name="file_format" value="pdf" checked required>
-              PDF
-            </label>
-          </div>
-        </div>
+        <label>
+          <input type="radio" name="file_format" value="pdf" checked required>
+          PDF
+        </label>
       </div>
 
       <!-- Permission -->
       <div class="form-toggle">
         <label>
           <input type="checkbox" name="permission" {{#if data.permission}}checked{{/if}}>
-          I consent to Twennie using this library unit for promotional purposes.
+          I consent to Twennie using this unit for promotional purposes.
         </label>
       </div>
 
-      <!-- Short Summary -->
+      <!-- Summaries -->
       <div class="form-field">
-        <label for="short-summary">Short Summary (~30 words)</label>
-        <textarea id="short-summary" name="short_summary" maxlength="300" required>{{data.short_summary}}</textarea>
+        <label>Short Summary</label>
+        <textarea name="short_summary" required>{{data.short_summary}}</textarea>
       </div>
 
-      <!-- Full Summary -->
       <div class="form-field">
-        <label for="full-summary">Full Summary (optional)</label>
-        <textarea id="full-summary" name="full_summary" maxlength="600">{{data.full_summary}}</textarea>
+        <label>Full Summary (optional)</label>
+        <textarea name="full_summary">{{data.full_summary}}</textarea>
       </div>
 
       <!-- Visibility -->
       <div class="form-field">
-        <label>Who can access this template?</label>
-        <div class="visibility-toggle-row">
-          <label>
-            <input type="radio" name="visibility" value="team_only" {{#ifEquals data.visibility "team_only"}}checked{{/ifEquals}} required>
-            My group
-          </label>
-          <label>
-            <input type="radio" name="visibility" value="organization_only" {{#ifEquals data.visibility "organization_only"}}checked{{/ifEquals}}>
-            My organization
-          </label>
-          <label>
-            <input type="radio" name="visibility" value="all_members" {{#ifEquals data.visibility "all_members"}}checked{{/ifEquals}}>
-            All members
-          </label>
-        </div>
+        <label>Visibility</label>
+        <label><input type="radio" name="visibility" value="team_only"> Team</label>
+        <label><input type="radio" name="visibility" value="organization_only"> Org</label>
+        <label><input type="radio" name="visibility" value="all_members"> All</label>
       </div>
 
       <!-- Submit -->
@@ -141,6 +128,5 @@
 
 {{> mainpartials/home_subfooter}}
 {{> mainpartials/footer}}
-
 
 
