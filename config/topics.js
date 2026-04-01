@@ -24,6 +24,7 @@ const topics = [
   'Leading Change',
   'Leading Groups on Twennie',
   'Making a Proposal Easy to Read, Skim, and Evaluate',
+  'Making Safety a Part of Your Culture',
   'Managing Scope So It Doesnt Manage You',
   'Mental Health in Consulting Environments',
   'Non-Technical Roles in Technical Environments',
