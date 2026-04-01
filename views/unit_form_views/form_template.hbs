@@ -18,26 +18,33 @@
         <input type="hidden" name="_id" value="{{data._id}}">
       {{/if}}
 
-      <!-- Preserve existing uploads -->
       {{#if data.documentUploads}}
         <input type="hidden" name="existing_document_uploads" value='{{json data.documentUploads}}'>
       {{/if}}
 
-      <!-- Title -->
       <div class="form-field">
-        <label>Template Title</label>
-        <input type="text" name="template_title" value="{{data.template_title}}" required>
+        <label for="template_title">Template Title</label>
+        <input
+          type="text"
+          id="template_title"
+          name="template_title"
+          value="{{data.template_title}}"
+          required
+        >
       </div>
 
       {{> unitformpartials/topicdropdown }}
 
-      <!-- Sub Topic -->
       <div class="form-field">
-        <label>Sub Topic (Optional)</label>
-        <input type="text" name="sub_topic" value="{{data.sub_topic}}">
+        <label for="sub_topic">Sub Topic (Optional)</label>
+        <input
+          type="text"
+          id="sub_topic"
+          name="sub_topic"
+          value="{{data.sub_topic}}"
+        >
       </div>
 
-      <!-- Existing Files -->
       {{#if data.documentUploads}}
         <div class="uploaded-files">
           {{#each data.documentUploads}}
@@ -47,20 +54,17 @@
               {{else}}
                 🛠️ Working File:
               {{/ifEquals}}
-
-              <a href="{{this.url}}" target="_blank" rel="noopener">
-                {{this.filename}}
-              </a>
+              <a href="{{this.url}}" target="_blank" rel="noopener">{{this.filename}}</a>
             </p>
           {{/each}}
         </div>
       {{/if}}
 
-      <!-- PDF Upload -->
       <div class="form-field">
-        <label>Upload Template (PDF – required for new templates)</label>
+        <label for="template_pdf">Upload Template (PDF – required for new templates)</label>
         <input
           type="file"
+          id="template_pdf"
           name="template_pdf"
           accept=".pdf,application/pdf"
           {{#unless data._id}}required{{/unless}}
@@ -68,27 +72,17 @@
         <small>This file is used for viewing in the browser.</small>
       </div>
 
-      <!-- Working File -->
       <div class="form-field">
-        <label>Upload Working File (optional)</label>
+        <label for="template_working">Upload Working File (optional)</label>
         <input
           type="file"
+          id="template_working"
           name="template_working"
           accept=".doc,.docx,.xls,.xlsx,.ppt,.pptx"
         >
         <small>Optional editable version.</small>
       </div>
 
-      <!-- File Format -->
-      <div class="form-field">
-        <label>File Format</label>
-        <label>
-          <input type="radio" name="file_format" value="pdf" checked required>
-          PDF
-        </label>
-      </div>
-
-      <!-- Permission -->
       <div class="form-toggle">
         <label>
           <input type="checkbox" name="permission" {{#if data.permission}}checked{{/if}}>
@@ -96,32 +90,64 @@
         </label>
       </div>
 
-      <!-- Summaries -->
       <div class="form-field">
-        <label>Short Summary</label>
-        <textarea name="short_summary" required>{{data.short_summary}}</textarea>
+        <label for="short_summary">Short Summary</label>
+        <textarea
+          id="short_summary"
+          name="short_summary"
+          required
+        >{{data.short_summary}}</textarea>
       </div>
 
       <div class="form-field">
-        <label>Full Summary (optional)</label>
-        <textarea name="full_summary">{{data.full_summary}}</textarea>
+        <label for="full_summary">Full Summary (optional)</label>
+        <textarea
+          id="full_summary"
+          name="full_summary"
+        >{{data.full_summary}}</textarea>
       </div>
 
-      <!-- Visibility -->
       <div class="form-field">
-        <label>Visibility</label>
-        <label><input type="radio" name="visibility" value="team_only"> Team</label>
-        <label><input type="radio" name="visibility" value="organization_only"> Org</label>
-        <label><input type="radio" name="visibility" value="all_members"> All</label>
+        <label>Who can access this template?</label>
+        <div class="visibility-toggle-row">
+          <label class="visibility-option">
+            <input
+              type="radio"
+              name="visibility"
+              value="team_only"
+              {{#ifEquals data.visibility "team_only"}}checked{{/ifEquals}}
+              required
+            >
+            Share with my group only
+          </label>
+          <label class="visibility-option">
+            <input
+              type="radio"
+              name="visibility"
+              value="organization_only"
+              {{#ifEquals data.visibility "organization_only"}}checked{{/ifEquals}}
+              required
+            >
+            Share with my organization only
+          </label>
+          <label class="visibility-option">
+            <input
+              type="radio"
+              name="visibility"
+              value="all_members"
+              {{#ifEquals data.visibility "all_members"}}checked{{/ifEquals}}
+              required
+            >
+            Share with all Twennie members
+          </label>
+        </div>
       </div>
 
-      <!-- Submit -->
       <div class="form-buttons">
         <button type="submit" class="form-button submit-button">
           {{#if data._id}}save template{{else}}submit{{/if}}
         </button>
       </div>
-
     </form>
   </div>
 </div>

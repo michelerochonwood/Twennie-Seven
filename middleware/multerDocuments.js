@@ -17,7 +17,7 @@ const allowedMimeTypes = [
 // Create Multer instance
 const uploadDocs = multer({
   storage,
-  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB limit
+  limits: { fileSize: 2 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     if (allowedMimeTypes.includes(file.mimetype)) {
       cb(null, true);

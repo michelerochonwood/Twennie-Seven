@@ -518,12 +518,15 @@ router.get('/edit_template/:id', ensureAuthenticated, csrfProtection, async (req
 // Route to handle form submission for templates
 
 router.post(
-    '/submit_template',
-    ensureAuthenticated,
-    uploadDocs.array('document_uploads', 3), // ✅ multer first
-    csrfProtection,                          // ✅ csrf second
-    unitFormController.submitTemplate
-  );
+  '/submit_template',
+  ensureAuthenticated,
+  uploadDocs.fields([
+    { name: 'template_pdf', maxCount: 1 },
+    { name: 'template_working', maxCount: 1 }
+  ]),
+  csrfProtection,
+  unitFormController.submitTemplate
+);
   
   
   
