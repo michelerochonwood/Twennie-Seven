@@ -11,19 +11,20 @@
 
 <div class="form-exercise-background">
   <div class="form-exercise-container">
-    <form
-      id="exercise-form"
-      class="exercise-form"
-      action="/unitform/submit_exercise"
-      method="POST"
-      enctype="multipart/form-data"
-    >
+    <form id="exercise-form" action="/unitform/submit_exercise" method="POST" enctype="multipart/form-data">
+
       <input type="hidden" name="_csrf" value="{{csrfToken}}">
 
       {{#if data._id}}
         <input type="hidden" name="_id" value="{{data._id}}">
       {{/if}}
 
+      <!-- Preserve existing -->
+      {{#if data.document_uploads}}
+        <input type="hidden" name="existing_document_uploads" value='{{json data.document_uploads}}'>
+      {{/if}}
+
+      <!-- Title -->
       <div class="form-field">
         <label for="exercise-title">Exercise Title</label>
         <input type="text" id="exercise-title" name="exercise_title" value="{{data.exercise_title}}" required>
@@ -31,87 +32,72 @@
 
       {{> unitformpartials/topicdropdown }}
 
+      <!-- File Format -->
       <div class="form-field">
-        <label for="file-format">File format</label>
-        <div class="radio-group file-upload-group">
-          <label>
-            <input type="radio" name="file_format" value="PDF" {{#ifEquals data.file_format "PDF"}}checked{{/ifEquals}} required>
-            PDF
-          </label>
-        </div>
+        <label>File Format</label>
+        <label>
+          <input type="radio" name="file_format" value="PDF" checked required>
+          PDF
+        </label>
       </div>
 
+      <!-- Upload -->
       <div class="form-field">
-        <label for="document_uploads">Upload Exercise Document (PDF only, up to 3)</label>
+        <label for="document_uploads">Upload Exercise (PDF only, max 3)</label>
         <input
           type="file"
           id="document_uploads"
           name="document_uploads"
           multiple
           accept=".pdf,application/pdf"
-          onchange="if(this.files.length > 3) { alert('You can upload up to 3 PDF files.'); this.value = ''; }"
+          onchange="if(this.files.length > 3) { alert('Max 3 PDFs'); this.value=''; }"
         >
-        <small>Please upload PDF files only. PDFs are the most reliable format for browser viewing.</small>
       </div>
 
+      <!-- Time -->
       <div class="form-field">
-        <label for="time_required">Estimated Completion Time</label>
-        <select name="time_required" id="time_required" required style="border-radius: 55px;">
-          <option value="">Select a time estimate</option>
-          <option value="15 mins" {{#ifEquals data.time_required "15 mins"}}selected{{/ifEquals}}>15 mins</option>
-          <option value="30 mins" {{#ifEquals data.time_required "30 mins"}}selected{{/ifEquals}}>30 mins</option>
-          <option value="1 hour" {{#ifEquals data.time_required "1 hour"}}selected{{/ifEquals}}>1 hour</option>
-          <option value="1.5 hours" {{#ifEquals data.time_required "1.5 hours"}}selected{{/ifEquals}}>1.5 hours</option>
+        <label for="time_required">Estimated Time</label>
+        <select name="time_required" required>
+          <option value="">Select</option>
+          <option value="15 mins">15 mins</option>
+          <option value="30 mins">30 mins</option>
+          <option value="1 hour">1 hour</option>
+          <option value="1.5 hours">1.5 hours</option>
         </select>
       </div>
 
+      <!-- Permission -->
       <div class="form-field">
-        <div class="white-container">
-          <div class="toggle-group">
-            <label>
-              <input type="checkbox" name="permission" {{#if data.permission}}checked{{/if}}>
-              Do you provide consent for this library unit to be used for Twennie promotional purposes?
-            </label>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-field">
-        <label for="short-summary">Short Summary (aim for ~30 words)</label>
-        <textarea id="short-summary" name="short_summary" maxlength="300" required>{{data.short_summary}}</textarea>
-      </div>
-
-      <div class="form-field">
-        <label for="full-summary">
-          Full Summary <span style="font-weight: normal; font-size: 0.85em;">(Optional, aim for ~90 words)</span>
+        <label>
+          <input type="checkbox" name="permission" {{#if data.permission}}checked{{/if}}>
+          Consent for promotional use
         </label>
-        <p class="form-help-text" style="font-size: 0.85rem; color: #555; margin-top: 4px;">
-          The full summary gives further context about your exercise and helps other members decide if it fits their needs. Including both summaries is recommended.
-        </p>
-        <textarea id="full-summary" name="full_summary" maxlength="600">{{data.full_summary}}</textarea>
+      </div>
+
+      <!-- Summaries -->
+      <div class="form-field">
+        <label>Short Summary</label>
+        <textarea name="short_summary" required>{{data.short_summary}}</textarea>
       </div>
 
       <div class="form-field">
-        <label>Who can access this exercise?</label>
-        <div class="visibility-toggle-row">
-          <label class="visibility-option">
-            <input type="radio" name="visibility" value="team_only" {{#ifEquals data.visibility "team_only"}}checked{{/ifEquals}} required>
-            share with my group only
-          </label>
-          <label class="visibility-option">
-            <input type="radio" name="visibility" value="organization_only" {{#ifEquals data.visibility "organization_only"}}checked{{/ifEquals}} required>
-            share with my organization only
-          </label>
-          <label class="visibility-option">
-            <input type="radio" name="visibility" value="all_members" {{#ifEquals data.visibility "all_members"}}checked{{/ifEquals}} required>
-            share with all Twennie members
-          </label>
-        </div>
+        <label>Full Summary (optional)</label>
+        <textarea name="full_summary">{{data.full_summary}}</textarea>
       </div>
 
-      <div class="form-buttons">
-        <button type="submit" name="submit" value="submit" class="form-button submit-button">submit</button>
+      <!-- Visibility -->
+      <div class="form-field">
+        <label>Visibility</label>
+        <label><input type="radio" name="visibility" value="team_only"> Team</label>
+        <label><input type="radio" name="visibility" value="organization_only"> Org</label>
+        <label><input type="radio" name="visibility" value="all_members"> All</label>
       </div>
+
+      <!-- Submit -->
+      <div class="form-buttons">
+        <button type="submit" class="form-button submit-button">submit</button>
+      </div>
+
     </form>
   </div>
 </div>

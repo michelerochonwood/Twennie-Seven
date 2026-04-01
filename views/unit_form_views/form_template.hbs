@@ -13,8 +13,17 @@
   <div class="form-template-container">
     <form id="template-form" action="/unitform/submit_template" method="POST" enctype="multipart/form-data">
       <input type="hidden" name="_csrf" value="{{csrfToken}}">
-      <input type="hidden" name="_id" value="{{data._id}}">
 
+      {{#if data._id}}
+        <input type="hidden" name="_id" value="{{data._id}}">
+      {{/if}}
+
+      <!-- Preserve existing uploads -->
+      {{#if data.documentUploads}}
+        <input type="hidden" name="existing_document_uploads" value='{{json data.documentUploads}}'>
+      {{/if}}
+
+      <!-- Title -->
       <div class="form-field">
         <label for="template-title">Template Title</label>
         <input type="text" id="template-title" name="template_title" value="{{data.template_title}}" required>
@@ -22,97 +31,110 @@
 
       {{> unitformpartials/topicdropdown }}
 
+      <!-- Sub Topic -->
       <div class="form-field">
         <label for="sub-topic">Sub Topic (Optional)</label>
         <input type="text" id="sub-topic" name="sub_topic" value="{{data.sub_topic}}">
       </div>
 
+      <!-- Existing files display -->
       {{#if data.documentUploads}}
         <div class="uploaded-files">
           {{#each data.documentUploads}}
-            <p><a href="{{this.url}}" target="_blank" rel="noopener">{{this.filename}}</a></p>
+            <p>
+              <a href="{{this.url}}" target="_blank" rel="noopener">
+                View {{this.filename}}
+              </a>
+            </p>
           {{/each}}
         </div>
       {{/if}}
 
-      <div class="form-field">
-        <label for="template_upload">Upload Template File (PDF only)</label>
-        <input
-          type="file"
-          id="template_upload"
-          name="document_uploads"
-          accept=".pdf,application/pdf"
-        >
-        <small>Please upload a PDF file only. PDFs are the most reliable format for browser viewing.</small>
-      </div>
+      <!-- Upload -->
+<!-- PDF Upload (REQUIRED) -->
+<div class="form-field">
+  <label for="template_pdf">Upload Template (PDF – required)</label>
+  <input
+    type="file"
+    id="template_pdf"
+    name="template_pdf"
+    accept=".pdf,application/pdf"
+    required
+  >
+  <small>This PDF will be used for viewing in the browser.</small>
+</div>
 
+<!-- Working File Upload (OPTIONAL) -->
+<div class="form-field">
+  <label for="template_working">Upload Working File (optional)</label>
+  <input
+    type="file"
+    id="template_working"
+    name="template_working"
+    accept=".doc,.docx,.xls,.xlsx"
+  >
+  <small>Optional: upload a Word or Excel file for practical use.</small>
+</div>
+
+      <!-- File Format -->
       <div class="form-field">
         <label>File Format</label>
         <div class="white-container">
           <div class="toggle-group">
             <label>
-              <input type="radio" name="file_format" value="pdf" {{#ifEquals data.file_format "pdf"}}checked{{/ifEquals}} required>
+              <input type="radio" name="file_format" value="pdf" checked required>
               PDF
             </label>
           </div>
         </div>
-        <small>The uploaded template must be a PDF.</small>
       </div>
 
+      <!-- Permission -->
       <div class="form-toggle">
         <label>
-          <input
-            type="checkbox"
-            name="permission"
-            {{#if data.permission}}checked{{/if}}
-          >
-          I consent to Twennie using this library unit (with attribution) for promotional purposes.
+          <input type="checkbox" name="permission" {{#if data.permission}}checked{{/if}}>
+          I consent to Twennie using this library unit for promotional purposes.
         </label>
-        <p class="form-field-help">
-          This consent is optional and does not affect your membership or access.
-        </p>
       </div>
 
+      <!-- Short Summary -->
       <div class="form-field">
         <label for="short-summary">Short Summary (~30 words)</label>
         <textarea id="short-summary" name="short_summary" maxlength="300" required>{{data.short_summary}}</textarea>
       </div>
 
+      <!-- Full Summary -->
       <div class="form-field">
-        <label for="full-summary">
-          Full Summary <span style="font-weight: normal; font-size: 0.85em;">(Optional, ~90 words)</span>
-        </label>
-        <p class="form-help-text" style="font-size: 0.85rem; color: #555; margin-top: 4px;">
-          The full summary gives further context about your template and helps other members decide if it fits their needs. Including both summaries is recommended.
-        </p>
+        <label for="full-summary">Full Summary (optional)</label>
         <textarea id="full-summary" name="full_summary" maxlength="600">{{data.full_summary}}</textarea>
       </div>
 
+      <!-- Visibility -->
       <div class="form-field">
         <label>Who can access this template?</label>
         <div class="visibility-toggle-row">
-          <label class="visibility-option">
+          <label>
             <input type="radio" name="visibility" value="team_only" {{#ifEquals data.visibility "team_only"}}checked{{/ifEquals}} required>
-            Share with my group only
+            My group
           </label>
-          <label class="visibility-option">
-            <input type="radio" name="visibility" value="organization_only" {{#ifEquals data.visibility "organization_only"}}checked{{/ifEquals}} required>
-            Share with my organization only
+          <label>
+            <input type="radio" name="visibility" value="organization_only" {{#ifEquals data.visibility "organization_only"}}checked{{/ifEquals}}>
+            My organization
           </label>
-          <label class="visibility-option">
-            <input type="radio" name="visibility" value="all_members" {{#ifEquals data.visibility "all_members"}}checked{{/ifEquals}} required>
-            Share with all Twennie members
+          <label>
+            <input type="radio" name="visibility" value="all_members" {{#ifEquals data.visibility "all_members"}}checked{{/ifEquals}}>
+            All members
           </label>
         </div>
       </div>
 
+      <!-- Submit -->
       <div class="form-buttons">
-        {{#if data._id}}
-          <button type="submit" name="submit" value="edit" class="form-button submit-button">save edited template</button>
-        {{else}}
-          <button type="submit" name="submit" value="submit" class="form-button submit-button">submit</button>
-        {{/if}}
+        <button type="submit" class="form-button submit-button">
+          {{#if data._id}}save template{{else}}submit{{/if}}
+        </button>
       </div>
+
     </form>
   </div>
 </div>

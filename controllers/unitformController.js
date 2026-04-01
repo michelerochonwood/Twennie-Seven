@@ -1585,10 +1585,8 @@ submitTemplate: async (req, res) => {
 
     if (!requireTermsForPosting(req, res)) return;
 
-    // Pull id + upcoming context; keep rest as payload
     const { _id, fromUpcomingId, existing_document_uploads, ...templateData } = req.body;
 
-    // Checkbox "on" -> boolean
     const booleanFields = [
       'clarify_topic',
       'produce_deliverables',
@@ -1601,7 +1599,6 @@ submitTemplate: async (req, res) => {
       templateData[field] = req.body[field] === 'on';
     });
 
-    // Normalize secondary topics
     if (
       typeof templateData.secondary_topics === 'string' &&
       templateData.secondary_topics.trim() !== ''
@@ -1611,10 +1608,17 @@ submitTemplate: async (req, res) => {
       templateData.secondary_topics = [];
     }
 
-    // Attach author
     templateData.author = { id: req.user._id };
 
-    // Normalize existing uploads passed back from edit form
+    if (templateData.file_format !== 'pdf') {
+      return res.status(400).render('unit_form_views/form_template', {
+        layout: 'unitformlayout',
+        data: req.body,
+        errorMessage: 'Templates must be uploaded as PDF files only.',
+        csrfToken: getCsrfToken(req),
+      });
+    }
+
     let preservedDocuments = [];
     if (existing_document_uploads) {
       try {
@@ -1628,7 +1632,7 @@ submitTemplate: async (req, res) => {
             .map(doc => ({
               url: String(doc.url).trim(),
               filename: String(doc.filename).trim(),
-              mimetype: doc.mimetype ? String(doc.mimetype).trim() : 'application/octet-stream',
+              mimetype: doc.mimetype ? String(doc.mimetype).trim() : 'application/pdf',
             }));
         }
       } catch (err) {
@@ -1636,28 +1640,39 @@ submitTemplate: async (req, res) => {
       }
     }
 
-    // Support either multer array style or named field style
     const uploadedFiles = Array.isArray(req.files)
       ? req.files
-      : req.files?.documentUploads || [];
+      : req.files?.document_uploads || [];
 
     const totalDocumentCount = preservedDocuments.length + uploadedFiles.length;
 
-    if (totalDocumentCount > 3) {
+    if (totalDocumentCount > 1) {
       return res.status(400).render('unit_form_views/form_template', {
         layout: 'unitformlayout',
         data: req.body,
-        errorMessage: 'You may upload up to 3 documents only.',
+        errorMessage: 'You may upload only 1 PDF document for a template.',
         csrfToken: getCsrfToken(req),
       });
     }
 
-    // For new templates, require at least one file
     if (!_id && totalDocumentCount === 0) {
       return res.status(400).render('unit_form_views/error', {
         layout: 'unitformlayout',
         title: 'Missing File',
-        errorMessage: 'Please upload your template document before submitting.',
+        errorMessage: 'Please upload your template PDF before submitting.',
+      });
+    }
+
+    const invalidFiles = uploadedFiles.filter(file =>
+      !(file.mimetype === 'application/pdf' || /\.pdf$/i.test(file.originalname))
+    );
+
+    if (invalidFiles.length > 0) {
+      return res.status(400).render('unit_form_views/form_template', {
+        layout: 'unitformlayout',
+        data: req.body,
+        errorMessage: 'Only PDF files are allowed for templates.',
+        csrfToken: getCsrfToken(req),
       });
     }
 
@@ -1675,7 +1690,7 @@ submitTemplate: async (req, res) => {
 
           const stream = uploader.upload_stream(
             {
-              resource_type: 'raw',
+              resource_type: 'image',
               folder: 'twennie_templates',
               public_id: safePublicId,
               overwrite: false,
@@ -1693,7 +1708,7 @@ submitTemplate: async (req, res) => {
 
               resolve({
                 filename: file.originalname,
-                mimetype: file.mimetype || 'application/octet-stream',
+                mimetype: file.mimetype || 'application/pdf',
                 url: result.secure_url,
               });
             }
@@ -1706,8 +1721,6 @@ submitTemplate: async (req, res) => {
       uploadedDocuments = (await Promise.all(uploadPromises)).filter(Boolean);
     }
 
-    // Keep existing docs if no new uploads.
-    // If new uploads exist, append them to preserved docs.
     const mergedUploads =
       uploadedDocuments.length > 0
         ? [...preservedDocuments, ...uploadedDocuments]
@@ -1731,16 +1744,12 @@ submitTemplate: async (req, res) => {
       if (!templateDoc) {
         throw new Error(`Template not found for ID ${_id}.`);
       }
-
-      console.log(`Template with ID ${_id} updated successfully.`);
     } else {
       templateData.documentUploads = mergedUploads;
       templateDoc = new Template(templateData);
       await templateDoc.save();
-      console.log('New template created successfully.');
     }
 
-    // Determine published state robustly
     const isPublished = (() => {
       const status =
         (typeof templateDoc.status !== 'undefined' ? templateDoc.status : undefined) ??
@@ -1752,7 +1761,6 @@ submitTemplate: async (req, res) => {
       return status === true || String(status).toLowerCase() === 'published';
     })();
 
-    // Only migrate/delete Upcoming if originated from Upcoming AND is now published
     if (fromUpcomingId && isPublished) {
       try {
         await migrateAndDeleteUpcoming({
@@ -1760,7 +1768,6 @@ submitTemplate: async (req, res) => {
           toItemId: templateDoc._id,
           toUnitType: 'template',
         });
-        console.log(`Upcoming ${fromUpcomingId} migrated and deleted after publish.`);
       } catch (migrateErr) {
         console.error('Failed migrating/deleting upcoming during publish:', migrateErr);
       }
