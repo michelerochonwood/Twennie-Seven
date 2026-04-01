@@ -1,8 +1,8 @@
 {{#*inline "title"}}Create a Template | Twennie{{/inline}}
 {{> mainpartials/templateinstructions_partial}}
 
-<!-- near the top of every form_* file -->
 <input type="hidden" name="fromUpcomingId" value="{{fromUpcomingId}}">
+
 <div class="contribute-wave-divider">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 160">
     <path fill="#939598" fill-opacity="1" d="M0,64L80,58.7C160,53,320,43,480,58.7C640,75,800,117,960,122.7C1120,128,1280,96,1360,80L1440,64L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z"></path>
@@ -15,83 +15,69 @@
       <input type="hidden" name="_csrf" value="{{csrfToken}}">
       <input type="hidden" name="_id" value="{{data._id}}">
 
-      <!-- Title -->
       <div class="form-field">
         <label for="template-title">Template Title</label>
         <input type="text" id="template-title" name="template_title" value="{{data.template_title}}" required>
       </div>
 
-{{> unitformpartials/topicdropdown }}
+      {{> unitformpartials/topicdropdown }}
 
-      <!-- Sub Topic -->
       <div class="form-field">
         <label for="sub-topic">Sub Topic (Optional)</label>
         <input type="text" id="sub-topic" name="sub_topic" value="{{data.sub_topic}}">
       </div>
 
-      <!-- Previously uploaded files -->
       {{#if data.documentUploads}}
         <div class="uploaded-files">
           {{#each data.documentUploads}}
-            <p><a href="{{this.url}}" target="_blank">{{this.filename}}</a></p>
+            <p><a href="{{this.url}}" target="_blank" rel="noopener">{{this.filename}}</a></p>
           {{/each}}
         </div>
       {{/if}}
 
-      <!-- File upload -->
       <div class="form-field">
-        <label for="template_upload">Upload Template File (PDF, Word, Excel, PowerPoint)</label>
-        <input type="file" id="template_upload" name="document_uploads" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx">
-        <small>You may upload one file. Combine related files into a single PDF before submitting.</small>
+        <label for="template_upload">Upload Template File (PDF only)</label>
+        <input
+          type="file"
+          id="template_upload"
+          name="document_uploads"
+          accept=".pdf,application/pdf"
+        >
+        <small>Please upload a PDF file only. PDFs are the most reliable format for browser viewing.</small>
       </div>
 
-      <!-- File format (RADIO GROUP - REQUIRED) -->
       <div class="form-field">
         <label>File Format</label>
         <div class="white-container">
           <div class="toggle-group">
             <label>
-              <input type="radio" name="file_format" value="pdf" {{#ifEquals data.file_format "pdf"}}checked{{/ifEquals}} required> PDF
-            </label>
-            <label>
-              <input type="radio" name="file_format" value="word" {{#ifEquals data.file_format "word"}}checked{{/ifEquals}}> Word (DOC/DOCX)
-            </label>
-            <label>
-              <input type="radio" name="file_format" value="excel" {{#ifEquals data.file_format "excel"}}checked{{/ifEquals}}> Excel (XLS/XLSX)
-            </label>
-            <label>
-              <input type="radio" name="file_format" value="ppt" {{#ifEquals data.file_format "ppt"}}checked{{/ifEquals}}> PowerPoint (PPT/PPTX)
-            </label>
-            <label>
-              <input type="radio" name="file_format" value="other" {{#ifEquals data.file_format "other"}}checked{{/ifEquals}}> Other
+              <input type="radio" name="file_format" value="pdf" {{#ifEquals data.file_format "pdf"}}checked{{/ifEquals}} required>
+              PDF
             </label>
           </div>
         </div>
-        <small>Please select the format of the file you’re uploading.</small>
+        <small>The uploaded template must be a PDF.</small>
       </div>
 
-      <!-- Attributes (checkboxes) - file_format removed from here -->
-<div class="form-toggle">
-  <label>
-    <input
-      type="checkbox"
-      name="permission"
-      {{#if data.permission}}checked{{/if}}
-    >
-    I consent to Twennie using this library unit (with attribution) for promotional purposes.
-  </label>
-  <p class="form-field-help">
-    This consent is optional and does not affect your membership or access.
-  </p>
-</div>
+      <div class="form-toggle">
+        <label>
+          <input
+            type="checkbox"
+            name="permission"
+            {{#if data.permission}}checked{{/if}}
+          >
+          I consent to Twennie using this library unit (with attribution) for promotional purposes.
+        </label>
+        <p class="form-field-help">
+          This consent is optional and does not affect your membership or access.
+        </p>
+      </div>
 
-      <!-- Short Summary -->
       <div class="form-field">
         <label for="short-summary">Short Summary (~30 words)</label>
         <textarea id="short-summary" name="short_summary" maxlength="300" required>{{data.short_summary}}</textarea>
       </div>
 
-      <!-- Full Summary -->
       <div class="form-field">
         <label for="full-summary">
           Full Summary <span style="font-weight: normal; font-size: 0.85em;">(Optional, ~90 words)</span>
@@ -102,7 +88,6 @@
         <textarea id="full-summary" name="full_summary" maxlength="600">{{data.full_summary}}</textarea>
       </div>
 
-      <!-- Visibility -->
       <div class="form-field">
         <label>Who can access this template?</label>
         <div class="visibility-toggle-row">
@@ -121,7 +106,6 @@
         </div>
       </div>
 
-      <!-- Buttons -->
       <div class="form-buttons">
         {{#if data._id}}
           <button type="submit" name="submit" value="edit" class="form-button submit-button">save edited template</button>
@@ -132,9 +116,9 @@
     </form>
   </div>
 </div>
+
 {{> mainpartials/home_subfooter}}
 {{> mainpartials/footer}}
-
 
 
 
