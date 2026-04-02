@@ -1436,6 +1436,8 @@ const leaderAccount = {
   username: userData?.username || ''
 };
 
+const assignedPromptSets = await buildAssignedPromptSets(id);
+
 // ---------- TAB COUNTS: DOT TRIGGERS ONLY ----------
 // Keep these counts tightly aligned to what each tab is meant to signal.
 
@@ -1458,12 +1460,12 @@ const completedPromptSetsCount = Array.isArray(formattedCompletedSets)
 const promptProgressSignalCount = assignedPromptSetsCount + completedPromptSetsCount;
 
 const leaderCounts = {
-  group:    Array.isArray(resolvedGroupMembers) ? resolvedGroupMembers.length : 0,
-  topics:   Array.isArray(topicSuggestions) ? topicSuggestions.length : 0,
-  prompts:  promptRegistrationsCount,
+  group: Array.isArray(resolvedGroupMembers) ? resolvedGroupMembers.length : 0,
+  topics: Array.isArray(topicSuggestions) ? topicSuggestions.length : 0,
+  prompts: promptRegistrationsCount,
   progress: promptProgressSignalCount,
-  library:  Array.isArray(leaderUnits) ? leaderUnits.length : 0,
-  tagged:   Number(leaderTaggedCountAll || 0)
+  library: Array.isArray(leaderUnits) ? leaderUnits.length : 0,
+  tagged: Number(leaderTaggedCountAll || 0)
 };
 
 // Load/create seen doc for this leader
@@ -1471,31 +1473,46 @@ let seenDocLeader = await DashboardSeen.findOne({ userId: id, role: 'leader' });
 
 if (!seenDocLeader) {
   // First time: baseline all tabs to current counts (no dots on first render)
-  seenDocLeader = new DashboardSeen({ userId: id, role: 'leader', tabs: new Map() });
+  seenDocLeader = new DashboardSeen({
+    userId: id,
+    role: 'leader',
+    tabs: new Map()
+  });
+
   for (const [key, val] of Object.entries(leaderCounts)) {
-    seenDocLeader.tabs.set(key, { count: val, seenAt: new Date() });
+    seenDocLeader.tabs.set(key, {
+      count: val,
+      seenAt: new Date()
+    });
   }
+
   await seenDocLeader.save();
 } else {
   // If new tabs were added later, baseline them once
   let updated = false;
+
   for (const [key, val] of Object.entries(leaderCounts)) {
     if (!seenDocLeader.tabs?.has(key)) {
-      seenDocLeader.tabs.set(key, { count: val, seenAt: new Date() });
+      seenDocLeader.tabs.set(key, {
+        count: val,
+        seenAt: new Date()
+      });
       updated = true;
     }
   }
-  if (updated) await seenDocLeader.save();
+
+  if (updated) {
+    await seenDocLeader.save();
+  }
 }
 
 // Compute badges: show dot ONLY if current > lastSeen
 const leaderBadges = {};
+
 for (const [key, val] of Object.entries(leaderCounts)) {
-  const last = seenDocLeader.tabs?.get(key)?.count ?? val; // default to current as baseline
+  const last = seenDocLeader.tabs?.get(key)?.count ?? val;
   leaderBadges[key] = val > last;
 }
-
-const assignedPromptSets = await buildAssignedPromptSets(id);
 
 console.log(
   'assignedPromptSets count:',
