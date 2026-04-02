@@ -1436,14 +1436,34 @@ const leaderAccount = {
   username: userData?.username || ''
 };
 
-// ---------- NEW: tab counts + badges ----------
+// ---------- TAB COUNTS: DOT TRIGGERS ONLY ----------
+// Keep these counts tightly aligned to what each tab is meant to signal.
+
+// TAB 1: complete a prompt
+// Trigger = a new prompt set has been registered by this leader
+const promptRegistrationsCount = Array.isArray(leaderRegistrations)
+  ? leaderRegistrations.length
+  : 0;
+
+// TAB 2: prompt set progress and completions
+// Trigger = a new prompt set has been assigned OR a prompt set has been completed / badge earned
+const assignedPromptSetsCount = Array.isArray(assignedPromptSets)
+  ? assignedPromptSets.length
+  : 0;
+
+const completedPromptSetsCount = Array.isArray(formattedCompletedSets)
+  ? formattedCompletedSets.length
+  : 0;
+
+const promptProgressSignalCount = assignedPromptSetsCount + completedPromptSetsCount;
+
 const leaderCounts = {
-  group:    (resolvedGroupMembers || []).length,       // my group members
-  topics:   (topicSuggestions || []).length,           // my suggested topics
-  prompts:  (leaderRegistrations || []).length,        // registered prompt sets
-  progress: (formattedCompletedSets || []).length,     // simple monotonic signal
-  library:  (leaderUnits || []).length,                // my contributions (incl. upcoming)
-  tagged:   leaderTaggedCountAll                       // 👈 all tags I created (self + assignments)
+  group:    Array.isArray(resolvedGroupMembers) ? resolvedGroupMembers.length : 0,
+  topics:   Array.isArray(topicSuggestions) ? topicSuggestions.length : 0,
+  prompts:  promptRegistrationsCount,
+  progress: promptProgressSignalCount,
+  library:  Array.isArray(leaderUnits) ? leaderUnits.length : 0,
+  tagged:   Number(leaderTaggedCountAll || 0)
 };
 
 // Load/create seen doc for this leader
