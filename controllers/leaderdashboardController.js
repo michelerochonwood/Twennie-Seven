@@ -1479,7 +1479,6 @@ const leaderCounts = {
   topics: Array.isArray(topicSuggestions) ? topicSuggestions.length : 0,
   prompts: promptRegistrationsCount,
   progress: promptProgressSignalCount,
-  tagged: assignedLearningUnitsCount,
   library: Array.isArray(leaderUnits) ? leaderUnits.length : 0,
   tagged: assignedLearningUnitsCount
 };
