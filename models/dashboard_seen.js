@@ -15,7 +15,12 @@ const tabSeenSchema = new mongoose.Schema({
 
 const dashboardSeenSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, required: true, index: true },
-  role:   { type: String, enum: ['leader','group_member','member'], required: true, index: true },
+role: { 
+  type: String, 
+  enum: ['leader','group_member','member','org_admin'], 
+  required: true, 
+  index: true 
+},
 
   // flexible per-tab subdocs: tabs.get('library'), tabs.get('tagged'), etc.
   tabs: {
