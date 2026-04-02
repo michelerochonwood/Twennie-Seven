@@ -67,12 +67,19 @@
       </div>
 
       <!-- Permission -->
-      <div class="form-field">
-        <label>
-          <input type="checkbox" name="permission" {{#if data.permission}}checked{{/if}}>
-          Consent for promotional use
-        </label>
-      </div>
+<div class="form-toggle">
+  <label>
+    <input
+      type="checkbox"
+      name="permission"
+      {{#if data.permission}}checked{{/if}}
+    >
+    I consent to Twennie using this library unit (with attribution) for promotional purposes.
+  </label>
+  <p class="form-field-help">
+    This consent is optional and does not affect your membership or access.
+  </p>
+</div>
 
       <!-- Summaries -->
       <div class="form-field">
@@ -85,12 +92,23 @@
         <textarea name="full_summary">{{data.full_summary}}</textarea>
       </div>
 
-      <!-- Visibility -->
+      <!-- NEW: Visibility Toggles -->
       <div class="form-field">
-        <label>Visibility</label>
-        <label><input type="radio" name="visibility" value="team_only"> Team</label>
-        <label><input type="radio" name="visibility" value="organization_only"> Org</label>
-        <label><input type="radio" name="visibility" value="all_members"> All</label>
+        <label>Who can access this article?</label>
+        <div class="visibility-toggle-row">
+          <label class="visibility-option">
+            <input type="radio" name="visibility" value="team_only" {{#ifEquals data.visibility "team_only"}}checked{{/ifEquals}} required>
+            share with my group only
+          </label>
+          <label class="visibility-option">
+            <input type="radio" name="visibility" value="organization_only" {{#ifEquals data.visibility "organization_only"}}checked{{/ifEquals}} required>
+            share with my organization only
+          </label>
+          <label class="visibility-option">
+            <input type="radio" name="visibility" value="all_members" {{#ifEquals data.visibility "all_members"}}checked{{/ifEquals}} required>
+            share with all Twennie members
+          </label>
+        </div>
       </div>
 
       <!-- Submit -->

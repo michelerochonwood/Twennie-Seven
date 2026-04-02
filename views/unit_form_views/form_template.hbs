@@ -83,12 +83,19 @@
         <small>Optional editable version.</small>
       </div>
 
-      <div class="form-toggle">
-        <label>
-          <input type="checkbox" name="permission" {{#if data.permission}}checked{{/if}}>
-          I consent to Twennie using this unit for promotional purposes.
-        </label>
-      </div>
+<div class="form-toggle">
+  <label>
+    <input
+      type="checkbox"
+      name="permission"
+      {{#if data.permission}}checked{{/if}}
+    >
+    I consent to Twennie using this library unit (with attribution) for promotional purposes.
+  </label>
+  <p class="form-field-help">
+    This consent is optional and does not affect your membership or access.
+  </p>
+</div>
 
       <div class="form-field">
         <label for="short_summary">Short Summary</label>
