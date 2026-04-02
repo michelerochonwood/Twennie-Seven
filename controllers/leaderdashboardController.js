@@ -1436,6 +1436,11 @@ const leaderAccount = {
   username: userData?.username || ''
 };
 
+
+
+
+
+
 const assignedPromptSets = await buildAssignedPromptSets(id);
 
 // ---------- TAB COUNTS: DOT TRIGGERS ONLY ----------
@@ -1459,13 +1464,24 @@ const completedPromptSetsCount = Array.isArray(formattedCompletedSets)
 
 const promptProgressSignalCount = assignedPromptSetsCount + completedPromptSetsCount;
 
+// TAB 3: my group's learning and assignments
+// Trigger = a new article, video, interview, exercise, or template has been assigned
+const assignedLearningUnitsCount = Array.isArray(leaderAssignedNonMissionUnits)
+  ? leaderAssignedNonMissionUnits.filter(u =>
+      ['article', 'video', 'interview', 'exercise', 'template'].includes(
+        String(u.unitType || '').toLowerCase()
+      )
+    ).length
+  : 0;
+
 const leaderCounts = {
   group: Array.isArray(resolvedGroupMembers) ? resolvedGroupMembers.length : 0,
   topics: Array.isArray(topicSuggestions) ? topicSuggestions.length : 0,
   prompts: promptRegistrationsCount,
   progress: promptProgressSignalCount,
+  tagged: assignedLearningUnitsCount,
   library: Array.isArray(leaderUnits) ? leaderUnits.length : 0,
-  tagged: Number(leaderTaggedCountAll || 0)
+  tagged: assignedLearningUnitsCount
 };
 
 // Load/create seen doc for this leader
@@ -1513,6 +1529,14 @@ for (const [key, val] of Object.entries(leaderCounts)) {
   const last = seenDocLeader.tabs?.get(key)?.count ?? val;
   leaderBadges[key] = val > last;
 }
+
+
+
+
+
+
+
+
 
 console.log(
   'assignedPromptSets count:',
