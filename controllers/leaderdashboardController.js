@@ -1474,13 +1474,26 @@ const assignedLearningUnitsCount = Array.isArray(leaderAssignedNonMissionUnits)
     ).length
   : 0;
 
+// TAB 4: my group's missions
+// Trigger = a new mission has been assigned OR a mission has been completed
+const assignedMissionsCount = Array.isArray(leaderAssignedMissions)
+  ? leaderAssignedMissions.length
+  : 0;
+
+const completedMissionsCount = Array.isArray(leaderSelfTaggedMissions)
+  ? leaderSelfTaggedMissions.filter(m => !!m.completedAtFormatted).length
+  : 0;
+
+const missionSignalCount = assignedMissionsCount + completedMissionsCount;
+
 const leaderCounts = {
   group: Array.isArray(resolvedGroupMembers) ? resolvedGroupMembers.length : 0,
   topics: Array.isArray(topicSuggestions) ? topicSuggestions.length : 0,
   prompts: promptRegistrationsCount,
   progress: promptProgressSignalCount,
-  library: Array.isArray(leaderUnits) ? leaderUnits.length : 0,
-  tagged: assignedLearningUnitsCount
+  tagged: assignedLearningUnitsCount,
+  missions: missionSignalCount,
+  library: Array.isArray(leaderUnits) ? leaderUnits.length : 0
 };
 
 // Load/create seen doc for this leader
