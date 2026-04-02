@@ -1486,6 +1486,12 @@ const completedMissionsCount = Array.isArray(leaderSelfTaggedMissions)
 
 const missionSignalCount = assignedMissionsCount + completedMissionsCount;
 
+// TAB 7: my library contributions
+// Trigger = a new unit has been created by this leader
+const libraryContributionsCount = Array.isArray(leaderUnits)
+  ? leaderUnits.length
+  : 0;
+
 const leaderCounts = {
   group: Array.isArray(resolvedGroupMembers) ? resolvedGroupMembers.length : 0,
   topics: Array.isArray(topicSuggestions) ? topicSuggestions.length : 0,
@@ -1493,7 +1499,7 @@ const leaderCounts = {
   progress: promptProgressSignalCount,
   tagged: assignedLearningUnitsCount,
   missions: missionSignalCount,
-  library: Array.isArray(leaderUnits) ? leaderUnits.length : 0
+  library: libraryContributionsCount
 };
 
 // Load/create seen doc for this leader
