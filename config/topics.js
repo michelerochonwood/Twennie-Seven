@@ -13,6 +13,7 @@ const topics = [
   'Closing a Project Strategically',
   'Conducting Color Reviews of Proposals',
   'Conducting Market Research',
+  'Creativity and Innovation',
   'Cross Selling in Multi-Disciplinary Firms',
   'CRM Software',
   'Designing a Proposal Process',
