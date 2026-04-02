@@ -25,6 +25,7 @@ const Nugget    = require('../models/unit_models/nugget');
 const GroupMember = require('../models/member_models/group_member');
 const Upcoming = require('../models/unit_models/upcoming');
 const OrganizationProfile = require('../models/profile_models/organization_profile');
+const DashboardSeen = require('../models/dashboard_seen');
 
 
 // -----------------------------
@@ -877,25 +878,112 @@ async function buildAdminTeamEngagement(orgId) {
 
 
 // Build all data needed for ALL admin tabs, every time (no flash, no missing vars)
-async function buildAdminPayload(orgId) {
-  const [orgSnapshot, orgGroups, organization, adminTeamEngagementReports] = await Promise.all([
+async function buildAdminPayload(orgId, adminId) {
+  const [
+    orgSnapshot,
+    orgGroups,
+    organization,
+    adminTeamEngagementReports,
+    seenSuggestionsCount
+  ] = await Promise.all([
     buildOrgSnapshot(orgId),
     buildOrgGroupsLeaders(orgId),
     Organization.findById(orgId).select('name slug industry createdAt').lean(),
+    buildAdminTeamEngagement(orgId),
 
-    // ✅ NEW: cross-team engagement table
-    buildAdminTeamEngagement(orgId)
+    // TAB 4: learning suggestions
+    // Trigger = a suggestion sent by this admin has been seen / acknowledged by a leader
+    UnitSuggestion.countDocuments({
+      organization: orgId,
+      suggestedBy: adminId,
+      $or: [
+        { status: 'acknowledged' },
+        { acknowledgedAt: { $exists: true, $ne: null } },
+        { seenAt: { $exists: true, $ne: null } }
+      ]
+    })
   ]);
+
+  const counts = orgSnapshot?.counts || {
+    leaders: 0,
+    groups: 0,
+    members: 0,
+    pendingJoinRequests: 0,
+    pendingLibrarySubmissions: 0,
+    suggestionsSent: 0
+  };
+
+  // ---------- ADMIN TAB COUNTS: DOT TRIGGERS ONLY ----------
+  // TAB 3: requests from leaders to join
+  // Trigger = a new pending join request
+  const pendingJoinRequestsCount = Number(counts.pendingJoinRequests || 0);
+
+  // TAB 4: learning suggestions
+  // Trigger = a suggestion sent by this admin has been seen / acknowledged by a leader
+  const acknowledgedSuggestionsCount = Number(seenSuggestionsCount || 0);
+
+  // TAB 5: organization's library units
+  // Trigger = a new unit has been added
+  const companyLibraryCount = Number(counts.pendingLibrarySubmissions || 0);
+
+  const adminCounts = {
+    requests: pendingJoinRequestsCount,
+    suggestions: acknowledgedSuggestionsCount,
+    companyLibrary: companyLibraryCount
+  };
+
+  let seenDocAdmin = await DashboardSeen.findOne({
+    userId: adminId,
+    role: 'org_admin'
+  });
+
+  if (!seenDocAdmin) {
+    // First time: baseline all tabs to current counts (no dots on first render)
+    seenDocAdmin = new DashboardSeen({
+      userId: adminId,
+      role: 'org_admin',
+      tabs: new Map()
+    });
+
+    for (const [key, val] of Object.entries(adminCounts)) {
+      seenDocAdmin.tabs.set(key, {
+        count: val,
+        seenAt: new Date()
+      });
+    }
+
+    await seenDocAdmin.save();
+  } else {
+    // If new tabs were added later, baseline them once
+    let updated = false;
+
+    for (const [key, val] of Object.entries(adminCounts)) {
+      if (!seenDocAdmin.tabs?.has(key)) {
+        seenDocAdmin.tabs.set(key, {
+          count: val,
+          seenAt: new Date()
+        });
+        updated = true;
+      }
+    }
+
+    if (updated) {
+      await seenDocAdmin.save();
+    }
+  }
+
+  // Compute badges: show dot ONLY if current > lastSeen
+  const adminBadges = {};
+
+  for (const [key, val] of Object.entries(adminCounts)) {
+    const last = seenDocAdmin.tabs?.get(key)?.count ?? val;
+    adminBadges[key] = val > last;
+  }
 
   return {
     orgSnapshot,
 
-    counts: orgSnapshot?.counts || {
-      leaders: 0, groups: 0, members: 0,
-      pendingJoinRequests: 0,
-      pendingLibrarySubmissions: 0,
-      suggestionsSent: 0
-    },
+    counts,
     learningFootprint: orgSnapshot?.learningFootprint || {
       activeLearners: 0,
       unitsCompleted: 0,
@@ -907,9 +995,10 @@ async function buildAdminPayload(orgId) {
 
     organization,
     orgGroups,
+    adminTeamEngagementReports,
 
-    // ✅ NEW: used by dashboardpartials/admin_reports
-    adminTeamEngagementReports
+    adminCounts,
+    adminBadges
   };
 }
 
@@ -926,7 +1015,8 @@ async myOrganization(req, res, next) {
     const orgId = await getOrgIdForAdmin(req);
     if (!orgId) return res.redirect('/dashboard/leader');
 
-    const payload = await buildAdminPayload(orgId);
+    const adminId = req.user?._id;
+const payload = await buildAdminPayload(orgId, adminId);
 
     return res.render('leader_dashboard', {
       ...(await baseRenderData(req)),
@@ -944,7 +1034,8 @@ async groupsLeaders(req, res, next) {
     const orgId = await getOrgIdForAdmin(req);
     if (!orgId) return res.redirect('/dashboard/leader');
 
-    const payload = await buildAdminPayload(orgId);
+    const adminId = req.user?._id;
+const payload = await buildAdminPayload(orgId, adminId);
 
     return res.render('leader_dashboard', {
       ...(await baseRenderData(req)),
@@ -962,7 +1053,8 @@ async requests(req, res, next) {
     const orgId = await getOrgIdForAdmin(req);
     if (!orgId) return res.redirect('/dashboard/leader');
 
-    const payload = await buildAdminPayload(orgId);
+    const adminId = req.user?._id;
+const payload = await buildAdminPayload(orgId, adminId);
 
     return res.render('leader_dashboard', {
       ...(await baseRenderData(req)),
@@ -980,10 +1072,10 @@ async suggestions(req, res, next) {
     const orgId = await getOrgIdForAdmin(req);
     if (!orgId) return res.redirect('/dashboard/leader');
 
-    const payload = await buildAdminPayload(orgId);
-
     const adminId = req.user?._id;
     if (!adminId) return res.redirect('/dashboard/leader');
+
+    const payload = await buildAdminPayload(orgId, adminId);
 
     const rawMySuggestions = await UnitSuggestion.find({
       organization: orgId,
@@ -1058,7 +1150,8 @@ async companyLibrary(req, res, next) {
     const orgId = await getOrgIdForAdmin(req);
     if (!orgId) return res.redirect('/dashboard/leader');
 
-    const payload = await buildAdminPayload(orgId);
+    const adminId = req.user?._id;
+const payload = await buildAdminPayload(orgId, adminId);
     const orgLeaderLibraries = await buildOrgLeaderLibraries(orgId);
 
     return res.render('leader_dashboard', {
@@ -1079,7 +1172,8 @@ async reports(req, res, next) {
     const orgId = await getOrgIdForAdmin(req);
     if (!orgId) return res.redirect('/dashboard/leader');
 
-    const payload = await buildAdminPayload(orgId);
+    const adminId = req.user?._id;
+const payload = await buildAdminPayload(orgId, adminId);
 
     return res.render('leader_dashboard', {
       ...(await baseRenderData(req)),
