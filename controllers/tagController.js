@@ -128,10 +128,19 @@ exports.createTag = async (req, res) => {
     let { tagName, itemId, itemType } = req.body;
     itemType = canonicalUnitType(itemType);
 
-    const assignedToRaw = req.body.assignedTo || {};
-    const normalizedAssignedTo = Object.values(assignedToRaw || {})
-      .map(v => ({ member: v?.member, instructions: (v?.instructions || '').trim() }))
-      .filter(v => v.member);
+const assignedToRaw = req.body.assignedTo || {};
+const allAssignedTo = Object.values(assignedToRaw || {})
+  .map(v => ({
+    member: v?.member,
+    instructions: (v?.instructions || '').trim()
+  }))
+  .filter(v => v.member);
+
+const userIdString = String(req.user._id);
+
+// leader self-selection should behave like a self-tag, not an assignment
+const selfAssignedEntry = allAssignedTo.find(v => String(v.member) === userIdString);
+const normalizedAssignedTo = allAssignedTo.filter(v => String(v.member) !== userIdString);
 
     if (!tagName || !itemId || !itemType) {
       const msg = 'Tag name, item ID, and item type are required.';
@@ -249,7 +258,7 @@ if (fromForm && isLeader && normalizedAssignedTo.length > 0) {
   });
 }
 
-// Standard HTML form submission (member/group member/leader quick-tag)
+// Standard HTML form submission (leader self-tag / member / group member quick-tag)
 if (fromForm) {
   const back = req.get('referer');
   return res.redirect(back ? `${back}${back.includes('?') ? '&' : '?'}tag=ok` : '/dashboard/member');
