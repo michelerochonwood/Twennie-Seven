@@ -1440,7 +1440,6 @@ const leaderAccount = {
 
 
 
-
 const assignedPromptSets = await buildAssignedPromptSets(id);
 
 // ---------- TAB COUNTS: DOT TRIGGERS ONLY ----------
@@ -1492,8 +1491,14 @@ const libraryContributionsCount = Array.isArray(leaderUnits)
   ? leaderUnits.length
   : 0;
 
+// TAB 9: my group members
+// Trigger = a pending member has completed registration
+const registeredGroupMembersCount = Array.isArray(resolvedGroupMembers)
+  ? resolvedGroupMembers.filter(member => member.isVerified === true).length
+  : 0;
+
 const leaderCounts = {
-  group: Array.isArray(resolvedGroupMembers) ? resolvedGroupMembers.length : 0,
+  group: registeredGroupMembersCount,
   topics: Array.isArray(topicSuggestions) ? topicSuggestions.length : 0,
   prompts: promptRegistrationsCount,
   progress: promptProgressSignalCount,
