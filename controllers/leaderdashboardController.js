@@ -1162,7 +1162,7 @@ if (progressRecords.length > 0) {
 
 
 
-
+const { leaderAssignedUnits, leaderAssignmentsOpen, leaderAssignmentsCompleted } = await buildLeaderAssignedUnits(id);
             
 
 const allLeaderTaggedUnits = await fetchTaggedUnits(id);
@@ -1382,7 +1382,7 @@ const groupCompletedPromptSets = groupCompletedRecords.map(record => ({
 
 
 // Map the completion records to a formatted array
-const { leaderAssignedUnits, leaderAssignmentsOpen, leaderAssignmentsCompleted } = await buildLeaderAssignedUnits(id);
+
 
 
 // ✅ Group assigned nuggets so one nugget card shows all assignees
