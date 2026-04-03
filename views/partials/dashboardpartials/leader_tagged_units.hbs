@@ -282,72 +282,98 @@
      }]
      ========================= --}}
 <section class="leader-suggested-units-section" style="margin-top:20px">
-  <h2 class="tagged-units-title">units suggested to me by my organization</h2>
+  <h2 class="tagged-units-title">suggested to me by my organization</h2>
 
   <div class="tagged-units-grid">
     {{#if leaderSuggestedUnits.length}}
       {{#each leaderSuggestedUnits}}
-        <div class="leader-assigned-unit-card leader-suggested-unit-card">
-          <div class="tagged-unit-icon">
-            <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
-          </div>
 
-          <div class="tagged-unit-info">
-            <h3 class="tagged-unit-title">{{unitTitle}}</h3>
+        {{!-- Skip missions (handled in mission tab) --}}
+        {{#unless (eq unitType "mission")}}
 
-            {{#if main_topic}}
-              <p class="tagged-unit-topic">{{main_topic}}</p>
-            {{/if}}
+        <div class="leader-assigned-unit-card leader-suggested-unit-card leader-dashboard-wave-card {{unitType}}-dashboard-card">
+          <div class="leader-dashboard-wave-card-inner">
 
-            <p class="leader-assigned-to">
-              suggested by: {{suggestedByName}}
-              {{#if suggestedAtFormatted}}
-                <span class="muted">({{suggestedAtFormatted}})</span>
-              {{/if}}
-            </p>
+            <!-- Dynamic wave -->
+            <div class="leader-dashboard-wave-header">
+              <img
+                src="
+                  {{#if (eq unitType 'nugget')}}
+                    /icons/goldsvg.svg
+                  {{else}}
+                    /icons/unitsvg.svg
+                  {{/if}}
+                "
+                alt=""
+                aria-hidden="true"
+                class="leader-dashboard-wave-image"
+              >
+            </div>
 
-            {{#if note}}
-              <p class="leader-assigned-instructions">
-                <em>{{note}}</em>
-              </p>
-            {{/if}}
-          </div>
+            <div class="leader-dashboard-wave-content">
 
-          <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
+              <div class="tagged-unit-icon">
+                <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
+              </div>
 
-            {{#if viewPath}}
-              <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
-            {{else}}
-              <span class="tagged-unit-link muted">view unavailable</span>
-            {{/if}}
+              <div class="tagged-unit-info">
+                <h3 class="tagged-unit-title">{{unitTitle}}</h3>
 
-            {{!-- ✅ Acknowledgement state --}}
-{{!-- ✅ Acknowledgement state --}}
-{{#if isAcknowledged}}
-  <span class="tagged-unit-link muted" aria-disabled="true">
-    seen{{#if acknowledgedAtFormatted}} <span class="muted">({{acknowledgedAtFormatted}})</span>{{/if}}
-  </span>
-{{else}}
-  <button
-    class="tagged-unit-link js-thanks-btn"
-    type="button"
-    data-suggestion-id="{{_id}}"
-  >
-    thanks!
-  </button>
+                {{#if main_topic}}
+                  <p class="tagged-unit-topic">{{main_topic}}</p>
+                {{/if}}
 
-  <div class="multi-record-item muted js-thanks-msg" style="display:none; text-align:center;">
-    your thanks have been sent to the admin!
-  </div>
-{{/if}}
+                <p class="leader-assigned-to">
+                  suggested by: {{suggestedByName}}
+                  {{#if suggestedAtFormatted}}
+                    <span class="muted">({{suggestedAtFormatted}})</span>
+                  {{/if}}
+                </p>
 
+                {{#if note}}
+                  <p class="leader-assigned-instructions">
+                    <em>{{note}}</em>
+                  </p>
+                {{/if}}
+              </div>
 
-            {{!-- future wiring --}}
-            <button class="tagged-unit-link muted" type="button" disabled>
-              dismiss
-            </button>
+              <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
+
+                {{#if viewPath}}
+                  <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
+                {{else}}
+                  <span class="tagged-unit-link muted">view unavailable</span>
+                {{/if}}
+
+                {{#if isAcknowledged}}
+                  <span class="tagged-unit-link muted" aria-disabled="true">
+                    seen{{#if acknowledgedAtFormatted}} <span class="muted">({{acknowledgedAtFormatted}})</span>{{/if}}
+                  </span>
+                {{else}}
+                  <button
+                    class="tagged-unit-link js-thanks-btn"
+                    type="button"
+                    data-suggestion-id="{{_id}}">
+                    thanks!
+                  </button>
+
+                  <div class="multi-record-item muted js-thanks-msg" style="display:none; text-align:center;">
+                    your thanks have been sent to the admin!
+                  </div>
+                {{/if}}
+
+                <button class="tagged-unit-link muted" type="button" disabled>
+                  dismiss
+                </button>
+
+              </div>
+            </div>
+
           </div>
         </div>
+
+        {{/unless}}
+
       {{/each}}
     {{else}}
       <p class="tagged-no-units">
