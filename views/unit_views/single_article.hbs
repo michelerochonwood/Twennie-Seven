@@ -143,13 +143,14 @@
 
 
         {{!-- Member/Group member: quick "tag this unit" (native POST) --}}
-        {{#if isGroupMemberOrMember}}
-          <div class="single_unit-tag-container" style="margin-bottom:200px;">
-            <form action="/tags/create" method="POST" class="inline" id="articleTagForm">
-              <input type="hidden" name="_csrf" value="{{csrfToken}}">
-              <input type="hidden" name="itemId" value="{{_id}}">
-              <input type="hidden" name="itemType" value="article">
-              <input type="hidden" name="tagName" value="Read Later">
+{{#if isGroupMemberOrMember}}
+  <div class="single_unit-tag-container" style="margin-bottom:200px;">
+    <form action="/tags/create" method="POST" class="inline" id="articleTagForm">
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+      <input type="hidden" name="itemId" value="{{_id}}">
+      <input type="hidden" name="itemType" value="article">
+      <input type="hidden" name="tagName" value="Read Later">
+      <input type="hidden" name="assignedTo[{{currentUserId}}][member]" value="{{currentUserId}}">
               <button type="button" class="tag-this-unit-link" onclick="promptAndSubmitTag('articleTagForm')"
                       style="background:none;border:none;padding:0;cursor:pointer;">
                 tag this unit
@@ -165,26 +166,40 @@
 
         {{!-- Notes --}}
 {{!-- Notes --}}
+{{!-- Notes --}}
 {{#if isGroupMemberOrLeaderOrMember}}
-  <div class="single_article-notes-container">
-    <h3 class="single_article-notes-title">complete this unit by recording notes</h3>
-    <p class="single_article-notes-instructions">
-      To complete this unit, record notes on this article. Consider how it relates to your work and how it might change your approach. These notes will be part of your Twennie learning record. (Keep your learning data hygienic - only post notes on a unit once you've completed all the tasks.)
-    </p>
+  {{#if isAssignedToCurrentUser}}
+    <div class="single_article-notes-container">
+      <h3 class="single_article-notes-title">complete this unit by recording notes</h3>
+      <p class="single_article-notes-instructions">
+        To complete this unit, record notes on this article. Consider how it relates to your work and how it might change your approach. These notes will be part of your Twennie learning record. (Keep your learning data hygienic - only post notes on a unit once you've completed all the tasks.)
+      </p>
 
-    <form action="/notes/submit" method="POST" class="single_article-notes-form">
-      <input type="hidden" name="_csrf" value="{{csrfToken}}">
-      <input type="hidden" name="unitId" value="{{_id}}">
-      <input type="hidden" name="unitType" value="article">
-      <input type="hidden" name="main_topic" value="{{main_topic}}">
-      <input type="hidden" name="secondary_topic" value="{{sub_topic}}">
+      <form action="/notes/submit" method="POST" class="single_article-notes-form">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        <input type="hidden" name="unitId" value="{{_id}}">
+        <input type="hidden" name="unitType" value="article">
+        <input type="hidden" name="main_topic" value="{{main_topic}}">
+        <input type="hidden" name="secondary_topic" value="{{sub_topic}}">
 
-      <textarea name="note_content" class="single_article-notes-textarea" rows="5" maxlength="1000"
-                placeholder="Write your notes here..."></textarea>
+        <textarea
+          name="note_content"
+          class="single_article-notes-textarea"
+          rows="5"
+          maxlength="1000"
+          placeholder="Write your notes here..."></textarea>
 
-      <button type="submit" class="single_article-notes-submit">submit notes</button>
-    </form>
-  </div>
+        <button type="submit" class="single_article-notes-submit">submit notes</button>
+      </form>
+    </div>
+  {{else}}
+    <div class="single_article-notes-container">
+      <h3 class="single_article-notes-title">complete this unit by recording notes</h3>
+      <p class="single_article-notes-instructions">
+        Before recording notes, assign this unit to yourself first so it appears in your dashboard with your other assigned units.
+      </p>
+    </div>
+  {{/if}}
 {{/if}}
       </div>
     {{else}}

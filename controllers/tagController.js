@@ -129,18 +129,12 @@ exports.createTag = async (req, res) => {
     itemType = canonicalUnitType(itemType);
 
 const assignedToRaw = req.body.assignedTo || {};
-const allAssignedTo = Object.values(assignedToRaw || {})
+const normalizedAssignedTo = Object.values(assignedToRaw)
   .map(v => ({
     member: v?.member,
     instructions: (v?.instructions || '').trim()
   }))
   .filter(v => v.member);
-
-const userIdString = String(req.user._id);
-
-// leader self-selection should behave like a self-tag, not an assignment
-const selfAssignedEntry = allAssignedTo.find(v => String(v.member) === userIdString);
-const normalizedAssignedTo = allAssignedTo.filter(v => String(v.member) !== userIdString);
 
     if (!tagName || !itemId || !itemType) {
       const msg = 'Tag name, item ID, and item type are required.';
@@ -231,17 +225,23 @@ const normalizedAssignedTo = allAssignedTo.filter(v => String(v.member) !== user
 const isLeader = userModel === 'leader';
 
 if (fromForm && isLeader && normalizedAssignedTo.length > 0) {
-  // Resolve assigned member names (GroupMembers are the normal assignees)
-  const assignedIds = normalizedAssignedTo.map(a => a.member).filter(Boolean);
+const assignedIds = normalizedAssignedTo.map(a => String(a.member)).filter(Boolean);
 
-  const assignees = assignedIds.length
-    ? await GroupMember.find({ _id: { $in: assignedIds } }).select('_id name').lean()
-    : [];
+const [groupMembers, leaders, members] = await Promise.all([
+  GroupMember.find({ _id: { $in: assignedIds } }).select('_id name').lean(),
+  Leader.find({ _id: { $in: assignedIds } }).select('_id groupLeaderName username').lean(),
+  Member.find({ _id: { $in: assignedIds } }).select('_id username').lean()
+]);
 
-  const nameById = new Map(assignees.map(m => [m._id.toString(), m.name]));
-  const assignedNames = assignedIds
-    .map(id => nameById.get(String(id)) || String(id))
-    .filter(Boolean);
+const nameById = new Map([
+  ...groupMembers.map(m => [String(m._id), m.name]),
+  ...leaders.map(l => [String(l._id), l.groupLeaderName || l.username || 'Leader']),
+  ...members.map(m => [String(m._id), m.username || 'Member'])
+]);
+
+const assignedNames = assignedIds
+  .map(id => nameById.get(id) || id)
+  .filter(Boolean);
 
   const unitLabel = unitLabelFromType(itemType);
   const unitTitle = await getUnitTitle(itemType, itemId);
@@ -307,10 +307,6 @@ exports.completeAssignment = async (req, res) => {
 exports.getAssignedToMe = async (req, res) => {
   try {
     if (!req.user) return res.status(401).json({ message: 'Login required.' });
-
-    // Only group members have leader assignments; others will just see empty
-    const isGroupMember = await GroupMember.exists({ _id: req.user._id });
-    if (!isGroupMember) return res.json([]);
 
     const tags = await Tag.find({ 'assignedTo.member': req.user._id }).lean();
     return res.json(tags);

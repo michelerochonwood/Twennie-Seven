@@ -913,6 +913,23 @@ viewArticle: async (req, res) => {
     const { groupMembers, leaderId, leaderName } = await getLeaderAssignContext(req);
     const adminSuggest = await buildOrgLeaderListForAdmin(req);
 
+    // 🔑 Check if this user is assigned to this unit
+let isAssignedToCurrentUser = false;
+
+if (req.user?._id) {
+  const existingAssignment = await Tag.exists({
+    associatedUnits: {
+      $elemMatch: {
+        item: article._id,
+        unitType: 'article'
+      }
+    },
+    'assignedTo.member': req.user._id
+  });
+
+  isAssignedToCurrentUser = !!existingAssignment;
+}
+
     return res.render('unit_views/single_article', {
       layout: 'unitviewlayout',
 
@@ -942,6 +959,8 @@ viewArticle: async (req, res) => {
       isGroupMember,
       isMember,
       tagSuccess: req.query.tag === 'ok',
+      currentUserId: currentUserId,
+      isAssignedToCurrentUser,
 
       isGroupMemberOrLeader: isLeader || isGroupMember,
       isGroupMemberOrMember: isGroupMember || isMember,

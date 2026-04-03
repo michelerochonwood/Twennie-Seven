@@ -10,7 +10,7 @@
   </p>
 
   {{#if assignedNames.length}}
-    <ul>
+    <ul class="success-assignment-list">
       {{#each assignedNames}}
         <li>{{this}}</li>
       {{/each}}
@@ -20,13 +20,16 @@
   {{/if}}
 
   <p class="success-message">
-    These members will see this {{#if unitLabel}}{{unitLabel}}{{else}}prompt set{{/if}} in their dashboards.
+    These assignees will now see this {{#if unitLabel}}{{unitLabel}}{{else}}prompt set{{/if}} in their dashboards.
   </p>
 
-  {{!-- Optional: show skips for transparency --}}
+  <p class="success-message">
+    This unit can be assigned again later if needed.
+  </p>
+
   {{#if skippedLimitNames.length}}
     <p class="success-message">
-      Skipped (limit of 3 active):
+      Skipped because they already had the maximum number of active assignments:
       {{#each skippedLimitNames}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}
     </p>
   {{/if}}
@@ -42,14 +45,60 @@
 </div>
 
 <style>
-.success-container { text-align: center; margin: 50px auto; padding: 20px; max-width: 500px; }
-.success-title { margin-top: 200px; color: #262262; font-size: 24px; font-weight: bold; }
-.success-message { font-size: 18px; margin: 10px 0; font-family: "Figtree"; }
-.success-button {
-  display: block; font-size: 11pt; margin: 10px auto; padding: 10px 20px;
-  border-radius: 99px; background-color: #262262; color: white;
-  font-family: "Figtree"; font-weight: 800; border: none;
-  text-align: center; text-decoration: none; cursor: pointer; width: 50%;
+.success-container {
+  text-align: center;
+  margin: 50px auto;
+  padding: 20px;
+  max-width: 560px;
 }
-.success-button:hover { background-color: #4a4ab2; }
+
+.success-title {
+  margin-top: 200px;
+  color: #262262;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.success-message {
+  font-size: 18px;
+  margin: 10px 0;
+  font-family: "Figtree";
+}
+
+.success-assignment-list {
+  margin: 18px auto;
+  padding: 0;
+  list-style: none;
+  max-width: 420px;
+}
+
+.success-assignment-list li {
+  font-size: 18px;
+  font-family: "Figtree";
+  margin: 8px 0;
+  padding: 10px 14px;
+  background: #f5f5fa;
+  border-radius: 12px;
+}
+
+.success-button {
+  display: block;
+  font-size: 11pt;
+  margin: 18px auto 0;
+  padding: 10px 20px;
+  border-radius: 99px;
+  background-color: #262262;
+  color: white;
+  font-family: "Figtree";
+  font-weight: 800;
+  border: none;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  width: 50%;
+}
+
+.success-button:hover {
+  background-color: #4a4ab2;
+}
 </style>
