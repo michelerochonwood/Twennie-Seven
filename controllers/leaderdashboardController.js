@@ -1167,17 +1167,26 @@ if (progressRecords.length > 0) {
 
 const allLeaderTaggedUnits = await fetchTaggedUnits(id);
 
-// Only self-tags (no assignments) count toward "my tagged units"
-const leaderTaggedCountAll = allLeaderTaggedUnits.length;
+// Legacy self-tags only (old behavior)
+const leaderLegacySelfTaggedRaw = allLeaderTaggedUnits.filter(u => u.assignedCount === 0);
 
-const leaderSelfTaggedRaw = allLeaderTaggedUnits.filter(u => u.assignedCount === 0);
+// New behavior: leader is an assignee on their own assignment row
+const leaderSelfAssignedRowsRaw = leaderAssignedUnits.filter(
+  u => String(u.assignedTo?._id || '') === String(id)
+);
 
-const leaderSelfTaggedUnitIds = leaderSelfTaggedRaw.map(u => u._id);
+// Notes for both legacy self-tags and self-assigned rows
+const leaderSelfUnitIds = [
+  ...new Set([
+    ...leaderLegacySelfTaggedRaw.map(u => u._id.toString()),
+    ...leaderSelfAssignedRowsRaw.map(u => u._id.toString())
+  ])
+];
 
-const leaderNotes = leaderSelfTaggedUnitIds.length
+const leaderNotes = leaderSelfUnitIds.length
   ? await Note.find({
       memberID: id,
-      unitID: { $in: leaderSelfTaggedUnitIds }
+      unitID: { $in: leaderSelfUnitIds }
     })
       .select('unitID updatedAt createdAt')
       .lean()
@@ -1190,11 +1199,14 @@ const leaderNoteByUnitId = new Map(
   ])
 );
 
-const leaderSelfTaggedUnits = leaderSelfTaggedRaw.map(u => {
+// Legacy self-tags, formatted for dashboard
+const leaderLegacySelfTaggedUnits = leaderLegacySelfTaggedRaw.map(u => {
   const completedAt = leaderNoteByUnitId.get(u._id.toString()) || null;
 
   return {
     ...u,
+    assignedToId: id,
+    assignedInstructions: '',
     completedAtFormatted: completedAt
       ? new Date(completedAt).toLocaleDateString('en-CA', {
           year: 'numeric',
@@ -1205,9 +1217,42 @@ const leaderSelfTaggedUnits = leaderSelfTaggedRaw.map(u => {
   };
 });
 
-// ✅ Split self-tagged units into missions vs non-missions
-const leaderSelfTaggedMissions = leaderSelfTaggedUnits.filter(u => u.unitType === 'mission');
-const leaderSelfTaggedNonMissionUnits = leaderSelfTaggedUnits.filter(u => u.unitType !== 'mission');
+// New self-assigned rows, formatted for dashboard
+const leaderSelfAssignedUnits = leaderSelfAssignedRowsRaw.map(u => {
+  const completedAt =
+    u.assignedTo?.completedAt ||
+    leaderNoteByUnitId.get(u._id.toString()) ||
+    null;
+
+  return {
+    ...u,
+    assignedToId: u.assignedTo?._id || id,
+    assignedInstructions: u.assignedTo?.instructions || '',
+    completedAtFormatted: completedAt
+      ? new Date(completedAt).toLocaleDateString('en-CA', {
+          year: 'numeric',
+          month: 'short',
+          day: '2-digit'
+        })
+      : ''
+  };
+});
+
+// Merge + dedupe by tagId + unitId
+const selfAssignedSeen = new Set();
+const leaderSelfAssignedAllUnits = [
+  ...leaderSelfAssignedUnits,
+  ...leaderLegacySelfTaggedUnits
+].filter(u => {
+  const key = `${u.tagId || 'notag'}-${u._id.toString()}`;
+  if (selfAssignedSeen.has(key)) return false;
+  selfAssignedSeen.add(key);
+  return true;
+});
+
+// Split self-assigned section into missions vs non-missions
+const leaderSelfTaggedMissions = leaderSelfAssignedAllUnits.filter(u => u.unitType === 'mission');
+const leaderSelfAssignedNonMissionUnits = leaderSelfAssignedAllUnits.filter(u => u.unitType !== 'mission');
 
 
 const [
@@ -1406,11 +1451,16 @@ const mapAssigned = (u) => ({
 
 // ✅ First, separate nuggets vs non-nuggets
 const leaderAssignedNonNuggetUnitsRaw = leaderAssignedUnits.filter(u => u.unitType !== 'nugget');
-const leaderAssignedNuggetsRaw      = leaderAssignedUnits.filter(u => u.unitType === 'nugget');
+const leaderAssignedNuggetsRaw = leaderAssignedUnits.filter(u => u.unitType === 'nugget');
+
+// Exclude leader self-assignment from the "assigned to my group" sections
+const leaderAssignedToOthersRaw = leaderAssignedNonNuggetUnitsRaw.filter(
+  u => String(u.assignedTo?._id || '') !== String(id)
+);
 
 // ✅ Then split missions out of the non-nugget set
-const leaderAssignedMissionsRaw        = leaderAssignedNonNuggetUnitsRaw.filter(u => u.unitType === 'mission');
-const leaderAssignedNonMissionUnitsRaw = leaderAssignedNonNuggetUnitsRaw.filter(u => u.unitType !== 'mission');
+const leaderAssignedMissionsRaw = leaderAssignedToOthersRaw.filter(u => u.unitType === 'mission');
+const leaderAssignedNonMissionUnitsRaw = leaderAssignedToOthersRaw.filter(u => u.unitType !== 'mission');
 
 // ✅ Flatten for the template
 const leaderAssignedNonNuggetUnits  = leaderAssignedNonNuggetUnitsRaw.map(mapAssigned);   // existing blended non-nuggets
@@ -1632,9 +1682,8 @@ return res.render('leader_dashboard', {
   leaderAccount,
   emailPreferenceLevel,
 
-  leaderSelfTaggedUnits,
-  leaderSelfTaggedNonMissionUnits,
-  leaderSelfTaggedMissions,
+leaderSelfAssignedNonMissionUnits,
+leaderSelfTaggedMissions,
 
   leaderAssignedNonNuggetUnits,
   leaderAssignedNonMissionUnits,

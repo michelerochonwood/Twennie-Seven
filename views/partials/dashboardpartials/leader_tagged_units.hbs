@@ -2,39 +2,74 @@
 <meta name="csrf-token" content="{{csrfToken}}">
 
 {{!-- =========================
-     1) SELF-TAGGED (NON-MISSION)
-     expects: leaderSelfTaggedNonMissionUnits = [
-       { _id, title, mainTopic, unitType, tagId, viewPath, completedAtFormatted }
+     1) SELF-ASSIGNED (NON-MISSION, NON-NUGGET)
+     expects: leaderSelfAssignedNonMissionUnits = [
+       {
+         _id,
+         title,
+         mainTopic,
+         unitType,
+         tagId,
+         assignedToId,
+         viewPath,
+         assignedCompletedAtFormatted,
+         assignedInstructions
+       }
      ]
      ========================= --}}
 <section class="tagged-units-section">
   <h2 class="tagged-units-title">my self-assigned library units</h2>
+
   <div class="tagged-units-grid">
-    {{#if leaderSelfTaggedNonMissionUnits.length}}
-      {{#each leaderSelfTaggedNonMissionUnits}}
-        <div class="tagged-unit-card">
-          <div class="tagged-unit-icon">
-            <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
-          </div>
+    {{#if leaderSelfAssignedNonMissionUnits.length}}
+      {{#each leaderSelfAssignedNonMissionUnits}}
+        <div class="tagged-unit-card leader-dashboard-wave-card {{unitType}}-dashboard-card">
+          <div class="leader-dashboard-wave-card-inner">
 
-          <div class="tagged-unit-info">
-            <h3 class="tagged-unit-title">{{title}}</h3>
-            {{#if mainTopic}}<p class="tagged-unit-topic">{{mainTopic}}</p>{{/if}}
+            <div class="leader-dashboard-wave-header">
+              <img
+                src="/icons/unitsvg.svg"
+                alt=""
+                aria-hidden="true"
+                class="leader-dashboard-wave-image"
+              >
+            </div>
 
-            {{#if completedAtFormatted}}
-              <p class="leader-assigned-status">✅ completed <span class="muted">({{completedAtFormatted}})</span></p>
-            {{else}}
-              <p class="leader-assigned-status">⏳ pending</p>
-            {{/if}}
-          </div>
+            <div class="leader-dashboard-wave-content">
+              <div class="tagged-unit-icon">
+                <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
+              </div>
 
-          <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
-            <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
+              <div class="tagged-unit-info">
+                <h3 class="tagged-unit-title">{{title}}</h3>
+                {{#if mainTopic}}
+                  <p class="tagged-unit-topic">{{mainTopic}}</p>
+                {{/if}}
 
-            <button class="tagged-unit-link"
-              onclick="removeTagFromUnit('{{tagId}}','{{_id}}','{{unitType}}')">
-              move to archive
-            </button>
+                {{#if assignedCompletedAtFormatted}}
+                  <p class="leader-assigned-status">
+                    ✅ completed <span class="muted">({{assignedCompletedAtFormatted}})</span>
+                  </p>
+                {{else}}
+                  <p class="leader-assigned-status">⏳ pending</p>
+                {{/if}}
+
+                {{#if assignedInstructions}}
+                  <p class="leader-assigned-instructions"><em>{{assignedInstructions}}</em></p>
+                {{/if}}
+              </div>
+
+              <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
+                <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
+
+                <button
+                  class="tagged-unit-link"
+                  onclick="unassignMember('{{tagId}}','{{assignedToId}}')">
+                  move to archive
+                </button>
+              </div>
+            </div>
+
           </div>
         </div>
       {{/each}}
@@ -47,43 +82,67 @@
 <div class="tagged-section-divider" aria-hidden="true"></div>
 
 {{!-- =========================
-     2) ASSIGNED UNITS (NON-MISSION, NON-NUGGET)
+     2) ASSIGNED TO MY GROUP (NON-MISSION, NON-NUGGET)
      expects: leaderAssignedNonMissionUnits = [...]
      ========================= --}}
 <section class="leader-assigned-units-section" style="margin-top:20px">
   <h2 class="tagged-units-title">units I have assigned to my group</h2>
+
   <div class="tagged-units-grid">
     {{#if leaderAssignedNonMissionUnits.length}}
       {{#each leaderAssignedNonMissionUnits}}
-        <div class="leader-assigned-unit-card">
-          <div class="tagged-unit-icon">
-            <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
-          </div>
+        <div class="leader-assigned-unit-card leader-dashboard-wave-card {{unitType}}-dashboard-card">
+          <div class="leader-dashboard-wave-card-inner">
 
-          <div class="tagged-unit-info">
-            <h3 class="tagged-unit-title">{{title}}</h3>
-            {{#if mainTopic}}<p class="tagged-unit-topic">{{mainTopic}}</p>{{/if}}
+            <div class="leader-dashboard-wave-header">
+              <img
+                src="/icons/unitsvg.svg"
+                alt=""
+                aria-hidden="true"
+                class="leader-dashboard-wave-image"
+              >
+            </div>
 
-            <p class="leader-assigned-to">assigned to: {{assignedToName}}</p>
+            <div class="leader-dashboard-wave-content">
+              <div class="tagged-unit-icon">
+                <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
+              </div>
 
-            {{#if assignedCompletedAtFormatted}}
-              <p class="leader-assigned-status">✅ completed <span class="muted">({{assignedCompletedAtFormatted}})</span></p>
-            {{else}}
-              <p class="leader-assigned-status">⏳ pending</p>
-            {{/if}}
+              <div class="tagged-unit-info">
+                <h3 class="tagged-unit-title">{{title}}</h3>
 
-            {{#if assignedInstructions}}
-              <p class="leader-assigned-instructions"><em>{{assignedInstructions}}</em></p>
-            {{/if}}
-          </div>
+                {{#if mainTopic}}
+                  <p class="tagged-unit-topic">{{mainTopic}}</p>
+                {{/if}}
 
-          <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
-            <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
+                <p class="leader-assigned-to">
+                  assigned to: {{assignedToName}}
+                </p>
 
-            <button class="tagged-unit-link"
-              onclick="unassignMember('{{tagId}}','{{assignedToId}}')">
-              move to archive
-            </button>
+                {{#if assignedCompletedAtFormatted}}
+                  <p class="leader-assigned-status">
+                    ✅ completed <span class="muted">({{assignedCompletedAtFormatted}})</span>
+                  </p>
+                {{else}}
+                  <p class="leader-assigned-status">⏳ pending</p>
+                {{/if}}
+
+                {{#if assignedInstructions}}
+                  <p class="leader-assigned-instructions"><em>{{assignedInstructions}}</em></p>
+                {{/if}}
+              </div>
+
+              <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
+                <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
+
+                <button
+                  class="tagged-unit-link"
+                  onclick="unassignMember('{{tagId}}','{{assignedToId}}')">
+                  move to archive
+                </button>
+              </div>
+            </div>
+
           </div>
         </div>
       {{/each}}
