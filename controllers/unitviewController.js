@@ -17,6 +17,7 @@ const sanitizeHtml = require('sanitize-html');
 const UpcomingUnit = require('../models/unit_models/upcoming'); // models/unit_models/upcoming.js
 const Nugget = require('../models/unit_models/nugget'); // add this at the top with other models
 const OrganizationProfile = require('../models/profile_models/organization_profile');
+const Tag = require('../models/tag');
 
 function isPaidMember(req) {
   const t = req.user?.accessLevel || req.user?.membershipType;
