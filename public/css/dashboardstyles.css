@@ -1842,7 +1842,84 @@ html, body {
 }
 
 
+/* =========================================
+   DASHBOARD UNIT CARDS — WAVE HEADER SYSTEM
+   ========================================= */
 
+/* Remove default padding so wave sits flush */
+.tagged-unit-card.leader-dashboard-wave-card,
+.leader-assigned-unit-card.leader-dashboard-wave-card,
+.leader-suggested-unit-card.leader-dashboard-wave-card {
+  padding: 0 !important;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Inner wrapper (handles rounded corners cleanly) */
+.leader-dashboard-wave-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  overflow: hidden;
+  background: inherit;
+}
+
+/* Wave image container */
+.leader-dashboard-wave-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  line-height: 0; /* removes spacing gap */
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Wave image */
+.leader-dashboard-wave-image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Content pushed below wave */
+.leader-dashboard-wave-content {
+  position: relative;
+  z-index: 2;
+
+  /* match your existing card padding */
+  padding: 11.25px;
+
+  /* this creates space for the wave */
+  padding-top: calc(11.25px + 3.2rem);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+/* Keep spacing consistent */
+.leader-dashboard-wave-content .tagged-unit-icon {
+  margin-bottom: 7.5px;
+}
+
+.leader-dashboard-wave-content .tagged-unit-info {
+  width: 100%;
+  text-align: center;
+}
+
+.leader-dashboard-wave-content .tagged-unit-actions {
+  width: 100%;
+}
+
+/* Keep hover effect consistent with existing cards */
+.tagged-unit-card.leader-dashboard-wave-card:hover,
+.leader-assigned-unit-card.leader-dashboard-wave-card:hover,
+.leader-suggested-unit-card.leader-dashboard-wave-card:hover {
+  transform: scale(1.05);
+}
 
 
 /*------------------------------------------------------------------------------*/
