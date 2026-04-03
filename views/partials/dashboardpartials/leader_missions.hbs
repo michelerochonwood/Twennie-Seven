@@ -4,10 +4,10 @@
 <meta name="csrf-token" content="{{csrfToken}}">
 
 {{!-- =========================
-     1) SELF-TAGGED MISSIONS
+     1) SELF-ASSIGNED MISSIONS
      expects: leaderSelfTaggedMissions = [{
        _id, title, mainTopic, unitType="mission", tagId, viewPath,
-       badge_name, badgeImagePath, category
+       badge_name, badgeImagePath, category, completedAtFormatted
      }]
      ========================= --}}
 <section class="tagged-units-section">
@@ -16,49 +16,63 @@
   <div class="tagged-units-grid">
     {{#if leaderSelfTaggedMissions.length}}
       {{#each leaderSelfTaggedMissions}}
-        <div class="tagged-unit-card">
-          <div class="tagged-unit-icon">
-            <img src="/icons/mission.svg" alt="mission icon">
-          </div>
+        <div class="tagged-unit-card leader-dashboard-wave-card mission-dashboard-card">
+          <div class="leader-dashboard-wave-card-inner">
 
-          <div class="tagged-unit-info">
-            <h3 class="tagged-unit-title">{{title}}</h3>
-            {{#if mainTopic}}<p class="tagged-unit-topic">{{mainTopic}}</p>{{/if}}
+            <div class="leader-dashboard-wave-header">
+              <img
+                src="/icons/onyxsvg.svg"
+                alt=""
+                aria-hidden="true"
+                class="leader-dashboard-wave-image"
+              >
+            </div>
 
-           {{!-- ⭐ Mission badge --}}
-{{#if badgeImagePath}}
-  <div class="mission-badge-row">
-    <img
-      src="{{badgeImagePath}}"
-      alt="{{badge_name}}"
-      class="mission-badge-icon"
-    />
-    {{#if badge_name}}
-      <p class="mission-badge-name">{{badge_name}}</p>
-    {{/if}}
-  </div>
-{{/if}}
-              </div>
-
-              <div class="mission-badge-text">
-                {{#if badge_name}}
-                  <p class="mission-badge-name">{{badge_name}}</p>
+            <div class="leader-dashboard-wave-content">
+              <div class="tagged-unit-icon">
+                {{#if badgeImagePath}}
+                  <img src="{{badgeImagePath}}" alt="{{#if badge_name}}{{badge_name}}{{else}}mission badge{{/if}}" class="mission-badge-icon">
                 {{else}}
-                  <p class="mission-badge-name mission-badge-name--muted">badge pending</p>
+                  <img src="/icons/mission.svg" alt="mission icon">
                 {{/if}}
               </div>
+
+              <div class="tagged-unit-info">
+                <h3 class="tagged-unit-title">{{title}}</h3>
+
+                {{#if mainTopic}}
+                  <p class="tagged-unit-topic">{{mainTopic}}</p>
+                {{/if}}
+
+                {{#if completedAtFormatted}}
+                  <p class="leader-assigned-status">
+                    ✅ completed <span class="muted">({{completedAtFormatted}})</span>
+                  </p>
+                {{else}}
+                  <p class="leader-assigned-status">⏳ pending</p>
+                {{/if}}
+
+                <div class="mission-badge-row">
+                  {{#if badge_name}}
+                    <p class="mission-badge-name">{{badge_name}}</p>
+                  {{else}}
+                    <p class="mission-badge-name mission-badge-name--muted">badge pending</p>
+                  {{/if}}
+                </div>
+              </div>
+
+              <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
+                <a href="{{viewPath}}" class="tagged-unit-link">view mission</a>
+
+                <button
+                  class="tagged-unit-link"
+                  onclick="removeTagFromUnit('{{tagId}}','{{_id}}','mission')"
+                >
+                  remove this mission
+                </button>
+              </div>
             </div>
-          </div>
 
-          <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
-            <a href="{{viewPath}}" class="tagged-unit-link">view mission</a>
-
-            <button
-              class="tagged-unit-link"
-              onclick="removeTagFromUnit('{{tagId}}','{{_id}}','mission')"
-            >
-              remove this mission
-            </button>
           </div>
         </div>
       {{/each}}
@@ -85,70 +99,69 @@
   <div class="tagged-units-grid">
     {{#if leaderAssignedMissions.length}}
       {{#each leaderAssignedMissions}}
-        <div class="leader-assigned-unit-card">
-          <div class="tagged-unit-icon">
-            <img src="/icons/mission.svg" alt="mission icon">
-          </div>
+        <div class="leader-assigned-unit-card leader-dashboard-wave-card mission-dashboard-card">
+          <div class="leader-dashboard-wave-card-inner">
 
-          <div class="tagged-unit-info">
-            <h3 class="tagged-unit-title">{{title}}</h3>
-            {{#if mainTopic}}<p class="tagged-unit-topic">{{mainTopic}}</p>{{/if}}
+            <div class="leader-dashboard-wave-header">
+              <img
+                src="/icons/onyxsvg.svg"
+                alt=""
+                aria-hidden="true"
+                class="leader-dashboard-wave-image"
+              >
+            </div>
 
-            <p class="leader-assigned-to">assigned to: {{assignedToName}}</p>
-
-            {{#if assignedCompletedAtFormatted}}
-              <p class="leader-assigned-status">✅ completed <span class="muted">({{assignedCompletedAtFormatted}})</span></p>
-            {{else}}
-              <p class="leader-assigned-status">⏳ in progress</p>
-            {{/if}}
-
-            {{#if assignedInstructions}}
-              <p class="leader-assigned-instructions"><em>{{assignedInstructions}}</em></p>
-            {{/if}}
-
-            {{!-- ⭐ Badge block --}}
-            <div class="mission-badge-row">
-              <div class="mission-badge-img">
+            <div class="leader-dashboard-wave-content">
+              <div class="tagged-unit-icon">
                 {{#if badgeImagePath}}
-                  <img src="{{badgeImagePath}}" alt="{{badge_name}}" class="mission-badge-icon">
+                  <img src="{{badgeImagePath}}" alt="{{#if badge_name}}{{badge_name}}{{else}}mission badge{{/if}}" class="mission-badge-icon">
                 {{else}}
-                  <img
-                    src="/badges/missions/
-                      {{#if (eq category 'learning')}}learningbadge.png{{/if}}
-                      {{#if (eq category 'research')}}researchbadge.png{{/if}}
-                      {{#if (eq category 'business_development')}}bdbadge.png{{/if}}
-                      {{#if (eq category 'internal_improvement')}}improvebadge.png{{/if}}
-                      {{#if (eq category 'culture_play')}}culturebadge.png{{/if}}
-                      {{#if (eq category 'client_experience')}}clientxbadge.png{{/if}}
-                      {{#if (eq category 'community')}}communitybadge.png{{/if}}
-                      {{#if (eq category 'administrative')}}adminbadge.png{{/if}}
-                      {{#if (eq category 'other')}}roguebadge.png{{/if}}
-                    "
-                    alt="{{#if badge_name}}{{badge_name}}{{else}}mission badge{{/if}}"
-                    class="mission-badge-icon"
-                  >
+                  <img src="/icons/mission.svg" alt="mission icon">
                 {{/if}}
               </div>
 
-              <div class="mission-badge-text">
-                {{#if badge_name}}
-                  <p class="mission-badge-name">{{badge_name}}</p>
-                {{else}}
-                  <p class="mission-badge-name mission-badge-name--muted">badge pending</p>
+              <div class="tagged-unit-info">
+                <h3 class="tagged-unit-title">{{title}}</h3>
+
+                {{#if mainTopic}}
+                  <p class="tagged-unit-topic">{{mainTopic}}</p>
                 {{/if}}
+
+                <p class="leader-assigned-to">assigned to: {{assignedToName}}</p>
+
+                {{#if assignedCompletedAtFormatted}}
+                  <p class="leader-assigned-status">
+                    ✅ completed <span class="muted">({{assignedCompletedAtFormatted}})</span>
+                  </p>
+                {{else}}
+                  <p class="leader-assigned-status">⏳ in progress</p>
+                {{/if}}
+
+                {{#if assignedInstructions}}
+                  <p class="leader-assigned-instructions"><em>{{assignedInstructions}}</em></p>
+                {{/if}}
+
+                <div class="mission-badge-row">
+                  {{#if badge_name}}
+                    <p class="mission-badge-name">{{badge_name}}</p>
+                  {{else}}
+                    <p class="mission-badge-name mission-badge-name--muted">badge pending</p>
+                  {{/if}}
+                </div>
+              </div>
+
+              <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
+                <a href="{{viewPath}}" class="tagged-unit-link">view mission</a>
+
+                <button
+                  class="tagged-unit-link"
+                  onclick="unassignMember('{{tagId}}','{{assignedToId}}')"
+                >
+                  move to archive
+                </button>
               </div>
             </div>
-          </div>
 
-          <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
-            <a href="{{viewPath}}" class="tagged-unit-link">view mission</a>
-
-            <button
-              class="tagged-unit-link"
-              onclick="unassignMember('{{tagId}}','{{assignedToId}}')"
-            >
-              move to archive
-            </button>
           </div>
         </div>
       {{/each}}
