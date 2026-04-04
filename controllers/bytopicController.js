@@ -584,12 +584,30 @@ const dedupedSectionedUnits = sectionedUnits.map(section => {
   };
 });
 
+const isLeaderOrGroupMember =
+  membershipType === 'leader' || membershipType === 'group_member';
+
+const isPaid =
+  membershipType === 'member' &&
+  (accessLevel === 'paid_individual' || accessLevel === 'contributor_individual');
+
+const isFree =
+  membershipType === 'member' && accessLevel === 'free_individual';
+
 res.render('bytopic_views/bytopic_view', {
   layout: 'bytopiclayout',
   title: topic.title,
   shortSummary: topic.shortSummary,
   longSummary: topic.longSummary,
-  sectionedUnits: dedupedSectionedUnits
+  sectionedUnits: dedupedSectionedUnits,
+  loggedIn,
+  isLeaderOrGroupMember:
+    membershipType === 'leader' || membershipType === 'group_member',
+  isPaid:
+    membershipType === 'member' &&
+    (accessLevel === 'paid_individual' || accessLevel === 'contributor_individual'),
+  isFree:
+    membershipType === 'member' && accessLevel === 'free_individual'
 });
 
 
