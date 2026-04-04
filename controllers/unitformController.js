@@ -1261,22 +1261,19 @@ submitPromptSet: async (req, res) => {
       booleanFields.reduce((obj, f) => ((obj[f] = promptSetData[f]), obj), {})
     );
 
-    // Optional: normalize a single secondary topic (string -> [string])
-    if (typeof promptSetData.secondary_topics === 'string' && promptSetData.secondary_topics.trim() !== '') {
-      promptSetData.secondary_topics = [promptSetData.secondary_topics];
-    } else if (!Array.isArray(promptSetData.secondary_topics)) {
-      promptSetData.secondary_topics = [];
-    }
+// Optional: normalize a single secondary topic (string -> [string])
+if (typeof promptSetData.secondary_topics === 'string' && promptSetData.secondary_topics.trim() !== '') {
+  promptSetData.secondary_topics = [promptSetData.secondary_topics];
+} else if (!Array.isArray(promptSetData.secondary_topics)) {
+  promptSetData.secondary_topics = [];
+}
 
-    // Badge flattening -> nested object
-    if (promptSetData['badge.image'] || promptSetData['badge.name']) {
-      promptSetData.badge = {
-        image: promptSetData['badge.image'],
-        name: promptSetData['badge.name'],
-      };
-      delete promptSetData['badge.image'];
-      delete promptSetData['badge.name'];
-    }
+// Normalize characteristics checkbox input
+if (typeof promptSetData.characteristics === 'string' && promptSetData.characteristics.trim() !== '') {
+  promptSetData.characteristics = [promptSetData.characteristics];
+} else if (!Array.isArray(promptSetData.characteristics)) {
+  promptSetData.characteristics = [];
+}
 
     // Attach author
     promptSetData.author = { id: req.user._id };

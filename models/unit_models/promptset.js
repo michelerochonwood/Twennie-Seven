@@ -39,9 +39,13 @@ const promptSetSchema = new mongoose.Schema({
   characteristics: {
     type: [String],
     enum: [
+      'investigative',
+      'reflective',
+      'strategic',
       'educational',
       'motivational',
-      'provocative',
+      'thought-provoking',
+      'transformative',
       'fun',
       'hilarious',
       'silly',
