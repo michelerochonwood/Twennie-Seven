@@ -775,18 +775,20 @@ const getPromptSetsCompletedReport = async (req, res) => {
       const notesArr = safeArray(prog.notes);
 
       // Build prompt notes aligned to prompts, including dateSubmitted
-      const promptNotes = Array.from({ length: TOTAL_PROMPTS }, (_, idx) => {
-        const content = safeString(notesArr[idx]).trim();
+const promptNotes = Array.from({ length: TOTAL_PROMPTS }, (_, idx) => {
+  // Prompt 0 has no submitted note; notes[0] belongs to Prompt 1
+  const noteIndex = idx === 0 ? -1 : idx - 1;
+  const content = noteIndex >= 0 ? safeString(notesArr[noteIndex]).trim() : '';
 
-        return {
-          notes: content
-            ? [{
-                content,
-                dateSubmitted: prog.updatedAt || prog.createdAt || null
-              }]
-            : []
-        };
-      });
+  return {
+    notes: content
+      ? [{
+          content,
+          dateSubmitted: prog.updatedAt || prog.createdAt || null
+        }]
+      : []
+  };
+});
 
       const comp = completionByKey.get(completionKey(mid, psId));
       const dateCompleted =
@@ -1069,18 +1071,20 @@ const getMyCompletedPromptSetsReport = async (req, res) => {
         });
 
         const notesArr = safeArray(prog.notes);
-        const promptNotes = Array.from({ length: TOTAL_PROMPTS }, (_, idx) => {
-          const content = safeString(notesArr[idx]).trim();
+const promptNotes = Array.from({ length: TOTAL_PROMPTS }, (_, idx) => {
+  // Prompt 0 has no note; shift notes by 1
+  const noteIndex = idx === 0 ? -1 : idx - 1;
+  const content = noteIndex >= 0 ? safeString(notesArr[noteIndex]).trim() : '';
 
-          return {
-            notes: content
-              ? [{
-                  content,
-                  dateSubmitted: prog.updatedAt || prog.createdAt || null
-                }]
-              : []
-          };
-        });
+  return {
+    notes: content
+      ? [{
+          content,
+          dateSubmitted: prog.updatedAt || prog.createdAt || null
+        }]
+      : []
+  };
+});
 
         const completion = completionByPromptSetId.get(psId);
         const dateCompleted =
@@ -1320,18 +1324,20 @@ const getMyCompletedPromptSetsReportIndividual = async (req, res) => {
         });
 
         const notesArr = safeArray(prog.notes);
-        const promptNotes = Array.from({ length: TOTAL_PROMPTS }, (_, idx) => {
-          const content = safeString(notesArr[idx]).trim();
+const promptNotes = Array.from({ length: TOTAL_PROMPTS }, (_, idx) => {
+  // Prompt 0 has no note; shift notes by 1
+  const noteIndex = idx === 0 ? -1 : idx - 1;
+  const content = noteIndex >= 0 ? safeString(notesArr[noteIndex]).trim() : '';
 
-          return {
-            notes: content
-              ? [{
-                  content,
-                  dateSubmitted: prog.updatedAt || prog.createdAt || null
-                }]
-              : []
-          };
-        });
+  return {
+    notes: content
+      ? [{
+          content,
+          dateSubmitted: prog.updatedAt || prog.createdAt || null
+        }]
+      : []
+  };
+});
 
         const completion = completionByPromptSetId.get(psId);
         const dateCompleted =
