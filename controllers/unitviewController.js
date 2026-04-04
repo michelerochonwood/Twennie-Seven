@@ -1303,9 +1303,7 @@ if (req.user?._id) {
 
       
     
-    
-
-viewPromptset: async (req, res) => {
+  viewPromptset: async (req, res) => {
   try {
     const { id } = req.params;
     console.log(`📚 Fetching prompt set with ID: ${id}`);
@@ -1320,7 +1318,7 @@ viewPromptset: async (req, res) => {
       });
     }
 
-    // 2) Resolve author (profile for name/image) + actual doc for org/team checks
+    // 2) Resolve author
     const authorIdRaw = promptSet.author?.id || promptSet.author;
     const authorId = authorIdRaw ? authorIdRaw.toString() : null;
     const author = await resolveAuthorById(authorId);
@@ -1333,60 +1331,78 @@ viewPromptset: async (req, res) => {
       });
     }
 
-    // 3) Ownership & current user
+    // 3) Current user / ownership
     const currentUserId = (req.user?._id || req.user?.id)?.toString();
-    const currentMembership = req.user?.membershipType || req.user?.accessLevel || null;
+    const membershipType = req.user?.membershipType || null;
+    const accessLevel = req.user?.accessLevel || null;
 
     const isOwner = !!(currentUserId && authorId && currentUserId === authorId);
-    const isLeader = currentMembership === 'leader';
+    const isLeader = membershipType === 'leader';
+    const isGroupMember = membershipType === 'group_member';
+    const isMember = membershipType === 'member';
 
-    // Fetch the author's org/team from their actual doc
+    const isPaidIndividual =
+      isMember &&
+      ['paid_individual', 'contributor_individual'].includes(accessLevel);
+
+    // 4) Fetch the author's org/team from actual docs
     let authorOrg = null;
     let authorGroupId = null;
 
     const [authorAsLeader, authorAsGroupMember] = await Promise.all([
       Leader.findById(authorId).select('_id organization').lean(),
-      GroupMember.findById(authorId).select('_id organization groupId').lean()
+      GroupMember.findById(authorId).select('_id organization groupId leader').lean()
     ]);
 
     if (authorAsLeader) {
       authorOrg = authorAsLeader.organization || null;
-      authorGroupId = authorAsLeader._id; // leaders use their own id as group id
+      authorGroupId = authorAsLeader._id; // leaders anchor their own group
     } else if (authorAsGroupMember) {
       authorOrg = authorAsGroupMember.organization || null;
-      authorGroupId = authorAsGroupMember.groupId || null;
+      authorGroupId = authorAsGroupMember.leader || authorAsGroupMember.groupId || null;
     }
 
-    // 4) Additional membership checks
-    const isGroupMember = !!(await GroupMember.findById(currentUserId).select('_id').lean());
-    const isPaidIndividual =
-      req.user?.membershipType === 'member' &&
-      ['paid_individual', 'contributor_individual'].includes(req.user?.accessLevel);
-
-    // 5) Visibility check
+    // 5) Visibility / access
     let isAuthorizedToViewFullContent = false;
+    let isOrgMatch = false;
+    let isTeamMatch = false;
 
     if (promptSet.visibility === 'all_members') {
       isAuthorizedToViewFullContent = true;
     } else {
-      const isOrgMatch =
+      isOrgMatch =
         promptSet.visibility === 'organization_only' &&
         req.user?.organization &&
         authorOrg &&
-        req.user.organization === authorOrg;
+        String(req.user.organization) === String(authorOrg);
 
-      const isTeamMatch =
+      isTeamMatch =
         promptSet.visibility === 'team_only' &&
         req.user?.groupId &&
         authorGroupId &&
-        req.user.groupId.toString() === authorGroupId.toString();
+        String(req.user.groupId) === String(authorGroupId);
 
-      // Prompt sets are more permissive in your system (leader, group_member, paid individual)
+      // prompt sets are available to leaders, group members,
+      // and paid/contributor individuals in your system
       isAuthorizedToViewFullContent =
         isOwner || isLeader || isGroupMember || isPaidIndividual || isOrgMatch || isTeamMatch;
     }
 
-    // 6) Leader context for assignment UI (if leader)
+    console.log('🔒 Access breakdown (prompt set):', {
+      currentUserId,
+      membershipType,
+      accessLevel,
+      isOwner,
+      isLeader,
+      isGroupMember,
+      isMember,
+      isPaidIndividual,
+      isOrgMatch,
+      isTeamMatch,
+      isAuthorizedToViewFullContent
+    });
+
+    // 6) Leader context for assignment UI
     let groupMembers = [];
     let leaderId = undefined;
     let leaderName = undefined;
@@ -1397,15 +1413,18 @@ viewPromptset: async (req, res) => {
         .lean();
 
       if (leaderDoc) {
-        groupMembers = await GroupMember.find({ groupId: leaderDoc._id })
+        groupMembers = await GroupMember.find({
+          $or: [{ leader: leaderDoc._id }, { groupId: leaderDoc._id }]
+        })
           .select('name _id')
           .lean();
+
         leaderId = leaderDoc._id.toString();
         leaderName = leaderDoc.groupLeaderName || leaderDoc.username || 'You';
       }
     }
 
-    // 7) ✅ Org Admin suggestion context
+    // 7) Org admin suggestion context
     const adminSuggest = await buildOrgLeaderListForAdmin(req);
 
     // 8) Render
@@ -1413,7 +1432,6 @@ viewPromptset: async (req, res) => {
       layout: 'unitviewlayout',
       csrfToken: typeof req.csrfToken === 'function' ? req.csrfToken() : null,
 
-      // identity & content
       _id: promptSet._id.toString(),
       unitType: 'promptset',
       promptset_title: promptSet.promptset_title,
@@ -1423,13 +1441,11 @@ viewPromptset: async (req, res) => {
       secondary_topics: promptSet.secondary_topics || [],
       sub_topic: promptSet.sub_topic,
 
-      // optional metadata
       target_audience: promptSet.target_audience,
       characteristics: promptSet.characteristics,
       purpose: promptSet.purpose,
       suggested_frequency: promptSet.suggested_frequency,
 
-      // prompts / headlines
       prompts: [
         promptSet.Prompt1, promptSet.Prompt2, promptSet.Prompt3, promptSet.Prompt4, promptSet.Prompt5,
         promptSet.Prompt6, promptSet.Prompt7, promptSet.Prompt8, promptSet.Prompt9, promptSet.Prompt10,
@@ -1454,28 +1470,24 @@ viewPromptset: async (req, res) => {
         permission: promptSet.permission,
       },
 
-      // author card
       author: {
         name: author.name || 'Unknown Author',
         image: author.image || '/images/default-avatar.png',
       },
 
-      // flags
       isOwner,
       isLeader,
       isAuthenticated: typeof req.isAuthenticated === 'function' ? req.isAuthenticated() : !!req.user,
       isAuthorizedToViewFullContent,
 
-      isGroupMemberOrLeader: isLeader || currentMembership === 'group_member',
-      isGroupMemberOrMember: currentMembership === 'group_member' || currentMembership === 'member',
+      isGroupMemberOrLeader: isLeader || isGroupMember,
+      isGroupMemberOrMember: isGroupMember || isMember,
 
-      // ✅ Admin suggest vars (top-level)
       ...adminSuggest,
-// ✅ Suggestion success banner (after redirect back)
-suggestionSuccess: req.query.suggested === '1',
-suggestedUnitId: req.query.unitId || '',
-suggestedUnitType: req.query.unitType || '',
-      // leader UI data (if your HBS uses it)
+      suggestionSuccess: req.query.suggested === '1',
+      suggestedUnitId: req.query.unitId || '',
+      suggestedUnitType: req.query.unitType || '',
+
       groupMembers,
       leaderId,
       leaderName: leaderName || req.user?.username || 'You',
@@ -2223,7 +2235,7 @@ const canAddMissionNotes = isOwner || isAssignedToCurrentUser;
 
       currentUserId: currentUserId,
       isAssignedToCurrentUser,
-      canAddMissionNotes,
+        canAddMissionNotes,
 
       // details
       department_requesting: mission.department_requesting,
