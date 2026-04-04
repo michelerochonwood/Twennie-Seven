@@ -796,6 +796,24 @@ viewMineDisciplines: async (req, res) => {
     // 6) ✅ Org Admin suggestion context
     const adminSuggest = await buildOrgLeaderListForAdmin(req);
 
+
+    let isAssignedToCurrentUser = false;
+
+if (req.user?._id) {
+  const existingAssignment = await Tag.exists({
+    associatedUnits: {
+      $elemMatch: {
+        item: nugget._id,
+        unitType: 'nugget'
+      }
+    },
+    'assignedTo.member': req.user._id
+  });
+
+  isAssignedToCurrentUser = !!existingAssignment;
+}
+
+const canAddNuggetMonitoringNotes = isOwner || isAssignedToCurrentUser;
     // 7) Render the nugget view
     return res.render('unit_views/single_nugget', {
       layout: 'unitviewlayout',
@@ -816,6 +834,10 @@ viewMineDisciplines: async (req, res) => {
       likelihood: nugget.likelihood,
       connectedTwennieUnits: nugget.connectedTwennieUnits || [],
       notes: nugget.notes,
+
+      currentUserId: currentUserId,
+      isAssignedToCurrentUser,
+      canAddNuggetMonitoringNotes,
 
       // Creator sidebar
       creator: {
@@ -1624,6 +1646,22 @@ viewExercise: async (req, res) => {
       };
     });
 
+    let isAssignedToCurrentUser = false;
+
+if (req.user?._id) {
+  const existingAssignment = await Tag.exists({
+    associatedUnits: {
+      $elemMatch: {
+        item: exercise._id,
+        unitType: 'exercise'
+      }
+    },
+    'assignedTo.member': req.user._id
+  });
+
+  isAssignedToCurrentUser = !!existingAssignment;
+}
+
     // 8) Render
     return res.render('unit_views/single_exercise', {
       layout: 'unitviewlayout',
@@ -1654,7 +1692,8 @@ viewExercise: async (req, res) => {
       isGroupMember,
       isMember,
 
-      
+      currentUserId: currentUserId,
+      isAssignedToCurrentUser,
 
       tagSuccess: req.query.tag === 'ok',
 
@@ -2132,6 +2171,24 @@ viewMission: async (req, res) => {
       leaderName,
     } = await getLeaderAssignContext(req);
 
+    let isAssignedToCurrentUser = false;
+
+if (req.user?._id) {
+  const existingAssignment = await Tag.exists({
+    associatedUnits: {
+      $elemMatch: {
+        item: mission._id,
+        unitType: 'mission'
+      }
+    },
+    'assignedTo.member': req.user._id
+  });
+
+  isAssignedToCurrentUser = !!existingAssignment;
+}
+
+const canAddMissionNotes = isOwner || isAssignedToCurrentUser;
+
     // ✅ Org Admin suggestion context
     const adminSuggest = await buildOrgLeaderListForAdmin(req);
 
@@ -2163,6 +2220,10 @@ viewMission: async (req, res) => {
       purpose: mission.purpose,
       why_it_matters: mission.why_it_matters,
       background: mission.background,
+
+      currentUserId: currentUserId,
+      isAssignedToCurrentUser,
+      canAddMissionNotes,
 
       // details
       department_requesting: mission.department_requesting,

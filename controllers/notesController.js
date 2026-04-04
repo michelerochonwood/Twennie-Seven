@@ -14,29 +14,30 @@ const GroupMember = require('../models/member_models/group_member');
 const Leader      = require('../models/member_models/leader');
 
 const Tag = require('../models/tag');
+const Nugget = require('../models/unit_models/nugget');
 
 /**
  * Resolve unit by id across known unit collections.
  * Returns { unit, type } where type ∈ 'article' | 'video' | 'interview' | 'exercise' | 'template' | 'mission' | null
  */
 async function resolveUnitAndType(unitId) {
-  const id = new mongoose.Types.ObjectId(unitId);
+const [a, v, i, e, t, m, n] = await Promise.all([
+  Article.findById(id).select('main_topic secondary_topics secondary_topic discipline region').lean(),
+  Video.findById(id).select('main_topic secondary_topics secondary_topic').lean(),
+  Interview.findById(id).select('main_topic secondary_topics secondary_topic').lean(),
+  Exercise.findById(id).select('main_topic secondary_topics secondary_topic').lean(),
+  Template.findById(id).select('main_topic secondary_topics secondary_topic').lean(),
+  Mission.findById(id).select('main_topic secondary_topics secondary_topic').lean(),
+  Nugget.findById(id).select('discipline region').lean()
+]);
 
-  const [a, v, i, e, t, m] = await Promise.all([
-    Article.findById(id).select('main_topic secondary_topics secondary_topic').lean(),
-    Video.findById(id).select('main_topic secondary_topics secondary_topic').lean(),
-    Interview.findById(id).select('main_topic secondary_topics secondary_topic').lean(),
-    Exercise.findById(id).select('main_topic secondary_topics secondary_topic').lean(),
-    Template.findById(id).select('main_topic secondary_topics secondary_topic').lean(),
-    Mission.findById(id).select('main_topic secondary_topics secondary_topic').lean()
-  ]);
-
-  if (a) return { unit: a, type: 'article' };
-  if (v) return { unit: v, type: 'video' };
-  if (i) return { unit: i, type: 'interview' };
-  if (e) return { unit: e, type: 'exercise' };
-  if (t) return { unit: t, type: 'template' };
-  if (m) return { unit: m, type: 'mission' };
+if (a) return { unit: a, type: 'article' };
+if (v) return { unit: v, type: 'video' };
+if (i) return { unit: i, type: 'interview' };
+if (e) return { unit: e, type: 'exercise' };
+if (t) return { unit: t, type: 'template' };
+if (m) return { unit: m, type: 'mission' };
+if (n) return { unit: n, type: 'nugget' };
   return { unit: null, type: null };
 }
 
@@ -91,22 +92,34 @@ exports.createNote = async (req, res) => {
       }
     }
 
-    const content = (note_content || '').trim();
+const content = (note_content || '').trim();
 
-    // Upsert the note (one note per user+unit)
-    await Note.findOneAndUpdate(
-      { unitID: unitId, memberID: userId },
-      {
-        $set: {
-          unitType:        effectiveUnitType || undefined,
-          main_topic:      effectiveMainTopic,
-          secondary_topic: effectiveSecondary,
-          note_content:    content,
-          updatedAt:       new Date()
-        }
-      },
-      { upsert: true, new: true, setDefaultsOnInsert: true }
-    );
+if (effectiveUnitType === 'nugget' || effectiveUnitType === 'mission') {
+  // Nuggets and missions keep a running history of notes
+  await Note.create({
+    unitID: unitId,
+    memberID: userId,
+    unitType: effectiveUnitType,
+    main_topic: effectiveMainTopic,
+    secondary_topic: effectiveSecondary,
+    note_content: content
+  });
+} else {
+  // Learning units keep one current note per user/unit
+  await Note.findOneAndUpdate(
+    { unitID: unitId, memberID: userId },
+    {
+      $set: {
+        unitType:        effectiveUnitType || undefined,
+        main_topic:      effectiveMainTopic,
+        secondary_topic: effectiveSecondary,
+        note_content:    content,
+        updatedAt:       new Date()
+      }
+    },
+    { upsert: true, new: true, setDefaultsOnInsert: true }
+  );
+}
 
     /**
      * Mark corresponding leader assignment as completed for this user + unit.

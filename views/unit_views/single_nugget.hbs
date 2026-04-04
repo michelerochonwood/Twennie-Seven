@@ -26,7 +26,7 @@
         {{else}}Not available{{/if}}
       </p>
       <p><strong>Project Delivery Type:</strong> {{projectDeliveryType}}</p>
-      <p><strong>Likelihood:</strong> {{likelihood}}%</p>
+      <p><strong>Win Probability:</strong> {{likelihood}}%</p>
       <p><strong>Original Source:</strong>
         <a href="{{originalSource.url}}" target="_blank" rel="noopener">
           {{#if originalSource.label}}{{originalSource.label}}{{else}}{{originalSource.url}}{{/if}}
@@ -189,14 +189,52 @@
           <input type="hidden" name="itemId" value="{{_id}}">
           <input type="hidden" name="itemType" value="nugget">
           <input type="hidden" name="tagName" value="Watch Later">
-          <button type="button" class="tag-this-unit-link" onclick="promptAndSubmitTag('nuggetTagForm')">
-            tag this nugget
-          </button>
+          <input type="hidden" name="assignedTo[{{currentUserId}}][member]" value="{{currentUserId}}">
+<button
+  type="button"
+  class="tag-this-unit-link"
+  onclick="promptAndSubmitTag('nuggetTagForm')"
+>
+  assign this nugget to myself
+</button>
         </form>
       </div>
     {{/if}}
 
   </div> <!-- /.single_nugget-main -->
+{{#if canAddNuggetMonitoringNotes}}
+  <div class="single_nugget-notes-container">
+    <h3 class="single_nugget-notes-title">record monitoring notes for this nugget</h3>
+    <p class="single_nugget-notes-instructions">
+      Use this space to record what you are learning as you monitor this opportunity. Add updates, new signals, changes in timing, client movement, risk, or anything your team should know. These notes help maintain continuity as monitoring changes hands.
+    </p>
+
+    <form action="/notes/submit-nugget-monitoring" method="POST" class="single_nugget-notes-form">
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+      <input type="hidden" name="unitId" value="{{_id}}">
+      <input type="hidden" name="unitType" value="nugget">
+      <input type="hidden" name="main_topic" value="{{discipline}}">
+      <input type="hidden" name="secondary_topic" value="{{region}}">
+
+      <textarea
+        name="note_content"
+        class="single_nugget-notes-textarea"
+        rows="5"
+        maxlength="2000"
+        placeholder="Record what you are noticing about this nugget..."
+      ></textarea>
+
+      <button type="submit" class="single_nugget-notes-submit">save monitoring notes</button>
+    </form>
+  </div>
+{{else}}
+  <div class="single_nugget-notes-container">
+    <h3 class="single_nugget-notes-title">record monitoring notes for this nugget</h3>
+    <p class="single_nugget-notes-instructions">
+      If you will be monitoring itAssign this nugget to yourself first , so your updates stay connected to the dashboard and reporting properly.
+    </p>
+  </div>
+{{/if}}
 
   <!-- Sidebar -->
   <aside class="single_nugget-sidebar">

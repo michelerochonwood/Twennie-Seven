@@ -275,53 +275,69 @@
         </div>
       {{/if}}
 
-      {{#if isGroupMemberOrMember}}
-        <div class="single_unit-tag-container" style="margin-bottom:200px;">
-          <form action="/tags/create" method="POST" class="inline" id="missionTagForm">
-            <input type="hidden" name="_csrf" value="{{csrfToken}}">
-            <input type="hidden" name="itemId" value="{{_id}}">
-            <input type="hidden" name="itemType" value="mission">
-            <input type="hidden" name="tagName" value="Work on this mission">
-            <button type="button"
-                    class="tag-this-unit-link"
-                    onclick="promptAndSubmitTag('missionTagForm')"
-                    style="background:none;border:none;padding:0;cursor:pointer;">
-              tag this mission
-              <svg class="tag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 39.48 36.66">
-                <path class="cls-1" d="M38.77,21.12L16.05.56C15.65.19,15.13,0,14.59,0L2.12.16c-1.18.01-2.12.97-2.12,2.15v11.2c0,.63.28,1.24.77,1.64l24.95,21c.9.76,2.24.65,3.01-.24l10.23-11.8c.77-.88.69-2.22-.18-3ZM6.28,8.87c-1.57,0-2.84-1.27-2.84-2.84s1.27-2.84,2.84-2.84,2.84,1.27,2.84,2.84-1.27,2.84-2.84,2.84Z"/>
-              </svg>
-            </button>
-          </form>
-        </div>
-      {{/if}}
+{{#if isGroupMemberOrMember}}
+  <div class="single_unit-tag-container" style="margin-bottom:200px;">
+    <form action="/tags/create" method="POST" class="inline" id="missionTagForm">
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+      <input type="hidden" name="itemId" value="{{_id}}">
+      <input type="hidden" name="itemType" value="mission">
+      <input type="hidden" name="tagName" value="Work on this mission">
+      <input type="hidden" name="assignedTo[{{currentUserId}}][member]" value="{{currentUserId}}">
 
-      {{#if isGroupMemberOrLeader}}
-        <div class="single_mission-notes-container">
-          <h3 class="single_mission-notes-title">complete this mission by recording notes</h3>
-          <p class="single_mission-notes-instructions">
-            Capture your observations as you work on this mission: what you learned, what surprised you, and ideas for next steps.
-            Once posted, these notes will be part of your Twennie learning record. Keep your learning data hygienic and only post notes once you've completed the mission.
-          </p>
+      <button type="button"
+              class="tag-this-unit-link"
+              onclick="promptAndSubmitTag('missionTagForm')"
+              style="background:none;border:none;padding:0;cursor:pointer;">
+        assign this mission to myself
+        <svg class="tag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 39.48 36.66">
+          <path class="cls-1" d="M38.77,21.12L16.05.56C15.65.19,15.13,0,14.59,0L2.12.16c-1.18.01-2.12.97-2.12,2.15v11.2c0,.63.28,1.24.77,1.64l24.95,21c.9.76,2.24.65,3.01-.24l10.23-11.8c.77-.88.69-2.22-.18-3ZM6.28,8.87c-1.57,0-2.84-1.27-2.84-2.84s1.27-2.84,2.84-2.84,2.84,1.27,2.84,2.84-1.27,2.84-2.84,2.84Z"/>
+        </svg>
+      </button>
+    </form>
+  </div>
+{{/if}}
 
-          <form action="/notes/submit" method="POST" class="single_mission-notes-form">
-            <input type="hidden" name="_csrf" value="{{csrfToken}}">
-            <input type="hidden" name="unitId" value="{{_id}}">
-            <input type="hidden" name="unitType" value="mission">
-            <input type="hidden" name="main_topic" value="{{category}}">
-            <input type="hidden" name="secondary_topic" value="mission">
+{{#if isGroupMemberOrLeaderOrMember}}
 
-            <textarea
-              name="note_content"
-              class="single_mission-notes-textarea"
-              rows="5"
-              maxlength="1000"
-              placeholder="Write your notes here..."
-            ></textarea>
+  {{#if canAddMissionNotes}}
 
-            <button type="submit" class="single_mission-notes-submit">submit notes</button>
-          </form>
-        </div>
-      {{/if}}
+    <div class="single_mission-notes-container">
+      <h3 class="single_mission-notes-title">record progress notes for this mission</h3>
+      <p class="single_mission-notes-instructions">
+        Use this space to record progress, setbacks, decisions, observations, and what you are learning as this mission unfolds. These notes create an ongoing record of the work and can be updated over time.
+      </p>
+
+      <form action="/notes/submit" method="POST" class="single_mission-notes-form">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        <input type="hidden" name="unitId" value="{{_id}}">
+        <input type="hidden" name="unitType" value="mission">
+        <input type="hidden" name="main_topic" value="{{category}}">
+        <input type="hidden" name="secondary_topic" value="mission">
+
+        <textarea
+          name="note_content"
+          class="single_mission-notes-textarea"
+          rows="6"
+          maxlength="2000"
+          placeholder="Record progress notes for this mission..."
+        ></textarea>
+
+        <button type="submit" class="single_mission-notes-submit">save mission notes</button>
+      </form>
+    </div>
+
+  {{else}}
+
+    <div class="single_mission-notes-container">
+      <h3 class="single_mission-notes-title">record progress notes for this mission</h3>
+      <p class="single_mission-notes-instructions">
+        Before recording mission notes, assign this mission to yourself so it appears in your dashboard with your other assigned work.
+      </p>
+    </div>
+
+  {{/if}}
+
+{{/if}}
     </div>
   </div>
 

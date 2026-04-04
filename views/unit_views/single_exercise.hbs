@@ -155,55 +155,72 @@
     {{/if}}
 
     <!-- Quick Tag (Member/Group Member) -->
-    {{#if isGroupMemberOrMember}}
-      <div class="single_unit-tag-container" style="margin-top:12px;">
-        <form action="/tags/create" method="POST" class="inline" id="exerciseTagForm-{{_id}}">
-          <input type="hidden" name="_csrf" value="{{csrfToken}}">
-          <input type="hidden" name="itemId" value="{{_id}}">
-          <input type="hidden" name="itemType" value="exercise">
-          <input type="hidden" name="tagName" value="Read Later">
-          <button
-            type="button"
-            class="tag-this-unit-link"
-            onclick="promptAndSubmitTag('exerciseTagForm-{{_id}}')"
-            style="background:none;border:none;padding:0;cursor:pointer;"
-          >
-            tag this unit
-            <svg class="tag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 39.48 36.66">
-              <path class="cls-1" d="M38.77,21.12L16.05.56C15.65.19,15.13,0,14.59,0L2.12.16c-1.18.01-2.12.97-2.12,2.15v11.2c0,.63.28,1.24.77,1.64l24.95,21c.9.76,2.24.65,3.01-.24l10.23-11.8c.77-.88.69-2.22-.18-3ZM6.28,8.87c-1.57,0-2.84-1.27-2.84-2.84s1.27-2.84,2.84-2.84,2.84,1.27,2.84,2.84-1.27,2.84-2.84,2.84Z"/>
-            </svg>
-          </button>
-        </form>
-      </div>
-    {{/if}}
+{{#if isGroupMemberOrMember}}
+  <div class="single_unit-tag-container" style="margin-top:12px;">
+    <form action="/tags/create" method="POST" class="inline" id="exerciseTagForm-{{_id}}">
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+      <input type="hidden" name="itemId" value="{{_id}}">
+      <input type="hidden" name="itemType" value="exercise">
+      <input type="hidden" name="tagName" value="Read Later">
+      <input type="hidden" name="assignedTo[{{currentUserId}}][member]" value="{{currentUserId}}">
+
+      <button
+        type="button"
+        class="tag-this-unit-link"
+        onclick="promptAndSubmitTag('exerciseTagForm-{{_id}}')"
+        style="background:none;border:none;padding:0;cursor:pointer;"
+      >
+        assign this unit to myself
+        <svg class="tag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 39.48 36.66">
+          <path class="cls-1" d="M38.77,21.12L16.05.56C15.65.19,15.13,0,14.59,0L2.12.16c-1.18.01-2.12.97-2.12,2.15v11.2c0,.63.28,1.24.77,1.64l24.95,21c.9.76,2.24.65,3.01-.24l10.23-11.8c.77-.88.69-2.22-.18-3ZM6.28,8.87c-1.57,0-2.84-1.27-2.84-2.84s1.27-2.84,2.84-2.84,2.84,1.27,2.84,2.84-1.27,2.84-2.84,2.84Z"/>
+        </svg>
+      </button>
+    </form>
+  </div>
+{{/if}}
 
     <!-- Notes Section -->
-    {{#if isGroupMemberOrLeaderOrMember}}
-      <div class="single_exercise-notes-container">
-        <h3 class="single_exercise-notes-title">complete this unit by recording notes</h3>
-        <p class="single_exercise-notes-instructions">
-          To complete this unit, record notes on this exercise. Consider how it relates to your work and how it might change your approach. Better yet, try the exercise with a group and write about the results. These notes will be part of your Twennie learning record. (Keep your learning data hygienic - only post notes on a unit once you've completed all the tasks.)
-        </p>
+{{#if isGroupMemberOrLeaderOrMember}}
 
-        <form action="/notes/submit" method="POST" class="single_exercise-notes-form">
-          <input type="hidden" name="_csrf" value="{{csrfToken}}">
-          <input type="hidden" name="unitId" value="{{_id}}">
-          <input type="hidden" name="unitType" value="exercise">
-          <input type="hidden" name="main_topic" value="{{main_topic}}">
-          <input type="hidden" name="secondary_topic" value="{{sub_topic}}">
+  {{#if isAssignedToCurrentUser}}
 
-          <textarea
-            name="note_content"
-            class="single_exercise-notes-textarea"
-            rows="5"
-            maxlength="1000"
-            placeholder="Write your notes here..."
-          ></textarea>
+    <div class="single_exercise-notes-container">
+      <h3 class="single_exercise-notes-title">complete this unit by recording notes</h3>
+      <p class="single_exercise-notes-instructions">
+        To complete this unit, record notes on this exercise. Consider how it relates to your work and how it might change your approach. Better yet, try the exercise with a group and write about the results. These notes will be part of your Twennie learning record.
+      </p>
 
-          <button type="submit" class="single_exercise-notes-submit">submit notes</button>
-        </form>
-      </div>
-    {{/if}}
+      <form action="/notes/submit" method="POST" class="single_exercise-notes-form">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        <input type="hidden" name="unitId" value="{{_id}}">
+        <input type="hidden" name="unitType" value="exercise">
+        <input type="hidden" name="main_topic" value="{{main_topic}}">
+        <input type="hidden" name="secondary_topic" value="{{sub_topic}}">
+
+        <textarea
+          name="note_content"
+          class="single_exercise-notes-textarea"
+          rows="5"
+          maxlength="1000"
+          placeholder="Write your notes here..."
+        ></textarea>
+
+        <button type="submit" class="single_exercise-notes-submit">submit notes</button>
+      </form>
+    </div>
+
+  {{else}}
+
+    <div class="single_exercise-notes-container">
+      <h3 class="single_exercise-notes-title">complete this unit by recording notes</h3>
+      <p class="single_exercise-notes-instructions">
+        Before recording notes, assign this unit to yourself so it appears in your dashboard with your other assigned units.
+      </p>
+    </div>
+
+  {{/if}}
+
+{{/if}}
 
     <!-- Access notice (when gated) -->
     {{#unless isAuthorizedToViewFullContent}}
