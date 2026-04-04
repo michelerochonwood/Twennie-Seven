@@ -78,13 +78,15 @@
 <hr class="bytopic-key-divider">
 
 
-    {{#each sectionedUnits}}
-      <h2 class="bytopic-section-title">{{this.sectionTitle}}</h2>
-      <hr class="bytopic-section-divider">
+{{#each sectionedUnits}}
 
-      {{#if this.units.length}}
-        <div class="bytopic-library-units-grid">
-          {{#each this.units}}
+  {{#if ../isLeaderOrGroupMember}}
+    <h2 class="bytopic-section-title">{{this.sectionTitle}}</h2>
+    <hr class="bytopic-section-divider">
+
+    {{#if this.units.length}}
+      <div class="bytopic-library-units-grid">
+        {{#each this.units}}
 <article class="bytopic-library-unit-card{{#if (eq this.type "upcoming")}} bytopic-upcoming-card{{/if}}" data-unit-id="{{_id}}">
   {{#if (eq this.type "upcoming")}}
     <img src="/icons/upcomingsvg.svg" alt="" aria-hidden="true" class="bytopic-upcoming-badge">
@@ -236,7 +238,17 @@
           {{#if this.emptyMessage}}<p>{{this.emptyMessage}}</p>{{/if}}
         </div>
       {{/if}}
-    {{/each}}
+
+  {{else}}
+
+    {{#unless (eq this.sectionTitle "my group's contributions")}}
+      {{#unless (eq this.sectionTitle "my organization's contributions")}}
+        <h2 class="bytopic-section-title">{{this.sectionTitle}}</h2>
+        <hr class="bytopic-section-divider">
+
+        {{#if this.units.length}}
+          <div class="bytopic-library-units-grid">
+            {{#each this.units}}
   </div>
 
   <!-- Right Topics Column (fixed; reused partial) -->
