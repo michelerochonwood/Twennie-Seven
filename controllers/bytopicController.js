@@ -551,12 +551,12 @@ const sectionedUnits = [
   {
     sectionTitle: "my group's library units",
     units: injectAccessData(groupLibraryUnits),
-    emptyMessage: "If you'd like to see your group contributing units to the library, encourage them to explore Twennie's topics and find ones they feel confident talking about. They can share within your group only, your organization only, or with the whole Twennie community."
+    emptyMessage: "If you'd like to see your group contributing units to the library, encourage them to explore Twennie's topics and find ones they feel confident talking about. They can share within your group only, your organization only, or with the whole Twennie community. Their contributions will show here under \"my group's library units\"."
   },
   {
     sectionTitle: "my organization's library units",
     units: injectAccessData(orgLibraryUnits),
-    emptyMessage: "Organizations with a culture of learning are stronger and more successful. If you'd like to see your organization contributing units to the library, start by contributing yourself. Write articles and record videos on topics that interest you. If you have templates and exercises that have been useful to you in the past, share those, too. Your organization will follow your lead."
+    emptyMessage: "Organizations with a culture of learning are stronger and more successful. If you'd like to see your organization contributing units to the library, start by contributing yourself. Write articles and record videos on topics that interest you. If you have templates and exercises that have been useful to you in the past, share those, too. Your organization will follow your lead. Your organization's library units will show here under \"my organization's library units\"."
   },
   {
     sectionTitle: "Twennie's library units",
