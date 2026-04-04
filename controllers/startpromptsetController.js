@@ -10,7 +10,7 @@ module.exports = {
   startPromptSet: async (req, res) => {
     try {
       const { promptSetId } = req.body;
-      const memberId = req.user?.id;
+      const memberId = req.user?._id || req.user?.id || req.session?.user?.id;
 
       if (!memberId || !promptSetId) {
         return res.status(400).render('unit_views/error', {
