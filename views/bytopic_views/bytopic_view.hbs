@@ -79,12 +79,34 @@
 
 
     {{#each sectionedUnits}}
-      <h2 class="bytopic-section-title">{{this.sectionTitle}}</h2>
-      <hr class="bytopic-section-divider">
+      {{#if ../isLeaderOrGroupMember}}
+        <h2 class="bytopic-section-title">{{this.sectionTitle}}</h2>
+        <hr class="bytopic-section-divider">
 
-      {{#if this.units.length}}
-        <div class="bytopic-library-units-grid">
-          {{#each this.units}}
+        {{#if this.units.length}}
+          <div class="bytopic-library-units-grid">
+            {{#each this.units}}
+      {{else}}
+        {{#unless (eq this.sectionTitle "my group's contributions")}}
+          {{#unless (eq this.sectionTitle "my organization's contributions")}}
+            <h2 class="bytopic-section-title">{{this.sectionTitle}}</h2>
+            <hr class="bytopic-section-divider">
+
+            {{#if this.units.length}}
+              <div class="bytopic-library-units-grid">
+                {{#each this.units}}
+          {{/each}}
+              </div>
+            {{else}}
+              <div class="bytopic-empty-section-message">
+                {{#if this.emptyMessage}}<p>{{this.emptyMessage}}</p>{{/if}}
+              </div>
+            {{/if}}
+          {{/unless}}
+        {{/unless}}
+        {{!-- skip the rest of this iteration because we already rendered it above --}}
+        {{#*inline "noop"}}{{/inline}}
+      {{/if}}
 <article class="bytopic-library-unit-card{{#if (eq this.type "upcoming")}} bytopic-upcoming-card{{/if}}" data-unit-id="{{_id}}">
   {{#if (eq this.type "upcoming")}}
     <img src="/icons/upcomingsvg.svg" alt="" aria-hidden="true" class="bytopic-upcoming-badge">
@@ -229,12 +251,13 @@
   </div> <!-- /.bytopic-card-inner -->
 </article>
 
-          {{/each}}
-        </div>
-      {{else}}
-        <div class="bytopic-empty-section-message">
-          {{#if this.emptyMessage}}<p>{{this.emptyMessage}}</p>{{/if}}
-        </div>
+            {{/each}}
+          </div>
+        {{else}}
+          <div class="bytopic-empty-section-message">
+            {{#if this.emptyMessage}}<p>{{this.emptyMessage}}</p>{{/if}}
+          </div>
+        {{/if}}
       {{/if}}
     {{/each}}
   </div>
