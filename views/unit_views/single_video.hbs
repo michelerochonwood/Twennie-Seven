@@ -251,14 +251,9 @@
         
     </div>
 
-    <div class="single_video-sidebar-toggle" onclick="toggleSidebarContent(this)">
-      <svg class="single_video-sidebar-arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99">
-        <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
-        <g><polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/></g>
-      </svg>
-    </div>
 
-    <div class="single_video-sidebar-content hidden">
+
+    <div class="single_video-sidebar-content">
       <p class="single_video-title-sidebar">{{video_title}}</p>
       <div class="single_video-author">
         <img src="{{author.image}}" alt="Author Image" class="single_video-author-image">
@@ -287,13 +282,7 @@ function toggleVideoContent(element) {
   }
 }
 
-function toggleSidebarContent(element) {
-  const sidebarContent = element.nextElementSibling;
-  if (sidebarContent) {
-    sidebarContent.classList.toggle('hidden');
-    element.classList.toggle('open');
-  }
-}
+
 
 function toggleInstructionField(checkbox) {
   const memberId = checkbox.value;
