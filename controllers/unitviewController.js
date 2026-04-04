@@ -1061,6 +1061,22 @@ if (req.user?._id) {
     const { groupMembers, leaderId, leaderName } = await getLeaderAssignContext(req);
     const adminSuggest = await buildOrgLeaderListForAdmin(req);
 
+    let isAssignedToCurrentUser = false;
+
+if (req.user?._id) {
+  const existingAssignment = await Tag.exists({
+    associatedUnits: {
+      $elemMatch: {
+        item: video._id,
+        unitType: 'video'
+      }
+    },
+    'assignedTo.member': req.user._id
+  });
+
+  isAssignedToCurrentUser = !!existingAssignment;
+}
+
     return res.render('unit_views/single_video', {
       layout: 'unitviewlayout',
 
@@ -1081,6 +1097,9 @@ if (req.user?._id) {
       main_topic: video.main_topic,
       secondary_topics: video.secondary_topics || [],
       sub_topic: video.sub_topic,
+
+      currentUserId: currentUserId,
+      isAssignedToCurrentUser,
 
       isOwner,
       isAuthorizedToViewFullContent,
@@ -1178,6 +1197,22 @@ viewInterview: async (req, res) => {
     const { groupMembers, leaderId, leaderName } = await getLeaderAssignContext(req);
     const adminSuggest = await buildOrgLeaderListForAdmin(req);
 
+    let isAssignedToCurrentUser = false;
+
+if (req.user?._id) {
+  const existingAssignment = await Tag.exists({
+    associatedUnits: {
+      $elemMatch: {
+        item: interview._id,
+        unitType: 'interview'
+      }
+    },
+    'assignedTo.member': req.user._id
+  });
+
+  isAssignedToCurrentUser = !!existingAssignment;
+}
+
     return res.render('unit_views/single_interview', {
       layout: 'unitviewlayout',
 
@@ -1198,6 +1233,9 @@ viewInterview: async (req, res) => {
       main_topic: interview.main_topic,
       secondary_topics: interview.secondary_topics || [],
       sub_topic: interview.sub_topic,
+
+      currentUserId: currentUserId,
+      isAssignedToCurrentUser,
 
       isOwner,
       isAuthorizedToViewFullContent,
