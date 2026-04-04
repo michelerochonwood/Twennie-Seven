@@ -686,6 +686,21 @@ html, body {
   background-color: #4a4ab2;
 }
 
+.promptset-started-success-tab-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0 30px 0;
+}
+
+.promptset-started-success-tab-preview {
+  max-width: 100%;
+  width: 500px;        /* nice readable size on desktop */
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
 
 /*SUCCESS PAGE FOR PROMPTS*/
 
