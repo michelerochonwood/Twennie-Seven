@@ -1304,6 +1304,7 @@ if (req.user?._id) {
       
     
   viewPromptset: async (req, res) => {
+    console.log('🔥 VIEWPROMPTSET HIT 🔥', req.params.id, req.user?.membershipType, req.user?.accessLevel);
   try {
     const { id } = req.params;
     console.log(`📚 Fetching prompt set with ID: ${id}`);
@@ -1426,7 +1427,16 @@ if (req.user?._id) {
 
     // 7) Org admin suggestion context
     const adminSuggest = await buildOrgLeaderListForAdmin(req);
-
+console.log('🔥 RENDERING SINGLE_PROMPTSET WITH ACCESS =', {
+  isAuthenticated: !!req.user,
+  membershipType,
+  accessLevel,
+  isLeader,
+  isGroupMember,
+  isMember,
+  isPaidIndividual,
+  isAuthorizedToViewFullContent
+});
     // 8) Render
     return res.render('unit_views/single_promptset', {
       layout: 'unitviewlayout',
