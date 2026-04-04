@@ -550,11 +550,32 @@ const mainTopics = require('../config/topics');
 
     if (unitType === 'promptset') {
       const secondaryTopics = mainTopics.slice();
-      const characteristics = [
-        'educational','motivational','provocative','fun','hilarious','silly','competitive','restorative','energizing',
-        'relationship-building','team building','stress-relieving','insightful','calming','reassuring','encouraging',
-        'creative','imaginative','heart-warming','other'
-      ];
+const characteristics = [
+  'investigative',
+  'reflective',
+  'strategic',
+  'educational',
+  'motivational',
+  'thought-provoking',
+  'transformative',
+  'fun',
+  'hilarious',
+  'silly',
+  'competitive',
+  'restorative',
+  'energizing',
+  'relationship-building',
+  'team building',
+  'stress-relieving',
+  'insightful',
+  'calming',
+  'reassuring',
+  'encouraging',
+  'creative',
+  'imaginative',
+  'heart-warming',
+  'other'
+];
       const frequencies = ['daily', 'weekly', 'monthly', 'quarterly'];
 
       return res.render('unit_form_views/form_promptset', {
