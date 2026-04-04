@@ -161,18 +161,12 @@ const getMemberEngagementReport = async (req, res) => {
   try {
     console.log("✅ Fetching Member Engagement Report (leader + members)…");
 
-    // -----------------------------
-    // Helpers
-    // -----------------------------
     const safeArray = (v) => (Array.isArray(v) ? v : []);
-    const toIdString = (v) => (v && typeof v.toString === "function" ? v.toString() : "");
     const safeString = (v) => (v == null ? "" : String(v));
+    const toIdString = (v) => (v && typeof v.toString === "function" ? v.toString() : "");
     const uniq = (arr) => Array.from(new Set(arr));
     const sortAZ = (a, b) => safeString(a).localeCompare(safeString(b));
 
-    // -----------------------------
-    // Leader identity
-    // -----------------------------
     const leaderId = toIdString(req.user?._id || req.user?.id || req.session?.user?.id);
 
     if (!leaderId) {
@@ -183,7 +177,6 @@ const getMemberEngagementReport = async (req, res) => {
       });
     }
 
-    // IMPORTANT: your leader record uses groupLeaderName, not name
     const leaderDoc = await Leader.findById(leaderId)
       .select("_id groupName groupLeaderName members")
       .lean();
@@ -198,9 +191,6 @@ const getMemberEngagementReport = async (req, res) => {
 
     const leaderName = leaderDoc.groupLeaderName || "Leader";
 
-    // -----------------------------
-    // Group members
-    // -----------------------------
     const memberIdsFromLeader = safeArray(leaderDoc.members);
     const groupMembers = memberIdsFromLeader.length
       ? await GroupMember.find({ _id: { $in: memberIdsFromLeader } })
@@ -208,7 +198,6 @@ const getMemberEngagementReport = async (req, res) => {
           .lean()
       : [];
 
-    // Include leader as a report person + members
     const reportPeople = [
       { _id: leaderDoc._id, name: leaderName },
       ...groupMembers.map(m => ({ _id: m._id, name: m.name || "Group Member" }))
@@ -217,7 +206,6 @@ const getMemberEngagementReport = async (req, res) => {
     const personIds = reportPeople.map(p => p._id);
     const nameById = new Map(reportPeople.map(p => [toIdString(p._id), p.name]));
 
-    // If for some reason we have nobody, render empty safely
     if (!personIds.length) {
       return res.render("report_views/memberengagement", {
         layout: "dashboardlayout",
@@ -229,9 +217,6 @@ const getMemberEngagementReport = async (req, res) => {
       });
     }
 
-    // -----------------------------
-    // Fetch all engagement sources
-    // -----------------------------
     const [promptCompletions, notes, missions] = await Promise.all([
       PromptSetCompletion.find({ memberId: { $in: personIds } })
         .populate("promptSetId", "promptset_title main_topic secondary_topics")
@@ -244,7 +229,6 @@ const getMemberEngagementReport = async (req, res) => {
         .lean()
     ]);
 
-    // Mission lookup maps
     const missionTitleById = new Map(
       safeArray(missions).map(m => [toIdString(m._id), m.mission_title || "Untitled mission"])
     );
@@ -259,9 +243,6 @@ const getMemberEngagementReport = async (req, res) => {
       ])
     );
 
-    // -----------------------------
-    // Index prompt completions by person
-    // -----------------------------
     const completionsByPerson = new Map();
     for (const c of safeArray(promptCompletions)) {
       const key = toIdString(c.memberId);
@@ -270,9 +251,6 @@ const getMemberEngagementReport = async (req, res) => {
       completionsByPerson.get(key).push(c);
     }
 
-    // -----------------------------
-    // Index notes by person
-    // -----------------------------
     const notesByPerson = new Map();
     for (const n of safeArray(notes)) {
       const key = toIdString(n.memberID);
@@ -281,9 +259,6 @@ const getMemberEngagementReport = async (req, res) => {
       notesByPerson.get(key).push(n);
     }
 
-    // -----------------------------
-    // Bulk resolve unit details (prevents await inside loops)
-    // -----------------------------
     const allUnitIdStrs = uniq(
       safeArray(notes)
         .map(n => toIdString(n.unitID))
@@ -304,22 +279,18 @@ const getMemberEngagementReport = async (req, res) => {
       })
     );
 
-    // -----------------------------
-    // Build per-person report + grouped units
-    // -----------------------------
     const memberEngagementReports = [];
-    const groupedUnitsMap = new Map(); // unitId -> { unitTitle, unitType, members: [] }
+    const groupedUnitsMap = new Map();
 
     for (const p of reportPeople) {
       const pid = toIdString(p._id);
       const personName = nameById.get(pid) || "Unknown";
 
-      // Prompt sets completed (and topics from them)
       const myComps = completionsByPerson.get(pid) || [];
       const promptSetsCompleted = myComps
         .map(c => ({
           name: c.promptSetId?.promptset_title || "Unknown Prompt Set",
-          dateCompleted: c.completedAt || c.createdAt
+          dateCompleted: c.completedAt || c.createdAt || null
         }))
         .sort((a, b) => new Date(a.dateCompleted || 0) - new Date(b.dateCompleted || 0));
 
@@ -329,11 +300,10 @@ const getMemberEngagementReport = async (req, res) => {
         return [...main, ...secs];
       });
 
-      // Notes -> units / missions / topics
       const myNotes = notesByPerson.get(pid) || [];
 
-      const unitSeen = new Set();    // dedupe units per person
-      const missionSeen = new Set(); // dedupe missions per person
+      const unitSeen = new Set();
+      const missionSeen = new Set();
 
       const unitsCompleted = [];
       const missionsCompleted = [];
@@ -348,21 +318,22 @@ const getMemberEngagementReport = async (req, res) => {
         const unitType = safeString(d.unitType) || "Unit";
         const unitTypeLower = unitType.toLowerCase();
 
-        // Missions
         if (unitTypeLower === "mission") {
           if (!missionSeen.has(unitIdStr)) {
             missionSeen.add(unitIdStr);
             missionsCompleted.push({
               missionId: unitIdStr,
-              missionTitle: missionTitleById.get(unitIdStr) || unitTitle || "Untitled mission"
+              missionTitle: missionTitleById.get(unitIdStr) || unitTitle || "Untitled mission",
+              dateCompleted: n.createdAt || n.updatedAt || null
             });
           }
 
           const mt = missionTopicsById.get(unitIdStr);
           if (mt?.main) topicsFromCompleted.push(mt.main);
-          if (Array.isArray(mt?.secondary) && mt.secondary.length) topicsFromCompleted.push(...mt.secondary);
+          if (Array.isArray(mt?.secondary) && mt.secondary.length) {
+            topicsFromCompleted.push(...mt.secondary);
+          }
 
-          // fallback topics if mission doc missing
           if (!mt?.main && d.main_topic) topicsFromCompleted.push(d.main_topic);
           if ((!mt?.secondary || !mt.secondary.length) && Array.isArray(d.secondary_topics) && d.secondary_topics.length) {
             topicsFromCompleted.push(...d.secondary_topics);
@@ -371,18 +342,19 @@ const getMemberEngagementReport = async (req, res) => {
           continue;
         }
 
-        // Non-mission units
         if (unitSeen.has(unitIdStr)) continue;
         unitSeen.add(unitIdStr);
 
-        unitsCompleted.push({ unitTitle, unitType });
+        unitsCompleted.push({
+          unitTitle,
+          unitType
+        });
 
         if (d.main_topic) topicsFromCompleted.push(d.main_topic);
         if (Array.isArray(d.secondary_topics) && d.secondary_topics.length) {
           topicsFromCompleted.push(...d.secondary_topics);
         }
 
-        // Grouped units table (unit appears once, members listed)
         if (!groupedUnitsMap.has(unitIdStr)) {
           groupedUnitsMap.set(unitIdStr, {
             unitTitle,
@@ -390,6 +362,7 @@ const getMemberEngagementReport = async (req, res) => {
             members: []
           });
         }
+
         groupedUnitsMap.get(unitIdStr).members.push(personName);
       }
 
@@ -418,9 +391,6 @@ const getMemberEngagementReport = async (req, res) => {
       }))
       .sort((a, b) => sortAZ(a.unitTitle, b.unitTitle));
 
-    // -----------------------------
-    // Render
-    // -----------------------------
     return res.render("report_views/memberengagement", {
       layout: "dashboardlayout",
       leaderGroupName: leaderDoc.groupName,
@@ -453,7 +423,10 @@ const getNuggetsMonitoredReport = async (req, res) => {
       });
     }
 
-    const leaderDoc = await Leader.findById(leaderId).select("_id name groupName members").lean();
+    const leaderDoc = await Leader.findById(leaderId)
+      .select("_id name groupLeaderName groupName members")
+      .lean();
+
     if (!leaderDoc) {
       return res.status(403).render("member_form_views/error", {
         layout: "memberformlayout",
@@ -462,24 +435,29 @@ const getNuggetsMonitoredReport = async (req, res) => {
       });
     }
 
-    // Group members (from leader.members as source of truth)
+    const leaderName = leaderDoc.groupLeaderName || leaderDoc.name || "Leader";
+
     const memberIdsFromLeader = Array.isArray(leaderDoc.members) ? leaderDoc.members : [];
     const groupMembers = memberIdsFromLeader.length
-      ? await GroupMember.find({ _id: { $in: memberIdsFromLeader } }).select("_id name").lean()
+      ? await GroupMember.find({ _id: { $in: memberIdsFromLeader } })
+          .select("_id name")
+          .lean()
       : [];
 
-    // People map (leader + members) for name lookup
     const people = [
-      { _id: leaderDoc._id, name: leaderDoc.name || "Leader", role: "leader" },
-      ...groupMembers.map(m => ({ _id: m._id, name: m.name || "Group Member", role: "member" }))
+      { _id: leaderDoc._id, name: leaderName, role: "leader" },
+      ...groupMembers.map(m => ({
+        _id: m._id,
+        name: m.name || "Group Member",
+        role: "member"
+      }))
     ];
+
+    const personIds = people.map(p => p._id);
     const nameById = new Map(people.map(p => [p._id.toString(), p.name]));
     const roleById = new Map(people.map(p => [p._id.toString(), p.role]));
 
-    // ✅ Find all tags that include nuggets
-    // NOTE: if your unitType is stored as "nugget" (lowercase), keep as-is.
-    // If you have mixed casing, this will still work if you normalize when saving;
-    // otherwise we can broaden it later.
+    // Assignment records for nuggets
     const nuggetTags = await Tag.find({
       "associatedUnits.unitType": "nugget"
     })
@@ -495,7 +473,7 @@ const getNuggetsMonitoredReport = async (req, res) => {
       });
     }
 
-    // Collect all nugget ids referenced by tags
+    // Collect nugget ids
     const nuggetIds = [];
     for (const t of nuggetTags) {
       const units = Array.isArray(t.associatedUnits) ? t.associatedUnits : [];
@@ -506,30 +484,70 @@ const getNuggetsMonitoredReport = async (req, res) => {
       }
     }
 
-    // Bulk fetch nugget details (title + discipline/client/region)
     const uniqueNuggetIds = Array.from(new Set(nuggetIds));
-    const nuggets = uniqueNuggetIds.length
-      ? await Nugget.find({ _id: { $in: uniqueNuggetIds } })
-          .select("title discipline client region")
-          .lean()
-      : [];
 
-    const nuggetById = new Map(
-      nuggets.map(n => [n._id.toString(), n])
-    );
+    const [nuggets, nuggetNotes] = await Promise.all([
+      uniqueNuggetIds.length
+        ? Nugget.find({ _id: { $in: uniqueNuggetIds } })
+            .select("title discipline client region")
+            .lean()
+        : [],
 
-    // Build rows: one row per tagged nugget (dedupe across multiple tags)
-    // If the same nugget is tagged multiple times, we merge monitors + instructions + choose earliest taggedAt.
+      uniqueNuggetIds.length
+        ? Notes.find({
+            unitID: { $in: uniqueNuggetIds },
+            unitType: "nugget",
+            memberID: { $in: personIds }
+          })
+            .select("unitID memberID note_content createdAt updatedAt")
+            .lean()
+        : []
+    ]);
+
+    const nuggetById = new Map(nuggets.map(n => [n._id.toString(), n]));
+
+    // Latest monitoring note per nugget across all current report people
+    const latestNoteByNuggetId = new Map();
+
+    for (const note of nuggetNotes) {
+      const nid = note.unitID?.toString?.();
+      if (!nid) continue;
+
+      const noteDate = note.updatedAt || note.createdAt || null;
+      const existing = latestNoteByNuggetId.get(nid);
+
+      if (!existing) {
+        latestNoteByNuggetId.set(nid, {
+          latestMonitoringNote: note.note_content || "",
+          latestMonitoringNoteAt: noteDate
+        });
+        continue;
+      }
+
+      const existingDate = existing.latestMonitoringNoteAt
+        ? new Date(existing.latestMonitoringNoteAt)
+        : new Date(0);
+
+      const nextDate = noteDate ? new Date(noteDate) : new Date(0);
+
+      if (nextDate > existingDate) {
+        latestNoteByNuggetId.set(nid, {
+          latestMonitoringNote: note.note_content || "",
+          latestMonitoringNoteAt: noteDate
+        });
+      }
+    }
+
+    // Build rows merged by nugget
     const rowByNuggetId = new Map();
 
     for (const t of nuggetTags) {
-      const tagName = t.name || "Untitled Tag";
-      const taggedAt = t.createdAt || null;
+      const assignmentName = t.name || "Untitled Assignment";
+      const assignedAt = t.createdAt || null;
 
       const units = Array.isArray(t.associatedUnits) ? t.associatedUnits : [];
       const assignedTo = Array.isArray(t.assignedTo) ? t.assignedTo : [];
 
-      // Determine monitors + instructions from assignedTo
       const monitors = [];
       const instructions = [];
 
@@ -545,11 +563,9 @@ const getNuggetsMonitoredReport = async (req, res) => {
         if (a.instructions) instructions.push(a.instructions);
       }
 
-      // If nothing assigned, consider the tag creator (leader) as monitoring (optional)
-      // This matches your “any tagged nugget is monitored” intent.
       if (!monitors.length) {
         monitors.push({
-          memberName: leaderDoc.name || "Leader",
+          memberName: leaderName,
           role: "leader"
         });
       }
@@ -562,6 +578,10 @@ const getNuggetsMonitoredReport = async (req, res) => {
         if (!nid) continue;
 
         const nug = nuggetById.get(nid);
+        const latest = latestNoteByNuggetId.get(nid) || {
+          latestMonitoringNote: "",
+          latestMonitoringNoteAt: null
+        };
 
         const baseRow = rowByNuggetId.get(nid) || {
           nuggetId: nid,
@@ -570,30 +590,29 @@ const getNuggetsMonitoredReport = async (req, res) => {
           client: nug?.client || "",
           region: nug?.region || "",
 
-          tagName: tagName,
-          tagDescription: "", // placeholder if you later add it
-          taggedAt: taggedAt,
+          assignmentName,
+          assignmentDescription: "",
+          assignedAt,
 
-          isAssigned: isAssigned,
+          isAssigned,
           monitoredBy: [],
-          instructions: []
+          instructions: [],
+
+          latestMonitoringNote: latest.latestMonitoringNote || "",
+          latestMonitoringNoteAt: latest.latestMonitoringNoteAt || null
         };
 
-        // If the nugget appears under multiple tags:
-        // - keep earliest taggedAt
-        // - merge monitors/instructions
-        if (!baseRow.taggedAt || (taggedAt && new Date(taggedAt) < new Date(baseRow.taggedAt))) {
-          baseRow.taggedAt = taggedAt;
+        if (!baseRow.assignedAt || (assignedAt && new Date(assignedAt) < new Date(baseRow.assignedAt))) {
+          baseRow.assignedAt = assignedAt;
         }
 
-        // If you’d rather show the “most recent” tagName, swap comparison above and set tagName accordingly.
-        // For now: first/earliest tag name wins.
-        if (!baseRow.tagName) baseRow.tagName = tagName;
+        if (!baseRow.assignmentName) baseRow.assignmentName = assignmentName;
+        if (isAssigned) baseRow.isAssigned = true;
 
-        // Merge monitors (dedupe by memberName+role)
         const existingMonitorKeys = new Set(
           (baseRow.monitoredBy || []).map(m => `${m.memberName}::${m.role || ""}`)
         );
+
         for (const m of monitors) {
           const k = `${m.memberName}::${m.role || ""}`;
           if (!existingMonitorKeys.has(k)) {
@@ -602,7 +621,6 @@ const getNuggetsMonitoredReport = async (req, res) => {
           }
         }
 
-        // Merge instructions (dedupe exact strings)
         const instrSet = new Set(baseRow.instructions || []);
         for (const ins of instructions) {
           if (!ins) continue;
@@ -612,19 +630,18 @@ const getNuggetsMonitoredReport = async (req, res) => {
           }
         }
 
-        // If any tag instance is assigned, mark assigned
-        if (isAssigned) baseRow.isAssigned = true;
-
         rowByNuggetId.set(nid, baseRow);
       }
     }
 
-    // Final list + sorting
     const monitoredNuggets = Array.from(rowByNuggetId.values())
       .map(r => {
-        // Sort monitors/instructions for tidy display
-        r.monitoredBy = (r.monitoredBy || []).sort((a, b) => (a.memberName || "").localeCompare(b.memberName || ""));
-        r.instructions = (r.instructions || []).sort((a, b) => (a || "").localeCompare(b || ""));
+        r.monitoredBy = (r.monitoredBy || []).sort((a, b) =>
+          (a.memberName || "").localeCompare(b.memberName || "")
+        );
+        r.instructions = (r.instructions || []).sort((a, b) =>
+          (a || "").localeCompare(b || "")
+        );
         return r;
       })
       .sort((a, b) => (a.nuggetTitle || "").localeCompare(b.nuggetTitle || ""));
@@ -651,17 +668,11 @@ const getPromptSetsCompletedReport = async (req, res) => {
   try {
     console.log("✅ Fetching Prompt Sets Completed Report (grouped by prompt set; leader+members)…");
 
-    // -----------------------------
-    // Helpers
-    // -----------------------------
     const safeArray = (v) => (Array.isArray(v) ? v : []);
-    const toIdString = (v) => (v && typeof v.toString === "function" ? v.toString() : "");
     const safeString = (v) => (v == null ? "" : String(v));
+    const toIdString = (v) => (v && typeof v.toString === "function" ? v.toString() : "");
     const sortAZ = (a, b) => safeString(a).localeCompare(safeString(b));
 
-    // -----------------------------
-    // Leader identity
-    // -----------------------------
     const leaderId = toIdString(req.user?._id || req.user?.id || req.session?.user?.id);
     if (!leaderId) {
       return res.status(403).render("member_form_views/error", {
@@ -671,13 +682,11 @@ const getPromptSetsCompletedReport = async (req, res) => {
       });
     }
 
-    // IMPORTANT: your leader record uses groupLeaderName (not name)
     const leaderDoc = await Leader.findById(leaderId)
       .select("_id groupName groupLeaderName members")
       .lean();
 
     if (!leaderDoc) {
-      console.error("❌ Leader not found:", leaderId);
       return res.status(403).render("member_form_views/error", {
         layout: "memberformlayout",
         title: "Access denied",
@@ -687,9 +696,6 @@ const getPromptSetsCompletedReport = async (req, res) => {
 
     const leaderName = leaderDoc.groupLeaderName || "Leader";
 
-    // -----------------------------
-    // Group members
-    // -----------------------------
     const memberIdsFromLeader = safeArray(leaderDoc.members);
     const groupMembers = memberIdsFromLeader.length
       ? await GroupMember.find({ _id: { $in: memberIdsFromLeader } })
@@ -697,13 +703,12 @@ const getPromptSetsCompletedReport = async (req, res) => {
           .lean()
       : [];
 
-    // Report people = leader + group members
     const reportPeople = [
       { _id: leaderDoc._id, name: leaderName },
       ...groupMembers.map(m => ({ _id: m._id, name: m.name || "Group Member" }))
     ];
 
-    const personIds = reportPeople.map(p => p._id); // ObjectIds for $in queries
+    const personIds = reportPeople.map(p => p._id);
     const nameById = new Map(reportPeople.map(p => [toIdString(p._id), p.name]));
 
     if (!personIds.length) {
@@ -715,15 +720,10 @@ const getPromptSetsCompletedReport = async (req, res) => {
       });
     }
 
-    // -----------------------------
-    // Fetch progress + completions
-    // -----------------------------
-    // PROGRESS is source of truth for notes
     const progresses = await PromptSetProgress.find({ memberId: { $in: personIds } })
       .populate("promptSetId")
       .lean();
 
-    // COMPLETIONS is fallback for "completion date"
     const completions = await PromptSetCompletion.find({ memberId: { $in: personIds } })
       .select("memberId promptSetId completedAt createdAt updatedAt")
       .lean();
@@ -736,11 +736,8 @@ const getPromptSetsCompletedReport = async (req, res) => {
       ])
     );
 
-    // -----------------------------
-    // Build ONE report record per prompt set
-    // -----------------------------
-    const TOTAL_PROMPTS = 21; // Prompt0 + Prompts 1..20
-    const byPromptSet = new Map(); // psId -> report row
+    const TOTAL_PROMPTS = 21; // Prompt0 + Prompt1..Prompt20
+    const byPromptSet = new Map();
 
     for (const prog of safeArray(progresses)) {
       const ps = prog.promptSetId;
@@ -752,45 +749,52 @@ const getPromptSetsCompletedReport = async (req, res) => {
 
       const memberName = nameById.get(mid) || "Unknown Member";
 
-      // Initialize prompt set row ONCE
       if (!byPromptSet.has(psId)) {
-        // Build prompt header row once per prompt set
         const prompts = Array.from({ length: TOTAL_PROMPTS }, (_, idx) => {
           const headlineKey = `prompt_headline${idx}`;
           const textKey = `Prompt${idx}`;
+
           return {
-            promptHeadline: ps?.[headlineKey] || `Prompt ${idx === 0 ? 1 : idx + 1}`,
+            promptHeadline: ps?.[headlineKey] || `Prompt ${idx}`,
             promptText: ps?.[textKey] || ""
           };
         });
 
         byPromptSet.set(psId, {
-          // Table 1 fields
           promptSetTitle: ps.promptset_title || "Unknown Prompt Set",
-          main_topic: ps.main_topic || "No Topic",
+          main_topic: ps.main_topic || "",
           secondary_topics: safeArray(ps.secondary_topics),
-          purpose: ps.purpose || "No purpose provided",
-
-          // Table 2 header row
+          purpose: ps.purpose || "",
           prompts,
-
-          // For Option A table 2: members under prompt header
-          completedBy: [] // we will push { memberId, memberName, dateCompleted, promptNotes }
+          completedBy: []
         });
       }
 
       const row = byPromptSet.get(psId);
 
-      // Notes are stored on progress; ensure 21 columns
       const notesArr = safeArray(prog.notes);
+
+      // Build prompt notes aligned to prompts, including dateSubmitted
       const promptNotes = Array.from({ length: TOTAL_PROMPTS }, (_, idx) => {
         const content = safeString(notesArr[idx]).trim();
-        return { notes: content ? [{ content }] : [] };
+
+        return {
+          notes: content
+            ? [{
+                content,
+                dateSubmitted: prog.updatedAt || prog.createdAt || null
+              }]
+            : []
+        };
       });
 
-      // Completion date fallback: Completion doc > updatedAt > createdAt
       const comp = completionByKey.get(completionKey(mid, psId));
-      const dateCompleted = comp?.completedAt || prog.updatedAt || prog.createdAt || comp?.createdAt;
+      const dateCompleted =
+        comp?.completedAt ||
+        prog.updatedAt ||
+        prog.createdAt ||
+        comp?.createdAt ||
+        null;
 
       row.completedBy.push({
         memberId: mid,
@@ -800,11 +804,10 @@ const getPromptSetsCompletedReport = async (req, res) => {
       });
     }
 
-    // Convert map -> array, dedupe/sort member rows per prompt set
-    const reports = Array.from(byPromptSet.values())
+    const promptSetsCompletedReports = Array.from(byPromptSet.values())
       .map(r => {
-        // Dedupe: if multiple progress docs exist for same member+promptset, keep the "most recent"
         const byMember = new Map();
+
         for (const entry of safeArray(r.completedBy)) {
           const key = entry.memberId || entry.memberName;
           const prev = byMember.get(key);
@@ -812,11 +815,12 @@ const getPromptSetsCompletedReport = async (req, res) => {
           const prevDate = prev?.dateCompleted ? new Date(prev.dateCompleted) : new Date(0);
           const nextDate = entry?.dateCompleted ? new Date(entry.dateCompleted) : new Date(0);
 
-          if (!prev || nextDate > prevDate) byMember.set(key, entry);
+          if (!prev || nextDate > prevDate) {
+            byMember.set(key, entry);
+          }
         }
 
         r.completedBy = Array.from(byMember.values()).sort((a, b) => {
-          // sort by completion date then name
           const ad = a.dateCompleted ? new Date(a.dateCompleted) : new Date(0);
           const bd = b.dateCompleted ? new Date(b.dateCompleted) : new Date(0);
           if (ad.getTime() !== bd.getTime()) return ad - bd;
@@ -831,7 +835,7 @@ const getPromptSetsCompletedReport = async (req, res) => {
       layout: "dashboardlayout",
       leaderGroupName: leaderDoc.groupName,
       isPromptSetsCompleted: true,
-      promptSetsCompletedReports: reports
+      promptSetsCompletedReports
     });
   } catch (err) {
     console.error("❌ Error loading Prompt Sets Completed Report:", err);
@@ -866,10 +870,8 @@ const getUnitsCompletedReport = async (req, res) => {
       });
     }
 
-    // 1) Leader header + member list source of truth
     const leaderDoc = await Leader.findById(leaderId).select("_id name groupName members").lean();
     if (!leaderDoc) {
-      console.error("❌ Leader not found:", leaderId);
       return res.status(403).render("member_form_views/error", {
         layout: "memberformlayout",
         title: "Access denied",
@@ -877,7 +879,6 @@ const getUnitsCompletedReport = async (req, res) => {
       });
     }
 
-    // 2) Group members from leader.members
     const memberIdsFromLeader = Array.isArray(leaderDoc.members) ? leaderDoc.members : [];
     const groupMembers = memberIdsFromLeader.length
       ? await GroupMember.find({ _id: { $in: memberIdsFromLeader } })
@@ -885,7 +886,6 @@ const getUnitsCompletedReport = async (req, res) => {
           .lean()
       : [];
 
-    // ✅ Include leader as a report person (optional)
     const reportPeople = [
       { _id: leaderDoc._id, name: leaderDoc.name || "Leader" },
       ...groupMembers
@@ -903,14 +903,12 @@ const getUnitsCompletedReport = async (req, res) => {
       });
     }
 
-    // 3) Fetch all completion notes for these people
-    // NOTE: Notes uses memberID (capital D) in your existing codebase
+    // Fetch notes
     const notes = await Notes.find({ memberID: { $in: personIds } }).lean();
 
-    // 4) Filter OUT mission notes (missions have their own column/report)
+    // Remove missions (handled elsewhere)
     const filteredNotes = (notes || []).filter(n => {
-      const t = String(n.unitType || "").toLowerCase();
-      return t !== "mission";
+      return String(n.unitType || "").toLowerCase() !== "mission";
     });
 
     if (!filteredNotes.length) {
@@ -922,70 +920,70 @@ const getUnitsCompletedReport = async (req, res) => {
       });
     }
 
-    // 5) Group notes by unitID
-    const byUnit = new Map(); // unitID -> { notes: [note], members: Set(memberId) }
+    // Group notes by unit
+    const byUnit = new Map();
+
     for (const n of filteredNotes) {
-      const u = (n.unitID || "").toString();
-      if (!u) continue;
-      if (!byUnit.has(u)) byUnit.set(u, { notes: [], members: new Set() });
-      byUnit.get(u).notes.push(n);
-      byUnit.get(u).members.add((n.memberID || "").toString());
-    }
+      const unitId = (n.unitID || "").toString();
+      if (!unitId) continue;
 
-    // 6) Build report rows per unit
-    const unitsCompletedReports = [];
+      if (!byUnit.has(unitId)) {
+        const details = await resolveUnitDetails(unitId);
 
-    for (const [unitID, bucket] of byUnit.entries()) {
-      // Resolve unit metadata: title / type / topics
-      const details = await resolveUnitDetails(unitID);
+        if (String(details.unitType || "").toLowerCase() === "mission") continue;
 
-      // ✅ Extra guard: if resolve says it's a Mission, skip it (covers bad/missing unitType on Notes)
-      if (String(details.unitType || "").toLowerCase() === "mission") continue;
-
-      // CompletedBy: each member who has at least one note for this unit
-      const completedBy = [];
-      for (const mid of bucket.members) {
-        const memberNotesForUnit = bucket.notes.filter(n => String(n.memberID) === mid);
-        if (!memberNotesForUnit.length) continue;
-
-        const firstDate = memberNotesForUnit
-          .map(n => n.createdAt || n.updatedAt)
-          .filter(Boolean)
-          .sort((a, b) => new Date(a) - new Date(b))[0];
-
-        completedBy.push({
-          memberName: nameById.get(mid) || "Unknown Member",
-          dateCompleted: firstDate || new Date(0)
+        byUnit.set(unitId, {
+          unitTitle: details.unitTitle,
+          unitType: details.unitType,
+          main_topic: details.main_topic,
+          secondary_topics: details.secondary_topics || [],
+          memberNotesMap: new Map()
         });
       }
 
-      // MemberNotes: flatten all notes
-      // View expects: memberNotes -> notes -> {content, dateSubmitted}
-      const memberNotes = bucket.notes
-        .map(n => ({
-          notes: [{
-            content: n.note_content || "",
-            dateSubmitted: n.createdAt || n.updatedAt || null
-          }]
-        }))
-        .sort((a, b) => {
-          const da = a.notes?.[0]?.dateSubmitted ? new Date(a.notes[0].dateSubmitted) : 0;
-          const db = b.notes?.[0]?.dateSubmitted ? new Date(b.notes[0].dateSubmitted) : 0;
-          return da - db;
-        });
+      const unitEntry = byUnit.get(unitId);
 
-      unitsCompletedReports.push({
-        unitTitle: details.unitTitle,
-        unitType: details.unitType,
-        main_topic: details.main_topic,
-        secondary_topics: details.secondary_topics || [],
-        completedBy: completedBy.sort((a, b) => new Date(a.dateCompleted || 0) - new Date(b.dateCompleted || 0)),
-        memberNotes
+      const memberId = (n.memberID || "").toString();
+      if (!memberId) continue;
+
+      if (!unitEntry.memberNotesMap.has(memberId)) {
+        unitEntry.memberNotesMap.set(memberId, {
+          memberName: nameById.get(memberId) || "Unknown Member",
+          notes: []
+        });
+      }
+
+      unitEntry.memberNotesMap.get(memberId).notes.push({
+        content: n.note_content || "",
+        dateSubmitted: n.createdAt || n.updatedAt || null
       });
     }
 
-    // Optional: sort units alphabetically
-    unitsCompletedReports.sort((a, b) => (a.unitTitle || "").localeCompare(b.unitTitle || ""));
+    // Final structure
+    const unitsCompletedReports = Array.from(byUnit.values()).map(unit => {
+      const memberNotes = Array.from(unit.memberNotesMap.values()).map(m => {
+        m.notes.sort((a, b) => {
+          return new Date(a.dateSubmitted || 0) - new Date(b.dateSubmitted || 0);
+        });
+        return m;
+      });
+
+      return {
+        unitTitle: unit.unitTitle,
+        unitType: unit.unitType,
+        main_topic: unit.main_topic,
+        secondary_topics: unit.secondary_topics,
+        completedBy: memberNotes.map(m => ({
+          memberName: m.memberName,
+          dateCompleted: m.notes[0]?.dateSubmitted || null
+        })),
+        memberNotes
+      };
+    });
+
+    unitsCompletedReports.sort((a, b) =>
+      (a.unitTitle || "").localeCompare(b.unitTitle || "")
+    );
 
     return res.render("report_views/unitscompleted", {
       layout: "dashboardlayout",
@@ -993,6 +991,7 @@ const getUnitsCompletedReport = async (req, res) => {
       isUnitsCompleted: true,
       unitsCompletedReports
     });
+
   } catch (err) {
     console.error("❌ Error loading Units Completed Report:", err);
     return res.status(500).send("Server error");
@@ -1059,7 +1058,6 @@ const getMyCompletedPromptSetsReport = async (req, res) => {
         const ps = prog.promptSetId;
         const psId = toIdString(ps._id);
 
-        // Build prompt text array
         const prompts = Array.from({ length: TOTAL_PROMPTS }, (_, idx) => {
           const headlineKey = `prompt_headline${idx}`;
           const textKey = `Prompt${idx}`;
@@ -1070,12 +1068,17 @@ const getMyCompletedPromptSetsReport = async (req, res) => {
           };
         });
 
-        // Build notes array aligned with prompts
         const notesArr = safeArray(prog.notes);
         const promptNotes = Array.from({ length: TOTAL_PROMPTS }, (_, idx) => {
           const content = safeString(notesArr[idx]).trim();
+
           return {
-            notes: content ? [{ content }] : []
+            notes: content
+              ? [{
+                  content,
+                  dateSubmitted: prog.updatedAt || prog.createdAt || null
+                }]
+              : []
           };
         });
 
@@ -1086,15 +1089,16 @@ const getMyCompletedPromptSetsReport = async (req, res) => {
           prog.createdAt ||
           completion?.createdAt ||
           null;
-return {
-  promptSetTitle: ps.promptset_title || "Unknown Prompt Set",
-  main_topic: ps.main_topic || "",
-  secondary_topics: safeArray(ps.secondary_topics),
-  purpose: ps.purpose || "",
-  dateCompleted,
-  prompts,
-  promptNotes
-};
+
+        return {
+          promptSetTitle: ps.promptset_title || "Unknown Prompt Set",
+          main_topic: ps.main_topic || "",
+          secondary_topics: safeArray(ps.secondary_topics),
+          purpose: ps.purpose || "",
+          dateCompleted,
+          prompts,
+          promptNotes
+        };
       })
       .sort((a, b) => sortAZ(a.promptSetTitle, b.promptSetTitle));
 
@@ -1122,7 +1126,6 @@ const getMyLearningNotesReport = async (req, res) => {
     const safeArray = (v) => (Array.isArray(v) ? v : []);
     const safeString = (v) => (v == null ? "" : String(v));
     const toIdString = (v) => (v && typeof v.toString === "function" ? v.toString() : "");
-    const sortAZ = (a, b) => safeString(a).localeCompare(safeString(b));
 
     const memberId = toIdString(req.user?._id || req.user?.id || req.session?.user?.id);
 
@@ -1158,7 +1161,6 @@ const getMyLearningNotesReport = async (req, res) => {
       });
     }
 
-    // Resolve all unit metadata once
     const uniqueUnitIds = Array.from(
       new Set(
         safeArray(notes)
@@ -1181,7 +1183,7 @@ const getMyLearningNotesReport = async (req, res) => {
       })
     );
 
-    // Only include these unit types
+    // Standard learning units only
     const allowedUnitTypes = new Set([
       "article",
       "video",
@@ -1190,7 +1192,6 @@ const getMyLearningNotesReport = async (req, res) => {
       "template"
     ]);
 
-    // Group notes by unit
     const byUnit = new Map();
 
     for (const note of notes) {
@@ -1251,7 +1252,7 @@ const getMyLearningNotesReport = async (req, res) => {
     return res.status(500).send("Server error");
   }
 };
-''
+
 // ✅ Fetch Individual Member's Own Completed Prompt Sets Report
 // Shape matches views/report_views/mycompletedpromptsets_individual.hbs
 const getMyCompletedPromptSetsReportIndividual = async (req, res) => {
@@ -1321,8 +1322,14 @@ const getMyCompletedPromptSetsReportIndividual = async (req, res) => {
         const notesArr = safeArray(prog.notes);
         const promptNotes = Array.from({ length: TOTAL_PROMPTS }, (_, idx) => {
           const content = safeString(notesArr[idx]).trim();
+
           return {
-            notes: content ? [{ content }] : []
+            notes: content
+              ? [{
+                  content,
+                  dateSubmitted: prog.updatedAt || prog.createdAt || null
+                }]
+              : []
           };
         });
 
@@ -1494,6 +1501,8 @@ const getMyLearningNotesReportIndividual = async (req, res) => {
     return res.status(500).send("Server error");
   }
 };
+
+
 
 
 

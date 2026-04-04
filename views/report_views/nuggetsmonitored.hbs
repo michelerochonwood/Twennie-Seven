@@ -11,10 +11,10 @@
       <thead>
         <tr>
           <th class="dashboard-library-header">nugget</th>
-          <th class="dashboard-library-header">who’s monitoring</th>
-          <th class="dashboard-library-header">tag / assignment</th>
-          <th class="dashboard-library-header">notes / instructions</th>
-          <th class="dashboard-library-header">date tagged</th>
+<th class="dashboard-library-header">assignment</th>
+<th class="dashboard-library-header">latest monitoring note</th>
+<th class="dashboard-library-header">last update</th>
+<th class="dashboard-library-header">date assigned</th>
         </tr>
       </thead>
 
@@ -59,45 +59,41 @@
             </td>
 
             {{!-- Tag / Assignment --}}
-            <td class="dashboard-library-cell">
-              {{!-- Tag name (from Tag collection) --}}
-              {{#if this.tagName}}
-                <div class="multi-record-item">tag: {{this.tagName}}</div>
-              {{else}}
-                <span class="no-data">No tag name</span>
-              {{/if}}
+<td class="dashboard-library-cell">
+  {{#if this.assignmentName}}
+    <div class="multi-record-item">{{this.assignmentName}}</div>
+  {{else}}
+    <span class="no-data">No assignment name</span>
+  {{/if}}
 
-              {{!-- Assigned status (if controller provides it) --}}
-              {{#if this.isAssigned}}
-                <div class="multi-record-item" style="opacity:0.9;">assigned</div>
-              {{else}}
-                <div class="multi-record-item" style="opacity:0.9;">tagged</div>
-              {{/if}}
-            </td>
+  {{#if this.isAssigned}}
+    <div class="multi-record-item" style="opacity:0.9;">active</div>
+  {{else}}
+    <div class="multi-record-item" style="opacity:0.9;">unassigned</div>
+  {{/if}}
+</td>
 
             {{!-- Notes / Instructions --}}
-            <td class="dashboard-library-cell">
-              {{!-- Tag-level description / context (optional) --}}
-              {{#if this.tagDescription}}
-                <div class="multi-record-item">{{this.tagDescription}}</div>
-              {{/if}}
+<td class="dashboard-library-cell">
+  {{#if this.assignmentDescription}}
+    <div class="multi-record-item">{{this.assignmentDescription}}</div>
+  {{/if}}
 
-              {{!-- Assignment instructions (array) --}}
-              {{#each this.instructions}}
-                <div class="multi-record-item">• {{this}}</div>
-              {{else}}
-                <span class="no-data">No instructions</span>
-              {{/each}}
-            </td>
+  {{#each this.instructions}}
+    <div class="multi-record-item">• {{this}}</div>
+  {{else}}
+    <span class="no-data">No instructions</span>
+  {{/each}}
+</td>
 
             {{!-- Date Tagged --}}
-            <td class="dashboard-library-cell">
-              {{#if this.taggedAt}}
-                {{formatDate this.taggedAt}}
-              {{else}}
-                <span class="no-data">—</span>
-              {{/if}}
-            </td>
+<td class="dashboard-library-cell">
+  {{#if this.assignedAt}}
+    {{formatDate this.assignedAt}}
+  {{else}}
+    <span class="no-data">—</span>
+  {{/if}}
+</td>
 
           </tr>
         {{else}}
@@ -110,32 +106,51 @@
   </div>
 
   {{!-- Report Navigation Links --}}
-  <div class="report-links-container">
+<div class="report-links-container report-links-enhanced">
 
-{{#unless isMemberEngagement}}
-  <a href="/reports/memberengagement" class="report-link">
-    <img src="/images/memberengagementreport.png" alt="Member Engagement Report">
-  </a>
-{{/unless}}
-
-{{#unless isNuggetsMonitored}}
-  <a href="/reports/nuggetsmonitored" class="report-link">
-    <img src="/images/nuggetsreport.png" alt="Nuggets Being Monitored Report">
-  </a>
-{{/unless}}
-
-{{#unless isPromptSetsCompleted}}
-  <a href="/reports/promptsetscompleted" class="report-link">
-    <img src="/images/promptsetsreport.png" alt="Prompt Sets Report">
-  </a>
-{{/unless}}
-
-{{#unless isUnitsCompleted}}
-  <a href="/reports/unitscompleted" class="report-link">
-    <img src="/images/libraryunitsreport.png" alt="Library Units Report">
-  </a>
-{{/unless}}
-
-
+  {{#unless isMemberEngagement}}
+  <div class="report-card">
+    <a href="/reports/memberengagement" class="report-link">
+      <img src="/images/memberengagementreport.png" alt="Member Engagement Report">
+    </a>
+    <p class="report-description">
+      See how each team member is engaging with learning, including topics explored, units completed, and mission activity.
+    </p>
   </div>
+  {{/unless}}
+
+  {{#unless isNuggetsMonitored}}
+  <div class="report-card">
+    <a href="/reports/nuggetsmonitored" class="report-link">
+      <img src="/images/nuggetsreport.png" alt="Nuggets Being Monitored Report">
+    </a>
+    <p class="report-description">
+      Track which nuggets are being monitored, who is responsible, and the latest insights being recorded.
+    </p>
+  </div>
+  {{/unless}}
+
+  {{#unless isPromptSetsCompleted}}
+  <div class="report-card">
+    <a href="/reports/promptsetscompleted" class="report-link">
+      <img src="/images/promptsetsreport.png" alt="Prompt Sets Report">
+    </a>
+    <p class="report-description">
+      Review completed prompt sets across your team, including progress, notes, and learning patterns.
+    </p>
+  </div>
+  {{/unless}}
+
+  {{#unless isUnitsCompleted}}
+  <div class="report-card">
+    <a href="/reports/unitscompleted" class="report-link">
+      <img src="/images/libraryunitsreport.png" alt="Library Units Report">
+    </a>
+    <p class="report-description">
+      View all completed learning units, who completed them, and the notes recorded along the way.
+    </p>
+  </div>
+  {{/unless}}
+
+</div>
 </section>

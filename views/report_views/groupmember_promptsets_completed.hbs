@@ -23,7 +23,11 @@
 
           <!-- Topics -->
           <td class="dashboard-library-cell">
-            <div class="multi-record-item">{{this.main_topic}}</div>
+{{#if this.main_topic}}
+  <div class="multi-record-item">{{this.main_topic}}</div>
+{{else}}
+  <span class="no-data">No main topic</span>
+{{/if}}
             {{#each this.secondary_topics}}
               <div class="multi-record-item">{{this}}</div>
             {{else}}
@@ -31,7 +35,13 @@
             {{/each}}
           </td>
 
-          <td class="dashboard-library-cell">{{this.purpose}}</td>
+<td class="dashboard-library-cell">
+  {{#if this.purpose}}
+    {{this.purpose}}
+  {{else}}
+    <span class="no-data">No purpose provided</span>
+  {{/if}}
+</td>
 
           <!-- Characteristics -->
           <td class="dashboard-library-cell">
@@ -42,8 +52,21 @@
             {{/each}}
           </td>
 
-          <td class="dashboard-library-cell">{{this.targetAudience}}</td>
-          <td class="dashboard-library-cell">{{formatDate this.dateCompleted}}</td>
+<td class="dashboard-library-cell">
+  {{#if this.targetAudience}}
+    {{this.targetAudience}}
+  {{else}}
+    <span class="no-data">No target audience provided</span>
+  {{/if}}
+</td>
+
+<td class="dashboard-library-cell">
+  {{#if this.dateCompleted}}
+    {{formatDate this.dateCompleted}}
+  {{else}}
+    <span class="no-data">No completion date</span>
+  {{/if}}
+</td>
         </tr>
         {{else}}
         <tr>
@@ -80,14 +103,22 @@
 
         <!-- Row 2: Notes -->
         <tr class="dashboard-library-row">
-          <td class="dashboard-library-cell"><strong>Your Notes</strong></td>
+          <td class="dashboard-library-cell"><strong>your notes (history)</strong></td>
           {{#each this.promptNotes}}
             <td class="dashboard-library-cell" style="vertical-align: top;">
-              {{#each this.notes}}
-                <div class="multi-record-item">{{this.content}}</div>
-              {{else}}
-                <span class="no-data">No notes</span>
-              {{/each}}
+{{#each this.notes}}
+  <div class="multi-record-item" style="margin-bottom: 0.75rem;">
+    <div>{{this.content}}</div>
+
+    {{#if this.dateSubmitted}}
+      <div style="font-size: 0.85rem; opacity: 0.75; margin-top: 0.25rem;">
+        {{formatDate this.dateSubmitted}}
+      </div>
+    {{/if}}
+  </div>
+{{else}}
+  <span class="no-data">No notes</span>
+{{/each}}
             </td>
           {{/each}}
         </tr>

@@ -73,10 +73,7 @@
   </div>
 
   {{!-- =========================================================
-       TABLE 2: Prompt Notes
-       - orientation prompt shown separately
-       - prompts 1–20 shown across
-       - anchors allow dashboard cards to jump here
+       TABLE 2: Prompt Notes History
   ========================================================== --}}
   <h2 class="dashboard-section-title">Your Prompt Notes</h2>
 
@@ -134,18 +131,24 @@
             {{/each}}
           </tr>
 
-          {{!-- Row 2: Your Notes --}}
+          {{!-- Row 2: Your Notes History --}}
           <tr class="dashboard-library-row">
             <td class="dashboard-library-cell">
-              <strong>your notes</strong>
+              <strong>your notes (history)</strong>
             </td>
 
             {{#each this.promptNotes}}
               {{#unless @first}}
                 <td class="dashboard-library-cell" style="vertical-align: top;">
                   {{#each this.notes}}
-                    <div class="multi-record-item">
-                      {{this.content}}
+                    <div class="multi-record-item" style="margin-bottom: 0.75rem;">
+                      <div>{{this.content}}</div>
+
+                      {{#if this.dateSubmitted}}
+                        <div style="font-size: 0.85rem; opacity: 0.75; margin-top: 0.25rem;">
+                          {{formatDate this.dateSubmitted}}
+                        </div>
+                      {{/if}}
                     </div>
                   {{else}}
                     <span class="no-data">No notes</span>

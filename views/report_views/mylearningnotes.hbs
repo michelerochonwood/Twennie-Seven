@@ -7,11 +7,11 @@
     <table class="dashboard-library-table">
       <thead>
         <tr>
-          <th class="dashboard-library-header">Unit Title</th>
-          <th class="dashboard-library-header">Unit Type</th>
-          <th class="dashboard-library-header">Topics</th>
-          <th class="dashboard-library-header">Notes</th>
-          <th class="dashboard-library-header">Latest Note</th>
+          <th class="dashboard-library-header">unit title</th>
+          <th class="dashboard-library-header">unit type</th>
+          <th class="dashboard-library-header">topics</th>
+          <th class="dashboard-library-header">notes</th>
+          <th class="dashboard-library-header">latest update</th>
         </tr>
       </thead>
 
@@ -19,11 +19,19 @@
         {{#each myLearningNotesReports}}
           <tr class="dashboard-library-row">
             <td class="dashboard-library-cell">
-              {{this.unitTitle}}
+              {{#if this.unitTitle}}
+                {{this.unitTitle}}
+              {{else}}
+                <span class="no-data">Untitled unit</span>
+              {{/if}}
             </td>
 
             <td class="dashboard-library-cell">
-              {{this.unitType}}
+              {{#if this.unitType}}
+                {{this.unitType}}
+              {{else}}
+                <span class="no-data">Unknown type</span>
+              {{/if}}
             </td>
 
             <td class="dashboard-library-cell">
@@ -59,7 +67,7 @@
               {{#if this.latestNoteDate}}
                 {{formatDate this.latestNoteDate}}
               {{else}}
-                <span class="no-data">No date</span>
+                <span class="no-data">No update yet</span>
               {{/if}}
             </td>
           </tr>
