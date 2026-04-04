@@ -1391,6 +1391,7 @@ html, body {
   flex-direction: column;
 }
 
+/* Title row */
 .expandable-title {
   font-size: 0.9rem;
   font-weight: 600;
@@ -1399,13 +1400,36 @@ html, body {
   align-items: center;
   color: #4a4ab2;
   cursor: pointer;
-  padding: 10px;
-  border-bottom: 2px dotted #4a4ab2;
+  padding: 12px 10px;
   min-height: 50px;
+  position: relative;
+  transition: color 0.2s ease;
 }
 
+/* Gradient divider (matches bytopic style but blue) */
+.expandable-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(to right, transparent, #4a4ab2, transparent);
+}
+
+/* Hover state */
+.expandable-title:hover {
+  color: #262262;
+}
+
+.expandable-title:hover::after {
+  background: linear-gradient(to right, transparent, #262262, transparent);
+}
+
+/* Arrow spacing + animation */
 .expandable-title svg {
   margin-left: 0.5rem;
+  transition: transform 0.3s ease;
 }
 
 /* Expanded Arrow (Rotated) */
@@ -1413,11 +1437,18 @@ html, body {
   transform: rotate(180deg);
 }
 
+/* Expandable content */
 .expandable-content {
   display: none;
-  padding: 5px;
+  padding: 8px 10px 12px;
   font-size: 0.8em;
   color: #333;
+  line-height: 1.35;
+}
+
+/* Optional: subtle entrance feel when opened */
+.expandable-item.active .expandable-content {
+  display: block;
 }
 
 .expandable-title svg {
