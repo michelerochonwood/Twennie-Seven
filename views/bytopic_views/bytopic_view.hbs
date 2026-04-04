@@ -259,29 +259,44 @@
                       <img src="/icons/upcomingsvg.svg" alt="" aria-hidden="true" class="bytopic-upcoming-badge">
                     {{/if}}
 
-                    {{#unless (eq this.type "upcoming")}}
-                      <div class="bytopic-card-top-badges">
-                        <div class="bytopic-card-top-badge bytopic-card-author-badge">
-                          <img
-                            src="{{#if authorImage}}{{authorImage}}{{else}}/images/default-avatar.png{{/if}}"
-                            alt="{{authorName}}"
-                            class="bytopic-card-author-mini"
-                          >
-                        </div>
+{{#unless (eq this.type "upcoming")}}
+  <div class="bytopic-card-top-badges">
+    <div class="bytopic-card-top-badge bytopic-card-author-badge">
+      <img
+        src="{{#if authorImage}}{{authorImage}}{{else}}/images/default-avatar.png{{/if}}"
+        alt="{{authorName}}"
+        class="bytopic-card-author-mini"
+      >
+    </div>
 
-                        {{#if organizationId}}
-                          <div class="bytopic-card-top-badge bytopic-card-org-badge">
-                            <a href="/profile/organization/{{organizationId}}" class="bytopic-card-org-link">
-                              <img
-                                src="{{#if organizationLogo}}{{organizationLogo}}{{else}}/images/default-organization-logo.png{{/if}}"
-                                alt="{{#if organizationName}}{{organizationName}}{{else}}Organization{{/if}} logo"
-                                class="bytopic-card-org-logo"
-                              >
-                            </a>
-                          </div>
-                        {{/if}}
-                      </div>
-                    {{/unless}}
+    {{#if organizationId}}
+      <div class="bytopic-card-top-badge bytopic-card-org-badge">
+        <a href="/profile/organization/{{organizationId}}" class="bytopic-card-org-link">
+          <img
+            src="{{#if organizationLogo}}{{organizationLogo}}{{else}}/images/default-organization-logo.png{{/if}}"
+            alt="{{#if organizationName}}{{organizationName}}{{else}}Organization{{/if}} logo"
+            class="bytopic-card-org-logo"
+          >
+        </a>
+      </div>
+    {{/if}}
+  </div>
+
+  {{#if (eq this.type "promptset")}}
+    {{#if characteristics}}
+      <div class="bytopic-card-characteristics">
+        {{#each characteristics}}
+          {{#if @first}}
+            <span class="bytopic-characteristic-pill">{{this}}</span>
+          {{/if}}
+          {{#if (eq @index 1)}}
+            <span class="bytopic-characteristic-pill">{{this}}</span>
+          {{/if}}
+        {{/each}}
+      </div>
+    {{/if}}
+  {{/if}}
+{{/unless}}
 
                     <div class="bytopic-card-inner">
                       <div class="bytopic-card-svg-header">
@@ -354,7 +369,7 @@
 
                           {{#if (eq this.type "promptset")}}
                             <div class="bytopic-detail-value-purpose">
-                              <strong>Purpose:</strong><br>
+                              <strong>why should I register for this prompt set:</strong><br>
                               {{this.purpose}}
                             </div>
                           {{/if}}
