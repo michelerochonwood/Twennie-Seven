@@ -125,16 +125,27 @@ exports.createTag = async (req, res) => {
                       : res.status(401).json({ message: 'User must be logged in to create tags.' });
     }
 
-    let { tagName, itemId, itemType } = req.body;
-    itemType = canonicalUnitType(itemType);
+let { tagName, itemId, itemType, selfAssign } = req.body;
+itemType = canonicalUnitType(itemType);
 
 const assignedToRaw = req.body.assignedTo || {};
-const normalizedAssignedTo = Object.values(assignedToRaw)
+
+let normalizedAssignedTo = Object.values(assignedToRaw)
   .map(v => ({
     member: v?.member,
     instructions: (v?.instructions || '').trim()
   }))
   .filter(v => v.member);
+
+// Support self-assignment from inline unit-view forms
+if (selfAssign === 'true' && req.user?._id) {
+  normalizedAssignedTo = [{
+    member: req.user._id,
+    instructions: ''
+  }];
+}
+
+tagName = String(tagName || '').trim();
 
 if (!tagName || !itemId || !itemType) {
   const msg = 'Assignment name, item ID, and item type are required.';
