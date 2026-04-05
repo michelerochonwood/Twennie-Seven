@@ -58,6 +58,29 @@ function dedupeSectionedNuggets(sectionedNuggets) {
   });
 }
 
+async function isUserAssignedToUnit(req, unitId, unitType) {
+  if (!req.user?._id || !unitId || !unitType) return false;
+
+  let userObjectId;
+  try {
+    userObjectId = new mongoose.Types.ObjectId(req.user._id);
+  } catch (e) {
+    return false;
+  }
+
+  const existingAssignment = await Tag.exists({
+    associatedUnits: {
+      $elemMatch: {
+        item: unitId,
+        unitType
+      }
+    },
+    'assignedTo.member': userObjectId
+  });
+
+  return !!existingAssignment;
+}
+
 async function resolveAuthorById(authorId) {
   if (!authorId) {
     return {
@@ -797,22 +820,7 @@ viewMineDisciplines: async (req, res) => {
     const adminSuggest = await buildOrgLeaderListForAdmin(req);
 
 
-    let isAssignedToCurrentUser = false;
-
-if (req.user?._id) {
-  const existingAssignment = await Tag.exists({
-    associatedUnits: {
-      $elemMatch: {
-        item: nugget._id,
-        unitType: 'nugget'
-      }
-    },
-    'assignedTo.member': req.user._id
-  });
-
-  isAssignedToCurrentUser = !!existingAssignment;
-}
-
+const isAssignedToCurrentUser = await isUserAssignedToUnit(req, nugget._id, 'nugget');
 const canAddNuggetMonitoringNotes = isOwner || isAssignedToCurrentUser;
     // 7) Render the nugget view
     return res.render('unit_views/single_nugget', {
@@ -937,21 +945,7 @@ viewArticle: async (req, res) => {
     const adminSuggest = await buildOrgLeaderListForAdmin(req);
 
     // 🔑 Check if this user is assigned to this unit
-let isAssignedToCurrentUser = false;
-
-if (req.user?._id) {
-  const existingAssignment = await Tag.exists({
-    associatedUnits: {
-      $elemMatch: {
-        item: article._id,
-        unitType: 'article'
-      }
-    },
-    'assignedTo.member': req.user._id
-  });
-
-  isAssignedToCurrentUser = !!existingAssignment;
-}
+const isAssignedToCurrentUser = await isUserAssignedToUnit(req, article._id, 'article');
 
     return res.render('unit_views/single_article', {
       layout: 'unitviewlayout',
@@ -1083,21 +1077,7 @@ if (req.user?._id) {
     const { groupMembers, leaderId, leaderName } = await getLeaderAssignContext(req);
     const adminSuggest = await buildOrgLeaderListForAdmin(req);
 
-    let isAssignedToCurrentUser = false;
-
-if (req.user?._id) {
-  const existingAssignment = await Tag.exists({
-    associatedUnits: {
-      $elemMatch: {
-        item: video._id,
-        unitType: 'video'
-      }
-    },
-    'assignedTo.member': req.user._id
-  });
-
-  isAssignedToCurrentUser = !!existingAssignment;
-}
+const isAssignedToCurrentUser = await isUserAssignedToUnit(req, video._id, 'video');
 
     return res.render('unit_views/single_video', {
       layout: 'unitviewlayout',
@@ -1219,21 +1199,7 @@ viewInterview: async (req, res) => {
     const { groupMembers, leaderId, leaderName } = await getLeaderAssignContext(req);
     const adminSuggest = await buildOrgLeaderListForAdmin(req);
 
-    let isAssignedToCurrentUser = false;
-
-if (req.user?._id) {
-  const existingAssignment = await Tag.exists({
-    associatedUnits: {
-      $elemMatch: {
-        item: interview._id,
-        unitType: 'interview'
-      }
-    },
-    'assignedTo.member': req.user._id
-  });
-
-  isAssignedToCurrentUser = !!existingAssignment;
-}
+const isAssignedToCurrentUser = await isUserAssignedToUnit(req, interview._id, 'interview');
 
     return res.render('unit_views/single_interview', {
       layout: 'unitviewlayout',
@@ -1668,21 +1634,7 @@ viewExercise: async (req, res) => {
       };
     });
 
-    let isAssignedToCurrentUser = false;
-
-if (req.user?._id) {
-  const existingAssignment = await Tag.exists({
-    associatedUnits: {
-      $elemMatch: {
-        item: exercise._id,
-        unitType: 'exercise'
-      }
-    },
-    'assignedTo.member': req.user._id
-  });
-
-  isAssignedToCurrentUser = !!existingAssignment;
-}
+const isAssignedToCurrentUser = await isUserAssignedToUnit(req, exercise._id, 'exercise');
 
     // 8) Render
     return res.render('unit_views/single_exercise', {
@@ -1751,7 +1703,7 @@ if (req.user?._id) {
     
     
     
- viewTemplate: async (req, res) => {
+viewTemplate: async (req, res) => {
   try {
     const { id } = req.params;
     console.log(`📄 Fetching template with ID: ${id}`);
@@ -1795,7 +1747,7 @@ if (req.user?._id) {
 
     const [authorAsLeader, authorAsGroupMember] = await Promise.all([
       Leader.findById(authorId).select('_id organization').lean(),
-      GroupMember.findById(authorId).select('_id organization groupId').lean()
+      GroupMember.findById(authorId).select('_id organization groupId leader').lean()
     ]);
 
     if (authorAsLeader) {
@@ -1803,7 +1755,7 @@ if (req.user?._id) {
       authorGroupId = authorAsLeader._id;
     } else if (authorAsGroupMember) {
       authorOrg = authorAsGroupMember.organization || null;
-      authorGroupId = authorAsGroupMember.groupId || null;
+      authorGroupId = authorAsGroupMember.leader || authorAsGroupMember.groupId || null;
     }
 
     let isAuthorizedToViewFullContent = false;
@@ -1817,13 +1769,13 @@ if (req.user?._id) {
         template.visibility === 'organization_only' &&
         req.user?.organization &&
         authorOrg &&
-        req.user.organization === authorOrg;
+        String(req.user.organization) === String(authorOrg);
 
       isTeamMatch =
         template.visibility === 'team_only' &&
         req.user?.groupId &&
         authorGroupId &&
-        req.user.groupId.toString() === authorGroupId.toString();
+        String(req.user.groupId) === String(authorGroupId);
 
       isAuthorizedToViewFullContent = isOwner || isOrgMatch || isTeamMatch;
     }
@@ -1837,8 +1789,8 @@ if (req.user?._id) {
 
     // 5) Leader context for assignments
     let groupMembers = [];
-    let leaderId;
-    let leaderName;
+    let leaderId = null;
+    let leaderName = null;
 
     if (isLeader && currentUserId) {
       const leaderDoc = await Leader.findById(currentUserId)
@@ -1846,9 +1798,12 @@ if (req.user?._id) {
         .lean();
 
       if (leaderDoc) {
-        groupMembers = await GroupMember.find({ groupId: leaderDoc._id })
+        groupMembers = await GroupMember.find({
+          $or: [{ leader: leaderDoc._id }, { groupId: leaderDoc._id }]
+        })
           .select('_id name')
           .lean();
+
         leaderId = leaderDoc._id.toString();
         leaderName = leaderDoc.groupLeaderName || leaderDoc.username || 'You';
       }
@@ -1871,7 +1826,7 @@ if (req.user?._id) {
     const rawDocs = template.documentUploads;
 
     if (Array.isArray(rawDocs)) {
-      documentUploads = rawDocs.map(d =>
+      documentUploads = rawDocs.map((d) =>
         typeof d === 'string'
           ? { url: d, filename: toFilename(d) }
           : { url: d.url || '', filename: d.filename || toFilename(d.url || '') }
@@ -1884,7 +1839,10 @@ if (req.user?._id) {
       ];
     }
 
-    // 8) Render
+    // 8) Check assignment state for current user
+    const isAssignedToCurrentUser = await isUserAssignedToUnit(req, template._id, 'template');
+
+    // 9) Render
     return res.render('unit_views/single_template', {
       layout: 'unitviewlayout',
 
@@ -1912,6 +1870,9 @@ if (req.user?._id) {
       isLeader,
       isGroupMember,
       isMember,
+
+      currentUserId: currentUserId,
+      isAssignedToCurrentUser,
 
       tagSuccess: req.query.tag === 'ok',
 
@@ -2193,21 +2154,8 @@ viewMission: async (req, res) => {
       leaderName,
     } = await getLeaderAssignContext(req);
 
-    let isAssignedToCurrentUser = false;
+const isAssignedToCurrentUser = await isUserAssignedToUnit(req, mission._id, 'mission');
 
-if (req.user?._id) {
-  const existingAssignment = await Tag.exists({
-    associatedUnits: {
-      $elemMatch: {
-        item: mission._id,
-        unitType: 'mission'
-      }
-    },
-    'assignedTo.member': req.user._id
-  });
-
-  isAssignedToCurrentUser = !!existingAssignment;
-}
 
 const canAddMissionNotes = isOwner || isAssignedToCurrentUser;
 

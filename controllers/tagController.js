@@ -137,8 +137,7 @@ let normalizedAssignedTo = Object.values(assignedToRaw)
   }))
   .filter(v => v.member);
 
-// Support self-assignment from inline unit-view forms
-if (selfAssign === 'true' && req.user?._id) {
+if ((selfAssign === 'true' || selfAssign === true) && req.user && req.user._id) {
   normalizedAssignedTo = [{
     member: req.user._id,
     instructions: ''
