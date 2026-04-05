@@ -1175,7 +1175,7 @@ html, body {
 .bytopic-card-characteristics {
   position: absolute;
   top: -1.2rem;          /* pull above card edge */
-  left: 2rem;            /* opposite side from author/org */
+  left: 1rem;            /* opposite side from author/org */
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1185,8 +1185,8 @@ html, body {
 
 /* Each circle */
 .bytopic-characteristic-pill {
-  width: 52px;
-  height: 52px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   background: #dc176a;
   color: white;
@@ -1209,6 +1209,7 @@ html, body {
 /* overlap effect */
 .bytopic-characteristic-pill + .bytopic-characteristic-pill {
   margin-top: -12px;
+  margin-left: -12px;
 }
 
 /* subtle variation for second badge */
