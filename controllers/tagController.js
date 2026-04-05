@@ -256,16 +256,27 @@ if (fromForm && normalizedAssignedTo.length > 0) {
   const unitLabel = unitLabelFromType(itemType);
   const unitTitle = await getUnitTitle(itemType, itemId);
 
-  return res.render('unit_views/assign_success', {
-    layout: 'unitviewlayout',
-    title: 'Assignment Successful',
-    unitLabel,
-    unitTitle,
-    promptSetTitle: unitTitle,
-    assignedNames,
-    skippedLimitNames: [],
-    skippedDupesNames: []
-  });
+  let dashboardUrl = '/dashboard/member';
+
+if (userModel === 'leader') {
+  dashboardUrl = '/dashboard/leader';
+} else if (userModel === 'group_member') {
+  dashboardUrl = '/dashboard/groupmember';
+} else if (userModel === 'member') {
+  dashboardUrl = '/dashboard/member';
+}
+
+return res.render('unit_views/assign_success', {
+  layout: 'unitviewlayout',
+  title: 'Assignment Successful',
+  unitLabel,
+  unitTitle,
+  promptSetTitle: unitTitle,
+  assignedNames,
+  skippedLimitNames: [],
+  skippedDupesNames: [],
+  dashboardUrl
+});
 }
 
 // Standard HTML form submission (leader self-tag / member / group member quick-tag)
