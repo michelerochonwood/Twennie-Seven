@@ -1175,7 +1175,7 @@ html, body {
 .bytopic-card-characteristics {
   position: absolute;
   top: -1.2rem;          /* pull above card edge */
-  left: 1.5rem;            /* opposite side from author/org */
+  left: 2rem;            /* opposite side from author/org */
   display: flex;
   flex-direction: column;
   align-items: flex-start;
