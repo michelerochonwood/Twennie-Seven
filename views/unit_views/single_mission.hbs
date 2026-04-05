@@ -283,12 +283,21 @@
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
         <input type="hidden" name="itemId" value="{{_id}}">
         <input type="hidden" name="itemType" value="mission">
-        <input type="hidden" name="tagName" value="Work on this mission">
-        <input type="hidden" name="assignedTo[{{currentUserId}}][member]" value="{{currentUserId}}">
+        <input type="hidden" name="selfAssign" value="true">
 
-        <button type="button"
+        <div class="form-field" style="margin-bottom:10px;">
+          <label for="missionTagName-{{_id}}">Name this assignment</label>
+          <input
+            type="text"
+            id="missionTagName-{{_id}}"
+            name="tagName"
+            value="Work on this mission"
+            required
+          >
+        </div>
+
+        <button type="submit"
                 class="tag-this-unit-link"
-                onclick="promptAndSubmitTag('missionTagForm')"
                 style="background:none;border:none;padding:0;cursor:pointer;">
           assign this mission to myself
           <svg class="tag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 39.48 36.66">

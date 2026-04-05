@@ -164,13 +164,22 @@
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
         <input type="hidden" name="itemId" value="{{_id}}">
         <input type="hidden" name="itemType" value="exercise">
-        <input type="hidden" name="tagName" value="Read Later">
-        <input type="hidden" name="assignedTo[{{currentUserId}}][member]" value="{{currentUserId}}">
+        <input type="hidden" name="selfAssign" value="true">
+
+        <div class="form-field" style="margin-bottom:10px;">
+          <label for="exerciseTagName-{{_id}}">Name this assignment</label>
+          <input
+            type="text"
+            id="exerciseTagName-{{_id}}"
+            name="tagName"
+            value="Read Later"
+            required
+          >
+        </div>
 
         <button
-          type="button"
+          type="submit"
           class="tag-this-unit-link"
-          onclick="promptAndSubmitTag('exerciseTagForm-{{_id}}')"
           style="background:none;border:none;padding:0;cursor:pointer;"
         >
           assign this unit to myself

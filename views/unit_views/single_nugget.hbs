@@ -192,13 +192,22 @@
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
         <input type="hidden" name="itemId" value="{{_id}}">
         <input type="hidden" name="itemType" value="nugget">
-        <input type="hidden" name="tagName" value="Watch Later">
-        <input type="hidden" name="assignedTo[{{currentUserId}}][member]" value="{{currentUserId}}">
+        <input type="hidden" name="selfAssign" value="true">
+
+        <div class="form-field" style="margin-bottom:10px;">
+          <label for="nuggetTagName-{{_id}}">Name this assignment</label>
+          <input
+            type="text"
+            id="nuggetTagName-{{_id}}"
+            name="tagName"
+            value="Watch Later"
+            required
+          >
+        </div>
 
         <button
-          type="button"
+          type="submit"
           class="tag-this-unit-link"
-          onclick="promptAndSubmitTag('nuggetTagForm')"
         >
           assign this nugget to myself
         </button>

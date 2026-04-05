@@ -136,14 +136,16 @@ const normalizedAssignedTo = Object.values(assignedToRaw)
   }))
   .filter(v => v.member);
 
-    if (!tagName || !itemId || !itemType) {
-      const msg = 'Tag name, item ID, and item type are required.';
-      return fromForm
-        ? res.status(400).render('member_form_views/error', {
-            layout: 'memberformlayout', title: 'Invalid tag', errorMessage: msg
-          })
-        : res.status(400).json({ message: msg });
-    }
+if (!tagName || !itemId || !itemType) {
+  const msg = 'Assignment name, item ID, and item type are required.';
+  return fromForm
+    ? res.status(400).render('member_form_views/error', {
+        layout: 'memberformlayout',
+        title: 'Invalid assignment',
+        errorMessage: msg
+      })
+    : res.status(400).json({ message: msg });
+}
 
     if (!ALLOWED_UNIT_TYPES.has(itemType)) {
       const msg = `Unsupported item type: ${itemType}`;
@@ -171,8 +173,8 @@ const normalizedAssignedTo = Object.values(assignedToRaw)
         : res.status(403).json({ message: msg });
     }
 
-    const cleanName = String(tagName).trim();
-    const nameLower = cleanName.toLowerCase();
+const cleanName = tagName;
+const nameLower = cleanName.toLowerCase();
 
     let tag = await Tag.findOne({ nameLower, createdBy: userId });
 
@@ -267,15 +269,34 @@ if (fromForm) {
 // Non-HTML / AJAX
 return res.status(200).json({ message: 'Tag saved successfully.', tag });
 
-  } catch (error) {
-    console.error('❌ Error creating tag:', error);
-    return isHtmlForm(req)
-      ? res.status(500).render('member_form_views/error', {
-          layout: 'memberformlayout', title: 'Error',
-          errorMessage: 'An error occurred while creating the tag.'
-        })
-      : res.status(500).json({ message: 'Internal server error' });
-  }
+} catch (error) {
+  console.error('❌ Error creating tag:', error);
+  console.error('message:', error.message);
+  console.error('stack:', error.stack);
+  console.error('req.body:', req.body);
+  console.error(
+    'req.user:',
+    req.user
+      ? {
+          _id: req.user._id,
+          membershipType: req.user.membershipType
+        }
+      : null
+  );
+
+  if (error.code) console.error('mongo code:', error.code);
+  if (error.keyPattern) console.error('keyPattern:', error.keyPattern);
+  if (error.keyValue) console.error('keyValue:', error.keyValue);
+  if (error.errors) console.error('validation errors:', error.errors);
+
+  return isHtmlForm(req)
+    ? res.status(500).render('member_form_views/error', {
+        layout: 'memberformlayout',
+        title: 'Error',
+        errorMessage: 'An error occurred while creating the assignment.'
+      })
+    : res.status(500).json({ message: 'Internal server error' });
+}
 };
 
 
