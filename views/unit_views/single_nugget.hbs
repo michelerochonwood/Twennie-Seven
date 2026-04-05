@@ -64,67 +64,70 @@
     </div>
 
     <!-- Tagging / Assignments (Leader) -->
-    {{#if isLeader}}
-      <div class="assign-tag-form white-container">
-        <h4>Assign this nugget</h4>
-        <form id="assignNuggetForm" action="/tags/create" method="POST">
-          <input type="hidden" name="_csrf" value="{{csrfToken}}">
-          <input type="hidden" name="itemId" value="{{_id}}">
-          <input type="hidden" name="itemType" value="nugget">
+   {{#if isLeader}}
+  {{#unless isAssignedToCurrentUser}}
+    <div class="assign-tag-form white-container">
+      <h4>Assign this nugget</h4>
 
-          <div class="form-field">
-            <label for="tagName">Give the assignment a name</label>
-            <input type="text" id="tagName" name="tagName" required>
+      <form id="assignNuggetForm" action="/tags/create" method="POST">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        <input type="hidden" name="itemId" value="{{_id}}">
+        <input type="hidden" name="itemType" value="nugget">
+
+        <div class="form-field">
+          <label for="tagName">Give the assignment a name</label>
+          <input type="text" id="tagName" name="tagName" required>
+        </div>
+
+        <fieldset class="assign-tag-members">
+          <legend>Select recipients and enter instructions:</legend>
+
+          <div class="assign-tag-member-block">
+            <label>
+              <input
+                type="checkbox"
+                name="assignedTo[{{leaderId}}][member]"
+                value="{{leaderId}}"
+                onchange="toggleInstructionField(this)"
+              >
+              {{leaderName}} (you)
+            </label>
+            <textarea
+              class="assign-tag-instructions"
+              name="assignedTo[{{leaderId}}][instructions]"
+              placeholder="Instructions for yourself"
+              style="display:none;"
+            ></textarea>
           </div>
 
-          <fieldset class="assign-tag-members">
-            <legend>Select recipients and enter instructions:</legend>
+          <hr>
 
+          {{#each groupMembers}}
             <div class="assign-tag-member-block">
               <label>
                 <input
                   type="checkbox"
-                  name="assignedTo[{{leaderId}}][member]"
-                  value="{{leaderId}}"
+                  name="assignedTo[{{_id}}][member]"
+                  value="{{_id}}"
                   onchange="toggleInstructionField(this)"
                 >
-                {{leaderName}} (you)
+                {{name}}
               </label>
               <textarea
                 class="assign-tag-instructions"
-                name="assignedTo[{{leaderId}}][instructions]"
-                placeholder="Instructions for yourself"
+                name="assignedTo[{{_id}}][instructions]"
+                placeholder="Instructions for {{name}}"
                 style="display:none;"
               ></textarea>
             </div>
+          {{/each}}
+        </fieldset>
 
-            <hr>
-
-            {{#each groupMembers}}
-              <div class="assign-tag-member-block">
-                <label>
-                  <input
-                    type="checkbox"
-                    name="assignedTo[{{_id}}][member]"
-                    value="{{_id}}"
-                    onchange="toggleInstructionField(this)"
-                  >
-                  {{name}}
-                </label>
-                <textarea
-                  class="assign-tag-instructions"
-                  name="assignedTo[{{_id}}][instructions]"
-                  placeholder="Instructions for {{name}}"
-                  style="display:none;"
-                ></textarea>
-              </div>
-            {{/each}}
-          </fieldset>
-
-          <button type="submit" class="form-button submit-button">assign nugget</button>
-        </form>
-      </div>
-    {{/if}}
+        <button type="submit" class="form-button submit-button">assign nugget</button>
+      </form>
+    </div>
+  {{/unless}}
+{{/if}}
 
     {{!-- Admin: suggest this unit to org leaders --}}
 {{#if isOrgAdmin}}
@@ -182,24 +185,27 @@
 
 
     <!-- Member/Group Member Quick Tag -->
-    {{#if isGroupMemberOrMember}}
-      <div class="single_unit-tag-container">
-        <form action="/tags/create" method="POST" class="inline" id="nuggetTagForm">
-          <input type="hidden" name="_csrf" value="{{csrfToken}}">
-          <input type="hidden" name="itemId" value="{{_id}}">
-          <input type="hidden" name="itemType" value="nugget">
-          <input type="hidden" name="tagName" value="Watch Later">
-          <input type="hidden" name="assignedTo[{{currentUserId}}][member]" value="{{currentUserId}}">
-<button
-  type="button"
-  class="tag-this-unit-link"
-  onclick="promptAndSubmitTag('nuggetTagForm')"
->
-  assign this nugget to myself
-</button>
-        </form>
-      </div>
-    {{/if}}
+{{#if isGroupMemberOrMember}}
+  {{#unless isAssignedToCurrentUser}}
+    <div class="single_unit-tag-container">
+      <form action="/tags/create" method="POST" class="inline" id="nuggetTagForm">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        <input type="hidden" name="itemId" value="{{_id}}">
+        <input type="hidden" name="itemType" value="nugget">
+        <input type="hidden" name="tagName" value="Watch Later">
+        <input type="hidden" name="assignedTo[{{currentUserId}}][member]" value="{{currentUserId}}">
+
+        <button
+          type="button"
+          class="tag-this-unit-link"
+          onclick="promptAndSubmitTag('nuggetTagForm')"
+        >
+          assign this nugget to myself
+        </button>
+      </form>
+    </div>
+  {{/unless}}
+{{/if}}
 
   </div> <!-- /.single_nugget-main -->
 {{#if canAddNuggetMonitoringNotes}}

@@ -48,87 +48,93 @@
       {{/if}}
 
       <!-- Quick Tag (Member/Group Member) -->
-      {{#if isGroupMemberOrMember}}
-        <div class="single_unit-tag-container">
-          <form action="/tags/create" method="POST" class="inline" id="videoTagForm-{{_id}}">
-            <input type="hidden" name="_csrf" value="{{csrfToken}}">
-            <input type="hidden" name="itemId" value="{{_id}}">
-            <input type="hidden" name="itemType" value="video">
-            <input type="hidden" name="tagName" value="Read Later">  {{!-- default; prompt overwrites --}}
-            <input type="hidden" name="assignedTo[{{currentUserId}}][member]" value="{{currentUserId}}">
-            <button type="button"
-                    class="tag-this-unit-link"
-                    onclick="promptAndSubmitTag('videoTagForm-{{_id}}')"
-                    style="background:none;border:none;padding:0;cursor:pointer;">
-              assign this unit to myself
-              <svg class="tag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 39.48 36.66">
-                <path class="cls-1" d="M38.77,21.12L16.05.56C15.65.19,15.13,0,14.59,0L2.12.16c-1.18.01-2.12.97-2.12,2.15v11.2c0,.63.28,1.24.77,1.64l24.95,21c.9.76,2.24.65,3.01-.24l10.23-11.8c.77-.88.69-2.22-.18-3ZM6.28,8.87c-1.57,0-2.84-1.27-2.84-2.84s1.27-2.84,2.84-2.84,2.84,1.27,2.84,2.84-1.27,2.84-2.84,2.84Z"/>
-              </svg>
-            </button>
-          </form>
-        </div>
-      {{/if}}
+{{#if isGroupMemberOrMember}}
+  {{#unless isAssignedToCurrentUser}}
+    <div class="single_unit-tag-container">
+      <form action="/tags/create" method="POST" class="inline" id="videoTagForm-{{_id}}">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        <input type="hidden" name="itemId" value="{{_id}}">
+        <input type="hidden" name="itemType" value="video">
+        <input type="hidden" name="tagName" value="Read Later">
+        <input type="hidden" name="assignedTo[{{currentUserId}}][member]" value="{{currentUserId}}">
+
+        <button type="button"
+                class="tag-this-unit-link"
+                onclick="promptAndSubmitTag('videoTagForm-{{_id}}')"
+                style="background:none;border:none;padding:0;cursor:pointer;">
+          assign this unit to myself
+          <svg class="tag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 39.48 36.66">
+            <path class="cls-1" d="M38.77,21.12L16.05.56C15.65.19,15.13,0,14.59,0L2.12.16c-1.18.01-2.12.97-2.12,2.15v11.2c0,.63.28,1.24.77,1.64l24.95,21c.9.76,2.24.65,3.01-.24l10.23-11.8c.77-.88.69-2.22-.18-3ZM6.28,8.87c-1.57,0-2.84-1.27-2.84-2.84s1.27-2.84,2.84-2.84,2.84,1.27,2.84,2.84-1.27,2.84-2.84,2.84Z"/>
+          </svg>
+        </button>
+      </form>
+    </div>
+  {{/unless}}
+{{/if}}
 
       <!-- Assign Form (Leader Only) -->
-      {{#if isLeader}}
-        <div class="assign-tag-form white-container">
-          <h4 class="assign-tag-title">Assign this video to yourself or your group</h4>
-          <form action="/tags/create" method="POST">
-            <input type="hidden" name="_csrf" value="{{csrfToken}}">
-            <input type="hidden" name="itemId" value="{{_id}}">
-            <input type="hidden" name="itemType" value="video">
+{{#if isLeader}}
+  {{#unless isAssignedToCurrentUser}}
+    <div class="assign-tag-form white-container">
+      <h4 class="assign-tag-title">Assign this video to yourself or your group</h4>
 
-            <div class="form-field">
-              <label for="tagName">Give the assignment a name</label>
-              <input type="text" id="tagName" name="tagName" required>
-            </div>
+      <form action="/tags/create" method="POST">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        <input type="hidden" name="itemId" value="{{_id}}">
+        <input type="hidden" name="itemType" value="video">
 
-            <fieldset class="assign-tag-members">
-              <legend class="assign-tag-legend">Select recipients and enter instructions:</legend>
-
-              <!-- Leader block -->
-              <div class="assign-tag-member-block">
-                <label class="assign-tag-member-label">
-                  <input
-                    type="checkbox"
-                    name="assignedTo[{{leaderId}}][member]"
-                    value="{{leaderId}}"
-                    onchange="toggleInstructionField(this)">
-                  {{leaderName}} (you)
-                </label>
-                <textarea
-                  class="assign-tag-instructions"
-                  name="assignedTo[{{leaderId}}][instructions]"
-                  placeholder="Instructions for yourself"
-                  style="display:none;"></textarea>
-              </div>
-
-              <hr class="assign-tag-divider">
-
-              <!-- Group members -->
-              {{#each groupMembers}}
-                <div class="assign-tag-member-block">
-                  <label class="assign-tag-member-label">
-                    <input
-                      type="checkbox"
-                      name="assignedTo[{{_id}}][member]"
-                      value="{{_id}}"
-                      onchange="toggleInstructionField(this)">
-                    {{name}}
-                  </label>
-                  <textarea
-                    class="assign-tag-instructions"
-                    name="assignedTo[{{_id}}][instructions]"
-                    placeholder="Instructions for {{name}}"
-                    style="display:none;"></textarea>
-                </div>
-              {{/each}}
-            </fieldset>
-
-            <button type="submit" class="form-button submit-button">assign video</button>
-          </form>
+        <div class="form-field">
+          <label for="tagName">Give the assignment a name</label>
+          <input type="text" id="tagName" name="tagName" required>
         </div>
-      {{/if}}
+
+        <fieldset class="assign-tag-members">
+          <legend class="assign-tag-legend">Select recipients and enter instructions:</legend>
+
+          <!-- Leader block -->
+          <div class="assign-tag-member-block">
+            <label class="assign-tag-member-label">
+              <input
+                type="checkbox"
+                name="assignedTo[{{leaderId}}][member]"
+                value="{{leaderId}}"
+                onchange="toggleInstructionField(this)">
+              {{leaderName}} (you)
+            </label>
+            <textarea
+              class="assign-tag-instructions"
+              name="assignedTo[{{leaderId}}][instructions]"
+              placeholder="Instructions for yourself"
+              style="display:none;"></textarea>
+          </div>
+
+          <hr class="assign-tag-divider">
+
+          <!-- Group members -->
+          {{#each groupMembers}}
+            <div class="assign-tag-member-block">
+              <label class="assign-tag-member-label">
+                <input
+                  type="checkbox"
+                  name="assignedTo[{{_id}}][member]"
+                  value="{{_id}}"
+                  onchange="toggleInstructionField(this)">
+                {{name}}
+              </label>
+              <textarea
+                class="assign-tag-instructions"
+                name="assignedTo[{{_id}}][instructions]"
+                placeholder="Instructions for {{name}}"
+                style="display:none;"></textarea>
+            </div>
+          {{/each}}
+        </fieldset>
+
+        <button type="submit" class="form-button submit-button">assign video</button>
+      </form>
+    </div>
+  {{/unless}}
+{{/if}}
 
 {{!-- Admin: suggest this unit to org leaders --}}
 {{#if isOrgAdmin}}
