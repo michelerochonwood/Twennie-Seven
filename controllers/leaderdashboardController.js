@@ -332,60 +332,72 @@ async function buildLeaderAssignedUnits(leaderId) {
       const unit = await Model.findById(item).lean();
       if (!unit) continue;
 
-      for (const assignee of tag.assignedTo || []) {
-        const member = await GroupMember.findById(assignee.member).select('name').lean();
-        if (!member) continue;
+for (const assignee of tag.assignedTo || []) {
+  const assigneeId = assignee.member?.toString();
+  if (!assigneeId) continue;
 
-const title =
-  unit.article_title   ||
-  unit.video_title     ||
-  unit.interview_title ||
-  unit.exercise_title  ||
-  unit.template_title  ||
-  unit.mission_title   ||   // ✅ NEW: missions
-  unit.title           ||   // nuggets (and any other models that use `title`)
-  "Untitled";
+  let assigneeName = null;
 
-        const mainTopic = unit.main_topic || unit.discipline || unit.client || unit.region || "No topic";
-
-        const viewPath =
-          unitType === 'nugget'
-            ? `/unitviews/nuggets/view/${item}`
-            : `/unitviews/${unitType}s/view/${item}`;
-
-const category = (unitType === 'mission') ? (unit.category || 'other') : null;
-
-const badgeImagePath =
-  (unitType === 'mission')
-    ? (unit.badgeImagePath || unit.badge_image || unit.badgeImage || getMissionBadgePath(category))
-    : null;
-
-leaderAssignedUnits.push({
-  _id: item.toString(),
-  unitType,
-  title,
-  mainTopic,
-  tagId: tag._id.toString(),
-  viewPath,
-
-  client: (unitType === 'nugget') ? (unit.client || null) : null,
-  region: (unitType === 'nugget') ? (unit.region || null) : null,
-  discipline: (unitType === 'nugget') ? (unit.discipline || null) : null,
-
-  category,
-  badge_name: (unitType === 'mission') ? (unit.badge_name || '') : '',
-  badgeImagePath,
-
-  assignedTo: {
-    _id: assignee.member?.toString(),
-    name: member.name,
-    instructions: assignee.instructions || '',
-    completedAt: assignee.completedAt || null,
+  const groupMember = await GroupMember.findById(assigneeId).select('name').lean();
+  if (groupMember) {
+    assigneeName = groupMember.name;
+  } else {
+    const leaderDoc = await Leader.findById(assigneeId).select('groupLeaderName username').lean();
+    if (leaderDoc) {
+      assigneeName = leaderDoc.groupLeaderName || leaderDoc.username || 'Leader';
+    }
   }
-});
 
+  if (!assigneeName) continue;
 
-      }
+  const title =
+    unit.article_title   ||
+    unit.video_title     ||
+    unit.interview_title ||
+    unit.exercise_title  ||
+    unit.template_title  ||
+    unit.mission_title   ||
+    unit.title           ||
+    "Untitled";
+
+  const mainTopic = unit.main_topic || unit.discipline || unit.client || unit.region || "No topic";
+
+  const viewPath =
+    unitType === 'nugget'
+      ? `/unitviews/nuggets/view/${item}`
+      : `/unitviews/${unitType}s/view/${item}`;
+
+  const category = (unitType === 'mission') ? (unit.category || 'other') : null;
+
+  const badgeImagePath =
+    (unitType === 'mission')
+      ? (unit.badgeImagePath || unit.badge_image || unit.badgeImage || getMissionBadgePath(category))
+      : null;
+
+  leaderAssignedUnits.push({
+    _id: item.toString(),
+    unitType,
+    title,
+    mainTopic,
+    tagId: tag._id.toString(),
+    viewPath,
+
+    client: (unitType === 'nugget') ? (unit.client || null) : null,
+    region: (unitType === 'nugget') ? (unit.region || null) : null,
+    discipline: (unitType === 'nugget') ? (unit.discipline || null) : null,
+
+    category,
+    badge_name: (unitType === 'mission') ? (unit.badge_name || '') : '',
+    badgeImagePath,
+
+    assignedTo: {
+      _id: assigneeId,
+      name: assigneeName,
+      instructions: assignee.instructions || '',
+      completedAt: assignee.completedAt || null,
+    }
+  });
+}
     }
   }
 
@@ -1207,7 +1219,7 @@ const leaderLegacySelfTaggedUnits = leaderLegacySelfTaggedRaw.map(u => {
     ...u,
     assignedToId: id,
     assignedInstructions: '',
-    completedAtFormatted: completedAt
+    assignedCompletedAtFormatted: completedAt
       ? new Date(completedAt).toLocaleDateString('en-CA', {
           year: 'numeric',
           month: 'short',
@@ -1228,7 +1240,7 @@ const leaderSelfAssignedUnits = leaderSelfAssignedRowsRaw.map(u => {
     ...u,
     assignedToId: u.assignedTo?._id || id,
     assignedInstructions: u.assignedTo?.instructions || '',
-    completedAtFormatted: completedAt
+    assignedCompletedAtFormatted: completedAt
       ? new Date(completedAt).toLocaleDateString('en-CA', {
           year: 'numeric',
           month: 'short',
