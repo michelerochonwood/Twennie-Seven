@@ -1215,3 +1215,12 @@ html, body {
 .bytopic-characteristic-pill:nth-child(2) {
   background: #4e50a2;
 }
+
+.bytopic-characteristic-pill {
+  opacity: 0.85;
+  transform: rotate(-5deg);
+}
+
+.bytopic-characteristic-pill:nth-child(2) {
+  transform: rotate(4deg);
+}
