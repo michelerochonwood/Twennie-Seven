@@ -1170,26 +1170,48 @@ html, body {
 }
 
 
+/* === CHARACTERISTIC BADGES (NEW STYLE) === */
 
 .bytopic-card-characteristics {
   position: absolute;
-  top: 3.5rem; /* below author badge */
-  right: 1rem;
+  top: -1.2rem;          /* pull above card edge */
+  left: 1rem;            /* opposite side from author/org */
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  z-index: 5;
+  align-items: flex-start;
+  z-index: 6;
   pointer-events: none;
 }
 
+/* Each circle */
 .bytopic-characteristic-pill {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
   background: #dc176a;
   color: white;
-  font-size: 0.6rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  font-size: 0.55rem;
   font-weight: 800;
-  padding: 4px 10px;
-  border-radius: 999px;
-  text-transform: lowercase;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-  opacity: 0.9;
+  line-height: 1.1;
+  padding: 6px;
+
+  box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+
+  opacity: 0.95;
+}
+
+/* overlap effect */
+.bytopic-characteristic-pill + .bytopic-characteristic-pill {
+  margin-top: -14px;
+}
+
+/* subtle variation for second badge */
+.bytopic-characteristic-pill:nth-child(2) {
+  background: #4e50a2;
 }
