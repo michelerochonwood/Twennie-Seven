@@ -1175,7 +1175,7 @@ html, body {
 .bytopic-card-characteristics {
   position: absolute;
   top: -1.2rem;          /* pull above card edge */
-  left: 1rem;            /* opposite side from author/org */
+  left: 1.5rem;            /* opposite side from author/org */
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1208,7 +1208,7 @@ html, body {
 
 /* overlap effect */
 .bytopic-characteristic-pill + .bytopic-characteristic-pill {
-  margin-top: -14px;
+  margin-top: -12px;
 }
 
 /* subtle variation for second badge */
@@ -1218,9 +1218,9 @@ html, body {
 
 .bytopic-characteristic-pill {
   opacity: 0.85;
-  transform: rotate(-5deg);
+  transform: rotate(-10deg);
 }
 
 .bytopic-characteristic-pill:nth-child(2) {
-  transform: rotate(4deg);
+  transform: rotate(8deg);
 }
