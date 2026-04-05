@@ -21,23 +21,23 @@ const Nugget = require('../models/unit_models/nugget');
  * Returns { unit, type } where type ∈ 'article' | 'video' | 'interview' | 'exercise' | 'template' | 'mission' | null
  */
 async function resolveUnitAndType(unitId) {
-const [a, v, i, e, t, m, n] = await Promise.all([
-  Article.findById(id).select('main_topic secondary_topics secondary_topic discipline region').lean(),
-  Video.findById(id).select('main_topic secondary_topics secondary_topic').lean(),
-  Interview.findById(id).select('main_topic secondary_topics secondary_topic').lean(),
-  Exercise.findById(id).select('main_topic secondary_topics secondary_topic').lean(),
-  Template.findById(id).select('main_topic secondary_topics secondary_topic').lean(),
-  Mission.findById(id).select('main_topic secondary_topics secondary_topic').lean(),
-  Nugget.findById(id).select('discipline region').lean()
-]);
+  const [a, v, i, e, t, m, n] = await Promise.all([
+    Article.findById(unitId).select('main_topic secondary_topics secondary_topic discipline region').lean(),
+    Video.findById(unitId).select('main_topic secondary_topics secondary_topic').lean(),
+    Interview.findById(unitId).select('main_topic secondary_topics secondary_topic').lean(),
+    Exercise.findById(unitId).select('main_topic secondary_topics secondary_topic').lean(),
+    Template.findById(unitId).select('main_topic secondary_topics secondary_topic').lean(),
+    Mission.findById(unitId).select('main_topic secondary_topics secondary_topic').lean(),
+    Nugget.findById(unitId).select('discipline region').lean()
+  ]);
 
-if (a) return { unit: a, type: 'article' };
-if (v) return { unit: v, type: 'video' };
-if (i) return { unit: i, type: 'interview' };
-if (e) return { unit: e, type: 'exercise' };
-if (t) return { unit: t, type: 'template' };
-if (m) return { unit: m, type: 'mission' };
-if (n) return { unit: n, type: 'nugget' };
+  if (a) return { unit: a, type: 'article' };
+  if (v) return { unit: v, type: 'video' };
+  if (i) return { unit: i, type: 'interview' };
+  if (e) return { unit: e, type: 'exercise' };
+  if (t) return { unit: t, type: 'template' };
+  if (m) return { unit: m, type: 'mission' };
+  if (n) return { unit: n, type: 'nugget' };
   return { unit: null, type: null };
 }
 
@@ -74,7 +74,7 @@ exports.createNote = async (req, res) => {
     let effectiveMainTopic  = main_topic || null;
     let effectiveSecondary  = secondary_topic || null;
 
-    if (!effectiveUnitType || !effectiveMainTopic || !effectiveSecondary) {
+if (!effectiveUnitType || !effectiveMainTopic) {
       const { unit, type } = await resolveUnitAndType(unitId);
       if (!unit) return res.status(404).send('Unit not found.');
 
