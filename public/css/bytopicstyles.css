@@ -1209,7 +1209,7 @@ html, body {
 /* overlap effect */
 .bytopic-characteristic-pill + .bytopic-characteristic-pill {
   margin-top: -12px;
-  margin-left: -12px;
+  margin-left: -16px;
 }
 
 /* subtle variation for second badge */
