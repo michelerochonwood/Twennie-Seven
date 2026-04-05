@@ -224,26 +224,24 @@ const nameLower = cleanName.toLowerCase();
     // HTML success flows
 // HTML success flows
 // HTML success flows
-const isLeader = userModel === 'leader';
+if (fromForm && normalizedAssignedTo.length > 0) {
+  const assignedIds = normalizedAssignedTo.map(a => String(a.member)).filter(Boolean);
 
-if (fromForm && isLeader && normalizedAssignedTo.length > 0) {
-const assignedIds = normalizedAssignedTo.map(a => String(a.member)).filter(Boolean);
+  const [groupMembers, leaders, members] = await Promise.all([
+    GroupMember.find({ _id: { $in: assignedIds } }).select('_id name').lean(),
+    Leader.find({ _id: { $in: assignedIds } }).select('_id groupLeaderName username').lean(),
+    Member.find({ _id: { $in: assignedIds } }).select('_id username').lean()
+  ]);
 
-const [groupMembers, leaders, members] = await Promise.all([
-  GroupMember.find({ _id: { $in: assignedIds } }).select('_id name').lean(),
-  Leader.find({ _id: { $in: assignedIds } }).select('_id groupLeaderName username').lean(),
-  Member.find({ _id: { $in: assignedIds } }).select('_id username').lean()
-]);
+  const nameById = new Map([
+    ...groupMembers.map(m => [String(m._id), m.name]),
+    ...leaders.map(l => [String(l._id), l.groupLeaderName || l.username || 'Leader']),
+    ...members.map(m => [String(m._id), m.username || 'Member'])
+  ]);
 
-const nameById = new Map([
-  ...groupMembers.map(m => [String(m._id), m.name]),
-  ...leaders.map(l => [String(l._id), l.groupLeaderName || l.username || 'Leader']),
-  ...members.map(m => [String(m._id), m.username || 'Member'])
-]);
-
-const assignedNames = assignedIds
-  .map(id => nameById.get(id) || id)
-  .filter(Boolean);
+  const assignedNames = assignedIds
+    .map(id => nameById.get(id) || id)
+    .filter(Boolean);
 
   const unitLabel = unitLabelFromType(itemType);
   const unitTitle = await getUnitTitle(itemType, itemId);
