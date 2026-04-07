@@ -1,41 +1,26 @@
 <div class="group-member-tagged-units-section">
 
-  {{#if currentPromptSets.length}}
-    <div class="group-member-tagged-subsection">
-      <h2 class="group-member-tagged-subtitle">prompt sets in progress</h2>
+{{#if currentPromptSets.length}}
+  <h2 class="groupmember-progress-current-title"> prompt sets in progress</h2>
+  <div class="groupmember-progress-current">
+    {{#each currentPromptSets}}
+      <div class="groupmember-progress-grid">
+        <h2 class="groupmember-progress-title">{{this.promptSetTitle}}</h2>
 
-      <div class="tagged-units-grid">
-        {{#each currentPromptSets}}
-          <div class="tagged-unit-card">
-            <div class="tagged-unit-icon">
-              <img
-                src="/promptprogress/promptprogress{{increment @index}}-{{this.promptIndex}}.svg"
-                alt="Progress Pie Chart"
-                class="groupmember-progress-svg"
-                data-progress="{{this.promptIndex}}"
-              >
-            </div>
+        <img 
+          src="/promptprogress/promptprogress{{increment @index}}-{{this.promptIndex}}.svg"
+          alt="Progress Pie Chart" 
+          class="groupmember-progress-svg"
+          data-progress="{{this.promptIndex}}"
+        >
 
-            <div class="tagged-unit-info">
-              <h3 class="tagged-unit-title">{{this.promptSetTitle}}</h3>
-
-              <p class="leader-assigned-status">
-                ⏳ in progress
-              </p>
-
-              <p class="tagged-unit-topic">
-                you have completed {{this.promptIndex}} prompts in this set
-              </p>
-            </div>
-
-            <div class="tagged-unit-actions">
-              <a href="/reports/mycompletedpromptsets" class="tagged-unit-link">view my prompt report</a>
-            </div>
-          </div>
-        {{/each}}
+        <p class="groupmember-progress-target">
+          you have completed {{this.promptIndex}} prompts in this set
+        </p>
       </div>
-    </div>
-  {{/if}}
+    {{/each}}
+  </div>
+{{/if}}
 
   <div class="tagged-section-divider" aria-hidden="true"></div>
 
@@ -83,9 +68,7 @@
               {{/if}}
             </div>
 
-            <div class="tagged-unit-actions">
-              <span class="tagged-unit-link">view completed prompts</span>
-            </div>
+
           </a>
         {{/each}}
       {{else}}
