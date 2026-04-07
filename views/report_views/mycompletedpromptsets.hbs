@@ -1,214 +1,149 @@
 {{#*inline "title"}}My Completed Prompt Sets | Twennie{{/inline}}
 
 <section class="dashboard-section">
-
   <h1 class="dashboard-section-title">Your Completed Prompt Sets</h1>
 
-
-  <!-- =========================================================
-       TABLE 1: Prompt Set Overview
-  ========================================================== -->
-
-  <div class="table-container" style="margin-bottom: -100px;">
+  <!-- Table 1: Prompt Set Overview -->
+  <div class="table-container" style="margin-bottom: -100px;"> 
     <table class="dashboard-library-table">
-
       <thead>
         <tr>
-          <th class="dashboard-library-header">prompt set title</th>
-          <th class="dashboard-library-header">topics</th>
-          <th class="dashboard-library-header">purpose</th>
-          <th class="dashboard-library-header">completion date</th>
+          <th class="dashboard-library-header">Prompt Set Title</th>
+          <th class="dashboard-library-header">Topics</th>
+          <th class="dashboard-library-header">Purpose</th>
+          <th class="dashboard-library-header">Characteristics</th>
+          <th class="dashboard-library-header">Target Audience</th>
+          <th class="dashboard-library-header">Completion Date</th>
         </tr>
       </thead>
-
       <tbody>
-        {{#each promptSetsCompletedReports}}
+        {{#each completedPromptSetsReports}}
+        <tr class="dashboard-library-row">
+          <td class="dashboard-library-cell">{{this.promptSetTitle}}</td>
 
-          <tr class="dashboard-library-row">
-            <td class="dashboard-library-cell">
-              {{this.promptSetTitle}}
-            </td>
+          <td class="dashboard-library-cell">
+            {{#if this.main_topic}}
+              <div class="multi-record-item">{{this.main_topic}}</div>
+            {{else}}
+              <span class="no-data">No main topic</span>
+            {{/if}}
 
-            <!-- Topics -->
-            <td class="dashboard-library-cell">
+            {{#each this.secondary_topics}}
+              <div class="multi-record-item">{{this}}</div>
+            {{else}}
+              <span class="no-data">No secondary topics</span>
+            {{/each}}
+          </td>
 
-              {{#if this.main_topic}}
-                <div class="multi-record-item">{{this.main_topic}}</div>
-              {{else}}
-                <span class="no-data">No main topic</span>
-              {{/if}}
+          <td class="dashboard-library-cell">
+            {{#if this.purpose}}
+              {{this.purpose}}
+            {{else}}
+              <span class="no-data">No purpose provided</span>
+            {{/if}}
+          </td>
 
-              {{#each this.secondary_topics}}
-                <div class="multi-record-item">{{this}}</div>
-              {{else}}
-                <span class="no-data">No secondary topics</span>
-              {{/each}}
+          <td class="dashboard-library-cell">
+            {{#each this.characteristics}}
+              <div class="multi-record-item">{{this}}</div>
+            {{else}}
+              <span class="no-data">No characteristics provided</span>
+            {{/each}}
+          </td>
 
-            </td>
+          <td class="dashboard-library-cell">
+            {{#if this.targetAudience}}
+              {{this.targetAudience}}
+            {{else}}
+              <span class="no-data">No target audience provided</span>
+            {{/if}}
+          </td>
 
-            <!-- Purpose -->
-            <td class="dashboard-library-cell">
-              {{#if this.purpose}}
-                {{this.purpose}}
-              {{else}}
-                <span class="no-data">No purpose provided</span>
-              {{/if}}
-            </td>
-
-            <!-- Completion Date -->
-            <td class="dashboard-library-cell">
-              {{#if this.dateCompleted}}
-                {{formatDate this.dateCompleted}}
-              {{else}}
-                <span class="no-data">No completion date</span>
-              {{/if}}
-            </td>
-
-          </tr>
-
+          <td class="dashboard-library-cell">
+            {{#if this.dateCompleted}}
+              {{formatDate this.dateCompleted}}
+            {{else}}
+              <span class="no-data">No completion date</span>
+            {{/if}}
+          </td>
+        </tr>
         {{else}}
-
-          <tr>
-            <td colspan="4" class="no-data">
-              You have not completed any prompt sets yet.
-            </td>
-          </tr>
-
+        <tr>
+          <td colspan="6" class="no-data">You have not completed any prompt sets yet.</td>
+        </tr>
         {{/each}}
       </tbody>
-
     </table>
   </div>
 
-
-
-  <!-- =========================================================
-       TABLE 2: Prompt Notes
-       - orientation prompt shown separately
-       - prompts 1–20 shown across
-       - anchors allow dashboard cards to jump here
-  ========================================================== -->
-
+  <!-- Table 2: Prompt Notes -->
   <h2 class="dashboard-section-title">Your Prompt Notes</h2>
-
-<div class="table-container wide-table-container">
-
-  <table class="dashboard-library-table wide-table">
-
-    <thead>
-      <tr>
-        <th class="dashboard-library-header">prompt set</th>
-
-        {{#if promptSetsCompletedReports.[0].prompts}}
-          {{#each promptSetsCompletedReports.[0].prompts}}
-            {{#unless @first}}
-              <th class="dashboard-library-header">
-                prompt {{@index}}
-              </th>
-            {{/unless}}
+  <div class="table-container wide-table-container">
+    <table class="dashboard-library-table wide-table">
+      <thead>
+        <tr>
+          <th class="dashboard-library-header">Prompt Set Title</th>
+          {{#each (range 1 21)}}
+            <th class="dashboard-library-header">Prompt {{this}}</th>
           {{/each}}
-        {{/if}}
-
-      </tr>
-    </thead>
-
-    <tbody>
-
-      {{#each promptSetsCompletedReports}}
-
-        <!-- =========================================================
-             ROW 1: Prompt Instructions
-        ========================================================== -->
-
-        <tr id="promptset-{{@index}}" class="dashboard-library-row promptset-header-row">
-
+        </tr>
+      </thead>
+      <tbody>
+        {{#each promptNotesReports}}
+        <!-- Row 1: Prompt Texts -->
+        <tr class="dashboard-library-row">
           <td class="dashboard-library-cell">
-
-            <strong>{{this.promptSetTitle}}</strong>
-
-            {{#if this.prompts.[0].promptText}}
-              <div class="multi-record-item" style="margin-top: 0.5rem;">
-                <strong>orientation:</strong>
-                {{this.prompts.[0].promptText}}
-              </div>
-            {{/if}}
-
-            {{#if this.dateCompleted}}
-              <div class="multi-record-item" style="margin-top: 0.5rem;">
-                <strong>completed:</strong>
-                {{formatDate this.dateCompleted}}
-              </div>
-            {{/if}}
-
+            <strong>{{this.promptSetTitle}}</strong><br>
+            <span class="multi-record-item" style="opacity:0.8;">
+              {{#if this.dateCompleted}}
+                completed: {{formatDate this.dateCompleted}}
+              {{else}}
+                in progress
+              {{/if}}
+            </span>
           </td>
 
           {{#each this.prompts}}
             {{#unless @first}}
               <td class="dashboard-library-cell" style="vertical-align: top;">
                 <div class="multi-record-item">
-                  <strong>{{this.promptHeadline}}:</strong>
-                  {{this.promptText}}
+                  <strong>{{this.promptHeadline}}:</strong> {{this.promptText}}
                 </div>
               </td>
             {{/unless}}
           {{/each}}
-
         </tr>
 
-
-
-        <!-- =========================================================
-             ROW 2: YOUR NOTES (HISTORY)
-        ========================================================== -->
-
+        <!-- Row 2: Notes -->
         <tr class="dashboard-library-row">
-
-          <td class="dashboard-library-cell">
-            <strong>your notes (history)</strong>
-          </td>
+          <td class="dashboard-library-cell"><strong>your notes (history)</strong></td>
 
           {{#each this.promptNotes}}
             {{#unless @first}}
-
               <td class="dashboard-library-cell" style="vertical-align: top;">
-
                 {{#each this.notes}}
-                  <div class="multi-record-item" style="margin-bottom: 0.5rem;">
+                  <div class="multi-record-item" style="margin-bottom: 0.75rem;">
                     <div>{{this.content}}</div>
 
                     {{#if this.dateSubmitted}}
-                      <div style="font-size: 0.8rem; opacity: 0.7;">
+                      <div style="font-size: 0.85rem; opacity: 0.75; margin-top: 0.25rem;">
                         {{formatDate this.dateSubmitted}}
                       </div>
                     {{/if}}
                   </div>
-
                 {{else}}
                   <span class="no-data">No notes</span>
                 {{/each}}
-
               </td>
-
             {{/unless}}
           {{/each}}
-
         </tr>
-
-      {{else}}
-
+        {{else}}
         <tr>
-          <td colspan="21" class="no-data">
-            You haven’t completed any prompts yet.
-          </td>
+          <td colspan="21" class="no-data">You haven’t started any prompt sets yet.</td>
         </tr>
-
-      {{/each}}
-
-    </tbody>
-
-  </table>
-
-
+        {{/each}}
+      </tbody>
+    </table>
   </div>
-
 </section>
