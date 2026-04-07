@@ -21,10 +21,27 @@
 
                 <div class="tagged-unit-info">
                   <h3 class="tagged-unit-title">{{title}}</h3>
-                  {{#if mainTopic}}<p class="tagged-unit-topic">{{mainTopic}}</p>{{/if}}
+                  {{#if mainTopic}}
+                    <p class="tagged-unit-topic">{{mainTopic}}</p>
+                  {{/if}}
 
                   {{#if completedAtFormatted}}
-                    <p class="leader-assigned-status">✅ completed <span class="muted">({{completedAtFormatted}})</span></p>
+                    <p class="leader-assigned-status">
+                      ✅ completed <span class="muted">({{completedAtFormatted}})</span>
+                    </p>
+
+                    {{#if earnedBadge.name}}
+                      <div class="tagged-unit-badge">
+                        {{#if earnedBadge.image}}
+                          <img
+                            src="{{earnedBadge.image}}"
+                            alt="{{earnedBadge.name}} badge"
+                            class="tagged-unit-badge-image"
+                          >
+                        {{/if}}
+                        <p class="tagged-unit-badge-name">{{earnedBadge.name}}</p>
+                      </div>
+                    {{/if}}
                   {{else}}
                     <p class="leader-assigned-status">⏳ pending</p>
                   {{/if}}
@@ -69,15 +86,38 @@
 
                 <div class="tagged-unit-info">
                   <h3 class="tagged-unit-title">{{title}}</h3>
-                  {{#if mainTopic}}<p class="tagged-unit-topic">{{mainTopic}}</p>{{/if}}
-                  {{#if leaderName}}<p class="tagged-unit-meta">assigned by: {{leaderName}}</p>{{/if}}
+
+                  {{#if mainTopic}}
+                    <p class="tagged-unit-topic">{{mainTopic}}</p>
+                  {{/if}}
+
+                  {{#if leaderName}}
+                    <p class="tagged-unit-meta">assigned by: {{leaderName}}</p>
+                  {{/if}}
 
                   {{#if assignedInstructions}}
-                    <p class="tagged-unit-instructions"><em>instructions:</em> {{assignedInstructions}}</p>
+                    <p class="tagged-unit-instructions">
+                      <em>instructions:</em> {{assignedInstructions}}
+                    </p>
                   {{/if}}
 
                   {{#if assignedCompletedAtFormatted}}
-                    <p class="leader-assigned-status">✅ completed <span class="muted">({{assignedCompletedAtFormatted}})</span></p>
+                    <p class="leader-assigned-status">
+                      ✅ completed <span class="muted">({{assignedCompletedAtFormatted}})</span>
+                    </p>
+
+                    {{#if earnedBadge.name}}
+                      <div class="tagged-unit-badge">
+                        {{#if earnedBadge.image}}
+                          <img
+                            src="{{earnedBadge.image}}"
+                            alt="{{earnedBadge.name}} badge"
+                            class="tagged-unit-badge-image"
+                          >
+                        {{/if}}
+                        <p class="tagged-unit-badge-name">{{earnedBadge.name}}</p>
+                      </div>
+                    {{/if}}
                   {{else}}
                     <p class="leader-assigned-status">⏳ pending</p>
                   {{/if}}
@@ -115,5 +155,4 @@
       </a>
     </div>
   </div>
-
 </section>

@@ -262,16 +262,25 @@ async function fetchTaggedUnits(userId) {
         const key = `${unit._id.toString()}-${type}`;
         const tag = tagLookup.get(key);
         const assignment = (tag?.assignedTo || []).find(a => String(a.member) === String(userId));
+
+        const completionInfo =
+          type === 'promptset'
+            ? promptSetCompletionById.get(unit._id.toString()) || {}
+            : {};
+
         return {
           unitType: type,
           title: unit[titleField] || `Untitled ${type}`,
           mainTopic: unit[topicField] || 'No topic',
           _id: unit._id,
           tagId: tag?._id?.toString() || null,
-          tagIdCreator: tag?.createdBy?.toString() || null, // used to split self vs leader-assigned
+          tagIdCreator: tag?.createdBy?.toString() || null,
           instructions: assignment?.instructions || '',
-          completedAt: assignment?.completedAt || null,
-          viewPath: viewPathFor(type, unit._id)
+          completedAt: assignment?.completedAt || completionInfo.completedAt || null,
+          viewPath: viewPathFor(type, unit._id),
+
+          // ✅ NEW: for completed prompt set cards
+          earnedBadge: completionInfo.earnedBadge || null
         };
       });
 
