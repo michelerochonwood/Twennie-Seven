@@ -31,35 +31,46 @@ module.exports = {
             }
     
             // ✅ Check if user already has 3 prompt set registrations
-            const existingRegistrations = await PromptSetRegistration.find({ memberId: id }).populate('promptSetId');
-            if (existingRegistrations.length >= 3) {
-                console.warn(`Member ${id} has too many prompt registrations, redirecting.`);
-                return res.render('toomanyregistrations', {
-                    layout: 'dashboardlayout',
-                    title: 'Too Many Registrations',
-                    registeredPromptSets: existingRegistrations.map(reg => ({
-                        _id: reg.promptSetId?._id?.toString(),
-                        promptSetTitle: reg.promptSetId?.promptset_title,
-                        frequency: reg.frequency,
-                        targetCompletionDate: reg.targetCompletionDate.toDateString()
-                    })),
-                    dashboard: membershipType === 'leader' ? '/dashboard/leader' :
-                              membershipType === 'group_member' ? '/dashboard/groupmember' :
-                              '/dashboard/member'
-                });
-            }
+// ✅ Check how many prompt sets are actually IN PROGRESS
+const activePromptSetIds = await PromptSetProgress.find({ memberId: id }).distinct('promptSetId');
+
+const activeRegistrations = await PromptSetRegistration.find({
+    memberId: id,
+    promptSetId: { $in: activePromptSetIds }
+}).populate('promptSetId');
+
+if (activeRegistrations.length >= 3) {
+    console.warn(`Member ${id} already has 3 active prompt sets, redirecting.`);
+    return res.render('toomanyregistrations', {
+        layout: 'dashboardlayout',
+        title: 'Too Many Registrations',
+        registeredPromptSets: activeRegistrations.map(reg => ({
+            _id: reg.promptSetId?._id?.toString(),
+            promptSetTitle: reg.promptSetId?.promptset_title,
+            frequency: reg.frequency,
+            targetCompletionDate: reg.targetCompletionDate
+                ? reg.targetCompletionDate.toDateString()
+                : ''
+        })),
+        dashboard: membershipType === 'leader' ? '/dashboard/leader' :
+                  membershipType === 'group_member' ? '/dashboard/groupmember' :
+                  '/dashboard/member'
+    });
+}
     
             // ✅ Ensure the prompt set exists
             const promptSet = await PromptSet.findById(promptSetId);
             if (!promptSet) {
                 return res.status(404).json({ message: 'Prompt set not found.' });
             }
+
+            // ✅ Ensure user isn't already actively working on this prompt set
+const existingActiveProgress = await PromptSetProgress.findOne({ memberId: id, promptSetId });
+if (existingActiveProgress) {
+    return res.status(400).json({ message: 'You are already working on this prompt set.' });
+}
     
-            // ✅ Ensure user hasn't already completed this prompt set
-            const existingCompletion = await PromptSetCompletion.findOne({ memberId: id, promptSetId });
-            if (existingCompletion) {
-                return res.status(400).json({ message: 'You have already completed this prompt set.' });
-            }
+
     
             // Normalize membershipType
             const normalizedMemberType = (membershipType === 'groupmember')
@@ -109,25 +120,32 @@ module.exports = {
     
 
     // ✅ Fetch all registered prompt sets for a user
-    getRegisteredPromptSets: async (req, res) => {
+getRegisteredPromptSets: async (req, res) => {
+    try {
+        const { id } = req.session.user;
 
-        try {
-            const { id } = req.session.user;
-            const registrations = await PromptSetRegistration.find({ memberId: id }).populate('promptSetId');
+        const activePromptSetIds = await PromptSetProgress.find({ memberId: id }).distinct('promptSetId');
 
-            const formattedRegistrations = registrations.map(reg => ({
-                _id: reg.promptSetId?._id,
-                promptSetTitle: reg.promptSetId?.promptset_title,
-                frequency: reg.frequency,
-                targetCompletionDate: reg.targetCompletionDate.toDateString()
-            }));
+        const registrations = await PromptSetRegistration.find({
+            memberId: id,
+            promptSetId: { $in: activePromptSetIds }
+        }).populate('promptSetId');
 
-            res.status(200).json(formattedRegistrations);
-        } catch (error) {
-            console.error('❌ Error fetching registered prompt sets:', error);
-            res.status(500).json({ message: 'An error occurred. Please try again.' });
-        }
-    },
+        const formattedRegistrations = registrations.map(reg => ({
+            _id: reg.promptSetId?._id,
+            promptSetTitle: reg.promptSetId?.promptset_title,
+            frequency: reg.frequency,
+            targetCompletionDate: reg.targetCompletionDate
+                ? reg.targetCompletionDate.toDateString()
+                : ''
+        }));
+
+        res.status(200).json(formattedRegistrations);
+    } catch (error) {
+        console.error('❌ Error fetching registered prompt sets:', error);
+        res.status(500).json({ message: 'An error occurred. Please try again.' });
+    }
+},
 
     // ✅ Update progress for a prompt set
     updateProgress: async (req, res) => {
@@ -152,22 +170,29 @@ module.exports = {
                 return res.status(404).json({ message: 'Prompt set not found.' });
             }
 
-            const totalPrompts = 21;
-            if (progress.completedPrompts.length >= totalPrompts) {
-                await PromptSetCompletion.create({
-                    memberId: id,
-                    memberType: progress.memberType,
-                    promptSetId,
-                    completedAt: new Date(),
-                    earnedBadge: promptSet.earnedBadge || "Default Badge",
-                    notes: progress.notes,
-                    finalNotes: req.body.finalNotes || ""
-                });
+if (progress.completedPrompts.length >= totalPrompts) {
+    await PromptSetCompletion.create({
+        memberId: id,
+        memberType: progress.memberType,
+        promptSetId,
+        completedAt: new Date(),
+        earnedBadge: promptSet.earnedBadge || "Default Badge",
+        notes: progress.notes,
+        finalNotes: req.body.finalNotes || ""
+    });
 
-                await PromptSetProgress.deleteOne({ memberId: id, promptSetId });
-            } else {
-                await progress.save();
-            }
+    // ✅ Remove all "active" records for this prompt set
+    await PromptSetProgress.deleteOne({ memberId: id, promptSetId });
+    await PromptSetRegistration.deleteOne({ memberId: id, promptSetId });
+
+    // ✅ If this prompt set was leader-assigned, remove that assignment too
+    await require('../models/prompt_models/assignpromptset').deleteMany({
+        promptSetId,
+        assignedMemberIds: id
+    });
+} else {
+    await progress.save();
+}
 
             res.status(200).json({ message: 'Progress updated successfully.' });
         } catch (error) {

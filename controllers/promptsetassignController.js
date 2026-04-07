@@ -119,74 +119,56 @@ const csvMirror  = req.body.assignedMemberIdsCsv;     // CSV string we just rena
       // Fan-out per member
       const results = [];
 
-      for (const memberOid of validObjectIds) {
-        const memberIdStr = memberOid.toString();
+ for (const memberOid of validObjectIds) {
+  const memberIdStr = memberOid.toString();
 
-        // ✅ Enforce "max 3 active" and skip duplicates using UNIQUE promptSetIds across assignments + registrations
-        const [assignIds, regIds] = await Promise.all([
-          AssignPromptSet.find({ assignedMemberIds: memberOid }).distinct('promptSetId'),
-          PromptSetRegistration.find({ memberId: memberIdStr }).distinct('promptSetId')
-        ]);
+  // ✅ Active progress is the source of truth
+  const activeProgressIds = await PromptSetProgress.find({ memberId: memberIdStr }).distinct('promptSetId');
+  const underway = new Set(activeProgressIds.map(String));
+  const psKey = String(promptSetId);
 
-        const underway = new Set([...assignIds.map(String), ...regIds.map(String)]);
-        const psKey = String(promptSetId);
+  // Already has THIS prompt set underway
+  if (underway.has(psKey)) {
+    results.push({ memberId: memberIdStr, skipped: true, reason: 'already_assigned' });
+    continue;
+  }
 
-        // Already has THIS prompt set via assignment or registration
-        if (underway.has(psKey)) {
-          results.push({ memberId: memberIdStr, skipped: true, reason: 'already_assigned' });
-          continue;
-        }
+  // Already at limit of 3 active prompt sets
+  if (underway.size >= 3) {
+    results.push({ memberId: memberIdStr, skipped: true, reason: 'limit_exceeded' });
+    continue;
+  }
 
-        // Already at limit of 3 unique sets underway
-        if (underway.size >= 3) {
-          results.push({ memberId: memberIdStr, skipped: true, reason: 'limit_exceeded' });
-          continue;
-        }
+  // Create ONE assignment doc for this member (single id array)
+  const assignment = await AssignPromptSet.create({
+    promptSetId,
+    groupLeaderId,
+    assignedMemberIds: [memberOid],
+    frequency,
+    assignDate: new Date(),
+    targetCompletionDate: targetDateISO,
+    leaderNotes
+  });
+  console.log(" Assignment saved:", assignment?._id);
 
-        // Double-check: avoid duplicate assignment of same PS to same member
-        const alreadyAssigned = await AssignPromptSet.exists({
-          promptSetId,
-          assignedMemberIds: memberOid
-        });
-        if (alreadyAssigned) {
-          results.push({ memberId: memberIdStr, skipped: true, reason: 'already_assigned' });
-          continue;
-        }
+  // Ensure per-member progress
+  const existingProgress = await PromptSetProgress.findOne({ memberId: memberIdStr, promptSetId }).lean();
+  if (!existingProgress) {
+    await new PromptSetProgress({
+      memberId: memberIdStr,
+      memberType: "group_member",
+      promptSetId,
+      currentPromptIndex: 0,
+      completedPrompts: [],
+      notes: []
+    }).save();
+    console.log(`✅ Progress initialized at Prompt 0 for member ${memberIdStr}`);
+  } else {
+    console.log(`ℹ️ Progress already exists for member ${memberIdStr}, skipping initialization.`);
+  }
 
-        // Create ONE assignment doc for this member (single id array)
-        const assignment = await AssignPromptSet.create({
-          promptSetId,
-          groupLeaderId,
-          assignedMemberIds: [memberOid],
-          frequency,
-          assignDate: new Date(),
-          targetCompletionDate: targetDateISO,
-          leaderNotes
-        });
-        console.log(" Assignment saved:", assignment?._id);
-
-        // Ensure per-member progress
-        const existingProgress = await PromptSetProgress.findOne({ memberId: memberIdStr, promptSetId }).lean();
-        if (!existingProgress) {
-          await new PromptSetProgress({
-            memberId: memberIdStr,
-            memberType: "group_member",
-            promptSetId,
-            currentPromptIndex: 0,
-            completedPrompts: [],
-            notes: []
-          }).save();
-          console.log(`✅ Progress initialized at Prompt 0 for member ${memberIdStr}`);
-        } else {
-          console.log(`ℹ️ Progress already exists for member ${memberIdStr}, skipping initialization.`);
-        }
-
-        // IMPORTANT: Do NOT create a PromptSetRegistration for leader-assigned sets.
-        // This prevents duplicates in member dashboards and double-counting toward the limit.
-        // If you ever need both, handle dedupe in the dashboard renderer.
-
-        results.push({ memberId: memberIdStr, createdId: assignment._id.toString() });
-      }
+  results.push({ memberId: memberIdStr, createdId: assignment._id.toString() });
+}
 
       // Build success summary
       const createdCount   = results.filter(r => r.createdId).length;

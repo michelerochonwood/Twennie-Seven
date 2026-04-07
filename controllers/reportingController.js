@@ -666,7 +666,7 @@ const getNuggetsMonitoredReport = async (req, res) => {
 // - Member rows below with member-specific notes + completion date
 const getPromptSetsCompletedReport = async (req, res) => {
   try {
-    console.log("✅ Fetching Prompt Sets Completed Report (grouped by prompt set; leader+members)…");
+    console.log("✅ Fetching Prompt Sets Completed Report (split completed + notes; leader+members)…");
 
     const safeArray = (v) => (Array.isArray(v) ? v : []);
     const safeString = (v) => (v == null ? "" : String(v));
@@ -716,40 +716,90 @@ const getPromptSetsCompletedReport = async (req, res) => {
         layout: "dashboardlayout",
         leaderGroupName: leaderDoc.groupName,
         isPromptSetsCompleted: true,
-        promptSetsCompletedReports: []
+        completedPromptSetsReports: [],
+        promptNotesReports: []
       });
     }
 
-    const progresses = await PromptSetProgress.find({ memberId: { $in: personIds } })
-      .populate("promptSetId")
-      .lean();
+    const [progresses, completions] = await Promise.all([
+      PromptSetProgress.find({ memberId: { $in: personIds } })
+        .populate("promptSetId")
+        .lean(),
 
-    const completions = await PromptSetCompletion.find({ memberId: { $in: personIds } })
-      .select("memberId promptSetId completedAt createdAt updatedAt")
-      .lean();
+      PromptSetCompletion.find({ memberId: { $in: personIds } })
+        .populate("promptSetId")
+        .lean()
+    ]);
 
-    const completionKey = (mid, psid) => `${mid}::${psid}`;
-    const completionByKey = new Map(
-      safeArray(completions).map(c => [
-        completionKey(toIdString(c.memberId), toIdString(c.promptSetId)),
-        c
-      ])
-    );
+    const TOTAL_PROMPTS = 21;
 
-    const TOTAL_PROMPTS = 21; // Prompt0 + Prompt1..Prompt20
-    const byPromptSet = new Map();
+    // =========================================================
+    // TABLE 1 DATA: COMPLETED PROMPT SETS ONLY
+    // Source of truth = PromptSetCompletion
+    // =========================================================
+    const completedByPromptSet = new Map();
+
+    for (const comp of safeArray(completions)) {
+      const ps = comp.promptSetId;
+      const psId = toIdString(ps?._id);
+      const memberId = toIdString(comp.memberId);
+
+      if (!ps || !psId || !memberId) continue;
+
+      if (!completedByPromptSet.has(psId)) {
+        completedByPromptSet.set(psId, {
+          promptSetTitle: ps.promptset_title || "Unknown Prompt Set",
+          main_topic: ps.main_topic || "",
+          secondary_topics: safeArray(ps.secondary_topics),
+          purpose: ps.purpose || "",
+          completedBy: []
+        });
+      }
+
+      completedByPromptSet.get(psId).completedBy.push({
+        memberId,
+        memberName: nameById.get(memberId) || "Unknown Member",
+        dateCompleted: comp.completedAt || comp.createdAt || comp.updatedAt || null
+      });
+    }
+
+    const completedPromptSetsReports = Array.from(completedByPromptSet.values())
+      .map(row => {
+        const deduped = new Map();
+
+        for (const entry of safeArray(row.completedBy)) {
+          const key = `${entry.memberId}::${entry.dateCompleted ? new Date(entry.dateCompleted).getTime() : 0}`;
+          if (!deduped.has(key)) {
+            deduped.set(key, entry);
+          }
+        }
+
+        row.completedBy = Array.from(deduped.values()).sort((a, b) => {
+          const ad = a.dateCompleted ? new Date(a.dateCompleted) : new Date(0);
+          const bd = b.dateCompleted ? new Date(b.dateCompleted) : new Date(0);
+          if (ad.getTime() !== bd.getTime()) return ad - bd;
+          return sortAZ(a.memberName, b.memberName);
+        });
+
+        return row;
+      })
+      .sort((a, b) => sortAZ(a.promptSetTitle, b.promptSetTitle));
+
+    // =========================================================
+    // TABLE 2 DATA: PROMPT NOTES HISTORY
+    // Can include in-progress sets
+    // Source = PromptSetProgress
+    // =========================================================
+    const notesByPromptSet = new Map();
 
     for (const prog of safeArray(progresses)) {
       const ps = prog.promptSetId;
       const psId = toIdString(ps?._id);
-      if (!ps || !psId) continue;
+      const memberId = toIdString(prog.memberId);
 
-      const mid = toIdString(prog.memberId);
-      if (!mid) continue;
+      if (!ps || !psId || !memberId) continue;
 
-      const memberName = nameById.get(mid) || "Unknown Member";
-
-      if (!byPromptSet.has(psId)) {
+      if (!notesByPromptSet.has(psId)) {
         const prompts = Array.from({ length: TOTAL_PROMPTS }, (_, idx) => {
           const headlineKey = `prompt_headline${idx}`;
           const textKey = `Prompt${idx}`;
@@ -760,7 +810,7 @@ const getPromptSetsCompletedReport = async (req, res) => {
           };
         });
 
-        byPromptSet.set(psId, {
+        notesByPromptSet.set(psId, {
           promptSetTitle: ps.promptset_title || "Unknown Prompt Set",
           main_topic: ps.main_topic || "",
           secondary_topics: safeArray(ps.secondary_topics),
@@ -770,66 +820,46 @@ const getPromptSetsCompletedReport = async (req, res) => {
         });
       }
 
-      const row = byPromptSet.get(psId);
-
       const notesArr = safeArray(prog.notes);
 
-      // Build prompt notes aligned to prompts, including dateSubmitted
-const promptNotes = Array.from({ length: TOTAL_PROMPTS }, (_, idx) => {
-  // Prompt 0 has no submitted note; notes[0] belongs to Prompt 1
-  const noteIndex = idx === 0 ? -1 : idx - 1;
-  const content = noteIndex >= 0 ? safeString(notesArr[noteIndex]).trim() : '';
+      const promptNotes = Array.from({ length: TOTAL_PROMPTS }, (_, idx) => {
+        const noteIndex = idx === 0 ? -1 : idx - 1;
+        const content = noteIndex >= 0 ? safeString(notesArr[noteIndex]).trim() : '';
 
-  return {
-    notes: content
-      ? [{
-          content,
-          dateSubmitted: prog.updatedAt || prog.createdAt || null
-        }]
-      : []
-  };
-});
+        return {
+          notes: content
+            ? [{
+                content,
+                dateSubmitted: prog.updatedAt || prog.createdAt || null
+              }]
+            : []
+        };
+      });
 
-      const comp = completionByKey.get(completionKey(mid, psId));
-      const dateCompleted =
-        comp?.completedAt ||
-        prog.updatedAt ||
-        prog.createdAt ||
-        comp?.createdAt ||
-        null;
-
-      row.completedBy.push({
-        memberId: mid,
-        memberName,
-        dateCompleted,
+      notesByPromptSet.get(psId).completedBy.push({
+        memberId,
+        memberName: nameById.get(memberId) || "Unknown Member",
+        dateCompleted: null, // because this table is really note history, not completions only
         promptNotes
       });
     }
 
-    const promptSetsCompletedReports = Array.from(byPromptSet.values())
-      .map(r => {
+    const promptNotesReports = Array.from(notesByPromptSet.values())
+      .map(row => {
         const byMember = new Map();
 
-        for (const entry of safeArray(r.completedBy)) {
+        for (const entry of safeArray(row.completedBy)) {
           const key = entry.memberId || entry.memberName;
-          const prev = byMember.get(key);
-
-          const prevDate = prev?.dateCompleted ? new Date(prev.dateCompleted) : new Date(0);
-          const nextDate = entry?.dateCompleted ? new Date(entry.dateCompleted) : new Date(0);
-
-          if (!prev || nextDate > prevDate) {
+          if (!byMember.has(key)) {
             byMember.set(key, entry);
           }
         }
 
-        r.completedBy = Array.from(byMember.values()).sort((a, b) => {
-          const ad = a.dateCompleted ? new Date(a.dateCompleted) : new Date(0);
-          const bd = b.dateCompleted ? new Date(b.dateCompleted) : new Date(0);
-          if (ad.getTime() !== bd.getTime()) return ad - bd;
-          return sortAZ(a.memberName, b.memberName);
-        });
+        row.completedBy = Array.from(byMember.values()).sort((a, b) =>
+          sortAZ(a.memberName, b.memberName)
+        );
 
-        return r;
+        return row;
       })
       .sort((a, b) => sortAZ(a.promptSetTitle, b.promptSetTitle));
 
@@ -837,14 +867,14 @@ const promptNotes = Array.from({ length: TOTAL_PROMPTS }, (_, idx) => {
       layout: "dashboardlayout",
       leaderGroupName: leaderDoc.groupName,
       isPromptSetsCompleted: true,
-      promptSetsCompletedReports
+      completedPromptSetsReports,
+      promptNotesReports
     });
   } catch (err) {
     console.error("❌ Error loading Prompt Sets Completed Report:", err);
     return res.status(500).send("Server error");
   }
 };
-
 
 
 
@@ -1035,26 +1065,59 @@ const getMyCompletedPromptSetsReport = async (req, res) => {
       });
     }
 
-    // Progress = source of truth for notes
-    const progresses = await PromptSetProgress.find({ memberId: memberDoc._id })
-      .populate("promptSetId")
-      .lean();
+    const [progresses, completions] = await Promise.all([
+      PromptSetProgress.find({ memberId: memberDoc._id })
+        .populate("promptSetId")
+        .lean(),
 
-    // Completion docs = best source for completion date
-    const completions = await PromptSetCompletion.find({ memberId: memberDoc._id })
-      .select("memberId promptSetId completedAt createdAt updatedAt")
-      .lean();
+      PromptSetCompletion.find({ memberId: memberDoc._id })
+        .populate("promptSetId")
+        .lean()
+    ]);
 
-    const completionByPromptSetId = new Map(
+    const TOTAL_PROMPTS = 21;
+
+    const completionKey = (memberId, promptSetId) => `${memberId}::${promptSetId}`;
+    const completionByKey = new Map(
       safeArray(completions).map(c => [
-        toIdString(c.promptSetId),
+        completionKey(
+          toIdString(c.memberId),
+          toIdString(c.promptSetId?._id || c.promptSetId)
+        ),
         c
       ])
     );
 
-    const TOTAL_PROMPTS = 21; // Prompt0 through Prompt20
+    // =========================================================
+    // TABLE 1 DATA: COMPLETED PROMPT SETS ONLY
+    // =========================================================
+    const completedPromptSetsReports = safeArray(completions)
+      .filter(comp => comp.promptSetId)
+      .map(comp => {
+        const ps = comp.promptSetId;
 
-    const promptSetsCompletedReports = safeArray(progresses)
+        return {
+          promptSetId: toIdString(ps._id),
+          promptSetTitle: ps.promptset_title || "Unknown Prompt Set",
+          main_topic: ps.main_topic || "",
+          secondary_topics: safeArray(ps.secondary_topics),
+          purpose: ps.purpose || "",
+          characteristics: safeArray(ps.characteristics),
+          targetAudience: ps.targetAudience || "",
+          dateCompleted: comp.completedAt || comp.createdAt || comp.updatedAt || null
+        };
+      })
+      .sort((a, b) => {
+        const ad = a.dateCompleted ? new Date(a.dateCompleted) : new Date(0);
+        const bd = b.dateCompleted ? new Date(b.dateCompleted) : new Date(0);
+        if (ad.getTime() !== bd.getTime()) return bd - ad;
+        return sortAZ(a.promptSetTitle, b.promptSetTitle);
+      });
+
+    // =========================================================
+    // TABLE 2 DATA: PROMPT NOTES / HISTORY
+    // =========================================================
+    const promptNotesReports = safeArray(progresses)
       .filter(prog => prog.promptSetId)
       .map(prog => {
         const ps = prog.promptSetId;
@@ -1071,35 +1134,36 @@ const getMyCompletedPromptSetsReport = async (req, res) => {
         });
 
         const notesArr = safeArray(prog.notes);
-const promptNotes = Array.from({ length: TOTAL_PROMPTS }, (_, idx) => {
-  // Prompt 0 has no note; shift notes by 1
-  const noteIndex = idx === 0 ? -1 : idx - 1;
-  const content = noteIndex >= 0 ? safeString(notesArr[noteIndex]).trim() : '';
 
-  return {
-    notes: content
-      ? [{
-          content,
-          dateSubmitted: prog.updatedAt || prog.createdAt || null
-        }]
-      : []
-  };
-});
+        const promptNotes = Array.from({ length: TOTAL_PROMPTS }, (_, idx) => {
+          const noteIndex = idx === 0 ? -1 : idx - 1;
+          const content = noteIndex >= 0 ? safeString(notesArr[noteIndex]).trim() : '';
 
-        const completion = completionByPromptSetId.get(psId);
-        const dateCompleted =
-          completion?.completedAt ||
-          prog.updatedAt ||
-          prog.createdAt ||
-          completion?.createdAt ||
-          null;
+          return {
+            notes: content
+              ? [{
+                  content,
+                  dateSubmitted: prog.updatedAt || prog.createdAt || null
+                }]
+              : []
+          };
+        });
+
+        const matchingCompletion = completionByKey.get(
+          completionKey(toIdString(prog.memberId), psId)
+        );
 
         return {
+          promptSetId: psId,
           promptSetTitle: ps.promptset_title || "Unknown Prompt Set",
           main_topic: ps.main_topic || "",
           secondary_topics: safeArray(ps.secondary_topics),
           purpose: ps.purpose || "",
-          dateCompleted,
+          characteristics: safeArray(ps.characteristics),
+          targetAudience: ps.targetAudience || "",
+          dateCompleted: matchingCompletion
+            ? (matchingCompletion.completedAt || matchingCompletion.createdAt || matchingCompletion.updatedAt || null)
+            : null,
           prompts,
           promptNotes
         };
@@ -1109,7 +1173,8 @@ const promptNotes = Array.from({ length: TOTAL_PROMPTS }, (_, idx) => {
     return res.render("report_views/mycompletedpromptsets", {
       layout: "dashboardlayout",
       isMyCompletedPromptSets: true,
-      promptSetsCompletedReports
+      completedPromptSetsReports,
+      promptNotesReports
     });
   } catch (err) {
     console.error("❌ Error loading Group Member Completed Prompt Sets Report:", err);
@@ -1290,24 +1355,59 @@ const getMyCompletedPromptSetsReportIndividual = async (req, res) => {
       });
     }
 
-    const progresses = await PromptSetProgress.find({ memberId: memberDoc._id })
-      .populate("promptSetId")
-      .lean();
+    const [progresses, completions] = await Promise.all([
+      PromptSetProgress.find({ memberId: memberDoc._id })
+        .populate("promptSetId")
+        .lean(),
 
-    const completions = await PromptSetCompletion.find({ memberId: memberDoc._id })
-      .select("memberId promptSetId completedAt createdAt updatedAt")
-      .lean();
+      PromptSetCompletion.find({ memberId: memberDoc._id })
+        .populate("promptSetId")
+        .lean()
+    ]);
 
-    const completionByPromptSetId = new Map(
+    const TOTAL_PROMPTS = 21;
+
+    const completionKey = (memberId, promptSetId) => `${memberId}::${promptSetId}`;
+    const completionByKey = new Map(
       safeArray(completions).map(c => [
-        toIdString(c.promptSetId),
+        completionKey(
+          toIdString(c.memberId),
+          toIdString(c.promptSetId?._id || c.promptSetId)
+        ),
         c
       ])
     );
 
-    const TOTAL_PROMPTS = 21; // Prompt0 through Prompt20
+    // =========================================================
+    // TABLE 1 DATA: COMPLETED PROMPT SETS ONLY
+    // =========================================================
+    const completedPromptSetsReports = safeArray(completions)
+      .filter(comp => comp.promptSetId)
+      .map(comp => {
+        const ps = comp.promptSetId;
 
-    const promptSetsCompletedReports = safeArray(progresses)
+        return {
+          promptSetId: toIdString(ps._id),
+          promptSetTitle: ps.promptset_title || "Unknown Prompt Set",
+          main_topic: ps.main_topic || "",
+          secondary_topics: safeArray(ps.secondary_topics),
+          purpose: ps.purpose || "",
+          characteristics: safeArray(ps.characteristics),
+          targetAudience: ps.targetAudience || "",
+          dateCompleted: comp.completedAt || comp.createdAt || comp.updatedAt || null
+        };
+      })
+      .sort((a, b) => {
+        const ad = a.dateCompleted ? new Date(a.dateCompleted) : new Date(0);
+        const bd = b.dateCompleted ? new Date(b.dateCompleted) : new Date(0);
+        if (ad.getTime() !== bd.getTime()) return bd - ad;
+        return sortAZ(a.promptSetTitle, b.promptSetTitle);
+      });
+
+    // =========================================================
+    // TABLE 2 DATA: PROMPT NOTES / HISTORY
+    // =========================================================
+    const promptNotesReports = safeArray(progresses)
       .filter(prog => prog.promptSetId)
       .map(prog => {
         const ps = prog.promptSetId;
@@ -1324,28 +1424,24 @@ const getMyCompletedPromptSetsReportIndividual = async (req, res) => {
         });
 
         const notesArr = safeArray(prog.notes);
-const promptNotes = Array.from({ length: TOTAL_PROMPTS }, (_, idx) => {
-  // Prompt 0 has no note; shift notes by 1
-  const noteIndex = idx === 0 ? -1 : idx - 1;
-  const content = noteIndex >= 0 ? safeString(notesArr[noteIndex]).trim() : '';
 
-  return {
-    notes: content
-      ? [{
-          content,
-          dateSubmitted: prog.updatedAt || prog.createdAt || null
-        }]
-      : []
-  };
-});
+        const promptNotes = Array.from({ length: TOTAL_PROMPTS }, (_, idx) => {
+          const noteIndex = idx === 0 ? -1 : idx - 1;
+          const content = noteIndex >= 0 ? safeString(notesArr[noteIndex]).trim() : '';
 
-        const completion = completionByPromptSetId.get(psId);
-        const dateCompleted =
-          completion?.completedAt ||
-          prog.updatedAt ||
-          prog.createdAt ||
-          completion?.createdAt ||
-          null;
+          return {
+            notes: content
+              ? [{
+                  content,
+                  dateSubmitted: prog.updatedAt || prog.createdAt || null
+                }]
+              : []
+          };
+        });
+
+        const matchingCompletion = completionByKey.get(
+          completionKey(toIdString(prog.memberId), psId)
+        );
 
         return {
           promptSetId: psId,
@@ -1353,7 +1449,11 @@ const promptNotes = Array.from({ length: TOTAL_PROMPTS }, (_, idx) => {
           main_topic: ps.main_topic || "",
           secondary_topics: safeArray(ps.secondary_topics),
           purpose: ps.purpose || "",
-          dateCompleted,
+          characteristics: safeArray(ps.characteristics),
+          targetAudience: ps.targetAudience || "",
+          dateCompleted: matchingCompletion
+            ? (matchingCompletion.completedAt || matchingCompletion.createdAt || matchingCompletion.updatedAt || null)
+            : null,
           prompts,
           promptNotes
         };
@@ -1363,7 +1463,8 @@ const promptNotes = Array.from({ length: TOTAL_PROMPTS }, (_, idx) => {
     return res.render("report_views/mycompletedpromptsets_individual", {
       layout: "dashboardlayout",
       isMyCompletedPromptSetsIndividual: true,
-      promptSetsCompletedReports
+      completedPromptSetsReports,
+      promptNotesReports
     });
   } catch (err) {
     console.error("❌ Error loading Individual Member Completed Prompt Sets Report:", err);

@@ -24,13 +24,17 @@ const PromptSetCompletionSchema = new mongoose.Schema({
         name: { type: String, trim: true }
     },
     notes: {
-        type: [String], // Stores an array of notes (one for each prompt)
+        type: [String],
         default: []
     },
     finalNotes: {
-        type: String, // Final thoughts after completing the set
+        type: String,
         trim: true
     }
 }, { timestamps: true });
+
+// ✅ Allow multiple completions of the same prompt set by the same learner
+// ✅ This index is for lookup speed only, NOT uniqueness
+PromptSetCompletionSchema.index({ memberId: 1, promptSetId: 1, completedAt: -1 });
 
 module.exports = mongoose.model('PromptSetCompletion', PromptSetCompletionSchema);

@@ -84,7 +84,7 @@
       - intro/orientation prompt shown in first column
       - prompts 1–20 shown once as header row
       - member rows aligned under headers
-      - notes now show as history with timestamps
+      - notes can include prompt sets still in progress
   ========================================================= --}}
   <h2 class="dashboard-section-title">Prompt Notes (History)</h2>
 
@@ -94,8 +94,8 @@
         <tr>
           <th class="dashboard-library-header">prompt set / member</th>
 
-          {{#if promptSetsCompletedReports.[0].prompts}}
-            {{#each promptSetsCompletedReports.[0].prompts}}
+          {{#if promptNotesReports.[0].prompts}}
+            {{#each promptNotesReports.[0].prompts}}
               {{#unless @first}}
                 <th class="dashboard-library-header">
                   prompt {{@index}}
@@ -107,7 +107,7 @@
       </thead>
 
       <tbody>
-        {{#each promptSetsCompletedReports}}
+        {{#each promptNotesReports}}
 
           {{!-- Prompt Set Header Row --}}
           <tr class="dashboard-library-row promptset-header-row">
@@ -139,7 +139,11 @@
               <td class="dashboard-library-cell">
                 <strong>{{this.memberName}}</strong><br>
                 <span class="multi-record-item" style="opacity:0.8;">
-                  completed: {{formatDate this.dateCompleted}}
+                  {{#if this.dateCompleted}}
+                    completed: {{formatDate this.dateCompleted}}
+                  {{else}}
+                    in progress
+                  {{/if}}
                 </span>
               </td>
 
@@ -168,7 +172,7 @@
               <td class="dashboard-library-cell">
                 <strong>{{../promptSetTitle}}</strong>
               </td>
-              <td colspan="20" class="no-data">No completions</td>
+              <td colspan="20" class="no-data">No notes available.</td>
             </tr>
           {{/each}}
 

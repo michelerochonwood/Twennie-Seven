@@ -17,16 +17,18 @@ const PromptSetProgressSchema = new mongoose.Schema({
     },
     currentPromptIndex: {
         type: Number,
-        default: 0 // Starts at the first prompt
+        default: 0
     },
     completedPrompts: {
-        type: [Number], // Stores indexes of completed prompts
+        type: [Number],
         default: []
     },
     notes: {
-        type: [String], // Array to store one note per prompt
+        type: [String],
         default: []
     }
 }, { timestamps: true });
+
+PromptSetProgressSchema.index({ memberId: 1, promptSetId: 1 }, { unique: true });
 
 module.exports = mongoose.model('PromptSetProgress', PromptSetProgressSchema);
