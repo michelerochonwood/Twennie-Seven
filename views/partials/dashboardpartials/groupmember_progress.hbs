@@ -34,6 +34,26 @@
     .groupmember-progress-completed-card-text{
       margin: 0;
     }
+
+    .groupmember-progress-badge-wrap{
+      margin-top: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .groupmember-progress-badge-image{
+      width: 56px;
+      height: 56px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+    .groupmember-progress-badge-name{
+      margin: 0;
+      font-weight: 600;
+      line-height: 1.2;
+    }
   </style>
 
   {{#if currentPromptSets.length}}
@@ -70,6 +90,26 @@
             <p class="groupmember-progress-completed-card-text">
               you completed all prompts in this set
             </p>
+
+            {{#if this.completedAt}}
+              <p class="groupmember-progress-completed-card-text" style="margin-top: 0.5rem;">
+                <span class="muted">completed: {{this.completedAt}}</span>
+              </p>
+            {{/if}}
+
+            {{#if this.badge.name}}
+              <div class="groupmember-progress-badge-wrap">
+                {{#if this.badge.image}}
+                  <img
+                    src="{{this.badge.image}}"
+                    alt="{{this.badge.name}} badge"
+                    class="groupmember-progress-badge-image"
+                  >
+                {{/if}}
+
+                <p class="groupmember-progress-badge-name">{{this.badge.name}}</p>
+              </div>
+            {{/if}}
           </a>
         {{/each}}
       </div>
