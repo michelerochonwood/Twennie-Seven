@@ -1037,6 +1037,8 @@ const getUnitsCompletedReport = async (req, res) => {
 const getMyCompletedPromptSetsReport = async (req, res) => {
   try {
     console.log("✅ Fetching Group Member Completed Prompt Sets Report…");
+    console.log("req.user:", req.user);
+console.log("req.session.user:", req.session?.user);
 
     const safeArray = (v) => (Array.isArray(v) ? v : []);
     const safeString = (v) => (v == null ? "" : String(v));
@@ -1057,6 +1059,9 @@ const getMyCompletedPromptSetsReport = async (req, res) => {
       .select("_id name")
       .lean();
 
+      console.log("memberId from session/user:", memberId);
+console.log("memberDoc found:", memberDoc);
+
     if (!memberDoc) {
       return res.status(403).render("member_form_views/error", {
         layout: "memberformlayout",
@@ -1074,6 +1079,18 @@ const getMyCompletedPromptSetsReport = async (req, res) => {
         .populate("promptSetId")
         .lean()
     ]);
+
+    console.log("progresses found:", progresses.length);
+console.log("completions found:", completions.length);
+console.log("progress promptSetIds:", progresses.map(p => ({
+  memberId: p.memberId?.toString?.(),
+  promptSetId: p.promptSetId?._id?.toString?.() || p.promptSetId?.toString?.()
+})));
+console.log("completion promptSetIds:", completions.map(c => ({
+  memberId: c.memberId?.toString?.(),
+  promptSetId: c.promptSetId?._id?.toString?.() || c.promptSetId?.toString?.(),
+  completedAt: c.completedAt
+})));
 
     const TOTAL_PROMPTS = 21;
 
@@ -1169,7 +1186,8 @@ const getMyCompletedPromptSetsReport = async (req, res) => {
         };
       })
       .sort((a, b) => sortAZ(a.promptSetTitle, b.promptSetTitle));
-
+console.log("completedPromptSetsReports length:", completedPromptSetsReports.length);
+console.log("promptNotesReports length:", promptNotesReports.length);
     return res.render("report_views/mycompletedpromptsets", {
       layout: "dashboardlayout",
       isMyCompletedPromptSets: true,
