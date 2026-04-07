@@ -491,10 +491,10 @@ async function buildAssignedPromptSets(leaderId) {
 
       const progress = progressByKey.get(`${mid}-${psId}`);
       const completedCount = Array.isArray(progress?.completedPrompts) ? progress.completedPrompts.length : 0;
-      const progressPercent = Math.min(100, Math.round((completedCount / 20) * 100));
+      const progressPercent = Math.min(100, Math.round((completedCount / 21) * 100));
       const currentPromptIndex = Number.isInteger(progress?.currentPromptIndex) ? progress.currentPromptIndex : 0;
 
-      const isCompleted = completedCount >= 20;
+      const isCompleted = completedCount >= 21;
       const isOverdue = !isCompleted && targetRaw && new Date(targetRaw) < now;
       const hasStarted = !isCompleted && completedCount > 0;
 
@@ -1115,7 +1115,7 @@ groupMemberUnits = [...groupMemberUnits, ...gmUpcomingRows, ...gmNuggetRows];
                     const headlineKey = `prompt_headline${currentPromptIndex}`;
                     const promptKey = `Prompt${currentPromptIndex}`;
             
-                    const isCompleted = progress?.completedPrompts?.length >= 20;
+                    const isCompleted = progress?.completedPrompts?.length >= 21;
             
 if (!isCompleted) {
   const currentPromptIndex = progress?.currentPromptIndex ?? 0;
@@ -1146,31 +1146,84 @@ leaderPrompts.push({
             
             // ✅ Fetch prompt set progress from MongoDB (No session-based tracking)
 
-// ✅ First fetch completed prompt sets
-const completedRecords = await PromptSetCompletion.find({ memberId: id }).populate('promptSetId');
 
-// ✅ Then fetch in-progress prompt records
-const progressRecords = await PromptSetProgress.find({ memberId: id }).populate('promptSetId');
 
-const completedIds = new Set(completedRecords.map(record => record.promptSetId._id.toString()));
 
-let currentPromptSets = [];
 
-if (progressRecords.length > 0) {
-  progressRecords.forEach(record => {
-    const promptSetId = record.promptSetId._id.toString();
-    if (!completedIds.has(promptSetId)) {
-      const progressPercentage = (record.completedPrompts?.length / 20) * 100 || 0;
-      currentPromptSets.push({
-        promptSetTitle: record.promptSetId.promptset_title,
-        frequency: record.promptSetId.suggested_frequency,
-        progress: `${progressPercentage}%`,
-        targetCompletionDate: record.promptSetId.target_completion_date || "Not Set",
-        promptIndex: record.currentPromptIndex || 0
-      });
-    }
-  });
+// ---- Unified leader prompt progress/completion build (deduped) ----
+
+const TOTAL_PROMPTS = 21;
+
+// 1) Fetch COMPLETED sets for this leader, build exclusion set
+const completedRecords = await PromptSetCompletion
+  .find({ memberId: id })
+  .populate('promptSetId');
+
+const completedIds = new Set(
+  completedRecords
+    .map(r => r.promptSetId?._id?.toString())
+    .filter(Boolean)
+);
+
+// 2) Fetch PROGRESS rows once
+const progressRecords = await PromptSetProgress
+  .find({ memberId: id })
+  .populate('promptSetId');
+
+// 3) Build CURRENT (deduped) from progress only, excluding completed
+const currentByPsId = new Map();
+
+for (const record of progressRecords) {
+  const ps = record.promptSetId;
+  if (!ps) continue;
+
+  const psId = ps._id.toString();
+  if (completedIds.has(psId)) continue; // exclude completed
+
+  const completedCount = Array.isArray(record.completedPrompts)
+    ? record.completedPrompts.length
+    : 0;
+
+  const progressPct = Math.round((completedCount / TOTAL_PROMPTS) * 100);
+
+  const currentPromptIndex = Number.isInteger(record.currentPromptIndex)
+    ? record.currentPromptIndex
+    : 0;
+
+  if (!currentByPsId.has(psId)) {
+    currentByPsId.set(psId, {
+      promptSetId: psId,
+      promptSetTitle: ps.promptset_title || 'Unknown Title',
+      frequency: ps.suggested_frequency,
+      progress: `${progressPct}%`,
+      targetCompletionDate: ps.target_completion_date || 'Not Set',
+      promptIndex: currentPromptIndex
+    });
+  }
 }
+
+// 4) Final current array
+const currentPromptSets = Array.from(currentByPsId.values())
+  .sort((a, b) => a.promptSetTitle.localeCompare(b.promptSetTitle));
+
+// 5) Completed prompt sets for display
+const formattedCompletedSets = completedRecords.map(record => ({
+  promptSetTitle: record.promptSetId?.promptset_title || 'Unknown Title',
+  frequency: record.promptSetId?.suggested_frequency,
+  mainTopic: record.promptSetId?.main_topic || 'No Topic',
+  completedAt: record.completedAt
+    ? new Date(record.completedAt).toDateString()
+    : 'Unknown Date',
+  badge: record.earnedBadge || null
+}));
+
+
+
+
+
+
+
+
 
 
 
@@ -1356,16 +1409,7 @@ leaderUnits = [...leaderUnits, ...leaderNuggetRows, ...leaderUpcomingRows];
 
 // Now fetch completed prompt set records directly from the PromptSetCompletion collection
 
-// Map the completion records to a formatted array
-const formattedCompletedSets = completedRecords.map(record => ({
-  promptSetTitle: record.promptSetId.promptset_title,
-  frequency: record.promptSetId.suggested_frequency,
-  mainTopic: record.promptSetId.main_topic,
-  completedAt: record.completedAt
-    ? new Date(record.completedAt).toDateString()
-    : 'Unknown Date',
-  badge: record.earnedBadge // object with { image, name } if present
-}));
+
 
 // ---------- GROUP COMPLETED PROMPT SETS (for group badges) ----------
 
