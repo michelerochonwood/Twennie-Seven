@@ -416,7 +416,9 @@ function fmtDate(d) {
 }
 
 async function buildAssignedPromptSets(leaderId) {
-  const leaderObjectId = Types.ObjectId.isValid(leaderId) ? new Types.ObjectId(leaderId) : leaderId;
+  const leaderObjectId = Types.ObjectId.isValid(leaderId)
+    ? new Types.ObjectId(leaderId)
+    : leaderId;
 
   const assignments = await AssignPromptSet.find({ groupLeaderId: leaderObjectId }).lean();
   if (!assignments.length) return [];
@@ -427,44 +429,65 @@ async function buildAssignedPromptSets(leaderId) {
 
   for (const a of assignments) {
     if (a.promptSetId) promptSetIds.add(a.promptSetId.toString());
-    for (const mid of a.assignedMemberIds || []) memberIds.add(mid.toString());
+    for (const mid of a.assignedMemberIds || []) {
+      if (mid) memberIds.add(mid.toString());
+    }
   }
 
   const [promptSets, members, profiles] = await Promise.all([
     PromptSet.find({ _id: { $in: [...promptSetIds] } }).lean(),
     GroupMember.find({ _id: { $in: [...memberIds] } }).select('name').lean(),
-    GroupMemberProfile.find({ groupMemberId: { $in: [...memberIds] } }).select('groupMemberId profileImage').lean()
+    GroupMemberProfile.find({ groupMemberId: { $in: [...memberIds] } })
+      .select('groupMemberId profileImage')
+      .lean()
   ]);
 
   const psById = new Map(promptSets.map(ps => [ps._id.toString(), ps]));
   const memberById = new Map(members.map(m => [m._id.toString(), m]));
-  const profileByMemberId = new Map(profiles.map(p => [p.groupMemberId.toString(), p]));
+  const profileByMemberId = new Map(
+    profiles.map(p => [p.groupMemberId.toString(), p])
+  );
 
-  // ✅ Batch-load progress to avoid N+1 queries
-  const progressDocs = await PromptSetProgress
-    .find({
-      memberId: { $in: [...memberIds] },
-      promptSetId: { $in: [...promptSetIds] }
-    })
+  // Batch-load progress
+  const progressDocs = await PromptSetProgress.find({
+    memberId: { $in: [...memberIds] },
+    promptSetId: { $in: [...promptSetIds] }
+  })
     .select('memberId promptSetId currentPromptIndex completedPrompts')
     .lean();
 
   const progressByKey = new Map(
-    progressDocs.map(p => [`${p.memberId.toString()}-${p.promptSetId.toString()}`, p])
+    progressDocs.map(p => [
+      `${p.memberId.toString()}-${p.promptSetId.toString()}`,
+      p
+    ])
   );
 
-  // ✅ Group results by promptSetId
-  const grouped = new Map(); // key: promptSetId -> { promptSet fields + members[] }
+  // Batch-load completions
+  const completionDocs = await PromptSetCompletion.find({
+    memberId: { $in: [...memberIds] },
+    promptSetId: { $in: [...promptSetIds] }
+  })
+    .select('memberId promptSetId completedAt')
+    .lean();
+
+  const completionByKey = new Map(
+    completionDocs.map(c => [
+      `${c.memberId.toString()}-${c.promptSetId.toString()}`,
+      c
+    ])
+  );
+
+  // Group results by promptSetId
+  const grouped = new Map();
 
   for (const a of assignments) {
     const psId = a.promptSetId?.toString();
     const ps = psById.get(psId);
     if (!ps) continue;
 
-    // per-assignment “target” fallback logic preserved
     const targetRaw = a.targetCompletionDate || ps.target_completion_date || null;
 
-    // ensure group exists
     if (!grouped.has(psId)) {
       grouped.set(psId, {
         promptSetId: psId,
@@ -472,8 +495,6 @@ async function buildAssignedPromptSets(leaderId) {
         mainTopic: ps.main_topic || 'No topic',
         frequency: a.frequency || ps.suggested_frequency || 'weekly',
         members: [],
-
-        // Optional: used for sorting cards (we’ll set/update this below)
         sortDateRaw: targetRaw ? new Date(targetRaw) : null
       });
     }
@@ -490,54 +511,80 @@ async function buildAssignedPromptSets(leaderId) {
       const memberImage = prof?.profileImage || '/images/default-avatar.png';
 
       const progress = progressByKey.get(`${mid}-${psId}`);
-      const completedCount = Array.isArray(progress?.completedPrompts) ? progress.completedPrompts.length : 0;
-      const progressPercent = Math.min(100, Math.round((completedCount / 21) * 100));
-      const currentPromptIndex = Number.isInteger(progress?.currentPromptIndex) ? progress.currentPromptIndex : 0;
+      const completion = completionByKey.get(`${mid}-${psId}`);
 
-      const isCompleted = completedCount >= 21;
+      // Ignore prompt 0 for dashboard display purposes
+      const completedCountRaw = Array.isArray(progress?.completedPrompts)
+        ? progress.completedPrompts.length
+        : 0;
+
+      const completedCount = Math.min(
+        20,
+        completedCountRaw >= 1 ? completedCountRaw - 1 : 0
+      );
+
+      const progressPercent = completion
+        ? 100
+        : Math.min(100, Math.round((completedCount / 20) * 100));
+
+      const currentPromptIndex = Number.isInteger(progress?.currentPromptIndex)
+        ? progress.currentPromptIndex
+        : 0;
+
+      const isCompleted = !!completion || completedCount >= 20 || currentPromptIndex >= 20;
       const isOverdue = !isCompleted && targetRaw && new Date(targetRaw) < now;
       const hasStarted = !isCompleted && completedCount > 0;
 
       let status = 'assigned';
       let statusLabel = 'assigned';
-      if (isCompleted) { status = 'completed'; statusLabel = 'completed'; }
-      else if (isOverdue) { status = 'overdue'; statusLabel = 'overdue'; }
-      else if (hasStarted) { status = 'inprogress'; statusLabel = 'in progress'; }
 
-      // member row
+      if (isCompleted) {
+        status = 'completed';
+        statusLabel = 'completed';
+      } else if (isOverdue) {
+        status = 'overdue';
+        statusLabel = 'overdue';
+      } else if (hasStarted) {
+        status = 'inprogress';
+        statusLabel = 'in progress';
+      }
+
       card.members.push({
-        assignmentId: a._id.toString(),           // ⚠️ see note below about unassign
+        assignmentId: a._id.toString(),
         memberId: mid,
         memberName: m.name,
         memberImage,
-
         currentPromptIndex,
         progressPercent,
-
         status,
         statusLabel,
-
         targetCompletionDate: fmtDate(targetRaw),
         targetCompletionDateRaw: targetRaw ? new Date(targetRaw) : null,
-
         leaderNotes: a.leaderNotes || ''
       });
 
-      // Update sort date: earliest target across members/assignments wins
       if (targetRaw) {
         const td = new Date(targetRaw);
-        if (!card.sortDateRaw || td < card.sortDateRaw) card.sortDateRaw = td;
+        if (!card.sortDateRaw || td < card.sortDateRaw) {
+          card.sortDateRaw = td;
+        }
       }
     }
 
-    // Optional: keep members in a consistent order (overdue first, then in progress, then assigned, then completed)
-    const statusRank = { overdue: 0, inprogress: 1, assigned: 2, completed: 3 };
-    card.members.sort((x, y) => (statusRank[x.status] ?? 9) - (statusRank[y.status] ?? 9));
+    const statusRank = {
+      overdue: 0,
+      inprogress: 1,
+      assigned: 2,
+      completed: 3
+    };
+
+    card.members.sort(
+      (x, y) => (statusRank[x.status] ?? 9) - (statusRank[y.status] ?? 9)
+    );
   }
 
   const result = Array.from(grouped.values());
 
-  // Sort cards by their earliest target date; nulls go last
   result.sort((a, b) => {
     const ad = a.sortDateRaw ? new Date(a.sortDateRaw) : null;
     const bd = b.sortDateRaw ? new Date(b.sortDateRaw) : null;
@@ -732,10 +779,10 @@ async function getLeaderPromptSchedule(leaderId, promptSetId) {
     const remainingDays = Math.max(0, Math.ceil((targetDate - today) / (1000 * 60 * 60 * 24)));
 
     // Fetch progress and determine remaining prompts
-    const progress = await PromptSetProgress.findOne({ memberId: leaderId, promptSetId });
+let progress = await PromptSetProgress.findOne({ memberId: leaderId, promptSetId });
 
-    if (!progress) {
-  console.warn(`⚠️ No progress found for promptSetId ${registration.promptSetId}. Showing Prompt 0 fallback.`);
+if (!progress) {
+  console.warn(`⚠️ No progress found for promptSetId ${promptSetId}. Showing Prompt 0 fallback.`);
   progress = {
     currentPromptIndex: 0,
     completedPrompts: []
