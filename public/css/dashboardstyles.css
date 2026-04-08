@@ -1792,7 +1792,27 @@ html, body {
 
 
 
+.leader-archive-button-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
 
+.leader-archive-button {
+  background: transparent;
+  color: #262262;
+  border-radius: 999px;
+  padding: 0.5rem 1.1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.leader-archive-button:hover {
+  background: #4a4ab2;
+  color: #fff;
+}
 
 
 

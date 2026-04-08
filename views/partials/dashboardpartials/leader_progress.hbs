@@ -16,6 +16,17 @@
           <p class="leader-progress-target">
             you have completed {{this.promptIndex}} prompts in this set
           </p>
+
+          <div class="leader-archive-button-wrap">
+            <button
+              type="button"
+              class="leader-archive-button"
+              data-archive-type="leader-current-promptset"
+              data-promptset-id="{{this.promptSetId}}"
+            >
+              archive
+            </button>
+          </div>
         </div>
       {{/each}}
     </div>
@@ -115,24 +126,35 @@
                   </div>
                 </div> 
 
-<div class="leader-assigned-actions">
-  <form
-    method="POST"
-    action="/promptsetassign/unassign/{{assignmentId}}/{{memberId}}"
-    class="leader-unassign-form"
-    onsubmit="return confirm('Unassign this prompt set from {{memberName}}?');"
-  >
-    {{#if ../../csrfToken}}
-      <input type="hidden" name="_csrf" value="{{../../csrfToken}}">
-    {{/if}}
-    <input type="hidden" name="_method" value="DELETE">
-    <button type="submit" class="leader-assigned-unassign">
-      unassign
-    </button>
-  </form>
-</div>
+                <div class="leader-assigned-actions">
+                  <form
+                    method="POST"
+                    action="/promptsetassign/unassign/{{assignmentId}}/{{memberId}}"
+                    class="leader-unassign-form"
+                    onsubmit="return confirm('Unassign this prompt set from {{memberName}}?');"
+                  >
+                    {{#if ../../csrfToken}}
+                      <input type="hidden" name="_csrf" value="{{../../csrfToken}}">
+                    {{/if}}
+                    <input type="hidden" name="_method" value="DELETE">
+                    <button type="submit" class="leader-assigned-unassign">
+                      unassign
+                    </button>
+                  </form>
+                </div>
               </div>
             {{/each}}
+          </div>
+
+          <div class="leader-archive-button-wrap">
+            <button
+              type="button"
+              class="leader-archive-button"
+              data-archive-type="leader-assigned-promptset"
+              data-promptset-id="{{promptSetId}}"
+            >
+              archive
+            </button>
           </div>
 
         </div>
