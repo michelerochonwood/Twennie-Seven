@@ -1786,6 +1786,10 @@ html, body {
   max-width: 720px; /* optional: keeps it readable */
 }
 
+.tagged-unit-badge-image {
+  height: auto;
+}
+
 
 
 
