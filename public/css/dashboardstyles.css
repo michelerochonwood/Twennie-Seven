@@ -1799,8 +1799,9 @@ html, body {
 }
 
 .leader-archive-button {
-  background: transparent;
-  color: #262262;
+  background: #262262;
+  font-family: "Figtree";
+  color: white;
   border-radius: 999px;
   padding: 0.5rem 1.1rem;
   font-size: 0.9rem;
@@ -1811,7 +1812,6 @@ html, body {
 
 .leader-archive-button:hover {
   background: #4a4ab2;
-  color: #fff;
 }
 
 
