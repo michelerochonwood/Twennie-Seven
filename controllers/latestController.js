@@ -247,44 +247,47 @@ exports.getLatestLibraryItems = async (req, res) => {
     }));
 
     // Hard-coded featured promo units
-    const featuredPromoBase = [
-      {
-        title: 'Never Miss Another RFP\nA Solution to a Pesky Problem',
-        unitLabel: 'video',
-        unitType: 'video',
-        image: '/images/missed RFP.png',
-        authorImage: '/images/twenniefounders3.png',
-        kicker:
-          'Missing an RFP creates panic and wasted effort. A simple internal work order turns monitoring into a structured, accountable task, reducing risk, improving consistency, and preventing avoidable breakdowns in your pursuit process.',
-        body:
-          'Missing an RFP creates unnecessary stress, lost opportunities, and last-minute chaos that could have been avoided. The issue isn’t effort—it’s structure. Monitoring purchasing sites is often informal, unclear, and easy to overlook, especially when support staff are pulled into urgent work. A simple internal work order changes that. It defines expectations, clarifies instructions, and creates accountability on both sides. It also allows for continuity, backups, and regular improvement.',
-        reviewHref: '/unitviews/videos/view/69d82d47d8af4487117da8f5'
-      },
-      {
-        title: 'How to Write an Article in an\nIndustry or Trade Publication',
-        unitLabel: 'video',
-        unitType: 'video',
-        image: '/images/renewmag.png',
-        authorImage: '/images/twenniefounders3.png',
-        kicker:
-          'Publishing in trusted industry magazines builds instant credibility, but only if you share insight, not project details. Start with tension, show thinking, and help clients see their own challenges reflected.',
-        body:
-          'Publishing in a trusted industry magazine can create powerful client moments before you even walk in the room. But it only works if the article delivers insight, not documentation. Clients don’t care about scope, budget, or timelines—they care about how you think. Start with tension, something real they’re dealing with, and use the project as proof, not the focus. When the client becomes the hero and your thinking is clear, the article feels relevant and credible. That’s what makes clients engage, ask questions, and remember you long after the meeting ends.',
-        reviewHref: '/unitviews/videos/view/69d6c22cd8af4487117d9c34'
-      },
-      {
-        title: 'Creativity and Innovation\nTesting the Habits of the Greats 1',
-        unitLabel: 'prompt set',
-        unitType: 'promptset',
-        image: '/images/creatives.png',
-        authorImage: '/images/twenniefounders3.png',
-        kicker:
-          'This prompt set introduces proven creative techniques used by history’s most innovative thinkers, helping you break routine patterns, generate new ideas, and apply creativity directly to real-world consulting challenges.',
-        body:
-          'This prompt set draws from the working habits of some of history’s most creative individuals to demonstrate that creativity is not rare—it is trainable. Through structured exercises inspired by figures like Leonardo da Vinci, Walt Disney, and Albert Einstein, you will experiment with techniques such as reverse thinking, constraint design, cross-disciplinary problem solving, and deliberate disruption.',
-        reviewHref: '/unitviews/promptsets/view/69d5251fd412678302354d04'
-      }
-    ];
+const featuredPromoBase = [
+  {
+    title: 'Never Miss Another RFP',
+    subtitle: 'A Solution to a Pesky Problem',
+    unitLabel: 'video',
+    unitType: 'video',
+    image: '/images/missed RFP.png',
+    authorImage: '/images/twenniefounders3.png',
+    kicker:
+      'Missing an RFP creates panic and wasted effort. A simple internal work order turns monitoring into a structured, accountable task, reducing risk, improving consistency, and preventing avoidable breakdowns in your pursuit process.',
+    body:
+      'Missing an RFP creates unnecessary stress, lost opportunities, and last-minute chaos that could have been avoided. The issue isn’t effort—it’s structure. Monitoring purchasing sites is often informal, unclear, and easy to overlook, especially when support staff are pulled into urgent work. A simple internal work order changes that. It defines expectations, clarifies instructions, and creates accountability on both sides. It also allows for continuity, backups, and regular improvement.',
+    reviewHref: '/unitviews/videos/view/69d82d47d8af4487117da8f5'
+  },
+  {
+    title: 'How to Write an Article in an',
+    subtitle: 'Industry or Trade Publication',
+    unitLabel: 'video',
+    unitType: 'video',
+    image: '/images/renewmag.png',
+    authorImage: '/images/twenniefounders3.png',
+    kicker:
+      'Publishing in trusted industry magazines builds instant credibility, but only if you share insight, not project details. Start with tension, show thinking, and help clients see their own challenges reflected.',
+    body:
+      'Publishing in a trusted industry magazine can create powerful client moments before you even walk in the room. But it only works if the article delivers insight, not documentation. Clients don’t care about scope, budget, or timelines—they care about how you think. Start with tension, something real they’re dealing with, and use the project as proof, not the focus. When the client becomes the hero and your thinking is clear, the article feels relevant and credible. That’s what makes clients engage, ask questions, and remember you long after the meeting ends.',
+    reviewHref: '/unitviews/videos/view/69d6c22cd8af4487117d9c34'
+  },
+  {
+    title: 'Creativity and Innovation',
+    subtitle: 'Testing the Habits of the Greats 1',
+    unitLabel: 'prompt set',
+    unitType: 'promptset',
+    image: '/images/creatives.png',
+    authorImage: '/images/twenniefounders3.png',
+    kicker:
+      'This prompt set introduces proven creative techniques used by history’s most innovative thinkers, helping you break routine patterns, generate new ideas, and apply creativity directly to real-world consulting challenges.',
+    body:
+      'This prompt set draws from the working habits of some of history’s most creative individuals to demonstrate that creativity is not rare—it is trainable. Through structured exercises inspired by figures like Leonardo da Vinci, Walt Disney, and Albert Einstein, you will experiment with techniques such as reverse thinking, constraint design, cross-disciplinary problem solving, and deliberate disruption.',
+    reviewHref: '/unitviews/promptsets/view/69d5251fd412678302354d04'
+  }
+];
 
     const featuredPromos = featuredPromoBase.map((item) => ({
       ...item,

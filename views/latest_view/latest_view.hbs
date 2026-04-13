@@ -11,9 +11,12 @@
           <span class="latest-featured-eyebrow">featured this month</span>
         </div>
 
-        <div class="latest-featured-title-block">
-          <h2 class="latest-featured-title">{{this.title}}</h2>
-        </div>
+<h2 class="latest-featured-title">
+  {{this.title}}
+  {{#if this.subtitle}}
+    <span class="latest-featured-subtitle">{{this.subtitle}}</span>
+  {{/if}}
+</h2>
 
         <div class="latest-featured-grid">
           <div class="latest-featured-image-col">
