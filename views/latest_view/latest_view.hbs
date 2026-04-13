@@ -2,33 +2,37 @@
 
 
 
-<div class="latest-container">
-  <div class="latest-content">
-
 <div class="latest-featured-promos">
   {{#each featuredPromos}}
-    <div class="latest-featured-row">
+    <section class="latest-featured-row latest-featured-row-animated">
       <div class="latest-featured-main">
+
+        <div class="latest-featured-topline">
+          <span class="latest-featured-eyebrow">featured this month</span>
+        </div>
+
         <div class="latest-featured-title-block">
           <h2 class="latest-featured-title">{{this.title}}</h2>
         </div>
 
         <div class="latest-featured-grid">
           <div class="latest-featured-image-col">
-            <img
-              src="{{this.image}}"
-              alt="{{this.title}}"
-              class="latest-featured-main-image"
-            >
+            <div class="latest-featured-image-frame">
+              <img
+                src="{{this.image}}"
+                alt="{{this.title}}"
+                class="latest-featured-main-image"
+              >
+            </div>
           </div>
 
           <div class="latest-featured-copy-col">
             <div class="latest-featured-unit-label-wrap">
               <div class="latest-featured-unit-icon">
                 {{#if (eq this.unitType "promptset")}}
-                  <img src="/icons/promptseticon.svg" alt="{{this.unitLabel}}">
+                  <img src="/icons/promptset.svg" alt="{{this.unitLabel}}">
                 {{else}}
-                  <img src="/icons/videoicon.svg" alt="{{this.unitLabel}}">
+                  <img src="/icons/video.svg" alt="{{this.unitLabel}}">
                 {{/if}}
               </div>
               <div class="latest-featured-unit-label">{{this.unitLabel}}</div>
@@ -36,31 +40,40 @@
 
             <p class="latest-featured-kicker">{{this.kicker}}</p>
             <p class="latest-featured-body">{{this.body}}</p>
-          </div>
 
-          <div class="latest-featured-author-col">
-            <img
-              src="{{this.authorImage}}"
-              alt="Author image"
-              class="latest-featured-author-image"
-            >
-            <div class="latest-featured-author-label">AUTHOR</div>
-
-            <div class="latest-featured-btn-wrap">
-              {{#if this.button.disabled}}
-                <div class="latest-unit-review-btn disabled">
-                  {{this.button.text}}
-                </div>
-              {{else}}
-                <a href="{{this.button.href}}" class="latest-unit-review-btn">
-                  {{this.button.text}}
-                </a>
-              {{/if}}
+            <div class="latest-featured-outcome-strip">
+              <span>practical</span>
+              <span>immediately useful</span>
+              <span>built for real work</span>
             </div>
           </div>
+
+          <aside class="latest-featured-author-col">
+            <div class="latest-featured-author-card">
+              <img
+                src="{{this.authorImage}}"
+                alt="Author image"
+                class="latest-featured-author-image"
+              >
+              <div class="latest-featured-author-label">CREATED BY</div>
+              <div class="latest-featured-author-name">Michele Rochon-Wood</div>
+
+              <div class="latest-featured-btn-wrap">
+                {{#if this.button.disabled}}
+                  <div class="latest-unit-review-btn disabled">
+                    {{this.button.text}}
+                  </div>
+                {{else}}
+                  <a href="{{this.button.href}}" class="latest-unit-review-btn">
+                    {{this.button.text}}
+                  </a>
+                {{/if}}
+              </div>
+            </div>
+          </aside>
         </div>
       </div>
-    </div>
+    </section>
 
     <hr class="latest-divider">
   {{/each}}

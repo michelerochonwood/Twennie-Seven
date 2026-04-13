@@ -265,7 +265,7 @@ exports.getLatestLibraryItems = async (req, res) => {
         unitLabel: 'video',
         unitType: 'video',
         image: '/images/renewmag.png',
-        authorImage: '/images/twenniefounders3.pmg',
+        authorImage: '/images/twenniefounders3.png',
         kicker:
           'Publishing in trusted industry magazines builds instant credibility, but only if you share insight, not project details. Start with tension, show thinking, and help clients see their own challenges reflected.',
         body:
