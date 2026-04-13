@@ -261,9 +261,21 @@ const featuredPromoBase = [
       'Missing an RFP creates unnecessary stress, lost opportunities, and last-minute chaos that could have been avoided. The issue isn’t effort—it’s structure. Monitoring purchasing sites is often informal, unclear, and easy to overlook, especially when support staff are pulled into urgent work. A simple internal work order changes that. It defines expectations, clarifies instructions, and creates accountability on both sides. It also allows for continuity, backups, and regular improvement.',
     reviewHref: '/unitviews/videos/view/69d82d47d8af4487117da8f5'
   },
+    {
+    title: 'Interview: John Velick',
+    subtitle: 'On Using AI to Write Proposals',
+    unitLabel: 'interview',
+    unitType: 'interview',
+    image: '/images/interview with john.png',
+    authorImage: '/images/twenniefounders3.png',
+    kicker:
+      'John Velick explains how proposal teams are using AI to reduce manual writing, improve first drafts, and handle large volumes of background material more efficiently.',
+    body:
+      'In this interview, John Velick describes how he uses ChatGPT to support proposal development from start to finish. By setting up dedicated project spaces, training the tool on company information and past work, and uploading materials like CVs, RFPs, and reports, he is able to produce stronger first drafts for project understanding, staff bios, risk plans, and more. He also shows how AI can help teams rewrite content, summarize large documents, draft emails, and catch gaps in compliance before submission.',
+    reviewHref: '/unitviews/interviews/view/686e9d9c847132d273359c36'
+  },
   {
-    title: 'How to Write an Article in an',
-    subtitle: 'Industry or Trade Publication',
+    title: 'How to Write an Article in an Industry or Trade Publication',
     unitLabel: 'video',
     unitType: 'video',
     image: '/images/renewmag.png',
@@ -287,6 +299,7 @@ const featuredPromoBase = [
       'This prompt set draws from the working habits of some of history’s most creative individuals to demonstrate that creativity is not rare—it is trainable. Through structured exercises inspired by figures like Leonardo da Vinci, Walt Disney, and Albert Einstein, you will experiment with techniques such as reverse thinking, constraint design, cross-disciplinary problem solving, and deliberate disruption.',
     reviewHref: '/unitviews/promptsets/view/69d5251fd412678302354d04'
   }
+
 ];
 
     const featuredPromos = featuredPromoBase.map((item) => ({
