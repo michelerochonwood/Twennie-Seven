@@ -1545,6 +1545,39 @@ html, body {
   align-items: center;
 }
 
+/* === IMAGE + TEXT SIDE-BY-SIDE === */
+
+.latest-featured-content-row {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+/* tighten image so it doesn't dominate */
+.latest-featured-image-frame {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* make sure image behaves */
+.latest-featured-main-image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* give text a bit of breathing room */
+.latest-featured-copy-col {
+  padding-top: 0.2rem;
+}
+
+@media (max-width: 700px) {
+  .latest-featured-content-row {
+    grid-template-columns: 1fr;
+  }
+}
+
 
 /* =========================
    ANIMATION

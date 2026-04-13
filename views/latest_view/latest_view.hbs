@@ -18,30 +18,38 @@
           {{/if}}
         </h2>
 
-        <div class="latest-featured-grid">
+<div class="latest-featured-grid">
 
-          <div class="latest-featured-image-col">
-            <div class="latest-featured-image-frame">
-              <img
-                src="{{this.image}}"
-                alt="{{this.title}}"
-                class="latest-featured-main-image"
-              >
-            </div>
-          </div>
+  <!-- NEW: image + text row -->
+  <div class="latest-featured-content-row">
 
-          <div class="latest-featured-copy-col">
-            <p class="latest-featured-kicker">{{this.kicker}}</p>
-            <p class="latest-featured-body">{{this.body}}</p>
+    <!-- IMAGE -->
+    <div class="latest-featured-image-col">
+      <div class="latest-featured-image-frame">
+        <img
+          src="{{this.image}}"
+          alt="{{this.title}}"
+          class="latest-featured-main-image"
+        >
+      </div>
+    </div>
 
-            <div class="latest-featured-outcome-strip">
-              <span>practical</span>
-              <span>immediately useful</span>
-              <span>built for real work</span>
-            </div>
-          </div>
+    <!-- TEXT -->
+    <div class="latest-featured-copy-col">
+      <p class="latest-featured-kicker">{{this.kicker}}</p>
+      <p class="latest-featured-body">{{this.body}}</p>
 
-<aside class="latest-featured-author-col">
+      <div class="latest-featured-outcome-strip">
+        <span>practical</span>
+        <span>immediately useful</span>
+        <span>built for real work</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- AUTHOR ROW (unchanged) -->
+  <aside class="latest-featured-author-col">
   <div class="latest-featured-author-row">
 
     <!-- AUTHOR IMAGE -->
