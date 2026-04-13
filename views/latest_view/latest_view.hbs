@@ -18,38 +18,53 @@
   {{/if}}
 </h2>
 
-        <div class="latest-featured-grid">
-          <div class="latest-featured-image-col">
-            <div class="latest-featured-image-frame">
-              <img
-                src="{{this.image}}"
-                alt="{{this.title}}"
-                class="latest-featured-main-image"
-              >
-            </div>
-          </div>
+<div class="latest-featured-grid">
 
-          <div class="latest-featured-copy-col">
-            <div class="latest-featured-unit-label-wrap">
-              <div class="latest-featured-unit-icon">
-                {{#if (eq this.unitType "promptset")}}
-                  <img src="/icons/promptset.svg" alt="{{this.unitLabel}}">
-                {{else}}
-                  <img src="/icons/video.svg" alt="{{this.unitLabel}}">
-                {{/if}}
-              </div>
-              <div class="latest-featured-unit-label">{{this.unitLabel}}</div>
-            </div>
+  <!-- IMAGE + ICON + DESCRIPTION -->
+  <div class="latest-featured-image-col">
+    <div class="latest-featured-image-frame">
+      <img
+        src="{{this.image}}"
+        alt="{{this.title}}"
+        class="latest-featured-main-image"
+      >
+    </div>
 
-            <p class="latest-featured-kicker">{{this.kicker}}</p>
-            <p class="latest-featured-body">{{this.body}}</p>
+    <!-- NEW: icon + description block -->
+    <div class="latest-featured-type-block">
+      <div class="latest-featured-unit-icon">
+        {{#if (eq this.unitType "promptset")}}
+          <img src="/icons/promptset.svg" alt="{{this.unitLabel}}">
+        {{else}}
+          <img src="/icons/video.svg" alt="{{this.unitLabel}}">
+        {{/if}}
+      </div>
 
-            <div class="latest-featured-outcome-strip">
-              <span>practical</span>
-              <span>immediately useful</span>
-              <span>built for real work</span>
-            </div>
-          </div>
+      <p class="latest-featured-type-description">
+        {{#if (eq this.unitType "promptset")}}
+          Prompt sets contain 20 brief activities you complete over weeks or months that help you build new habits in leadership, business development, project management, culture, and creativity.
+        {{else}}
+          Twennie videos are less than 20 minutes long and explore a topic relevant to your work.
+        {{/if}}
+      </p>
+    </div>
+  </div>
+
+
+  <!-- COPY COLUMN (cleaned up) -->
+  <div class="latest-featured-copy-col">
+
+    <p class="latest-featured-kicker">{{this.kicker}}</p>
+    <p class="latest-featured-body">{{this.body}}</p>
+
+    <div class="latest-featured-outcome-strip">
+      <span>practical</span>
+      <span>immediately useful</span>
+      <span>built for real work</span>
+    </div>
+  </div>
+
+  <!-- AUTHOR COLUMN stays the same -->
 
           <aside class="latest-featured-author-col">
             <div class="latest-featured-author-card">
