@@ -1226,9 +1226,13 @@ html, body {
   transform: rotate(8deg);
 }
 
+/* === LATEST PROMOTIONS === */
 
-
-
+.latest-library-container {
+  width: 80vw;
+  max-width: 1300px;
+  margin: 0 auto;
+}
 
 .latest-featured-promos {
   width: min(85vw, 1400px);
