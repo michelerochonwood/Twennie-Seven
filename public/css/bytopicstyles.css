@@ -1487,6 +1487,65 @@ html, body {
 }
 
 
+
+/* === AUTHOR ROW LAYOUT === */
+
+.latest-featured-author-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  padding-top: 1rem;
+  margin-top: 0.5rem;
+  border-top: 1px solid rgba(0,0,0,0.08);
+
+  flex-wrap: wrap; /* prevents breakage on smaller cards */
+}
+
+/* AUTHOR IMAGE */
+.latest-featured-author-image {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* NAME */
+.latest-featured-author-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #30327d;
+  white-space: nowrap;
+}
+
+/* ICON */
+.latest-featured-unit-icon img {
+  width: 26px;
+  height: auto;
+}
+
+/* DESCRIPTION */
+.latest-featured-type-description {
+  font-size: 0.65rem;
+  line-height: 1.3;
+  color: #666;
+  max-width: 160px;
+}
+
+/* DIVIDER */
+.latest-featured-divider {
+  width: 1px;
+  height: 28px;
+  background: rgba(0,0,0,0.15);
+}
+
+/* BUTTON WRAP */
+.latest-featured-btn-wrap {
+  display: flex;
+  align-items: center;
+}
+
+
 /* =========================
    ANIMATION
    ========================= */

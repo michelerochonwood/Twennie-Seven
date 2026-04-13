@@ -41,52 +41,64 @@
             </div>
           </div>
 
-          <aside class="latest-featured-author-col">
-            <div class="latest-featured-author-card">
-              <img
-                src="{{this.authorImage}}"
-                alt="Author image"
-                class="latest-featured-author-image"
-              >
+<aside class="latest-featured-author-col">
+  <div class="latest-featured-author-row">
 
-              <div class="latest-featured-author-label">CREATED BY</div>
-              <div class="latest-featured-author-name">Michele Rochon-Wood</div>
+    <!-- AUTHOR IMAGE -->
+    <img
+      src="{{this.authorImage}}"
+      alt="Author image"
+      class="latest-featured-author-image"
+    >
 
-              <div class="latest-featured-btn-wrap">
-                {{#if this.button.disabled}}
-                  <div class="latest-unit-review-btn disabled">
-                    {{this.button.text}}
-                  </div>
-                {{else}}
-                  <a href="{{this.button.href}}" class="latest-unit-review-btn">
-                    {{this.button.text}}
-                  </a>
-                {{/if}}
-              </div>
+    <!-- AUTHOR NAME -->
+    <div class="latest-featured-author-name">
+      Michele Rochon-Wood
+    </div>
 
-              <div class="latest-featured-type-block">
-                <div class="latest-featured-unit-icon">
-                  {{#if (eq this.unitType "promptset")}}
-                    <img src="/icons/promptset.svg" alt="{{this.unitLabel}}">
-                  {{else if (eq this.unitType "interview")}}
-                    <img src="/icons/interview.svg" alt="{{this.unitLabel}}">
-                  {{else}}
-                    <img src="/icons/video.svg" alt="{{this.unitLabel}}">
-                  {{/if}}
-                </div>
+    <!-- DIVIDER -->
+    <div class="latest-featured-divider"></div>
 
-                <p class="latest-featured-type-description">
-                  {{#if (eq this.unitType "promptset")}}
-                    Prompt sets contain 20 brief activities you complete over weeks or months that help you build new habits in leadership, business development, project management, culture, and creativity.
-                  {{else if (eq this.unitType "interview")}}
-                    Twennie interviews feature conversations with industry professionals sharing practical insights, real experiences, and strategies you can apply directly to your work.
-                  {{else}}
-                    Twennie videos are shorter than 20 minutes and explore a topic relevant to your work.
-                  {{/if}}
-                </p>
-              </div>
-            </div>
-          </aside>
+    <!-- UNIT ICON -->
+    <div class="latest-featured-unit-icon">
+      {{#if (eq this.unitType "promptset")}}
+        <img src="/icons/promptset.svg" alt="{{this.unitLabel}}">
+      {{else if (eq this.unitType "interview")}}
+        <img src="/icons/interview.svg" alt="{{this.unitLabel}}">
+      {{else}}
+        <img src="/icons/video.svg" alt="{{this.unitLabel}}">
+      {{/if}}
+    </div>
+
+    <!-- UNIT DESCRIPTION -->
+    <p class="latest-featured-type-description">
+      {{#if (eq this.unitType "promptset")}}
+        Prompt sets contain 20 brief activities you complete over weeks or months that help you build new habits in leadership, business development, project management, culture, and creativity.
+      {{else if (eq this.unitType "interview")}}
+        Twennie interviews feature conversations with industry professionals sharing practical insights, real experiences, and strategies you can apply directly to your work.
+      {{else}}
+        Twennie videos are shorter than 20 minutes and explore a topic relevant to your work.
+      {{/if}}
+    </p>
+
+    <!-- DIVIDER -->
+    <div class="latest-featured-divider"></div>
+
+    <!-- BUTTON -->
+    <div class="latest-featured-btn-wrap">
+      {{#if this.button.disabled}}
+        <div class="latest-unit-review-btn disabled">
+          {{this.button.text}}
+        </div>
+      {{else}}
+        <a href="{{this.button.href}}" class="latest-unit-review-btn">
+          {{this.button.text}}
+        </a>
+      {{/if}}
+    </div>
+
+  </div>
+</aside>
 
         </div>
       </div>
