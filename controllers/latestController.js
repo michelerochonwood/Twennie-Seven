@@ -283,7 +283,7 @@ const featuredPromoBase = [
     kicker:
       'Publishing in trusted industry magazines builds instant credibility, but only if you share insight, not project details. Start with tension, show thinking, and help clients see their own challenges reflected.',
     body:
-      'Publishing in a trusted industry magazine can create powerful client moments before you even walk in the room. But it only works if the article delivers insight, not documentation. Clients don’t care about scope, budget, or timelines—they care about how you think. Start with tension, something real they’re dealing with, and use the project as proof, not the focus. When the client becomes the hero and your thinking is clear, the article feels relevant and credible.',
+      'Publishing in a trusted industry magazine can create powerful client moments. But it only works if the article delivers insight, not documentation. Clients don’t care about scope, budget, or timelines—they care about how you think. Start with tension, something real they’re dealing with, and use the project as proof, not the focus. When the client becomes the hero and your thinking is clear, the article feels relevant and credible.',
     reviewHref: '/unitviews/videos/view/69d6c22cd8af4487117d9c34'
   },
   {
