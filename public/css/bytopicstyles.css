@@ -657,6 +657,7 @@ html, body {
 .latest-title {
   color: #262262;
   font-size: clamp(1.5rem, 5vw, 2.3rem);
+  margin-top: 100px;
 }
 
 .latest-section-title {
