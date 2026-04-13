@@ -67,22 +67,35 @@
               </div>
 
               <!-- NEW: icon + description under author -->
-              <div class="latest-featured-type-block">
-                <div class="latest-featured-unit-icon">
-                  {{#if (eq this.unitType "promptset")}}
-                    <img src="/icons/promptset.svg" alt="{{this.unitLabel}}">
-                  {{else}}
-                    <img src="/icons/video.svg" alt="{{this.unitLabel}}">
-                  {{/if}}
-                </div>
+<div class="latest-featured-type-block">
+  <div class="latest-featured-unit-icon">
 
-                <p class="latest-featured-type-description">
-                  {{#if (eq this.unitType "promptset")}}
-                    Prompt sets contain 20 brief activities you complete over weeks or months that help you build new habits in leadership, business development, project management, culture, and creativity.
-                  {{else}}
-                    Twennie videos are shorter than 20 minutes and explore a topic relevant to your work.
-                  {{/if}}
-                </p>
+    {{#if (eq this.unitType "promptset")}}
+      <img src="/icons/promptset.svg" alt="{{this.unitLabel}}">
+
+    {{else if (eq this.unitType "interview")}}
+      <img src="/icons/interview.svg" alt="{{this.unitLabel}}">
+
+    {{else}}
+      <img src="/icons/video.svg" alt="{{this.unitLabel}}">
+    {{/if}}
+
+  </div>
+
+  <p class="latest-featured-type-description">
+
+    {{#if (eq this.unitType "promptset")}}
+      Prompt sets contain 20 brief activities you complete over weeks or months that help you build new habits in leadership, business development, project management, culture, and creativity.
+
+    {{else if (eq this.unitType "interview")}}
+      Twennie interviews feature conversations with industry professionals sharing practical insights, real experiences, and strategies you can apply directly to your work.
+
+    {{else}}
+      Twennie videos are shorter than 20 minutes and explore a topic relevant to your work.
+    {{/if}}
+
+  </p>
+</div>
               </div>
 
             </div>
