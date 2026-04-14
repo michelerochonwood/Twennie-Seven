@@ -1735,7 +1735,7 @@ overflow: visible;
   width: 80%;
   background: transparent;
   box-shadow: none;
-  z-index: 3;
+  z-index: 5;
   animation: latestParetoFloat 5.5s ease-in-out infinite;
 }
 
@@ -1778,7 +1778,7 @@ overflow: visible;
   content: "”";
   position: absolute;
   right: 14px;
-  bottom: -80px;
+  bottom: -30px;
   font-family: serif;
   font-size: 140px;
   line-height: 1;
