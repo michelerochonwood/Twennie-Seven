@@ -1616,7 +1616,7 @@ html, body {
   position: relative;
   width: min(1350px, calc(100% - 40px));
   margin: 70px auto 60px;
-  padding: 55px 45px;
+
   border-radius: 36px;
 overflow: visible;
   background:
