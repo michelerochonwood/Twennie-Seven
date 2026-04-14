@@ -159,10 +159,16 @@
         >
 
         <img
-          src="/images/michele.png"
+          src="/images/michele.jpg"
           alt="Michele Rochon-Wood"
           class="latest-about-image latest-about-image-michele"
         >
+
+        <div class="latest-about-quote">
+          <p>
+            I assembled a team of veteran professionals from the industry. They believed in my vision for a new kind of learning resource and wanted to lend their support. Over several months, I interviewed them about their experiences in leadership, business unit management, working with clients, and managing successful projects. From those interviews came Twennie, an online environment designed just for technical service providers.
+          </p>
+        </div>
 
         <img
           src="/images/pareto3d2.png"
@@ -424,6 +430,28 @@
 
     aboutAnimated.forEach(element => aboutObserver.observe(element));
   });
+
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const aboutAnimated = document.querySelectorAll(
+      ".latest-about-reveal, .latest-about-quote"
+    );
+
+    const aboutObserver = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("in-view");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.18 }
+    );
+
+    aboutAnimated.forEach(element => aboutObserver.observe(element));
+  });
+
 
 </script>
 
