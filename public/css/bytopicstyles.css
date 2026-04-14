@@ -1654,7 +1654,7 @@ overflow: visible;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #8e4ec6;
+  color: #dc176a;
 }
 
 .latest-about-title {
@@ -1730,9 +1730,9 @@ overflow: visible;
 }
 
 .latest-about-image-pareto {
-  right: -100px;
+  right: -120px;
   bottom: -8px;
-  width: 70%;
+  width: 80%;
   background: transparent;
   box-shadow: none;
   z-index: 3;
@@ -1742,8 +1742,8 @@ overflow: visible;
 .latest-about-quote {
   position: absolute;
   top: 695px;
-  left: 10%;
-  width: 58%;
+  left: 12%;
+  width: 60%;
   padding: 24px 24px 24px 30px;
   border-left: 4px solid #dc176a;
   border-radius: 20px;
@@ -1768,7 +1768,7 @@ overflow: visible;
   top: -30px;
   left: 12px;
   font-family: serif;
-  font-size: 120px;
+  font-size: 140px;
   line-height: 1;
   color: rgba(220, 24, 106, 0.18);
   pointer-events: none;
@@ -1778,9 +1778,9 @@ overflow: visible;
   content: "”";
   position: absolute;
   right: 14px;
-  bottom: -60px;
+  bottom: -80px;
   font-family: serif;
-  font-size: 120px;
+  font-size: 140px;
   line-height: 1;
   color: rgba(220, 24, 106, 0.18);
   pointer-events: none;
@@ -1792,7 +1792,6 @@ overflow: visible;
   margin: 0;
   font-size: 0.95rem;
   line-height: 1.6;
-  font-style: italic;
   font-weight: 700;
   color: #2e3160;
 }
