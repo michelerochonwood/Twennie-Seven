@@ -1714,9 +1714,9 @@ overflow: visible;
 }
 
 .latest-about-image-panels {
-  top: 6px;
+  top: -6px;
   right: 0;
-  width: 62%;
+  width: 72%;
   border-radius: 28px;
   z-index: 1;
 }
@@ -1779,7 +1779,7 @@ overflow: visible;
   content: "”";
   position: absolute;
   right: 14px;
-  bottom: -20px;
+  bottom: -30px;
   font-family: serif;
   font-size: 200px;
   line-height: 1;
