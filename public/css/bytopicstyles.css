@@ -1823,15 +1823,16 @@ html, body {
   backdrop-filter: blur(6px);
   box-shadow: 0 20px 50px rgba(41, 49, 102, 0.16);
   z-index: 4;
-  border-left: 4px solid #8e4ec6;
+  border-left: 4px solid #dc176a;
 }
 
 .latest-about-quote p {
-  font-size: 0.95rem;
+  font-size: 1rem;
   line-height: 1.6;
   color: #2e3160;
   margin: 0;
   font-style: italic;
+  font-weight: 800;
 }
 
 .latest-about-quote {
