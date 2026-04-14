@@ -1732,9 +1732,8 @@ html, body {
 .latest-about-image-pareto {
   right: 0;
   bottom: -8px;
-  width: 42%;
+  width: 100%;
   background: transparent;
-  object-fit: contain;
   box-shadow: none;
   z-index: 3;
   animation: latestParetoFloat 5.5s ease-in-out infinite;
@@ -1742,7 +1741,7 @@ html, body {
 
 .latest-about-quote {
   position: absolute;
-  top: 495px;
+  top: 695px;
   left: 10%;
   width: 58%;
   padding: 24px 24px 24px 30px;
