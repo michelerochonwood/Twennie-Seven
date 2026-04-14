@@ -1881,19 +1881,19 @@ html, body {
   }
 
   .latest-about-image-michele {
-    top: 96px;
+    top: 196px;
     left: 0;
     width: 64%;
   }
 
   .latest-about-image-pareto {
     right: 0;
-    bottom: -44px;
+ 
     width: 44%;
   }
 
   .latest-about-quote {
-    top: 400px;
+    top: 1000px;
     left: 6%;
     width: 68%;
     padding: 18px 18px 18px 22px;
