@@ -1755,6 +1755,7 @@ overflow: visible;
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 1s ease, transform 1s ease;
+  margin-bottom: 30px;
 }
 
 .latest-about-quote.in-view {
@@ -1765,10 +1766,10 @@ overflow: visible;
 .latest-about-quote::before {
   content: "“";
   position: absolute;
-  top: -20px;
+  top: -30px;
   left: 12px;
   font-family: serif;
-  font-size: 140px;
+  font-size: 200px;
   line-height: 1;
   color: rgba(220, 24, 106, 0.18);
   pointer-events: none;
