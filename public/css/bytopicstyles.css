@@ -1722,7 +1722,7 @@ html, body {
 }
 
 .latest-about-image-michele {
-  top: 108px;
+  top: 150px;
   left: 4%;
   width: 58%;
   border-radius: 28px;
@@ -1742,7 +1742,7 @@ html, body {
 
 .latest-about-quote {
   position: absolute;
-  top: 395px;
+  top: 495px;
   left: 10%;
   width: 58%;
   padding: 24px 24px 24px 30px;
@@ -1881,19 +1881,19 @@ html, body {
   }
 
   .latest-about-image-michele {
-    top: 196px;
+    top: 96px;
     left: 0;
     width: 64%;
   }
 
   .latest-about-image-pareto {
     right: 0;
- 
+    bottom: -44px;
     width: 44%;
   }
 
   .latest-about-quote {
-    top: 1000px;
+    top: 285px;
     left: 6%;
     width: 68%;
     padding: 18px 18px 18px 22px;
