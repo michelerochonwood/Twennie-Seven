@@ -1755,7 +1755,6 @@ overflow: visible;
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 1s ease, transform 1s ease;
-  margin-bottom: 30px;
 }
 
 .latest-about-quote.in-view {
@@ -1766,8 +1765,9 @@ overflow: visible;
 .latest-about-quote::before {
   content: "“";
   position: absolute;
-  top: -30px;
-  left: 12px;
+  top: 0;
+  left: 10px;
+  transform: translateY(-48%);
   font-family: serif;
   font-size: 200px;
   line-height: 1;
@@ -1778,8 +1778,9 @@ overflow: visible;
 .latest-about-quote::after {
   content: "”";
   position: absolute;
-  right: 14px;
-  bottom: -30px;
+  right: 6px;
+  bottom: 0;
+  transform: translateY(48%);
   font-family: serif;
   font-size: 200px;
   line-height: 1;
