@@ -116,6 +116,65 @@
 
 </div>
 
+<section class="latest-about-strip latest-about-animated">
+        <hr class="latest-divider">
+  <div class="latest-about-grid">
+
+    <div class="latest-about-copy latest-about-reveal">
+      <p class="latest-about-eyebrow">about twennie</p>
+
+      <h2 class="latest-about-title">
+        Built for technical professionals who need useful learning, not extra noise.
+      </h2>
+
+      <p class="latest-about-text">
+        I’m Michele Rochon-Wood, a 20-year proposal and marketing specialist in the engineering and architecture industry. I worked for four global firms before striking out on my own a few years ago. The aim was to bring valuable learning content to the world of technical consulting. At the time, I had a few learning modules of my own, but I wanted to build a comprehensive library, a fully digital warehouse of the non-technical learning urgently needed in the world of technical consulting.
+      </p>
+
+      <p class="latest-about-text">
+        I assembled a team of veteran professionals from the industry. They believed in my vision for a new kind of learning resource and wanted to lend their support. Over several months, I interviewed them about their experiences in leadership, business unit management, working with clients, and managing successful projects. From those interviews came Twennie, an online environment designed just for technical service providers.
+      </p>
+
+      <p class="latest-about-text">
+        On Twennie, technical professionals and their internal leadership and support teams have access to learning in project management, business development, and engaging clients and employees to succeed in their fields of expertise. That learning is built to consume fewer billable hours while bringing essential clarity to the most challenging concepts in the business.
+      </p>
+
+      <p class="latest-about-text">
+        Twennie’s name is taken from the Pareto Principle, which states that 20% of our efforts produces 80% of our results. Twennie’s philosophy for learning follows this guideline, teaching high-impact action planning, efficient use of resources, and fit-for-purpose techniques. And we do it asynchronously in less time, affordably.
+      </p>
+
+      <div class="latest-about-pill-row">
+        <span class="latest-about-pill">20-minute learning</span>
+        <span class="latest-about-pill">high-impact action</span>
+        <span class="latest-about-pill">built for real work</span>
+      </div>
+    </div>
+
+    <div class="latest-about-images latest-about-reveal">
+      <div class="latest-about-image-stack">
+        <img
+          src="/images/panels.png"
+          alt="Industry panel discussions that informed Twennie"
+          class="latest-about-image latest-about-image-panels"
+        >
+
+        <img
+          src="/images/michele.jpg"
+          alt="Michele Rochon-Wood"
+          class="latest-about-image latest-about-image-michele"
+        >
+
+        <img
+          src="/images/pareto3d2.png"
+          alt="Pareto principle illustration"
+          class="latest-about-image latest-about-image-pareto"
+        >
+      </div>
+    </div>
+
+  </div>
+</section>
+
 <div class="latest-library-container">
       <hr class="latest-divider">
   <h1 class="latest-title">latest additions to the Twennie library</h1>
@@ -346,6 +405,26 @@
       content.style.display = 'flex';
     }
   }
+
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const aboutAnimated = document.querySelectorAll(".latest-about-reveal");
+
+    const aboutObserver = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("in-view");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.18 }
+    );
+
+    aboutAnimated.forEach(element => aboutObserver.observe(element));
+  });
+
 </script>
 
 
