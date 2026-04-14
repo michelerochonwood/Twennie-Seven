@@ -1730,9 +1730,9 @@ html, body {
 }
 
 .latest-about-image-pareto {
-  right: 0;
+  right: -100px;
   bottom: -8px;
-  width: 100%;
+  width: 70%;
   background: transparent;
   box-shadow: none;
   z-index: 3;
