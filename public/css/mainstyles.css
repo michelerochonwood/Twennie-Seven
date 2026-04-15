@@ -8301,4 +8301,37 @@ overflow: visible;
 }
 
 
+.about-contact-block {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(41, 49, 102, 0.12);
+  position: relative;
+  z-index: 2;
+}
+
+.about-contact-heading {
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #262262;
+  text-transform: lowercase;
+}
+
+.about-contact {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.9;
+  color: #3f426d;
+}
+
+.about-contact a {
+  color: #4e50a2;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.about-contact a:hover {
+  text-decoration: underline;
+}
+
 
