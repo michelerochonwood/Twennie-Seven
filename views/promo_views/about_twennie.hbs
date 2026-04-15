@@ -1,8 +1,6 @@
 {{#*inline "title"}}About Twennie | Twennie{{/inline}}
-{{#*inline "title"}}Latest Additions | Twennie{{/inline}}
 
 <section class="latest-about-strip latest-about-animated">
-
   <div class="latest-about-grid">
 
     <div class="latest-about-copy latest-about-reveal">
@@ -15,7 +13,6 @@
       <p class="latest-about-text">
         Hi! I’m Michele Rochon-Wood, a 20-year business development specialist in AEC. I worked for four global firms before striking out on my own a few years ago. I wanted to bring valuable learning content to the world of technical consulting. At the time, I had a handful of modules, but I wanted to build a comprehensive library, a full digital warehouse of urgently needed, non-technical learning.
       </p>
-
 
       <p class="latest-about-text">
         On Twennie, technical professionals and their internal support teams have access to learning in project management, business development, and engaging clients to succeed in their fields of expertise. That learning is built to consume fewer billable hours while bringing essential clarity to the most challenging concepts in the business.
@@ -34,24 +31,23 @@
 
     <div class="latest-about-images latest-about-reveal">
       <div class="latest-about-image-stack">
-  <img
-    src="/images/panels.png"
-    alt="Industry panel discussions that informed Twennie"
-    class="latest-about-image latest-about-image-panels"
-  >
+        <img
+          src="/images/panels.png"
+          alt="Industry panel discussions that informed Twennie"
+          class="latest-about-image latest-about-image-panels"
+        >
 
-  <!-- NEW FOUNDERS IMAGE -->
-  <img
-    src="/images/twenniefounders3.png"
-    alt="Twennie Founders"
-    class="latest-about-image latest-about-image-founders"
-  >
+        <img
+          src="/images/twenniefounders3.png"
+          alt="Twennie Founders"
+          class="latest-about-image latest-about-image-founders"
+        >
 
-  <img
-    src="/images/michele.png"
-    alt="Michele Rochon-Wood"
-    class="latest-about-image latest-about-image-michele"
-  >
+        <img
+          src="/images/michele.png"
+          alt="Michele Rochon-Wood"
+          class="latest-about-image latest-about-image-michele"
+        >
 
         <div class="latest-about-quote">
           <p>
@@ -68,46 +64,21 @@
     </div>
 
   </div>
+
+  <div class="about-contact-block latest-about-reveal">
+    <h3 class="about-contact-heading">contact twennie</h3>
+    <p class="about-contact">
+      <strong>phone:</strong> 613.716.6393<br>
+      <strong>email:</strong> <a href="mailto:info@twennie.com">info@twennie.com</a><br>
+      <strong>location:</strong> twennie is based in Wasaga Beach, Ontario.<br>
+      <strong>business address:</strong> 103-40 Mulligan Lane, Wasaga Beach, Ontario L9Z 0C5
+    </p>
+  </div>
 </section>
-
-        <!-- Contact Info -->
-        <h3 class="about-contact-heading">contact twennie</h3>
-        <p class="about-contact">
-          <strong>phone:</strong> 613.716.6393<br>
-          <strong>email:</strong> <a href="mailto:info@twennie.com">info@twennie.com</a><br>
-          <strong>location:</strong> twennie is based in Wasaga Beach, Ontario.<br>
-          <strong>business address:</strong> 103-40 Mulligan Lane, Wasaga Beach, Ontario L9Z 0C5
-        </p>
-      </div>
-
-    </div>
-  </section>
-
-</div>
 
 {{> mainpartials/home_subfooter}}
 
 <script>
-
-  document.addEventListener("DOMContentLoaded", function () {
-    const aboutAnimated = document.querySelectorAll(".latest-about-reveal");
-
-    const aboutObserver = new IntersectionObserver(
-      (entries, observer) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("in-view");
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.18 }
-    );
-
-    aboutAnimated.forEach(element => aboutObserver.observe(element));
-  });
-
-
   document.addEventListener("DOMContentLoaded", function () {
     const aboutAnimated = document.querySelectorAll(
       ".latest-about-reveal, .latest-about-quote"
