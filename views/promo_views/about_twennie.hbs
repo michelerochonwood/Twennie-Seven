@@ -1,22 +1,74 @@
 {{#*inline "title"}}About Twennie | Twennie{{/inline}}
-<div class="about-container">
+{{#*inline "title"}}Latest Additions | Twennie{{/inline}}
 
-  <!-- About Twennie Section: Left Text, Right Image -->
-  <section class="about-section animate">
-    <div class="about-grid-container">
-      
-      <!-- Left: Text Content -->
-      <div class="about-text-content animate" style="margin-left: 50px;">
-        <h2 class="about-heading">about twennie</h2>
-        <p class="about-text">
-          Twennie was founded in 2026 by <strong>Michele Rochon-Wood</strong>, a 20-year proposal and marketing specialist in the engineering and architecture industry. Rochon-Wood worked for four global firms before striking out on her own. The aim was to bring valuable learning content to the world of technical consulting.
-        </p>
-        <p class="about-text">
-          To get the Twennie platform up and running, industry and personal sources contributed articles, videos, interviews, prompt sets, exercises, and templates. The objective was then to refine the content to meet the criteria of 20-minute increments, and Twennie was born. 
-        </p>
-        <p class="about-text">
-          Now technical professionals and their internal leadership and support teams have access to learning in project management, business development, and engaging clients and employees to succeed in their fields of expertise. That learning is built to consume fewer billable hours while bringing essential clarity to the most challenging concepts in the business.
-        </p>
+<section class="latest-about-strip latest-about-animated">
+
+  <div class="latest-about-grid">
+
+    <div class="latest-about-copy latest-about-reveal">
+      <p class="latest-about-eyebrow">about twennie</p>
+
+      <h2 class="latest-about-title">
+        Built for technical professionals who need useful learning in minutes, not hours.
+      </h2>
+
+      <p class="latest-about-text">
+        Hi! I’m Michele Rochon-Wood, a 20-year business development specialist in AEC. I worked for four global firms before striking out on my own a few years ago. I wanted to bring valuable learning content to the world of technical consulting. At the time, I had a handful of modules, but I wanted to build a comprehensive library, a full digital warehouse of urgently needed, non-technical learning.
+      </p>
+
+
+      <p class="latest-about-text">
+        On Twennie, technical professionals and their internal support teams have access to learning in project management, business development, and engaging clients to succeed in their fields of expertise. That learning is built to consume fewer billable hours while bringing essential clarity to the most challenging concepts in the business.
+      </p>
+
+      <p class="latest-about-text">
+        <b>Twennie’s name is from the Pareto Principle - 20% of effort produces 80% of results. Twennie learning follows this guideline, teaching high-impact action, efficient use of resources, and fit-for-purpose techniques, asynchronously in less time, affordably.</b>
+      </p>
+
+      <div class="latest-about-pill-row">
+        <span class="latest-about-pill">20-minute learning</span>
+        <span class="latest-about-pill">high-impact action</span>
+        <span class="latest-about-pill">built for real work</span>
+      </div>
+    </div>
+
+    <div class="latest-about-images latest-about-reveal">
+      <div class="latest-about-image-stack">
+  <img
+    src="/images/panels.png"
+    alt="Industry panel discussions that informed Twennie"
+    class="latest-about-image latest-about-image-panels"
+  >
+
+  <!-- NEW FOUNDERS IMAGE -->
+  <img
+    src="/images/twenniefounders3.png"
+    alt="Twennie Founders"
+    class="latest-about-image latest-about-image-founders"
+  >
+
+  <img
+    src="/images/michele.png"
+    alt="Michele Rochon-Wood"
+    class="latest-about-image latest-about-image-michele"
+  >
+
+        <div class="latest-about-quote">
+          <p>
+            I assembled a network of veteran professionals from AEC. They remained anonymous, but believed in my vision for a new kind of learning resource and wanted to lend their support. Over several months, I interviewed them about their experiences in leadership, working with clients, and managing successful projects. From those interviews came Twennie, an online environment designed just for technical service providers. On Twennie, the veterans I interviewed are known as the Twennie Founders.
+          </p>
+        </div>
+
+        <img
+          src="/images/pareto3d2.png"
+          alt="Pareto principle illustration"
+          class="latest-about-image latest-about-image-pareto"
+        >
+      </div>
+    </div>
+
+  </div>
+</section>
 
         <!-- Contact Info -->
         <h3 class="about-contact-heading">contact twennie</h3>
@@ -28,11 +80,6 @@
         </p>
       </div>
 
-      <!-- Right: Image -->
-      <div class="about-image-wrapper animate">
-        <img src="https://www.twennie.com/images/snow2.jpeg" alt="Snow Scene" class="about-image">
-      </div>
-
     </div>
   </section>
 
@@ -41,21 +88,43 @@
 {{> mainpartials/home_subfooter}}
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-  const animatedElements = document.querySelectorAll(".animate");
 
-  const observer = new IntersectionObserver(
-    (entries, observer) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("in-view");
-          observer.unobserve(entry.target); // Stop observing after animation
-        }
-      });
-    },
-    { threshold: 0.2 } // Element is animated when 20% is visible
-  );
+  document.addEventListener("DOMContentLoaded", function () {
+    const aboutAnimated = document.querySelectorAll(".latest-about-reveal");
 
-  animatedElements.forEach(element => observer.observe(element));
-});
+    const aboutObserver = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("in-view");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.18 }
+    );
+
+    aboutAnimated.forEach(element => aboutObserver.observe(element));
+  });
+
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const aboutAnimated = document.querySelectorAll(
+      ".latest-about-reveal, .latest-about-quote"
+    );
+
+    const aboutObserver = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("in-view");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.18 }
+    );
+
+    aboutAnimated.forEach(element => aboutObserver.observe(element));
+  });
 </script>
