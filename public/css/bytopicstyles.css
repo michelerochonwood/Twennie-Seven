@@ -1717,8 +1717,8 @@ overflow: visible;
   position: absolute;
 
   /* anchor to panels image */
-  top: -40px;
-  right: -40px;
+  top: -60px;
+  right: -60px;
 
   width: 180px; /* ~3x your author row size */
   height: 180px;
