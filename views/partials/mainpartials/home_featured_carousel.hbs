@@ -1,0 +1,215 @@
+<section class="home-featured-carousel-section">
+  <div class="home-featured-carousel-shell">
+
+    <div class="home-featured-carousel-track" id="homeFeaturedCarouselTrack">
+      {{#each featuredPromos}}
+        <article class="home-featured-slide {{#if @first}}is-active{{/if}}">
+          <section class="latest-featured-row">
+            <div class="latest-featured-main">
+
+              <div class="latest-featured-topline">
+                <span class="latest-featured-eyebrow">featured this month</span>
+              </div>
+
+              <h2 class="latest-featured-title">
+                {{this.title}}
+                {{#if this.subtitle}}
+                  <span class="latest-featured-subtitle">{{this.subtitle}}</span>
+                {{/if}}
+              </h2>
+
+              <div class="latest-featured-grid">
+
+                <div class="latest-featured-content-row">
+
+                  <div class="latest-featured-image-col">
+                    <div class="latest-featured-image-frame">
+                      <img
+                        src="{{this.image}}"
+                        alt="{{this.title}}"
+                        class="latest-featured-main-image"
+                      >
+                    </div>
+                  </div>
+
+                  <div class="latest-featured-copy-col">
+                    <p class="latest-featured-kicker">{{this.kicker}}</p>
+                    <p class="latest-featured-body">{{this.body}}</p>
+
+                    <div class="latest-featured-outcome-strip">
+                      <span>practical</span>
+                      <span>immediately useful</span>
+                      <span>built for real work</span>
+                    </div>
+                  </div>
+
+                </div>
+
+                <aside class="latest-featured-author-col">
+                  <div class="latest-featured-author-row">
+
+                    <img
+                      src="{{this.authorImage}}"
+                      alt="Author image"
+                      class="latest-featured-author-image"
+                    >
+
+                    <div class="latest-featured-author-name">
+                      Michele Rochon-Wood
+                    </div>
+
+                    <div class="latest-featured-divider"></div>
+
+                    <div class="latest-featured-unit-icon">
+                      {{#if (eq this.unitType "promptset")}}
+                        <img src="/icons/promptset.svg" alt="{{this.unitLabel}}">
+                      {{else if (eq this.unitType "interview")}}
+                        <img src="/icons/interview.svg" alt="{{this.unitLabel}}">
+                      {{else}}
+                        <img src="/icons/video.svg" alt="{{this.unitLabel}}">
+                      {{/if}}
+                    </div>
+
+                    <p class="latest-featured-type-description">
+                      {{#if (eq this.unitType "promptset")}}
+                        Prompt sets contain 20 brief activities you complete over time that help you build new habits in business development, project management, and creativity.
+                      {{else if (eq this.unitType "interview")}}
+                        Twennie interviews feature conversations with industry professionals sharing practical insights you can apply directly to your work.
+                      {{else}}
+                        Twennie videos are shorter than 20 minutes and explore a topic relevant to your work.
+                      {{/if}}
+                    </p>
+
+                    <div class="latest-featured-divider"></div>
+
+                    <div class="latest-featured-btn-wrap">
+                      {{#if this.button.disabled}}
+                        <div class="latest-unit-review-btn disabled">
+                          {{this.button.text}}
+                        </div>
+                      {{else}}
+                        <a href="{{this.button.href}}" class="latest-unit-review-btn">
+                          {{this.button.text}}
+                        </a>
+                      {{/if}}
+                    </div>
+
+                  </div>
+                </aside>
+
+              </div>
+            </div>
+          </section>
+        </article>
+      {{/each}}
+    </div>
+
+    {{#if featuredPromos.length}}
+      <div class="home-featured-carousel-controls">
+        <button
+          type="button"
+          class="home-featured-carousel-btn"
+          id="homeFeaturedPrev"
+          aria-label="Previous featured item"
+        >
+          ‹
+        </button>
+
+        <div class="home-featured-carousel-dots" id="homeFeaturedDots">
+          {{#each featuredPromos}}
+            <button
+              type="button"
+              class="home-featured-dot {{#if @first}}is-active{{/if}}"
+              data-slide="{{@index}}"
+              aria-label="Go to featured item {{inc @index}}"
+            ></button>
+          {{/each}}
+        </div>
+
+        <button
+          type="button"
+          class="home-featured-carousel-btn"
+          id="homeFeaturedNext"
+          aria-label="Next featured item"
+        >
+          ›
+        </button>
+      </div>
+    {{/if}}
+
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const slides = Array.from(document.querySelectorAll('.home-featured-slide'));
+    const dots = Array.from(document.querySelectorAll('.home-featured-dot'));
+    const prevBtn = document.getElementById('homeFeaturedPrev');
+    const nextBtn = document.getElementById('homeFeaturedNext');
+
+    if (!slides.length) return;
+
+    let currentIndex = 0;
+    let intervalId = null;
+
+    function showSlide(index) {
+      slides.forEach((slide, i) => {
+        slide.classList.toggle('is-active', i === index);
+      });
+
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('is-active', i === index);
+      });
+
+      currentIndex = index;
+    }
+
+    function nextSlide() {
+      const nextIndex = (currentIndex + 1) % slides.length;
+      showSlide(nextIndex);
+    }
+
+    function prevSlide() {
+      const prevIndex = (currentIndex - 1 + slides.length) % slides.length;
+      showSlide(prevIndex);
+    }
+
+    function startAutoRotate() {
+      if (slides.length < 2) return;
+      stopAutoRotate();
+      intervalId = setInterval(nextSlide, 7000);
+    }
+
+    function stopAutoRotate() {
+      if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+    }
+
+    if (prevBtn) {
+      prevBtn.addEventListener('click', function () {
+        prevSlide();
+        startAutoRotate();
+      });
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener('click', function () {
+        nextSlide();
+        startAutoRotate();
+      });
+    }
+
+    dots.forEach((dot) => {
+      dot.addEventListener('click', function () {
+        const index = Number(this.dataset.slide);
+        showSlide(index);
+        startAutoRotate();
+      });
+    });
+
+    showSlide(0);
+    startAutoRotate();
+  });
+</script>
