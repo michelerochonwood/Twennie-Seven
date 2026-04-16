@@ -8334,3 +8334,59 @@ overflow: visible;
 }
 
 
+
+
+/* ======================================
+   PROMO CONTRIBUTION – TIGHTENED VERSION
+   ====================================== */
+
+.promo-contribution-section {
+  min-height: auto;               /* remove forced full screen */
+  padding: 40px 0 60px;           /* tighter vertical rhythm */
+}
+
+.promo-contribution-title {
+  margin-top: 40px;               /* was 100px */
+  margin-bottom: 10px;
+}
+
+/* Fix the massive paragraph spacing */
+.promo-contribution-container p {
+  max-width: 520px;
+  margin: 0 auto 30px auto !important;  /* override inline 250px */
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Tighten grid spacing */
+.promo-contribution-grid {
+  margin-top: 20px;               /* was 40px */
+  gap: 8px;
+}
+
+/* Slightly smaller cards */
+.promo-unit-card {
+  width: 130px;
+  height: 130px;
+}
+
+/* Bring popups closer */
+.promo-expandable-info {
+  top: -170px;                    /* was -200px */
+  width: 190px;
+  padding: 12px;
+}
+
+/* Tighten text inside popups */
+.promo-expand-text,
+.promo-expand-text-white {
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+}
+
+/* Buttons tighter */
+.promo-expand-btn {
+  font-size: 0.7rem;
+  padding: 6px 10px;
+}
+
