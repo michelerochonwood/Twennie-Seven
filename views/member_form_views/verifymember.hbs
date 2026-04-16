@@ -48,7 +48,6 @@
         </div>
 
         <form action="/member/group/verify-registration-code" method="POST" class="registration-form" data-group="{{this._id}}">
-          <input type="hidden" name="_csrf" value="{{../csrfToken}}">
           <input type="hidden" name="groupId" value="{{this._id}}">
 
           <label for="registration-code-{{this._id}}">enter your group's registration code</label>
