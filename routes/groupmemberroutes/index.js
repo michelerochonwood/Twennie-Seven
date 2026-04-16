@@ -1,12 +1,24 @@
 const express = require('express');
 const router = express.Router();
 const groupmemberController = require('../../controllers/groupmemberController');
+const rateLimit = require('express-rate-limit');
+
+const verifyRegistrationCodeLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 7, // limit each IP to 7 requests per window
+  message: 'Too many attempts. Please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 // ✅ Render the verification form (loads the group selection page)
 router.get('/verify', groupmemberController.showVerifyMemberForm);
 
-// ✅ Verify the registration code (used only to reveal group members)
-router.post('/verify-registration-code', groupmemberController.verifyRegistrationCode);
+router.post(
+  '/verify-registration-code',
+  verifyRegistrationCodeLimiter,
+  groupmemberController.verifyRegistrationCode
+);
 
 // ✅ Redirect to the complete registration form instead of a POST request
 router.get("/complete-registration", groupmemberController.showCompleteMemberForm);
