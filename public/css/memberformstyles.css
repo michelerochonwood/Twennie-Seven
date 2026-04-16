@@ -1756,3 +1756,27 @@ html, body {
 .hidden {
   display: none;
 }
+
+
+
+
+.membership-info-block {
+  background: linear-gradient(135deg, #f4f6ff, #eef1ff);
+  border: 1px solid rgba(41, 49, 102, 0.08);
+  border-left: 5px solid #dc176a;
+  border-radius: 16px;
+  padding: 22px 26px;
+  margin: 20px 0 30px 0;
+  box-shadow: 0 10px 30px rgba(41, 49, 102, 0.08);
+}
+
+.membership-info-block p {
+  margin-bottom: 14px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #293166;
+}
+
+.membership-info-block p:last-child {
+  margin-bottom: 0;
+}
