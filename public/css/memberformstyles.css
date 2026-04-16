@@ -1780,3 +1780,11 @@ html, body {
 .membership-info-block p:last-child {
   margin-bottom: 0;
 }
+
+.group-membership-info-wrap {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto 30px auto;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
