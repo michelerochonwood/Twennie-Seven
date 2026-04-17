@@ -151,11 +151,21 @@
     let currentIndex = 0;
     let intervalId = null;
 
+    function getStepSize() {
+      if (slides.length < 2) return slides[0].offsetWidth;
+
+      const firstRect = slides[0].getBoundingClientRect();
+      const secondRect = slides[1].getBoundingClientRect();
+
+      return secondRect.left - firstRect.left;
+    }
+
     function showSlide(index) {
       if (index < 0) index = slides.length - 1;
       if (index >= slides.length) index = 0;
 
-      track.style.transform = `translateX(-${index * 100}%)`;
+      const step = getStepSize();
+      track.style.transform = `translateX(-${index * step}px)`;
 
       dots.forEach((dot, i) => {
         dot.classList.toggle('is-active', i === index);
@@ -205,6 +215,10 @@
         showSlide(index);
         startAutoRotate();
       });
+    });
+
+    window.addEventListener('resize', function () {
+      showSlide(currentIndex);
     });
 
     showSlide(0);
