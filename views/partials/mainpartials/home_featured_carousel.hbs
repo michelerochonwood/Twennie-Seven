@@ -3,7 +3,7 @@
 
     <div class="home-featured-carousel-track" id="homeFeaturedCarouselTrack">
       {{#each featuredPromos}}
-        <article class="home-featured-slide {{#if @first}}is-active{{/if}}">
+        <article class="home-featured-slide">
           <section class="latest-featured-row">
             <div class="latest-featured-main">
 
@@ -21,7 +21,6 @@
               <div class="latest-featured-grid">
 
                 <div class="latest-featured-content-row">
-
                   <div class="latest-featured-image-col">
                     <div class="latest-featured-image-frame">
                       <img
@@ -42,7 +41,6 @@
                       <span>built for real work</span>
                     </div>
                   </div>
-
                 </div>
 
                 <aside class="latest-featured-author-col">
@@ -121,7 +119,7 @@
               type="button"
               class="home-featured-dot {{#if @first}}is-active{{/if}}"
               data-slide="{{@index}}"
-              aria-label="Go to featured item {{inc @index}}"
+              aria-label="Go to featured item {{@index}}"
             ></button>
           {{/each}}
         </div>
@@ -142,20 +140,22 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
+    const track = document.getElementById('homeFeaturedCarouselTrack');
     const slides = Array.from(document.querySelectorAll('.home-featured-slide'));
     const dots = Array.from(document.querySelectorAll('.home-featured-dot'));
     const prevBtn = document.getElementById('homeFeaturedPrev');
     const nextBtn = document.getElementById('homeFeaturedNext');
 
-    if (!slides.length) return;
+    if (!track || !slides.length) return;
 
     let currentIndex = 0;
     let intervalId = null;
 
     function showSlide(index) {
-      slides.forEach((slide, i) => {
-        slide.classList.toggle('is-active', i === index);
-      });
+      if (index < 0) index = slides.length - 1;
+      if (index >= slides.length) index = 0;
+
+      track.style.transform = `translateX(-${index * 100}%)`;
 
       dots.forEach((dot, i) => {
         dot.classList.toggle('is-active', i === index);
@@ -165,13 +165,11 @@
     }
 
     function nextSlide() {
-      const nextIndex = (currentIndex + 1) % slides.length;
-      showSlide(nextIndex);
+      showSlide(currentIndex + 1);
     }
 
     function prevSlide() {
-      const prevIndex = (currentIndex - 1 + slides.length) % slides.length;
-      showSlide(prevIndex);
+      showSlide(currentIndex - 1);
     }
 
     function startAutoRotate() {
