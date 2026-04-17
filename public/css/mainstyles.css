@@ -8441,8 +8441,8 @@ overflow: visible;
 }
 
 .home-featured-slide {
-  flex: 0 0 80%;
-  min-width: 80%;
+  flex: 0 0 70%;
+  min-width: 70%;
   box-sizing: border-box;
 }
 
