@@ -8403,7 +8403,7 @@ overflow: visible;
 }
 
 .home-featured-carousel-shell {
-  width: min(90vw, 1600px);
+  width: min(70vw, 1100px);
   margin: 0 auto;
 }
 
@@ -8513,7 +8513,7 @@ overflow: visible;
 }
 
 .latest-featured-promos {
-  width: min(90vw, 1600px);
+  width: min(100vw, 1600px);
   margin: 3rem auto 0;
 
   display: grid;
@@ -8528,7 +8528,7 @@ overflow: visible;
    ========================= */
 
 .latest-featured-promos {
-  width: min(60vw, 1200px);
+  width: min(100vw, 1200px);
   margin: auto 0;
 
   display: grid;
