@@ -140,13 +140,14 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
+    const shell = document.querySelector('.home-featured-carousel-shell');
     const track = document.getElementById('homeFeaturedCarouselTrack');
     const slides = Array.from(document.querySelectorAll('.home-featured-slide'));
     const dots = Array.from(document.querySelectorAll('.home-featured-dot'));
     const prevBtn = document.getElementById('homeFeaturedPrev');
     const nextBtn = document.getElementById('homeFeaturedNext');
 
-    if (!track || !slides.length) return;
+    if (!shell || !track || !slides.length) return;
 
     let currentIndex = 0;
     let intervalId = null;
@@ -161,12 +162,21 @@
       return secondRect.left - firstRect.left;
     }
 
+    function getCenteredOffset(index) {
+      const step = getStepSize();
+      const shellWidth = shell.clientWidth;
+      const slideWidth = slides[index].offsetWidth;
+
+      const rawOffset = (index * step) - ((shellWidth - slideWidth) / 2);
+      return Math.max(0, rawOffset);
+    }
+
     function showSlide(index) {
       if (index < 0) index = 0;
       if (index >= slides.length) index = slides.length - 1;
 
-      const step = getStepSize();
-      track.style.transform = `translateX(-${index * step}px)`;
+      const offset = getCenteredOffset(index);
+      track.style.transform = `translateX(-${offset}px)`;
 
       dots.forEach((dot, i) => {
         dot.classList.toggle('is-active', i === index);
@@ -235,7 +245,6 @@
     dots.forEach((dot) => {
       dot.addEventListener('click', function () {
         const index = Number(this.dataset.slide);
-
         direction = index > currentIndex ? 1 : -1;
         showSlide(index);
         startAutoRotate();
