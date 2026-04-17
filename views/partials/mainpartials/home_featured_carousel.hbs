@@ -150,6 +150,7 @@
 
     let currentIndex = 0;
     let intervalId = null;
+    let direction = 1; // 1 = forward, -1 = backward
 
     function getStepSize() {
       if (slides.length < 2) return slides[0].offsetWidth;
@@ -161,8 +162,8 @@
     }
 
     function showSlide(index) {
-      if (index < 0) index = slides.length - 1;
-      if (index >= slides.length) index = 0;
+      if (index < 0) index = 0;
+      if (index >= slides.length) index = slides.length - 1;
 
       const step = getStepSize();
       track.style.transform = `translateX(-${index * step}px)`;
@@ -175,10 +176,26 @@
     }
 
     function nextSlide() {
-      showSlide(currentIndex + 1);
+      if (slides.length < 2) return;
+
+      if (currentIndex === slides.length - 1) {
+        direction = -1;
+      } else if (currentIndex === 0) {
+        direction = 1;
+      }
+
+      showSlide(currentIndex + direction);
     }
 
     function prevSlide() {
+      direction = -1;
+
+      if (currentIndex === 0) {
+        direction = 1;
+        showSlide(1);
+        return;
+      }
+
       showSlide(currentIndex - 1);
     }
 
@@ -204,6 +221,12 @@
 
     if (nextBtn) {
       nextBtn.addEventListener('click', function () {
+        direction = 1;
+
+        if (currentIndex === slides.length - 1) {
+          direction = -1;
+        }
+
         nextSlide();
         startAutoRotate();
       });
@@ -212,6 +235,8 @@
     dots.forEach((dot) => {
       dot.addEventListener('click', function () {
         const index = Number(this.dataset.slide);
+
+        direction = index > currentIndex ? 1 : -1;
         showSlide(index);
         startAutoRotate();
       });
