@@ -8404,7 +8404,7 @@ overflow: visible;
 .home-featured-carousel-shell {
   width: min(70vw, 1100px);
   margin: 0 auto;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .home-featured-carousel-track {
