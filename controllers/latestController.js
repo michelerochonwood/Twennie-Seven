@@ -111,7 +111,103 @@ function buildPromoButton({ isAuthenticated, membershipType, accessLevel, unitTy
   };
 }
 
-// Controller: Get all Twennie-visible units for the "latest" view
+// Helper: build featured promos for both latest page and home page
+function getFeaturedPromos(req) {
+  const sessionUser = req.session?.user || req.user || null;
+
+  const isAuthenticated =
+    (typeof req.isAuthenticated === 'function' && req.isAuthenticated()) ||
+    !!req.user ||
+    !!req.session?.user;
+
+  const membershipType = sessionUser?.membershipType || null;
+  const accessLevel = sessionUser?.accessLevel || null;
+
+  const featuredPromoBase = [
+    {
+      title: 'Never Miss Another RFP',
+      subtitle: 'A Solution to a Pesky Problem',
+      unitLabel: 'video',
+      unitType: 'video',
+      image: '/images/missed RFP.png',
+      authorImage: '/images/twenniefounders3.png',
+      kicker:
+        'Missing an RFP creates panic and wasted effort. A simple internal work order turns monitoring into a structured, accountable task, reducing risk, improving consistency, and preventing avoidable breakdowns in your pursuit process.',
+      body:
+        'Missing an RFP creates unnecessary stress, lost opportunities, and last-minute chaos that could have been avoided. The issue isn’t effort—it’s structure. Monitoring purchasing sites is often informal, unclear, and easy to overlook, especially when support staff are pulled into urgent work. A simple internal work order changes that. It defines expectations, clarifies instructions, and creates accountability on both sides. It also allows for continuity, backups, and regular improvement.',
+      reviewHref: '/unitviews/videos/view/69d82d47d8af4487117da8f5'
+    },
+    {
+      title: 'Interview: John Velick',
+      subtitle: 'On Using AI to Write Proposals',
+      unitLabel: 'interview',
+      unitType: 'interview',
+      image: '/images/interview with john.png',
+      authorImage: '/images/twenniefounders3.png',
+      kicker:
+        'John Velick explains how proposal teams are using AI to reduce manual writing, improve first drafts, and handle large volumes of background material more efficiently.',
+      body:
+        'In this interview, John Velick describes how he uses ChatGPT to support proposal development from start to finish. By setting up dedicated project spaces, training the tool on company information and past work, and uploading materials like CVs, RFPs, and reports, he is able to produce stronger first drafts for project understanding, staff bios, risk plans, and more. He also shows how AI can help teams rewrite content, summarize large documents, draft emails, and catch gaps in compliance before submission.',
+      reviewHref: '/unitviews/interviews/view/686e9d9c847132d273359c36'
+    },
+    {
+      title: 'How to Write an Article in an Industry or Trade Publication',
+      unitLabel: 'video',
+      unitType: 'video',
+      image: '/images/renewmag.png',
+      authorImage: '/images/twenniefounders3.png',
+      kicker:
+        'Publishing in trusted industry magazines builds instant credibility, but only if you share insight, not project details. Start with tension, show thinking, and help clients see their own challenges reflected.',
+      body:
+        'Publishing in a trusted industry magazine can create powerful client moments. But it only works if the article delivers insight, not documentation. Clients don’t care about scope, budget, or timelines—they care about how you think. Start with tension, something real they’re dealing with, and use the project as proof, not the focus. When the client becomes the hero and your thinking is clear, the article feels relevant and credible.',
+      reviewHref: '/unitviews/videos/view/69d6c22cd8af4487117d9c34'
+    },
+    {
+      title: 'Creativity and Innovation',
+      subtitle: 'Testing the Habits of the Greats 1',
+      unitLabel: 'prompt set',
+      unitType: 'promptset',
+      image: '/images/creatives.png',
+      authorImage: '/images/twenniefounders3.png',
+      kicker:
+        'This prompt set introduces proven creative techniques used by history’s most innovative thinkers, helping you break routine patterns, generate new ideas, and apply creativity directly to real-world consulting challenges.',
+      body:
+        'This prompt set draws from the working habits of some of history’s most creative individuals to demonstrate that creativity is not rare—it is trainable. Through structured exercises inspired by figures like Leonardo da Vinci, Walt Disney, and Albert Einstein, you will experiment with techniques such as reverse thinking, constraint design, cross-disciplinary problem solving, and deliberate disruption.',
+      reviewHref: '/unitviews/promptsets/view/69d5251fd412678302354d04'
+    }
+  ];
+
+  return featuredPromoBase.map((item) => ({
+    ...item,
+    button: buildPromoButton({
+      isAuthenticated,
+      membershipType,
+      accessLevel,
+      unitType: item.unitType,
+      reviewHref: item.reviewHref
+    })
+  }));
+}
+
+// Controller: home page
+exports.getHomePage = async (req, res) => {
+  try {
+    const featuredPromos = getFeaturedPromos(req);
+
+    return res.render('promo_views/main_home_page', {
+      layout: 'mainlayout',
+      featuredPromos
+    });
+  } catch (error) {
+    console.error('Error rendering home page:', error);
+    return res.status(500).render('promo_views/main_home_page', {
+      layout: 'mainlayout',
+      featuredPromos: []
+    });
+  }
+};
+
+// Controller: latest library page
 exports.getLatestLibraryItems = async (req, res) => {
   console.log('👤 req.user in latestController:', req.user);
 
@@ -174,7 +270,6 @@ exports.getLatestLibraryItems = async (req, res) => {
       }))
     ];
 
-    // newest first
     allLibraryUnits.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
 
     const startOfThisMonth = moment().startOf('month');
@@ -207,7 +302,6 @@ exports.getLatestLibraryItems = async (req, res) => {
       }
     }
 
-    // MFA-safe auth flags
     const sessionUser = req.session?.user || req.user || null;
 
     const isAuthenticated =
@@ -226,7 +320,6 @@ exports.getLatestLibraryItems = async (req, res) => {
 
     const isFree = accessLevel === 'free_individual';
 
-    // Stamp flags on each dynamic item so HBS can keep using existing logic
     for (const arr of [thisMonthItems, lastMonthItems]) {
       for (const u of arr) {
         u.isAuthenticated = isAuthenticated;
@@ -236,7 +329,6 @@ exports.getLatestLibraryItems = async (req, res) => {
       }
     }
 
-    // Map upcoming docs to the shape the view expects
     const upcomingItems = upcomingDocs.map((u) => ({
       _id: u._id,
       unit_type: u.unit_type,
@@ -246,81 +338,14 @@ exports.getLatestLibraryItems = async (req, res) => {
       projected_release_at: u.projected_release_at
     }));
 
-    // Hard-coded featured promo units
-const featuredPromoBase = [
-  {
-    title: 'Never Miss Another RFP',
-    subtitle: 'A Solution to a Pesky Problem',
-    unitLabel: 'video',
-    unitType: 'video',
-    image: '/images/missed RFP.png',
-    authorImage: '/images/twenniefounders3.png',
-    kicker:
-      'Missing an RFP creates panic and wasted effort. A simple internal work order turns monitoring into a structured, accountable task, reducing risk, improving consistency, and preventing avoidable breakdowns in your pursuit process.',
-    body:
-      'Missing an RFP creates unnecessary stress, lost opportunities, and last-minute chaos that could have been avoided. The issue isn’t effort—it’s structure. Monitoring purchasing sites is often informal, unclear, and easy to overlook, especially when support staff are pulled into urgent work. A simple internal work order changes that. It defines expectations, clarifies instructions, and creates accountability on both sides. It also allows for continuity, backups, and regular improvement.',
-    reviewHref: '/unitviews/videos/view/69d82d47d8af4487117da8f5'
-  },
-    {
-    title: 'Interview: John Velick',
-    subtitle: 'On Using AI to Write Proposals',
-    unitLabel: 'interview',
-    unitType: 'interview',
-    image: '/images/interview with john.png',
-    authorImage: '/images/twenniefounders3.png',
-    kicker:
-      'John Velick explains how proposal teams are using AI to reduce manual writing, improve first drafts, and handle large volumes of background material more efficiently.',
-    body:
-      'In this interview, John Velick describes how he uses ChatGPT to support proposal development from start to finish. By setting up dedicated project spaces, training the tool on company information and past work, and uploading materials like CVs, RFPs, and reports, he is able to produce stronger first drafts for project understanding, staff bios, risk plans, and more. He also shows how AI can help teams rewrite content, summarize large documents, draft emails, and catch gaps in compliance before submission.',
-    reviewHref: '/unitviews/interviews/view/686e9d9c847132d273359c36'
-  },
-  {
-    title: 'How to Write an Article in an Industry or Trade Publication',
-    unitLabel: 'video',
-    unitType: 'video',
-    image: '/images/renewmag.png',
-    authorImage: '/images/twenniefounders3.png',
-    kicker:
-      'Publishing in trusted industry magazines builds instant credibility, but only if you share insight, not project details. Start with tension, show thinking, and help clients see their own challenges reflected.',
-    body:
-      'Publishing in a trusted industry magazine can create powerful client moments. But it only works if the article delivers insight, not documentation. Clients don’t care about scope, budget, or timelines—they care about how you think. Start with tension, something real they’re dealing with, and use the project as proof, not the focus. When the client becomes the hero and your thinking is clear, the article feels relevant and credible.',
-    reviewHref: '/unitviews/videos/view/69d6c22cd8af4487117d9c34'
-  },
-  {
-    title: 'Creativity and Innovation',
-    subtitle: 'Testing the Habits of the Greats 1',
-    unitLabel: 'prompt set',
-    unitType: 'promptset',
-    image: '/images/creatives.png',
-    authorImage: '/images/twenniefounders3.png',
-    kicker:
-      'This prompt set introduces proven creative techniques used by history’s most innovative thinkers, helping you break routine patterns, generate new ideas, and apply creativity directly to real-world consulting challenges.',
-    body:
-      'This prompt set draws from the working habits of some of history’s most creative individuals to demonstrate that creativity is not rare—it is trainable. Through structured exercises inspired by figures like Leonardo da Vinci, Walt Disney, and Albert Einstein, you will experiment with techniques such as reverse thinking, constraint design, cross-disciplinary problem solving, and deliberate disruption.',
-    reviewHref: '/unitviews/promptsets/view/69d5251fd412678302354d04'
-  }
-
-];
-
-    const featuredPromos = featuredPromoBase.map((item) => ({
-      ...item,
-      button: buildPromoButton({
-        isAuthenticated,
-        membershipType,
-        accessLevel,
-        unitType: item.unitType,
-        reviewHref: item.reviewHref
-      })
-    }));
+    const featuredPromos = getFeaturedPromos(req);
 
     return res.render('latest_view/latest_view', {
       layout: 'bytopiclayout',
-
       featuredPromos,
       thisMonthItems,
       lastMonthItems,
       upcomingItems,
-
       isAuthenticated,
       membershipType,
       accessLevel,
@@ -337,21 +362,4 @@ const featuredPromoBase = [
       message: 'There was a problem loading the latest additions to the library. Please try again later.'
     });
   }
-
-  exports.getHomePage = async (req, res) => {
-  try {
-    const featuredPromos = getFeaturedPromos(req);
-
-    return res.render('promo_views/main_home_page', {
-      layout: 'mainlayout',
-      featuredPromos
-    });
-  } catch (error) {
-    console.error('Error rendering home page:', error);
-    return res.status(500).render('promo_views/main_home_page', {
-      layout: 'mainlayout',
-      featuredPromos: []
-    });
-  }
-}
 };
