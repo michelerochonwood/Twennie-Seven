@@ -87,6 +87,7 @@ const hbs = create({
     allowProtoMethodsByDefault: true,
   },
   helpers: {
+    inc: (value) => Number(value) + 1,
     replace: (string, find, rep) =>
       (typeof string === 'string' ? string.split(find).join(rep) : ''),
     formatContent: (c) => (c ? c.replace(/\n/g, '<br>') : ''),
