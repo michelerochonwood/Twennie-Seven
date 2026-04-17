@@ -337,4 +337,21 @@ const featuredPromoBase = [
       message: 'There was a problem loading the latest additions to the library. Please try again later.'
     });
   }
+
+  exports.getHomePage = async (req, res) => {
+  try {
+    const featuredPromos = getFeaturedPromos(req);
+
+    return res.render('promo_views/main_home_page', {
+      layout: 'mainlayout',
+      featuredPromos
+    });
+  } catch (error) {
+    console.error('Error rendering home page:', error);
+    return res.status(500).render('promo_views/main_home_page', {
+      layout: 'mainlayout',
+      featuredPromos: []
+    });
+  }
+}
 };

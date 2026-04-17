@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const latestController = require('../../controllers/latestController');
 
 const twenniemapController = require('../../controllers/twenniemapController');
 const createLearningController = require('../../controllers/createlearningController');
@@ -62,9 +63,7 @@ function sanitizeNext(next, user) {
 // ------------------------------------------------------------
 // Promo / public routes
 // ------------------------------------------------------------
-router.get('/', (req, res) => {
-  res.render('promo_views/main_home_page', { layout: 'mainlayout' });
-});
+router.get('/', latestController.getHomePage);
 
 router.get('/avail_memberships', (req, res) => {
   res.render('promo_views/avail_memberships', { layout: 'mainlayout' });
