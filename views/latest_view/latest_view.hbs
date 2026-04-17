@@ -71,119 +71,145 @@
 
       <hr class="latest-divider" style="width: 90%; margin: 0 auto">
 
-<div class="latest-featured-promos">
-  {{#each featuredPromos}}
-    <section class="latest-featured-row latest-featured-row-animated">
-      <div class="latest-featured-main">
+<section class="home-featured-carousel-section">
+  <div class="home-featured-carousel-shell">
 
-        <div class="latest-featured-topline">
-          <span class="latest-featured-eyebrow">featured this month</span>
-        </div>
+    <div class="home-featured-carousel-track" id="homeFeaturedCarouselTrack">
+      {{#each featuredPromos}}
+        <article class="home-featured-slide">
+          <section class="latest-featured-row">
+            <div class="latest-featured-main">
 
-        <h2 class="latest-featured-title">
-          {{this.title}}
-          {{#if this.subtitle}}
-            <span class="latest-featured-subtitle">{{this.subtitle}}</span>
-          {{/if}}
-        </h2>
+              <div class="latest-featured-topline">
+                <span class="latest-featured-eyebrow">featured this month</span>
+              </div>
 
-<div class="latest-featured-grid">
+              <h2 class="latest-featured-title">
+                {{this.title}}
+                {{#if this.subtitle}}
+                  <span class="latest-featured-subtitle">{{this.subtitle}}</span>
+                {{/if}}
+              </h2>
 
-  <!-- NEW: image + text row -->
-  <div class="latest-featured-content-row">
+              <div class="latest-featured-grid">
 
-    <!-- IMAGE -->
-    <div class="latest-featured-image-col">
-      <div class="latest-featured-image-frame">
-        <img
-          src="{{this.image}}"
-          alt="{{this.title}}"
-          class="latest-featured-main-image"
+                <div class="latest-featured-content-row">
+                  <div class="latest-featured-image-col">
+                    <div class="latest-featured-image-frame">
+                      <img
+                        src="{{this.image}}"
+                        alt="{{this.title}}"
+                        class="latest-featured-main-image"
+                      >
+                    </div>
+                  </div>
+
+                  <div class="latest-featured-copy-col">
+                    <p class="latest-featured-kicker">{{this.kicker}}</p>
+                    <p class="latest-featured-body">{{this.body}}</p>
+
+                    <div class="latest-featured-outcome-strip">
+                      <span>practical</span>
+                      <span>immediately useful</span>
+                      <span>built for real work</span>
+                    </div>
+                  </div>
+                </div>
+
+                <aside class="latest-featured-author-col">
+                  <div class="latest-featured-author-row">
+
+                    <img
+                      src="{{this.authorImage}}"
+                      alt="Author image"
+                      class="latest-featured-author-image"
+                    >
+
+                    <div class="latest-featured-author-name">
+                      Michele Rochon-Wood
+                    </div>
+
+                    <div class="latest-featured-divider"></div>
+
+                    <div class="latest-featured-unit-icon">
+                      {{#if (eq this.unitType "promptset")}}
+                        <img src="/icons/promptset.svg" alt="{{this.unitLabel}}">
+                      {{else if (eq this.unitType "interview")}}
+                        <img src="/icons/interview.svg" alt="{{this.unitLabel}}">
+                      {{else}}
+                        <img src="/icons/video.svg" alt="{{this.unitLabel}}">
+                      {{/if}}
+                    </div>
+
+                    <p class="latest-featured-type-description">
+                      {{#if (eq this.unitType "promptset")}}
+                        Prompt sets contain 20 brief activities you complete over time that help you build new habits in business development, project management, and creativity.
+                      {{else if (eq this.unitType "interview")}}
+                        Twennie interviews feature conversations with industry professionals sharing practical insights you can apply directly to your work.
+                      {{else}}
+                        Twennie videos are shorter than 20 minutes and explore a topic relevant to your work.
+                      {{/if}}
+                    </p>
+
+                    <div class="latest-featured-divider"></div>
+
+                    <div class="latest-featured-btn-wrap">
+                      {{#if this.button.disabled}}
+                        <div class="latest-unit-review-btn disabled">
+                          {{this.button.text}}
+                        </div>
+                      {{else}}
+                        <a href="{{this.button.href}}" class="latest-unit-review-btn">
+                          {{this.button.text}}
+                        </a>
+                      {{/if}}
+                    </div>
+
+                  </div>
+                </aside>
+
+              </div>
+            </div>
+          </section>
+        </article>
+      {{/each}}
+    </div>
+
+    {{#if featuredPromos.length}}
+      <div class="home-featured-carousel-controls">
+        <button
+          type="button"
+          class="home-featured-carousel-btn"
+          id="homeFeaturedPrev"
+          aria-label="Previous featured item"
         >
-      </div>
-    </div>
+          ‹
+        </button>
 
-    <!-- TEXT -->
-    <div class="latest-featured-copy-col">
-      <p class="latest-featured-kicker">{{this.kicker}}</p>
-      <p class="latest-featured-body">{{this.body}}</p>
+        <div class="home-featured-carousel-dots" id="homeFeaturedDots">
+          {{#each featuredPromos}}
+            <button
+              type="button"
+              class="home-featured-dot {{#if @first}}is-active{{/if}}"
+              data-slide="{{@index}}"
+              aria-label="Go to featured item {{@index}}"
+            ></button>
+          {{/each}}
+        </div>
 
-      <div class="latest-featured-outcome-strip">
-        <span>practical</span>
-        <span>immediately useful</span>
-        <span>built for real work</span>
+        <button
+          type="button"
+          class="home-featured-carousel-btn"
+          id="homeFeaturedNext"
+          aria-label="Next featured item"
+        >
+          ›
+        </button>
       </div>
-    </div>
+    {{/if}}
 
   </div>
-
-  <!-- AUTHOR ROW (unchanged) -->
-  <aside class="latest-featured-author-col">
-  <div class="latest-featured-author-row">
-
-    <!-- AUTHOR IMAGE -->
-    <img
-      src="{{this.authorImage}}"
-      alt="Author image"
-      class="latest-featured-author-image"
-    >
-
-    <!-- AUTHOR NAME -->
-    <div class="latest-featured-author-name">
-      Michele Rochon-Wood
-    </div>
-
-    <!-- DIVIDER -->
-    <div class="latest-featured-divider"></div>
-
-    <!-- UNIT ICON -->
-    <div class="latest-featured-unit-icon">
-      {{#if (eq this.unitType "promptset")}}
-        <img src="/icons/promptset.svg" alt="{{this.unitLabel}}">
-      {{else if (eq this.unitType "interview")}}
-        <img src="/icons/interview.svg" alt="{{this.unitLabel}}">
-      {{else}}
-        <img src="/icons/video.svg" alt="{{this.unitLabel}}">
-      {{/if}}
-    </div>
-
-    <!-- UNIT DESCRIPTION -->
-    <p class="latest-featured-type-description">
-      {{#if (eq this.unitType "promptset")}}
-        Prompt sets contain 20 brief activities you complete over time that help you build new habits in business development, project management, and creativity.
-      {{else if (eq this.unitType "interview")}}
-        Twennie interviews feature conversations with industry professionals sharing practical insights you can apply directly to your work.
-      {{else}}
-        Twennie videos are shorter than 20 minutes and explore a topic relevant to your work.
-      {{/if}}
-    </p>
-
-    <!-- DIVIDER -->
-    <div class="latest-featured-divider"></div>
-
-    <!-- BUTTON -->
-    <div class="latest-featured-btn-wrap">
-      {{#if this.button.disabled}}
-        <div class="latest-unit-review-btn disabled">
-          {{this.button.text}}
-        </div>
-      {{else}}
-        <a href="{{this.button.href}}" class="latest-unit-review-btn">
-          {{this.button.text}}
-        </a>
-      {{/if}}
-    </div>
-
-  </div>
-</aside>
-
-        </div>
-      </div>
-    </section>
-  {{/each}}
-
-
-</div>
+</section>
 
 
 
@@ -456,6 +482,180 @@
     );
 
     aboutAnimated.forEach(element => aboutObserver.observe(element));
+  });
+
+
+  function toggleLatestCard(element) {
+    const card = element.closest('.latest-library-unit-card');
+    const content = card.querySelector('.latest-hidden-content');
+
+    const isActive = card.classList.contains('active');
+
+    if (isActive) {
+      card.classList.remove('active');
+      content.style.display = 'none';
+    } else {
+      card.classList.add('active');
+      content.style.display = 'flex';
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const aboutAnimated = document.querySelectorAll(".latest-about-reveal");
+
+    const aboutObserver = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("in-view");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.18 }
+    );
+
+    aboutAnimated.forEach(element => aboutObserver.observe(element));
+  });
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const aboutAnimated = document.querySelectorAll(
+      ".latest-about-reveal, .latest-about-quote"
+    );
+
+    const aboutObserver = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("in-view");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.18 }
+    );
+
+    aboutAnimated.forEach(element => aboutObserver.observe(element));
+  });
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const shell = document.querySelector('.home-featured-carousel-shell');
+    const track = document.getElementById('homeFeaturedCarouselTrack');
+    const slides = Array.from(document.querySelectorAll('.home-featured-slide'));
+    const dots = Array.from(document.querySelectorAll('.home-featured-dot'));
+    const prevBtn = document.getElementById('homeFeaturedPrev');
+    const nextBtn = document.getElementById('homeFeaturedNext');
+
+    if (!shell || !track || !slides.length) return;
+
+    let currentIndex = 0;
+    let intervalId = null;
+    let direction = 1;
+
+    function getStepSize() {
+      if (slides.length < 2) return slides[0].offsetWidth;
+
+      const firstRect = slides[0].getBoundingClientRect();
+      const secondRect = slides[1].getBoundingClientRect();
+
+      return secondRect.left - firstRect.left;
+    }
+
+    function getCenteredOffset(index) {
+      const step = getStepSize();
+      const shellWidth = shell.clientWidth;
+      const slideWidth = slides[index].offsetWidth;
+
+      const rawOffset = (index * step) - ((shellWidth - slideWidth) / 2);
+      return Math.max(0, rawOffset);
+    }
+
+    function showSlide(index) {
+      if (index < 0) index = 0;
+      if (index >= slides.length) index = slides.length - 1;
+
+      const offset = getCenteredOffset(index);
+      track.style.transform = `translateX(-${offset}px)`;
+
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('is-active', i === index);
+      });
+
+      currentIndex = index;
+    }
+
+    function nextSlide() {
+      if (slides.length < 2) return;
+
+      if (currentIndex === slides.length - 1) {
+        direction = -1;
+      } else if (currentIndex === 0) {
+        direction = 1;
+      }
+
+      showSlide(currentIndex + direction);
+    }
+
+    function prevSlide() {
+      direction = -1;
+
+      if (currentIndex === 0) {
+        direction = 1;
+        showSlide(1);
+        return;
+      }
+
+      showSlide(currentIndex - 1);
+    }
+
+    function startAutoRotate() {
+      if (slides.length < 2) return;
+      stopAutoRotate();
+      intervalId = setInterval(nextSlide, 7000);
+    }
+
+    function stopAutoRotate() {
+      if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+    }
+
+    if (prevBtn) {
+      prevBtn.addEventListener('click', function () {
+        prevSlide();
+        startAutoRotate();
+      });
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener('click', function () {
+        direction = 1;
+
+        if (currentIndex === slides.length - 1) {
+          direction = -1;
+        }
+
+        nextSlide();
+        startAutoRotate();
+      });
+    }
+
+    dots.forEach((dot) => {
+      dot.addEventListener('click', function () {
+        const index = Number(this.dataset.slide);
+        direction = index > currentIndex ? 1 : -1;
+        showSlide(index);
+        startAutoRotate();
+      });
+    });
+
+    window.addEventListener('resize', function () {
+      showSlide(currentIndex);
+    });
+
+    showSlide(0);
+    startAutoRotate();
   });
 
 
