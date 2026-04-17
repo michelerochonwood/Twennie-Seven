@@ -8528,7 +8528,7 @@ overflow: visible;
    ========================= */
 
 .latest-featured-promos {
-  width: min(60vw, 1600px);
+  width: min(60vw, 1200px);
   margin: auto 0;
 
   display: grid;
