@@ -8433,7 +8433,7 @@ overflow: visible;
 
 .home-featured-carousel-track {
   display: flex;
-  gap: 2rem;
+  gap: 1.25rem;
   align-items: stretch;
   transition: transform 0.7s cubic-bezier(0.77, 0, 0.175, 1);
   will-change: transform;
