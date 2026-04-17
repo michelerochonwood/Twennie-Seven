@@ -8437,7 +8437,7 @@ overflow: visible;
   align-items: stretch;
   transition: transform 0.7s cubic-bezier(0.77, 0, 0.175, 1);
   will-change: transform;
-  padding: 0 10%;
+  padding: 0;
 }
 
 .home-featured-slide {
