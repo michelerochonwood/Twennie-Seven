@@ -214,7 +214,7 @@
 
   <!-- Section: This Month -->
   <div class="latest-section">
-    <h2 class="latest-section-title">this month</h2>
+
     <div class="latest-library-units-grid">
       {{#each thisMonthItems}}
         <div class="latest-library-unit-card">
@@ -284,77 +284,7 @@
 
   <hr class="latest-divider">
 
-  <!-- Section: Last Month -->
-  <div class="latest-section">
-    <h2 class="latest-section-title">last month</h2>
-    <div class="latest-library-units-grid">
-      {{#each lastMonthItems}}
-        <div class="latest-library-unit-card">
-          <div class="latest-card-svg-header">
-            <img
-              src="/images/unitsvg.svg"
-              alt=""
-              aria-hidden="true"
-              class="latest-card-svg-image"
-            >
-          </div>
 
-          <div class="latest-card-content">
-            <img src="{{getUnitTypeIcon this.type}}" alt="Unit Type Icon" class="latest-unit-type-icon">
-            <h2 class="latest-unit-title">{{this.title}}</h2>
-
-            <div class="latest-expand-toggle" onclick="toggleLatestCard(this)">
-              <svg class="latest-arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99">
-                <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
-                <polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/>
-              </svg>
-            </div>
-
-            <div class="latest-hidden-content">
-              <div class="latest-author-label">AUTHOR</div>
-              <img src="{{authorImage}}" alt="Author Image" class="latest-author-image">
-              <div class="latest-author-name">{{this.authorName}}</div>
-
-              <p class="latest-unit-long-summary">{{this.full_summary}}</p>
-
-              {{#if (eq this.type "promptset")}}
-                <div class="latest-detail-value-purpose">
-                  <strong>Purpose:</strong><br>
-                  {{this.purpose}}
-                </div>
-              {{/if}}
-
-              <div class="latest-unit-review-btn-container">
-                {{#if isAuthenticated}}
-                  {{#if isLeaderOrGroupMember}}
-                    <a href="/unitviews/{{capitalize this.type}}s/view/{{this._id}}" class="latest-unit-review-btn">review this unit</a>
-                  {{else if isPaid}}
-                    <a href="/unitviews/{{capitalize this.type}}s/view/{{this._id}}" class="latest-unit-review-btn">review this unit</a>
-                  {{else}}
-                    {{#if isFree}}
-                      {{#if isVideoOrArticle}}
-                        <a href="/unitviews/{{capitalize this.type}}s/view/{{this._id}}" class="latest-unit-review-btn">review this unit</a>
-                      {{else}}
-                        <div class="latest-unit-review-btn disabled">membership upgrade required</div>
-                      {{/if}}
-                    {{else}}
-                      <div class="latest-unit-review-btn disabled">membership upgrade required</div>
-                    {{/if}}
-                  {{/if}}
-                {{else}}
-                  <a href="/auth/login" class="latest-unit-review-btn">log in to view</a>
-                {{/if}}
-              </div>
-            </div>
-          </div>
-        </div>
-      {{else}}
-        <p>No new items last month.</p>
-      {{/each}}
-    </div>
-  </div>
-
-  <hr class="latest-divider">
 
   <!-- Section: Upcoming Units -->
   <div class="latest-section">

@@ -340,20 +340,22 @@ exports.getLatestLibraryItems = async (req, res) => {
 
     const featuredPromos = getFeaturedPromos(req);
 
-    return res.render('latest_view/latest_view', {
-      layout: 'bytopiclayout',
-      featuredPromos,
-      thisMonthItems,
-      lastMonthItems,
-      upcomingItems,
-      isAuthenticated,
-      membershipType,
-      accessLevel,
-      isLeaderOrGroupMember,
-      isPaid,
-      isFree,
-      loggedIn: isAuthenticated
-    });
+return res.render('latest_view/latest_view', {
+  layout: 'bytopiclayout',
+  featuredPromos,
+
+  thisMonthItems: thisMonthItems.slice(0, 10),
+  lastMonthItems: lastMonthItems.slice(0, 10),
+  upcomingItems: upcomingItems.slice(0, 10),
+
+  isAuthenticated,
+  membershipType,
+  accessLevel,
+  isLeaderOrGroupMember,
+  isPaid,
+  isFree,
+  loggedIn: isAuthenticated
+});
   } catch (error) {
     console.error('❌ Error in getLatestLibraryItems:', error);
     return res.status(500).render('error', {
