@@ -125,7 +125,7 @@ function getFeaturedPromos(req) {
 
   const featuredPromoBase = [
     {
-      title: 'H',
+      title: 'Never Miss Another RFP',
       subtitle: 'A Solution to a Pesky Problem',
       unitLabel: 'video',
       unitType: 'video',
@@ -138,17 +138,18 @@ function getFeaturedPromos(req) {
       reviewHref: '/unitviews/videos/view/69d82d47d8af4487117da8f5'
     },
     {
-      title: 'Interview: John Velick',
-      subtitle: '10 Steps to a Proposal Win Theme',
+      title: '10 Steps to a Proposal Win Theme',
+      subtitle: 'A Tried and True Method for Win Strategies',
       unitLabel: 'video',
       unitType: 'video',
       image: '/images/10stepsvideo.png',
       authorImage: '/images/twenniefounders3.png',
-      kicker:
-        'Since its publication in 2010, Ten Steps to a Win Theme has helped proposal teams across a wide range of technical disciplines craft stronger, more successful submissions.',
-        'A good win theme facilitates a decision-making process in the client’s mind. That decision might be to entrust you with a project that could define their career. It might involve working side-by-side with your project manager for two years or inviting your team into their office space for six months. Whatever the case, the client is making a high-stakes choice and your job is to help them feel confident in it. This 10 step process helps you do it comprehensively and persuasively.',
-      reviewHref: '/unitviews/interviews/view/6955a5dc1ad9372c5272d131'
-    },
+  kicker:
+    'Since its publication in 2010, Ten Steps to a Win Theme has helped proposal teams across a wide range of technical disciplines craft stronger, more successful submissions.',
+  body:
+    'A good win theme facilitates a decision-making process in the client’s mind. That decision might be to entrust you with a project that could define their career. It might involve working side-by-side with your project manager for two years or inviting your team into their office space for six months. Whatever the case, the client is making a high-stakes choice and your job is to help them feel confident in it. This 10 step process helps you do it comprehensively and persuasively.',
+  reviewHref: '/unitviews/interviews/view/6955a5dc1ad9372c5272d131'
+},
     {
       title: 'How to Write an Article in an Industry or Trade Publication',
       unitLabel: 'video',
