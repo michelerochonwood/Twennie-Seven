@@ -8936,11 +8936,3 @@ overflow: visible;
   border-radius: 12px;
 }
 
-.teach-me-video {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.teach-me-video:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.3);
-}
