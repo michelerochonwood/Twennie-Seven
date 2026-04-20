@@ -8911,3 +8911,28 @@ overflow: visible;
   }
 }
 
+
+
+.teach-me-video-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 60px auto 40px;
+  width: 100%;
+}
+
+.teach-me-video {
+  width: 80%;
+  max-width: 900px;
+  border-radius: 18px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+}
+
+.teach-me-video {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.teach-me-video:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.3);
+}
