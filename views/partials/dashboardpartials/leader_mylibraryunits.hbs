@@ -1,5 +1,73 @@
 <section class="old-dashboard-library-units">
   <!-- My Library Contributions -->
+
+  {{#if hasNewLibraryItems}}
+  <h2 class="old-dashboard-section-title">new library units</h2>
+
+  <table class="old-dashboard-library-table old-dashboard-new-table">
+    <thead>
+      <tr>
+        <th class="old-dashboard-library-header">source</th>
+        <th class="old-dashboard-library-header">unit type</th>
+        <th class="old-dashboard-library-header">title</th>
+        <th class="old-dashboard-library-header">main topic</th>
+        <th class="old-dashboard-library-header">view unit</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      {{!-- Leader's new units --}}
+      {{#each newLeaderUnits}}
+        <tr class="old-dashboard-library-row old-dashboard-new-row">
+          <td class="old-dashboard-library-cell">you</td>
+
+          <td class="old-dashboard-library-cell">
+            {{#if (eq this.unitType "upcoming")}}
+              upcoming ({{this.plannedType}})
+            {{else}}
+              {{this.unitType}}
+            {{/if}}
+          </td>
+
+          <td class="old-dashboard-library-cell">{{this.title}}</td>
+          <td class="old-dashboard-library-cell">{{this.mainTopic}}</td>
+
+          <td class="old-dashboard-library-cell">
+            <a href="/unitviews/{{this.unitType}}s/view/{{this._id}}" class="old-dashboard-view-link">
+              view
+            </a>
+          </td>
+        </tr>
+      {{/each}}
+
+      {{!-- Group members' new units --}}
+      {{#each newGroupMemberUnits}}
+        <tr class="old-dashboard-library-row old-dashboard-new-row">
+          <td class="old-dashboard-library-cell">{{this.author}}</td>
+
+          <td class="old-dashboard-library-cell">
+            {{#if (eq this.unitType "upcoming")}}
+              upcoming ({{this.plannedType}})
+            {{else}}
+              {{this.unitType}}
+            {{/if}}
+          </td>
+
+          <td class="old-dashboard-library-cell">{{this.title}}</td>
+          <td class="old-dashboard-library-cell">{{this.mainTopic}}</td>
+
+          <td class="old-dashboard-library-cell">
+            <a href="/unitviews/{{this.unitType}}s/view/{{this._id}}" class="old-dashboard-view-link">
+              view
+            </a>
+          </td>
+        </tr>
+      {{/each}}
+
+    </tbody>
+  </table>
+{{/if}}
+
   <h2 class="old-dashboard-section-title">my library units</h2>
   <table class="old-dashboard-library-table">
     <thead>

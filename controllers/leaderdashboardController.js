@@ -1710,6 +1710,30 @@ for (const [key, val] of Object.entries(leaderCounts)) {
 
 
 
+const seenLibraryCount = seenDocLeader.tabs?.get('library')?.count ?? 0;
+
+// Sort newest first
+const sortedLeaderUnits = [...leaderUnits].sort(
+  (a, b) =>
+    new Date(b._id.getTimestamp?.() || 0) -
+    new Date(a._id.getTimestamp?.() || 0)
+);
+
+const sortedGroupUnits = [...groupMemberUnits].sort(
+  (a, b) =>
+    new Date(b._id.getTimestamp?.() || 0) -
+    new Date(a._id.getTimestamp?.() || 0)
+);
+
+// Calculate how many are new
+const newCount = Math.max(0, leaderCounts.library - seenLibraryCount);
+
+// Slice new items
+const newLeaderUnits = sortedLeaderUnits.slice(0, newCount);
+const newGroupMemberUnits = sortedGroupUnits.slice(0, newCount);
+
+// Flag for template
+const hasNewLibraryItems = newCount > 0;
 
 
 
@@ -1766,6 +1790,10 @@ return res.render('leader_dashboard', {
   leaderAssignmentsOpen,
   leaderAssignmentsCompleted,
   assignedPromptSets,
+
+  newLeaderUnits,
+newGroupMemberUnits,
+hasNewLibraryItems,
 
 
   registeredPromptSets: leaderPrompts,
