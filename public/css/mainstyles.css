@@ -8934,5 +8934,6 @@ overflow: visible;
   width: 100%;
   max-width: 900px;
   border-radius: 12px;
+  border: none;
 }
 
