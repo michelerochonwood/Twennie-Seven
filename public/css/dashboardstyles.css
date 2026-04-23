@@ -6146,7 +6146,7 @@ box-shadow: none !important;
 
 .leader-archive-page {
   width: 100%;
-  max-width: 1120px;
+  max-width: 80vw;
   margin: 0 auto 3.5rem auto;
 }
 
@@ -6231,14 +6231,16 @@ box-shadow: none !important;
 }
 
 .leader-archive-topic-block {
+  width: 100%;
   background-color: rgb(240, 240, 240);
   border-radius: 18px;
   padding: 1.3rem;
+  box-sizing: border-box;
 }
 
 .leader-archive-topic-header {
-  text-align: center;
-  margin-bottom: 1.1rem;
+  text-align: left;
+  margin-bottom: 1.15rem;
 }
 
 .leader-archive-topic-title {
@@ -6246,16 +6248,22 @@ box-shadow: none !important;
   font-size: 1.2rem;
   font-weight: 800;
   color: #262262;
-  margin: 0 0 0.35rem 0;
+  margin: 0 0 0.65rem 0;
+  text-align: left;
 }
 
 .leader-archive-topic-summary {
-  max-width: 740px;
-  margin: 0.4rem auto 0.85rem auto;
+  max-width: 900px;
+  margin: 0 0 0.85rem 0;
+  padding: 0.9rem 1rem;
+  background: #ffffff;
+  border-left: 5px solid #4a4ab2;
+  border-radius: 14px;
+  box-sizing: border-box;
   font-size: 0.85rem;
   line-height: 1.55;
   color: #444;
-  text-align: center;
+  text-align: left;
 }
 
 .leader-archive-topic-count {
@@ -6263,6 +6271,7 @@ box-shadow: none !important;
   font-size: 0.75rem;
   color: #666;
   font-family: "Figtree";
+  text-align: left;
 }
 
 .leader-archive-grid {
@@ -6286,11 +6295,15 @@ box-shadow: none !important;
   height: 100%;
 }
 
+.leader-archive-card .leader-dashboard-wave-content {
+  padding-top: calc(11.25px + 2.25rem);
+}
+
 .leader-archive-unit-icon {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 0.45rem;
+  margin-bottom: 0.35rem;
   width: 100%;
 }
 
@@ -6422,6 +6435,10 @@ box-shadow: none !important;
 }
 
 @media screen and (max-width: 1200px) {
+  .leader-archive-page {
+    max-width: 90vw;
+  }
+
   .leader-archive-grid {
     grid-template-columns: repeat(4, minmax(165px, 1fr));
   }
@@ -6441,9 +6458,17 @@ box-shadow: none !important;
   .leader-archive-topic-block {
     padding: 1rem;
   }
+
+  .leader-archive-topic-summary {
+    max-width: 100%;
+  }
 }
 
 @media screen and (max-width: 640px) {
+  .leader-archive-page {
+    max-width: 94vw;
+  }
+
   .leader-archive-grid {
     grid-template-columns: 1fr;
   }
