@@ -6164,7 +6164,7 @@ box-shadow: none !important;
 }
 
 .leader-archive-hero-image {
-  width: 300px;
+  width: 400px;
   max-width: 70%;
   height: auto;
   display: block;
@@ -6246,10 +6246,10 @@ box-shadow: none !important;
 
 .leader-archive-topic-title {
   font-family: "Figtree";
-  font-size: 3rem;
+  font-size: 2rem;
   font-weight: 800;
   color: #262262;
-  margin: 0 0 0.65rem 0;
+  margin: 1rem 0 1.5rem 0;
   text-align: left;
 }
 
