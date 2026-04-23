@@ -48,16 +48,19 @@
 
                   <div class="leader-dashboard-wave-content">
 
+                    <div class="tagged-unit-icon leader-archive-unit-icon">
+                      <img
+                        src="/icons/{{#if (eq unitType 'article')}}article.svg{{else if (eq unitType 'video')}}video.svg{{else if (eq unitType 'interview')}}interview.svg{{else if (eq unitType 'promptset')}}promptset.svg{{else if (eq unitType 'exercise')}}exercise.svg{{else if (eq unitType 'template')}}template.svg{{else if (eq unitType 'nugget')}}nuggeticon.svg{{else if (eq unitType 'mission')}}mission.svg{{else}}article.svg{{/if}}"
+                        alt="{{unitType}} icon"
+                      >
+                    </div>
+
                     <div class="leader-archive-card-top">
                       <div class="leader-archive-card-type">
                         {{unitType}}
                       </div>
 
-                      {{#if archivedAtFormatted}}
-                        <div class="leader-archive-card-date">
-                          archived {{archivedAtFormatted}}
-                        </div>
-                      {{/if}}
+
                     </div>
 
                     <div class="leader-archive-card-body">
@@ -69,21 +72,14 @@
                         </p>
                       {{/if}}
 
-                      {{#if archivedByNameSnapshot}}
-                        <p class="leader-archive-card-meta">
-                          <strong>archived by:</strong> {{archivedByNameSnapshot}}
-                        </p>
-                      {{/if}}
-
                       {{#if completedByName}}
                         <p class="leader-archive-card-meta">
-                          <strong>completed by:</strong> {{completedByName}}
+                          <strong>completed by:</strong>
+                          {{completedByName}}{{#if completedWhenFormatted}}, {{completedWhenFormatted}}{{/if}}
                         </p>
-                      {{/if}}
-
-                      {{#if completedWhenFormatted}}
+                      {{else if completedWhenFormatted}}
                         <p class="leader-archive-card-meta">
-                          <strong>completed when:</strong> {{completedWhenFormatted}}
+                          <strong>completed:</strong> {{completedWhenFormatted}}
                         </p>
                       {{/if}}
 
@@ -112,9 +108,6 @@
                         <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
                       {{/if}}
 
-                      {{#if reportPath}}
-                        <a href="{{reportPath}}" class="tagged-unit-link">view report</a>
-                      {{/if}}
                     </div>
 
                   </div>

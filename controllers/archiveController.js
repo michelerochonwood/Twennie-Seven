@@ -5,6 +5,7 @@ const Tag = require('../models/tag');
 const Member = require('../models/member_models/member');
 const Leader = require('../models/member_models/leader');
 const GroupMember = require('../models/member_models/group_member');
+const Note = require('../models/notes/notes');
 
 const {
   canonicalUnitType
@@ -270,13 +271,14 @@ exports.renderLeaderArchive = async (req, res) => {
 
     const archiveTopicsMap = new Map();
 
-    for (const row of archiveRows) {
-      let unitDoc = null;
-      let title = 'Untitled unit';
-      let mainTopic = 'No Topic Assigned';
-      let summary = '';
-      let unitAuthorName = '';
-      let viewPath = '';
+for (const row of archiveRows) {
+  let unitDoc = null;
+  let title = 'Untitled unit';
+  let mainTopic = 'No Topic Assigned';
+  let summary = '';
+  let unitAuthorName = '';
+  let viewPath = '';
+  let notesPreview = '';
 
       if (row.unitType === 'article') {
         const Article = require('../models/unit_models/article');
@@ -361,11 +363,24 @@ exports.renderLeaderArchive = async (req, res) => {
         }
       }
 
-      if (unitDoc?.author?.id || unitDoc?.author) {
-        const authorId = unitDoc.author.id || unitDoc.author;
-        const authorName = await getUserNameSnapshot(authorId);
-        unitAuthorName = authorName || '';
-      }
+if (unitDoc?.author?.id || unitDoc?.author) {
+  const authorId = unitDoc.author.id || unitDoc.author;
+  const authorName = await getUserNameSnapshot(authorId);
+  unitAuthorName = authorName || '';
+}
+
+if (row.assignedToMember && row.unitId) {
+  const learnerNote = await Note.findOne({
+    unitID: row.unitId,
+    memberID: row.assignedToMember
+  })
+    .sort({ updatedAt: -1, createdAt: -1 })
+    .lean();
+
+  if (learnerNote?.note_content) {
+    notesPreview = learnerNote.note_content;
+  }
+}
 
       const topicTitle = mainTopic || 'No Topic Assigned';
 
@@ -395,7 +410,7 @@ exports.renderLeaderArchive = async (req, res) => {
             })
           : '',
         archivedByNameSnapshot: row.assignedToNameSnapshot || '',
-        notesPreview: row.assignedInstructionsSnapshot || '',
+notesPreview,
         viewPath,
         reportPath: '/reports/leaderreport'
       });
