@@ -128,21 +128,26 @@ exports.archiveUnit = async (req, res) => {
       }
 
       archiveScope = 'leader_assigned';
-    } else {
-      // Self archive path
-      // Allowed if:
-      // - user created the tag, OR
-      // - user is actually assigned on the tag
-      const isAssignedToMe = !!assignmentRow;
+} else {
+  // Self-archive path:
+  // Remove only this user's assignment row if present.
+  // IMPORTANT:
+  // Do NOT remove associatedUnits while other assignees remain,
+  // because assigned group members still need the unit to appear
+  // on their dashboards and on the leader's assigned-to-group view.
+  tag.assignedTo = (tag.assignedTo || []).filter(
+    a => String(a.member) !== archiverId
+  );
 
-      if (!isTagCreator && !isAssignedToMe) {
-        return res.status(403).json({
-          message: 'You can only archive your own active dashboard items.'
-        });
-      }
+  const hasRemainingAssignees = (tag.assignedTo || []).length > 0;
 
-      archiveScope = 'self_assigned';
-    }
+  // Only remove the unit association if nobody else is still assigned.
+  if (isTagCreator && !hasRemainingAssignees) {
+    tag.associatedUnits = (tag.associatedUnits || []).filter(
+      u => !(String(u.item) === String(unitId) && u.unitType === normalizedType)
+    );
+  }
+}
 
 const [assignedToModel, assignedToNameSnapshot] = await Promise.all([
   getUserModel(targetAssignedMemberId),
