@@ -2,6 +2,14 @@
 
 <section class="leader-archive-page">
   <header class="leader-archive-header">
+    <div class="leader-archive-hero-image-wrap">
+      <img
+        src="/images/archivebluey.png"
+        alt="Archive Bluey"
+        class="leader-archive-hero-image"
+      >
+    </div>
+
     <h1 class="leader-archive-title">learning archive</h1>
     <p class="leader-archive-intro">
       Review archived work by topic, see what has been completed, and jump back to the unit or report center whenever you need more detail.
@@ -26,6 +34,12 @@
                 no topic assigned
               {{/if}}
             </h2>
+
+            {{#if topicLongSummary}}
+              <p class="leader-archive-topic-summary">
+                {{topicLongSummary}}
+              </p>
+            {{/if}}
 
             <p class="leader-archive-topic-count">
               {{archivedItems.length}} archived item{{#unless (eq archivedItems.length 1)}}s{{/unless}}
@@ -53,14 +67,6 @@
                         src="/icons/{{#if (eq unitType 'article')}}article.svg{{else if (eq unitType 'video')}}video.svg{{else if (eq unitType 'interview')}}interview.svg{{else if (eq unitType 'promptset')}}promptset.svg{{else if (eq unitType 'exercise')}}exercise.svg{{else if (eq unitType 'template')}}template.svg{{else if (eq unitType 'nugget')}}nuggeticon.svg{{else if (eq unitType 'mission')}}mission.svg{{else}}article.svg{{/if}}"
                         alt="{{unitType}} icon"
                       >
-                    </div>
-
-                    <div class="leader-archive-card-top">
-                      <div class="leader-archive-card-type">
-                        {{unitType}}
-                      </div>
-
-
                     </div>
 
                     <div class="leader-archive-card-body">
@@ -107,7 +113,6 @@
                       {{#if viewPath}}
                         <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
                       {{/if}}
-
                     </div>
 
                   </div>
@@ -121,6 +126,14 @@
     </div>
   {{else}}
     <section class="leader-archive-empty">
+      <div class="leader-archive-hero-image-wrap">
+        <img
+          src="/images/archivebluey.png"
+          alt="Archive Bluey"
+          class="leader-archive-hero-image"
+        >
+      </div>
+
       <h2 class="leader-archive-empty-title">nothing archived yet</h2>
       <p class="leader-archive-empty-text">
         Once you or your group move units out of the active dashboard, they’ll appear here by topic.

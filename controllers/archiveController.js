@@ -6,6 +6,12 @@ const Member = require('../models/member_models/member');
 const Leader = require('../models/member_models/leader');
 const GroupMember = require('../models/member_models/group_member');
 const Note = require('../models/notes/notes');
+const topicsData = require('../public/data/topics.json');
+
+
+const topicSummaryMap = new Map(
+  (topicsData.topics || []).map(t => [t.title, t.longSummary])
+);
 
 const {
   canonicalUnitType
@@ -416,12 +422,13 @@ notesPreview,
       });
     }
 
-    const archiveTopics = Array.from(archiveTopicsMap.entries())
-      .map(([topicTitle, archivedItems]) => ({
-        topicTitle,
-        archivedItems
-      }))
-      .sort((a, b) => a.topicTitle.localeCompare(b.topicTitle));
+const archiveTopics = Array.from(archiveTopicsMap.entries())
+  .map(([topicTitle, archivedItems]) => ({
+    topicTitle,
+    topicLongSummary: topicSummaryMap.get(topicTitle) || '',
+    archivedItems
+  }))
+  .sort((a, b) => a.topicTitle.localeCompare(b.topicTitle));
 
 return res.render('archiveviews/leader_archive', {
   layout: 'dashboardlayout',
