@@ -62,11 +62,12 @@
               <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
                 <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
 
-                <button
-                  class="tagged-unit-link"
-                  onclick="unassignMember('{{tagId}}','{{assignedToId}}')">
-                  move to archive
-                </button>
+<button
+  class="tagged-unit-link"
+  type="button"
+  onclick="archiveUnit('{{tagId}}','{{_id}}','{{unitType}}')">
+  move to archive
+</button>
               </div>
             </div>
 
@@ -135,11 +136,12 @@
               <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
                 <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
 
-                <button
-                  class="tagged-unit-link"
-                  onclick="unassignMember('{{tagId}}','{{assignedToId}}')">
-                  move to archive
-                </button>
+<button
+  class="tagged-unit-link"
+  type="button"
+  onclick="archiveUnit('{{tagId}}','{{_id}}','{{unitType}}','{{assignedToId}}')">
+  move to archive
+</button>
               </div>
             </div>
 
@@ -275,10 +277,45 @@
 </section>
 
 
-
+<div class="leader-archive-button-wrap">
+  <a href="/archive/leader" class="leader-archive-button">
+    learning archive
+  </a>
+</div>
 <script>
   function getCsrfToken() {
     return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+  }
+
+  async function archiveUnit(tagId, unitId, unitType, assignedToMemberId = null) {
+    if (!confirm("Move this item to archive?")) return;
+
+    try {
+      const res = await fetch('/archive', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': getCsrfToken()
+        },
+        body: JSON.stringify({
+          tagId,
+          unitId,
+          unitType,
+          assignedToMemberId
+        })
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok && data.ok) {
+        location.reload();
+      } else {
+        alert(data.message || 'Could not archive this item.');
+      }
+    } catch (err) {
+      console.error('archiveUnit error:', err);
+      alert('An error occurred while archiving this item.');
+    }
   }
 
   async function removeTagFromUnit(tagId, unitId, unitType) {
@@ -326,76 +363,68 @@
     }
   }
 
-async function sendThanksForSuggestion(buttonEl) {
-  const id = buttonEl?.dataset?.suggestionId;
-  if (!id) return;
+  async function sendThanksForSuggestion(buttonEl) {
+    const id = buttonEl?.dataset?.suggestionId;
+    if (!id) return;
 
-  // Find the card + success message early (before DOM changes)
-  const card =
-    buttonEl.closest('.leader-suggested-unit-card') ||
-    buttonEl.closest('.leader-assigned-unit-card');
+    const card =
+      buttonEl.closest('.leader-suggested-unit-card') ||
+      buttonEl.closest('.leader-assigned-unit-card');
 
-  const msg = card ? card.querySelector('.js-thanks-msg') : null;
+    const msg = card ? card.querySelector('.js-thanks-msg') : null;
 
-  // UI: disable + show sending state
-  const originalText = buttonEl.textContent;
-  buttonEl.disabled = true;
-  buttonEl.textContent = 'sending...';
+    const originalText = buttonEl.textContent;
+    buttonEl.disabled = true;
+    buttonEl.textContent = 'sending...';
 
-  try {
-    const csrf = getCsrfToken();
-    if (!csrf) {
+    try {
+      const csrf = getCsrfToken();
+      if (!csrf) {
+        buttonEl.disabled = false;
+        buttonEl.textContent = originalText;
+        alert('Missing CSRF token. Please refresh and try again.');
+        return;
+      }
+
+      const res = await fetch(`/dashboard/leader/suggestions/${id}/thanks`, {
+        method: 'POST',
+        headers: { 'X-CSRF-Token': csrf }
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok || !data.ok) {
+        buttonEl.disabled = false;
+        buttonEl.textContent = originalText;
+        alert(data.message || `Could not send thanks (HTTP ${res.status}).`);
+        return;
+      }
+
+      const seenLabel = document.createElement('span');
+      seenLabel.className = 'tagged-unit-link muted';
+      seenLabel.setAttribute('aria-disabled', 'true');
+
+      const dt = data.acknowledgedAtFormatted ? ` (${data.acknowledgedAtFormatted})` : '';
+      seenLabel.textContent = `seen${dt}`;
+
+      buttonEl.replaceWith(seenLabel);
+
+      if (msg) {
+        msg.style.display = 'block';
+      }
+    } catch (err) {
+      console.error('sendThanksForSuggestion error:', err);
       buttonEl.disabled = false;
       buttonEl.textContent = originalText;
-      alert('Missing CSRF token. Please refresh and try again.');
-      return;
+      alert('Could not send thanks. Please try again.');
     }
-
-    const res = await fetch(`/dashboard/leader/suggestions/${id}/thanks`, {
-      method: 'POST',
-      headers: { 'X-CSRF-Token': csrf }
-    });
-
-    const data = await res.json().catch(() => ({}));
-
-    if (!res.ok || !data.ok) {
-      buttonEl.disabled = false;
-      buttonEl.textContent = originalText;
-      alert(data.message || `Could not send thanks (HTTP ${res.status}).`);
-      return;
-    }
-
-    // Build the "seen" label to replace the button
-    const seenLabel = document.createElement('span');
-    seenLabel.className = 'tagged-unit-link muted';
-    seenLabel.setAttribute('aria-disabled', 'true');
-
-    const dt = data.acknowledgedAtFormatted ? ` (${data.acknowledgedAtFormatted})` : '';
-    seenLabel.textContent = `seen${dt}`;
-
-    // Replace button with the label
-    buttonEl.replaceWith(seenLabel);
-
-    // Show the success message on the card (if present)
-    if (msg) {
-      msg.style.display = 'block';
-    }
-  } catch (err) {
-    console.error('sendThanksForSuggestion error:', err);
-    buttonEl.disabled = false;
-    buttonEl.textContent = originalText;
-    alert('Could not send thanks. Please try again.');
   }
-}
 
-
-// event delegation: works even if cards render dynamically
-document.addEventListener('click', (e) => {
-  const btn = e.target.closest('.js-thanks-btn');
-  if (!btn) return;
-  sendThanksForSuggestion(btn);
-});
-
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.js-thanks-btn');
+    if (!btn) return;
+    sendThanksForSuggestion(btn);
+  });
 </script>
 
 

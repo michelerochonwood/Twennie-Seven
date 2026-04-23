@@ -32,12 +32,13 @@
 
                 <div class="tagged-unit-actions">
                   <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
-                  <button
-                    class="tagged-unit-link"
-                    onclick="removeSelfTag('{{tagId}}','{{_id}}','{{unitType}}')"
-                  >
-                    move to archive
-                  </button>
+<button
+  type="button"
+  class="tagged-unit-link"
+  onclick="archiveUnit('{{tagId}}','{{_id}}','{{unitType}}')"
+>
+  move to archive
+</button>
                 </div>
               </div>
             {{/unless}}
@@ -83,9 +84,17 @@
                   {{/if}}
                 </div>
 
+
                 <div class="tagged-unit-actions">
-                  <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
-                </div>
+  <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
+  <button
+    type="button"
+    class="tagged-unit-link"
+    onclick="archiveUnit('{{tagId}}','{{_id}}','{{unitType}}','{{../user._id}}')"
+  >
+    move to archive
+  </button>
+</div>
               </div>
             {{/unless}}
           {{/unless}}

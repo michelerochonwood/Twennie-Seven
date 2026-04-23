@@ -32,9 +32,10 @@
 
               {{#if tagId}}
                 <button
+                  type="button"
                   class="tagged-unit-link"
-                  onclick="removeTag('{{tagId}}', '{{_id}}', '{{unitType}}')">
-                  remove tag
+                  onclick="archiveUnit('{{tagId}}','{{_id}}','{{unitType}}')">
+                  move to archive
                 </button>
               {{/if}}
             </div>
@@ -46,11 +47,11 @@
     </div>
   </div>
 
-<div class="member-progress-report-button-container" style="margin-top: 1.5rem;">
-  <a href="/reports/mylearningnotes-individual" class="member-progress-report-button">
-    view my learning notes
-  </a>
-</div>
+  <div class="member-progress-report-button-container" style="margin-top: 1.5rem;">
+    <a href="/reports/mylearningnotes-individual" class="member-progress-report-button">
+      view my learning notes
+    </a>
+  </div>
 </section>
 
 <script>
@@ -58,31 +59,35 @@
     return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
   }
 
-  async function removeTag(tagId, unitId, unitType) {
+  async function archiveUnit(tagId, unitId, unitType, assignedToMemberId = null) {
     if (!tagId) return;
-    if (!confirm("Are you sure you want to remove this tag?")) return;
+    if (!confirm("Move this item to archive?")) return;
 
     try {
-      const response = await fetch(`/tags/remove/${tagId}/${unitId}/${unitType}`, {
-        method: 'DELETE',
+      const response = await fetch('/archive', {
+        method: 'POST',
         headers: {
+          'Content-Type': 'application/json',
           'X-CSRF-Token': getCsrfToken()
-        }
+        },
+        body: JSON.stringify({
+          tagId,
+          unitId,
+          unitType,
+          assignedToMemberId
+        })
       });
 
       const result = await response.json().catch(() => ({}));
 
-      if (response.ok) {
+      if (response.ok && result.ok) {
         location.reload();
       } else {
-        alert(result.message || 'Failed to remove tag.');
+        alert(result.message || 'Failed to archive item.');
       }
     } catch (err) {
-      console.error('❌ Tag removal failed:', err);
-      alert('An error occurred while removing the tag.');
+      console.error('❌ Archive failed:', err);
+      alert('An error occurred while archiving this item.');
     }
   }
 </script>
-
-
-

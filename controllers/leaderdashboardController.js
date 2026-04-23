@@ -27,6 +27,7 @@ const Organization = require('../models/member_models/organization');
 const mongoose = require('mongoose');
 const UnitSuggestion = require('../models/unit_models/unit_suggestion');
 const OrganizationProfile = require('../models/profile_models/organization_profile');
+const ArchivedUnit = require('../models/archivedUnit');
 
 
 
@@ -1136,6 +1137,24 @@ groupMemberUnits = [...groupMemberUnits, ...gmUpcomingRows, ...gmNuggetRows];
                 throw new Error(`Leader with ID ${id} not found.`);
             }
 
+            const archivedUnits = await ArchivedUnit.find({
+  archivedBy: id
+})
+  .select('tagId unitId assignedToMember')
+  .lean();
+
+const archivedKeySet = new Set(
+  archivedUnits.map(a => {
+    const assigneeKey = a.assignedToMember ? String(a.assignedToMember) : 'self';
+    return `${String(a.tagId)}-${String(a.unitId)}-${assigneeKey}`;
+  })
+);
+
+function isArchivedDashboardItem(tagId, unitId, assignedToId = null) {
+  const assigneeKey = assignedToId ? String(assignedToId) : 'self';
+  return archivedKeySet.has(`${String(tagId)}-${String(unitId)}-${assigneeKey}`);
+}
+
             console.log("Fetched leader data:", userData);
 
             const maxGroupSize = 10;
@@ -1363,8 +1382,12 @@ const leaderSelfAssignedAllUnits = [
 });
 
 // Split self-assigned section into missions vs non-missions
-const leaderSelfTaggedMissions = leaderSelfAssignedAllUnits.filter(u => u.unitType === 'mission');
-const leaderSelfAssignedNonMissionUnits = leaderSelfAssignedAllUnits.filter(u => u.unitType !== 'mission');
+const leaderSelfAssignedVisibleUnits = leaderSelfAssignedAllUnits.filter(u =>
+  !isArchivedDashboardItem(u.tagId, u._id)
+);
+
+const leaderSelfTaggedMissions = leaderSelfAssignedVisibleUnits.filter(u => u.unitType === 'mission');
+const leaderSelfAssignedNonMissionUnits = leaderSelfAssignedVisibleUnits.filter(u => u.unitType !== 'mission');
 
 
 const [
@@ -1553,8 +1576,16 @@ const mapAssigned = (u) => ({
 });
 
 // ✅ First, separate nuggets vs non-nuggets
-const leaderAssignedNonNuggetUnitsRaw = leaderAssignedUnits.filter(u => u.unitType !== 'nugget');
-const leaderAssignedNuggetsRaw = leaderAssignedUnits.filter(u => u.unitType === 'nugget');
+const leaderAssignedUnitsVisible = leaderAssignedUnits.filter(u =>
+  !isArchivedDashboardItem(
+    u.tagId,
+    u._id,
+    u.assignedTo?._id || null
+  )
+);
+
+const leaderAssignedNonNuggetUnitsRaw = leaderAssignedUnitsVisible.filter(u => u.unitType !== 'nugget');
+const leaderAssignedNuggetsRaw = leaderAssignedUnitsVisible.filter(u => u.unitType === 'nugget');
 
 // Exclude leader self-assignment from the "assigned to my group" sections
 const leaderAssignedToOthersRaw = leaderAssignedNonNuggetUnitsRaw.filter(

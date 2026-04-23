@@ -16,6 +16,7 @@ const TopicSuggestion = require('../models/topic/topic_suggestion');
 const Upcoming = require('../models/unit_models/upcoming');
 const DashboardSeen = require('../models/dashboard_seen');
 const mongoose = require('mongoose');
+const ArchivedUnit = require('../models/archivedUnit');
 
  
 
@@ -301,6 +302,24 @@ module.exports = {
       const memberOid = new mongoose.Types.ObjectId(String(id)); // <-- ADD
       if (!id) return res.redirect('/auth/login');
 
+      const archivedUnits = await ArchivedUnit.find({
+  archivedBy: id
+})
+  .select('tagId unitId assignedToMember')
+  .lean();
+
+const archivedKeySet = new Set(
+  archivedUnits.map(a => {
+    const assigneeKey = a.assignedToMember ? String(a.assignedToMember) : 'self';
+    return `${String(a.tagId)}-${String(a.unitId)}-${assigneeKey}`;
+  })
+);
+
+function isArchivedDashboardItem(tagId, unitId, assignedToId = null) {
+  const assigneeKey = assignedToId ? String(assignedToId) : 'self';
+  return archivedKeySet.has(`${String(tagId)}-${String(unitId)}-${assigneeKey}`);
+}
+
       const userData = await Member.findById(id)
         .select('name username email emailPreferenceLevel profileImage professionalTitle organization topics accessLevel mfa.enabled mfa.method mfa.recoveryCodes mfa.updatedAt')
         .lean();
@@ -477,7 +496,11 @@ formattedCompletedSets = completedRecords.map(record => ({
 
             // ✅ Fetch tagged and contributed units
 // ✅ Fetch tagged and contributed units
-const memberTaggedUnits = await fetchTaggedUnits(id);
+const memberTaggedUnitsRaw = await fetchTaggedUnits(id);
+
+const memberTaggedUnits = memberTaggedUnitsRaw.filter(u =>
+  !isArchivedDashboardItem(u.tagId, u._id)
+);
 
 const [
   memberArticles,

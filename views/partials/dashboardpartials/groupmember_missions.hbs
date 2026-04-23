@@ -44,12 +44,13 @@
 
                 <div class="tagged-unit-actions">
                   <a href="{{viewPath}}" class="tagged-unit-link">view nugget</a>
-                  <button
-                    class="tagged-unit-link"
-                    onclick="removeSelfTag('{{tagId}}','{{_id}}','nugget')"
-                  >
-                    unassign
-                  </button>
+<button
+  type="button"
+  class="tagged-unit-link"
+  onclick="archiveUnit('{{tagId}}','{{_id}}','nugget')"
+>
+  move to archive
+</button>
                 </div>
               </div>
 
@@ -108,9 +109,16 @@
                   {{/if}}
                 </div>
 
-                <div class="tagged-unit-actions">
-                  <a href="{{viewPath}}" class="tagged-unit-link">view nugget</a>
-                </div>
+<div class="tagged-unit-actions">
+  <a href="{{viewPath}}" class="tagged-unit-link">view nugget</a>
+  <button
+    type="button"
+    class="tagged-unit-link"
+    onclick="archiveUnit('{{tagId}}','{{_id}}','nugget','{{assignedToId}}')"
+  >
+    move to archive
+  </button>
+</div>
               </div>
 
             </div>
@@ -165,11 +173,12 @@
             <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
               <a href="{{viewPath}}" class="tagged-unit-link">view mission</a>
 
-              <button
-                class="tagged-unit-link"
-                onclick="removeSelfTag('{{tagId}}','{{_id}}','mission')">
-                unassign
-              </button>
+<button
+  type="button"
+  class="tagged-unit-link"
+  onclick="archiveUnit('{{tagId}}','{{_id}}','mission')">
+  move to archive
+</button>
             </div>
           </div>
         {{/each}}
@@ -220,9 +229,16 @@
               {{/if}}
             </div>
 
-            <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
-              <a href="{{viewPath}}" class="tagged-unit-link">view mission</a>
-            </div>
+<div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
+  <a href="{{viewPath}}" class="tagged-unit-link">view mission</a>
+  <button
+    type="button"
+    class="tagged-unit-link"
+    onclick="archiveUnit('{{tagId}}','{{_id}}','mission','{{assignedToId}}')"
+  >
+    move to archive
+  </button>
+</div>
           </div>
         {{/each}}
       {{else}}
@@ -288,21 +304,31 @@
     return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
   }
 
-  async function removeSelfTag(tagId, unitId, unitType) {
-    if (!confirm('Remove this tag from the unit?')) return;
-    try {
-      const res = await fetch(`/tags/remove/${tagId}/${unitId}/${unitType}`, {
-        method: 'DELETE',
-        headers: { 'X-CSRF-Token': getCsrfGM() }
-      });
-      const data = await res.json().catch(() => ({}));
-      if (res.ok) location.reload();
-      else alert(data.message || 'Failed to remove tag.');
-    } catch (e) {
-      console.error('removeSelfTag error', e);
-      alert('An error occurred while removing the tag.');
-    }
+async function archiveUnit(tagId, unitId, unitType, assignedToMemberId = null) {
+  if (!confirm('Move this item to archive?')) return;
+  try {
+    const res = await fetch('/archive', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': getCsrfGM()
+      },
+      body: JSON.stringify({
+        tagId,
+        unitId,
+        unitType,
+        assignedToMemberId
+      })
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if (res.ok && data.ok) location.reload();
+    else alert(data.message || 'Could not archive this item.');
+  } catch (e) {
+    console.error('archiveUnit error', e);
+    alert('An error occurred while archiving this item.');
   }
+}
 
   (async function markMissionsSeenOnce() {
     try {

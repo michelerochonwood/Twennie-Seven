@@ -557,6 +557,10 @@ exports.removeTag = async (req, res) => {
 };
 
 
+module.exports.canonicalUnitType = canonicalUnitType;
+module.exports.getUnitTitle = getUnitTitle;
+
+
 
 
 

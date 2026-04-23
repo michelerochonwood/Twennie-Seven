@@ -23,6 +23,7 @@ const Nugget = require('../models/unit_models/nugget'); // ✅ NEW
 const GroupProfile = require('../models/profile_models/group_profile'); // ✅ NEW
 const Mission = require('../models/unit_models/mission'); // ✅ NEW
 const Note = require('../models/notes/notes');
+const ArchivedUnit = require('../models/archivedUnit');
 
 
 
@@ -502,6 +503,24 @@ let completedPromptSets = [];
 
             console.log("Fetching dashboard for user:", id);
 
+            const archivedUnits = await ArchivedUnit.find({
+  archivedBy: id
+})
+  .select('tagId unitId assignedToMember')
+  .lean();
+
+const archivedKeySet = new Set(
+  archivedUnits.map(a => {
+    const assigneeKey = a.assignedToMember ? String(a.assignedToMember) : 'self';
+    return `${String(a.tagId)}-${String(a.unitId)}-${assigneeKey}`;
+  })
+);
+
+function isArchivedDashboardItem(tagId, unitId, assignedToId = null) {
+  const assigneeKey = assignedToId ? String(assignedToId) : 'self';
+  return archivedKeySet.has(`${String(tagId)}-${String(unitId)}-${assigneeKey}`);
+}
+
             //members of a group are meant to show in the group member dashboard as cards - it is important that none of this changed because the group members are located based on the leader of the group - if you are rewriting anything in this renderdashboard, make sure to rewrite it exactly as you see it here. 
     
 const userData = await GroupMember.findById(id)
@@ -727,7 +746,9 @@ const groupMemberNoteByUnitId = new Map(
   ])
 );
 
-const groupMemberSelfTaggedUnits = groupMemberSelfTaggedRaw.map(u => {
+const groupMemberSelfTaggedUnits = groupMemberSelfTaggedRaw
+  .filter(u => !isArchivedDashboardItem(u.tagId, u._id))
+  .map(u => {
   const completedAt = groupMemberNoteByUnitId.get(u._id.toString()) || null;
 
   return {
@@ -754,12 +775,21 @@ const leaders = creatorIds.length
 const leaderNameById = new Map(leaders.map(l => [l._id.toString(), l.groupLeaderName || 'Group Leader']));
 
 // Flatten the assigned array with friendly fields
-const groupMemberAssignedUnits = assignedRaw.map(u => ({
-  ...u,
-  leaderName: leaderNameById.get(u.tagIdCreator) || 'Group Leader',
-  assignedInstructions: u.instructions || '',
-  assignedCompletedAtFormatted: u.completedAt ? new Date(u.completedAt).toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: '2-digit' }) : ''
-}));
+const groupMemberAssignedUnits = assignedRaw
+  .filter(u => !isArchivedDashboardItem(u.tagId, u._id, id))
+  .map(u => ({
+    ...u,
+    leaderName: leaderNameById.get(u.tagIdCreator) || 'Group Leader',
+    assignedToId: id,
+    assignedInstructions: u.instructions || '',
+    assignedCompletedAtFormatted: u.completedAt
+      ? new Date(u.completedAt).toLocaleDateString('en-CA', {
+          year: 'numeric',
+          month: 'short',
+          day: '2-digit'
+        })
+      : ''
+  }));
 
 
 // ✅ Split self-tagged / assigned into nuggets & missions

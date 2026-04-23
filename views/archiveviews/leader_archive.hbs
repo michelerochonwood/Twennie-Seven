@@ -1,0 +1,81 @@
+<article class="tagged-unit-card leader-dashboard-wave-card">
+
+  <div class="leader-dashboard-wave-card-inner">
+
+    {{!-- SVG header --}}
+    <div class="leader-dashboard-wave-header">
+      <img
+        src="/icons/{{#if (eq unitType 'nugget')}}goldsvg.svg{{else if (eq unitType 'mission')}}onyxsvg.svg{{else}}unitsvg.svg{{/if}}"
+        alt=""
+        class="leader-dashboard-wave-image"
+      >
+    </div>
+
+    {{!-- Content --}}
+    <div class="leader-dashboard-wave-content">
+
+      <div class="leader-archive-card-top">
+        <div class="leader-archive-card-type">
+          {{unitType}}
+        </div>
+
+        {{#if archivedAtFormatted}}
+          <div class="leader-archive-card-date">
+            archived {{archivedAtFormatted}}
+          </div>
+        {{/if}}
+      </div>
+
+      <h3 class="leader-archive-card-title">{{titleSnapshot}}</h3>
+
+      {{#if unitAuthorName}}
+        <p class="leader-archive-card-meta">
+          <strong>unit author:</strong> {{unitAuthorName}}
+        </p>
+      {{/if}}
+
+      {{#if archivedByNameSnapshot}}
+        <p class="leader-archive-card-meta">
+          <strong>archived by:</strong> {{archivedByNameSnapshot}}
+        </p>
+      {{/if}}
+
+      {{#if completedByName}}
+        <p class="leader-archive-card-meta">
+          <strong>completed by:</strong> {{completedByName}}
+        </p>
+      {{/if}}
+
+      {{#if completedWhenFormatted}}
+        <p class="leader-archive-card-meta">
+          <strong>completed when:</strong> {{completedWhenFormatted}}
+        </p>
+      {{/if}}
+
+      {{#if summarySnapshot}}
+        <div class="leader-archive-card-summary">
+          <h4 class="leader-archive-card-subtitle">summary</h4>
+          <p>{{summarySnapshot}}</p>
+        </div>
+      {{/if}}
+
+      {{#if notesPreview}}
+        <div class="leader-archive-card-notes">
+          <h4 class="leader-archive-card-subtitle">notes</h4>
+          <p>{{notesPreview}}</p>
+        </div>
+      {{/if}}
+
+      <div class="leader-archive-card-actions">
+        {{#if viewPath}}
+          <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
+        {{/if}}
+
+        {{#if reportPath}}
+          <a href="{{reportPath}}" class="tagged-unit-link">view report</a>
+        {{/if}}
+      </div>
+
+    </div>
+  </div>
+</article>
