@@ -730,6 +730,8 @@ console.log(`Total prompt sets found for member ${id}: ${memberRegistrations.len
             
             
     
+const allTaggedUnits = await fetchTaggedUnits(id);
+
 const taggedPromptSetById = new Map(
   (allTaggedUnits || [])
     .filter(u => u.unitType === 'promptset')
@@ -970,8 +972,12 @@ if (taggedPrompt?.tagId && isArchivedDashboardItem(taggedPrompt.tagId, psId, id)
   continue;
 }
 
-  // Use TOTAL_PROMPTS=21 consistently (Prompt0 + 1–20)
-  const progressPct = Math.round((completedCount / TOTAL_PROMPTS) * 100);
+const completedCount = Array.isArray(record.completedPrompts)
+  ? record.completedPrompts.length
+  : 0;
+
+// Use TOTAL_PROMPTS=21 consistently (Prompt0 + 1–20)
+const progressPct = Math.round((completedCount / TOTAL_PROMPTS) * 100);
   const currentPromptIndex = Number.isInteger(record.currentPromptIndex)
     ? record.currentPromptIndex
     : 0;
