@@ -536,7 +536,7 @@ app.use('/ui', require('./routes/uiroutes'));
 app.use('/', require('./routes/missionroutes'));
 app.use('/search', require('./routes/searchroutes'));
 app.use('/unitsuggestions', require('./routes/unitsuggestionroutes'));
-app.use('/', require('./routes/archiveRoutes'));
+app.use('/archive', require('./routes/archiveRoutes'));
 
 
 

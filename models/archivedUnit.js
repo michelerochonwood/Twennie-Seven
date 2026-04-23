@@ -10,7 +10,13 @@ const mongoose = require('mongoose');
  * Important:
  * - Archiving affects dashboard visibility only
  * - Archiving does NOT remove the item from reporting/history
- * - Archive visibility is private to the user who archived it
+ * - Archive visibility is role-dependent:
+ *   - member: their own archive
+ *   - group_member: their own archive
+ *   - leader: their own archive + group archive
+ *
+ * Archive is meant to support a CURRENT VIEW of previously assigned work,
+ * not a frozen historical snapshot of the unit itself.
  */
 
 const UNIT_TYPES = [
@@ -33,7 +39,7 @@ const ARCHIVE_SCOPES = [
 const archivedUnitSchema = new mongoose.Schema({
   /**
    * The user who performed the archive action.
-   * Archive pages should mainly query by this field.
+   * This is the most important field for archive visibility.
    */
   archivedBy: {
     type: mongoose.Schema.Types.ObjectId,
@@ -48,7 +54,7 @@ const archivedUnitSchema = new mongoose.Schema({
   },
 
   /**
-   * The underlying Tag record this dashboard item came from.
+   * Underlying Tag record this archived dashboard item came from.
    */
   tagId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -58,8 +64,8 @@ const archivedUnitSchema = new mongoose.Schema({
   },
 
   /**
-   * The specific unit that was visible on the dashboard.
-   * Important because a Tag can hold multiple associatedUnits.
+   * The specific unit this archive item refers to.
+   * Archive views will use unitId + unitType to pull the CURRENT unit data.
    */
   unitId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -75,9 +81,9 @@ const archivedUnitSchema = new mongoose.Schema({
   },
 
   /**
-   * Whether this archived dashboard item was:
-   * - self assigned by the current user
-   * - assigned by a leader to a specific group member
+   * Whether this was:
+   * - a self-assigned dashboard item
+   * - or a leader-assigned item archived for a specific assignee
    */
   archiveScope: {
     type: String,
@@ -103,9 +109,8 @@ const archivedUnitSchema = new mongoose.Schema({
 
   /**
    * Assignment target details.
-   * For self-assigned items, assignedToMember will usually be the same as
-   * archivedBy, but we store it explicitly because completion/instructions live
-   * at the assignment-row level in Tag.assignedTo[].
+   * For leader-assigned items, this is the assignee.
+   * For self-assigned items, this will usually match archivedBy.
    */
   assignedToMember: {
     type: mongoose.Schema.Types.ObjectId,
@@ -119,6 +124,11 @@ const archivedUnitSchema = new mongoose.Schema({
     default: null
   },
 
+  /**
+   * Lightweight convenience fields for archive display.
+   * These are okay to keep because they describe assignment context,
+   * not the unit content itself.
+   */
   assignedToNameSnapshot: {
     type: String,
     trim: true,
@@ -134,36 +144,6 @@ const archivedUnitSchema = new mongoose.Schema({
   assignedCompletedAtSnapshot: {
     type: Date,
     default: null
-  },
-
-  /**
-   * Unit display snapshot
-   * Stored so archive views are stable even if unit titles later change.
-   */
-  titleSnapshot: {
-    type: String,
-    required: true,
-    trim: true
-  },
-
-  mainTopicSnapshot: {
-    type: String,
-    trim: true,
-    default: ''
-  },
-
-  secondaryTopicsSnapshot: [{
-    type: String,
-    trim: true
-  }],
-
-  /**
-   * Optional display metadata for special unit types
-   * (badge name, client, region, discipline, etc.)
-   */
-  snapshotMeta: {
-    type: mongoose.Schema.Types.Mixed,
-    default: {}
   },
 
   /**
@@ -188,7 +168,7 @@ const archivedUnitSchema = new mongoose.Schema({
 archivedUnitSchema.index({ archivedBy: 1, archivedAt: -1 });
 
 /**
- * Useful for archive filtering by type within a user's archive
+ * Useful for type-based filtering inside archives
  */
 archivedUnitSchema.index({ archivedBy: 1, unitType: 1, archivedAt: -1 });
 
@@ -198,7 +178,7 @@ archivedUnitSchema.index({ archivedBy: 1, unitType: 1, archivedAt: -1 });
  * Notes:
  * - One Tag can hold multiple units
  * - One leader-created Tag can be assigned to multiple members
- * - So uniqueness has to include archivedBy + tagId + unitId + assignedToMember
+ * - So uniqueness includes archivedBy + tagId + unitId + assignedToMember
  *
  * For self-assigned items, assignedToMember may be null.
  */
