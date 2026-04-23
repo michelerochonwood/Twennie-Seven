@@ -78,16 +78,18 @@
                         </p>
                       {{/if}}
 
-                      {{#if completedByName}}
-                        <p class="leader-archive-card-meta">
-                          <strong>completed by:</strong>
-                          {{completedByName}}{{#if completedWhenFormatted}}, {{completedWhenFormatted}}{{/if}}
-                        </p>
-                      {{else if completedWhenFormatted}}
-                        <p class="leader-archive-card-meta">
-                          <strong>completed:</strong> {{completedWhenFormatted}}
-                        </p>
-                      {{/if}}
+{{#if completedByName}}
+  <p class="leader-archive-card-meta">
+    <strong>completed by:</strong>
+    {{completedByName}}{{#if completedWhenFormatted}}, {{completedWhenFormatted}}{{/if}}
+  </p>
+{{else}}
+  {{#if completedWhenFormatted}}
+    <p class="leader-archive-card-meta">
+      <strong>completed:</strong> {{completedWhenFormatted}}
+    </p>
+  {{/if}}
+{{/if}}
 
                       {{#if summarySnapshot}}
                         <div class="leader-archive-card-summary">
@@ -108,12 +110,11 @@
     {{/if}}
   </div>
 {{else}}
-                      {{else}}
-                        <div class="leader-archive-card-notes leader-archive-card-notes--empty">
-                          <h4 class="leader-archive-card-subtitle">notes</h4>
-                          <p class="muted">no notes available</p>
-                        </div>
-                      {{/if}}
+  <div class="leader-archive-card-notes leader-archive-card-notes--empty">
+    <h4 class="leader-archive-card-subtitle">notes</h4>
+    <p class="muted">no notes available</p>
+  </div>
+{{/if}}
                     </div>
 
                     <div class="leader-archive-card-actions">
