@@ -23,22 +23,15 @@
 
   {{#if archiveTopics.length}}
     <div class="leader-archive-topic-sections">
-
       {{#each archiveTopics}}
         <section class="leader-archive-topic-block">
           <div class="leader-archive-topic-header">
             <h2 class="leader-archive-topic-title">
-              {{#if topicTitle}}
-                {{topicTitle}}
-              {{else}}
-                no topic assigned
-              {{/if}}
+              {{#if topicTitle}}{{topicTitle}}{{else}}no topic assigned{{/if}}
             </h2>
 
             {{#if topicLongSummary}}
-              <p class="leader-archive-topic-summary">
-                {{topicLongSummary}}
-              </p>
+              <p class="leader-archive-topic-summary">{{topicLongSummary}}</p>
             {{/if}}
 
             <p class="leader-archive-topic-count">
@@ -53,7 +46,7 @@
 
                   <div class="leader-dashboard-wave-header">
                     <img
-                      src="/icons/{{#if (eq unitType 'nugget')}}goldsvg.svg{{else if (eq unitType 'mission')}}onyxsvg.svg{{else}}unitsvg.svg{{/if}}"
+                      src="/icons/{{#if (eq unitType 'nugget')}}goldsvg.svg{{else}}{{#if (eq unitType 'mission')}}onyxsvg.svg{{else}}unitsvg.svg{{/if}}{{/if}}"
                       alt=""
                       aria-hidden="true"
                       class="leader-dashboard-wave-image"
@@ -61,10 +54,9 @@
                   </div>
 
                   <div class="leader-dashboard-wave-content">
-
                     <div class="tagged-unit-icon leader-archive-unit-icon">
                       <img
-                        src="/icons/{{#if (eq unitType 'article')}}article.svg{{else if (eq unitType 'video')}}video.svg{{else if (eq unitType 'interview')}}interview.svg{{else if (eq unitType 'promptset')}}promptset.svg{{else if (eq unitType 'exercise')}}exercise.svg{{else if (eq unitType 'template')}}template.svg{{else if (eq unitType 'nugget')}}nuggeticon.svg{{else if (eq unitType 'mission')}}mission.svg{{else}}article.svg{{/if}}"
+                        src="/icons/{{#if (eq unitType 'article')}}article.svg{{else}}{{#if (eq unitType 'video')}}video.svg{{else}}{{#if (eq unitType 'interview')}}interview.svg{{else}}{{#if (eq unitType 'promptset')}}promptset.svg{{else}}{{#if (eq unitType 'exercise')}}exercise.svg{{else}}{{#if (eq unitType 'template')}}template.svg{{else}}{{#if (eq unitType 'nugget')}}nuggeticon.svg{{else}}{{#if (eq unitType 'mission')}}mission.svg{{else}}article.svg{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}"
                         alt="{{unitType}} icon"
                       >
                     </div>
@@ -78,18 +70,18 @@
                         </p>
                       {{/if}}
 
-{{#if completedByName}}
-  <p class="leader-archive-card-meta">
-    <strong>completed by:</strong>
-    {{completedByName}}{{#if completedWhenFormatted}}, {{completedWhenFormatted}}{{/if}}
-  </p>
-{{else}}
-  {{#if completedWhenFormatted}}
-    <p class="leader-archive-card-meta">
-      <strong>completed:</strong> {{completedWhenFormatted}}
-    </p>
-  {{/if}}
-{{/if}}
+                      {{#if completedByName}}
+                        <p class="leader-archive-card-meta">
+                          <strong>completed by:</strong>
+                          {{completedByName}}{{#if completedWhenFormatted}}, {{completedWhenFormatted}}{{/if}}
+                        </p>
+                      {{else}}
+                        {{#if completedWhenFormatted}}
+                          <p class="leader-archive-card-meta">
+                            <strong>completed:</strong> {{completedWhenFormatted}}
+                          </p>
+                        {{/if}}
+                      {{/if}}
 
                       {{#if summarySnapshot}}
                         <div class="leader-archive-card-summary">
@@ -98,23 +90,23 @@
                         </div>
                       {{/if}}
 
-{{#if notesPreview}}
-  <div class="leader-archive-card-notes">
-    <h4 class="leader-archive-card-subtitle">notes</h4>
-    <p>{{notesPreview}}</p>
+                      {{#if notesPreview}}
+                        <div class="leader-archive-card-notes">
+                          <h4 class="leader-archive-card-subtitle">notes</h4>
+                          <p>{{notesPreview}}</p>
 
-    {{#if archiveNoteInstruction}}
-      <p class="leader-archive-note-instruction">
-        {{archiveNoteInstruction}}
-      </p>
-    {{/if}}
-  </div>
-{{else}}
-  <div class="leader-archive-card-notes leader-archive-card-notes--empty">
-    <h4 class="leader-archive-card-subtitle">notes</h4>
-    <p class="muted">no notes available</p>
-  </div>
-{{/if}}
+                          {{#if archiveNoteInstruction}}
+                            <p class="leader-archive-note-instruction">
+                              {{archiveNoteInstruction}}
+                            </p>
+                          {{/if}}
+                        </div>
+                      {{else}}
+                        <div class="leader-archive-card-notes leader-archive-card-notes--empty">
+                          <h4 class="leader-archive-card-subtitle">notes</h4>
+                          <p class="muted">no notes available</p>
+                        </div>
+                      {{/if}}
                     </div>
 
                     <div class="leader-archive-card-actions">
@@ -122,7 +114,6 @@
                         <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
                       {{/if}}
                     </div>
-
                   </div>
                 </div>
               </article>
@@ -130,7 +121,6 @@
           </div>
         </section>
       {{/each}}
-
     </div>
   {{else}}
     <section class="leader-archive-empty">
