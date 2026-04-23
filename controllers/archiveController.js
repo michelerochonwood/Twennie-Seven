@@ -129,24 +129,15 @@ exports.archiveUnit = async (req, res) => {
 
       archiveScope = 'leader_assigned';
 } else {
-  // Self-archive path:
-  // Remove only this user's assignment row if present.
-  // IMPORTANT:
-  // Do NOT remove associatedUnits while other assignees remain,
-  // because assigned group members still need the unit to appear
-  // on their dashboards and on the leader's assigned-to-group view.
-  tag.assignedTo = (tag.assignedTo || []).filter(
-    a => String(a.member) !== archiverId
-  );
+  const isAssignedToMe = !!assignmentRow;
 
-  const hasRemainingAssignees = (tag.assignedTo || []).length > 0;
-
-  // Only remove the unit association if nobody else is still assigned.
-  if (isTagCreator && !hasRemainingAssignees) {
-    tag.associatedUnits = (tag.associatedUnits || []).filter(
-      u => !(String(u.item) === String(unitId) && u.unitType === normalizedType)
-    );
+  if (!isTagCreator && !isAssignedToMe) {
+    return res.status(403).json({
+      message: 'You can only archive your own active dashboard items.'
+    });
   }
+
+  archiveScope = 'self_assigned';
 }
 
 const [assignedToModel, assignedToNameSnapshot] = await Promise.all([
@@ -203,24 +194,23 @@ await ArchivedUnit.create({
      *   If the user is also the tag creator and this unit is only present for
      *   that self-assigned dashboard item, remove the unit association too.
      */
-    if (archiveScope === 'leader_assigned') {
-      tag.assignedTo = (tag.assignedTo || []).filter(
-        a => String(a.member) !== targetAssignedMemberId
-      );
-    } else {
-      // Remove this user's assignment row if present
-      tag.assignedTo = (tag.assignedTo || []).filter(
-        a => String(a.member) !== archiverId
-      );
+if (archiveScope === 'leader_assigned') {
+  tag.assignedTo = (tag.assignedTo || []).filter(
+    a => String(a.member) !== targetAssignedMemberId
+  );
+} else {
+  tag.assignedTo = (tag.assignedTo || []).filter(
+    a => String(a.member) !== archiverId
+  );
 
-      // If this user is the creator, also remove the unit association
-      // so it disappears from their self-assigned active dashboard
-      if (isTagCreator) {
-        tag.associatedUnits = (tag.associatedUnits || []).filter(
-          u => !(String(u.item) === String(unitId) && u.unitType === normalizedType)
-        );
-      }
-    }
+  const hasRemainingAssignees = (tag.assignedTo || []).length > 0;
+
+  if (isTagCreator && !hasRemainingAssignees) {
+    tag.associatedUnits = (tag.associatedUnits || []).filter(
+      u => !(String(u.item) === String(unitId) && u.unitType === normalizedType)
+    );
+  }
+}
 
     const isNowEmpty =
       (tag.associatedUnits?.length || 0) === 0 &&
