@@ -3,46 +3,43 @@
 <section class="group-member-tagged-units-section">
   <h2 class="tagged-units-title">assigned library units</h2>
 
-  {{!-- =====================================================
-       1) MY TAGGED UNITS (NON-NUGGET, NON-MISSION)
-       ===================================================== --}}
+  {{!-- 1) MY SELF-ASSIGNED UNITS --}}
   <div class="group-member-tagged-subsection">
     <h3 class="group-member-tagged-subtitle">my self-assigned units</h3>
 
     <div class="tagged-units-grid">
-      {{#if groupMemberSelfTaggedUnits.length}}
-        {{#each groupMemberSelfTaggedUnits}}
-          {{#unless (eq unitType "nugget")}}
-            {{#unless (eq unitType "mission")}}
-              <div class="tagged-unit-card">
-                <div class="tagged-unit-icon">
-                  <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
-                </div>
+      {{#if groupMemberSelfTaggedNonMissionUnits.length}}
+        {{#each groupMemberSelfTaggedNonMissionUnits}}
+          <div class="tagged-unit-card">
+            <div class="tagged-unit-icon">
+              <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
+            </div>
 
-                <div class="tagged-unit-info">
-                  <h3 class="tagged-unit-title">{{title}}</h3>
-                  {{#if mainTopic}}<p class="tagged-unit-topic">{{mainTopic}}</p>{{/if}}
+            <div class="tagged-unit-info">
+              <h3 class="tagged-unit-title">{{title}}</h3>
+              {{#if mainTopic}}<p class="tagged-unit-topic">{{mainTopic}}</p>{{/if}}
 
-                  {{#if completedAtFormatted}}
-                    <p class="leader-assigned-status">✅ completed <span class="muted">({{completedAtFormatted}})</span></p>
-                  {{else}}
-                    <p class="leader-assigned-status">⏳ pending</p>
-                  {{/if}}
-                </div>
+              {{#if completedAtFormatted}}
+                <p class="leader-assigned-status">✅ completed <span class="muted">({{completedAtFormatted}})</span></p>
+              {{else}}
+                <p class="leader-assigned-status">⏳ pending</p>
+              {{/if}}
+            </div>
 
-                <div class="tagged-unit-actions">
-                  <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
-<button
-  type="button"
-  class="tagged-unit-link"
-  onclick="archiveUnit('{{tagId}}','{{_id}}','{{unitType}}')"
->
-  move to archive
-</button>
-                </div>
-              </div>
-            {{/unless}}
-          {{/unless}}
+            <div class="tagged-unit-actions">
+              <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
+
+              {{#if tagId}}
+                <button
+                  type="button"
+                  class="tagged-unit-link"
+                  onclick="archiveUnit('{{tagId}}','{{_id}}','{{unitType}}')"
+                >
+                  move to archive
+                </button>
+              {{/if}}
+            </div>
+          </div>
         {{/each}}
       {{else}}
         <p class="tagged-no-units">You have not self-assigned any units.</p>
@@ -52,52 +49,50 @@
 
   <div class="tagged-section-divider" aria-hidden="true"></div>
 
-  {{!-- =====================================================
-       2) MY ASSIGNED UNITS (NON-NUGGET, NON-MISSION)
-       ===================================================== --}}
+  {{!-- 2) MY LEADER-ASSIGNED UNITS --}}
   <div class="group-member-tagged-subsection">
     <h3 class="group-member-tagged-subtitle">my leader-assigned units</h3>
 
     <div class="tagged-units-grid">
-      {{#if groupMemberAssignedUnits.length}}
-        {{#each groupMemberAssignedUnits}}
-          {{#unless (eq unitType "nugget")}}
-            {{#unless (eq unitType "mission")}}
-              <div class="tagged-unit-card">
-                <div class="tagged-unit-icon">
-                  <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
-                </div>
+      {{#if groupMemberAssignedNonMissionUnits.length}}
+        {{#each groupMemberAssignedNonMissionUnits}}
+          <div class="tagged-unit-card">
+            <div class="tagged-unit-icon">
+              <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
+            </div>
 
-                <div class="tagged-unit-info">
-                  <h3 class="tagged-unit-title">{{title}}</h3>
-                  {{#if mainTopic}}<p class="tagged-unit-topic">{{mainTopic}}</p>{{/if}}
-                  {{#if leaderName}}<p class="tagged-unit-meta">assigned by: {{leaderName}}</p>{{/if}}
+            <div class="tagged-unit-info">
+              <h3 class="tagged-unit-title">{{title}}</h3>
+              {{#if mainTopic}}<p class="tagged-unit-topic">{{mainTopic}}</p>{{/if}}
+              {{#if leaderName}}<p class="tagged-unit-meta">assigned by: {{leaderName}}</p>{{/if}}
 
-                  {{#if assignedInstructions}}
-                    <p class="tagged-unit-instructions"><em>instructions:</em> {{assignedInstructions}}</p>
-                  {{/if}}
+              {{#if assignedInstructions}}
+                <p class="tagged-unit-instructions">
+                  <em>instructions:</em> {{assignedInstructions}}
+                </p>
+              {{/if}}
 
-                  {{#if assignedCompletedAtFormatted}}
-                    <p class="leader-assigned-status">✅ completed <span class="muted">({{assignedCompletedAtFormatted}})</span></p>
-                  {{else}}
-                    <p class="leader-assigned-status">⏳ pending</p>
-                  {{/if}}
-                </div>
+              {{#if assignedCompletedAtFormatted}}
+                <p class="leader-assigned-status">✅ completed <span class="muted">({{assignedCompletedAtFormatted}})</span></p>
+              {{else}}
+                <p class="leader-assigned-status">⏳ pending</p>
+              {{/if}}
+            </div>
 
+            <div class="tagged-unit-actions">
+              <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
 
-                <div class="tagged-unit-actions">
-  <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
-  <button
-    type="button"
-    class="tagged-unit-link"
-    onclick="archiveUnit('{{tagId}}','{{_id}}','{{unitType}}','{{../user._id}}')"
-  >
-    move to archive
-  </button>
-</div>
-              </div>
-            {{/unless}}
-          {{/unless}}
+              {{#if tagId}}
+                <button
+                  type="button"
+                  class="tagged-unit-link"
+                  onclick="archiveUnit('{{tagId}}','{{_id}}','{{unitType}}','{{assignedToId}}')"
+                >
+                  move to archive
+                </button>
+              {{/if}}
+            </div>
+          </div>
         {{/each}}
       {{else}}
         <p class="tagged-no-units">You have no leader-assigned units.</p>
@@ -107,9 +102,7 @@
 
   <div class="tagged-section-divider" aria-hidden="true"></div>
 
-  {{!-- =====================================================
-       3) MY LEARNING NOTES REPORT
-       ===================================================== --}}
+  {{!-- 3) REPORTS + ARCHIVE --}}
   <div class="group-member-tagged-subsection">
     <h3 class="group-member-tagged-subtitle">my learning notes</h3>
 
@@ -123,6 +116,11 @@
         >
       </a>
     </div>
-  </div>
 
+    <div class="leader-archive-button-wrap">
+      <a href="/archive/groupmember" class="leader-archive-button">
+        learning archive
+      </a>
+    </div>
+  </div>
 </section>

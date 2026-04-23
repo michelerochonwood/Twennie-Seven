@@ -3,9 +3,7 @@
 <section class="group-member-tagged-units-section">
   <h2 class="tagged-units-title">my nuggets and missions</h2>
 
-  {{!-- =========================
-       1) MY SELF-ASSIGNED NUGGETS
-       ========================= --}}
+  {{!-- 1) MY SELF-ASSIGNED NUGGETS --}}
   <div class="group-member-tagged-subsection">
     <h3 class="group-member-tagged-subtitle">my self-assigned nuggets</h3>
 
@@ -14,14 +12,8 @@
         {{#each groupMemberTaggedNuggets}}
           <div class="leader-assigned-unit-card leader-nugget-card">
             <div class="leader-nugget-card-inner">
-
               <div class="leader-nugget-card-svg-header">
-                <img
-                  src="/icons/goldsvg.svg"
-                  alt=""
-                  aria-hidden="true"
-                  class="leader-nugget-card-svg-image"
-                >
+                <img src="/icons/goldsvg.svg" alt="" aria-hidden="true" class="leader-nugget-card-svg-image">
               </div>
 
               <div class="leader-nugget-card-content">
@@ -44,16 +36,18 @@
 
                 <div class="tagged-unit-actions">
                   <a href="{{viewPath}}" class="tagged-unit-link">view nugget</a>
-<button
-  type="button"
-  class="tagged-unit-link"
-  onclick="archiveUnit('{{tagId}}','{{_id}}','nugget')"
->
-  move to archive
-</button>
+
+                  {{#if tagId}}
+                    <button
+                      type="button"
+                      class="tagged-unit-link"
+                      onclick="archiveUnit('{{tagId}}','{{_id}}','nugget')"
+                    >
+                      move to archive
+                    </button>
+                  {{/if}}
                 </div>
               </div>
-
             </div>
           </div>
         {{/each}}
@@ -65,9 +59,7 @@
 
   <div class="tagged-section-divider" aria-hidden="true"></div>
 
-  {{!-- =========================
-       2) MY LEADER-ASSIGNED NUGGETS
-       ========================= --}}
+  {{!-- 2) MY LEADER-ASSIGNED NUGGETS --}}
   <div class="group-member-tagged-subsection">
     <h3 class="group-member-tagged-subtitle">my leader-assigned nuggets</h3>
 
@@ -76,14 +68,8 @@
         {{#each groupMemberAssignedNuggets}}
           <div class="leader-assigned-unit-card leader-nugget-card">
             <div class="leader-nugget-card-inner">
-
               <div class="leader-nugget-card-svg-header">
-                <img
-                  src="/icons/goldsvg.svg"
-                  alt=""
-                  aria-hidden="true"
-                  class="leader-nugget-card-svg-image"
-                >
+                <img src="/icons/goldsvg.svg" alt="" aria-hidden="true" class="leader-nugget-card-svg-image">
               </div>
 
               <div class="leader-nugget-card-content">
@@ -109,18 +95,20 @@
                   {{/if}}
                 </div>
 
-<div class="tagged-unit-actions">
-  <a href="{{viewPath}}" class="tagged-unit-link">view nugget</a>
-  <button
-    type="button"
-    class="tagged-unit-link"
-    onclick="archiveUnit('{{tagId}}','{{_id}}','nugget','{{assignedToId}}')"
-  >
-    move to archive
-  </button>
-</div>
-              </div>
+                <div class="tagged-unit-actions">
+                  <a href="{{viewPath}}" class="tagged-unit-link">view nugget</a>
 
+                  {{#if tagId}}
+                    <button
+                      type="button"
+                      class="tagged-unit-link"
+                      onclick="archiveUnit('{{tagId}}','{{_id}}','nugget','{{assignedToId}}')"
+                    >
+                      move to archive
+                    </button>
+                  {{/if}}
+                </div>
+              </div>
             </div>
           </div>
         {{/each}}
@@ -132,13 +120,7 @@
 
   <div class="tagged-section-divider" aria-hidden="true"></div>
 
-  {{!-- =========================
-       3) MY TAGGED MISSIONS
-       expects: groupMemberTaggedMissions = [{
-         _id, title, mainTopic, tagId, viewPath,
-         badge_name, badgeImagePath, completedAtFormatted
-       }]
-       ========================= --}}
+  {{!-- 3) MY SELF-ASSIGNED MISSIONS --}}
   <div class="group-member-tagged-subsection">
     <h3 class="group-member-tagged-subtitle">my self-assigned missions</h3>
 
@@ -163,22 +145,23 @@
               {{#if badgeImagePath}}
                 <div class="mission-badge-row">
                   <img src="{{badgeImagePath}}" alt="{{badge_name}}" class="mission-badge-icon">
-                  {{#if badge_name}}
-                    <p class="mission-badge-name">{{badge_name}}</p>
-                  {{/if}}
+                  {{#if badge_name}}<p class="mission-badge-name">{{badge_name}}</p>{{/if}}
                 </div>
               {{/if}}
             </div>
 
-            <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
+            <div class="tagged-unit-actions">
               <a href="{{viewPath}}" class="tagged-unit-link">view mission</a>
 
-<button
-  type="button"
-  class="tagged-unit-link"
-  onclick="archiveUnit('{{tagId}}','{{_id}}','mission')">
-  move to archive
-</button>
+              {{#if tagId}}
+                <button
+                  type="button"
+                  class="tagged-unit-link"
+                  onclick="archiveUnit('{{tagId}}','{{_id}}','mission')"
+                >
+                  move to archive
+                </button>
+              {{/if}}
             </div>
           </div>
         {{/each}}
@@ -190,9 +173,7 @@
 
   <div class="tagged-section-divider" aria-hidden="true"></div>
 
-  {{!-- =========================
-       4) MY ASSIGNED MISSIONS
-       ========================= --}}
+  {{!-- 4) MY LEADER-ASSIGNED MISSIONS --}}
   <div class="group-member-tagged-subsection" style="margin-top:20px;">
     <h3 class="group-member-tagged-subtitle">my leader-assigned missions</h3>
 
@@ -222,23 +203,24 @@
               {{#if badgeImagePath}}
                 <div class="mission-badge-row">
                   <img src="{{badgeImagePath}}" alt="{{badge_name}}" class="mission-badge-icon">
-                  {{#if badge_name}}
-                    <p class="mission-badge-name">{{badge_name}}</p>
-                  {{/if}}
+                  {{#if badge_name}}<p class="mission-badge-name">{{badge_name}}</p>{{/if}}
                 </div>
               {{/if}}
             </div>
 
-<div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
-  <a href="{{viewPath}}" class="tagged-unit-link">view mission</a>
-  <button
-    type="button"
-    class="tagged-unit-link"
-    onclick="archiveUnit('{{tagId}}','{{_id}}','mission','{{assignedToId}}')"
-  >
-    move to archive
-  </button>
-</div>
+            <div class="tagged-unit-actions">
+              <a href="{{viewPath}}" class="tagged-unit-link">view mission</a>
+
+              {{#if tagId}}
+                <button
+                  type="button"
+                  class="tagged-unit-link"
+                  onclick="archiveUnit('{{tagId}}','{{_id}}','mission','{{assignedToId}}')"
+                >
+                  move to archive
+                </button>
+              {{/if}}
+            </div>
           </div>
         {{/each}}
       {{else}}
@@ -249,9 +231,7 @@
 
   <div class="tagged-section-divider" aria-hidden="true"></div>
 
-  {{!-- =========================
-       5) MISSION BADGES
-       ========================= --}}
+  {{!-- 5) MISSION BADGES --}}
   <div class="group-member-tagged-subsection" style="margin-top:20px;">
     <h3 class="group-member-tagged-subtitle">mission badges</h3>
 
@@ -260,13 +240,8 @@
         {{#each @root.missionBadges}}
           <article class="gm-mission-badge-card">
             <div class="gm-mission-badge-inner">
-
               <div class="gm-mission-badge-top">
-                <img
-                  src="{{badgePath}}"
-                  alt="{{badgeName}} badge"
-                  class="gm-mission-badge-img"
-                >
+                <img src="{{badgePath}}" alt="{{badgeName}} badge" class="gm-mission-badge-img">
               </div>
 
               <div class="gm-mission-badge-body">
@@ -285,7 +260,6 @@
                   view mission
                 </a>
               </div>
-
             </div>
           </article>
         {{/each}}
@@ -297,6 +271,11 @@
     {{/if}}
   </div>
 
+  <div class="leader-archive-button-wrap">
+    <a href="/archive/groupmember" class="leader-archive-button">
+      learning archive
+    </a>
+  </div>
 </section>
 
 <script>
@@ -304,43 +283,54 @@
     return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
   }
 
-async function archiveUnit(tagId, unitId, unitType, assignedToMemberId = null) {
-  if (!confirm('Move this item to archive?')) return;
-  try {
-    const res = await fetch('/archive', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': getCsrfGM()
-      },
-      body: JSON.stringify({
-        tagId,
-        unitId,
-        unitType,
-        assignedToMemberId
-      })
-    });
+  async function archiveUnit(tagId, unitId, unitType, assignedToMemberId = null) {
+    if (!tagId || !unitId || !unitType) return;
+    if (!confirm('Move this item to archive?')) return;
 
-    const data = await res.json().catch(() => ({}));
-    if (res.ok && data.ok) location.reload();
-    else alert(data.message || 'Could not archive this item.');
-  } catch (e) {
-    console.error('archiveUnit error', e);
-    alert('An error occurred while archiving this item.');
+    try {
+      const res = await fetch('/archive', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': getCsrfGM()
+        },
+        body: JSON.stringify({
+          tagId,
+          unitId,
+          unitType,
+          assignedToMemberId
+        })
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok && data.ok) {
+        location.reload();
+      } else {
+        alert(data.message || 'Could not archive this item.');
+      }
+    } catch (e) {
+      console.error('archiveUnit error', e);
+      alert('An error occurred while archiving this item.');
+    }
   }
-}
 
   (async function markMissionsSeenOnce() {
     try {
       const count = Number('{{@root.gmCounts.missions}}') || 0;
+
       await fetch('/dashboard/groupmember/mark-seen', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-CSRF-Token': getCsrfGM()
         },
-        body: JSON.stringify({ tabKey: 'missions', currentCount: count })
+        body: JSON.stringify({
+          tabKey: 'missions',
+          currentCount: count
+        })
       });
+
       const dot = document.querySelector('.dashboard-tab[data-tab="missions"] .tab-dot');
       if (dot) dot.remove();
     } catch (e) {

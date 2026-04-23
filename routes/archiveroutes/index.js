@@ -9,6 +9,8 @@ router.post('/', archiveController.archiveUnit);
 // archive views
 router.get('/leader', archiveController.renderLeaderArchive);
 
+router.get('/groupmember', archiveController.renderGroupMemberArchive);
+
 // later:
 // router.get('/groupmember', archiveController.renderGroupMemberArchive);
 // router.get('/member', archiveController.renderMemberArchive);

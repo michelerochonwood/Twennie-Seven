@@ -517,8 +517,16 @@ const archivedKeySet = new Set(
 );
 
 function isArchivedDashboardItem(tagId, unitId, assignedToId = null) {
-  const assigneeKey = assignedToId ? String(assignedToId) : 'self';
-  return archivedKeySet.has(`${String(tagId)}-${String(unitId)}-${assigneeKey}`);
+  if (!tagId || !unitId) return false;
+
+  if (assignedToId) {
+    return archivedKeySet.has(`${String(tagId)}-${String(unitId)}-${String(assignedToId)}`);
+  }
+
+  return (
+    archivedKeySet.has(`${String(tagId)}-${String(unitId)}-self`) ||
+    archivedKeySet.has(`${String(tagId)}-${String(unitId)}-${String(id)}`)
+  );
 }
 
             //members of a group are meant to show in the group member dashboard as cards - it is important that none of this changed because the group members are located based on the leader of the group - if you are rewriting anything in this renderdashboard, make sure to rewrite it exactly as you see it here. 
@@ -722,7 +730,11 @@ console.log(`Total prompt sets found for member ${id}: ${memberRegistrations.len
             
             
     
-const allTaggedUnits = await fetchTaggedUnits(id);
+const taggedPromptSetById = new Map(
+  (allTaggedUnits || [])
+    .filter(u => u.unitType === 'promptset')
+    .map(u => [String(u._id), u])
+);
 
 // ✅ 1) Self-tagged (all unit types, including upcoming + nuggets)
 const groupMemberSelfTaggedRaw = allTaggedUnits
@@ -950,12 +962,13 @@ for (const record of progressRecords) {
   const ps = record.promptSetId;
   if (!ps) continue;
 
-  const psId = ps._id.toString();
-  if (completedIds.has(psId)) continue; // exclude completed
+const psId = ps._id.toString();
+if (completedIds.has(psId)) continue; // exclude completed
 
-  const completedCount = Array.isArray(record.completedPrompts)
-    ? record.completedPrompts.length
-    : 0;
+const taggedPrompt = taggedPromptSetById.get(psId);
+if (taggedPrompt?.tagId && isArchivedDashboardItem(taggedPrompt.tagId, psId, id)) {
+  continue;
+}
 
   // Use TOTAL_PROMPTS=21 consistently (Prompt0 + 1–20)
   const progressPct = Math.round((completedCount / TOTAL_PROMPTS) * 100);
@@ -977,15 +990,34 @@ for (const record of progressRecords) {
 }
 
 // 4) Map COMPLETED sets for display (single pass)
-const formattedCompletedSets = completedRecords.map(record => ({
-  promptSetTitle: record.promptSetId?.promptset_title || 'Unknown Title',
-  frequency: record.promptSetId?.suggested_frequency,
-  mainTopic: record.promptSetId?.main_topic || 'No Topic',
-  completedAt: record.completedAt
-    ? new Date(record.completedAt).toDateString()
-    : "Unknown Date",
-  badge: record.earnedBadge // { image, name }
-}));
+const formattedCompletedSets = completedRecords
+  .map(record => {
+    const ps = record.promptSetId;
+    const psId = ps?._id?.toString();
+
+    if (!psId) return null;
+
+    const taggedPrompt = taggedPromptSetById.get(psId);
+
+    if (taggedPrompt?.tagId && isArchivedDashboardItem(taggedPrompt.tagId, psId, id)) {
+      return null;
+    }
+
+    return {
+      promptSetId: psId,
+      tagId: taggedPrompt?.tagId || null,
+      assignedToId: id,
+
+      promptSetTitle: ps?.promptset_title || 'Unknown Title',
+      frequency: ps?.suggested_frequency,
+      mainTopic: ps?.main_topic || 'No Topic',
+      completedAt: record.completedAt
+        ? new Date(record.completedAt).toDateString()
+        : 'Unknown Date',
+      badge: record.earnedBadge
+    };
+  })
+  .filter(Boolean);
 
 // 5) Final arrays (sorted) to render
 currentPromptSets = Array.from(currentByPsId.values())

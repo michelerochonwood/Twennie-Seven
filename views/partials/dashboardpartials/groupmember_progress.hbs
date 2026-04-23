@@ -1,26 +1,27 @@
 <div class="group-member-tagged-units-section">
 
-{{#if currentPromptSets.length}}
-  <h2 class="groupmember-progress-current-title"> prompt sets in progress</h2>
-  <div class="groupmember-progress-current">
-    {{#each currentPromptSets}}
-      <div class="groupmember-progress-grid">
-        <h2 class="groupmember-progress-title">{{this.promptSetTitle}}</h2>
+  {{#if currentPromptSets.length}}
+    <h2 class="groupmember-progress-current-title">prompt sets in progress</h2>
 
-        <img 
-          src="/promptprogress/promptprogress{{increment @index}}-{{this.promptIndex}}.svg"
-          alt="Progress Pie Chart" 
-          class="groupmember-progress-svg"
-          data-progress="{{this.promptIndex}}"
-        >
+    <div class="groupmember-progress-current">
+      {{#each currentPromptSets}}
+        <div class="groupmember-progress-grid">
+          <h2 class="groupmember-progress-title">{{this.promptSetTitle}}</h2>
 
-        <p class="groupmember-progress-target">
-          you have completed {{this.promptIndex}} prompts in this set
-        </p>
-      </div>
-    {{/each}}
-  </div>
-{{/if}}
+          <img
+            src="/promptprogress/promptprogress{{increment @index}}-{{this.promptIndex}}.svg"
+            alt="Progress Pie Chart"
+            class="groupmember-progress-svg"
+            data-progress="{{this.promptIndex}}"
+          >
+
+          <p class="groupmember-progress-target">
+            you have completed {{this.promptIndex}} prompts in this set
+          </p>
+        </div>
+      {{/each}}
+    </div>
+  {{/if}}
 
   <div class="tagged-section-divider" aria-hidden="true"></div>
 
@@ -30,46 +31,57 @@
     <div class="tagged-units-grid">
       {{#if completedPromptSets.length}}
         {{#each completedPromptSets}}
-          <a
-            href="/reports/mycompletedpromptsets#promptset-{{@index}}"
-            class="tagged-unit-card"
-            style="text-decoration: none; color: inherit;"
-          >
-            <div class="tagged-unit-icon">
-              {{#if this.badge.image}}
-                <img
-                  src="{{this.badge.image}}"
-                  alt="{{this.badge.name}} badge"
-                  class="tagged-unit-badge-image"
-                >
-              {{else}}
-                <img src="/icons/promptset.svg" alt="promptset icon">
-              {{/if}}
-            </div>
-
-            <div class="tagged-unit-info">
-              <h3 class="tagged-unit-title">{{this.promptSetTitle}}</h3>
-
-              <p class="leader-assigned-status">
-                ✅ completed
-                {{#if this.completedAt}}
-                  <span class="muted">({{this.completedAt}})</span>
+          <div class="tagged-unit-card">
+            <a
+              href="/reports/mycompletedpromptsets#promptset-{{@index}}"
+              style="text-decoration: none; color: inherit;"
+            >
+              <div class="tagged-unit-icon">
+                {{#if this.badge.image}}
+                  <img
+                    src="{{this.badge.image}}"
+                    alt="{{this.badge.name}} badge"
+                    class="tagged-unit-badge-image"
+                  >
+                {{else}}
+                  <img src="/icons/promptset.svg" alt="promptset icon">
                 {{/if}}
-              </p>
+              </div>
 
-              <p class="tagged-unit-topic">
-                you completed all prompts in this set
-              </p>
+              <div class="tagged-unit-info">
+                <h3 class="tagged-unit-title">{{this.promptSetTitle}}</h3>
 
-              {{#if this.badge.name}}
-                <p class="tagged-unit-meta">
-                  badge earned: {{this.badge.name}}
+                <p class="leader-assigned-status">
+                  ✅ completed
+                  {{#if this.completedAt}}
+                    <span class="muted">({{this.completedAt}})</span>
+                  {{/if}}
                 </p>
+
+                <p class="tagged-unit-topic">
+                  you completed all prompts in this set
+                </p>
+
+                {{#if this.badge.name}}
+                  <p class="tagged-unit-meta">
+                    badge earned: {{this.badge.name}}
+                  </p>
+                {{/if}}
+              </div>
+            </a>
+
+            <div class="tagged-unit-actions">
+              {{#if this.tagId}}
+                <button
+                  type="button"
+                  class="tagged-unit-link"
+                  onclick="archiveUnit('{{this.tagId}}','{{this.promptSetId}}','promptset')"
+                >
+                  move to archive
+                </button>
               {{/if}}
             </div>
-
-
-          </a>
+          </div>
         {{/each}}
       {{else}}
         <p class="tagged-no-units">You haven’t completed any prompt sets yet.</p>
@@ -79,6 +91,12 @@
     <div class="member-progress-report-button-container" style="margin-top: 1.5rem; text-align:center;">
       <a href="/reports/mycompletedpromptsets" class="member-progress-report-button">
         view my completed prompts
+      </a>
+    </div>
+
+    <div class="leader-archive-button-wrap">
+      <a href="/archive/groupmember" class="leader-archive-button">
+        learning archive
       </a>
     </div>
   </div>
