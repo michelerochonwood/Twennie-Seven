@@ -274,13 +274,14 @@ exports.renderLeaderArchive = async (req, res) => {
     const archiveTopicsMap = new Map();
 
 for (const row of archiveRows) {
-  let unitDoc = null;
-  let title = 'Untitled unit';
-  let mainTopic = 'No Topic Assigned';
-  let summary = '';
-  let unitAuthorName = '';
-  let viewPath = '';
-  let notesPreview = '';
+let unitDoc = null;
+let title = 'Untitled unit';
+let mainTopic = 'No Topic Assigned';
+let summary = '';
+let unitAuthorName = '';
+let viewPath = '';
+let notesPreview = '';
+let archiveNoteInstruction = '';
 
       if (row.unitType === 'article') {
         const Article = require('../models/unit_models/article');
