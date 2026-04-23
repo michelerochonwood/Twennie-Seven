@@ -7,6 +7,7 @@ const Leader = require('../models/member_models/leader');
 const GroupMember = require('../models/member_models/group_member');
 const Note = require('../models/notes/notes');
 const topicsData = require('../public/data/topics.json');
+const PromptSetCompletion = require('../models/prompt_models/promptsetcompletion');
 
 
 const topicSummaryMap = new Map(
@@ -370,7 +371,26 @@ if (unitDoc?.author?.id || unitDoc?.author) {
   unitAuthorName = authorName || '';
 }
 
-if (row.assignedToMember && row.unitId) {
+if (row.unitType === 'promptset' && row.assignedToMember && row.unitId) {
+  const completion = await PromptSetCompletion.findOne({
+    memberId: row.assignedToMember,
+    promptSetId: row.unitId
+  })
+    .sort({ completedAt: -1, createdAt: -1 })
+    .lean();
+
+  notesPreview =
+    completion?.finalNotes ||
+    completion?.notes?.[19] ||
+    '';
+
+  archiveNoteInstruction = 'View all 20 notes in the completed prompt sets report.';
+
+} else if (row.unitType === 'nugget') {
+  notesPreview = unitDoc?.notes || '';
+  archiveNoteInstruction = 'View all nugget notes in the nuggets report.';
+
+} else if (row.assignedToMember && row.unitId) {
   const learnerNote = await Note.findOne({
     unitID: row.unitId,
     memberID: row.assignedToMember
@@ -412,8 +432,10 @@ if (row.assignedToMember && row.unitId) {
           : '',
         archivedByNameSnapshot: row.assignedToNameSnapshot || '',
 notesPreview,
+archiveNoteInstruction,
         viewPath,
         reportPath: '/reports/leaderreport'
+        
       });
     }
 
