@@ -72,6 +72,17 @@
       {{/if}}
     </div>
 
+
+              <div class="tagged-unit-actions leader-nugget-actions">
+                <a href="/unitviews/nuggets/view/{{this._id}}" class="tagged-unit-link">view nugget</a>
+              </div>
+
+
+    <!-- BOTTOM DIVIDER -->
+    <div class="leader-nugget-divider"></div>
+
+  </div>
+{{/each}}
     <div class="leader-assigned-row-actions leader-nugget-row-actions">
       <button
         type="button"
@@ -81,22 +92,13 @@
         move to archive
       </button>
     </div>
-
-    <!-- BOTTOM DIVIDER -->
-    <div class="leader-nugget-divider"></div>
-
-  </div>
-{{/each}}
-
                   {{else}}
                     <p class="tagged-no-units">No members are currently assigned this nugget.</p>
                   {{/if}}
                 </div>
               </div>
 
-              <div class="tagged-unit-actions leader-nugget-actions">
-                <a href="/unitviews/nuggets/view/{{this._id}}" class="tagged-unit-link">view nugget</a>
-              </div>
+
 
             </div>
           </div>
