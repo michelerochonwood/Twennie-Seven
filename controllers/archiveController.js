@@ -408,11 +408,11 @@ exports.renderLeaderArchive = async (req, res) => {
       }))
       .sort((a, b) => a.topicTitle.localeCompare(b.topicTitle));
 
-    return res.render('leader_archive', {
-      layout: 'dashboardlayout',
-      title: 'Learning Archive',
-      archiveTopics
-    });
+return res.render('archiveviews/leader_archive', {
+  layout: 'dashboardlayout',
+  title: 'Learning Archive',
+  archiveTopics
+});
 
   } catch (err) {
     console.error('❌ renderLeaderArchive error:', err);
