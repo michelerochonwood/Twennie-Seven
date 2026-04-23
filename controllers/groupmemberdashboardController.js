@@ -264,10 +264,7 @@ async function fetchTaggedUnits(userId) {
         const tag = tagLookup.get(key);
         const assignment = (tag?.assignedTo || []).find(a => String(a.member) === String(userId));
 
-        const completionInfo =
-          type === 'promptset'
-            ? promptSetCompletionById.get(unit._id.toString()) || {}
-            : {};
+const completionInfo = {};
 
         return {
           unitType: type,
