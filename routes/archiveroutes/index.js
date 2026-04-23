@@ -1,7 +1,7 @@
 // routes/archiveRoutes.js
 const express = require('express');
 const router = express.Router();
-const archiveController = require('../controllers/archiveController');
+const archiveController = require('../../controllers/archiveController');
 
 // archive action
 router.post('/', archiveController.archiveUnit);
