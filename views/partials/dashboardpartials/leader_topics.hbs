@@ -72,12 +72,12 @@
 <div class="leader-topic-suggestion-card">
   {{#if topicSuggestions.length}}
     {{#each topicSuggestions}}
-      <h4 class="leader-topic-suggestion-title">suggested new topic: {{this.topicTitle}}</h4>
+      <h4 class="leader-topic-suggestion-title">my suggested new topic: {{this.topicTitle}}</h4>
       <p class="leader-topic-suggestion-meta">
         Submitted on {{formatDate this.submittedAt}} |
         {{#if this.approved}}
           <span class="approved">✅ Approved</span><br>
-          Estimated library release: {{formatDate this.expectedLibraryDate}}
+
         {{else}}
           <span class="pending">🕓 Approval pending</span>
         {{/if}}
