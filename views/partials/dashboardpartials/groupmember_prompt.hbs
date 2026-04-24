@@ -1,10 +1,7 @@
 {{!-- groupmember_prompt_tab.hbs --}}
 
-<meta name="csrf-token" content="{{csrfToken}}">
-
 <div class="groupmember-prompt-tab" id="groupmemberPromptTab" data-member-id="{{@root.user.id}}">
-
-  {{!-- 1) PROMPT SETS IN PROGRESS --}}
+  {{!-- Prefer rendering from an array (promptSets) if the controller provides one; otherwise fall back to single promptSet --}}
   {{#if promptSets}}
     {{#each promptSets}}
       {{> _gm_prompt_card promptSet=this csrfToken=@root.csrfToken}}
@@ -36,182 +33,95 @@
       </p>
     </div>
   {{/if}}
-
-  <div class="tagged-section-divider" aria-hidden="true"></div>
-
-  {{!-- 2) COMPLETED PROMPT SETS --}}
-  <div class="group-member-tagged-subsection">
-    <h3 class="group-member-tagged-subtitle">completed prompt sets</h3>
-
-    <div class="tagged-units-grid">
-      {{#if completedPromptSets.length}}
-        {{#each completedPromptSets}}
-          <div class="tagged-unit-card leader-dashboard-wave-card">
-            <div class="leader-dashboard-wave-card-inner">
-
-              <div class="leader-dashboard-wave-header">
-                <img
-                  src="/images/unitsvg.svg"
-                  alt=""
-                  class="leader-dashboard-wave-image"
-                  aria-hidden="true"
-                >
-              </div>
-
-              <div class="leader-dashboard-wave-content">
-                <div class="tagged-unit-icon">
-                  <img src="/icons/promptset.svg" alt="prompt set icon">
-                </div>
-
-                <div class="tagged-unit-info">
-                  <h3 class="tagged-unit-title">{{promptSetTitle}}</h3>
-
-                  {{#if mainTopic}}
-                    <p class="tagged-unit-topic">{{mainTopic}}</p>
-                  {{/if}}
-
-                  {{#if completedAtFormatted}}
-                    <p class="leader-assigned-status">
-                      ✅ completed <span class="muted">({{completedAtFormatted}})</span>
-                    </p>
-                  {{else if completed_at}}
-                    <p class="leader-assigned-status">
-                      ✅ completed
-                    </p>
-                  {{else}}
-                    <p class="leader-assigned-status">
-                      ✅ completed
-                    </p>
-                  {{/if}}
-
-                  {{#if badgeImagePath}}
-                    <div class="mission-badge-row">
-                      <img src="{{badgeImagePath}}" alt="{{badge_name}}" class="mission-badge-icon">
-                      {{#if badge_name}}<p class="mission-badge-name">{{badge_name}}</p>{{/if}}
-                    </div>
-                  {{/if}}
-                </div>
-
-                <div class="tagged-unit-actions">
-                  {{#if viewPath}}
-                    <a href="{{viewPath}}" class="tagged-unit-link">view prompt set</a>
-                  {{else}}
-                    <a href="/unitviews/promptsets/view/{{promptSetId}}" class="tagged-unit-link">view prompt set</a>
-                  {{/if}}
-
-                  {{#if registrationId}}
-                    <button
-                      type="button"
-                      class="tagged-unit-link"
-                      onclick="archivePromptSet('{{registrationId}}','{{promptSetId}}')"
-                    >
-                      move to archive
-                    </button>
-                  {{else if tagId}}
-                    <button
-                      type="button"
-                      class="tagged-unit-link"
-                      onclick="archiveUnit('{{tagId}}','{{promptSetId}}','promptset')"
-                    >
-                      move to archive
-                    </button>
-                  {{/if}}
-                </div>
-              </div>
-
-            </div>
-          </div>
-        {{/each}}
-      {{else}}
-        <p class="tagged-no-units">You have not completed any prompt sets yet.</p>
-      {{/if}}
-    </div>
-  </div>
 </div>
 
-{{!-- Inline sub-partial for active prompt sets --}}
+{{!-- Inline sub-partial that mirrors your original markup/behavior one-for-one --}}
 {{#*inline "_gm_prompt_card"}}
+  {{!-- Expect: promptSet = { promptSetId, registrationId, frequency, promptSetTitle, mainTopic, purpose, leaderNotes?, leaderName?, promptHeadline, promptText, promptIndex?, promptSchedule? } --}}
+  {{!-- Use external promptSchedule if provided at root-level for back-compat --}}
   {{#with promptSet as |ps|}}
-    <div class="groupmember-prompt-container" data-psid="{{ps.promptSetId}}" data-regid="{{ps.registrationId}}">
-      <h2 class="groupmember-prompt-title">{{ps.frequency}} prompt</h2>
+  <div class="groupmember-prompt-container" data-psid="{{ps.promptSetId}}" data-regid="{{ps.registrationId}}">
+    <h2 class="groupmember-prompt-title">{{ps.frequency}} prompt</h2>
 
-      <h5 class="groupmember-prompt-set-title" style="font-size: 1rem;">
-        <strong>{{ps.promptSetTitle}}</strong> - {{ps.mainTopic}}
-      </h5>
+    <h5 class="groupmember-prompt-set-title" style="font-size: 1rem;">
+      <strong>{{ps.promptSetTitle}}</strong> - {{ps.mainTopic}}
+    </h5>
 
-      <p class="groupmember-prompt-purpose">
-        <strong>Purpose of this prompt set:</strong> {{ps.purpose}}
+    <p class="groupmember-prompt-purpose">
+      <strong>Purpose of this prompt set:</strong> {{ps.purpose}}
+    </p>
+
+    {{!-- schedule: support legacy {{promptSchedule}} OR ps.promptSchedule --}}
+    {{#if (or ../promptSchedule ps.promptSchedule)}}
+      <p class="groupmember-prompt-schedule">
+        To stay on schedule with this prompt set, Twennie recommends you complete this prompt by:
       </p>
+      <p class="groupmember-prompt-schedule-date">
+        {{#if ../promptSchedule}}{{../promptSchedule.recommendedCompletionDate}}{{else}}{{ps.promptSchedule.recommendedCompletionDate}}{{/if}}
+      </p>
+    {{/if}}
 
-      {{#if (or ../promptSchedule ps.promptSchedule)}}
-        <p class="groupmember-prompt-schedule">
-          To stay on schedule with this prompt set, Twennie recommends you complete this prompt by:
-        </p>
-        <p class="groupmember-prompt-schedule-date">
-          {{#if ../promptSchedule}}{{../promptSchedule.recommendedCompletionDate}}{{else}}{{ps.promptSchedule.recommendedCompletionDate}}{{/if}}
-        </p>
-      {{/if}}
+    {{#if ps.leaderNotes}}
+      <div class="groupmember-leader-notes">
+        <h4 class="groupmember-leader-notes-title">instructions from {{ps.leaderName}}:</h4>
+        <p class="groupmember-leader-notes-text">{{ps.leaderNotes}}</p>
+      </div>
+    {{/if}}
 
-      {{#if ps.leaderNotes}}
-        <div class="groupmember-leader-notes">
-          <h4 class="groupmember-leader-notes-title">instructions from {{ps.leaderName}}:</h4>
-          <p class="groupmember-leader-notes-text">{{ps.leaderNotes}}</p>
-        </div>
-      {{/if}}
-
-      <div class="groupmember-prompt-card">
-        <div class="groupmember-prompt-border">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1224.99 153.32">
-            <defs><style>.cls-777 {fill: #4e50a2;}</style></defs>
-            <g>
-              <path class="cls-777" d="M149.91,136.71c-.06,0-.11,0-.17,0,.06,0,.11,0,.17,0Z"/>
-              <path class="cls-777" d="M109.06,90.03h-49.65c28.73-7.2,48.89-24.04,48.89-43.65C108.29,20.2,72.54.92,28.27.92,21,.92,14.68.28,7.69.28L.3,0h-.3l.64,149.68c31-6.8,68.57-11.39,108.41-14.03v-45.62Z"/>
-              <path class="cls-777" d="M1224.99,0L215,4.7c-68.86-.52-105.94,30.88-105.94,62.55,0,28.27,50.59,67.87,183.53,72.77h0c83.12,1.86,260.56-21.97,326.9-30.26,300.52-37.57,604.74,43.55,604.74,43.55l.76-153.32Z"/>
-            </g>
-          </svg>
-        </div>
-
-        <p class="groupmember-prompt-headline">{{ps.promptHeadline}}</p>
-        <p class="groupmember-prompt-text">{{ps.promptText}}</p>
+    <div class="groupmember-prompt-card">
+      <div class="groupmember-prompt-border">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1224.99 153.32">
+          <defs><style>.cls-777 {fill: #4e50a2;}</style></defs>
+          <g>
+            <path class="cls-777" d="M149.91,136.71c-.06,0-.11,0-.17,0,.06,0,.11,0,.17,0Z"/>
+            <path class="cls-777" d="M109.06,90.03h-49.65c28.73-7.2,48.89-24.04,48.89-43.65C108.29,20.2,72.54.92,28.27.92,21,.92,14.68.28,7.69.28L.3,0h-.3l.64,149.68c31-6.8,68.57-11.39,108.41-14.03v-45.62Z"/>
+            <path class="cls-777" d="M1224.99,0L215,4.7c-68.86-.52-105.94,30.88-105.94,62.55,0,28.27,50.59,67.87,183.53,72.77h0c83.12,1.86,260.56-21.97,326.9-30.26,300.52-37.57,604.74,43.55,604.74,43.55l.76-153.32Z"/>
+          </g>
+        </svg>
       </div>
 
-      {{#if ps.promptIndex}}
-        <form action="/promptsetnotes/submit-prompt-notes" method="POST" class="groupmember-prompt-form">
-          <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
-          <input type="hidden" name="promptSetId" value="{{ps.promptSetId}}">
-
-          <label for="notes-{{ps.promptSetId}}" class="groupmember-prompt-notes-label">Record your notes here:</label>
-          <textarea
-            name="notes"
-            id="notes-{{ps.promptSetId}}"
-            class="groupmember-prompt-notes"
-            placeholder="Write your notes here..."
-            required
-          ></textarea>
-
-          {{#if (eq ps.promptIndex 20)}}
-            <p class="final-prompt-message">
-              <strong>Final Prompt!</strong> This is the last prompt in the set. Make sure to complete the prompt and add your final thoughts about what you learned and discovered!
-            </p>
-          {{/if}}
-
-          <button type="submit" class="groupmember-prompt-submit">submit this prompt</button>
-        </form>
-      {{else}}
-        <form action="/promptsetstart/start" method="POST">
-          <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
-          <input type="hidden" name="promptSetId" value="{{ps.promptSetId}}">
-          <button type="submit" class="groupmember-prompt-submit">get started completing prompts</button>
-        </form>
-      {{/if}}
-
-      <button class="groupmember-unregister-btn" data-id="{{ps.registrationId}}">
-        unregister for this prompt set
-      </button>
+      <p class="groupmember-prompt-headline">{{ps.promptHeadline}}</p>
+      <p class="groupmember-prompt-text">{{ps.promptText}}</p>
     </div>
+
+    {{#if ps.promptIndex}}
+      {{!-- Notes form for prompts 1–20 (kept identical, ids made unique per set) --}}
+      <form action="/promptsetnotes/submit-prompt-notes" method="POST" class="groupmember-prompt-form">
+        <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
+        <input type="hidden" name="promptSetId" value="{{ps.promptSetId}}">
+
+        <label for="notes-{{ps.promptSetId}}" class="groupmember-prompt-notes-label">Record your notes here:</label>
+        <textarea name="notes"
+                  id="notes-{{ps.promptSetId}}"
+                  class="groupmember-prompt-notes"
+                  placeholder="Write your notes here..."
+                  required></textarea>
+
+        {{#if (eq ps.promptIndex 20)}}
+          <p class="final-prompt-message">
+            <strong>Final Prompt!</strong> This is the last prompt in the set. Make sure to complete the prompt and add your final thoughts about what you learned and discovered!
+          </p>
+        {{/if}}
+
+        <button type="submit" class="groupmember-prompt-submit">submit this prompt</button>
+      </form>
+    {{else}}
+      {{!-- Start form for Prompt 0 (kept identical) --}}
+      <form action="/promptsetstart/start" method="POST">
+        <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
+        <input type="hidden" name="promptSetId" value="{{ps.promptSetId}}">
+        <button type="submit" class="groupmember-prompt-submit">get started completing prompts</button>
+      </form>
+    {{/if}}
+
+    <button class="groupmember-unregister-btn" data-id="{{ps.registrationId}}">
+      unregister for this prompt set
+    </button>
+  </div>
   {{/with}}
 {{/inline}}
 
+{{!-- Small client-side de-duplication: if upstream accidentally sends duplicates, keep the first per promptSetId --}}
 <script>
 (function () {
   var root = document.getElementById('groupmemberPromptTab');
@@ -224,7 +134,6 @@
     var card = cards[i];
     var key = card.getAttribute('data-psid') || '';
     if (!key) continue;
-
     if (seen[key]) {
       card.parentNode && card.parentNode.removeChild(card);
     } else {
@@ -232,69 +141,6 @@
     }
   }
 })();
-
-function getCsrfGM() {
-  return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-}
-
-async function archivePromptSet(registrationId, promptSetId) {
-  if (!registrationId || !promptSetId) return;
-  if (!confirm('Move this completed prompt set to archive?')) return;
-
-  try {
-    const res = await fetch('/archive/promptset', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': getCsrfGM()
-      },
-      body: JSON.stringify({
-        registrationId,
-        promptSetId
-      })
-    });
-
-    const data = await res.json().catch(() => ({}));
-
-    if (res.ok && data.ok) {
-      location.reload();
-    } else {
-      alert(data.message || 'Could not archive this prompt set.');
-    }
-  } catch (e) {
-    console.error('archivePromptSet error', e);
-    alert('An error occurred while archiving this prompt set.');
-  }
-}
-
-async function archiveUnit(tagId, unitId, unitType) {
-  if (!tagId || !unitId || !unitType) return;
-  if (!confirm('Move this item to archive?')) return;
-
-  try {
-    const res = await fetch('/archive', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': getCsrfGM()
-      },
-      body: JSON.stringify({
-        tagId,
-        unitId,
-        unitType
-      })
-    });
-
-    const data = await res.json().catch(() => ({}));
-
-    if (res.ok && data.ok) {
-      location.reload();
-    } else {
-      alert(data.message || 'Could not archive this item.');
-    }
-  } catch (e) {
-    console.error('archiveUnit error', e);
-    alert('An error occurred while archiving this item.');
-  }
-}
 </script>
+
+
