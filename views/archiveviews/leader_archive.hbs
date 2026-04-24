@@ -117,16 +117,38 @@
   </div>
 
 {{#if archiveNoteInstruction}}
-  <div class="archive-prompt-report-cta-wrap">
-    {{#if (eq unitType "promptset")}}
-      <a href="/reports/promptsetscompleted" class="archive-prompt-report-cta">
+  {{#if (eq unitType "promptset")}}
+    <div style="width: 100%; display: flex; justify-content: center; margin: 1rem 0 0 0;">
+      <a
+        href="/reports/promptsetscompleted"
+        style="
+          display: inline-block;
+          width: auto;
+          max-width: 85%;
+          height: auto;
+          min-height: 0;
+          padding: 0.65rem 1rem;
+          border-radius: 999px;
+          background-color: #262262;
+          color: #ffffff;
+          font-family: Figtree, sans-serif;
+          font-size: 0.72rem;
+          font-weight: 800;
+          line-height: 1.25;
+          text-align: center;
+          text-decoration: none;
+          box-shadow: none;
+          transform: none;
+        "
+      >
         {{archiveNoteInstruction}}
       </a>
-    {{else}}
+    </div>
+  {{else}}
+    <div style="width: 100%; text-align: center; margin-top: 1rem;">
       <strong>{{archiveNoteInstruction}}</strong>
-    {{/if}}
-  </div>
-{{/if}}
+    </div>
+  {{/if}}
 {{/if}}
 
                     <div class="leader-archive-card-actions">
