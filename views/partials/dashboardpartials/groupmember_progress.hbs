@@ -54,6 +54,7 @@
                         src="{{this.badge.image}}"
                         alt="{{this.badge.name}} badge"
                         class="tagged-unit-badge-image"
+                        style="height: auto;"
                       >
                     {{else}}
                       <img src="/icons/promptset.svg" alt="promptset icon">
@@ -83,15 +84,13 @@
                 </a>
 
                 <div class="tagged-unit-actions">
-                  {{#if this.tagId}}
-                    <button
-                      type="button"
-                      class="tagged-unit-link"
-                      onclick="archiveUnit('{{this.tagId}}','{{this.promptSetId}}','promptset')"
-                    >
-                      move to archive
-                    </button>
-                  {{/if}}
+                  <button
+                    type="button"
+                    class="tagged-unit-link"
+                    onclick="archiveUnit('{{this.tagId}}','{{this.promptSetId}}','promptset')"
+                  >
+                    move to archive
+                  </button>
                 </div>
               </div>
 
@@ -117,6 +116,3 @@
   </div>
 
 </div>
-
-
-    
