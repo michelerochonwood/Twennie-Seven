@@ -3,16 +3,17 @@ const express = require('express');
 const router = express.Router();
 const archiveController = require('../../controllers/archiveController');
 
-// archive action
+// tag-based archive action
 router.post('/', archiveController.archiveUnit);
+
+// completed prompt set archive action
+router.post('/completed-promptset', archiveController.archiveCompletedPromptSet);
 
 // archive views
 router.get('/leader', archiveController.renderLeaderArchive);
-
 router.get('/groupmember', archiveController.renderGroupMemberArchive);
 
 // later:
-// router.get('/groupmember', archiveController.renderGroupMemberArchive);
 // router.get('/member', archiveController.renderMemberArchive);
 
 module.exports = router;

@@ -8,6 +8,8 @@ const GroupMember = require('../models/member_models/group_member');
 const Note = require('../models/notes/notes');
 const topicsData = require('../public/data/topics.json');
 const PromptSetCompletion = require('../models/prompt_models/promptsetcompletion');
+const AssignPromptSet = require('../models/prompt_models/assignpromptset');
+const PromptSet = require('../models/unit_models/promptset');
 
 
 const topicSummaryMap = new Map(
@@ -662,6 +664,119 @@ exports.renderGroupMemberArchive = async (req, res) => {
     return res.status(500).render('error', {
       title: 'Error',
       errorMessage: 'Could not load the archive.'
+    });
+  }
+};
+
+exports.archiveCompletedPromptSet = async (req, res) => {
+  try {
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({ message: 'Login required.' });
+    }
+
+    const { promptSetId, completionId, assignedToMemberId } = req.body;
+
+    if (!promptSetId) {
+      return res.status(400).json({
+        message: 'promptSetId is required.'
+      });
+    }
+
+    const archiverId = String(req.user._id);
+    const archiverModel = await getUserModel(req.user._id);
+
+    if (!archiverModel) {
+      return res.status(403).json({
+        message: 'Unable to determine user type.'
+      });
+    }
+
+    const targetMemberId = assignedToMemberId
+      ? String(assignedToMemberId)
+      : archiverId;
+
+    const completionQuery = completionId
+      ? { _id: completionId, memberId: targetMemberId, promptSetId }
+      : { memberId: targetMemberId, promptSetId };
+
+    const completion = await PromptSetCompletion.findOne(completionQuery)
+      .sort({ completedAt: -1, createdAt: -1 })
+      .lean();
+
+    if (!completion) {
+      return res.status(404).json({
+        message: 'Completed prompt set record not found.'
+      });
+    }
+
+    const promptSet = await PromptSet.findById(promptSetId).lean();
+
+    if (!promptSet) {
+      return res.status(404).json({
+        message: 'Prompt set not found.'
+      });
+    }
+
+    const assignment = await AssignPromptSet.findOne({
+      promptSetId,
+      assignedMemberIds: targetMemberId
+    }).lean();
+
+    const assignedToModel = await getUserModel(targetMemberId);
+    const assignedToNameSnapshot = await getUserNameSnapshot(targetMemberId);
+
+    const existingArchive = await ArchivedUnit.findOne({
+      archivedBy: req.user._id,
+      unitId: promptSetId,
+      unitType: 'promptset',
+      assignedToMember: targetMemberId
+    }).lean();
+
+    if (existingArchive) {
+      return res.status(200).json({
+        ok: true,
+        alreadyArchived: true
+      });
+    }
+
+    await ArchivedUnit.create({
+      archivedBy: req.user._id,
+      archivedByModel: archiverModel,
+
+      tagId: null,
+      unitId: promptSetId,
+      unitType: 'promptset',
+
+      archiveScope: assignment ? 'promptset_assigned' : 'promptset_self_completed',
+
+      createdBy: assignment?.groupLeaderId || promptSet.author?.id || promptSet.author || null,
+      createdByModel: assignment?.groupLeaderId ? 'leader' : null,
+
+      assignedToMember: targetMemberId,
+      assignedToModel: assignedToModel || null,
+      assignedToNameSnapshot: assignedToNameSnapshot || '',
+
+      assignedInstructionsSnapshot: assignment?.leaderNotes || '',
+      assignedCompletedAtSnapshot: completion.completedAt || null,
+
+      originallyAssignedAt: assignment?.assignDate || assignment?.createdAt || null,
+      archivedAt: new Date()
+    });
+
+    return res.status(200).json({ ok: true });
+
+  } catch (e) {
+    console.error('❌ archiveCompletedPromptSet error:', e);
+
+    if (e && e.code === 11000) {
+      return res.status(200).json({
+        ok: true,
+        alreadyArchived: true
+      });
+    }
+
+    return res.status(500).json({
+      message: 'Internal server error'
     });
   }
 };

@@ -500,10 +500,12 @@ let completedPromptSets = [];
 
             console.log("Fetching dashboard for user:", id);
 
-            const archivedUnits = await ArchivedUnit.find({
+
+
+const archivedUnits = await ArchivedUnit.find({
   archivedBy: id
 })
-  .select('tagId unitId assignedToMember')
+  .select('tagId unitId unitType assignedToMember archiveScope')
   .lean();
 
 const archivedKeySet = new Set(
@@ -513,6 +515,22 @@ const archivedKeySet = new Set(
   })
 );
 
+// ✅ NEW: completed prompt set archive tracking
+const archivedCompletedPromptSetIds = new Set(
+  archivedUnits
+    .filter(a =>
+      a.unitType === 'promptset' &&
+      String(a.assignedToMember || '') === String(id)
+    )
+    .map(a => String(a.unitId))
+);
+
+function isArchivedCompletedPromptSet(promptSetId) {
+  if (!promptSetId) return false;
+  return archivedCompletedPromptSetIds.has(String(promptSetId));
+}
+
+// existing tag-based archive logic
 function isArchivedDashboardItem(tagId, unitId, assignedToId = null) {
   if (!tagId || !unitId) return false;
 
@@ -965,9 +983,15 @@ const psId = ps._id.toString();
 if (completedIds.has(psId)) continue; // exclude completed
 
 const taggedPrompt = taggedPromptSetById.get(psId);
-if (taggedPrompt?.tagId && isArchivedDashboardItem(taggedPrompt.tagId, psId, id)) {
+
+if (
+  isArchivedCompletedPromptSet(psId) ||
+  (taggedPrompt?.tagId && isArchivedDashboardItem(taggedPrompt.tagId, psId, id))
+) {
   continue;
 }
+
+
 
 const completedCount = Array.isArray(record.completedPrompts)
   ? record.completedPrompts.length
@@ -1002,23 +1026,26 @@ const formattedCompletedSets = completedRecords
 
     const taggedPrompt = taggedPromptSetById.get(psId);
 
-    if (taggedPrompt?.tagId && isArchivedDashboardItem(taggedPrompt.tagId, psId, id)) {
-      return null;
-    }
+if (
+  isArchivedCompletedPromptSet(psId) ||
+  (taggedPrompt?.tagId && isArchivedDashboardItem(taggedPrompt.tagId, psId, id))
+) {
+  return null;
+}
+return {
+  completionId: record._id.toString(),
+  promptSetId: psId,
+  tagId: taggedPrompt?.tagId || null,
+  assignedToId: id,
 
-    return {
-      promptSetId: psId,
-      tagId: taggedPrompt?.tagId || null,
-      assignedToId: id,
-
-      promptSetTitle: ps?.promptset_title || 'Unknown Title',
-      frequency: ps?.suggested_frequency,
-      mainTopic: ps?.main_topic || 'No Topic',
-      completedAt: record.completedAt
-        ? new Date(record.completedAt).toDateString()
-        : 'Unknown Date',
-      badge: record.earnedBadge
-    };
+  promptSetTitle: ps?.promptset_title || 'Unknown Title',
+  frequency: ps?.suggested_frequency,
+  mainTopic: ps?.main_topic || 'No Topic',
+  completedAt: record.completedAt
+    ? new Date(record.completedAt).toDateString()
+    : 'Unknown Date',
+  badge: record.earnedBadge
+};
   })
   .filter(Boolean);
 

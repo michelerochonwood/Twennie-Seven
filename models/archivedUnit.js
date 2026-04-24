@@ -33,7 +33,9 @@ const UNIT_TYPES = [
 
 const ARCHIVE_SCOPES = [
   'self_assigned',
-  'leader_assigned'
+  'leader_assigned',
+  'promptset_self_completed',
+  'promptset_assigned'
 ];
 
 const archivedUnitSchema = new mongoose.Schema({
@@ -55,11 +57,15 @@ const archivedUnitSchema = new mongoose.Schema({
 
   /**
    * Underlying Tag record this archived dashboard item came from.
+   *
+   * Tag-based units use this.
+   * Completed prompt sets may not have a Tag, so this must be optional.
    */
   tagId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Tag',
-    required: true,
+    required: false,
+    default: null,
     index: true
   },
 
@@ -83,7 +89,9 @@ const archivedUnitSchema = new mongoose.Schema({
   /**
    * Whether this was:
    * - a self-assigned dashboard item
-   * - or a leader-assigned item archived for a specific assignee
+   * - a leader-assigned item archived for a specific assignee
+   * - a completed prompt set archived by the learner
+   * - a leader-assigned completed prompt set archived by the learner
    */
   archiveScope: {
     type: String,
@@ -93,24 +101,31 @@ const archivedUnitSchema = new mongoose.Schema({
   },
 
   /**
-   * Original tag ownership
+   * Original assignment/content ownership.
+   *
+   * Tag-based archives generally have this from the Tag.
+   * Completed prompt-set archives may derive this from AssignPromptSet.groupLeaderId,
+   * PromptSet author, or may be null if unavailable.
    */
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
-    required: true,
+    required: false,
+    default: null,
     index: true
   },
 
   createdByModel: {
     type: String,
-    required: true,
-    enum: ['member', 'group_member', 'leader']
+    required: false,
+    enum: ['member', 'group_member', 'leader', null],
+    default: null
   },
 
   /**
    * Assignment target details.
    * For leader-assigned items, this is the assignee.
    * For self-assigned items, this will usually match archivedBy.
+   * For completed prompt sets, this should be the learner who completed it.
    */
   assignedToMember: {
     type: mongoose.Schema.Types.ObjectId,
@@ -126,8 +141,7 @@ const archivedUnitSchema = new mongoose.Schema({
 
   /**
    * Lightweight convenience fields for archive display.
-   * These are okay to keep because they describe assignment context,
-   * not the unit content itself.
+   * These describe assignment/completion context, not the unit content itself.
    */
   assignedToNameSnapshot: {
     type: String,
@@ -175,15 +189,11 @@ archivedUnitSchema.index({ archivedBy: 1, unitType: 1, archivedAt: -1 });
 /**
  * Prevent duplicate archive entries for the same visible dashboard instance.
  *
- * Notes:
- * - One Tag can hold multiple units
- * - One leader-created Tag can be assigned to multiple members
- * - So uniqueness includes archivedBy + tagId + unitId + assignedToMember
- *
- * For self-assigned items, assignedToMember may be null.
+ * Includes archiveScope so Tag-based and prompt-completion archives do not collide.
+ * tagId may be null for completed prompt sets.
  */
 archivedUnitSchema.index(
-  { archivedBy: 1, tagId: 1, unitId: 1, assignedToMember: 1 },
+  { archivedBy: 1, tagId: 1, unitId: 1, assignedToMember: 1, archiveScope: 1 },
   { unique: true }
 );
 

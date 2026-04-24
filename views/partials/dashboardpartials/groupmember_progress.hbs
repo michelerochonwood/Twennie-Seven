@@ -84,15 +84,13 @@
                 </a>
 
                 <div class="tagged-unit-actions">
-{{#if this.tagId}}
-  <button
-    type="button"
-    class="tagged-unit-link"
-    onclick="archiveUnit('{{this.tagId}}','{{this.promptSetId}}','promptset','{{this.assignedToId}}')"
-  >
-    move to archive
-  </button>
-{{/if}}
+<button
+  type="button"
+  class="tagged-unit-link"
+  onclick="archiveCompletedPromptSet('{{this.promptSetId}}','{{this.assignedToId}}')"
+>
+  move to archive
+</button>
                 </div>
               </div>
 
@@ -118,3 +116,34 @@
   </div>
 
 </div>
+
+<script>
+async function archiveCompletedPromptSet(promptSetId, assignedToMemberId = null) {
+  if (!confirm('Move this prompt set to archive?')) return;
+
+  try {
+    const res = await fetch('/archive/completed-promptset', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+      },
+      body: JSON.stringify({
+        promptSetId,
+        assignedToMemberId
+      })
+    });
+
+    const data = await res.json().catch(() => ({}));
+
+    if (res.ok && data.ok) {
+      location.reload();
+    } else {
+      alert(data.message || 'Could not archive this prompt set.');
+    }
+  } catch (e) {
+    console.error('archiveCompletedPromptSet error', e);
+    alert('An error occurred while archiving this prompt set.');
+  }
+}
+</script>
