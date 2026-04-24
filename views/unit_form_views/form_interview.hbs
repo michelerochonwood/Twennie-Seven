@@ -78,24 +78,46 @@
         <textarea id="full-summary" name="full_summary" maxlength="600">{{data.full_summary}}</textarea>
       </div>
 
-      <!-- Visibility -->
-      <div class="form-field">
-        <label>Who can access this interview?</label>
-        <div class="visibility-toggle-row">
-          <label class="visibility-option">
-            <input type="radio" name="visibility" value="team_only" {{#ifEquals data.visibility "team_only"}}checked{{/ifEquals}} required>
-            share with my group only
-          </label>
-          <label class="visibility-option">
-            <input type="radio" name="visibility" value="organization_only" {{#ifEquals data.visibility "organization_only"}}checked{{/ifEquals}} required>
-            share with my organization only
-          </label>
-          <label class="visibility-option">
-            <input type="radio" name="visibility" value="all_members" {{#ifEquals data.visibility "all_members"}}checked{{/ifEquals}} required>
-            share with all Twennie members
-          </label>
-        </div>
-      </div>
+{{!-- Visibility Toggles --}}
+<div class="form-field">
+  <label>Who can access this interview?</label>
+
+  <div class="visibility-toggle-row">
+    {{#unless (eq user.membershipType "member")}}
+      <label class="visibility-option">
+        <input
+          type="radio"
+          name="visibility"
+          value="team_only"
+          {{#ifEquals data.visibility "team_only"}}checked{{/ifEquals}}
+        >
+        share with my group only
+      </label>
+
+      <label class="visibility-option">
+        <input
+          type="radio"
+          name="visibility"
+          value="organization_only"
+          {{#ifEquals data.visibility "organization_only"}}checked{{/ifEquals}}
+        >
+        share with my organization only
+      </label>
+    {{/unless}}
+
+    <label class="visibility-option">
+      <input
+        type="radio"
+        name="visibility"
+        value="all_members"
+        {{#ifEquals data.visibility "all_members"}}checked{{/ifEquals}}
+        {{#if (eq user.membershipType "member")}}checked{{/if}}
+        required
+      >
+      share with all Twennie members
+    </label>
+  </div>
+</div>
 
       <!-- Submit -->
       <div class="form-buttons">
