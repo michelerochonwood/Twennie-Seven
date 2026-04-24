@@ -1826,34 +1826,50 @@ html, body {
   padding: 0;
 }
 
-/* Make it look like a proper button */
-.leader-archive-note-button {
-  display: inline-flex;
-  align-items: center;
+.archive-prompt-report-cta-wrap {
+  width: 100%;
+  margin: 0.9rem auto 0 auto;
+  padding: 0;
+  background: transparent !important;
+  border: none !important;
+  display: flex;
   justify-content: center;
-  max-width: 85%;
-  padding: 0.7rem 1.1rem;
-
-  background-color: #262262;
-  color: #4a4ab2;
-
-  font-family: "Figtree";
-  font-size: 0.75rem;
-  font-weight: 800;
+  align-items: center;
   text-align: center;
-  line-height: 1.3;
-
-  border-radius: 999px;
-  text-decoration: none;
-
-  box-shadow: 0 2px 6px rgba(38, 34, 98, 0.2);
 }
 
-/* Kill ALL hover weirdness */
-.leader-archive-note-button:hover {
-  background-color: #262262;
-  transform: none;
-  text-decoration: none;
+/* unique archive prompt report button */
+.archive-prompt-report-cta,
+.archive-prompt-report-cta:visited {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-width: 90%;
+  padding: 0.65rem 1rem !important;
+  border-radius: 999px !important;
+  background-color: #262262 !important;
+  color: #ffffff !important;
+  font-family: "Figtree", sans-serif;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.25;
+  text-align: center;
+  text-decoration: none !important;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.archive-prompt-report-cta:hover,
+.archive-prompt-report-cta:focus,
+.archive-prompt-report-cta:active {
+  background-color: #262262 !important;
+  color: #ffffff !important;
+  text-decoration: none !important;
+  transform: none !important;
 }
 
 
