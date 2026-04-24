@@ -1137,10 +1137,10 @@ groupMemberUnits = [...groupMemberUnits, ...gmUpcomingRows, ...gmNuggetRows];
                 throw new Error(`Leader with ID ${id} not found.`);
             }
 
-            const archivedUnits = await ArchivedUnit.find({
+const archivedUnits = await ArchivedUnit.find({
   archivedBy: id
 })
-  .select('tagId unitId assignedToMember')
+  .select('tagId unitId unitType assignedToMember archiveScope')
   .lean();
 
 const archivedKeySet = new Set(
@@ -1149,6 +1149,20 @@ const archivedKeySet = new Set(
     return `${String(a.tagId)}-${String(a.unitId)}-${assigneeKey}`;
   })
 );
+
+const archivedCompletedPromptSetKeys = new Set(
+  archivedUnits
+    .filter(a => a.unitType === 'promptset')
+    .map(a => {
+      const assigneeKey = a.assignedToMember ? String(a.assignedToMember) : String(id);
+      return `${String(a.unitId)}-${assigneeKey}`;
+    })
+);
+
+function isArchivedCompletedPromptSet(promptSetId, assignedToId = id) {
+  if (!promptSetId) return false;
+  return archivedCompletedPromptSetKeys.has(`${String(promptSetId)}-${String(assignedToId)}`);
+}
 
 function isArchivedDashboardItem(tagId, unitId, assignedToId = null) {
   const assigneeKey = assignedToId ? String(assignedToId) : 'self';
@@ -1494,20 +1508,27 @@ const groupCompletedRecords = await PromptSetCompletion
   .populate('promptSetId')
   .lean();
 
-const groupCompletedPromptSets = groupCompletedRecords.map(record => ({
-  completionId: record._id.toString(),
-  promptSetId: record.promptSetId?._id?.toString(),
-  assignedToId: record.memberId?.toString(),
+const groupCompletedPromptSets = groupCompletedRecords
+  .filter(record => {
+    const psId = record.promptSetId?._id?.toString();
+    const memberId = record.memberId?.toString();
 
-  promptSetTitle: record.promptSetId?.promptset_title || 'Unknown Title',
-  frequency: record.promptSetId?.suggested_frequency,
-  mainTopic: record.promptSetId?.main_topic || 'No Topic',
-  completedAt: record.completedAt
-    ? new Date(record.completedAt).toDateString()
-    : 'Unknown Date',
-  badge: record.earnedBadge,
-  memberName: memberNameById.get(record.memberId?.toString()) || 'Group Member'
-}));
+    return !isArchivedCompletedPromptSet(psId, memberId);
+  })
+  .map(record => ({
+    completionId: record._id.toString(),
+    promptSetId: record.promptSetId?._id?.toString(),
+    assignedToId: record.memberId?.toString(),
+
+    promptSetTitle: record.promptSetId?.promptset_title || 'Unknown Title',
+    frequency: record.promptSetId?.suggested_frequency,
+    mainTopic: record.promptSetId?.main_topic || 'No Topic',
+    completedAt: record.completedAt
+      ? new Date(record.completedAt).toDateString()
+      : 'Unknown Date',
+    badge: record.earnedBadge,
+    memberName: memberNameById.get(record.memberId?.toString()) || 'Group Member'
+  }));
 
 
 
