@@ -90,66 +90,53 @@
                         </div>
                       {{/if}}
 
-{{#if notesPreview}}
-  <div class="leader-archive-card-notes">
-    <h4 class="leader-archive-card-subtitle">notes</h4>
-    <p>{{notesPreview}}</p>
-  </div>
+                      {{#if notesPreview}}
+                        <div class="leader-archive-card-notes">
+                          <h4 class="leader-archive-card-subtitle">notes</h4>
+                          <p>{{notesPreview}}</p>
+                        </div>
+                      {{else}}
+                        <div class="leader-archive-card-notes leader-archive-card-notes--empty">
+                          <h4 class="leader-archive-card-subtitle">notes</h4>
+                          <p class="muted">no notes available</p>
+                        </div>
+                      {{/if}}
 
-  {{#if archiveNoteInstruction}}
-    <div class="leader-archive-note-instruction-block">
-      <strong>
-        {{#if (eq unitType "promptset")}}
-          <a href="/reports/mylearningnotes" class="report-link">
-            {{archiveNoteInstruction}}
-          </a>
-        {{else}}
-          {{archiveNoteInstruction}}
-        {{/if}}
-      </strong>
-    </div>
-  {{/if}}
-
-{{else}}
-  <div class="leader-archive-card-notes leader-archive-card-notes--empty">
-    <h4 class="leader-archive-card-subtitle">notes</h4>
-    <p class="muted">no notes available</p>
-  </div>
-
-{{#if archiveNoteInstruction}}
-  {{#if (eq unitType "promptset")}}
-    <div style="width: 100%; display: flex; justify-content: center; margin: 1rem 0 0 0;">
-      <a
-        href="/reports/promptsetscompleted"
-        style="
-          display: inline-block;
-          width: auto;
-          max-width: 85%;
-          height: auto;
-          min-height: 0;
-          padding: 0.65rem 1rem;
-          border-radius: 999px;
-          background-color: #262262;
-          color: #ffffff;
-          font-family: Figtree, sans-serif;
-          font-size: 0.72rem;
-          font-weight: 800;
-          line-height: 1.25;
-          text-align: center;
-          text-decoration: none;
-          box-shadow: none;
-          transform: none;
-        "
-      >
-        {{archiveNoteInstruction}}
-      </a>
-    </div>
-  {{else}}
-    <div style="width: 100%; text-align: center; margin-top: 1rem;">
-      <strong>{{archiveNoteInstruction}}</strong>
-    </div>
-  {{/if}}
-{{/if}}
+                      {{#if archiveNoteInstruction}}
+                        {{#if (eq unitType "promptset")}}
+                          <div style="width: 100%; display: flex; justify-content: center; margin: 1rem 0 0 0;">
+                            <a
+                              href="/reports/promptsetscompleted"
+                              style="
+                                display: inline-block;
+                                width: auto;
+                                max-width: 85%;
+                                height: auto;
+                                min-height: 0;
+                                padding: 0.65rem 1rem;
+                                border-radius: 999px;
+                                background-color: #262262;
+                                color: #ffffff;
+                                font-family: Figtree, sans-serif;
+                                font-size: 0.72rem;
+                                font-weight: 800;
+                                line-height: 1.25;
+                                text-align: center;
+                                text-decoration: none;
+                                box-shadow: none;
+                                transform: none;
+                              "
+                            >
+                              {{archiveNoteInstruction}}
+                            </a>
+                          </div>
+                        {{else}}
+                          <div style="width: 100%; text-align: center; margin-top: 1rem;">
+                            <strong>{{archiveNoteInstruction}}</strong>
+                          </div>
+                        {{/if}}
+                      {{/if}}
+                    </div>
 
                     <div class="leader-archive-card-actions">
                       {{#if viewPath}}
