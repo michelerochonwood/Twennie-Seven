@@ -98,9 +98,18 @@
 
   {{#if archiveNoteInstruction}}
     <div class="leader-archive-note-instruction-block">
-      <strong>{{archiveNoteInstruction}}</strong>
+      <strong>
+        {{#if (eq unitType "promptset")}}
+          <a href="/reports/mylearningnotes" class="report-link">
+            {{archiveNoteInstruction}}
+          </a>
+        {{else}}
+          {{archiveNoteInstruction}}
+        {{/if}}
+      </strong>
     </div>
   {{/if}}
+
 {{else}}
   <div class="leader-archive-card-notes leader-archive-card-notes--empty">
     <h4 class="leader-archive-card-subtitle">notes</h4>
@@ -109,7 +118,15 @@
 
   {{#if archiveNoteInstruction}}
     <div class="leader-archive-note-instruction-block">
-      <strong>{{archiveNoteInstruction}}</strong>
+      <strong>
+        {{#if (eq unitType "promptset")}}
+          <a href="/reports/mylearningnotes" class="report-link">
+            {{archiveNoteInstruction}}
+          </a>
+        {{else}}
+          {{archiveNoteInstruction}}
+        {{/if}}
+      </strong>
     </div>
   {{/if}}
 {{/if}}
