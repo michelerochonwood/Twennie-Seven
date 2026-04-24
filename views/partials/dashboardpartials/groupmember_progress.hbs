@@ -84,13 +84,15 @@
                 </a>
 
                 <div class="tagged-unit-actions">
-                  <button
-                    type="button"
-                    class="tagged-unit-link"
-                    onclick="archiveUnit('{{this.tagId}}','{{this.promptSetId}}','promptset')"
-                  >
-                    move to archive
-                  </button>
+{{#if this.tagId}}
+  <button
+    type="button"
+    class="tagged-unit-link"
+    onclick="archiveUnit('{{this.tagId}}','{{this.promptSetId}}','promptset','{{this.assignedToId}}')"
+  >
+    move to archive
+  </button>
+{{/if}}
                 </div>
               </div>
 
