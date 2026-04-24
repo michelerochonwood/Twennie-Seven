@@ -1495,6 +1495,10 @@ const groupCompletedRecords = await PromptSetCompletion
   .lean();
 
 const groupCompletedPromptSets = groupCompletedRecords.map(record => ({
+  completionId: record._id.toString(),
+  promptSetId: record.promptSetId?._id?.toString(),
+  assignedToId: record.memberId?.toString(),
+
   promptSetTitle: record.promptSetId?.promptset_title || 'Unknown Title',
   frequency: record.promptSetId?.suggested_frequency,
   mainTopic: record.promptSetId?.main_topic || 'No Topic',

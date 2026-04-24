@@ -176,39 +176,49 @@
         Badges earned by members of your group for completing prompt sets.
       </p>
 
-      {{#if groupCompletedPromptSets.length}}
-        <div class="leader-progress-completed-grid" style="overflow: hidden;">
-          {{#each groupCompletedPromptSets}}
-            <div class="leader-progress-completed-card leader-group-badge-card">
-              <h3 class="leader-progress-completed-title">{{this.promptSetTitle}}</h3>
+{{#each groupCompletedPromptSets}}
+  <div class="leader-progress-completed-card leader-group-badge-card">
 
-              <p class="leader-progress-completed-main-topic">{{this.mainTopic}}</p>
+    <h3 class="leader-progress-completed-title">{{this.promptSetTitle}}</h3>
 
-              {{#if this.memberName}}
-                <p class="leader-group-badge-member">
-                  earned by <strong>{{this.memberName}}</strong>
-                </p>
-              {{/if}}
+    <p class="leader-progress-completed-main-topic">{{this.mainTopic}}</p>
 
-              <p class="leader-progress-completed-date">
-                completed: {{this.completedAt}}
-              </p>
+    {{#if this.memberName}}
+      <p class="leader-group-badge-member">
+        earned by <strong>{{this.memberName}}</strong>
+      </p>
+    {{/if}}
 
-              <div class="leader-progress-badge">
-                {{#if this.badge}}
-                  <img
-                    src="{{this.badge.image}}"
-                    alt="{{this.badge.name}}"
-                    class="leader-progress-badge-img"
-                    style="height: auto;"
-                  >
-                  <p class="leader-progress-badge-name">{{this.badge.name}}</p>
-                {{else}}
-                  <p class="leader-progress-badge-name">No badge data for this completion</p>
-                {{/if}}
-              </div>
-            </div>
-          {{/each}}
+    <p class="leader-progress-completed-date">
+      completed: {{this.completedAt}}
+    </p>
+
+    <div class="leader-progress-badge">
+      {{#if this.badge}}
+        <img
+          src="{{this.badge.image}}"
+          alt="{{this.badge.name}}"
+          class="leader-progress-badge-img"
+          style="height: auto;"
+        >
+        <p class="leader-progress-badge-name">{{this.badge.name}}</p>
+      {{else}}
+        <p class="leader-progress-badge-name">No badge data for this completion</p>
+      {{/if}}
+    </div>
+
+    <div class="leader-archive-button-wrap">
+      <button
+        type="button"
+        class="leader-archive-button"
+        onclick="archiveCompletedPromptSet('{{this.promptSetId}}','{{this.assignedToId}}','{{this.completionId}}')"
+      >
+        move to archive
+      </button>
+    </div>
+
+  </div>
+{{/each}}
         </div>
       {{else}}
         <p class="no-data" style="text-align: center; margin-top: 1rem; font-size: 1rem">
