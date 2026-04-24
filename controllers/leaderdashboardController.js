@@ -584,7 +584,15 @@ async function buildAssignedPromptSets(leaderId) {
     );
   }
 
-  const result = Array.from(grouped.values());
+const result = Array.from(grouped.values()).filter(card => {
+  const members = Array.isArray(card.members) ? card.members : [];
+
+  const allMembersCompleted =
+    members.length > 0 &&
+    members.every(member => member.status === 'completed');
+
+  return !allMembersCompleted;
+});
 
   result.sort((a, b) => {
     const ad = a.sortDateRaw ? new Date(a.sortDateRaw) : null;
