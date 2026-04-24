@@ -90,24 +90,29 @@
                         </div>
                       {{/if}}
 
-                      {{#if notesPreview}}
-                        <div class="leader-archive-card-notes">
-                          <h4 class="leader-archive-card-subtitle">notes</h4>
-                          <p>{{notesPreview}}</p>
+{{#if notesPreview}}
+  <div class="leader-archive-card-notes">
+    <h4 class="leader-archive-card-subtitle">notes</h4>
+    <p>{{notesPreview}}</p>
+  </div>
 
-                          {{#if archiveNoteInstruction}}
-                            <p class="leader-archive-note-instruction">
-                              {{archiveNoteInstruction}}
-                            </p>
-                          {{/if}}
-                        </div>
-                      {{else}}
-                        <div class="leader-archive-card-notes leader-archive-card-notes--empty">
-                          <h4 class="leader-archive-card-subtitle">notes</h4>
-                          <p class="muted">no notes available</p>
-                        </div>
-                      {{/if}}
-                    </div>
+  {{#if archiveNoteInstruction}}
+    <div class="leader-archive-note-instruction-block">
+      <strong>{{archiveNoteInstruction}}</strong>
+    </div>
+  {{/if}}
+{{else}}
+  <div class="leader-archive-card-notes leader-archive-card-notes--empty">
+    <h4 class="leader-archive-card-subtitle">notes</h4>
+    <p class="muted">no notes available</p>
+  </div>
+
+  {{#if archiveNoteInstruction}}
+    <div class="leader-archive-note-instruction-block">
+      <strong>{{archiveNoteInstruction}}</strong>
+    </div>
+  {{/if}}
+{{/if}}
 
                     <div class="leader-archive-card-actions">
                       {{#if viewPath}}

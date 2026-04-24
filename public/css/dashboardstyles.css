@@ -1815,6 +1815,14 @@ html, body {
   background: #4a4ab2;
 }
 
+.leader-archive-note-instruction-block {
+  margin-top: 10px;
+  padding: 10px 14px;
+  background: rgba(78, 80, 162, 0.08);
+  border-left: 4px solid #4e50a2;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
 
 
 /* Optional: keep spacing consistent with leader groups */
