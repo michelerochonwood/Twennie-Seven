@@ -1824,6 +1824,20 @@ html, body {
   font-size: 0.9rem;
 }
 
+.leader-archive-note-link {
+  color: #262262;
+  text-decoration: none;
+  display: block;
+  width: 100%;
+  text-align: center;
+}
+
+.leader-archive-note-link:hover {
+  color: #262262;
+  text-decoration: none;
+  transform: none;
+}
+
 
 /* Optional: keep spacing consistent with leader groups */
 .dashboard-tabs-container--admin .dashboard-tab {

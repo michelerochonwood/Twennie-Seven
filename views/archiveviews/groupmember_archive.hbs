@@ -100,7 +100,7 @@
     <div class="leader-archive-note-instruction-block">
       <strong>
         {{#if (eq unitType "promptset")}}
-          <a href="/reports/mylearningnotes" class="report-link">
+          <a href="/reports/mylearningnotes" class="leader-archive-note-link">
             {{archiveNoteInstruction}}
           </a>
         {{else}}
@@ -119,7 +119,7 @@
     <div class="leader-archive-note-instruction-block">
       <strong>
         {{#if (eq unitType "promptset")}}
-          <a href="/reports/mylearningnotes" class="report-link">
+          <a href="/reports/mylearningnotes" class="leader-archive-note-link">
             {{archiveNoteInstruction}}
           </a>
         {{else}}
@@ -129,12 +129,7 @@
     </div>
   {{/if}}
 {{/if}}
-                      {{else}}
-                        <div class="leader-archive-card-notes leader-archive-card-notes--empty">
-                          <h4 class="leader-archive-card-subtitle">notes</h4>
-                          <p class="muted">no notes available</p>
-                        </div>
-                      {{/if}}
+
                     </div>
 
                     <div class="leader-archive-card-actions">
