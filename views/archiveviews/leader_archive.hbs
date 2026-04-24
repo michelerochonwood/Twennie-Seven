@@ -116,19 +116,17 @@
     <p class="muted">no notes available</p>
   </div>
 
-  {{#if archiveNoteInstruction}}
-    <div class="leader-archive-note-instruction-block">
-      <strong>
-        {{#if (eq unitType "promptset")}}
-          <a href="/reports/mylearningnotes" class="report-link">
-            {{archiveNoteInstruction}}
-          </a>
-        {{else}}
-          {{archiveNoteInstruction}}
-        {{/if}}
-      </strong>
-    </div>
-  {{/if}}
+{{#if archiveNoteInstruction}}
+  <div class="leader-archive-note-instruction-block">
+    {{#if (eq unitType "promptset")}}
+      <a href="/reports/promptsetscompleted" class="leader-archive-note-button">
+        {{archiveNoteInstruction}}
+      </a>
+    {{else}}
+      <strong>{{archiveNoteInstruction}}</strong>
+    {{/if}}
+  </div>
+{{/if}}
 {{/if}}
 
                     <div class="leader-archive-card-actions">
