@@ -31,55 +31,70 @@
     <div class="tagged-units-grid">
       {{#if completedPromptSets.length}}
         {{#each completedPromptSets}}
-          <div class="tagged-unit-card">
-            <a
-              href="/reports/mycompletedpromptsets#promptset-{{@index}}"
-              style="text-decoration: none; color: inherit;"
-            >
-              <div class="tagged-unit-icon">
-                {{#if this.badge.image}}
-                  <img
-                    src="{{this.badge.image}}"
-                    alt="{{this.badge.name}} badge"
-                    class="tagged-unit-badge-image"
-                  >
-                {{else}}
-                  <img src="/icons/promptset.svg" alt="promptset icon">
-                {{/if}}
-              </div>
+          <div class="tagged-unit-card leader-dashboard-wave-card">
+            <div class="leader-dashboard-wave-card-inner">
 
-              <div class="tagged-unit-info">
-                <h3 class="tagged-unit-title">{{this.promptSetTitle}}</h3>
-
-                <p class="leader-assigned-status">
-                  ✅ completed
-                  {{#if this.completedAt}}
-                    <span class="muted">({{this.completedAt}})</span>
-                  {{/if}}
-                </p>
-
-                <p class="tagged-unit-topic">
-                  you completed all prompts in this set
-                </p>
-
-                {{#if this.badge.name}}
-                  <p class="tagged-unit-meta">
-                    badge earned: {{this.badge.name}}
-                  </p>
-                {{/if}}
-              </div>
-            </a>
-
-            <div class="tagged-unit-actions">
-              {{#if this.tagId}}
-                <button
-                  type="button"
-                  class="tagged-unit-link"
-                  onclick="archiveUnit('{{this.tagId}}','{{this.promptSetId}}','promptset')"
+              <div class="leader-dashboard-wave-header">
+                <img
+                  src="/images/unitsvg.svg"
+                  alt=""
+                  class="leader-dashboard-wave-image"
+                  aria-hidden="true"
                 >
-                  move to archive
-                </button>
-              {{/if}}
+              </div>
+
+              <div class="leader-dashboard-wave-content">
+                <a
+                  href="/reports/mycompletedpromptsets#promptset-{{@index}}"
+                  style="text-decoration: none; color: inherit;"
+                >
+                  <div class="tagged-unit-icon">
+                    {{#if this.badge.image}}
+                      <img
+                        src="{{this.badge.image}}"
+                        alt="{{this.badge.name}} badge"
+                        class="tagged-unit-badge-image"
+                      >
+                    {{else}}
+                      <img src="/icons/promptset.svg" alt="promptset icon">
+                    {{/if}}
+                  </div>
+
+                  <div class="tagged-unit-info">
+                    <h3 class="tagged-unit-title">{{this.promptSetTitle}}</h3>
+
+                    <p class="leader-assigned-status">
+                      ✅ completed
+                      {{#if this.completedAt}}
+                        <span class="muted">({{this.completedAt}})</span>
+                      {{/if}}
+                    </p>
+
+                    <p class="tagged-unit-topic">
+                      you completed all prompts in this set
+                    </p>
+
+                    {{#if this.badge.name}}
+                      <p class="tagged-unit-meta">
+                        badge earned: {{this.badge.name}}
+                      </p>
+                    {{/if}}
+                  </div>
+                </a>
+
+                <div class="tagged-unit-actions">
+                  {{#if this.tagId}}
+                    <button
+                      type="button"
+                      class="tagged-unit-link"
+                      onclick="archiveUnit('{{this.tagId}}','{{this.promptSetId}}','promptset')"
+                    >
+                      move to archive
+                    </button>
+                  {{/if}}
+                </div>
+              </div>
+
             </div>
           </div>
         {{/each}}
