@@ -1598,9 +1598,19 @@ const getMyLearningNotesReportIndividual = async (req, res) => {
       });
     }
 
-    const notes = await Notes.find({ memberID: memberDoc._id })
-      .sort({ createdAt: 1 })
-      .lean();
+const [notes, progresses, completions] = await Promise.all([
+  Notes.find({ memberID: memberDoc._id })
+    .sort({ createdAt: 1 })
+    .lean(),
+
+  PromptSetProgress.find({ memberId: memberDoc._id })
+    .populate("promptSetId")
+    .lean(),
+
+  PromptSetCompletion.find({ memberId: memberDoc._id })
+    .populate("promptSetId")
+    .lean()
+]);
 
     if (!notes.length) {
       return res.render("report_views/mylearningnotes_individual", {
@@ -1690,11 +1700,75 @@ const getMyLearningNotesReportIndividual = async (req, res) => {
         return bd - ad;
       });
 
-    return res.render("report_views/mylearningnotes_individual", {
-      layout: "dashboardlayout",
-      isMyLearningNotesIndividual: true,
-      myLearningNotesReports
+      // =========================================================
+// TABLE 2 DATA: PROMPT NOTES / HISTORY
+// =========================================================
+const TOTAL_PROMPTS = 21;
+
+const completionKey = (memberId, promptSetId) => `${memberId}::${promptSetId}`;
+const completionByKey = new Map(
+  (completions || []).map(c => [
+    completionKey(
+      String(c.memberId),
+      String(c.promptSetId?._id || c.promptSetId)
+    ),
+    c
+  ])
+);
+
+const promptNotesReports = (progresses || [])
+  .filter(prog => prog.promptSetId)
+  .map(prog => {
+    const ps = prog.promptSetId;
+    const psId = String(ps._id);
+
+    const prompts = Array.from({ length: TOTAL_PROMPTS }, (_, idx) => {
+      return {
+        promptHeadline: ps?.[`prompt_headline${idx}`] || `Prompt ${idx}`,
+        promptText: ps?.[`Prompt${idx}`] || ""
+      };
     });
+
+    const notesArr = prog.notes || [];
+
+    const promptNotes = Array.from({ length: TOTAL_PROMPTS }, (_, idx) => {
+      const noteIndex = idx === 0 ? -1 : idx - 1;
+      const content = noteIndex >= 0 ? String(notesArr[noteIndex] || '').trim() : '';
+
+      return {
+        notes: content
+          ? [{
+              content,
+              dateSubmitted: prog.updatedAt || prog.createdAt || null
+            }]
+          : []
+      };
+    });
+
+    const matchingCompletion = completionByKey.get(
+      completionKey(String(prog.memberId), psId)
+    );
+
+    return {
+      promptSetId: psId,
+      promptSetTitle: ps.promptset_title || "Unknown Prompt Set",
+      main_topic: ps.main_topic || "",
+      secondary_topics: ps.secondary_topics || [],
+      purpose: ps.purpose || "",
+      dateCompleted: matchingCompletion
+        ? (matchingCompletion.completedAt || matchingCompletion.createdAt || matchingCompletion.updatedAt || null)
+        : null,
+      prompts,
+      promptNotes
+    };
+  });
+
+return res.render("report_views/mylearningnotes_individual", {
+  layout: "dashboardlayout",
+  isMyLearningNotesIndividual: true,
+  myLearningNotesReports,
+  promptNotesReports
+});
   } catch (err) {
     console.error("❌ Error loading Individual Member Learning Notes Report:", err);
     return res.status(500).send("Server error");

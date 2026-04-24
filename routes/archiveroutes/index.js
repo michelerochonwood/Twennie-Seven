@@ -13,6 +13,8 @@ router.post('/completed-promptset', archiveController.archiveCompletedPromptSet)
 router.get('/leader', archiveController.renderLeaderArchive);
 router.get('/groupmember', archiveController.renderGroupMemberArchive);
 
+router.get('/member', archiveController.renderMemberArchive);
+
 // later:
 // router.get('/member', archiveController.renderMemberArchive);
 

@@ -1,9 +1,11 @@
+<meta name="csrf-token" content="{{csrfToken}}">
+
 <!-- DEBUG current len={{currentPromptSets.length}} completed len={{completedPromptSets.length}} -->
 
 <div class="member-progress-container" style="overflow: hidden; padding-bottom: 2rem;">
 
   <style>
-    .member-progress-completed-card-link{
+    .member-progress-completed-card-link {
       display: block;
       text-decoration: none;
       color: inherit;
@@ -12,22 +14,21 @@
     .member-progress-completed-card-link:hover,
     .member-progress-completed-card-link:focus,
     .member-progress-completed-card-link:active,
-    .member-progress-completed-card-link:visited{
+    .member-progress-completed-card-link:visited {
       text-decoration: none;
       color: inherit;
     }
   </style>
 
-  {{!-- Free members see upgrade notice --}}
   {{#if (eq @root.member.accessLevel "free_individual")}}
     <p style="text-align: center; margin: 2rem 0; font-style: italic; color: #4e50a2;">
       To register for prompts, you must upgrade your membership.
     </p>
   {{else}}
 
-    {{!-- CURRENT PROMPT SETS --}}
     {{#if currentPromptSets.length}}
       <h2 class="member-progress-current-title">current prompt sets</h2>
+
       <div class="member-progress-current">
         {{#each currentPromptSets}}
           <div class="member-progress-grid">
@@ -48,30 +49,52 @@
       </div>
     {{/if}}
 
-    {{!-- COMPLETED PROMPT SETS --}}
     <div class="member-progress-completed">
       <h2 class="member-progress-completed-title">completed prompt sets</h2>
 
       {{#if completedPromptSets.length}}
         <div class="member-progress-completed-grid" style="overflow: hidden;">
           {{#each completedPromptSets}}
-            <a href="/reports/mycompletedpromptsets-individual#promptset-{{this.promptSetId}}" class="member-progress-completed-card-link">
-              <div class="member-progress-completed-card" style="padding: 1rem; min-height: auto;">
+            <div class="member-progress-completed-card" style="padding: 1rem; min-height: auto;">
+              <a
+                href="/reports/mycompletedpromptsets-individual#promptset-{{this.promptSetId}}"
+                class="member-progress-completed-card-link"
+              >
                 <h3 class="member-progress-completed-title">{{this.promptSetTitle}}</h3>
+
                 <p class="member-progress-completed-main-topic">{{this.mainTopic}}</p>
+
                 <p class="member-progress-completed-date">
                   completed: {{this.completedAt}}
                 </p>
+
                 <div class="member-progress-badge" style="text-align: center; margin-top: 1rem;">
                   {{#if this.badge}}
-                    <img src="{{this.badge.image}}" alt="{{this.badge.name}}" class="member-progress-badge-img" style="max-width: 80px;">
+                    <img
+                      src="{{this.badge.image}}"
+                      alt="{{this.badge.name}}"
+                      class="member-progress-badge-img"
+                      style="max-width: 80px; height: auto;"
+                    >
                     <p class="member-progress-badge-name">{{this.badge.name}}</p>
                   {{else}}
                     <p class="member-progress-badge-name">No badge earned</p>
                   {{/if}}
                 </div>
-              </div>
-            </a>
+              </a>
+
+              {{#if this.promptSetId}}
+                <div class="leader-archive-button-wrap">
+                  <button
+                    type="button"
+                    class="leader-archive-button"
+                    onclick="archiveCompletedPromptSet('{{this.promptSetId}}','{{this.completionId}}')"
+                  >
+                    move to archive
+                  </button>
+                </div>
+              {{/if}}
+            </div>
           {{/each}}
         </div>
       {{else}}
@@ -85,12 +108,54 @@
           view my completed prompts
         </a>
       </div>
+
+      <div class="leader-archive-button-wrap">
+        <a href="/archive/member" class="leader-archive-button">
+          learning archive
+        </a>
+      </div>
     </div>
 
   {{/if}}
-  <div style="height: 1px; clear: both;"></div>
 
+  <div style="height: 1px; clear: both;"></div>
 </div>
+
+<script>
+  function getCsrfMember() {
+    return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+  }
+
+  async function archiveCompletedPromptSet(promptSetId, completionId = null) {
+    if (!promptSetId) return;
+    if (!confirm('Move this completed prompt set to archive?')) return;
+
+    try {
+      const res = await fetch('/archive/completed-promptset', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': getCsrfMember()
+        },
+        body: JSON.stringify({
+          promptSetId,
+          completionId
+        })
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok && data.ok) {
+        location.reload();
+      } else {
+        alert(data.message || 'Could not archive this prompt set.');
+      }
+    } catch (e) {
+      console.error('archiveCompletedPromptSet error', e);
+      alert('An error occurred while archiving this prompt set.');
+    }
+  }
+</script>
 
 
 

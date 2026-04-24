@@ -10,34 +10,50 @@
     <div class="tagged-units-grid">
       {{#if recentTaggedUnits.length}}
         {{#each recentTaggedUnits}}
-          <div class="tagged-unit-card">
-            <div class="tagged-unit-icon">
-              <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
-            </div>
+          <div class="tagged-unit-card leader-dashboard-wave-card">
+            <div class="leader-dashboard-wave-card-inner">
 
-            <div class="tagged-unit-info">
-              <h3 class="tagged-unit-title">{{title}}</h3>
+              <div class="leader-dashboard-wave-header">
+                <img
+                  src="/icons/unitsvg.svg"
+                  alt=""
+                  class="leader-dashboard-wave-image"
+                  aria-hidden="true"
+                >
+              </div>
 
-              {{#if mainTopic}}
-                <p class="tagged-unit-topic">{{mainTopic}}</p>
-              {{/if}}
+              <div class="leader-dashboard-wave-content">
+                <div class="tagged-unit-icon">
+                  <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
+                </div>
 
-              {{#if (eq unitType "upcoming")}}
-                <p class="tagged-unit-status">🚧 coming soon</p>
-              {{/if}}
-            </div>
+                <div class="tagged-unit-info">
+                  <h3 class="tagged-unit-title">{{title}}</h3>
 
-            <div class="tagged-unit-actions">
-              <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
+                  {{#if mainTopic}}
+                    <p class="tagged-unit-topic">{{mainTopic}}</p>
+                  {{/if}}
 
-              {{#if tagId}}
-                <button
-                  type="button"
-                  class="tagged-unit-link"
-                  onclick="archiveUnit('{{tagId}}','{{_id}}','{{unitType}}')">
-                  move to archive
-                </button>
-              {{/if}}
+                  {{#if (eq unitType "upcoming")}}
+                    <p class="tagged-unit-status">🚧 coming soon</p>
+                  {{/if}}
+                </div>
+
+                <div class="tagged-unit-actions">
+                  <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
+
+                  {{#if tagId}}
+                    <button
+                      type="button"
+                      class="tagged-unit-link"
+                      onclick="archiveUnit('{{tagId}}','{{_id}}','{{unitType}}')"
+                    >
+                      move to archive
+                    </button>
+                  {{/if}}
+                </div>
+              </div>
+
             </div>
           </div>
         {{/each}}
@@ -50,6 +66,12 @@
   <div class="member-progress-report-button-container" style="margin-top: 1.5rem;">
     <a href="/reports/mylearningnotes-individual" class="member-progress-report-button">
       view my learning notes
+    </a>
+  </div>
+
+  <div class="leader-archive-button-wrap">
+    <a href="/archive/member" class="leader-archive-button">
+      learning archive
     </a>
   </div>
 </section>

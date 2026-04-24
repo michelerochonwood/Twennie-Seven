@@ -302,10 +302,10 @@ module.exports = {
       const memberOid = new mongoose.Types.ObjectId(String(id)); // <-- ADD
       if (!id) return res.redirect('/auth/login');
 
-      const archivedUnits = await ArchivedUnit.find({
+const archivedUnits = await ArchivedUnit.find({
   archivedBy: id
 })
-  .select('tagId unitId assignedToMember')
+  .select('tagId unitId unitType assignedToMember archiveScope')
   .lean();
 
 const archivedKeySet = new Set(
@@ -315,9 +315,23 @@ const archivedKeySet = new Set(
   })
 );
 
+const archivedCompletedPromptSetIds = new Set(
+  archivedUnits
+    .filter(a =>
+      a.unitType === 'promptset' &&
+      String(a.assignedToMember || '') === String(id)
+    )
+    .map(a => String(a.unitId))
+);
+
 function isArchivedDashboardItem(tagId, unitId, assignedToId = null) {
   const assigneeKey = assignedToId ? String(assignedToId) : 'self';
   return archivedKeySet.has(`${String(tagId)}-${String(unitId)}-${assigneeKey}`);
+}
+
+function isArchivedCompletedPromptSet(promptSetId) {
+  if (!promptSetId) return false;
+  return archivedCompletedPromptSetIds.has(String(promptSetId));
 }
 
       const userData = await Member.findById(id)
@@ -485,14 +499,22 @@ const completedIds = new Set(
 
 // ------------- COMPLETED (mapped for view) -------------
 // (Needed for memberCounts.progress and the completed list)
-formattedCompletedSets = completedRecords.map(record => ({
-  promptSetId: record.promptSetId?._id?.toString() || '',
-  promptSetTitle: record.promptSetId?.promptset_title || 'Unknown Title',
-  frequency: record.promptSetId?.suggested_frequency,
-  mainTopic: record.promptSetId?.main_topic || 'No Topic',
-  completedAt: record.completedAt ? new Date(record.completedAt).toDateString() : 'Unknown Date',
-  badge: record.earnedBadge
-}));
+formattedCompletedSets = completedRecords
+  .filter(record => {
+    const promptSetId = record.promptSetId?._id?.toString();
+    return !isArchivedCompletedPromptSet(promptSetId);
+  })
+  .map(record => ({
+    completionId: record._id?.toString() || '',
+    promptSetId: record.promptSetId?._id?.toString() || '',
+    assignedToId: id,
+
+    promptSetTitle: record.promptSetId?.promptset_title || 'Unknown Title',
+    frequency: record.promptSetId?.suggested_frequency,
+    mainTopic: record.promptSetId?.main_topic || 'No Topic',
+    completedAt: record.completedAt ? new Date(record.completedAt).toDateString() : 'Unknown Date',
+    badge: record.earnedBadge
+  }));
 
             // ✅ Fetch tagged and contributed units
 // ✅ Fetch tagged and contributed units
