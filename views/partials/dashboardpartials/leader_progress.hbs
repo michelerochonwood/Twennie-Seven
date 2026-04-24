@@ -2,7 +2,6 @@
 
 <div class="leader-progress-container" style="overflow: hidden; padding-bottom: 2rem;">
 
-  {{!-- CURRENT PROMPT SETS --}}
   {{#if currentPromptSets.length}}
     <h2 class="leader-progress-current-title">my prompt sets in progress</h2>
 
@@ -26,7 +25,6 @@
     </div>
   {{/if}}
 
-  {{!-- COMPLETED PROMPT SETS --}}
   <div class="leader-progress-completed">
     <h2 class="leader-progress-completed-title">my completed prompt sets and badges</h2>
 
@@ -35,21 +33,12 @@
         {{#each completedPromptSets}}
           <div class="leader-progress-completed-card">
             <h3 class="leader-progress-completed-title">{{this.promptSetTitle}}</h3>
-
             <p class="leader-progress-completed-main-topic">{{this.mainTopic}}</p>
-
-            <p class="leader-progress-completed-date">
-              completed: {{this.completedAt}}
-            </p>
+            <p class="leader-progress-completed-date">completed: {{this.completedAt}}</p>
 
             <div class="leader-progress-badge">
               {{#if this.badge}}
-                <img
-                  src="{{this.badge.image}}"
-                  alt="{{this.badge.name}}"
-                  class="leader-progress-badge-img"
-                  style="height: auto;"
-                >
+                <img src="{{this.badge.image}}" alt="{{this.badge.name}}" class="leader-progress-badge-img" style="height: auto;">
                 <p class="leader-progress-badge-name">{{this.badge.name}}</p>
               {{else}}
                 <p class="leader-progress-badge-name">No badge earned</p>
@@ -80,18 +69,13 @@
       </p>
 
       <a href="/reports/promptsetscompleted" class="report-link" style="display: inline-block;">
-        <img
-          src="https://www.twennie.com/images/promptsetsreport.png"
-          alt="Prompt Sets Report"
-          style="width: 100px; height: auto;"
-        >
+        <img src="https://www.twennie.com/images/promptsetsreport.png" alt="Prompt Sets Report" style="width: 100px; height: auto;">
       </a>
     </div>
   </div>
 
   <hr class="leader-prompts-divider">
 
-  {{!-- ASSIGNED PROMPT SETS --}}
   <section class="leader-prompt-section">
     <h2 class="leader-assigned-title">prompt sets I have assigned to my group</h2>
     <p class="leader-assigned-subtitle">Each card is one prompt set.</p>
@@ -112,9 +96,7 @@
               {{#each members}}
                 <div class="leader-assigned-member">
                   <div class="leader-assigned-card-top">
-                    <span class="leader-assigned-status leader-assigned-status--{{status}}">
-                      {{statusLabel}}
-                    </span>
+                    <span class="leader-assigned-status leader-assigned-status--{{status}}">{{statusLabel}}</span>
                     <span class="leader-assigned-due">due {{targetCompletionDate}}</span>
                   </div>
 
@@ -168,7 +150,6 @@
 
     <hr class="leader-prompts-divider">
 
-    {{!-- GROUP BADGES --}}
     <div class="leader-group-badges">
       <h2 class="leader-progress-completed-title">group badges</h2>
 
@@ -176,49 +157,43 @@
         Badges earned by members of your group for completing prompt sets.
       </p>
 
-{{#each groupCompletedPromptSets}}
-  <div class="leader-progress-completed-card leader-group-badge-card">
+      {{#if groupCompletedPromptSets.length}}
+        <div class="leader-progress-completed-grid" style="overflow: hidden;">
+          {{#each groupCompletedPromptSets}}
+            <div class="leader-progress-completed-card leader-group-badge-card">
+              <h3 class="leader-progress-completed-title">{{this.promptSetTitle}}</h3>
+              <p class="leader-progress-completed-main-topic">{{this.mainTopic}}</p>
 
-    <h3 class="leader-progress-completed-title">{{this.promptSetTitle}}</h3>
+              {{#if this.memberName}}
+                <p class="leader-group-badge-member">
+                  earned by <strong>{{this.memberName}}</strong>
+                </p>
+              {{/if}}
 
-    <p class="leader-progress-completed-main-topic">{{this.mainTopic}}</p>
+              <p class="leader-progress-completed-date">
+                completed: {{this.completedAt}}
+              </p>
 
-    {{#if this.memberName}}
-      <p class="leader-group-badge-member">
-        earned by <strong>{{this.memberName}}</strong>
-      </p>
-    {{/if}}
+              <div class="leader-progress-badge">
+                {{#if this.badge}}
+                  <img src="{{this.badge.image}}" alt="{{this.badge.name}}" class="leader-progress-badge-img" style="height: auto;">
+                  <p class="leader-progress-badge-name">{{this.badge.name}}</p>
+                {{else}}
+                  <p class="leader-progress-badge-name">No badge data for this completion</p>
+                {{/if}}
+              </div>
 
-    <p class="leader-progress-completed-date">
-      completed: {{this.completedAt}}
-    </p>
-
-    <div class="leader-progress-badge">
-      {{#if this.badge}}
-        <img
-          src="{{this.badge.image}}"
-          alt="{{this.badge.name}}"
-          class="leader-progress-badge-img"
-          style="height: auto;"
-        >
-        <p class="leader-progress-badge-name">{{this.badge.name}}</p>
-      {{else}}
-        <p class="leader-progress-badge-name">No badge data for this completion</p>
-      {{/if}}
-    </div>
-
-    <div class="leader-archive-button-wrap">
-      <button
-        type="button"
-        class="leader-archive-button"
-        onclick="archiveCompletedPromptSet('{{this.promptSetId}}','{{this.assignedToId}}','{{this.completionId}}')"
-      >
-        move to archive
-      </button>
-    </div>
-
-  </div>
-{{/each}}
+              <div class="leader-archive-button-wrap">
+                <button
+                  type="button"
+                  class="leader-archive-button"
+                  onclick="archiveCompletedPromptSet('{{this.promptSetId}}','{{this.assignedToId}}','{{this.completionId}}')"
+                >
+                  move to archive
+                </button>
+              </div>
+            </div>
+          {{/each}}
         </div>
       {{else}}
         <p class="no-data" style="text-align: center; margin-top: 1rem; font-size: 1rem">
@@ -267,6 +242,3 @@
     }
   }
 </script>
-
-
-
