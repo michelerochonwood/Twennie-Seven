@@ -151,7 +151,75 @@
         </section>
       {{/each}}
     </div>
+
+
+
+
+
+{{#if archivedMissions.length}}
+  <section class="leader-archive-topic-block">
+    <div class="leader-archive-topic-header">
+      <h2 class="leader-archive-topic-title">archived missions</h2>
+      <p class="leader-archive-topic-count">
+        {{archivedMissions.length}} archived mission{{#unless (eq archivedMissions.length 1)}}s{{/unless}}
+      </p>
+    </div>
+
+    <div class="leader-archive-grid">
+      {{#each archivedMissions}}
+        <article class="leader-archive-card tagged-unit-card leader-dashboard-wave-card">
+          <div class="leader-archive-card-inner leader-dashboard-wave-card-inner">
+
+            <div class="leader-dashboard-wave-header">
+              <img src="/icons/onyxsvg.svg" class="leader-dashboard-wave-image" aria-hidden="true">
+            </div>
+
+            {{> archive_card_content this}}
+          </div>
+        </article>
+      {{/each}}
+    </div>
+  </section>
+{{/if}}
+
+
+
+
+{{#if archivedNuggets.length}}
+  <section class="leader-archive-topic-block">
+    <div class="leader-archive-topic-header">
+      <h2 class="leader-archive-topic-title">archived nuggets</h2>
+      <p class="leader-archive-topic-count">
+        {{archivedNuggets.length}} archived nugget{{#unless (eq archivedNuggets.length 1)}}s{{/unless}}
+      </p>
+    </div>
+
+    <div class="leader-archive-grid">
+      {{#each archivedNuggets}}
+        <article class="leader-archive-card tagged-unit-card leader-dashboard-wave-card">
+          <div class="leader-archive-card-inner leader-dashboard-wave-card-inner">
+
+            <div class="leader-dashboard-wave-header">
+              <img src="/icons/goldsvg.svg" class="leader-dashboard-wave-image" aria-hidden="true">
+            </div>
+
+            {{!-- keep rest EXACTLY same as your existing card --}}
+            {{> archive_card_content this}}
+          </div>
+        </article>
+      {{/each}}
+    </div>
+  </section>
+{{/if}}
+
+
+
   {{else}}
+
+
+
+
+  
     <section class="leader-archive-empty">
       <div class="leader-archive-hero-image-wrap">
         <img

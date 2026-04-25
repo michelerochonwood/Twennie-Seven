@@ -275,6 +275,8 @@ exports.renderLeaderArchive = async (req, res) => {
       .lean();
 
     const archiveTopicsMap = new Map();
+    const archivedNuggets = [];
+    const archivedMissions = [];
 
 for (const row of archiveRows) {
 let unitDoc = null;
@@ -407,39 +409,47 @@ if (row.unitType === 'promptset' && row.assignedToMember && row.unitId) {
   }
 }
 
-      const topicTitle = mainTopic || 'No Topic Assigned';
+const archiveCard = {
+  ...row,
+  titleSnapshot: title,
+  mainTopicSnapshot: mainTopic,
+  summarySnapshot: summary,
+  unitAuthorName,
+  completedByName: row.assignedToNameSnapshot || '',
+  completedWhenFormatted: row.assignedCompletedAtSnapshot
+    ? new Date(row.assignedCompletedAtSnapshot).toLocaleDateString('en-CA', {
+        year: 'numeric',
+        month: 'short',
+        day: '2-digit'
+      })
+    : '',
+  archivedAtFormatted: row.archivedAt
+    ? new Date(row.archivedAt).toLocaleDateString('en-CA', {
+        year: 'numeric',
+        month: 'short',
+        day: '2-digit'
+      })
+    : '',
+  archivedByNameSnapshot: row.assignedToNameSnapshot || '',
+  notesPreview,
+  archiveNoteInstruction,
+  viewPath,
+  reportPath: '/reports/leaderreport'
+};
 
-      if (!archiveTopicsMap.has(topicTitle)) {
-        archiveTopicsMap.set(topicTitle, []);
-      }
+if (row.unitType === 'nugget') {
+  archivedNuggets.push(archiveCard);
+} else if (row.unitType === 'mission') {
+  archivedMissions.push(archiveCard);
+} else {
+  const topicTitle = mainTopic || 'No Topic Assigned';
 
-      archiveTopicsMap.get(topicTitle).push({
-        ...row,
-        titleSnapshot: title,
-        mainTopicSnapshot: mainTopic,
-        summarySnapshot: summary,
-        unitAuthorName,
-        completedByName: row.assignedToNameSnapshot || '',
-        completedWhenFormatted: row.assignedCompletedAtSnapshot
-          ? new Date(row.assignedCompletedAtSnapshot).toLocaleDateString('en-CA', {
-              year: 'numeric',
-              month: 'short',
-              day: '2-digit'
-            })
-          : '',
-        archivedAtFormatted: row.archivedAt
-          ? new Date(row.archivedAt).toLocaleDateString('en-CA', {
-              year: 'numeric',
-              month: 'short',
-              day: '2-digit'
-            })
-          : '',
-        archivedByNameSnapshot: row.assignedToNameSnapshot || '',
-        notesPreview,
-        archiveNoteInstruction,
-        viewPath,
-        reportPath: '/reports/leaderreport'
-      });
+  if (!archiveTopicsMap.has(topicTitle)) {
+    archiveTopicsMap.set(topicTitle, []);
+  }
+
+  archiveTopicsMap.get(topicTitle).push(archiveCard);
+}
     }
 
     const archiveTopics = Array.from(archiveTopicsMap.entries())
@@ -450,11 +460,13 @@ if (row.unitType === 'promptset' && row.assignedToMember && row.unitId) {
       }))
       .sort((a, b) => a.topicTitle.localeCompare(b.topicTitle));
 
-    return res.render('archiveviews/leader_archive', {
-      layout: 'dashboardlayout',
-      title: 'Learning Archive',
-      archiveTopics
-    });
+return res.render('archiveviews/leader_archive', {
+  layout: 'dashboardlayout',
+  title: 'Learning Archive',
+  archiveTopics,
+  archivedNuggets,
+  archivedMissions
+});
 
   } catch (err) {
     console.error('❌ renderLeaderArchive error:', err);

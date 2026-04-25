@@ -55,43 +55,46 @@
 {{#each this.assignments}}
   <div class="leader-assigned-row leader-nugget-assigned-row">
 
-    <!-- TOP DIVIDER -->
     <div class="leader-nugget-divider"></div>
 
     <div class="leader-assigned-row-left">
       <p class="leader-assigned-to">assigned to: {{this.assignedToName}}</p>
 
       {{#if this.assignedCompletedAtFormatted}}
-        <p class="leader-assigned-status">✅ closed <span class="muted">({{this.assignedCompletedAtFormatted}})</span></p>
+        <p class="leader-assigned-status">
+          ✅ closed <span class="muted">({{this.assignedCompletedAtFormatted}})</span>
+        </p>
       {{else}}
         <p class="leader-assigned-status">⏳ monitoring</p>
       {{/if}}
 
       {{#if this.assignedInstructions}}
-        <p class="leader-assigned-instructions"><em>{{this.assignedInstructions}}</em></p>
+        <p class="leader-assigned-instructions">
+          <em>{{this.assignedInstructions}}</em>
+        </p>
       {{/if}}
     </div>
 
+    <div class="tagged-unit-actions leader-nugget-actions">
+      <a href="/unitviews/nuggets/view/{{../_id}}" class="tagged-unit-link">
+        view nugget
+      </a>
 
-              <div class="tagged-unit-actions leader-nugget-actions">
-                <a href="/unitviews/nuggets/view/{{this._id}}" class="tagged-unit-link">view nugget</a>
-              </div>
+      <button
+        type="button"
+        class="tagged-unit-link"
+        onclick="archiveUnit('{{this.tagId}}','{{../_id}}','nugget','{{this.assignedToId}}')"
+      >
+        move to archive
+      </button>
+    </div>
 
-
-    <!-- BOTTOM DIVIDER -->
     <div class="leader-nugget-divider"></div>
 
   </div>
 {{/each}}
-    <div class="leader-assigned-row-actions leader-nugget-row-actions">
-<button
-  type="button"
-  class="tagged-unit-link"
-  onclick="archiveUnit('{{this.tagId}}','{{../_id}}','nugget','{{this.assignedToId}}')"
->
-  move to archive
-</button>
-    </div>
+
+
                   {{else}}
                     <p class="tagged-no-units">No members are currently assigned this nugget.</p>
                   {{/if}}
