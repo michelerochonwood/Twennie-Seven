@@ -124,18 +124,33 @@
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const cards = document.querySelectorAll(".promo-unit-card");
+    let popupTimer = null;
+
+    function hideAllPopups() {
+      document.querySelectorAll(".promo-expandable-info").forEach(popup => {
+        popup.style.display = "none";
+      });
+    }
 
     cards.forEach(card => {
       card.addEventListener("click", function () {
         const targetId = this.getAttribute("data-target");
 
-        document.querySelectorAll(".promo-expandable-info").forEach(popup => {
-          popup.style.display = "none";
-        });
+        if (popupTimer) {
+          clearTimeout(popupTimer);
+        }
+
+        hideAllPopups();
 
         const targetPopup = document.getElementById(targetId);
+
         if (targetPopup) {
           targetPopup.style.display = "block";
+
+          popupTimer = setTimeout(() => {
+            targetPopup.style.display = "none";
+            popupTimer = null;
+          }, 30000);
         }
       });
     });
