@@ -485,16 +485,18 @@ exports.renderGroupMemberArchive = async (req, res) => {
 
     const groupMemberId = String(req.user._id);
 
-const archiveRows = await ArchivedUnit.find({
-  $or: [
-    { archivedBy: groupMemberId },
-    { assignedToMember: groupMemberId }
-  ]
-})
-  .sort({ archivedAt: -1 })
-  .lean();
+    const archiveRows = await ArchivedUnit.find({
+      $or: [
+        { archivedBy: groupMemberId },
+        { assignedToMember: groupMemberId }
+      ]
+    })
+      .sort({ archivedAt: -1 })
+      .lean();
 
     const archiveTopicsMap = new Map();
+    const archivedNuggets = [];
+    const archivedMissions = [];
 
     for (const row of archiveRows) {
       let unitDoc = null;
@@ -509,78 +511,100 @@ const archiveRows = await ArchivedUnit.find({
       if (row.unitType === 'article') {
         const Article = require('../models/unit_models/article');
         unitDoc = await Article.findById(row.unitId).lean();
+
         if (unitDoc) {
           title = unitDoc.article_title || title;
           mainTopic = unitDoc.main_topic || mainTopic;
           summary = unitDoc.summary || unitDoc.article_summary || '';
           viewPath = `/unitviews/articles/view/${unitDoc._id}`;
         }
+
       } else if (row.unitType === 'video') {
         const Video = require('../models/unit_models/video');
         unitDoc = await Video.findById(row.unitId).lean();
+
         if (unitDoc) {
           title = unitDoc.video_title || title;
           mainTopic = unitDoc.main_topic || mainTopic;
           summary = unitDoc.summary || unitDoc.video_summary || '';
           viewPath = `/unitviews/videos/view/${unitDoc._id}`;
         }
+
       } else if (row.unitType === 'promptset') {
         const PromptSet = require('../models/unit_models/promptset');
         unitDoc = await PromptSet.findById(row.unitId).lean();
+
         if (unitDoc) {
           title = unitDoc.promptset_title || title;
           mainTopic = unitDoc.main_topic || mainTopic;
           summary = unitDoc.summary || unitDoc.promptset_summary || '';
           viewPath = `/unitviews/promptsets/view/${unitDoc._id}`;
         }
+
       } else if (row.unitType === 'interview') {
         const Interview = require('../models/unit_models/interview');
         unitDoc = await Interview.findById(row.unitId).lean();
+
         if (unitDoc) {
           title = unitDoc.interview_title || title;
           mainTopic = unitDoc.main_topic || mainTopic;
           summary = unitDoc.summary || unitDoc.interview_summary || '';
           viewPath = `/unitviews/interviews/view/${unitDoc._id}`;
         }
+
       } else if (row.unitType === 'exercise') {
         const Exercise = require('../models/unit_models/exercise');
         unitDoc = await Exercise.findById(row.unitId).lean();
+
         if (unitDoc) {
           title = unitDoc.exercise_title || title;
           mainTopic = unitDoc.main_topic || mainTopic;
           summary = unitDoc.summary || unitDoc.exercise_summary || '';
           viewPath = `/unitviews/exercises/view/${unitDoc._id}`;
         }
+
       } else if (row.unitType === 'template') {
         const Template = require('../models/unit_models/template');
         unitDoc = await Template.findById(row.unitId).lean();
+
         if (unitDoc) {
           title = unitDoc.template_title || title;
           mainTopic = unitDoc.main_topic || mainTopic;
           summary = unitDoc.summary || unitDoc.template_summary || '';
           viewPath = `/unitviews/templates/view/${unitDoc._id}`;
         }
+
       } else if (row.unitType === 'upcoming') {
         const Upcoming = require('../models/unit_models/upcoming');
         unitDoc = await Upcoming.findById(row.unitId).lean();
+
         if (unitDoc) {
           title = unitDoc.title || title;
           mainTopic = unitDoc.main_topic || mainTopic;
           summary = unitDoc.summary || '';
           viewPath = `/unitviews/upcomings/view/${unitDoc._id}`;
         }
+
       } else if (row.unitType === 'nugget') {
         const Nugget = require('../models/unit_models/nugget');
         unitDoc = await Nugget.findById(row.unitId).lean();
+
         if (unitDoc) {
           title = unitDoc.title || title;
-          mainTopic = unitDoc.main_topic || unitDoc.discipline || unitDoc.client || unitDoc.region || mainTopic;
+          mainTopic =
+            unitDoc.main_topic ||
+            unitDoc.discipline ||
+            unitDoc.client ||
+            unitDoc.region ||
+            mainTopic;
           summary = unitDoc.summary || '';
           viewPath = `/unitviews/nuggets/view/${unitDoc._id}`;
         }
+
       } else if (row.unitType === 'mission') {
         const Mission = require('../models/unit_models/mission');
         unitDoc = await Mission.findById(row.unitId).lean();
+
         if (unitDoc) {
           title = unitDoc.mission_title || title;
           mainTopic = unitDoc.main_topic || mainTopic;
@@ -627,13 +651,7 @@ const archiveRows = await ArchivedUnit.find({
         }
       }
 
-      const topicTitle = mainTopic || 'No Topic Assigned';
-
-      if (!archiveTopicsMap.has(topicTitle)) {
-        archiveTopicsMap.set(topicTitle, []);
-      }
-
-      archiveTopicsMap.get(topicTitle).push({
+      const archiveCard = {
         ...row,
         titleSnapshot: title,
         mainTopicSnapshot: mainTopic,
@@ -658,7 +676,21 @@ const archiveRows = await ArchivedUnit.find({
         archiveNoteInstruction,
         viewPath,
         reportPath: '/reports/mylearningnotes'
-      });
+      };
+
+      if (row.unitType === 'nugget') {
+        archivedNuggets.push(archiveCard);
+      } else if (row.unitType === 'mission') {
+        archivedMissions.push(archiveCard);
+      } else {
+        const topicTitle = mainTopic || 'No Topic Assigned';
+
+        if (!archiveTopicsMap.has(topicTitle)) {
+          archiveTopicsMap.set(topicTitle, []);
+        }
+
+        archiveTopicsMap.get(topicTitle).push(archiveCard);
+      }
     }
 
     const archiveTopics = Array.from(archiveTopicsMap.entries())
@@ -672,7 +704,9 @@ const archiveRows = await ArchivedUnit.find({
     return res.render('archiveviews/groupmember_archive', {
       layout: 'dashboardlayout',
       title: 'Learning Archive',
-      archiveTopics
+      archiveTopics,
+      archivedNuggets,
+      archivedMissions
     });
 
   } catch (err) {
