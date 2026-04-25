@@ -776,7 +776,7 @@ const groupMemberNoteByUnitId = new Map(
 );
 
 const groupMemberSelfTaggedUnits = groupMemberSelfTaggedRaw
-  .filter(u => !isArchivedDashboardItem(u.tagId, u._id))
+  .filter(u => !isArchivedDashboardItem(u.tagId, u._id, id))
   .map(u => {
   const completedAt = groupMemberNoteByUnitId.get(u._id.toString()) || null;
 
