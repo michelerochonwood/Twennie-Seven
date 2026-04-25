@@ -485,11 +485,14 @@ exports.renderGroupMemberArchive = async (req, res) => {
 
     const groupMemberId = String(req.user._id);
 
-    const archiveRows = await ArchivedUnit.find({
-      archivedBy: groupMemberId
-    })
-      .sort({ archivedAt: -1 })
-      .lean();
+const archiveRows = await ArchivedUnit.find({
+  $or: [
+    { archivedBy: groupMemberId },
+    { assignedToMember: groupMemberId }
+  ]
+})
+  .sort({ archivedAt: -1 })
+  .lean();
 
     const archiveTopicsMap = new Map();
 
