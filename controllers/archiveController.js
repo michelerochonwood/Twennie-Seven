@@ -485,14 +485,32 @@ exports.renderGroupMemberArchive = async (req, res) => {
 
     const groupMemberId = String(req.user._id);
 
-    const archiveRows = await ArchivedUnit.find({
-      $or: [
-        { archivedBy: groupMemberId },
-        { assignedToMember: groupMemberId }
-      ]
-    })
-      .sort({ archivedAt: -1 })
-      .lean();
+const rawArchiveRows = await ArchivedUnit.find({
+  $or: [
+    { archivedBy: groupMemberId },
+    { assignedToMember: groupMemberId }
+  ]
+})
+  .sort({ archivedAt: -1 })
+  .lean();
+
+const seenArchiveKeys = new Set();
+
+const archiveRows = rawArchiveRows.filter(row => {
+  const archiveKey = [
+    String(row.tagId || 'no-tag'),
+    String(row.unitId || 'no-unit'),
+    String(row.unitType || 'no-type'),
+    String(row.assignedToMember || groupMemberId)
+  ].join('::');
+
+  if (seenArchiveKeys.has(archiveKey)) {
+    return false;
+  }
+
+  seenArchiveKeys.add(archiveKey);
+  return true;
+});
 
     const archiveTopicsMap = new Map();
     const archivedNuggets = [];
