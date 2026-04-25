@@ -43,10 +43,9 @@
             {{#each archivedItems}}
               <article class="leader-archive-card tagged-unit-card leader-dashboard-wave-card">
                 <div class="leader-archive-card-inner leader-dashboard-wave-card-inner">
-
                   <div class="leader-dashboard-wave-header">
                     <img
-                      src="/icons/{{#if (eq unitType 'nugget')}}goldsvg.svg{{else}}{{#if (eq unitType 'mission')}}onyxsvg.svg{{else}}unitsvg.svg{{/if}}{{/if}}"
+                      src="/icons/unitsvg.svg"
                       alt=""
                       aria-hidden="true"
                       class="leader-dashboard-wave-image"
@@ -56,7 +55,7 @@
                   <div class="leader-dashboard-wave-content">
                     <div class="tagged-unit-icon leader-archive-unit-icon">
                       <img
-                        src="/icons/{{#if (eq unitType 'article')}}article.svg{{else}}{{#if (eq unitType 'video')}}video.svg{{else}}{{#if (eq unitType 'interview')}}interview.svg{{else}}{{#if (eq unitType 'promptset')}}promptset.svg{{else}}{{#if (eq unitType 'exercise')}}exercise.svg{{else}}{{#if (eq unitType 'template')}}template.svg{{else}}{{#if (eq unitType 'nugget')}}nuggeticon.svg{{else}}{{#if (eq unitType 'mission')}}mission.svg{{else}}article.svg{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}"
+                        src="/icons/{{#if (eq unitType 'article')}}article.svg{{else}}{{#if (eq unitType 'video')}}video.svg{{else}}{{#if (eq unitType 'interview')}}interview.svg{{else}}{{#if (eq unitType 'promptset')}}promptset.svg{{else}}{{#if (eq unitType 'exercise')}}exercise.svg{{else}}{{#if (eq unitType 'template')}}template.svg{{else}}article.svg{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}"
                         alt="{{unitType}} icon"
                       >
                     </div>
@@ -151,92 +150,188 @@
         </section>
       {{/each}}
     </div>
+  {{/if}}
 
-
-
-
-
-{{#if archivedMissions.length}}
-  <section class="leader-archive-topic-block">
-    <div class="leader-archive-topic-header">
-      <h2 class="leader-archive-topic-title">archived missions</h2>
-      <p class="leader-archive-topic-count">
-        {{archivedMissions.length}} archived mission{{#unless (eq archivedMissions.length 1)}}s{{/unless}}
-      </p>
-    </div>
-
-    <div class="leader-archive-grid">
-      {{#each archivedMissions}}
-        <article class="leader-archive-card tagged-unit-card leader-dashboard-wave-card">
-          <div class="leader-archive-card-inner leader-dashboard-wave-card-inner">
-
-            <div class="leader-dashboard-wave-header">
-              <img src="/icons/onyxsvg.svg" class="leader-dashboard-wave-image" aria-hidden="true">
-            </div>
-
-            {{> archive_card_content this}}
-          </div>
-        </article>
-      {{/each}}
-    </div>
-  </section>
-{{/if}}
-
-
-
-
-{{#if archivedNuggets.length}}
-  <section class="leader-archive-topic-block">
-    <div class="leader-archive-topic-header">
-      <h2 class="leader-archive-topic-title">archived nuggets</h2>
-      <p class="leader-archive-topic-count">
-        {{archivedNuggets.length}} archived nugget{{#unless (eq archivedNuggets.length 1)}}s{{/unless}}
-      </p>
-    </div>
-
-    <div class="leader-archive-grid">
-      {{#each archivedNuggets}}
-        <article class="leader-archive-card tagged-unit-card leader-dashboard-wave-card">
-          <div class="leader-archive-card-inner leader-dashboard-wave-card-inner">
-
-            <div class="leader-dashboard-wave-header">
-              <img src="/icons/goldsvg.svg" class="leader-dashboard-wave-image" aria-hidden="true">
-            </div>
-
-            {{!-- keep rest EXACTLY same as your existing card --}}
-            {{> archive_card_content this}}
-          </div>
-        </article>
-      {{/each}}
-    </div>
-  </section>
-{{/if}}
-
-
-
-  {{else}}
-
-
-
-
-  
-    <section class="leader-archive-empty">
-      <div class="leader-archive-hero-image-wrap">
-        <img
-          src="/images/archive bluey.png"
-          alt="Archive Bluey"
-          class="leader-archive-hero-image"
-        >
+  {{#if archivedMissions.length}}
+    <section class="leader-archive-topic-block">
+      <div class="leader-archive-topic-header">
+        <h2 class="leader-archive-topic-title">archived missions</h2>
+        <p class="leader-archive-topic-count">
+          {{archivedMissions.length}} archived mission{{#unless (eq archivedMissions.length 1)}}s{{/unless}}
+        </p>
       </div>
 
-      <h2 class="leader-archive-empty-title">nothing archived yet</h2>
-      <p class="leader-archive-empty-text">
-        Once you or your group move units out of the active dashboard, they’ll appear here by topic.
-      </p>
+      <div class="leader-archive-grid">
+        {{#each archivedMissions}}
+          <article class="leader-archive-card tagged-unit-card leader-dashboard-wave-card">
+            <div class="leader-archive-card-inner leader-dashboard-wave-card-inner">
+              <div class="leader-dashboard-wave-header">
+                <img
+                  src="/icons/onyxsvg.svg"
+                  alt=""
+                  aria-hidden="true"
+                  class="leader-dashboard-wave-image"
+                >
+              </div>
 
-      <div class="leader-archive-top-actions">
-        <a href="/dashboard/leader" class="leader-archive-back-link">return to dashboard</a>
+              <div class="leader-dashboard-wave-content">
+                <div class="tagged-unit-icon leader-archive-unit-icon">
+                  <img src="/icons/mission.svg" alt="mission icon">
+                </div>
+
+                <div class="leader-archive-card-body">
+                  <h3 class="leader-archive-card-title">{{titleSnapshot}}</h3>
+
+                  {{#if completedByName}}
+                    <p class="leader-archive-card-meta">
+                      <strong>completed by:</strong>
+                      {{completedByName}}{{#if completedWhenFormatted}}, {{completedWhenFormatted}}{{/if}}
+                    </p>
+                  {{else}}
+                    {{#if completedWhenFormatted}}
+                      <p class="leader-archive-card-meta">
+                        <strong>completed:</strong> {{completedWhenFormatted}}
+                      </p>
+                    {{/if}}
+                  {{/if}}
+
+                  {{#if summarySnapshot}}
+                    <div class="leader-archive-card-summary">
+                      <h4 class="leader-archive-card-subtitle">summary</h4>
+                      <p>{{summarySnapshot}}</p>
+                    </div>
+                  {{/if}}
+
+                  {{#if notesPreview}}
+                    <div class="leader-archive-card-notes">
+                      <h4 class="leader-archive-card-subtitle">notes</h4>
+                      <p>{{notesPreview}}</p>
+                    </div>
+                  {{else}}
+                    <div class="leader-archive-card-notes leader-archive-card-notes--empty">
+                      <h4 class="leader-archive-card-subtitle">notes</h4>
+                      <p class="muted">no notes available</p>
+                    </div>
+                  {{/if}}
+                </div>
+
+                <div class="leader-archive-card-actions">
+                  {{#if viewPath}}
+                    <a href="{{viewPath}}" class="tagged-unit-link">view mission</a>
+                  {{/if}}
+                </div>
+              </div>
+            </div>
+          </article>
+        {{/each}}
       </div>
     </section>
   {{/if}}
+
+  {{#if archivedNuggets.length}}
+    <section class="leader-archive-topic-block">
+      <div class="leader-archive-topic-header">
+        <h2 class="leader-archive-topic-title">archived nuggets</h2>
+        <p class="leader-archive-topic-count">
+          {{archivedNuggets.length}} archived nugget{{#unless (eq archivedNuggets.length 1)}}s{{/unless}}
+        </p>
+      </div>
+
+      <div class="leader-archive-grid">
+        {{#each archivedNuggets}}
+          <article class="leader-archive-card tagged-unit-card leader-dashboard-wave-card">
+            <div class="leader-archive-card-inner leader-dashboard-wave-card-inner">
+              <div class="leader-dashboard-wave-header">
+                <img
+                  src="/icons/goldsvg.svg"
+                  alt=""
+                  aria-hidden="true"
+                  class="leader-dashboard-wave-image"
+                >
+              </div>
+
+              <div class="leader-dashboard-wave-content">
+                <div class="tagged-unit-icon leader-archive-unit-icon">
+                  <img src="/icons/nuggeticon.svg" alt="nugget icon">
+                </div>
+
+                <div class="leader-archive-card-body">
+                  <h3 class="leader-archive-card-title">{{titleSnapshot}}</h3>
+
+                  {{#if completedByName}}
+                    <p class="leader-archive-card-meta">
+                      <strong>archived for:</strong>
+                      {{completedByName}}{{#if completedWhenFormatted}}, {{completedWhenFormatted}}{{/if}}
+                    </p>
+                  {{/if}}
+
+                  {{#if mainTopicSnapshot}}
+                    <p class="leader-archive-card-meta">
+                      <strong>classification:</strong> {{mainTopicSnapshot}}
+                    </p>
+                  {{/if}}
+
+                  {{#if summarySnapshot}}
+                    <div class="leader-archive-card-summary">
+                      <h4 class="leader-archive-card-subtitle">summary</h4>
+                      <p>{{summarySnapshot}}</p>
+                    </div>
+                  {{/if}}
+
+                  {{#if notesPreview}}
+                    <div class="leader-archive-card-notes">
+                      <h4 class="leader-archive-card-subtitle">notes</h4>
+                      <p>{{notesPreview}}</p>
+                    </div>
+                  {{else}}
+                    <div class="leader-archive-card-notes leader-archive-card-notes--empty">
+                      <h4 class="leader-archive-card-subtitle">notes</h4>
+                      <p class="muted">no notes available</p>
+                    </div>
+                  {{/if}}
+
+                  {{#if archiveNoteInstruction}}
+                    <div style="width: 100%; text-align: center; margin-top: 1rem;">
+                      <strong>{{archiveNoteInstruction}}</strong>
+                    </div>
+                  {{/if}}
+                </div>
+
+                <div class="leader-archive-card-actions">
+                  {{#if viewPath}}
+                    <a href="{{viewPath}}" class="tagged-unit-link">view nugget</a>
+                  {{/if}}
+                </div>
+              </div>
+            </div>
+          </article>
+        {{/each}}
+      </div>
+    </section>
+  {{/if}}
+
+  {{#unless archiveTopics.length}}
+    {{#unless archivedMissions.length}}
+      {{#unless archivedNuggets.length}}
+        <section class="leader-archive-empty">
+          <div class="leader-archive-hero-image-wrap">
+            <img
+              src="/images/archive bluey.png"
+              alt="Archive Bluey"
+              class="leader-archive-hero-image"
+            >
+          </div>
+
+          <h2 class="leader-archive-empty-title">nothing archived yet</h2>
+          <p class="leader-archive-empty-text">
+            Once you or your group move units out of the active dashboard, they’ll appear here by topic.
+          </p>
+
+          <div class="leader-archive-top-actions">
+            <a href="/dashboard/leader" class="leader-archive-back-link">return to dashboard</a>
+          </div>
+        </section>
+      {{/unless}}
+    {{/unless}}
+  {{/unless}}
 </section>
