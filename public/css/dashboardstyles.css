@@ -6400,6 +6400,13 @@ box-shadow: none !important;
   width: 100%;
 }
 
+/* Adds spacing for archive blocks that sit outside the topic wrapper */
+.leader-archive-page > .leader-archive-topic-block {
+  margin-top: 1.25rem;
+}
+
+
+
 .leader-archive-card-body {
   flex: 1;
   width: 100%;

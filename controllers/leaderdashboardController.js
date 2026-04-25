@@ -1405,7 +1405,11 @@ const leaderSelfAssignedAllUnits = [
 
 // Split self-assigned section into missions vs non-missions
 const leaderSelfAssignedVisibleUnits = leaderSelfAssignedAllUnits.filter(u =>
-  !isArchivedDashboardItem(u.tagId, u._id)
+  !isArchivedDashboardItem(
+    u.tagId,
+    u._id,
+    u.assignedToId || id
+  )
 );
 
 const leaderSelfTaggedMissions = leaderSelfAssignedVisibleUnits.filter(u => u.unitType === 'mission');
