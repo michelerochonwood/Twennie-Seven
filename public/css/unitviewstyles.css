@@ -4243,7 +4243,7 @@ label {
 .single_nugget-connected-note {
   max-width: 780px;
   margin: 0.5rem auto 1rem;
-  text-align: center;
+  text-align: left;
   color: #333;
   line-height: 1.5;
 }
@@ -4285,3 +4285,9 @@ label {
   }
 }
 
+.single_nugget-promptset-icon {
+  width: 42px;
+  height: auto;
+  margin: 0 auto 0.5rem auto;
+  opacity: 0.9;
+}
