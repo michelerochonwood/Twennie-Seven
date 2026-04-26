@@ -20,6 +20,8 @@
   <p class="form-hint form-mission-video-hint">
     Before creating a nugget, watch this video. It provides guidance for creating successful nuggets based on what you want to achieve.
   </p>
+
+    <p>Please note that the Twennie Mine is not meant to replace CRM systems or formal opportunity tracking. Twennie is a learning platform. We use real opportunities because we want you to learn earlier awareness habits using real work, but Twennie should not replace other tracking tools or processes.</p>
 </div>
 
 
@@ -134,7 +136,7 @@
       <!-- Estimated Value (range bucket) -->
 <div class="form-field">
   <label for="estimated-value-bucket">Estimated Value (CAD)</label>
-  <p>If you choose the unknown option from this list, make sure you update the nugget as soon as you have further information.</p>
+  <p>If you choose the Unknown option from this list, make sure you update the nugget as soon as you have further information.</p>
   <select id="estimated-value-bucket" name="estimatedValue.bucket">
     <option value="">Select range</option>
     <option value="<$100K"        {{#ifEquals data.estimatedValue.bucket "<$100K"}}selected{{/ifEquals}}>&lt;$100K</option>
@@ -156,8 +158,9 @@
 
       <!-- Project Delivery Type -->
       <div class="form-field">
+                <label for="delivery-type">Project Delivery Type</label>
         <p>If you choose the Unknown option from this list, make sure to update the nugget as soon as you have further information.</p>
-        <label for="delivery-type">Project Delivery Type</label>
+
         <select id="delivery-type" name="projectDeliveryType">
           <option value="unknown"     {{#ifEquals data.projectDeliveryType "unknown"}}selected{{/ifEquals}}>Unknown</option>
           <option value="design"      {{#ifEquals data.projectDeliveryType "design"}}selected{{/ifEquals}}>Design</option>
@@ -173,7 +176,7 @@
       <!-- Original Source -->
       <div class="form-field">
         <label for="source-label">Original Source</label>
-        <p>This could be as simple a conversation with a past client. Provide some detail of where and how you learned about it. If it has a corresponding link online, record that in the second field.</p>
+        <p>This could be as simple a conversation with a past client or a newspaper article. It doesn't have to be a formal announcement. Provide some detail of where and how you learned about this nugget. If it has a corresponding link online, record that in the second field. If there is no link, leave the second field blank.</p>
         <input type="text" id="source-label" name="originalSource.label" value="{{data.originalSource.label}}" required>
         <input type="url" id="source-url" name="originalSource.url" value="{{data.originalSource.url}}" placeholder="http://...">
       </div>
@@ -220,17 +223,7 @@
       </label>
     {{/unless}}
 
-    <label class="visibility-option">
-      <input
-        type="radio"
-        name="visibility"
-        value="all_members"
-        {{#ifEquals data.visibility "all_members"}}checked{{/ifEquals}}
-        {{#if (eq user.membershipType "member")}}checked{{/if}}
-        required
-      >
-      share with all Twennie members
-    </label>
+
   </div>
 </div>
 

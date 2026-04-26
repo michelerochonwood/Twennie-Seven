@@ -34,37 +34,37 @@
 
     {{#if unit}}
       {{#if unit.video_title}}
-        <a href="/unitviews/videos/view/{{unit._id}}" class="btn-secondary">see my video</a>
+        <a href="/unitviews/videos/view/{{unit._id}}" class="success-unit-navigation-buttons">see my video</a>
         <a href="/unitform/form_video" class="btn-secondary">submit another video</a>
 
       {{else if unit.article_title}}
-        <a href="/unitviews/articles/view/{{unit._id}}" class="btn-secondary">see my article</a>
+        <a href="/unitviews/articles/view/{{unit._id}}" class="success-unit-navigation-buttons">see my article</a>
         <a href="/unitform/form_article" class="btn-secondary">submit another article</a>
 
       {{else if unit.promptset_title}}
-        <a href="/unitviews/promptsets/view/{{unit._id}}" class="btn-secondary">see my prompt set</a>
+        <a href="/unitviews/promptsets/view/{{unit._id}}" class="success-unit-navigation-buttons">see my prompt set</a>
         <a href="/unitform/form_promptset" class="btn-secondary">submit another prompt set</a>
 
       {{else if unit.exercise_title}}
-        <a href="/unitviews/exercises/view/{{unit._id}}" class="btn-secondary">see my exercise</a>
+        <a href="/unitviews/exercises/view/{{unit._id}}" class="success-unit-navigation-buttons">see my exercise</a>
         <a href="/unitform/form_exercise" class="btn-secondary">submit another exercise</a>
 
       {{else if unit.template_title}}
-        <a href="/unitviews/templates/view/{{unit._id}}" class="btn-secondary">see my template</a>
+        <a href="/unitviews/templates/view/{{unit._id}}" class="success-unit-navigation-buttons">see my template</a>
         <a href="/unitform/form_template" class="btn-secondary">submit another template</a>
 
       {{else if unit.interview_title}}
-        <a href="/unitviews/interviews/view/{{unit._id}}" class="btn-secondary">see my interview</a>
+        <a href="/unitviews/interviews/view/{{unit._id}}" class="success-unit-navigation-buttons">see my interview</a>
         <a href="/unitform/form_interview" class="btn-secondary">submit another interview</a>
 
       {{!-- ✅ NEW: Nugget branch (must be BEFORE upcoming fallback) --}}
       {{else if unit.nugget_title}}
-        <a href="/unitviews/nuggets/view/{{unit._id}}" class="btn-secondary">see my nugget</a>
+        <a href="/unitviews/nuggets/view/{{unit._id}}" class="success-unit-navigation-buttons">see my nugget</a>
         <a href="/unitform/form_nugget" class="btn-secondary">submit another nugget</a>
 
       {{!-- Upcoming (fallback uses plain title only) --}}
       {{else if unit.title}}
-        <a href="/unitviews/upcoming/view/{{unit._id}}" class="btn-secondary">see my upcoming unit</a>
+        <a href="/unitviews/upcoming/view/{{unit._id}}" class="success-unit-navigation-buttons">see my upcoming unit</a>
         <a href="/unitform/form_upcoming" class="btn-secondary">submit another upcoming</a>
       {{/if}}
     {{/if}}
