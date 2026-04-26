@@ -94,11 +94,16 @@ if (!effectiveUnitType || !effectiveMainTopic) {
 
 const content = (note_content || '').trim();
 
+let memberType = 'member';
+if (isLeader) memberType = 'leader';
+else if (isGroupMember) memberType = 'group_member';
+
 if (effectiveUnitType === 'nugget' || effectiveUnitType === 'mission') {
   // Nuggets and missions keep a running history of notes
   await Note.create({
     unitID: unitId,
     memberID: userId,
+    memberType,
     unitType: effectiveUnitType,
     main_topic: effectiveMainTopic,
     secondary_topic: effectiveSecondary,
@@ -126,7 +131,7 @@ if (effectiveUnitType === 'nugget' || effectiveUnitType === 'mission') {
      * This only matters for users who can actually receive assignments:
      * group members and leaders.
      */
-    if (isGroupMember || isLeader) {
+if (isGroupMember || isLeader || isMember) {
       await Tag.updateMany(
         {
           'assignedTo.member': new mongoose.Types.ObjectId(userId),
@@ -150,7 +155,7 @@ if (effectiveUnitType === 'nugget' || effectiveUnitType === 'mission') {
      * If this note belongs to a mission, mark that mission as completed for this user.
      * This only matters for roles that use missions.
      */
-    if (effectiveUnitType === 'mission' && (isGroupMember || isLeader)) {
+if (effectiveUnitType === 'mission' && (isGroupMember || isLeader || isMember)) {
       const mission = await Mission.findById(unitId);
       if (mission) {
         const alreadyCompleted = Array.isArray(mission.completions)
