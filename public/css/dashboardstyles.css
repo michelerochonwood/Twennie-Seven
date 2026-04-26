@@ -4133,7 +4133,7 @@ html, body {
 .member-sidebar .member-profile-btn {
   display: block;
   margin: 7.5px auto; /* Reduced from 10px */
-  padding: 7.5px 15px; /* Reduced from 10px 20px */
+  padding: 12px 20px; /* Reduced from 10px 20px */
   border-radius: 99px;
   background-color: #262262;
   color: white;
@@ -4144,7 +4144,7 @@ html, body {
   text-align: center;
   text-decoration: none;
   cursor: pointer;
-  width: 60%;
+  width: 50%;
 }
 
 .member-sidebar .member-profile-btn:hover {
