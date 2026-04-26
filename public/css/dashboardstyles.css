@@ -6504,8 +6504,9 @@ box-shadow: none !important;
   gap: 8px;
   margin-top: 0.75rem;
   font-size: 0.8rem;
-  color: #b42318; /* strong red */
+  color: #dc176a; /* strong red */
   font-weight: 800;
+  margin:auto 0; 
 }
 
 .leader-archive-not-completed-dot {
@@ -6514,6 +6515,7 @@ box-shadow: none !important;
   background-color: #dc176a; /* your pink/red */
   border-radius: 50%;
   display: inline-block;
+  margin:auto 0;
 }
 
 @media screen and (max-width: 1200px) {
