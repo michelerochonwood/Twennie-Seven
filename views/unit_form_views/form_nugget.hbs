@@ -46,6 +46,7 @@
       <!-- Title -->
       <div class="form-field">
         <label for="nugget-title">Nugget Title</label>
+        <p>Make sure your title is clear. It should be detailed enough that your team and organization can see exactly what opportunity this is by looking at the title only.</p>
         <input type="text" id="nugget-title" name="title" value="{{data.title}}" required>
       </div>
 
@@ -69,6 +70,7 @@
       <!-- Discipline (alphabetical) -->
       <div class="form-field">
         <label for="discipline">Discipline</label>
+        <p>If the appropriate discipline can't be found in this list, choose Other. Then provide added details in the Notes field below.</p>
         <select id="discipline" name="discipline" required>
           <option value="">Select discipline</option>
           <option value="Architecture"           {{#ifEquals data.discipline "Architecture"}}selected{{/ifEquals}}>Architecture</option>
@@ -95,8 +97,31 @@
         <label for="region">Region</label>
         <select id="region" name="region" required>
           <option value="">Select region</option>
-          <option value="Southern Ontario"                  {{#ifEquals data.region "Southern Ontario"}}selected{{/ifEquals}}>Southern Ontario</option>
-          <option value="Northern Ontario"                  {{#ifEquals data.region "Northern Ontario"}}selected{{/ifEquals}}>Northern Ontario</option>
+<option value="GTA (Toronto Core)" {{#ifEquals data.region "GTA (Toronto Core)"}}selected{{/ifEquals}}>
+  GTA (Toronto Core – Toronto, Etobicoke, North York, Scarborough)
+</option>
+
+<option value="GTA (Outer 905)" {{#ifEquals data.region "GTA (Outer 905)"}}selected{{/ifEquals}}>
+  GTA (Outer 905 – Mississauga, Brampton, Vaughan, Markham, Richmond Hill, Pickering, Ajax, Whitby, Oshawa)
+</option>
+
+<option value="Southwestern Ontario" {{#ifEquals data.region "Southwestern Ontario"}}selected{{/ifEquals}}>
+  Southwestern Ontario (London, Windsor, Waterloo, Sarnia, Stratford, Guelph, Cambridge)
+</option>
+
+<option value="Golden Horseshoe (Non-GTA)" {{#ifEquals data.region "Golden Horseshoe (Non-GTA)"}}selected{{/ifEquals}}>
+  Golden Horseshoe (Non-GTA – Hamilton, Burlington, Oakville, St. Catharines, Niagara Falls, Welland)
+</option>
+
+<option value="Central Ontario (Simcoe / Muskoka)" {{#ifEquals data.region "Central Ontario (Simcoe / Muskoka)"}}selected{{/ifEquals}}>
+  Central Ontario (Simcoe / Muskoka – Barrie, Orillia, Collingwood, Bracebridge, Huntsville)
+</option>
+
+<option value="Eastern Ontario" {{#ifEquals data.region "Eastern Ontario"}}selected{{/ifEquals}}>
+  Eastern Ontario (Ottawa, Kingston, Cornwall, Brockville, Belleville)
+</option>
+          <option value="Northeastern Ontario"                  {{#ifEquals data.region "Northeastern Ontario"}}selected{{/ifEquals}}>Northeastern Ontario</option>
+          <option value="Northwestern Ontario"                  {{#ifEquals data.region "Northwestern Ontario"}}selected{{/ifEquals}}>Northwestern Ontario</option>
           <option value="Prairies"                          {{#ifEquals data.region "Prairies"}}selected{{/ifEquals}}>Prairies</option>
           <option value="BC"                                {{#ifEquals data.region "BC"}}selected{{/ifEquals}}>BC</option>
           <option value="Quebec"                            {{#ifEquals data.region "Quebec"}}selected{{/ifEquals}}>Quebec</option>
@@ -109,6 +134,7 @@
       <!-- Estimated Value (range bucket) -->
 <div class="form-field">
   <label for="estimated-value-bucket">Estimated Value (CAD)</label>
+  <p>If you choose the unknown option from this list, make sure you update the nugget as soon as you have further information.</p>
   <select id="estimated-value-bucket" name="estimatedValue.bucket">
     <option value="">Select range</option>
     <option value="<$100K"        {{#ifEquals data.estimatedValue.bucket "<$100K"}}selected{{/ifEquals}}>&lt;$100K</option>
@@ -130,6 +156,7 @@
 
       <!-- Project Delivery Type -->
       <div class="form-field">
+        <p>If you choose the Unknown option from this list, make sure to update the nugget as soon as you have further information.</p>
         <label for="delivery-type">Project Delivery Type</label>
         <select id="delivery-type" name="projectDeliveryType">
           <option value="unknown"     {{#ifEquals data.projectDeliveryType "unknown"}}selected{{/ifEquals}}>Unknown</option>
@@ -146,6 +173,7 @@
       <!-- Original Source -->
       <div class="form-field">
         <label for="source-label">Original Source</label>
+        <p>This could be as simple a conversation with a past client. Provide some detail of where and how you learned about it. If it has a corresponding link online, record that in the second field.</p>
         <input type="text" id="source-label" name="originalSource.label" value="{{data.originalSource.label}}" required>
         <input type="url" id="source-url" name="originalSource.url" value="{{data.originalSource.url}}" placeholder="http://...">
       </div>

@@ -27,11 +27,15 @@
       </p>
       <p><strong>Project Delivery Type:</strong> {{projectDeliveryType}}</p>
       <p><strong>Win Probability:</strong> {{likelihood}}%</p>
-      <p><strong>Original Source:</strong>
-        <a href="{{originalSource.url}}" target="_blank" rel="noopener">
-          {{#if originalSource.label}}{{originalSource.label}}{{else}}{{originalSource.url}}{{/if}}
-        </a>
-      </p>
+<p><strong>Original Source:</strong>
+  {{#if originalSource.url}}
+    <a href="{{originalSource.url}}" target="_blank" rel="noopener">
+      {{originalSource.label}}
+    </a>
+  {{else}}
+    {{originalSource.label}}
+  {{/if}}
+</p>
       {{#if notes}}
         <div class="single_nugget-notes">
           <h4>Notes</h4>
@@ -41,27 +45,47 @@
     </div>
 
     <!-- Connected Units -->
-    <div class="single_nugget-connected-units white-container">
-      <h3>Connected Twennie Units</h3>
-      {{#if connectedTwennieUnits.length}}
-        <ul class="connected-unit-list">
-          {{#each connectedTwennieUnits}}
-            <li>
-              <a
-                href="/unitviews/{{this.kind}}s/view/{{this.unitId}}"
-                class="connected-unit-link"
-                rel="noopener"
-              >
-                {{capitalize this.kind}}: {{this.unitId}}
-              </a>
-              {{#if this.note}}<p class="connected-unit-note">{{this.note}}</p>{{/if}}
-            </li>
-          {{/each}}
-        </ul>
-      {{else}}
-        <p>No connected units yet. Leaders can link this nugget to articles, videos, or prompt sets.</p>
-      {{/if}}
-    </div>
+{{!-- Nugget Monitoring Prompt Sets --}}
+<div class="single_nugget-connected-units white-container">
+  <h3>Monitor this nugget with a prompt set</h3>
+
+  <p class="single_nugget-connected-intro">
+    Choose one of these prompt sets to help you monitor this nugget over time. The prompt set functions like a built-in capture plan, encouraging regular monitoring of the nugget and positioning activities. Register for the prompt set separately, then use the assignment notes to record which nugget you are monitoring.
+  </p>
+
+  <div class="single_nugget-promptset-links">
+    <a
+      href="/unitviews/promptsets/view/69c439f60df9f674bef71d68"
+      class="single_nugget-promptset-card"
+    >
+      <span class="single_nugget-promptset-kicker">3 months</span>
+      <strong>PROMPT SET: Monitoring My Nugget - Three Months</strong>
+      <span>Best for opportunities that may move quickly.</span>
+    </a>
+
+    <a
+      href="/unitviews/promptsets/view/69c43ead0df9f674bef71ef7"
+      class="single_nugget-promptset-card"
+    >
+      <span class="single_nugget-promptset-kicker">6 months</span>
+      <strong>PROMPT SET: Monitoring My Nugget - Six Months</strong>
+      <span>Best for opportunities that need steady interpretation and positioning.</span>
+    </a>
+
+    <a
+      href="/unitviews/promptsets/view/69c444060df9f674bef7207c"
+      class="single_nugget-promptset-card"
+    >
+      <span class="single_nugget-promptset-kicker">1 year</span>
+      <strong>PROMPT SET: Monitoring My Nugget - One Year</strong>
+      <span>Best for long-range opportunities that need patient, intermittent tracking.</span>
+    </a>
+  </div>
+
+  <p class="single_nugget-connected-note">
+    These prompt sets are not automatically connected to this nugget. After registering, add a note to your prompt set assignment naming the nugget you are monitoring. That way when it shows in your dashboard, you'll know you chose it for this nugget.
+  </p>
+</div>
 
   {{!-- Tagging / Assignments (Leader) - always visible --}}
 {{#if isLeader}}
@@ -244,7 +268,7 @@
   <div class="single_nugget-notes-container">
     <h3 class="single_nugget-notes-title">record monitoring notes for this nugget</h3>
     <p class="single_nugget-notes-instructions">
-      If you will be monitoring itAssign this nugget to yourself first , so your updates stay connected to the dashboard and reporting properly.
+      If you or a member of your group will be monitoring this nugget, assign it to yourself or your group member first. That way your updates stay connected to the dashboard and reporting properly.
     </p>
   </div>
 {{/if}}

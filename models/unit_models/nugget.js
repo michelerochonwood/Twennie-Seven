@@ -1,21 +1,30 @@
 const mongoose = require('mongoose');
 
-const ConnectedUnitSchema = new mongoose.Schema({
-  kind: {
+const NuggetMonitoringNoteSchema = new mongoose.Schema({
+  note: {
     type: String,
-    enum: ['article', 'video', 'interview', 'promptset', 'exercise', 'template'],
     required: true,
     trim: true
   },
-  unitId: {
+  addedBy: {
     type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    refPath: 'monitoringNotes.addedByModel'
+  },
+  addedByModel: {
+    type: String,
+    enum: ['leader', 'group_member', 'member'],
     required: true
   },
-  note: {
+  addedByNameSnapshot: {
     type: String,
     trim: true
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
   }
-}, { _id: false });
+}, { _id: true });
 
 const NuggetSchema = new mongoose.Schema({
   // Required core
@@ -28,10 +37,10 @@ const NuggetSchema = new mongoose.Schema({
   region: { type: String, trim: true },
 
   // Scale
-estimatedValue: {
-  amount: { type: Number, min: 0, default: null },
-  currency: { type: String, default: 'CAD', trim: true }
-},
+  estimatedValue: {
+    amount: { type: Number, min: 0, default: null },
+    currency: { type: String, default: 'CAD', trim: true }
+  },
 
   // Delivery / procurement
   projectDeliveryType: {
@@ -49,23 +58,22 @@ estimatedValue: {
   // Prioritization
   likelihood: { type: Number, min: 0, max: 100, default: 50 },
 
-  // Cross-links
-  connectedTwennieUnits: {
-    type: [ConnectedUnitSchema],
-    validate: {
-      validator: function (arr) {
-        return !arr || arr.length <= 3;
-      },
-      message: 'You can attach up to 3 Twennie learning units.'
-    },
+  // Original nugget notes / description
+  notes: { type: String, trim: true },
+
+  // Ongoing monitoring notes - append only
+  monitoringNotes: {
+    type: [NuggetMonitoringNoteSchema],
     default: []
   },
 
-  // Notes
-  notes: { type: String, trim: true },
-
   // Ownership & visibility
-  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Member', index: true },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Member',
+    index: true
+  },
+
   visibility: {
     type: String,
     enum: ['team_only', 'organization_only', 'all_members'],
@@ -75,9 +83,16 @@ estimatedValue: {
 }, { timestamps: true });
 
 // Indexes
-NuggetSchema.index({ title: 'text', client: 'text', region: 'text', discipline: 'text' });
+NuggetSchema.index({
+  title: 'text',
+  client: 'text',
+  region: 'text',
+  discipline: 'text'
+});
+
 NuggetSchema.index({ horizon: 1, likelihood: -1 });
 NuggetSchema.index({ 'estimatedValue.amount': -1 });
+NuggetSchema.index({ 'monitoringNotes.createdAt': -1 });
 
 module.exports = mongoose.model('Nugget', NuggetSchema);
 

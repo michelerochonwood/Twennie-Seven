@@ -840,7 +840,7 @@ const canAddNuggetMonitoringNotes = isOwner || isAssignedToCurrentUser;
       projectDeliveryType: nugget.projectDeliveryType,
       originalSource: nugget.originalSource,
       likelihood: nugget.likelihood,
-      connectedTwennieUnits: nugget.connectedTwennieUnits || [],
+      monitoringNotes: nugget.monitoringNotes || [],
       notes: nugget.notes,
 
       currentUserId: currentUserId,

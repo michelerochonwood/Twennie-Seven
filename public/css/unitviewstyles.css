@@ -4239,5 +4239,49 @@ label {
 
 
 
+.single_nugget-connected-intro,
+.single_nugget-connected-note {
+  max-width: 780px;
+  margin: 0.5rem auto 1rem;
+  text-align: center;
+  color: #333;
+  line-height: 1.5;
+}
 
+.single_nugget-promptset-links {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.single_nugget-promptset-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 1.1rem;
+  border-radius: 18px;
+  background: #f4f4fb;
+  color: #262262;
+  text-decoration: none;
+  text-align: center;
+  border: 2px solid rgba(78, 80, 162, 0.18);
+}
+
+.single_nugget-promptset-card:hover {
+  transform: translateY(-2px);
+}
+
+.single_nugget-promptset-kicker {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #dc176a;
+  text-transform: uppercase;
+}
+
+@media (max-width: 900px) {
+  .single_nugget-promptset-links {
+    grid-template-columns: 1fr;
+  }
+}
 
