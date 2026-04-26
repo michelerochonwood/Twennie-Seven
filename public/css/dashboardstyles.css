@@ -6518,6 +6518,11 @@ box-shadow: none !important;
 
 }
 
+.bluey-cta-image {
+  width: 200px;
+  height: auto;
+}
+
 
 .leader-archive-sidebar-block {
   margin: 1.5rem auto 0;
