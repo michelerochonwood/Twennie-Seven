@@ -2220,20 +2220,18 @@ label {
 }
 
 /* =========================
-   SINGLE NUGGET – FIXED LAYOUT
+   SINGLE NUGGET – LAYOUT
    ========================= */
-
 .single_nugget-container {
   display: flex;
   gap: 5rem;
   padding: 0 10%;
   align-items: flex-start; /* CRITICAL */
-  margin: 3rem auto 3rem auto;
+  margin: 4rem auto 3rem auto;
   max-width: 90vw;
   font-family: "Figtree", sans-serif;
 }
 
-/* MAIN COLUMN */
 .single_nugget-main {
   flex: 90%;
   display: flex;
@@ -2242,7 +2240,6 @@ label {
   margin: 0;
 }
 
-/* TITLE — align with blocks */
 .single_nugget-title {
   font-size: 1.8rem;
   font-weight: 800;
@@ -2254,6 +2251,7 @@ label {
   text-align: left;
 }
 
+/* Scoped “white card” containers for this page */
 /* ALL CONTENT BLOCKS — consistent alignment */
 .single_nugget-main .white-container {
   width: 80%;
@@ -2266,120 +2264,107 @@ label {
   text-align: left;
 }
 
-/* Remove vertical drift between blocks */
-.single_nugget-summary,
-.single_nugget-details,
-.single_nugget-connected-units {
-  margin-top: 0;
-}
-
-/* TEXT CLEANUP */
+/* Section cards */
 .single_nugget-summary p,
-.single_nugget-details p {
-  margin: 0 0 0.5rem 0;
-  line-height: 1.4;
-}
-
+.single_nugget-details p { margin: 0 0 .5rem 0; line-height: 1.4; }
 .single_nugget-details h3,
-.single_nugget-connected-units h3 {
-  margin: 0 0 0.75rem 0;
-  color: #262262;
-}
+.single_nugget-connected-units h3 { margin: 0 0 .75rem 0; color:#262262; }
 
-/* PROMPT SET GRID */
-.single_nugget-promptset-links {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
-  margin-top: 1rem;
+/* Connected units list */
+.connected-unit-list { list-style: none; padding: 0; margin: 0; }
+.connected-unit-list li { margin: .5rem 0; }
+.connected-unit-link {
+  color: #262262; font-weight: 800; text-decoration: none;
 }
+.connected-unit-link:hover { color: #4a4ab2; text-decoration: underline; }
+.connected-unit-note { margin: .25rem 0 0 0; font-size: .85rem; color: #555; }
 
-/* PROMPT SET CARDS */
-.single_nugget-promptset-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* FIX alignment */
-  justify-content: flex-start;
-  gap: 0.4rem;
-  padding: 1.2rem 1rem;
-  border-radius: 18px;
-  background: #f4f4fb;
-  color: #262262;
-  text-decoration: none;
-  border: 2px solid rgba(78, 80, 162, 0.18);
-  min-height: 180px; /* FIX uneven heights */
+/* Tags section (pills) */
+.single_unit-tags .unit-tag-list { list-style:none; padding:0; margin: 0; display:flex; flex-direction: column; gap: .5rem; }
+.single_unit-tags .tag-pill {
+  background:#f1f1f8; border-radius:999px; padding:6px 12px;
+  display:flex; align-items:center; gap:8px; width: fit-content;
 }
-
-.single_nugget-promptset-card:hover {
-  transform: translateY(-2px);
+.single_unit-tags .tag-name { font-weight:800; color:#262262; }
+.single_unit-tags .tag-status { font-weight:800; color:#4a4ab2; }
+.single_unit-tags .tag-action {
+  background: transparent; border: none; color: #4a4ab2; font-weight: 800; cursor: pointer;
 }
+.single_unit-tags .tag-action:hover { text-decoration: underline; }
 
-/* ICON */
-.single_nugget-promptset-icon {
-  width: 44px;
-  margin-bottom: 0.4rem;
-  opacity: 0.9;
-}
-
-/* KICKER */
-.single_nugget-promptset-kicker {
-  font-size: 0.75rem;
-  font-weight: 800;
-  color: #dc176a;
-  text-transform: uppercase;
-}
-
-/* TEXT */
-.single_nugget-connected-intro,
-.single_nugget-connected-note {
-  max-width: 780px;
-  margin: 0.5rem auto 1rem;
-  text-align: left;
-  color: #333;
-  line-height: 1.5;
-}
-
-/* NOTES BLOCK ALIGNMENT */
+/* Notes (reuse styling pattern from other unit views) */
 .single_nugget-notes-container {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  padding: 20px;
+  margin-top: 20px;
+  border-radius: 8px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+  margin-bottom: 30px;
   width: 80%;
-  margin: 1.5rem auto;
+  margin-left: auto; margin-right: auto;
+}
+.single_nugget-notes-form { display:flex; flex-direction:column; gap:10px; }
+.single_nugget-notes-textarea {
+  width: 95%; min-height: 120px; font-size: .85rem; font-family:"Figtree",sans-serif;
+  border:1px solid #ccc; padding:10px; border-radius:5px; resize:vertical;
+}
+.single_nugget-notes-textarea:focus { border-color:#262262; outline:none; }
+.single_nugget-notes-submit {
+  display:block; font-size:.8rem; padding:8px 14px; border-radius:99px;
+  background:#262262; color:#fff; font-weight:800; border:none; width:fit-content;
+  margin:10px auto; transition: background-color .3s ease-in-out;
+}
+.single_nugget-notes-submit:hover { background:#4a4ab2; }
+
+/* =========================
+   SINGLE NUGGET – SIDEBAR
+   ========================= */
+.single_nugget-sidebar {
+  background: rgb(188, 188, 188);
+  border-radius: 8px;
+  padding: 20px;
+  position: sticky;
+  top: 200px;
+  height: fit-content;
+  width: 30%;
 }
 
-/* SIDEBAR — align with top */
-.single_nugget-sidebar {
-  width: 30%;
-  position: sticky;
-  top: 50px; /* FIX — was too low */
-  height: fit-content;
+.single_nugget-author { text-align:center; margin-bottom: 20px; }
+.single_nugget-author-image {
+  width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #262262;
 }
+.single_nugget-author-name { font-size: 1.1rem; font-weight: 700; color:#262262; margin-top:.5rem; }
+
+.single_nugget-details-meta { text-align:center; margin-top: 10px; }
+.single_nugget-unit-type {
+  color:#4a4ab2; margin-bottom:10px; font-weight:800; text-align:center; font-size:1rem;
+}
+.single_nugget-edit-btn {
+  display:block; margin: 12px auto 0 auto; padding:10px 18px;
+  background:#262262; color:#fff; border:none; border-radius:99px; font-weight:800;
+  text-decoration:none;
+}
+.single_nugget-edit-btn:hover { background:#4a4ab2; }
 
 /* =========================
    RESPONSIVE
    ========================= */
+@media screen and (max-width: 1200px) {
+  .single_nugget-container { flex-direction: column; gap: 3rem; }
+  .single_nugget-main, .single_nugget-sidebar { width: 100%; margin: 0 auto; }
+}
 
-@media (max-width: 1200px) {
-  .single_nugget-container {
-    flex-direction: column;
-    gap: 3rem;
-  }
-
-  .single_nugget-sidebar,
-  .single_nugget-main {
-    width: 100%;
-  }
-
+@media screen and (max-width: 600px) {
+  .single_nugget-container { padding: 0 2rem; }
   .single_nugget-main .white-container,
-  .single_nugget-title,
-  .single_nugget-notes-container {
-    width: 100%;
-  }
+  .single_nugget-notes-container { width: 100%; }
 }
 
-@media (max-width: 900px) {
-  .single_nugget-promptset-links {
-    grid-template-columns: 1fr;
-  }
+@media screen and (max-width: 400px) {
+  .single_nugget-container { padding: 0 1.5rem; }
 }
+
 /*NOTES SUBMIT SUCCESS*/
 
 /* SUCCESS PAGE FOR UNIT NOTES */
