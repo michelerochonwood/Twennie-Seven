@@ -163,65 +163,63 @@
         </section>
       {{/if}}
 
- {{#if isLeader}}
-  {{#unless canAddMissionNotes}}
-    <div class="assign-tag-form white-container">
-      <h4 class="assign-tag-title">Assign this mission to yourself or your group</h4>
+{{#if isLeader}}
+  <div class="assign-tag-form white-container">
+    <h4 class="assign-tag-title">Assign this mission to yourself or your group</h4>
 
-      <form id="assignMissionTagForm" action="/tags/create" method="POST">
-        <input type="hidden" name="_csrf" value="{{csrfToken}}">
-        <input type="hidden" name="itemId" value="{{_id}}">
-        <input type="hidden" name="itemType" value="mission">
+    <form id="assignMissionTagForm" action="/tags/create" method="POST">
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+      <input type="hidden" name="itemId" value="{{_id}}">
+      <input type="hidden" name="itemType" value="mission">
 
-        <div class="form-field">
-          <label for="missionTagName">Give the assignment a name</label>
-          <input type="text" id="missionTagName" name="tagName" required>
+      <div class="form-field">
+        <label for="missionTagName">Give the assignment a name</label>
+        <input type="text" id="missionTagName" name="tagName" required>
+      </div>
+
+      <fieldset class="assign-tag-members">
+        <legend class="assign-tag-legend">Select recipients and enter instructions:</legend>
+
+        <div class="assign-tag-member-block">
+          <label class="assign-tag-member-label">
+            <input
+              type="checkbox"
+              name="assignedTo[{{leaderId}}][member]"
+              value="{{leaderId}}"
+              onchange="toggleInstructionField(this)">
+            {{leaderName}} (you)
+          </label>
+          <textarea
+            class="assign-tag-instructions"
+            name="assignedTo[{{leaderId}}][instructions]"
+            placeholder="Instructions for yourself"
+            style="display:none;"></textarea>
         </div>
 
-        <fieldset class="assign-tag-members">
-          <legend class="assign-tag-legend">Select recipients and enter instructions:</legend>
+        <hr class="assign-tag-divider">
 
+        {{#each groupMembers}}
           <div class="assign-tag-member-block">
             <label class="assign-tag-member-label">
               <input
                 type="checkbox"
-                name="assignedTo[{{leaderId}}][member]"
-                value="{{leaderId}}"
+                name="assignedTo[{{_id}}][member]"
+                value="{{_id}}"
                 onchange="toggleInstructionField(this)">
-              {{leaderName}} (you)
+              {{name}}
             </label>
             <textarea
               class="assign-tag-instructions"
-              name="assignedTo[{{leaderId}}][instructions]"
-              placeholder="Instructions for yourself"
+              name="assignedTo[{{_id}}][instructions]"
+              placeholder="Instructions for {{name}}"
               style="display:none;"></textarea>
           </div>
+        {{/each}}
+      </fieldset>
 
-          <hr class="assign-tag-divider">
-
-          {{#each groupMembers}}
-            <div class="assign-tag-member-block">
-              <label class="assign-tag-member-label">
-                <input
-                  type="checkbox"
-                  name="assignedTo[{{_id}}][member]"
-                  value="{{_id}}"
-                  onchange="toggleInstructionField(this)">
-                {{name}}
-              </label>
-              <textarea
-                class="assign-tag-instructions"
-                name="assignedTo[{{_id}}][instructions]"
-                placeholder="Instructions for {{name}}"
-                style="display:none;"></textarea>
-            </div>
-          {{/each}}
-        </fieldset>
-
-        <button type="submit" class="form-button submit-button">assign mission</button>
-      </form>
-    </div>
-  {{/unless}}
+      <button type="submit" class="form-button submit-button">assign mission</button>
+    </form>
+  </div>
 {{/if}}
       {{#if isOrgAdmin}}
         <div class="assign-tag-form white-container" style="margin-top:1.25rem;">

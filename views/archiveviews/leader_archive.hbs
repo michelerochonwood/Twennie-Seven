@@ -18,7 +18,7 @@
 
   <div class="leader-archive-top-actions">
     <a href="/dashboard/leader" class="leader-archive-back-link">return to dashboard</a>
-    <a href="/reports/leaderreport" class="leader-archive-report-link">view report center</a>
+
   </div>
 
   {{#if archiveTopics.length}}
@@ -62,6 +62,16 @@
 
                     <div class="leader-archive-card-body">
                       <h3 class="leader-archive-card-title">{{titleSnapshot}}</h3>
+                      {{#if archiveScope}}
+  <p class="leader-archive-card-meta">
+    <strong>assignment type:</strong>
+    {{#if (eq archiveScope "self_assigned")}}
+      self-assigned by {{#if completedByName}}{{completedByName}}{{else}}{{assignedToNameSnapshot}}{{/if}}
+    {{else}}
+      assigned by leader
+    {{/if}}
+  </p>
+{{/if}}
 
                       {{#if unitAuthorName}}
                         <p class="leader-archive-card-meta">
@@ -181,6 +191,16 @@
 
                 <div class="leader-archive-card-body">
                   <h3 class="leader-archive-card-title">{{titleSnapshot}}</h3>
+                  {{#if archiveScope}}
+  <p class="leader-archive-card-meta">
+    <strong>assignment type:</strong>
+    {{#if (eq archiveScope "self_assigned")}}
+      self-assigned by {{#if completedByName}}{{completedByName}}{{else}}{{assignedToNameSnapshot}}{{/if}}
+    {{else}}
+      assigned by leader
+    {{/if}}
+  </p>
+{{/if}}
 
                   {{#if completedByName}}
                     <p class="leader-archive-card-meta">
@@ -257,6 +277,16 @@
 
                 <div class="leader-archive-card-body">
                   <h3 class="leader-archive-card-title">{{titleSnapshot}}</h3>
+                  {{#if archiveScope}}
+  <p class="leader-archive-card-meta">
+    <strong>assignment type:</strong>
+    {{#if (eq archiveScope "self_assigned")}}
+      self-assigned by {{#if completedByName}}{{completedByName}}{{else}}{{assignedToNameSnapshot}}{{/if}}
+    {{else}}
+      assigned by leader
+    {{/if}}
+  </p>
+{{/if}}
 
                   {{#if completedByName}}
                     <p class="leader-archive-card-meta">
