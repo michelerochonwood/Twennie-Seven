@@ -6498,6 +6498,24 @@ box-shadow: none !important;
   line-height: 1.6;
 }
 
+.leader-archive-not-completed {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+  color: #b42318; /* strong red */
+  font-weight: 800;
+}
+
+.leader-archive-not-completed-dot {
+  width: 10px;
+  height: 10px;
+  background-color: #dc176a; /* your pink/red */
+  border-radius: 50%;
+  display: inline-block;
+}
+
 @media screen and (max-width: 1200px) {
   .leader-archive-page {
     max-width: 90vw;

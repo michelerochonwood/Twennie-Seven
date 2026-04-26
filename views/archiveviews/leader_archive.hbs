@@ -73,44 +73,51 @@
   </p>
 {{/if}}
 
-                      {{#if unitAuthorName}}
-                        <p class="leader-archive-card-meta">
-                          <strong>unit author:</strong> {{unitAuthorName}}
-                        </p>
-                      {{/if}}
+{{#if unitAuthorName}}
+  <p class="leader-archive-card-meta">
+    <strong>unit author:</strong> {{unitAuthorName}}
+  </p>
+{{/if}}
 
-                      {{#if completedByName}}
-                        <p class="leader-archive-card-meta">
-                          <strong>completed by:</strong>
-                          {{completedByName}}{{#if completedWhenFormatted}}, {{completedWhenFormatted}}{{/if}}
-                        </p>
-                      {{else}}
-                        {{#if completedWhenFormatted}}
-                          <p class="leader-archive-card-meta">
-                            <strong>completed:</strong> {{completedWhenFormatted}}
-                          </p>
-                        {{/if}}
-                      {{/if}}
+{{!-- COMPLETION STATUS --}}
+{{#if completedByName}}
+  <p class="leader-archive-card-meta">
+    <strong>completed by:</strong>
+    {{completedByName}}{{#if completedWhenFormatted}}, {{completedWhenFormatted}}{{/if}}
+  </p>
+{{else}}
+  {{#if completedWhenFormatted}}
+    <p class="leader-archive-card-meta">
+      <strong>completed:</strong> {{completedWhenFormatted}}
+    </p>
+  {{else}}
+    <div class="leader-archive-not-completed">
+      <span class="leader-archive-not-completed-dot"></span>
+      <strong>not completed</strong>
+    </div>
+  {{/if}}
+{{/if}}
 
-                      {{#if summarySnapshot}}
-                        <div class="leader-archive-card-summary">
-                          <h4 class="leader-archive-card-subtitle">summary</h4>
-                          <p>{{summarySnapshot}}</p>
-                        </div>
-                      {{/if}}
+{{!-- SUMMARY --}}
+{{#if summarySnapshot}}
+  <div class="leader-archive-card-summary">
+    <h4 class="leader-archive-card-subtitle">summary</h4>
+    <p>{{summarySnapshot}}</p>
+  </div>
+{{/if}}
 
-                      {{#if notesPreview}}
-                        <div class="leader-archive-card-notes">
-                          <h4 class="leader-archive-card-subtitle">notes</h4>
-                          <p>{{notesPreview}}</p>
-                        </div>
-                      {{else}}
-                        <div class="leader-archive-card-notes leader-archive-card-notes--empty">
-                          <h4 class="leader-archive-card-subtitle">notes</h4>
-                          <p class="muted">no notes available</p>
-                        </div>
-                      {{/if}}
-
+{{!-- NOTES --}}
+{{#if notesPreview}}
+  <div class="leader-archive-card-notes">
+    <h4 class="leader-archive-card-subtitle">notes</h4>
+    <p>{{notesPreview}}</p>
+  </div>
+{{else}}
+  <div class="leader-archive-card-notes leader-archive-card-notes--empty">
+    <h4 class="leader-archive-card-subtitle">notes</h4>
+    <p class="muted">no notes available</p>
+  </div>
+{{/if}}
                       {{#if archiveNoteInstruction}}
                         {{#if (eq unitType "promptset")}}
                           <div style="width: 100%; display: flex; justify-content: center; margin: 1rem 0 0 0;">
