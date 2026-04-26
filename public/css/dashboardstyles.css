@@ -4144,6 +4144,7 @@ html, body {
   text-align: center;
   text-decoration: none;
   cursor: pointer;
+  width: 60%;
 }
 
 .member-sidebar .member-profile-btn:hover {
@@ -6539,7 +6540,7 @@ box-shadow: none !important;
 
 .leader-archive-sidebar-btn {
   display: inline-block;
-  padding: 10px 18px;
+  padding: 12px 20px;
   border-radius: 99px;
   background-color: #262262;
   color: #ffffff;
