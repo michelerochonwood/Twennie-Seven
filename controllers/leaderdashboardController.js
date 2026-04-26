@@ -1356,17 +1356,22 @@ const leaderNoteByUnitId = new Map(
 const leaderLegacySelfTaggedUnits = leaderLegacySelfTaggedRaw.map(u => {
   const completedAt = leaderNoteByUnitId.get(u._id.toString()) || null;
 
+  const completedAtFormatted = completedAt
+    ? new Date(completedAt).toLocaleDateString('en-CA', {
+        year: 'numeric',
+        month: 'short',
+        day: '2-digit'
+      })
+    : '';
+
   return {
     ...u,
     assignedToId: id,
     assignedInstructions: '',
-    assignedCompletedAtFormatted: completedAt
-      ? new Date(completedAt).toLocaleDateString('en-CA', {
-          year: 'numeric',
-          month: 'short',
-          day: '2-digit'
-        })
-      : ''
+    assignedCompletedAtFormatted: completedAtFormatted,
+
+    // alias for the self-assigned mission partial
+    completedAtFormatted
   };
 });
 
@@ -1377,17 +1382,22 @@ const leaderSelfAssignedUnits = leaderSelfAssignedRowsRaw.map(u => {
     leaderNoteByUnitId.get(u._id.toString()) ||
     null;
 
+  const completedAtFormatted = completedAt
+    ? new Date(completedAt).toLocaleDateString('en-CA', {
+        year: 'numeric',
+        month: 'short',
+        day: '2-digit'
+      })
+    : '';
+
   return {
     ...u,
     assignedToId: u.assignedTo?._id || id,
     assignedInstructions: u.assignedTo?.instructions || '',
-    assignedCompletedAtFormatted: completedAt
-      ? new Date(completedAt).toLocaleDateString('en-CA', {
-          year: 'numeric',
-          month: 'short',
-          day: '2-digit'
-        })
-      : ''
+    assignedCompletedAtFormatted: completedAtFormatted,
+
+    // alias for the self-assigned mission partial
+    completedAtFormatted
   };
 });
 
