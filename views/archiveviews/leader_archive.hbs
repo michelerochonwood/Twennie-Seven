@@ -80,22 +80,16 @@
 {{/if}}
 
 {{!-- COMPLETION STATUS --}}
-{{#if completedByName}}
+{{#if isCompleted}}
   <p class="leader-archive-card-meta">
     <strong>completed by:</strong>
     {{completedByName}}{{#if completedWhenFormatted}}, {{completedWhenFormatted}}{{/if}}
   </p>
 {{else}}
-  {{#if completedWhenFormatted}}
-    <p class="leader-archive-card-meta">
-      <strong>completed:</strong> {{completedWhenFormatted}}
-    </p>
-  {{else}}
-    <div class="leader-archive-not-completed">
-      <span class="leader-archive-not-completed-dot"></span>
-      <strong>not completed</strong>
-    </div>
-  {{/if}}
+  <div class="leader-archive-not-completed">
+    <span class="leader-archive-not-completed-dot"></span>
+    <strong>not completed</strong>
+  </div>
 {{/if}}
 
 {{!-- SUMMARY --}}
@@ -209,18 +203,18 @@
   </p>
 {{/if}}
 
-                  {{#if completedByName}}
-                    <p class="leader-archive-card-meta">
-                      <strong>completed by:</strong>
-                      {{completedByName}}{{#if completedWhenFormatted}}, {{completedWhenFormatted}}{{/if}}
-                    </p>
-                  {{else}}
-                    {{#if completedWhenFormatted}}
-                      <p class="leader-archive-card-meta">
-                        <strong>completed:</strong> {{completedWhenFormatted}}
-                      </p>
-                    {{/if}}
-                  {{/if}}
+{{!-- COMPLETION STATUS --}}
+{{#if isCompleted}}
+  <p class="leader-archive-card-meta">
+    <strong>completed by:</strong>
+    {{completedByName}}{{#if completedWhenFormatted}}, {{completedWhenFormatted}}{{/if}}
+  </p>
+{{else}}
+  <div class="leader-archive-not-completed">
+    <span class="leader-archive-not-completed-dot"></span>
+    <strong>not completed</strong>
+  </div>
+{{/if}}
 
                   {{#if summarySnapshot}}
                     <div class="leader-archive-card-summary">

@@ -415,7 +415,9 @@ const archiveCard = {
   mainTopicSnapshot: mainTopic,
   summarySnapshot: summary,
   unitAuthorName,
-  completedByName: row.assignedToNameSnapshot || '',
+completedByName: row.assignedToNameSnapshot || '',
+isCompleted: !!row.assignedCompletedAtSnapshot,
+completedWhenFormatted: row.assignedCompletedAtSnapshot,
   completedWhenFormatted: row.assignedCompletedAtSnapshot
     ? new Date(row.assignedCompletedAtSnapshot).toLocaleDateString('en-CA', {
         year: 'numeric',
@@ -675,7 +677,9 @@ const archiveRows = rawArchiveRows.filter(row => {
         mainTopicSnapshot: mainTopic,
         summarySnapshot: summary,
         unitAuthorName,
-        completedByName: row.assignedToNameSnapshot || '',
+completedByName: row.assignedToNameSnapshot || '',
+isCompleted: !!row.assignedCompletedAtSnapshot,
+completedWhenFormatted: row.assignedCompletedAtSnapshot,
         completedWhenFormatted: row.assignedCompletedAtSnapshot
           ? new Date(row.assignedCompletedAtSnapshot).toLocaleDateString('en-CA', {
               year: 'numeric',
@@ -1008,7 +1012,9 @@ exports.renderMemberArchive = async (req, res) => {
         mainTopicSnapshot: mainTopic,
         summarySnapshot: summary,
         unitAuthorName,
-        completedByName: row.assignedToNameSnapshot || '',
+completedByName: row.assignedToNameSnapshot || '',
+isCompleted: !!row.assignedCompletedAtSnapshot,
+completedWhenFormatted: row.assignedCompletedAtSnapshot,
         completedWhenFormatted: row.assignedCompletedAtSnapshot
           ? new Date(row.assignedCompletedAtSnapshot).toLocaleDateString('en-CA', {
               year: 'numeric',
