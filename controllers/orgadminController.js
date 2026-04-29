@@ -1186,6 +1186,47 @@ const payload = await buildAdminPayload(orgId, adminId);
   }
 },
 
+async markAdminTabSeen(req, res) {
+  try {
+    const adminId = req.user?._id || req.user?.id;
+    if (!adminId) {
+      return res.status(401).json({ ok: false, error: 'unauthorized' });
+    }
+
+    const tabKey = req.body?.tab || req.body?.tabKey;
+    const currentCount = req.body?.count ?? req.body?.currentCount;
+
+    if (!tabKey) {
+      return res.status(400).json({ ok: false, error: 'missing tab key' });
+    }
+
+    let seenDoc = await DashboardSeen.findOne({
+      userId: adminId,
+      role: 'org_admin'
+    });
+
+    if (!seenDoc) {
+      seenDoc = new DashboardSeen({
+        userId: adminId,
+        role: 'org_admin',
+        tabs: new Map()
+      });
+    }
+
+    seenDoc.tabs.set(tabKey, {
+      count: Number(currentCount) || 0,
+      seenAt: new Date()
+    });
+
+    await seenDoc.save();
+
+    return res.json({ ok: true });
+  } catch (err) {
+    console.error('markAdminTabSeen error:', err);
+    return res.status(500).json({ ok: false });
+  }
+},
+
   // ADMIN: Approve a join request
   async approveJoinRequest(req, res) {
     const back = '/dashboard/leader/org-admin/my-organization';

@@ -51,36 +51,7 @@ router.post('/account/email-preferences', isAuthenticated, async (req, res, next
   }
 });
 
-router.post('/mark-seen', isAuthenticated, async (req, res) => {
-  try {
-    const rawId = req.session?.user?.id || req.user?._id;
-    if (!rawId) return res.status(401).json({ ok: false, reason: 'unauthorized' });
-
-    const { tab, count } = req.body || {};
-    if (!tab || typeof count !== 'number' || Number.isNaN(count)) {
-      return res.status(400).json({ ok: false, reason: 'bad payload' });
-    }
-
-    const userId = new mongoose.Types.ObjectId(String(rawId));
-    const update = {
-      $set: {
-        [`tabs.${tab}.count`]: count,
-        [`tabs.${tab}.seenAt`]: new Date()
-      }
-    };
-
-    const doc = await DashboardSeen.findOneAndUpdate(
-      { userId, role: 'member' },
-      update,
-      { new: true, upsert: true }
-    );
-
-    return res.json({ ok: true });
-  } catch (e) {
-    console.error('member mark-seen error:', e);
-    return res.status(500).json({ ok: false, reason: 'server' });
-  }
-});
+router.post('/mark-seen', isAuthenticated, memberDashboardController.markMemberTabSeen);
 
 module.exports = router;
 

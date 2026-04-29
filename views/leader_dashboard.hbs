@@ -320,6 +320,21 @@
          ONE TAB SCRIPT (handles leader + admin, safely scoped)
     ========================================================= --}}
     <script>
+
+      async function markSeenAdmin(tab, count) {
+  try {
+    await fetch('/dashboard/leader/org-admin/mark-seen', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-csrf-token': '{{csrfToken}}'
+      },
+      body: JSON.stringify({ tab, count: Number(count || 0) })
+    });
+  } catch (e) { /* no-op */ }
+} 
+
+
       (function () {
         function initTabs(scopeName) {
           const scopeRoot = document.querySelector(`[data-tabs-scope="${scopeName}"]`);
@@ -343,10 +358,17 @@
               const tabId = btn.dataset.tab;
               const href = btn.dataset.href;
 
-              if (scopeName === 'admin' && href) {
-                window.location.href = href;
-                return;
-              }
+if (scopeName === 'admin') {
+  const count = btn.dataset.count || 0;
+
+  // 🔥 FIX: mark seen BEFORE redirect
+  markSeenAdmin(tabId, count);
+
+  if (href) {
+    window.location.href = href;
+    return;
+  }
+}
 
               setActive(tabId);
             });

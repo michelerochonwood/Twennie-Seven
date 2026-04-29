@@ -796,7 +796,49 @@ recentTaggedUnits: memberTaggedUnits,
         errorMessage: 'Could not update account details. Please try again.'
       });
     }
+  },
+
+  markMemberTabSeen: async (req, res) => {
+  try {
+    const memberId = req.session?.user?.id || req.user?._id?.toString();
+
+    if (!memberId) {
+      return res.status(401).json({ ok: false, error: 'unauthorized' });
+    }
+
+    const tabKey = req.body?.tab || req.body?.tabKey;
+    const currentCount = req.body?.count ?? req.body?.currentCount;
+
+    if (!tabKey) {
+      return res.status(400).json({ ok: false, error: 'missing tab key' });
+    }
+
+    let seenDoc = await DashboardSeen.findOne({
+      userId: memberId,
+      role: 'member'
+    });
+
+    if (!seenDoc) {
+      seenDoc = new DashboardSeen({
+        userId: memberId,
+        role: 'member',
+        tabs: new Map()
+      });
+    }
+
+    seenDoc.tabs.set(tabKey, {
+      count: Number(currentCount) || 0,
+      seenAt: new Date()
+    });
+
+    await seenDoc.save();
+
+    return res.json({ ok: true });
+  } catch (e) {
+    console.error('markMemberTabSeen error:', e);
+    return res.status(500).json({ ok: false });
   }
+}
 
   };
 

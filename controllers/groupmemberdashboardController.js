@@ -1357,24 +1357,38 @@ updateAccountDetails: async (req, res) => {
 markGroupMemberTabSeen: async (req, res) => {
   try {
     const memberId = req.session?.user?.id;
-    if (!memberId) return res.status(401).json({ ok: false, error: 'unauthorized' });
+    if (!memberId) {
+      return res.status(401).json({ ok: false, error: 'unauthorized' });
+    }
 
-    const { tabKey, currentCount } = req.body || {};
-    if (!tabKey) return res.status(400).json({ ok: false, error: 'missing tabKey' });
+    const tabKey = req.body?.tab || req.body?.tabKey;
+    const currentCount = req.body?.count ?? req.body?.currentCount;
 
-    // Load/create doc
-let seenDoc = await DashboardSeen.findOne({ userId: memberId, role: 'group_member' });
-if (!seenDoc) {
-  seenDoc = new DashboardSeen({ userId: memberId, role: 'group_member', tabs: new Map() });
-}
+    if (!tabKey) {
+      return res.status(400).json({ ok: false, error: 'missing tab key' });
+    }
 
-// ✅ ensure tabs Map-like even if older docs stored it as an object
-ensureTabsMap(seenDoc);
+    let seenDoc = await DashboardSeen.findOne({
+      userId: memberId,
+      role: 'group_member'
+    });
 
-// Update this tab with the current count and timestamp
-const countNum = Number(currentCount) || 0;
-seenDoc.tabs.set(tabKey, { count: countNum, seenAt: new Date() });
-await seenDoc.save();
+    if (!seenDoc) {
+      seenDoc = new DashboardSeen({
+        userId: memberId,
+        role: 'group_member',
+        tabs: new Map()
+      });
+    }
+
+    ensureTabsMap(seenDoc);
+
+    seenDoc.tabs.set(tabKey, {
+      count: Number(currentCount) || 0,
+      seenAt: new Date()
+    });
+
+    await seenDoc.save();
 
     return res.json({ ok: true });
   } catch (e) {

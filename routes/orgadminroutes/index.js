@@ -39,5 +39,12 @@ router.post(
   orgadminController.rejectJoinRequest
 );
 
+router.post(
+  '/mark-seen',
+  ensureAuthenticated,
+  requireOrgAdmin,
+  orgadminController.markAdminTabSeen
+);
+
 module.exports = router;
 
