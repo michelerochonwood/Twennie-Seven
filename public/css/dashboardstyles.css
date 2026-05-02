@@ -6353,6 +6353,11 @@ box-shadow: none !important;
   height: 100%;
 }
 
+.leader-archive-badge-earned-name {
+  font-weight: 600;
+  color:#262262;
+}
+
 .leader-archive-card .leader-dashboard-wave-content {
   padding-top: calc(11.25px + 2.25rem);
 }
