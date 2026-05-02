@@ -1,78 +1,66 @@
 <!-- CSRF token for AJAX deletes -->
 <meta name="csrf-token" content="{{csrfToken}}">
 
-{{!-- =========================
-     1) SELF-ASSIGNED (NON-MISSION, NON-NUGGET)
-     expects: leaderSelfAssignedNonMissionUnits = [
-       {
-         _id,
-         title,
-         mainTopic,
-         unitType,
-         tagId,
-         assignedToId,
-         viewPath,
-         assignedCompletedAtFormatted,
-         assignedInstructions
-       }
-     ]
-     ========================= --}}
+{{!-- allowed in this tab only:
+     article, video, interview, exercise, template
+--}}
+
 <section class="tagged-units-section">
   <h2 class="tagged-units-title">my self-assigned library units</h2>
 
   <div class="tagged-units-grid">
     {{#if leaderSelfAssignedNonMissionUnits.length}}
       {{#each leaderSelfAssignedNonMissionUnits}}
-        <div class="tagged-unit-card leader-dashboard-wave-card {{unitType}}-dashboard-card">
-          <div class="leader-dashboard-wave-card-inner">
+        {{#if (or (eq unitType "article") (eq unitType "video") (eq unitType "interview") (eq unitType "exercise") (eq unitType "template"))}}
 
-            <div class="leader-dashboard-wave-header">
-              <img
-                src="/icons/unitsvg.svg"
-                alt=""
-                aria-hidden="true"
-                class="leader-dashboard-wave-image"
-              >
+          <div class="tagged-unit-card leader-dashboard-wave-card {{unitType}}-dashboard-card">
+            <div class="leader-dashboard-wave-card-inner">
+
+              <div class="leader-dashboard-wave-header">
+                <img src="/icons/unitsvg.svg" alt="" aria-hidden="true" class="leader-dashboard-wave-image">
+              </div>
+
+              <div class="leader-dashboard-wave-content">
+                <div class="tagged-unit-icon">
+                  <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
+                </div>
+
+                <div class="tagged-unit-info">
+                  <h3 class="tagged-unit-title">{{title}}</h3>
+
+                  {{#if mainTopic}}
+                    <p class="tagged-unit-topic">{{mainTopic}}</p>
+                  {{/if}}
+
+                  {{#if assignedCompletedAtFormatted}}
+                    <p class="leader-assigned-status">
+                      ✅ completed <span class="muted">({{assignedCompletedAtFormatted}})</span>
+                    </p>
+                  {{else}}
+                    <p class="leader-assigned-status">⏳ pending</p>
+                  {{/if}}
+
+                  {{#if assignedInstructions}}
+                    <p class="leader-assigned-instructions"><em>{{assignedInstructions}}</em></p>
+                  {{/if}}
+                </div>
+
+                <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
+                  <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
+
+                  <button
+                    class="tagged-unit-link"
+                    type="button"
+                    onclick="archiveUnit('{{tagId}}','{{_id}}','{{unitType}}')">
+                    move to archive
+                  </button>
+                </div>
+              </div>
+
             </div>
-
-            <div class="leader-dashboard-wave-content">
-              <div class="tagged-unit-icon">
-                <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
-              </div>
-
-              <div class="tagged-unit-info">
-                <h3 class="tagged-unit-title">{{title}}</h3>
-                {{#if mainTopic}}
-                  <p class="tagged-unit-topic">{{mainTopic}}</p>
-                {{/if}}
-
-                {{#if assignedCompletedAtFormatted}}
-                  <p class="leader-assigned-status">
-                    ✅ completed <span class="muted">({{assignedCompletedAtFormatted}})</span>
-                  </p>
-                {{else}}
-                  <p class="leader-assigned-status">⏳ pending</p>
-                {{/if}}
-
-                {{#if assignedInstructions}}
-                  <p class="leader-assigned-instructions"><em>{{assignedInstructions}}</em></p>
-                {{/if}}
-              </div>
-
-              <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
-                <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
-
-<button
-  class="tagged-unit-link"
-  type="button"
-  onclick="archiveUnit('{{tagId}}','{{_id}}','{{unitType}}')">
-  move to archive
-</button>
-              </div>
-            </div>
-
           </div>
-        </div>
+
+        {{/if}}
       {{/each}}
     {{else}}
       <p class="tagged-no-units">You have no self-assigned library units.</p>
@@ -82,71 +70,66 @@
 
 <div class="tagged-section-divider" aria-hidden="true"></div>
 
-{{!-- =========================
-     2) ASSIGNED TO MY GROUP (NON-MISSION, NON-NUGGET)
-     expects: leaderAssignedNonMissionUnits = [...]
-     ========================= --}}
 <section class="leader-assigned-units-section" style="margin-top:20px">
   <h2 class="tagged-units-title">units I have assigned to my group</h2>
 
   <div class="tagged-units-grid">
     {{#if leaderAssignedNonMissionUnits.length}}
       {{#each leaderAssignedNonMissionUnits}}
-        <div class="leader-assigned-unit-card leader-dashboard-wave-card {{unitType}}-dashboard-card">
-          <div class="leader-dashboard-wave-card-inner">
+        {{#if (or (eq unitType "article") (eq unitType "video") (eq unitType "interview") (eq unitType "exercise") (eq unitType "template"))}}
 
-            <div class="leader-dashboard-wave-header">
-              <img
-                src="/icons/unitsvg.svg"
-                alt=""
-                aria-hidden="true"
-                class="leader-dashboard-wave-image"
-              >
-            </div>
+          <div class="leader-assigned-unit-card leader-dashboard-wave-card {{unitType}}-dashboard-card">
+            <div class="leader-dashboard-wave-card-inner">
 
-            <div class="leader-dashboard-wave-content">
-              <div class="tagged-unit-icon">
-                <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
+              <div class="leader-dashboard-wave-header">
+                <img src="/icons/unitsvg.svg" alt="" aria-hidden="true" class="leader-dashboard-wave-image">
               </div>
 
-              <div class="tagged-unit-info">
-                <h3 class="tagged-unit-title">{{title}}</h3>
+              <div class="leader-dashboard-wave-content">
+                <div class="tagged-unit-icon">
+                  <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
+                </div>
 
-                {{#if mainTopic}}
-                  <p class="tagged-unit-topic">{{mainTopic}}</p>
-                {{/if}}
+                <div class="tagged-unit-info">
+                  <h3 class="tagged-unit-title">{{title}}</h3>
 
-                <p class="leader-assigned-to">
-                  assigned to: {{assignedToName}}
-                </p>
+                  {{#if mainTopic}}
+                    <p class="tagged-unit-topic">{{mainTopic}}</p>
+                  {{/if}}
 
-                {{#if assignedCompletedAtFormatted}}
-                  <p class="leader-assigned-status">
-                    ✅ completed <span class="muted">({{assignedCompletedAtFormatted}})</span>
+                  <p class="leader-assigned-to">
+                    assigned to: {{assignedToName}}
                   </p>
-                {{else}}
-                  <p class="leader-assigned-status">⏳ pending</p>
-                {{/if}}
 
-                {{#if assignedInstructions}}
-                  <p class="leader-assigned-instructions"><em>{{assignedInstructions}}</em></p>
-                {{/if}}
+                  {{#if assignedCompletedAtFormatted}}
+                    <p class="leader-assigned-status">
+                      ✅ completed <span class="muted">({{assignedCompletedAtFormatted}})</span>
+                    </p>
+                  {{else}}
+                    <p class="leader-assigned-status">⏳ pending</p>
+                  {{/if}}
+
+                  {{#if assignedInstructions}}
+                    <p class="leader-assigned-instructions"><em>{{assignedInstructions}}</em></p>
+                  {{/if}}
+                </div>
+
+                <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
+                  <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
+
+                  <button
+                    class="tagged-unit-link"
+                    type="button"
+                    onclick="archiveUnit('{{tagId}}','{{_id}}','{{unitType}}','{{assignedToId}}')">
+                    move to archive
+                  </button>
+                </div>
               </div>
 
-              <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
-                <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
-
-<button
-  class="tagged-unit-link"
-  type="button"
-  onclick="archiveUnit('{{tagId}}','{{_id}}','{{unitType}}','{{assignedToId}}')">
-  move to archive
-</button>
-              </div>
             </div>
-
           </div>
-        </div>
+
+        {{/if}}
       {{/each}}
     {{else}}
       <p class="tagged-no-units">You have no assigned units.</p>
@@ -156,117 +139,81 @@
 
 <div class="tagged-section-divider" aria-hidden="true"></div>
 
-
-
-
-{{!-- =========================
-     4) ORG-SUGGESTED UNITS (ADMIN → LEADER)
-     expects: leaderSuggestedUnits = [{
-       _id,
-       unitType,
-       unitTitle,
-       main_topic,
-       note,
-       suggestedByName,
-       suggestedAtFormatted,
-       viewPath,
-       isAcknowledged,
-       acknowledgedAtFormatted
-     }]
-     ========================= --}}
 <section class="leader-suggested-units-section" style="margin-top:20px">
   <h2 class="tagged-units-title">suggested to me by my organization</h2>
 
   <div class="tagged-units-grid">
     {{#if leaderSuggestedUnits.length}}
       {{#each leaderSuggestedUnits}}
+        {{#if (or (eq unitType "article") (eq unitType "video") (eq unitType "interview") (eq unitType "exercise") (eq unitType "template"))}}
 
-        {{!-- Skip missions (handled in mission tab) --}}
-        {{#unless (eq unitType "mission")}}
+          <div class="leader-assigned-unit-card leader-suggested-unit-card leader-dashboard-wave-card {{unitType}}-dashboard-card">
+            <div class="leader-dashboard-wave-card-inner">
 
-        <div class="leader-assigned-unit-card leader-suggested-unit-card leader-dashboard-wave-card {{unitType}}-dashboard-card">
-          <div class="leader-dashboard-wave-card-inner">
-
-            <!-- Dynamic wave -->
-            <div class="leader-dashboard-wave-header">
-              <img
-                src="
-                  {{#if (eq unitType 'nugget')}}
-                    /icons/goldsvg.svg
-                  {{else}}
-                    /icons/unitsvg.svg
-                  {{/if}}
-                "
-                alt=""
-                aria-hidden="true"
-                class="leader-dashboard-wave-image"
-              >
-            </div>
-
-            <div class="leader-dashboard-wave-content">
-
-              <div class="tagged-unit-icon">
-                <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
+              <div class="leader-dashboard-wave-header">
+                <img src="/icons/unitsvg.svg" alt="" aria-hidden="true" class="leader-dashboard-wave-image">
               </div>
 
-              <div class="tagged-unit-info">
-                <h3 class="tagged-unit-title">{{unitTitle}}</h3>
+              <div class="leader-dashboard-wave-content">
+                <div class="tagged-unit-icon">
+                  <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
+                </div>
 
-                {{#if main_topic}}
-                  <p class="tagged-unit-topic">{{main_topic}}</p>
-                {{/if}}
+                <div class="tagged-unit-info">
+                  <h3 class="tagged-unit-title">{{unitTitle}}</h3>
 
-                <p class="leader-assigned-to">
-                  suggested by: {{suggestedByName}}
-                  {{#if suggestedAtFormatted}}
-                    <span class="muted">({{suggestedAtFormatted}})</span>
+                  {{#if main_topic}}
+                    <p class="tagged-unit-topic">{{main_topic}}</p>
                   {{/if}}
-                </p>
 
-                {{#if note}}
-                  <p class="leader-assigned-instructions">
-                    <em>{{note}}</em>
+                  <p class="leader-assigned-to">
+                    suggested by: {{suggestedByName}}
+                    {{#if suggestedAtFormatted}}
+                      <span class="muted">({{suggestedAtFormatted}})</span>
+                    {{/if}}
                   </p>
-                {{/if}}
-              </div>
 
-              <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
+                  {{#if note}}
+                    <p class="leader-assigned-instructions">
+                      <em>{{note}}</em>
+                    </p>
+                  {{/if}}
+                </div>
 
-                {{#if viewPath}}
-                  <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
-                {{else}}
-                  <span class="tagged-unit-link muted">view unavailable</span>
-                {{/if}}
+                <div class="tagged-unit-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;">
+                  {{#if viewPath}}
+                    <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
+                  {{else}}
+                    <span class="tagged-unit-link muted">view unavailable</span>
+                  {{/if}}
 
-                {{#if isAcknowledged}}
-                  <span class="tagged-unit-link muted" aria-disabled="true">
-                    seen{{#if acknowledgedAtFormatted}} <span class="muted">({{acknowledgedAtFormatted}})</span>{{/if}}
-                  </span>
-                {{else}}
-                  <button
-                    class="tagged-unit-link js-thanks-btn"
-                    type="button"
-                    data-suggestion-id="{{_id}}">
-                    thanks!
+                  {{#if isAcknowledged}}
+                    <span class="tagged-unit-link muted" aria-disabled="true">
+                      seen{{#if acknowledgedAtFormatted}} <span class="muted">({{acknowledgedAtFormatted}})</span>{{/if}}
+                    </span>
+                  {{else}}
+                    <button
+                      class="tagged-unit-link js-thanks-btn"
+                      type="button"
+                      data-suggestion-id="{{_id}}">
+                      thanks!
+                    </button>
+
+                    <div class="multi-record-item muted js-thanks-msg" style="display:none; text-align:center;">
+                      your thanks have been sent to the admin!
+                    </div>
+                  {{/if}}
+
+                  <button class="tagged-unit-link muted" type="button" disabled>
+                    dismiss
                   </button>
-
-                  <div class="multi-record-item muted js-thanks-msg" style="display:none; text-align:center;">
-                    your thanks have been sent to the admin!
-                  </div>
-                {{/if}}
-
-                <button class="tagged-unit-link muted" type="button" disabled>
-                  dismiss
-                </button>
-
+                </div>
               </div>
+
             </div>
-
           </div>
-        </div>
 
-        {{/unless}}
-
+        {{/if}}
       {{/each}}
     {{else}}
       <p class="tagged-no-units">
@@ -276,12 +223,12 @@
   </div>
 </section>
 
-
 <div class="leader-archive-button-wrap">
   <a href="/archive/leader" class="leader-archive-button">
     view learning archive
   </a>
 </div>
+
 <script>
   function getCsrfToken() {
     return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
@@ -318,51 +265,6 @@
     }
   }
 
-  async function removeTagFromUnit(tagId, unitId, unitType) {
-    if (!confirm("Remove this tag from the unit?")) return;
-    try {
-      const res = await fetch(`/tags/remove/${tagId}/${unitId}/${unitType}`, {
-        method: 'DELETE',
-        headers: { 'X-CSRF-Token': getCsrfToken() }
-      });
-      const data = await res.json().catch(() => ({}));
-      if (res.ok) location.reload(); else alert(data.message || 'Failed to remove tag.');
-    } catch (err) {
-      console.error('removeTagFromUnit error:', err);
-      alert('An error occurred while removing the tag.');
-    }
-  }
-
-  async function unassignMember(tagId, memberId) {
-    if (!confirm("Unassign this member from the tag?")) return;
-    try {
-      const res = await fetch(`/tags/${tagId}/assigned/${memberId}`, {
-        method: 'DELETE',
-        headers: { 'X-CSRF-Token': getCsrfToken() }
-      });
-      const data = await res.json().catch(() => ({}));
-      if (res.ok) location.reload(); else alert(data.message || 'Could not unassign.');
-    } catch (err) {
-      console.error('unassignMember error:', err);
-      alert('An error occurred while unassigning.');
-    }
-  }
-
-  async function deleteTag(tagId) {
-    if (!confirm("Delete this tag entirely? This removes it from all units and all assignees.")) return;
-    try {
-      const res = await fetch(`/tags/${tagId}`, {
-        method: 'DELETE',
-        headers: { 'X-CSRF-Token': getCsrfToken() }
-      });
-      const data = await res.json().catch(() => ({}));
-      if (res.ok) location.reload(); else alert(data.message || 'Failed to delete tag.');
-    } catch (err) {
-      console.error('deleteTag error:', err);
-      alert('An error occurred while deleting the tag.');
-    }
-  }
-
   async function sendThanksForSuggestion(buttonEl) {
     const id = buttonEl?.dataset?.suggestionId;
     if (!id) return;
@@ -379,6 +281,7 @@
 
     try {
       const csrf = getCsrfToken();
+
       if (!csrf) {
         buttonEl.disabled = false;
         buttonEl.textContent = originalText;
@@ -426,8 +329,6 @@
     sendThanksForSuggestion(btn);
   });
 </script>
-
-
 
 
 
