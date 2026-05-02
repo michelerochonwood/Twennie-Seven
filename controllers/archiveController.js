@@ -19,7 +19,7 @@ const missionBadgeMap = {
   internal_improvement: 'improvebadge',
   culture_play: 'culturebadge',
   client_experience: 'clientxbadge',
-  community: 'communitybadge',
+  community: 'communiitybadge',
   administrative: 'adminbadge',
   other: 'roguebadge',
 };
@@ -404,16 +404,27 @@ let earnedBadge = null;
           summary = unitDoc.summary || '';
           viewPath = `/unitviews/nuggets/view/${unitDoc._id}`;
         }
-      } else if (row.unitType === 'mission') {
-        const Mission = require('../models/unit_models/mission');
-        unitDoc = await Mission.findById(row.unitId).lean();
-        if (unitDoc) {
-          title = unitDoc.mission_title || title;
-          mainTopic = unitDoc.main_topic || mainTopic;
-          summary = unitDoc.summary || '';
-          viewPath = `/unitviews/missions/view/${unitDoc._id}`;
-        }
-      }
+} else if (row.unitType === 'mission') {
+  const Mission = require('../models/unit_models/mission');
+  unitDoc = await Mission.findById(row.unitId).lean();
+
+  if (unitDoc) {
+    title = unitDoc.mission_title || title;
+    mainTopic = unitDoc.main_topic || mainTopic;
+    summary = unitDoc.summary || '';
+    viewPath = `/unitviews/missions/view/${unitDoc._id}`;
+
+    // ✅ THIS IS THE MISSING PIECE
+    if (row.assignedCompletedAtSnapshot) {
+      const category = unitDoc.category || 'other';
+
+      earnedBadge = {
+        badgeName: unitDoc.badge_name || '',
+        badgeImagePath: getMissionBadgePath(category)
+      };
+    }
+  }
+}
 
 if (unitDoc?.author?.id || unitDoc?.author) {
   const authorId = unitDoc.author.id || unitDoc.author;
