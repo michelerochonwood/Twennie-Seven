@@ -2827,7 +2827,7 @@ line-height: 1.5;
 }
 
 .topic-item h3 {
-  font-size: 0.8em;
+  font-size: 1rem;
   font-weight: 700;
   /* flex-grow: 1; */
 }
