@@ -2794,23 +2794,26 @@ line-height: 1.5;
   overflow: hidden;
 }
 
-/* SIGNAL APPEARS ONLY WHEN CLASS IS PRESENT */
+/* SIGNAL — TOP RIGHT, SMALL, HALF OFF CARD */
 .topic-item.has-topic-signal::after {
   content: "";
   position: absolute;
-  right: -30px;
-  bottom: -30px;
-  width: 120px;
-  height: 120px;
+
+  top: -12px;     /* pushes it slightly outside */
+  right: -12px;   /* pushes it slightly outside */
+
+  width: 42px;    /* much smaller */
+  height: 42px;
 
   background-image: url('/icons/radio wave svg.svg');
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
 
-  opacity: 0.14;   /* ← key tuning knob */
+  opacity: 1;     /* fully visible now */
   pointer-events: none;
-  z-index: 0;
+
+  z-index: 2;     /* ABOVE the card content */
 }
 
 /* keep text above the signal */
