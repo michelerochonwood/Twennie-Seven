@@ -2785,6 +2785,48 @@ line-height: 1.5;
   display: block;
 }
 
+/* ===============================
+   TOPIC SIGNAL (RADIO WAVE)
+   =============================== */
+
+.topic-item {
+  position: relative;
+  overflow: hidden;
+}
+
+/* SIGNAL APPEARS ONLY WHEN CLASS IS PRESENT */
+.topic-item.has-topic-signal::after {
+  content: "";
+  position: absolute;
+  right: -30px;
+  bottom: -30px;
+  width: 120px;
+  height: 120px;
+
+  background-image: url('/icons/radio wave svg.svg');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+
+  opacity: 0.14;   /* ← key tuning knob */
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* keep text above the signal */
+.topic-item.has-topic-signal h3,
+.topic-item.has-topic-signal p {
+  position: relative;
+  z-index: 1;
+}
+
+/* subtle interaction */
+.topic-item.has-topic-signal:hover::after {
+  transform: scale(1.08);
+  opacity: 0.2;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
 
 /* Grid Layout for Topics */
 
