@@ -2830,6 +2830,15 @@ line-height: 1.5;
   transition: transform 0.25s ease, opacity 0.25s ease;
 }
 
+.topic-item.has-topic-signal:hover::after {
+  transform: translateY(-2px) scale(1.05);
+  transition: transform 0.2s ease;
+}
+
+.topic-item.has-topic-signal::after {
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
 
 /* Grid Layout for Topics */
 
