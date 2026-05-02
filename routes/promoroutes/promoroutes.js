@@ -73,7 +73,7 @@ router.get('/topics', (req, res) => {
 
   const topicSignals = [
     "Conducting Market Research",
-    "Win Strategy",
+    "Proposal Strategy",
     "Leadership in Technical Consulting",
     "Managing Scope So It Doesnt Manage You"
   ];
