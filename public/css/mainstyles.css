@@ -2744,10 +2744,7 @@ line-height: 1.5;
   border-radius: 0.25rem;
 }
 
-/* Active tab */
-.topics-tab.active {
-  background-color: #dc176a;
-}
+
 
 /* Arrow under active tab */
 .topics-tab .tab-arrow {
@@ -2837,6 +2834,21 @@ line-height: 1.5;
   color: #ccc;
   text-align: left;
   flex-grow: 1; /* ✅ Pushes button to the bottom */
+}
+
+.topic-item {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.topic-item:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+}
+
+.topics-tab.active {
+  background-color: #dc176a;
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
 }
 
 .single-topic-container {
