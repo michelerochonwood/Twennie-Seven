@@ -42,6 +42,11 @@
           <div class="leader-archive-grid">
             {{#each archivedItems}}
               <article class="leader-archive-card tagged-unit-card leader-dashboard-wave-card">
+                {{#if hasEarnedBadge}}
+  <div class="leader-archive-earned-badge">
+    <img src="{{badgeImagePath}}" alt="{{#if badgeName}}{{badgeName}}{{else}}earned badge{{/if}}">
+  </div>
+{{/if}}
                 <div class="leader-archive-card-inner leader-dashboard-wave-card-inner">
                   <div class="leader-dashboard-wave-header">
                     <img
@@ -175,6 +180,11 @@
       <div class="leader-archive-grid">
         {{#each archivedMissions}}
           <article class="leader-archive-card tagged-unit-card leader-dashboard-wave-card">
+            {{#if hasEarnedBadge}}
+  <div class="leader-archive-earned-badge">
+    <img src="{{badgeImagePath}}" alt="{{#if badgeName}}{{badgeName}}{{else}}earned badge{{/if}}">
+  </div>
+{{/if}}
             <div class="leader-archive-card-inner leader-dashboard-wave-card-inner">
               <div class="leader-dashboard-wave-header">
                 <img

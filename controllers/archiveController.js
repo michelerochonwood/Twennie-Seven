@@ -12,6 +12,49 @@ const AssignPromptSet = require('../models/prompt_models/assignpromptset');
 const PromptSet = require('../models/unit_models/promptset');
 const PromptSetRegistration = require('../models/prompt_models/promptsetregistration');
 
+const missionBadgeMap = {
+  learning: 'learningbadge',
+  research: 'researchbadge',
+  business_development: 'bdbadge',
+  internal_improvement: 'improvebadge',
+  culture_play: 'culturebadge',
+  client_experience: 'clientxbadge',
+  community: 'communitybadge',
+  administrative: 'adminbadge',
+  other: 'roguebadge',
+};
+
+function getMissionBadgePath(category) {
+  const key = category || 'other';
+  const filename = missionBadgeMap[key] || missionBadgeMap.other;
+  return `/badges/missions/${filename}.png`;
+}
+
+function normalizePromptSetBadge(earnedBadge) {
+  if (!earnedBadge) return null;
+
+  if (typeof earnedBadge === 'string') {
+    return {
+      badgeName: earnedBadge,
+      badgeImagePath: ''
+    };
+  }
+
+  return {
+    badgeName:
+      earnedBadge.badgeName ||
+      earnedBadge.name ||
+      earnedBadge.title ||
+      '',
+    badgeImagePath:
+      earnedBadge.badgeImagePath ||
+      earnedBadge.imagePath ||
+      earnedBadge.image ||
+      earnedBadge.badgeImage ||
+      ''
+  };
+}
+
 
 const topicSummaryMap = new Map(
   (topicsData.topics || []).map(t => [t.title, t.longSummary])
@@ -287,6 +330,7 @@ let unitAuthorName = '';
 let viewPath = '';
 let notesPreview = '';
 let archiveNoteInstruction = '';
+let earnedBadge = null;
 
       if (row.unitType === 'article') {
         const Article = require('../models/unit_models/article');
@@ -390,6 +434,10 @@ if (row.unitType === 'promptset' && row.assignedToMember && row.unitId) {
     completion?.notes?.[19] ||
     '';
 
+  if (row.assignedCompletedAtSnapshot && completion?.earnedBadge) {
+    earnedBadge = normalizePromptSetBadge(completion.earnedBadge);
+  }
+
   archiveNoteInstruction = 'View all 20 notes in the completed prompt sets report.';
 
 } else if (row.unitType === 'nugget') {
@@ -415,9 +463,14 @@ const archiveCard = {
   mainTopicSnapshot: mainTopic,
   summarySnapshot: summary,
   unitAuthorName,
-completedByName: row.assignedToNameSnapshot || '',
-isCompleted: !!row.assignedCompletedAtSnapshot,
-completedWhenFormatted: row.assignedCompletedAtSnapshot,
+
+  earnedBadge,
+  hasEarnedBadge: !!(row.assignedCompletedAtSnapshot && earnedBadge?.badgeImagePath),
+  badgeName: earnedBadge?.badgeName || '',
+  badgeImagePath: earnedBadge?.badgeImagePath || '',
+
+  completedByName: row.assignedToNameSnapshot || '',
+  isCompleted: !!row.assignedCompletedAtSnapshot,
   completedWhenFormatted: row.assignedCompletedAtSnapshot
     ? new Date(row.assignedCompletedAtSnapshot).toLocaleDateString('en-CA', {
         year: 'numeric',
@@ -621,17 +674,30 @@ const archiveRows = rawArchiveRows.filter(row => {
           viewPath = `/unitviews/nuggets/view/${unitDoc._id}`;
         }
 
-      } else if (row.unitType === 'mission') {
-        const Mission = require('../models/unit_models/mission');
-        unitDoc = await Mission.findById(row.unitId).lean();
+} else if (row.unitType === 'mission') {
+  const Mission = require('../models/unit_models/mission');
+  unitDoc = await Mission.findById(row.unitId).lean();
 
-        if (unitDoc) {
-          title = unitDoc.mission_title || title;
-          mainTopic = unitDoc.main_topic || mainTopic;
-          summary = unitDoc.summary || '';
-          viewPath = `/unitviews/missions/view/${unitDoc._id}`;
-        }
-      }
+  if (unitDoc) {
+    title = unitDoc.mission_title || title;
+    mainTopic = unitDoc.main_topic || mainTopic;
+    summary = unitDoc.summary || '';
+    viewPath = `/unitviews/missions/view/${unitDoc._id}`;
+
+    if (row.assignedCompletedAtSnapshot) {
+      const category = unitDoc.category || 'other';
+
+      earnedBadge = {
+        badgeName: unitDoc.badge_name || '',
+        badgeImagePath:
+          unitDoc.badgeImagePath ||
+          unitDoc.badge_image ||
+          unitDoc.badgeImage ||
+          getMissionBadgePath(category)
+      };
+    }
+  }
+}
 
       if (unitDoc?.author?.id || unitDoc?.author) {
         const authorId = unitDoc.author.id || unitDoc.author;
@@ -679,8 +745,8 @@ const archiveRows = rawArchiveRows.filter(row => {
         unitAuthorName,
 completedByName: row.assignedToNameSnapshot || '',
 isCompleted: !!row.assignedCompletedAtSnapshot,
-completedWhenFormatted: row.assignedCompletedAtSnapshot,
-        completedWhenFormatted: row.assignedCompletedAtSnapshot
+completedWhenFormatted: row.assignedCompletedAtSnapshot
+
           ? new Date(row.assignedCompletedAtSnapshot).toLocaleDateString('en-CA', {
               year: 'numeric',
               month: 'short',
