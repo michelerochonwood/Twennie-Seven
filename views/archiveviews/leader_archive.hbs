@@ -80,17 +80,17 @@
                           {{completedByName}}{{#if completedWhenFormatted}}, {{completedWhenFormatted}}{{/if}}
                         </p>
 
-{{#if badgeImagePath}}
+{{#if this.badgeImagePath}}
   <div class="leader-archive-badge-earned-block">
     <img
-      src="{{badgeImagePath}}"
-      alt="{{#if badgeName}}{{badgeName}}{{else}}mission badge{{/if}}"
+      src="{{this.badgeImagePath}}"
+      alt="{{#if this.badgeName}}{{this.badgeName}}{{else}}mission badge{{/if}}"
       class="leader-archive-badge-earned-image"
     >
     <div class="leader-archive-badge-earned-copy">
       <span class="leader-archive-badge-earned-label">badge earned</span>
       <span class="leader-archive-badge-earned-name">
-        {{#if badgeName}}{{badgeName}}{{else}}mission badge{{/if}}
+        {{#if this.badgeName}}{{this.badgeName}}{{else}}mission badge{{/if}}
       </span>
     </div>
   </div>
