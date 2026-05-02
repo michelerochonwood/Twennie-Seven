@@ -199,6 +199,7 @@
                       <div class="leader-archive-badge-earned-copy">
                         <span class="leader-archive-badge-earned-label">badge earned</span>
                         <span class="leader-archive-badge-earned-name">administrative mission badge</span>
+                        
                       </div>
                     {{else if (eq category "business_development")}}
                       <img src="/badges/missions/bdbadge.png" alt="business development mission badge" class="leader-archive-badge-earned-image">
@@ -281,6 +282,10 @@
                 {{#if viewPath}}
                   <a href="{{viewPath}}" class="tagged-unit-link">view mission</a>
                 {{/if}}
+
+                <p style="color:red; font-size:12px;">
+  category: {{category}} | categorySnapshot: {{categorySnapshot}} | unitType: {{unitType}}
+</p>
               </div>
             </div>
           </div>
