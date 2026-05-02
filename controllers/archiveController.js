@@ -588,9 +588,10 @@ const archiveRows = rawArchiveRows.filter(row => {
       let mainTopic = 'No Topic Assigned';
       let summary = '';
       let unitAuthorName = '';
-      let viewPath = '';
-      let notesPreview = '';
-      let archiveNoteInstruction = '';
+let viewPath = '';
+let notesPreview = '';
+let archiveNoteInstruction = '';
+let earnedBadge = null;
 
       if (row.unitType === 'article') {
         const Article = require('../models/unit_models/article');
@@ -764,6 +765,10 @@ completedWhenFormatted: row.assignedCompletedAtSnapshot
               day: '2-digit'
             })
           : '',
+          earnedBadge,
+hasEarnedBadge: !!earnedBadge?.badgeImagePath,
+badgeName: earnedBadge?.badgeName || '',
+badgeImagePath: earnedBadge?.badgeImagePath || '',
         archivedAtFormatted: row.archivedAt
           ? new Date(row.archivedAt).toLocaleDateString('en-CA', {
               year: 'numeric',

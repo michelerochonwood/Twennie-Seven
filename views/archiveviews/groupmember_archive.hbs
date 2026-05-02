@@ -3,11 +3,7 @@
 <section class="leader-archive-page">
   <header class="leader-archive-header">
     <div class="leader-archive-hero-image-wrap">
-      <img
-        src="/images/archive bluey.png"
-        alt="Archive Bluey"
-        class="leader-archive-hero-image"
-      >
+      <img src="/images/archive bluey.png" alt="Archive Bluey" class="leader-archive-hero-image">
     </div>
 
     <h1 class="leader-archive-title">learning archive</h1>
@@ -43,20 +39,14 @@
             {{#each archivedItems}}
               <article class="leader-archive-card tagged-unit-card leader-dashboard-wave-card">
                 <div class="leader-archive-card-inner leader-dashboard-wave-card-inner">
-
                   <div class="leader-dashboard-wave-header">
-                    <img
-                      src="/icons/{{#if (eq unitType 'nugget')}}goldsvg.svg{{else}}{{#if (eq unitType 'mission')}}onyxsvg.svg{{else}}unitsvg.svg{{/if}}{{/if}}"
-                      alt=""
-                      aria-hidden="true"
-                      class="leader-dashboard-wave-image"
-                    >
+                    <img src="/icons/unitsvg.svg" alt="" aria-hidden="true" class="leader-dashboard-wave-image">
                   </div>
 
                   <div class="leader-dashboard-wave-content">
                     <div class="tagged-unit-icon leader-archive-unit-icon">
                       <img
-                        src="/icons/{{#if (eq unitType 'article')}}article.svg{{else}}{{#if (eq unitType 'video')}}video.svg{{else}}{{#if (eq unitType 'interview')}}interview.svg{{else}}{{#if (eq unitType 'promptset')}}promptset.svg{{else}}{{#if (eq unitType 'exercise')}}exercise.svg{{else}}{{#if (eq unitType 'template')}}template.svg{{else}}{{#if (eq unitType 'nugget')}}nuggeticon.svg{{else}}{{#if (eq unitType 'mission')}}mission.svg{{else}}article.svg{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}"
+                        src="/icons/{{#if (eq unitType 'article')}}article.svg{{else}}{{#if (eq unitType 'video')}}video.svg{{else}}{{#if (eq unitType 'interview')}}interview.svg{{else}}{{#if (eq unitType 'promptset')}}promptset.svg{{else}}{{#if (eq unitType 'exercise')}}exercise.svg{{else}}{{#if (eq unitType 'template')}}template.svg{{else}}article.svg{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}"
                         alt="{{unitType}} icon"
                       >
                     </div>
@@ -70,18 +60,34 @@
                         </p>
                       {{/if}}
 
-{{!-- COMPLETION STATUS --}}
-{{#if isCompleted}}
-  <p class="leader-archive-card-meta">
-    <strong>completed by:</strong>
-    {{completedByName}}{{#if completedWhenFormatted}}, {{completedWhenFormatted}}{{/if}}
-  </p>
-{{else}}
-  <div class="leader-archive-not-completed">
-    <span class="leader-archive-not-completed-dot"></span>
-    <strong>not completed</strong>
-  </div>
-{{/if}}
+                      {{#if isCompleted}}
+                        <p class="leader-archive-card-meta">
+                          <strong>completed by:</strong>
+                          {{completedByName}}{{#if completedWhenFormatted}}, {{completedWhenFormatted}}{{/if}}
+                        </p>
+
+                        {{#if this.badgeImagePath}}
+                          <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin:10px 0;">
+                            <img
+                              src="{{this.badgeImagePath}}"
+                              alt="{{#if this.badgeName}}{{this.badgeName}}{{else}}earned badge{{/if}}"
+                              style="width:85px; height:85px; object-fit:contain; flex-shrink:0;"
+                            >
+
+                            <div style="display:flex; flex-direction:column; align-items:flex-start; line-height:1.2;">
+                              <span style="font-size:0.6rem; font-weight:800; color:#dc176a;">badge earned</span>
+                              <span style="font-size:0.7rem; font-weight:800; color:#262262;">
+                                {{#if this.badgeName}}{{this.badgeName}}{{else}}badge earned{{/if}}
+                              </span>
+                            </div>
+                          </div>
+                        {{/if}}
+                      {{else}}
+                        <div class="leader-archive-not-completed">
+                          <span class="leader-archive-not-completed-dot"></span>
+                          <strong>not completed</strong>
+                        </div>
+                      {{/if}}
 
                       {{#if summarySnapshot}}
                         <div class="leader-archive-card-summary">
@@ -104,34 +110,13 @@
 
                       {{#if archiveNoteInstruction}}
                         {{#if (eq unitType "promptset")}}
-                          <div style="width: 100%; display: flex; justify-content: center; margin: 1rem 0 0 0;">
-                            <a
-                              href="/reports/mylearningnotes"
-                              style="
-                                display: inline-block;
-                                width: auto;
-                                max-width: 85%;
-                                height: auto;
-                                min-height: 0;
-                                padding: 0.65rem 1rem;
-                                border-radius: 999px;
-                                background-color: #262262;
-                                color: #ffffff;
-                                font-family: Figtree, sans-serif;
-                                font-size: 0.72rem;
-                                font-weight: 800;
-                                line-height: 1.25;
-                                text-align: center;
-                                text-decoration: none;
-                                box-shadow: none;
-                                transform: none;
-                              "
-                            >
+                          <div class="archive-prompt-report-cta-wrap">
+                            <a href="/reports/mylearningnotes" class="archive-prompt-report-cta">
                               {{archiveNoteInstruction}}
                             </a>
                           </div>
                         {{else}}
-                          <div style="width: 100%; text-align: center; margin-top: 1rem;">
+                          <div class="leader-archive-note-instruction-block">
                             <strong>{{archiveNoteInstruction}}</strong>
                           </div>
                         {{/if}}
@@ -151,18 +136,208 @@
         </section>
       {{/each}}
     </div>
-  {{else}}
-    <section class="leader-archive-empty">
+  {{/if}}
 
+  {{#if archivedMissions.length}}
+    <section class="leader-archive-topic-block">
+      <div class="leader-archive-topic-header">
+        <h2 class="leader-archive-topic-title">archived missions</h2>
+        <p class="leader-archive-topic-count">
+          {{archivedMissions.length}} archived mission{{#unless (eq archivedMissions.length 1)}}s{{/unless}}
+        </p>
+      </div>
 
-      <h2 class="leader-archive-empty-title">nothing archived yet</h2>
-      <p class="leader-archive-empty-text">
-        Once you move units out of your active dashboard, they’ll appear here by topic.
-      </p>
+      <div class="leader-archive-grid">
+        {{#each archivedMissions}}
+          <article class="leader-archive-card tagged-unit-card leader-dashboard-wave-card">
+            <div class="leader-archive-card-inner leader-dashboard-wave-card-inner">
+              <div class="leader-dashboard-wave-header">
+                <img src="/icons/onyxsvg.svg" alt="" aria-hidden="true" class="leader-dashboard-wave-image">
+              </div>
 
-      <div class="leader-archive-top-actions">
-        <a href="/dashboard/groupmember" class="leader-archive-back-link">return to dashboard</a>
+              <div class="leader-dashboard-wave-content">
+                <div class="tagged-unit-icon leader-archive-unit-icon">
+                  <img src="/icons/mission.svg" alt="mission icon">
+                </div>
+
+                <div class="leader-archive-card-body">
+                  <h3 class="leader-archive-card-title">{{titleSnapshot}}</h3>
+
+                  {{#if archiveScope}}
+                    <p class="leader-archive-card-meta">
+                      <strong>assignment type:</strong>
+                      {{#if (eq archiveScope "self_assigned")}}
+                        self-assigned by {{#if completedByName}}{{completedByName}}{{else}}{{assignedToNameSnapshot}}{{/if}}
+                      {{else}}
+                        assigned by leader
+                      {{/if}}
+                    </p>
+                  {{/if}}
+
+                  {{#if isCompleted}}
+                    <p class="leader-archive-card-meta">
+                      <strong>completed by:</strong>
+                      {{completedByName}}{{#if completedWhenFormatted}}, {{completedWhenFormatted}}{{/if}}
+                    </p>
+
+                    {{#if this.badgeImagePath}}
+                      <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin:10px 0;">
+                        <img
+                          src="{{this.badgeImagePath}}"
+                          alt="{{#if this.badgeName}}{{this.badgeName}}{{else}}mission badge{{/if}}"
+                          style="width:85px; height:85px; object-fit:contain; flex-shrink:0;"
+                        >
+
+                        <div style="display:flex; flex-direction:column; align-items:flex-start; line-height:1.2;">
+                          <span style="font-size:0.6rem; font-weight:800; color:#dc176a;">badge earned</span>
+                          <span style="font-size:0.7rem; font-weight:800; color:#262262;">
+                            {{#if this.badgeName}}{{this.badgeName}}{{else}}mission badge{{/if}}
+                          </span>
+                        </div>
+                      </div>
+                    {{/if}}
+                  {{else}}
+                    <div class="leader-archive-not-completed">
+                      <span class="leader-archive-not-completed-dot"></span>
+                      <strong>not completed</strong>
+                    </div>
+                  {{/if}}
+
+                  {{#if summarySnapshot}}
+                    <div class="leader-archive-card-summary">
+                      <h4 class="leader-archive-card-subtitle">summary</h4>
+                      <p>{{summarySnapshot}}</p>
+                    </div>
+                  {{/if}}
+
+                  {{#if notesPreview}}
+                    <div class="leader-archive-card-notes">
+                      <h4 class="leader-archive-card-subtitle">notes</h4>
+                      <p>{{notesPreview}}</p>
+                    </div>
+                  {{else}}
+                    <div class="leader-archive-card-notes leader-archive-card-notes--empty">
+                      <h4 class="leader-archive-card-subtitle">notes</h4>
+                      <p class="muted">no notes available</p>
+                    </div>
+                  {{/if}}
+                </div>
+
+                <div class="leader-archive-card-actions" style="margin-bottom:20px;">
+                  {{#if viewPath}}
+                    <a href="{{viewPath}}" class="tagged-unit-link">view mission</a>
+                  {{/if}}
+                </div>
+              </div>
+            </div>
+          </article>
+        {{/each}}
       </div>
     </section>
   {{/if}}
+
+  {{#if archivedNuggets.length}}
+    <section class="leader-archive-topic-block">
+      <div class="leader-archive-topic-header">
+        <h2 class="leader-archive-topic-title">archived nuggets</h2>
+        <p class="leader-archive-topic-count">
+          {{archivedNuggets.length}} archived nugget{{#unless (eq archivedNuggets.length 1)}}s{{/unless}}
+        </p>
+      </div>
+
+      <div class="leader-archive-grid">
+        {{#each archivedNuggets}}
+          <article class="leader-archive-card tagged-unit-card leader-dashboard-wave-card">
+            <div class="leader-archive-card-inner leader-dashboard-wave-card-inner">
+              <div class="leader-dashboard-wave-header">
+                <img src="/icons/goldsvg.svg" alt="" aria-hidden="true" class="leader-dashboard-wave-image">
+              </div>
+
+              <div class="leader-dashboard-wave-content">
+                <div class="tagged-unit-icon leader-archive-unit-icon">
+                  <img src="/icons/nuggeticon.svg" alt="nugget icon">
+                </div>
+
+                <div class="leader-archive-card-body">
+                  <h3 class="leader-archive-card-title">{{titleSnapshot}}</h3>
+
+                  {{#if archiveScope}}
+                    <p class="leader-archive-card-meta">
+                      <strong>assignment type:</strong>
+                      {{#if (eq archiveScope "self_assigned")}}
+                        self-assigned by {{#if completedByName}}{{completedByName}}{{else}}{{assignedToNameSnapshot}}{{/if}}
+                      {{else}}
+                        assigned by leader
+                      {{/if}}
+                    </p>
+                  {{/if}}
+
+                  {{#if completedByName}}
+                    <p class="leader-archive-card-meta">
+                      <strong>archived for:</strong>
+                      {{completedByName}}{{#if completedWhenFormatted}}, {{completedWhenFormatted}}{{/if}}
+                    </p>
+                  {{/if}}
+
+                  {{#if mainTopicSnapshot}}
+                    <p class="leader-archive-card-meta">
+                      <strong>classification:</strong> {{mainTopicSnapshot}}
+                    </p>
+                  {{/if}}
+
+                  {{#if summarySnapshot}}
+                    <div class="leader-archive-card-summary">
+                      <h4 class="leader-archive-card-subtitle">summary</h4>
+                      <p>{{summarySnapshot}}</p>
+                    </div>
+                  {{/if}}
+
+                  {{#if notesPreview}}
+                    <div class="leader-archive-card-notes">
+                      <h4 class="leader-archive-card-subtitle">notes</h4>
+                      <p>{{notesPreview}}</p>
+                    </div>
+                  {{else}}
+                    <div class="leader-archive-card-notes leader-archive-card-notes--empty">
+                      <h4 class="leader-archive-card-subtitle">notes</h4>
+                      <p class="muted">no notes available</p>
+                    </div>
+                  {{/if}}
+
+                  {{#if archiveNoteInstruction}}
+                    <div class="leader-archive-note-instruction-block">
+                      <strong>{{archiveNoteInstruction}}</strong>
+                    </div>
+                  {{/if}}
+                </div>
+
+                <div class="leader-archive-card-actions">
+                  {{#if viewPath}}
+                    <a href="{{viewPath}}" class="tagged-unit-link">view nugget</a>
+                  {{/if}}
+                </div>
+              </div>
+            </div>
+          </article>
+        {{/each}}
+      </div>
+    </section>
+  {{/if}}
+
+  {{#unless archiveTopics.length}}
+    {{#unless archivedMissions.length}}
+      {{#unless archivedNuggets.length}}
+        <section class="leader-archive-empty">
+          <h2 class="leader-archive-empty-title">nothing archived yet</h2>
+          <p class="leader-archive-empty-text">
+            Once you move units out of your active dashboard, they’ll appear here by topic.
+          </p>
+
+          <div class="leader-archive-top-actions">
+            <a href="/dashboard/groupmember" class="leader-archive-back-link">return to dashboard</a>
+          </div>
+        </section>
+      {{/unless}}
+    {{/unless}}
+  {{/unless}}
 </section>
