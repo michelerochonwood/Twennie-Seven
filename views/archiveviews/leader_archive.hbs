@@ -180,18 +180,22 @@
                   </p>
 
 {{#if this.badgeImagePath}}
-  <div class="leader-archive-badge-earned-block">
+  <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin:10px 0;">
+
     <img
       src="{{this.badgeImagePath}}"
       alt="{{#if this.badgeName}}{{this.badgeName}}{{else}}mission badge{{/if}}"
-      class="leader-archive-badge-earned-image"
+      style="width:55px; height:55px; object-fit:contain; flex-shrink:0;"
     >
-    <div class="leader-archive-badge-earned-copy">
-      <span class="leader-archive-badge-earned-label">badge earned</span>
-      <span class="leader-archive-badge-earned-name">
+
+    <div style="display:flex; flex-direction:column; align-items:flex-start; line-height:1.2;">
+      <span style="font-size:0.6rem; font-weight:800; color:#dc176a;">badge earned</span>
+
+      <span style="font-size:0.7rem; font-weight:800; color:#262262;">
         {{#if this.badgeName}}{{this.badgeName}}{{else}}mission badge{{/if}}
       </span>
     </div>
+
   </div>
 {{/if}}
                   </div>
