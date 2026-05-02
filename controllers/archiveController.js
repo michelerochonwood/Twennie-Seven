@@ -1013,7 +1013,9 @@ exports.renderMemberArchive = async (req, res) => {
       let viewPath = '';
       let notesPreview = '';
       let archiveNoteInstruction = '';
+      let earnedBadge = null;
 
+      // ===== LOAD UNIT =====
       if (row.unitType === 'article') {
         const Article = require('../models/unit_models/article');
         unitDoc = await Article.findById(row.unitId).lean();
@@ -1023,6 +1025,7 @@ exports.renderMemberArchive = async (req, res) => {
           summary = unitDoc.summary || unitDoc.article_summary || '';
           viewPath = `/unitviews/articles/view/${unitDoc._id}`;
         }
+
       } else if (row.unitType === 'video') {
         const Video = require('../models/unit_models/video');
         unitDoc = await Video.findById(row.unitId).lean();
@@ -1032,6 +1035,7 @@ exports.renderMemberArchive = async (req, res) => {
           summary = unitDoc.summary || unitDoc.video_summary || '';
           viewPath = `/unitviews/videos/view/${unitDoc._id}`;
         }
+
       } else if (row.unitType === 'promptset') {
         const PromptSet = require('../models/unit_models/promptset');
         unitDoc = await PromptSet.findById(row.unitId).lean();
@@ -1041,6 +1045,7 @@ exports.renderMemberArchive = async (req, res) => {
           summary = unitDoc.summary || unitDoc.promptset_summary || '';
           viewPath = `/unitviews/promptsets/view/${unitDoc._id}`;
         }
+
       } else if (row.unitType === 'interview') {
         const Interview = require('../models/unit_models/interview');
         unitDoc = await Interview.findById(row.unitId).lean();
@@ -1050,6 +1055,7 @@ exports.renderMemberArchive = async (req, res) => {
           summary = unitDoc.summary || unitDoc.interview_summary || '';
           viewPath = `/unitviews/interviews/view/${unitDoc._id}`;
         }
+
       } else if (row.unitType === 'exercise') {
         const Exercise = require('../models/unit_models/exercise');
         unitDoc = await Exercise.findById(row.unitId).lean();
@@ -1059,6 +1065,7 @@ exports.renderMemberArchive = async (req, res) => {
           summary = unitDoc.summary || unitDoc.exercise_summary || '';
           viewPath = `/unitviews/exercises/view/${unitDoc._id}`;
         }
+
       } else if (row.unitType === 'template') {
         const Template = require('../models/unit_models/template');
         unitDoc = await Template.findById(row.unitId).lean();
@@ -1068,23 +1075,16 @@ exports.renderMemberArchive = async (req, res) => {
           summary = unitDoc.summary || unitDoc.template_summary || '';
           viewPath = `/unitviews/templates/view/${unitDoc._id}`;
         }
-      } else if (row.unitType === 'upcoming') {
-        const Upcoming = require('../models/unit_models/upcoming');
-        unitDoc = await Upcoming.findById(row.unitId).lean();
-        if (unitDoc) {
-          title = unitDoc.title || title;
-          mainTopic = unitDoc.main_topic || mainTopic;
-          summary = unitDoc.summary || '';
-          viewPath = `/unitviews/upcomings/view/${unitDoc._id}`;
-        }
       }
 
+      // ===== AUTHOR =====
       if (unitDoc?.author?.id || unitDoc?.author) {
         const authorId = unitDoc.author.id || unitDoc.author;
         const authorName = await getUserNameSnapshot(authorId);
         unitAuthorName = authorName || '';
       }
 
+      // ===== PROMPT SET LOGIC (INCLUDING BADGES) =====
       if (row.unitType === 'promptset' && row.assignedToMember && row.unitId) {
         const completion = await PromptSetCompletion.findOne({
           memberId: row.assignedToMember,
@@ -1098,36 +1098,46 @@ exports.renderMemberArchive = async (req, res) => {
           completion?.notes?.[19] ||
           '';
 
-        archiveNoteInstruction = 'View all 20 notes in the completed prompt sets report.';
+        if (row.assignedCompletedAtSnapshot) {
+          earnedBadge = normalizePromptSetBadge(completion?.earnedBadge);
 
-      } else if (row.assignedToMember && row.unitId) {
-        const learnerNote = await Note.findOne({
-          unitID: row.unitId,
-          memberID: row.assignedToMember
-        })
-          .sort({ updatedAt: -1, createdAt: -1 })
-          .lean();
-
-        if (learnerNote?.note_content) {
-          notesPreview = learnerNote.note_content;
+          // fallback if completion badge missing
+          if (!earnedBadge?.badgeImagePath) {
+            earnedBadge = {
+              badgeName:
+                earnedBadge?.badgeName ||
+                unitDoc?.badge_name ||
+                unitDoc?.badgeName ||
+                'prompt set badge',
+              badgeImagePath:
+                unitDoc?.badgeImagePath ||
+                unitDoc?.badge_image ||
+                unitDoc?.badgeImage ||
+                unitDoc?.badge?.imagePath ||
+                unitDoc?.badge?.image ||
+                ''
+            };
+          }
         }
+
+        archiveNoteInstruction = 'View all 20 notes in the completed prompt sets report.';
       }
 
-      const topicTitle = mainTopic || 'No Topic Assigned';
-
-      if (!archiveTopicsMap.has(topicTitle)) {
-        archiveTopicsMap.set(topicTitle, []);
-      }
-
-      archiveTopicsMap.get(topicTitle).push({
+      // ===== BUILD CARD =====
+      const archiveCard = {
         ...row,
         titleSnapshot: title,
         mainTopicSnapshot: mainTopic,
         summarySnapshot: summary,
         unitAuthorName,
-completedByName: row.assignedToNameSnapshot || '',
-isCompleted: !!row.assignedCompletedAtSnapshot,
-completedWhenFormatted: row.assignedCompletedAtSnapshot,
+
+        earnedBadge,
+        hasEarnedBadge: !!earnedBadge?.badgeImagePath,
+        badgeName: earnedBadge?.badgeName || '',
+        badgeImagePath: earnedBadge?.badgeImagePath || '',
+
+        completedByName: row.assignedToNameSnapshot || '',
+        isCompleted: !!row.assignedCompletedAtSnapshot,
         completedWhenFormatted: row.assignedCompletedAtSnapshot
           ? new Date(row.assignedCompletedAtSnapshot).toLocaleDateString('en-CA', {
               year: 'numeric',
@@ -1146,7 +1156,15 @@ completedWhenFormatted: row.assignedCompletedAtSnapshot,
         archiveNoteInstruction,
         viewPath,
         reportPath: '/reports/mylearningnotes_individual'
-      });
+      };
+
+      const topicTitle = mainTopic || 'No Topic Assigned';
+
+      if (!archiveTopicsMap.has(topicTitle)) {
+        archiveTopicsMap.set(topicTitle, []);
+      }
+
+      archiveTopicsMap.get(topicTitle).push(archiveCard);
     }
 
     const archiveTopics = Array.from(archiveTopicsMap.entries())

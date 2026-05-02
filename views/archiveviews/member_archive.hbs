@@ -3,11 +3,7 @@
 <section class="leader-archive-page">
   <header class="leader-archive-header">
     <div class="leader-archive-hero-image-wrap">
-      <img
-        src="/images/archive bluey.png"
-        alt="Archive Bluey"
-        class="leader-archive-hero-image"
-      >
+      <img src="/images/archive bluey.png" alt="Archive Bluey" class="leader-archive-hero-image">
     </div>
 
     <h1 class="leader-archive-title">learning archive</h1>
@@ -43,14 +39,8 @@
             {{#each archivedItems}}
               <article class="leader-archive-card tagged-unit-card leader-dashboard-wave-card">
                 <div class="leader-archive-card-inner leader-dashboard-wave-card-inner">
-
                   <div class="leader-dashboard-wave-header">
-                    <img
-                      src="/icons/unitsvg.svg"
-                      alt=""
-                      aria-hidden="true"
-                      class="leader-dashboard-wave-image"
-                    >
+                    <img src="/icons/unitsvg.svg" alt="" aria-hidden="true" class="leader-dashboard-wave-image">
                   </div>
 
                   <div class="leader-dashboard-wave-content">
@@ -70,10 +60,32 @@
                         </p>
                       {{/if}}
 
-                      {{#if completedWhenFormatted}}
+                      {{#if isCompleted}}
                         <p class="leader-archive-card-meta">
                           <strong>completed:</strong> {{completedWhenFormatted}}
                         </p>
+
+                        {{#if this.badgeImagePath}}
+                          <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin:10px 0;">
+                            <img
+                              src="{{this.badgeImagePath}}"
+                              alt="{{#if this.badgeName}}{{this.badgeName}}{{else}}earned badge{{/if}}"
+                              style="width:85px; height:85px; object-fit:contain; flex-shrink:0;"
+                            >
+
+                            <div style="display:flex; flex-direction:column; align-items:flex-start; line-height:1.2;">
+                              <span style="font-size:0.6rem; font-weight:800; color:#dc176a;">badge earned</span>
+                              <span style="font-size:0.7rem; font-weight:800; color:#262262;">
+                                {{#if this.badgeName}}{{this.badgeName}}{{else}}badge earned{{/if}}
+                              </span>
+                            </div>
+                          </div>
+                        {{/if}}
+                      {{else}}
+                        <div class="leader-archive-not-completed">
+                          <span class="leader-archive-not-completed-dot"></span>
+                          <strong>not completed</strong>
+                        </div>
                       {{/if}}
 
                       {{#if summarySnapshot}}
@@ -97,34 +109,13 @@
 
                       {{#if archiveNoteInstruction}}
                         {{#if (eq unitType "promptset")}}
-                          <div style="width: 100%; display: flex; justify-content: center; margin: 1rem 0 0 0;">
-                            <a
-                              href="/reports/mylearningnotes_individual"
-                              style="
-                                display: inline-block;
-                                width: auto;
-                                max-width: 85%;
-                                height: auto;
-                                min-height: 0;
-                                padding: 0.65rem 1rem;
-                                border-radius: 999px;
-                                background-color: #262262;
-                                color: #ffffff;
-                                font-family: Figtree, sans-serif;
-                                font-size: 0.72rem;
-                                font-weight: 800;
-                                line-height: 1.25;
-                                text-align: center;
-                                text-decoration: none;
-                                box-shadow: none;
-                                transform: none;
-                              "
-                            >
+                          <div class="archive-prompt-report-cta-wrap">
+                            <a href="/reports/mylearningnotes_individual" class="archive-prompt-report-cta">
                               {{archiveNoteInstruction}}
                             </a>
                           </div>
                         {{else}}
-                          <div style="width: 100%; text-align: center; margin-top: 1rem;">
+                          <div class="leader-archive-note-instruction-block">
                             <strong>{{archiveNoteInstruction}}</strong>
                           </div>
                         {{/if}}
@@ -146,8 +137,6 @@
     </div>
   {{else}}
     <section class="leader-archive-empty">
-
-
       <h2 class="leader-archive-empty-title">nothing archived yet</h2>
       <p class="leader-archive-empty-text">
         Once you move units out of your active dashboard, they’ll appear here by topic.
