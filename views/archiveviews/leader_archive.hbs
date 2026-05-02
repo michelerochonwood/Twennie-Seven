@@ -79,7 +79,22 @@
                           <strong>completed by:</strong>
                           {{completedByName}}{{#if completedWhenFormatted}}, {{completedWhenFormatted}}{{/if}}
                         </p>
+{{#if this.badgeImagePath}}
+  <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin:10px 0;">
+    <img
+      src="{{this.badgeImagePath}}"
+      alt="{{#if this.badgeName}}{{this.badgeName}}{{else}}earned badge{{/if}}"
+      style="width:85px; height:85px; object-fit:contain; flex-shrink:0;"
+    >
 
+    <div style="display:flex; flex-direction:column; align-items:flex-start; line-height:1.2;">
+      <span style="font-size:0.6rem; font-weight:800; color:#dc176a;">badge earned</span>
+      <span style="font-size:0.7rem; font-weight:800; color:#262262;">
+        {{#if this.badgeName}}{{this.badgeName}}{{else}}badge earned{{/if}}
+      </span>
+    </div>
+  </div>
+{{/if}}
 
                       {{else}}
                         <div class="leader-archive-not-completed">

@@ -445,10 +445,26 @@ if (row.unitType === 'promptset' && row.assignedToMember && row.unitId) {
     completion?.notes?.[19] ||
     '';
 
-  if (row.assignedCompletedAtSnapshot && completion?.earnedBadge) {
-    earnedBadge = normalizePromptSetBadge(completion.earnedBadge);
-  }
+if (row.assignedCompletedAtSnapshot) {
+  earnedBadge = normalizePromptSetBadge(completion?.earnedBadge);
 
+  if (!earnedBadge?.badgeImagePath) {
+    earnedBadge = {
+      badgeName:
+        earnedBadge?.badgeName ||
+        unitDoc?.badge_name ||
+        unitDoc?.badgeName ||
+        'prompt set badge',
+      badgeImagePath:
+        unitDoc?.badgeImagePath ||
+        unitDoc?.badge_image ||
+        unitDoc?.badgeImage ||
+        unitDoc?.badge?.imagePath ||
+        unitDoc?.badge?.image ||
+        ''
+    };
+  }
+}
   archiveNoteInstruction = 'View all 20 notes in the completed prompt sets report.';
 
 } else if (row.unitType === 'nugget') {
@@ -551,32 +567,29 @@ exports.renderGroupMemberArchive = async (req, res) => {
 
     const groupMemberId = String(req.user._id);
 
-const rawArchiveRows = await ArchivedUnit.find({
-  $or: [
-    { archivedBy: groupMemberId },
-    { assignedToMember: groupMemberId }
-  ]
-})
-  .sort({ archivedAt: -1 })
-  .lean();
+    const rawArchiveRows = await ArchivedUnit.find({
+      $or: [
+        { archivedBy: groupMemberId },
+        { assignedToMember: groupMemberId }
+      ]
+    })
+      .sort({ archivedAt: -1 })
+      .lean();
 
-const seenArchiveKeys = new Set();
+    const seenArchiveKeys = new Set();
 
-const archiveRows = rawArchiveRows.filter(row => {
-  const archiveKey = [
-    String(row.tagId || 'no-tag'),
-    String(row.unitId || 'no-unit'),
-    String(row.unitType || 'no-type'),
-    String(row.assignedToMember || groupMemberId)
-  ].join('::');
+    const archiveRows = rawArchiveRows.filter(row => {
+      const archiveKey = [
+        String(row.tagId || 'no-tag'),
+        String(row.unitId || 'no-unit'),
+        String(row.unitType || 'no-type'),
+        String(row.assignedToMember || groupMemberId)
+      ].join('::');
 
-  if (seenArchiveKeys.has(archiveKey)) {
-    return false;
-  }
-
-  seenArchiveKeys.add(archiveKey);
-  return true;
-});
+      if (seenArchiveKeys.has(archiveKey)) return false;
+      seenArchiveKeys.add(archiveKey);
+      return true;
+    });
 
     const archiveTopicsMap = new Map();
     const archivedNuggets = [];
@@ -588,10 +601,10 @@ const archiveRows = rawArchiveRows.filter(row => {
       let mainTopic = 'No Topic Assigned';
       let summary = '';
       let unitAuthorName = '';
-let viewPath = '';
-let notesPreview = '';
-let archiveNoteInstruction = '';
-let earnedBadge = null;
+      let viewPath = '';
+      let notesPreview = '';
+      let archiveNoteInstruction = '';
+      let earnedBadge = null;
 
       if (row.unitType === 'article') {
         const Article = require('../models/unit_models/article');
@@ -616,7 +629,6 @@ let earnedBadge = null;
         }
 
       } else if (row.unitType === 'promptset') {
-        const PromptSet = require('../models/unit_models/promptset');
         unitDoc = await PromptSet.findById(row.unitId).lean();
 
         if (unitDoc) {
@@ -686,30 +698,26 @@ let earnedBadge = null;
           viewPath = `/unitviews/nuggets/view/${unitDoc._id}`;
         }
 
-} else if (row.unitType === 'mission') {
-  const Mission = require('../models/unit_models/mission');
-  unitDoc = await Mission.findById(row.unitId).lean();
+      } else if (row.unitType === 'mission') {
+        const Mission = require('../models/unit_models/mission');
+        unitDoc = await Mission.findById(row.unitId).lean();
 
-  if (unitDoc) {
-    title = unitDoc.mission_title || title;
-    mainTopic = unitDoc.main_topic || mainTopic;
-    summary = unitDoc.summary || '';
-    viewPath = `/unitviews/missions/view/${unitDoc._id}`;
+        if (unitDoc) {
+          title = unitDoc.mission_title || title;
+          mainTopic = unitDoc.main_topic || mainTopic;
+          summary = unitDoc.summary || '';
+          viewPath = `/unitviews/missions/view/${unitDoc._id}`;
 
-    if (row.assignedCompletedAtSnapshot) {
-      const category = unitDoc.category || 'other';
+          if (row.assignedCompletedAtSnapshot) {
+            const category = unitDoc.category || 'other';
 
-      earnedBadge = {
-        badgeName: unitDoc.badge_name || '',
-        badgeImagePath:
-          unitDoc.badgeImagePath ||
-          unitDoc.badge_image ||
-          unitDoc.badgeImage ||
-          getMissionBadgePath(category)
-      };
-    }
-  }
-}
+            earnedBadge = {
+              badgeName: unitDoc.badge_name || 'mission badge',
+              badgeImagePath: getMissionBadgePath(category)
+            };
+          }
+        }
+      }
 
       if (unitDoc?.author?.id || unitDoc?.author) {
         const authorId = unitDoc.author.id || unitDoc.author;
@@ -729,6 +737,27 @@ let earnedBadge = null;
           completion?.finalNotes ||
           completion?.notes?.[19] ||
           '';
+
+        if (row.assignedCompletedAtSnapshot) {
+          earnedBadge = normalizePromptSetBadge(completion?.earnedBadge);
+
+          if (!earnedBadge?.badgeImagePath) {
+            earnedBadge = {
+              badgeName:
+                earnedBadge?.badgeName ||
+                unitDoc?.badge_name ||
+                unitDoc?.badgeName ||
+                'prompt set badge',
+              badgeImagePath:
+                unitDoc?.badgeImagePath ||
+                unitDoc?.badge_image ||
+                unitDoc?.badgeImage ||
+                unitDoc?.badge?.imagePath ||
+                unitDoc?.badge?.image ||
+                ''
+            };
+          }
+        }
 
         archiveNoteInstruction = 'View all 20 notes in the completed prompt sets report.';
 
@@ -755,20 +784,21 @@ let earnedBadge = null;
         mainTopicSnapshot: mainTopic,
         summarySnapshot: summary,
         unitAuthorName,
-completedByName: row.assignedToNameSnapshot || '',
-isCompleted: !!row.assignedCompletedAtSnapshot,
-completedWhenFormatted: row.assignedCompletedAtSnapshot
 
+        earnedBadge,
+        hasEarnedBadge: !!earnedBadge?.badgeImagePath,
+        badgeName: earnedBadge?.badgeName || '',
+        badgeImagePath: earnedBadge?.badgeImagePath || '',
+
+        completedByName: row.assignedToNameSnapshot || '',
+        isCompleted: !!row.assignedCompletedAtSnapshot,
+        completedWhenFormatted: row.assignedCompletedAtSnapshot
           ? new Date(row.assignedCompletedAtSnapshot).toLocaleDateString('en-CA', {
               year: 'numeric',
               month: 'short',
               day: '2-digit'
             })
           : '',
-          earnedBadge,
-hasEarnedBadge: !!earnedBadge?.badgeImagePath,
-badgeName: earnedBadge?.badgeName || '',
-badgeImagePath: earnedBadge?.badgeImagePath || '',
         archivedAtFormatted: row.archivedAt
           ? new Date(row.archivedAt).toLocaleDateString('en-CA', {
               year: 'numeric',
@@ -776,6 +806,7 @@ badgeImagePath: earnedBadge?.badgeImagePath || '',
               day: '2-digit'
             })
           : '',
+        archivedByNameSnapshot: row.assignedToNameSnapshot || '',
         notesPreview,
         archiveNoteInstruction,
         viewPath,
