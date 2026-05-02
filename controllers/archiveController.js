@@ -476,7 +476,7 @@ const archiveCard = {
   unitAuthorName,
 
   earnedBadge,
-  hasEarnedBadge: !!(row.assignedCompletedAtSnapshot && earnedBadge?.badgeImagePath),
+hasEarnedBadge: !!earnedBadge?.badgeImagePath,
   badgeName: earnedBadge?.badgeName || '',
   badgeImagePath: earnedBadge?.badgeImagePath || '',
 
