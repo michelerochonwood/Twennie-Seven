@@ -70,7 +70,19 @@ router.get('/avail_memberships', (req, res) => {
 });
 
 router.get('/topics', (req, res) => {
-  res.render('promo_views/topics', { layout: 'mainlayout' });
+
+  const topicSignals = [
+    "Conducting Market Research",
+    "Win Strategy",
+    "Leadership in Technical Consulting",
+    "Managing Scope So It Doesnt Manage You"
+  ];
+
+  res.render('promo_views/topics', {
+    layout: 'mainlayout',
+    topicSignals
+  });
+
 });
 
 router.get('/contributor_units', (req, res) => {
