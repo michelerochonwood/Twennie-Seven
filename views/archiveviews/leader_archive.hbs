@@ -151,102 +151,144 @@
     </div>
   {{/if}}
 
-  {{#if archivedMissions.length}}
-    <section class="leader-archive-topic-block">
-      <div class="leader-archive-topic-header">
-        <h2 class="leader-archive-topic-title">archived missions</h2>
-        <p class="leader-archive-topic-count">
-          {{archivedMissions.length}} archived mission{{#unless (eq archivedMissions.length 1)}}s{{/unless}}
-        </p>
-      </div>
+{{#if archivedMissions.length}}
+  <section class="leader-archive-topic-block">
+    <div class="leader-archive-topic-header">
+      <h2 class="leader-archive-topic-title">archived missions</h2>
+      <p class="leader-archive-topic-count">
+        {{archivedMissions.length}} archived mission{{#unless (eq archivedMissions.length 1)}}s{{/unless}}
+      </p>
+    </div>
 
-      <div class="leader-archive-grid">
-        {{#each archivedMissions}}
-          <article class="leader-archive-card tagged-unit-card leader-dashboard-wave-card">
-            <div class="leader-archive-card-inner leader-dashboard-wave-card-inner">
-              <div class="leader-dashboard-wave-header">
-                <img src="/icons/onyxsvg.svg" alt="" aria-hidden="true" class="leader-dashboard-wave-image">
+    <div class="leader-archive-grid">
+      {{#each archivedMissions}}
+        <article class="leader-archive-card tagged-unit-card leader-dashboard-wave-card">
+          <div class="leader-archive-card-inner leader-dashboard-wave-card-inner">
+            <div class="leader-dashboard-wave-header">
+              <img src="/icons/onyxsvg.svg" alt="" aria-hidden="true" class="leader-dashboard-wave-image">
+            </div>
+
+            <div class="leader-dashboard-wave-content">
+              <div class="tagged-unit-icon leader-archive-unit-icon">
+                <img src="/icons/mission.svg" alt="mission icon">
               </div>
 
-              <div class="leader-dashboard-wave-content">
-                <div class="tagged-unit-icon leader-archive-unit-icon">
-                  <img src="/icons/mission.svg" alt="mission icon">
-                </div>
+              <div class="leader-archive-card-body">
+                <h3 class="leader-archive-card-title">{{titleSnapshot}}</h3>
 
-                <div class="leader-archive-card-body">
-                  <h3 class="leader-archive-card-title">{{titleSnapshot}}</h3>
+                {{#if archiveScope}}
+                  <p class="leader-archive-card-meta">
+                    <strong>assignment type:</strong>
+                    {{#if (eq archiveScope "self_assigned")}}
+                      self-assigned by {{#if completedByName}}{{completedByName}}{{else}}{{assignedToNameSnapshot}}{{/if}}
+                    {{else}}
+                      assigned by leader
+                    {{/if}}
+                  </p>
+                {{/if}}
 
-                  {{#if archiveScope}}
-                    <p class="leader-archive-card-meta">
-                      <strong>assignment type:</strong>
-                      {{#if (eq archiveScope "self_assigned")}}
-                        self-assigned by {{#if completedByName}}{{completedByName}}{{else}}{{assignedToNameSnapshot}}{{/if}}
-                      {{else}}
-                        assigned by leader
-                      {{/if}}
-                    </p>
-                  {{/if}}
+                {{#if isCompleted}}
+                  <p class="leader-archive-card-meta">
+                    <strong>completed by:</strong>
+                    {{completedByName}}{{#if completedWhenFormatted}}, {{completedWhenFormatted}}{{/if}}
+                  </p>
 
-                  {{#if isCompleted}}
-                    <p class="leader-archive-card-meta">
-                      <strong>completed by:</strong>
-                      {{completedByName}}{{#if completedWhenFormatted}}, {{completedWhenFormatted}}{{/if}}
-                    </p>
-
-                    {{#if hasEarnedBadge}}
-                      <div class="leader-archive-badge-earned-block">
-                        <img
-                          src="{{badgeImagePath}}"
-                          alt="{{#if badgeName}}{{badgeName}}{{else}}earned badge{{/if}}"
-                          class="leader-archive-badge-earned-image"
-                        >
-                        <div class="leader-archive-badge-earned-copy">
-                          <span class="leader-archive-badge-earned-label">badge earned</span>
-                          {{#if badgeName}}
-                            <span class="leader-archive-badge-earned-name">{{badgeName}}</span>
-                          {{/if}}
-                        </div>
+                  <div class="leader-archive-badge-earned-block">
+                    {{#if (eq category "administrative")}}
+                      <img src="/badges/adminbadge.png" alt="administrative mission badge" class="leader-archive-badge-earned-image">
+                      <div class="leader-archive-badge-earned-copy">
+                        <span class="leader-archive-badge-earned-label">badge earned</span>
+                        <span class="leader-archive-badge-earned-name">administrative mission badge</span>
+                      </div>
+                    {{else if (eq category "business_development")}}
+                      <img src="/badges/bdbadge.png" alt="business development mission badge" class="leader-archive-badge-earned-image">
+                      <div class="leader-archive-badge-earned-copy">
+                        <span class="leader-archive-badge-earned-label">badge earned</span>
+                        <span class="leader-archive-badge-earned-name">business development mission badge</span>
+                      </div>
+                    {{else if (eq category "client_experience")}}
+                      <img src="/badges/clientxbadge.png" alt="client experience mission badge" class="leader-archive-badge-earned-image">
+                      <div class="leader-archive-badge-earned-copy">
+                        <span class="leader-archive-badge-earned-label">badge earned</span>
+                        <span class="leader-archive-badge-earned-name">client experience mission badge</span>
+                      </div>
+                    {{else if (eq category "community")}}
+                      <img src="/badges/communiitybadge.png" alt="community mission badge" class="leader-archive-badge-earned-image">
+                      <div class="leader-archive-badge-earned-copy">
+                        <span class="leader-archive-badge-earned-label">badge earned</span>
+                        <span class="leader-archive-badge-earned-name">community mission badge</span>
+                      </div>
+                    {{else if (eq category "culture_play")}}
+                      <img src="/badges/culturebadge.png" alt="culture and play mission badge" class="leader-archive-badge-earned-image">
+                      <div class="leader-archive-badge-earned-copy">
+                        <span class="leader-archive-badge-earned-label">badge earned</span>
+                        <span class="leader-archive-badge-earned-name">culture and play mission badge</span>
+                      </div>
+                    {{else if (eq category "internal_improvement")}}
+                      <img src="/badges/improvebadge.png" alt="internal improvement mission badge" class="leader-archive-badge-earned-image">
+                      <div class="leader-archive-badge-earned-copy">
+                        <span class="leader-archive-badge-earned-label">badge earned</span>
+                        <span class="leader-archive-badge-earned-name">internal improvement mission badge</span>
+                      </div>
+                    {{else if (eq category "learning")}}
+                      <img src="/badges/learningbadge.png" alt="learning mission badge" class="leader-archive-badge-earned-image">
+                      <div class="leader-archive-badge-earned-copy">
+                        <span class="leader-archive-badge-earned-label">badge earned</span>
+                        <span class="leader-archive-badge-earned-name">learning mission badge</span>
+                      </div>
+                    {{else if (eq category "research")}}
+                      <img src="/badges/researchbadge.png" alt="research mission badge" class="leader-archive-badge-earned-image">
+                      <div class="leader-archive-badge-earned-copy">
+                        <span class="leader-archive-badge-earned-label">badge earned</span>
+                        <span class="leader-archive-badge-earned-name">research mission badge</span>
+                      </div>
+                    {{else if (eq category "other")}}
+                      <img src="/badges/roguebadge.png" alt="rogue mission badge" class="leader-archive-badge-earned-image">
+                      <div class="leader-archive-badge-earned-copy">
+                        <span class="leader-archive-badge-earned-label">badge earned</span>
+                        <span class="leader-archive-badge-earned-name">rogue mission badge</span>
                       </div>
                     {{/if}}
-                  {{else}}
-                    <div class="leader-archive-not-completed">
-                      <span class="leader-archive-not-completed-dot"></span>
-                      <strong>not completed</strong>
-                    </div>
-                  {{/if}}
+                  </div>
+                {{else}}
+                  <div class="leader-archive-not-completed">
+                    <span class="leader-archive-not-completed-dot"></span>
+                    <strong>not completed</strong>
+                  </div>
+                {{/if}}
 
-                  {{#if summarySnapshot}}
-                    <div class="leader-archive-card-summary">
-                      <h4 class="leader-archive-card-subtitle">summary</h4>
-                      <p>{{summarySnapshot}}</p>
-                    </div>
-                  {{/if}}
+                {{#if summarySnapshot}}
+                  <div class="leader-archive-card-summary">
+                    <h4 class="leader-archive-card-subtitle">summary</h4>
+                    <p>{{summarySnapshot}}</p>
+                  </div>
+                {{/if}}
 
-                  {{#if notesPreview}}
-                    <div class="leader-archive-card-notes">
-                      <h4 class="leader-archive-card-subtitle">notes</h4>
-                      <p>{{notesPreview}}</p>
-                    </div>
-                  {{else}}
-                    <div class="leader-archive-card-notes leader-archive-card-notes--empty">
-                      <h4 class="leader-archive-card-subtitle">notes</h4>
-                      <p class="muted">no notes available</p>
-                    </div>
-                  {{/if}}
-                </div>
+                {{#if notesPreview}}
+                  <div class="leader-archive-card-notes">
+                    <h4 class="leader-archive-card-subtitle">notes</h4>
+                    <p>{{notesPreview}}</p>
+                  </div>
+                {{else}}
+                  <div class="leader-archive-card-notes leader-archive-card-notes--empty">
+                    <h4 class="leader-archive-card-subtitle">notes</h4>
+                    <p class="muted">no notes available</p>
+                  </div>
+                {{/if}}
+              </div>
 
-                <div class="leader-archive-card-actions">
-                  {{#if viewPath}}
-                    <a href="{{viewPath}}" class="tagged-unit-link">view mission</a>
-                  {{/if}}
-                </div>
+              <div class="leader-archive-card-actions">
+                {{#if viewPath}}
+                  <a href="{{viewPath}}" class="tagged-unit-link">view mission</a>
+                {{/if}}
               </div>
             </div>
-          </article>
-        {{/each}}
-      </div>
-    </section>
-  {{/if}}
+          </div>
+        </article>
+      {{/each}}
+    </div>
+  </section>
+{{/if}}
 
   {{#if archivedNuggets.length}}
     <section class="leader-archive-topic-block">
