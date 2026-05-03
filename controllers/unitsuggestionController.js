@@ -172,7 +172,7 @@ const unitSuggestionController = {
         organization: orgId,
         organizationOptOut: { $ne: true }
       })
-        .select('_id')
+.select('_id groupLeaderName username groupName')
         .lean();
 
       const validSet = new Set(validLeaders.map(l => String(l._id)));
@@ -203,10 +203,26 @@ const unitSuggestionController = {
 
 await UnitSuggestion.insertMany(docs, { ordered: false });
 
-const ref = req.get('referer') || 'back';
-if (ref === 'back') return res.redirect('back');
-const joiner = ref.includes('?') ? '&' : '?';
-return res.redirect(`${ref}${joiner}suggested=1`);
+const suggestedNames = validLeaders
+  .filter(l => validSet.has(String(l._id)))
+  .map(l =>
+    l.groupLeaderName ||
+    l.username ||
+    l.groupName ||
+    'Leader'
+  );
+
+const ref = req.get('referer') || '';
+
+return res.render('unit_views/suggest_success', {
+  layout: 'unitviewlayout',
+  unitLabel: unitType,
+  unitTitle: snap.unitTitle || 'Untitled unit',
+  suggestedNames,
+  skippedDupesNames: [],
+  dashboardUrl: '/dashboard/leader/org-admin/suggestions',
+  unitUrl: ref
+});
 
     } catch (err) {
       console.error('unitSuggestionController.create error:', err);

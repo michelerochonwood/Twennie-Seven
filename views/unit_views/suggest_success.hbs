@@ -1,0 +1,111 @@
+{{#*inline "title"}}Suggestion Sent | Twennie{{/inline}}
+
+<div class="success-container suggest-success-container">
+  <h1 class="success-title">suggestion sent!</h1>
+
+  <p class="success-message">
+    The {{#if unitLabel}}{{unitLabel}}{{else}}unit{{/if}}
+    <strong>{{unitTitle}}</strong>
+    was successfully suggested to:
+  </p>
+
+  {{#if suggestedNames.length}}
+    <ul class="success-assignment-list">
+      {{#each suggestedNames}}
+        <li>{{this}}</li>
+      {{/each}}
+    </ul>
+  {{else}}
+    <p class="success-message">No suggestions were created.</p>
+  {{/if}}
+
+  <p class="success-message">
+    These leaders will now see this suggestion in their admin-related dashboard activity.
+  </p>
+
+  <p class="success-message">
+    You can suggest this unit again later if another leader or team may benefit from it.
+  </p>
+
+  {{#if skippedDupesNames.length}}
+    <p class="success-message">
+      Already suggested:
+      {{#each skippedDupesNames}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}
+    </p>
+  {{/if}}
+
+  <a href="{{dashboardUrl}}" class="success-button">return to your dashboard</a>
+
+  {{#if unitUrl}}
+    <a href="{{unitUrl}}" class="success-secondary-link">return to unit</a>
+  {{/if}}
+</div>
+
+<style>
+.success-container {
+  text-align: center;
+  margin: 50px auto;
+  padding: 20px;
+  max-width: 560px;
+}
+
+.success-title {
+  margin-top: 200px;
+  color: #262262;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.success-message {
+  font-size: 18px;
+  margin: 10px 0;
+  font-family: "Figtree";
+}
+
+.success-assignment-list {
+  margin: 18px auto;
+  padding: 0;
+  list-style: none;
+  max-width: 420px;
+}
+
+.success-assignment-list li {
+  font-size: 18px;
+  font-family: "Figtree";
+  margin: 8px 0;
+  padding: 10px 14px;
+  background: #f5f5fa;
+  border-radius: 12px;
+}
+
+.success-button {
+  display: block;
+  font-size: 11pt;
+  margin: 18px auto 0;
+  padding: 10px 20px;
+  border-radius: 99px;
+  background-color: #262262;
+  color: white;
+  font-family: "Figtree";
+  font-weight: 800;
+  border: none;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  width: 50%;
+}
+
+.success-button:hover {
+  background-color: #4a4ab2;
+}
+
+.success-secondary-link {
+  display: block;
+  margin: 14px auto 0;
+  font-family: "Figtree";
+  font-size: 0.9rem;
+  color: #262262;
+  font-weight: 800;
+  text-decoration: underline;
+}
+</style>
