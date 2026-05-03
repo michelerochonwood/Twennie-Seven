@@ -227,42 +227,21 @@
 <input type="hidden" name="assignedMemberIdsCsv" id="assignedMembersCsv" value="">
     <input type="hidden" name="frequency" id="selectedFrequency">
 
-    <label>assign to?</label>
-<fieldset class="assign-tag-members">
-  <legend class="assign-tag-legend">Select recipients:</legend>
+<label>assign to?</label>
 
-  <div class="assign-tag-member-block">
-    <label
-      class="assign-tag-member-label assign-member-option"
-      data-member-id="{{leaderId}}"
-    >
-      <input
-        type="checkbox"
-        value="{{leaderId}}"
-        onchange="toggleMemberSelection('{{leaderId}}', this.closest('.assign-member-option'))"
-      >
-      {{leaderName}} (you)
-    </label>
-  </div>
-
-  <hr class="assign-tag-divider">
-
+<div class="assign-member-options promptset-assign-member-options">
   {{#each groupMembers}}
-    <div class="assign-tag-member-block">
-      <label
-        class="assign-tag-member-label assign-member-option"
-        data-member-id="{{this._id}}"
-      >
-        <input
-          type="checkbox"
-          value="{{this._id}}"
-          onchange="toggleMemberSelection('{{this._id}}', this.closest('.assign-member-option'))"
-        >
-        {{this.name}}
-      </label>
+    <div
+      class="assign-member-option promptset-assign-member-option"
+      data-member-id="{{this._id}}"
+      onclick="toggleMemberSelection('{{this._id}}', this)"
+    >
+      <span class="promptset-fake-checkbox"></span>
+      <span>{{this.name}}</span>
     </div>
   {{/each}}
-</fieldset>
+</div>
+
     <label>choose frequency:</label>
     <div class="view-promptset-frequency-options">
       <div class="frequency-option" onclick="selectFrequency('daily', 20)">

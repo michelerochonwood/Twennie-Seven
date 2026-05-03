@@ -1287,3 +1287,34 @@ label[for=short-summary] {
     padding: 0 1.5rem;
   }
 }
+
+.promptset-assign-member-options {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  width: 80%;
+  margin: 1rem auto;
+}
+
+.promptset-assign-member-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: black;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.promptset-fake-checkbox {
+  width: 14px;
+  height: 14px;
+  border: 1px solid black;
+  display: inline-block;
+  flex: 0 0 14px;
+}
+
+.promptset-assign-member-option.selected .promptset-fake-checkbox {
+  background-color: #4a4ab2;
+}
