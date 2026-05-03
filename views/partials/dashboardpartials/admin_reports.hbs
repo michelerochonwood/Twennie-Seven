@@ -3,92 +3,181 @@
 <section class="leader-topics-container leader-admin-section">
   <h2 class="leader-dashboard-subtitles">team engagement</h2>
 
-  <div class="table-container admin-wide-table-container">
-    <table class="dashboard-library-table admin-wide-table">
-      <thead>
-        <tr>
-          <th class="dashboard-library-header" style="min-width: 260px;">team</th>
-          <th class="dashboard-library-header" style="min-width: 260px;">top topics</th>
-          <th class="dashboard-library-header" style="min-width: 420px;">units completed</th>
-          <th class="dashboard-library-header" style="min-width: 340px;">prompt sets completed</th>
-        </tr>
-      </thead>
+  <div class="admin-team-report-cards">
 
-      <tbody>
-        {{#each adminTeamEngagementReports}}
-          <tr class="dashboard-library-row">
+    {{#each adminTeamEngagementReports}}
+      <article class="admin-team-report-card">
 
-            {{!-- TEAM --}}
-            <td class="dashboard-library-cell">
-              <div style="display:flex; gap:0.75rem; align-items:flex-start;">
-                <img
-                  src="{{this.groupImage}}"
-                  alt="group image"
-                  style="width:44px; height:44px; border-radius:8px; object-fit:cover;"
-                >
+        {{!-- TEAM IDENTITY --}}
+        <section class="admin-team-report-section admin-team-identity-section">
+          <div class="admin-team-identity-main">
+            <img
+              src="{{this.groupImage}}"
+              alt="group image"
+              class="admin-team-image"
+            >
 
-                <div>
-                  <div class="multi-record-item">
-                    <strong>{{this.teamName}}</strong>
-                  </div>
+            <div class="admin-team-identity-text">
+              <h3 class="admin-team-name">{{this.teamName}}</h3>
 
-                  {{#if this.teamLeaderName}}
-                    <div class="multi-record-item" style="opacity:0.8;">
-                      leader: {{this.teamLeaderName}}
-                    </div>
-                  {{/if}}
+              <div class="admin-team-leader-row">
+                {{#if this.teamLeaderImage}}
+                  <img
+                    src="{{this.teamLeaderImage}}"
+                    alt="leader image"
+                    class="admin-team-leader-image"
+                  >
+                {{/if}}
 
-                  <div class="multi-record-item" style="opacity:0.8;">
-                    members: {{this.memberCount}}
-                  </div>
-                </div>
+                <p class="admin-team-meta">
+                  leader: {{#if this.teamLeaderName}}{{this.teamLeaderName}}{{else}}—{{/if}}
+                </p>
               </div>
-            </td>
 
-            {{!-- TOP TOPICS --}}
-            <td class="dashboard-library-cell">
+              <p class="admin-team-meta">members: {{this.memberCount}}</p>
+            </div>
+          </div>
+        </section>
+
+        {{!-- TOPICS AND UNITS --}}
+        <section class="admin-team-report-section">
+          <h4 class="admin-team-section-title">topics and units</h4>
+
+          <div class="admin-team-section-grid">
+            <div class="admin-team-report-block">
+              <h5>topics engaged</h5>
               {{#each this.topTopics}}
-                <div class="multi-record-item">{{this}}</div>
+                <div class="admin-report-pill">{{this}}</div>
               {{else}}
-                <span class="no-data">—</span>
+                <p class="no-data">—</p>
               {{/each}}
-            </td>
+            </div>
 
-            {{!-- UNITS COMPLETED --}}
-            <td class="dashboard-library-cell">
+            <div class="admin-team-report-block">
+              <h5>units completed</h5>
               {{#each this.unitsCompleted}}
-                <div class="multi-record-item">{{this}}</div>
+                <div class="admin-report-list-item">{{this}}</div>
               {{else}}
-                <span class="no-data">—</span>
+                <p class="no-data">—</p>
               {{/each}}
-            </td>
+            </div>
 
-            {{!-- PROMPT SETS COMPLETED --}}
-            <td class="dashboard-library-cell">
+            <div class="admin-team-report-block">
+              <h5>assigned but not completed</h5>
+              {{#each this.incompleteUnits}}
+                <div class="admin-report-list-item">
+                  <strong>{{this.title}}</strong>
+                  {{#if this.assignedAtFormatted}}
+                    <span>assigned: {{this.assignedAtFormatted}}</span>
+                  {{/if}}
+                </div>
+              {{else}}
+                <p class="no-data">—</p>
+              {{/each}}
+            </div>
+          </div>
+        </section>
+
+        {{!-- PROMPT SETS --}}
+        <section class="admin-team-report-section">
+          <h4 class="admin-team-section-title">prompt sets</h4>
+
+          <div class="admin-team-section-grid">
+            <div class="admin-team-report-block">
+              <h5>completed</h5>
               {{#each this.promptSetsCompleted}}
-                <div class="multi-record-item">{{this}}</div>
+                <div class="admin-report-list-item">{{this}}</div>
               {{else}}
-                <span class="no-data">—</span>
+                <p class="no-data">—</p>
               {{/each}}
-            </td>
+            </div>
 
-          </tr>
-        {{else}}
-          <tr>
-            <td colspan="4" class="no-data">
-              No team engagement data available.
-            </td>
-          </tr>
-        {{/each}}
-      </tbody>
-    </table>
+            <div class="admin-team-report-block">
+              <h5>badges earned</h5>
+              {{#each this.promptSetBadgesEarned}}
+                <div class="admin-report-badge-row">
+                  {{#if this.badgeImage}}
+                    <img src="{{this.badgeImage}}" alt="{{this.badgeName}}" class="admin-report-badge-img">
+                  {{/if}}
+                  <span>{{this.badgeName}}</span>
+                </div>
+              {{else}}
+                <p class="no-data">—</p>
+              {{/each}}
+            </div>
+
+            <div class="admin-team-report-block">
+              <h5>in progress</h5>
+              {{#each this.promptSetsInProgress}}
+                <div class="admin-report-list-item">{{this}}</div>
+              {{else}}
+                <p class="no-data">—</p>
+              {{/each}}
+            </div>
+          </div>
+        </section>
+
+        {{!-- NUGGETS --}}
+        <section class="admin-team-report-section">
+          <h4 class="admin-team-section-title">nuggets being monitored</h4>
+
+          <div class="admin-nugget-grid">
+            {{#each this.nuggetsMonitored}}
+              <div class="admin-nugget-card">
+                <strong>{{this.title}}</strong>
+                {{#if this.client}}<span>client: {{this.client}}</span>{{/if}}
+                {{#if this.region}}<span>region: {{this.region}}</span>{{/if}}
+                {{#if this.lastMonitoredFormatted}}<span>last monitored: {{this.lastMonitoredFormatted}}</span>{{/if}}
+              </div>
+            {{else}}
+              <p class="no-data">—</p>
+            {{/each}}
+          </div>
+        </section>
+
+        {{!-- MISSIONS --}}
+        <section class="admin-team-report-section">
+          <h4 class="admin-team-section-title">missions</h4>
+
+          <div class="admin-team-section-grid">
+            <div class="admin-team-report-block">
+              <h5>in progress</h5>
+              {{#each this.missionsInProgress}}
+                <div class="admin-report-list-item">{{this}}</div>
+              {{else}}
+                <p class="no-data">—</p>
+              {{/each}}
+            </div>
+
+            <div class="admin-team-report-block">
+              <h5>completed</h5>
+              {{#each this.missionsCompleted}}
+                <div class="admin-report-list-item">{{this}}</div>
+              {{else}}
+                <p class="no-data">—</p>
+              {{/each}}
+            </div>
+
+            <div class="admin-team-report-block">
+              <h5>badges earned</h5>
+              {{#each this.missionBadgesEarned}}
+                <div class="admin-report-badge-row">
+                  {{#if this.badgeImage}}
+                    <img src="{{this.badgeImage}}" alt="{{this.badgeName}}" class="admin-report-badge-img">
+                  {{/if}}
+                  <span>{{this.badgeName}}</span>
+                </div>
+              {{else}}
+                <p class="no-data">—</p>
+              {{/each}}
+            </div>
+          </div>
+        </section>
+
+      </article>
+    {{else}}
+      <p class="no-data">No team engagement data available.</p>
+    {{/each}}
+
   </div>
 </section>
-
-
-
-
-
-
-
-

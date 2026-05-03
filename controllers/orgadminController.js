@@ -26,6 +26,7 @@ const GroupMember = require('../models/member_models/group_member');
 const Upcoming = require('../models/unit_models/upcoming');
 const OrganizationProfile = require('../models/profile_models/organization_profile');
 const DashboardSeen = require('../models/dashboard_seen');
+const AssignPromptSet = require('../models/prompt_models/assignpromptset');
 
 
 // -----------------------------
@@ -716,29 +717,42 @@ async function buildOrgGroupsLeaders(orgId) {
 async function buildAdminTeamEngagement(orgId) {
   const leaderFilter = { organization: orgId, organizationOptOut: { $ne: true } };
 
-  // All leaders in org = all teams
   const leaders = await Leader.find(leaderFilter)
-    .select("_id groupName groupLeaderName name members")
+    .select('_id groupName groupLeaderName name members profileImage')
     .sort({ groupName: 1 })
     .lean();
 
   if (!leaders.length) return [];
 
-  // ✅ Group images (one query)
   const leaderIds = leaders.map(l => l._id);
-  const groupProfiles = await GroupProfile.find({ groupId: { $in: leaderIds } })
-    .select("groupId groupImage")
-    .lean();
+
+  const [groupProfiles, leaderProfiles] = await Promise.all([
+    GroupProfile.find({ groupId: { $in: leaderIds } })
+      .select('groupId groupImage')
+      .lean(),
+
+    LeaderProfile.find({ leaderId: { $in: leaderIds } })
+      .select('leaderId profileImage')
+      .lean()
+  ]);
+
   const groupImgByLeaderId = new Map(
     (groupProfiles || []).map(p => [p.groupId.toString(), p.groupImage])
   );
 
-  // Collect all person ids (leaders + group members) once
+  const leaderImgByLeaderId = new Map(
+    (leaderProfiles || []).map(p => [p.leaderId.toString(), p.profileImage])
+  );
+
   const allPersonIdSet = new Set();
-  for (const l of leaders) {
-    if (l?._id) allPersonIdSet.add(String(l._id));
-    if (Array.isArray(l.members)) {
-      for (const m of l.members) allPersonIdSet.add(String(m));
+
+  for (const leader of leaders) {
+    if (leader?._id) allPersonIdSet.add(String(leader._id));
+
+    if (Array.isArray(leader.members)) {
+      for (const m of leader.members) {
+        allPersonIdSet.add(String(m));
+      }
     }
   }
 
@@ -746,136 +760,412 @@ async function buildAdminTeamEngagement(orgId) {
     .filter(s => mongoose.Types.ObjectId.isValid(s))
     .map(s => new mongoose.Types.ObjectId(s));
 
-  // --- Bulk pulls across org ---
-  const [promptCompletions, notes] = await Promise.all([
+  const [
+    promptCompletions,
+    notes,
+    tags,
+    promptAssignments,
+    nuggets,
+    missions
+  ] = await Promise.all([
     PromptSetCompletion.find({ memberId: { $in: allPersonIds } })
-      .populate("promptSetId", "promptset_title main_topic secondary_topics")
+      .populate('promptSetId', 'promptset_title main_topic secondary_topics badge_name badgeImage badgeImagePath')
       .lean(),
 
-    Notes.find({ memberID: { $in: allPersonIds } }).lean()
+    Notes.find({ memberID: { $in: allPersonIds } }).lean(),
+
+    Tag.find({ 'assignedTo.member': { $in: allPersonIds } }).lean(),
+
+    AssignPromptSet.find({
+      $or: [
+        { assignedTo: { $in: allPersonIds } },
+        { assignedToMember: { $in: allPersonIds } },
+        { memberId: { $in: allPersonIds } }
+      ]
+    })
+      .populate('promptSetId', 'promptset_title badge_name badgeImage badgeImagePath main_topic secondary_topics')
+      .lean(),
+
+    Nugget.find({
+      'monitoringNotes.addedBy': { $in: allPersonIds }
+    }).lean(),
+
+    Mission.find({}).lean()
   ]);
 
-  // Index completions + notes by personId for quick aggregation
-  const completionsByPerson = new Map(); // personIdStr -> [completion]
-  for (const c of (promptCompletions || [])) {
-    const pid = c.memberId?.toString?.() || "";
+  const completionsByPerson = new Map();
+  for (const c of promptCompletions || []) {
+    const pid = c.memberId?.toString?.() || '';
     if (!pid) continue;
     if (!completionsByPerson.has(pid)) completionsByPerson.set(pid, []);
     completionsByPerson.get(pid).push(c);
   }
 
-  const notesByPerson = new Map(); // personIdStr -> [note]
-  for (const n of (notes || [])) {
-    const pid = n.memberID?.toString?.() || "";
+  const notesByPerson = new Map();
+  for (const n of notes || []) {
+    const pid = n.memberID?.toString?.() || '';
     if (!pid) continue;
     if (!notesByPerson.has(pid)) notesByPerson.set(pid, []);
     notesByPerson.get(pid).push(n);
   }
 
-  // Resolve unit details cache for notes → titles/topics, and mission-filtering safety
-  const unitCache = new Map(); // unitIdStr -> resolved details
+  const unitCache = new Map();
 
   const reports = [];
 
-  for (const l of leaders) {
-    const leaderIdStr = l._id.toString();
-    const memberIds = Array.isArray(l.members) ? l.members.map(x => x.toString()) : [];
-    const teamPersonIds = [leaderIdStr, ...memberIds];
+  for (const leader of leaders) {
+    const leaderIdStr = leader._id.toString();
+    const memberIds = Array.isArray(leader.members)
+      ? leader.members.map(x => x.toString())
+      : [];
 
-    // ---- Prompt set completions (ALL titles, deduped) ----
+    const teamPersonIds = [leaderIdStr, ...memberIds];
+    const teamPersonIdSet = new Set(teamPersonIds);
+
+    const teamObjectIds = teamPersonIds
+      .filter(s => mongoose.Types.ObjectId.isValid(s))
+      .map(s => new mongoose.Types.ObjectId(s));
+
+    const teamNotes = teamPersonIds.flatMap(pid => notesByPerson.get(pid) || []);
     const teamPromptComps = teamPersonIds.flatMap(pid => completionsByPerson.get(pid) || []);
-    const promptSetTitleSet = new Set(
-      teamPromptComps
-        .map(p => p.promptSetId?.promptset_title || "")
+
+    const completedUnitIdSet = new Set(
+      teamNotes
+        .map(n => n.unitID ? String(n.unitID) : '')
         .filter(Boolean)
     );
-    const promptSetsCompleted = Array.from(promptSetTitleSet).sort((a, b) => a.localeCompare(b));
 
-    // Topics from completions (for topTopics)
+    const completedMissionIdSet = new Set(
+      teamNotes
+        .filter(n => String(n.unitType || '').toLowerCase() === 'mission')
+        .map(n => n.unitID ? String(n.unitID) : '')
+        .filter(Boolean)
+    );
+
+    const completedPromptSetTitleSet = new Set();
+    const promptSetBadgesEarned = [];
+
+    for (const completion of teamPromptComps) {
+      const ps = completion.promptSetId || {};
+      const title = ps.promptset_title || completion.promptSetTitle || 'Untitled prompt set';
+
+      completedPromptSetTitleSet.add(title);
+
+      const badgeName =
+        completion.badgeName ||
+        ps.badge_name ||
+        title;
+
+      const badgeImage =
+        completion.badgeImage ||
+        completion.badgeImagePath ||
+        ps.badgeImage ||
+        ps.badgeImagePath ||
+        '';
+
+      promptSetBadgesEarned.push({
+        badgeName,
+        badgeImage
+      });
+    }
+
+    const promptSetsCompleted = Array.from(completedPromptSetTitleSet)
+      .sort((a, b) => a.localeCompare(b));
+
+    const promptSetBadgesUnique = [];
+    const seenPromptBadges = new Set();
+
+    for (const badge of promptSetBadgesEarned) {
+      const key = `${badge.badgeName}:${badge.badgeImage}`;
+      if (seenPromptBadges.has(key)) continue;
+      seenPromptBadges.add(key);
+      promptSetBadgesUnique.push(badge);
+    }
+
     const topicsFromCompletions = teamPromptComps.flatMap(p => {
-      const main = p.promptSetId?.main_topic ? [p.promptSetId.main_topic] : [];
-      const secs = Array.isArray(p.promptSetId?.secondary_topics) ? p.promptSetId.secondary_topics : [];
+      const ps = p.promptSetId || {};
+      const main = ps.main_topic ? [ps.main_topic] : [];
+      const secs = Array.isArray(ps.secondary_topics) ? ps.secondary_topics : [];
       return [...main, ...secs];
     });
 
-    // ---- Units completed (ALL titles, deduped; missions excluded robustly) ----
-    const teamNotes = teamPersonIds.flatMap(pid => notesByPerson.get(pid) || []);
+    const nonMissionNotes = teamNotes.filter(
+      n => String(n.unitType || '').toLowerCase() !== 'mission'
+    );
 
-    // First pass: exclude missions by note unitType if present
-    const nonMissionNotes = teamNotes.filter(n => String(n.unitType || "").toLowerCase() !== "mission");
-
-    // Distinct unitIDs from notes
-    const distinctUnitIds = Array.from(
-      new Set(nonMissionNotes.map(n => (n.unitID ? String(n.unitID) : "")).filter(Boolean))
+    const distinctCompletedUnitIds = Array.from(
+      new Set(nonMissionNotes.map(n => n.unitID ? String(n.unitID) : '').filter(Boolean))
     );
 
     const unitTitleSet = new Set();
     const topicsFromCompletedUnits = [];
 
-    for (const uid of distinctUnitIds) {
-      let d = unitCache.get(uid);
-      if (!d) {
-        d = await resolveUnitDetails(uid);
-        unitCache.set(uid, d);
+    for (const uid of distinctCompletedUnitIds) {
+      let details = unitCache.get(uid);
+
+      if (!details) {
+        details = await resolveUnitDetails(uid);
+        unitCache.set(uid, details);
       }
 
-      // Second pass: if it resolves to a mission anyway, skip (covers bad/missing note.unitType)
-      if (String(d.unitType || "").toLowerCase() === "mission") continue;
+      if (String(details.unitType || '').toLowerCase() === 'mission') continue;
 
-      if (d.unitTitle) unitTitleSet.add(d.unitTitle);
+      if (details.unitTitle) unitTitleSet.add(details.unitTitle);
 
-      if (d.main_topic) topicsFromCompletedUnits.push(d.main_topic);
-      if (Array.isArray(d.secondary_topics) && d.secondary_topics.length) {
-        topicsFromCompletedUnits.push(...d.secondary_topics);
+      if (details.main_topic) topicsFromCompletedUnits.push(details.main_topic);
+      if (Array.isArray(details.secondary_topics)) {
+        topicsFromCompletedUnits.push(...details.secondary_topics);
       }
     }
 
-    const unitsCompleted = Array.from(unitTitleSet).sort((a, b) => a.localeCompare(b));
+    const unitsCompleted = Array.from(unitTitleSet)
+      .sort((a, b) => a.localeCompare(b));
 
-    // ---- Top topics (based on completions + completed units) ----
+    const incompleteUnits = [];
+
+    for (const tag of tags || []) {
+      const assignedTo = Array.isArray(tag.assignedTo) ? tag.assignedTo : [];
+
+      const teamAssignments = assignedTo.filter(a => {
+        const memberId = a?.member?.toString?.() || '';
+        return teamPersonIdSet.has(memberId);
+      });
+
+      if (!teamAssignments.length) continue;
+
+      const associatedUnits = Array.isArray(tag.associatedUnits) ? tag.associatedUnits : [];
+
+      for (const au of associatedUnits) {
+        const unitId = au.item?.toString?.() || au.unitId?.toString?.() || '';
+        const unitType = String(au.unitType || au.itemType || '').toLowerCase();
+
+        if (!unitId) continue;
+        if (completedUnitIdSet.has(unitId)) continue;
+        if (unitType === 'mission') continue;
+        if (unitType === 'nugget') continue;
+
+        let details = unitCache.get(unitId);
+
+        if (!details) {
+          details = await resolveUnitDetails(unitId);
+          unitCache.set(unitId, details);
+        }
+
+        incompleteUnits.push({
+          title: details.unitTitle || tag.tagName || 'Assigned unit',
+          unitType: details.unitType || unitType || 'Unit',
+          assignedAtFormatted: fmtDate(tag.createdAt || tag.updatedAt),
+          viewPath: viewPathForUnit(unitType || details.unitType, unitId)
+        });
+      }
+    }
+
+    const incompleteUnitsUnique = [];
+    const seenIncomplete = new Set();
+
+    for (const item of incompleteUnits) {
+      const key = `${item.title}:${item.assignedAtFormatted}`;
+      if (seenIncomplete.has(key)) continue;
+      seenIncomplete.add(key);
+      incompleteUnitsUnique.push(item);
+    }
+
+    const completedPromptSetIds = new Set(
+      teamPromptComps
+        .map(c => c.promptSetId?._id?.toString?.() || c.promptSetId?.toString?.() || '')
+        .filter(Boolean)
+    );
+
+    const promptSetsInProgress = [];
+
+    for (const assignment of promptAssignments || []) {
+      const assignedToCandidates = [
+        assignment.assignedTo?.toString?.(),
+        assignment.assignedToMember?.toString?.(),
+        assignment.memberId?.toString?.()
+      ].filter(Boolean);
+
+      const belongsToTeam = assignedToCandidates.some(id => teamPersonIdSet.has(id));
+      if (!belongsToTeam) continue;
+
+      const psId =
+        assignment.promptSetId?._id?.toString?.() ||
+        assignment.promptSetId?.toString?.() ||
+        '';
+
+      if (psId && completedPromptSetIds.has(psId)) continue;
+
+      const title =
+        assignment.promptSetId?.promptset_title ||
+        assignment.promptSetTitle ||
+        'Prompt set in progress';
+
+      promptSetsInProgress.push({
+        title,
+        assignedAtFormatted: fmtDate(assignment.createdAt || assignment.assignedAt)
+      });
+    }
+
+    const promptSetsInProgressUnique = [];
+    const seenPromptProgress = new Set();
+
+    for (const item of promptSetsInProgress) {
+      const key = `${item.title}:${item.assignedAtFormatted}`;
+      if (seenPromptProgress.has(key)) continue;
+      seenPromptProgress.add(key);
+      promptSetsInProgressUnique.push(item);
+    }
+
+    const nuggetsMonitored = (nuggets || [])
+      .filter(nugget => {
+        const notes = Array.isArray(nugget.monitoringNotes) ? nugget.monitoringNotes : [];
+        return notes.some(note => {
+          const addedBy = note.addedBy?.toString?.() || '';
+          return teamPersonIdSet.has(addedBy);
+        });
+      })
+      .map(nugget => {
+        const notes = Array.isArray(nugget.monitoringNotes) ? nugget.monitoringNotes : [];
+
+        const teamMonitoringNotes = notes.filter(note => {
+          const addedBy = note.addedBy?.toString?.() || '';
+          return teamPersonIdSet.has(addedBy);
+        });
+
+        const lastNote = teamMonitoringNotes
+          .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))[0];
+
+        return {
+          title: nugget.title || 'Untitled nugget',
+          client: nugget.client || '',
+          region: nugget.region || '',
+          discipline: nugget.discipline || '',
+          lastMonitoredFormatted: fmtDate(lastNote?.createdAt),
+          viewPath: viewPathForUnit('nugget', nugget._id)
+        };
+      });
+
+    const missionLookup = new Map(
+      (missions || []).map(m => [m._id.toString(), m])
+    );
+
+    const missionsCompleted = [];
+    const missionBadgesEarned = [];
+
+    for (const missionId of completedMissionIdSet) {
+      const mission = missionLookup.get(missionId);
+      if (!mission) continue;
+
+      const title = mission.mission_title || 'Completed mission';
+
+      missionsCompleted.push({
+        title,
+        completedAtFormatted: '',
+        viewPath: viewPathForUnit('mission', missionId)
+      });
+
+      missionBadgesEarned.push({
+        badgeName: mission.badge_name || title,
+        badgeImage:
+          mission.badgeImagePath ||
+          mission.badge_image ||
+          mission.badgeImage ||
+          ''
+      });
+    }
+
+    const missionsInProgress = [];
+
+    for (const tag of tags || []) {
+      const assignedTo = Array.isArray(tag.assignedTo) ? tag.assignedTo : [];
+
+      const teamAssignments = assignedTo.filter(a => {
+        const memberId = a?.member?.toString?.() || '';
+        return teamPersonIdSet.has(memberId);
+      });
+
+      if (!teamAssignments.length) continue;
+
+      const associatedUnits = Array.isArray(tag.associatedUnits) ? tag.associatedUnits : [];
+
+      for (const au of associatedUnits) {
+        const unitId = au.item?.toString?.() || au.unitId?.toString?.() || '';
+        const unitType = String(au.unitType || au.itemType || '').toLowerCase();
+
+        if (unitType !== 'mission') continue;
+        if (!unitId) continue;
+        if (completedMissionIdSet.has(unitId)) continue;
+
+        const mission = missionLookup.get(unitId);
+
+        missionsInProgress.push({
+          title: mission?.mission_title || tag.tagName || 'Mission in progress',
+          assignedAtFormatted: fmtDate(tag.createdAt || tag.updatedAt),
+          viewPath: viewPathForUnit('mission', unitId)
+        });
+      }
+    }
+
     const allTopics = [...topicsFromCompletions, ...topicsFromCompletedUnits].filter(Boolean);
 
     const freq = new Map();
-    for (const t of allTopics) freq.set(t, (freq.get(t) || 0) + 1);
+    for (const topic of allTopics) {
+      freq.set(topic, (freq.get(topic) || 0) + 1);
+    }
 
     const topTopics = Array.from(freq.entries())
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
+      .slice(0, 8)
       .map(([topic]) => topic);
-
-      console.log("ADMIN TEAM ROW:", {
-  team: l.groupName,
-  ps: promptSetsCompleted.length,
-  units: unitsCompleted.length
-});
 
     reports.push({
       teamId: leaderIdStr,
-      teamName: l.groupName || "Unnamed group",
-      teamLeaderName: l.groupLeaderName || l.name || "Leader",
+      teamName: leader.groupName || 'Unnamed group',
+      groupImage: groupImgByLeaderId.get(leaderIdStr) || '/images/default-group.png',
+
+      teamLeaderName: leader.groupLeaderName || leader.name || 'Leader',
+      teamLeaderImage:
+        leaderImgByLeaderId.get(leaderIdStr) ||
+        leader.profileImage ||
+        '/images/default-avatar.png',
+
       memberCount: memberIds.length,
 
-      // ✅ New fields for the trimmed admin_reports partial
-      groupImage:
-        groupImgByLeaderId.get(leaderIdStr) || "/images/default-group.png",
+      topTopics,
+      unitsCompleted,
+      incompleteUnits: incompleteUnitsUnique,
 
-      promptSetsCompleted, // ALL titles
-      unitsCompleted,      // ALL titles
-      topTopics
+      promptSetsCompleted,
+      promptSetBadgesEarned: promptSetBadgesUnique,
+      promptSetsInProgress: promptSetsInProgressUnique,
+
+      nuggetsMonitored,
+
+      missionsInProgress,
+      missionsCompleted,
+      missionBadgesEarned
     });
   }
 
-  // Sort: most learning activity first (based on list lengths), then name
   reports.sort((a, b) => {
-    const as = (a.promptSetsCompleted?.length || 0) + (a.unitsCompleted?.length || 0);
-    const bs = (b.promptSetsCompleted?.length || 0) + (b.unitsCompleted?.length || 0);
-    if (bs !== as) return bs - as;
-    return (a.teamName || "").localeCompare(b.teamName || "");
+    const aScore =
+      (a.unitsCompleted?.length || 0) +
+      (a.promptSetsCompleted?.length || 0) +
+      (a.nuggetsMonitored?.length || 0) +
+      (a.missionsCompleted?.length || 0);
+
+    const bScore =
+      (b.unitsCompleted?.length || 0) +
+      (b.promptSetsCompleted?.length || 0) +
+      (b.nuggetsMonitored?.length || 0) +
+      (b.missionsCompleted?.length || 0);
+
+    if (bScore !== aScore) return bScore - aScore;
+    return (a.teamName || '').localeCompare(b.teamName || '');
   });
 
   return reports;
 }
-
 
 // Build all data needed for ALL admin tabs, every time (no flash, no missing vars)
 async function buildAdminPayload(orgId, adminId) {
