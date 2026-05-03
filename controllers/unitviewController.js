@@ -19,10 +19,11 @@ const Nugget = require('../models/unit_models/nugget'); // add this at the top w
 const OrganizationProfile = require('../models/profile_models/organization_profile');
 const Tag = require('../models/tag');
 
-function isPaidMember(req) {
-  const t = req.user?.accessLevel || req.user?.membershipType;
-  return ['paid_individual', 'leader', 'group_member'].includes(t);
+function canAccessMineAndMissions(req) {
+  const membershipType = req.user?.membershipType;
+  return membershipType === 'leader' || membershipType === 'group_member';
 }
+
 
 // Add this helper at the top of the controller file (outside the viewInterview function)
 function convertYouTubeToEmbed(url) {
@@ -412,7 +413,7 @@ viewMineClients: async (req, res) => {
   try {
     console.log('[viewMineClients] start, user:', req.user?.id || req.user?._id);
 
-    if (!isPaidMember(req)) {
+    if (!canAccessMineAndMissions(req)) {
       console.log('[viewMineClients] blocked: not paid member');
       return res.status(403).render('unit_views/error', {
         layout: 'unitviewlayout',
@@ -532,7 +533,7 @@ viewMineRegions: async (req, res) => {
   try {
     console.log('[viewMineRegions] start, user:', req.user?.id || req.user?._id);
 
-    if (!isPaidMember(req)) {
+    if (!canAccessMineAndMissions(req)) {
       console.log('[viewMineRegions] blocked: not paid member');
       return res.status(403).render('unit_views/error', {
         layout: 'unitviewlayout',
@@ -648,7 +649,7 @@ viewMineDisciplines: async (req, res) => {
   try {
     console.log('[viewMineDisciplines] start, user:', req.user?.id || req.user?._id);
 
-    if (!isPaidMember(req)) {
+    if (!canAccessMineAndMissions(req)) {
       console.log('[viewMineDisciplines] blocked: not paid member');
       return res.status(403).render('unit_views/error', {
         layout: 'unitviewlayout',

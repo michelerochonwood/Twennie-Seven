@@ -8,14 +8,16 @@ const GroupMemberProfile = require('../models/profile_models/groupmember_profile
 const LeaderProfile = require('../models/profile_models/leader_profile');
 const OrganizationProfile = require('../models/profile_models/organization_profile');
 
-function isPaidMember(req) {
-  const t = req.user?.accessLevel || req.user?.membershipType;
-  return ['paid_individual', 'leader', 'group_member'].includes(t);
+function canAccessMineAndMissions(req) {
+  const membershipType = req.user?.membershipType;
+
+  return membershipType === 'leader' || membershipType === 'group_member';
 }
 
 function isLeaderOrGroupMember(req) {
-  const t = req.user?.accessLevel || req.user?.membershipType;
-  return ['leader', 'group_member'].includes(t);
+  const membershipType = req.user?.membershipType;
+
+  return membershipType === 'leader' || membershipType === 'group_member';
 }
 
 function normalizeImg(img) {
@@ -175,7 +177,7 @@ async function renderMissionList(req, res, options) {
   } = options;
 
   try {
-    if (!isPaidMember(req)) {
+    if (!canAccessMineAndMissions(req)) {
       return res.status(403).render('unit_views/error', {
         layout: 'unitviewlayout',
         title: 'Access Restricted',
@@ -578,7 +580,7 @@ module.exports = {
   // Mission Control unchanged...
   missionControl: async (req, res) => {
     try {
-      if (!isPaidMember(req)) {
+      if (!canAccessMineAndMissions(req)) {
         return res.status(403).render('unit_views/error', {
           layout: 'unitviewlayout',
           title: 'Access Restricted',
@@ -717,11 +719,11 @@ module.exports = {
     try {
       const { id } = req.params;
 
-      if (!isPaidMember(req)) {
+      if (!canAccessMineAndMissions(req)) {
         return res.status(403).render('unit_views/error', {
           layout: 'unitviewlayout',
           title: 'Access Restricted',
-          errorMessage: 'Missions are available to paid members only.',
+          errorMessage: 'Mission Control is available to leaders and group members only.',
         });
       }
 
