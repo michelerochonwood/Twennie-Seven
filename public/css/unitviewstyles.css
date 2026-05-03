@@ -2330,6 +2330,64 @@ label {
   width: 30%;
 }
 
+/* =========================
+   NUGGET – SELF ASSIGN BLOCK
+   ========================= */
+
+.single_nugget-main .single_unit-tag-container {
+  width: 80%;
+  margin: 0 auto 1.25rem auto;
+  padding: 16px 18px;
+  background: #fff;
+  border: 1px solid #e6e6e6;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  text-align: left;
+}
+
+/* Form layout */
+#nuggetTagForm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Label (uses your global label style, just spacing tweak) */
+#nuggetTagForm label {
+  margin-top: 0;
+  font-size: 0.85rem;
+}
+
+/* Input (inherits your base input styles, just refine width/feel) */
+#nuggetTagForm input[type="text"] {
+  width: 100%;
+  max-width: 320px;
+  padding: 10px 14px;
+  border-radius: 55px;
+  border: 1px solid #ccc;
+  font-family: "Figtree", sans-serif;
+  font-size: 0.9rem;
+}
+
+/* Button — aligned with your existing CTA language */
+#nuggetTagForm .tag-this-unit-link {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 10px 18px;
+  border-radius: 99px;
+  background-color: #262262;
+  color: white;
+  font-weight: 800;
+  text-align: center;
+  text-decoration: none;
+  width: fit-content;
+  transition: background-color 0.3s ease;
+}
+
+#nuggetTagForm .tag-this-unit-link:hover {
+  background-color: #4a4ab2;
+}
+
 .single_nugget-author { text-align:center; margin-bottom: 20px; }
 .single_nugget-author-image {
   width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #262262;
