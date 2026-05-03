@@ -227,18 +227,16 @@
 <input type="hidden" name="assignedMemberIdsCsv" id="assignedMembersCsv" value="">
     <input type="hidden" name="frequency" id="selectedFrequency">
 
-<label>assign to?</label>
-
-<div class="assign-member-options promptset-assign-member-options">
+    <label>assign to?</label>
+<div class="assign-member-options">
   {{#each groupMembers}}
-    <div
-      class="assign-member-option promptset-assign-member-option"
-      data-member-id="{{this._id}}"
-      onclick="toggleMemberSelection('{{this._id}}', this)"
-    >
-      <span class="promptset-fake-checkbox"></span>
-      <span>{{this.name}}</span>
-    </div>
+  <div
+    class="assign-member-option"
+    data-member-id="{{this._id}}"
+    onclick="toggleMemberSelection('{{this._id}}', this)"
+  >
+    <span>{{this.name}}</span>
+  </div>
   {{/each}}
 </div>
 
