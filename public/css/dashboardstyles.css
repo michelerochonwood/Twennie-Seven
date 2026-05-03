@@ -6259,7 +6259,7 @@ box-shadow: none !important;
   height: 92px;
   border-radius: 14px;
   object-fit: cover;
-  left: -70px;
+  right: -70px;
   bottom: -70px;
 }
 
