@@ -6205,67 +6205,95 @@ box-shadow: none !important;
 .admin-team-report-cards {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.75rem;
+  width: 100%;
 }
 
 /* Card shell */
 .admin-team-report-card {
-  background: white;
-  border-radius: 15px;
-  padding: 20px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  background: #f3f3f5;
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
-/* Section spacing */
+/* Section shell */
 .admin-team-report-section {
-  margin-bottom: 1.5rem;
+  background: #fbfbfc;
+  border-radius: 14px;
+  padding: 22px;
+  margin-bottom: 1.25rem;
 }
 
 .admin-team-section-title {
   font-weight: 800;
   color: #262262;
-  margin-bottom: 0.75rem;
+  margin: 0 0 1rem 0;
+  text-align: center;
 }
 
 /* =========================
    TEAM IDENTITY
    ========================= */
 
+.admin-team-identity-section {
+  background: transparent;
+  padding: 0;
+}
+
 .admin-team-identity-main {
   display: flex;
-  gap: 1rem;
+  gap: 1.25rem;
   align-items: flex-start;
 }
 
-.admin-team-image {
-  width: 60px;
-  height: 60px;
-  border-radius: 10px;
-  object-fit: cover;
+.admin-team-image-wrap {
+  position: relative;
+  width: 92px;
+  height: 92px;
+  flex: 0 0 92px;
 }
 
-.admin-team-leader-row {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+.admin-team-image {
+  width: 92px;
+  height: 92px;
+  border-radius: 14px;
+  object-fit: cover;
 }
 
 .admin-team-leader-image {
-  width: 26px;
-  height: 26px;
+  position: absolute;
+  right: -10px;
+  bottom: -10px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   object-fit: cover;
+  border: 3px solid #f3f3f5;
+  background: white;
+}
+
+.admin-team-identity-text {
+  text-align: left;
 }
 
 .admin-team-name {
-  margin: 0;
-  font-size: 1.2rem;
+  margin: 0 0 0.25rem 0;
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: black;
 }
 
 .admin-team-meta {
-  font-size: 0.9rem;
-  color: #666;
-  margin: 2px 0;
+  font-size: 1rem;
+  color: #777;
+  margin: 3px 0;
+  text-align: left;
+}
+
+/* hide old leader row layout if still present */
+.admin-team-leader-row {
+  display: contents;
 }
 
 /* =========================
@@ -6276,12 +6304,26 @@ box-shadow: none !important;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
+  align-items: start;
+}
+
+.admin-team-report-block {
+  text-align: left;
 }
 
 .admin-team-report-block h5 {
-  margin-bottom: 0.5rem;
-  font-weight: 700;
-  color: #4e50a2;
+  margin: 0 0 0.75rem 0;
+  font-weight: 800;
+  color: #6f6cc8;
+  text-align: left;
+}
+
+/* special attention column */
+.admin-team-report-block.admin-incomplete-block,
+.admin-team-section-grid .admin-team-report-block:nth-child(3) {
+  background: #fff0f6;
+  border-radius: 12px;
+  padding: 14px;
 }
 
 /* =========================
@@ -6289,23 +6331,33 @@ box-shadow: none !important;
    ========================= */
 
 .admin-report-list-item {
-  font-size: 0.9rem;
-  margin-bottom: 4px;
+  font-size: 0.95rem;
+  margin-bottom: 0.6rem;
+  text-align: left;
+  line-height: 1.3;
+}
+
+.admin-report-list-item strong {
+  display: block;
+  text-align: left;
 }
 
 .admin-report-list-item span {
   display: block;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   color: #777;
+  text-align: left;
 }
 
 .admin-report-pill {
-  display: inline-block;
-  padding: 4px 10px;
+  display: block;
+  width: fit-content;
+  padding: 5px 12px;
   border-radius: 999px;
-  background: #f0f0f0;
-  font-size: 0.8rem;
-  margin: 2px;
+  background: #ececef;
+  font-size: 0.9rem;
+  margin: 0 0 0.45rem 0;
+  text-align: left;
 }
 
 /* =========================
@@ -6315,13 +6367,16 @@ box-shadow: none !important;
 .admin-report-badge-row {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-bottom: 4px;
+  justify-content: flex-start;
+  gap: 8px;
+  margin-bottom: 0.5rem;
+  text-align: left;
 }
 
 .admin-report-badge-img {
-  width: 20px;
-  height: 20px;
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
 }
 
 /* =========================
@@ -6335,16 +6390,27 @@ box-shadow: none !important;
 }
 
 .admin-nugget-card {
-  background: #f8f8f8;
-  padding: 10px;
-  border-radius: 10px;
-  font-size: 0.85rem;
+  background: #ffffff;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  text-align: left;
 }
 
 .admin-nugget-card span {
   display: block;
   color: #666;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
+  text-align: left;
+}
+
+/* =========================
+   EMPTY STATES
+   ========================= */
+
+.admin-team-report-card .no-data {
+  text-align: left;
+  color: #999;
 }
 
 /* =========================
@@ -6352,12 +6418,13 @@ box-shadow: none !important;
    ========================= */
 
 @media (max-width: 1000px) {
-  .admin-team-section-grid {
+  .admin-team-section-grid,
+  .admin-nugget-grid {
     grid-template-columns: 1fr;
   }
 
-  .admin-nugget-grid {
-    grid-template-columns: 1fr;
+  .admin-team-report-card {
+    padding: 20px;
   }
 }
 
