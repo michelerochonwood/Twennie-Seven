@@ -28,6 +28,7 @@ const OrganizationProfile = require('../models/profile_models/organization_profi
 const DashboardSeen = require('../models/dashboard_seen');
 const AssignPromptSet = require('../models/prompt_models/assignpromptset');
 const Tag = require('../models/tag');
+const ArchivedUnit = require('../models/archivedUnit');
 
 
 // -----------------------------
@@ -761,14 +762,15 @@ async function buildAdminTeamEngagement(orgId) {
     .filter(s => mongoose.Types.ObjectId.isValid(s))
     .map(s => new mongoose.Types.ObjectId(s));
 
-  const [
-    promptCompletions,
-    notes,
-    tags,
-    promptAssignments,
-    nuggets,
-    missions
-  ] = await Promise.all([
+const [
+  promptCompletions,
+  notes,
+  tags,
+  promptAssignments,
+  nuggets,
+  missions,
+  archivedMissionRows
+] = await Promise.all([
     PromptSetCompletion.find({ memberId: { $in: allPersonIds } })
       .populate('promptSetId', 'promptset_title main_topic secondary_topics badge_name badgeImage badgeImagePath')
       .lean(),
@@ -787,7 +789,13 @@ AssignPromptSet.find({
       'monitoringNotes.addedBy': { $in: allPersonIds }
     }).lean(),
 
-    Mission.find({}).lean()
+Mission.find({}).lean(),
+
+ArchivedUnit.find({
+  unitType: 'mission',
+  assignedToMember: { $in: allPersonIds },
+  assignedCompletedAtSnapshot: { $ne: null }
+}).lean()
   ]);
 
   const completionsByPerson = new Map();
@@ -1141,6 +1149,34 @@ for (const tag of tags || []) {
       }
     }
   }
+}
+
+/* archived completed missions */
+for (const row of archivedMissionRows || []) {
+  const assignedToMemberId = row.assignedToMember?.toString?.() || '';
+
+  if (!teamPersonIdSet.has(assignedToMemberId)) continue;
+
+  const missionId = row.unitId?.toString?.() || '';
+  const mission = missionLookup.get(missionId);
+  if (!mission) continue;
+
+  const title = mission.mission_title || 'Completed mission';
+
+  missionsCompleted.push({
+    title,
+    completedAtFormatted: fmtDate(row.assignedCompletedAtSnapshot),
+    viewPath: viewPathForUnit('mission', missionId)
+  });
+
+  missionsBadgesEarnedSafePush({
+    badgeName: mission.badge_name || title || 'mission badge',
+    badgeImage:
+      mission.badgeImagePath ||
+      mission.badge_image ||
+      mission.badgeImage ||
+      ''
+  });
 }
 
     const allTopics = [...topicsFromCompletions, ...topicsFromCompletedUnits].filter(Boolean);
