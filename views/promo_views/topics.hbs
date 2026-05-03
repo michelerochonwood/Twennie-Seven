@@ -110,12 +110,12 @@
       <span class="tab-title">people management</span>
       <div class="tab-arrow"></div>
     </button>
-    <button class="topics-tab" data-tab="technology">
-      <span class="tab-title">technology</span>
+        <button class="topics-tab" data-tab="workplaceculture">
+      <span class="tab-title">workplace culture</span>
       <div class="tab-arrow"></div>
     </button>
-    <button class="topics-tab" data-tab="workplaceculture">
-      <span class="tab-title">workplace culture</span>
+    <button class="topics-tab" data-tab="technology">
+      <span class="tab-title">technology</span>
       <div class="tab-arrow"></div>
     </button>
     <button class="topics-tab" data-tab="ai">
@@ -145,13 +145,15 @@
     {{> topicpartials/topics_peoplemanagement }}
   </div>
 
+    <div class="topics-tab-content" id="workplaceculture">
+    {{> topicpartials/topics_workplaceculture }}
+  </div>
+
   <div class="topics-tab-content" id="technology">
     {{> topicpartials/topics_technology }}
   </div>
 
-  <div class="topics-tab-content" id="workplaceculture">
-    {{> topicpartials/topics_workplaceculture }}
-  </div>
+
 
   <div class="topics-tab-content" id="ai">
     {{> topicpartials/topics_ai }}
