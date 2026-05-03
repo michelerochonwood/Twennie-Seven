@@ -27,6 +27,7 @@ const Upcoming = require('../models/unit_models/upcoming');
 const OrganizationProfile = require('../models/profile_models/organization_profile');
 const DashboardSeen = require('../models/dashboard_seen');
 const AssignPromptSet = require('../models/prompt_models/assignpromptset');
+const Tag = require('../models/tag');
 
 
 // -----------------------------
