@@ -1079,27 +1079,18 @@ for (const nugget of nuggetsMonitored) {
     const missionsCompleted = [];
     const missionBadgesEarned = [];
 
-    for (const missionId of completedMissionIdSet) {
-      const mission = missionLookup.get(missionId);
-      if (!mission) continue;
 
-      const title = mission.mission_title || 'Completed mission';
 
-      missionsCompleted.push({
-        title,
-        completedAtFormatted: '',
-        viewPath: viewPathForUnit('mission', missionId)
-      });
+    function missionsBadgesEarnedSafePush(badge) {
+  const key = `${badge.badgeName}:${badge.badgeImage}`;
+  if (!missionsBadgesEarnedSafePush.seen) {
+    missionsBadgesEarnedSafePush.seen = new Set();
+  }
 
-      missionBadgesEarned.push({
-        badgeName: mission.badge_name || title,
-        badgeImage:
-          mission.badgeImagePath ||
-          mission.badge_image ||
-          mission.badgeImage ||
-          ''
-      });
-    }
+  if (missionsBadgesEarnedSafePush.seen.has(key)) return;
+  missionsBadgesEarnedSafePush.seen.add(key);
+  missionBadgesEarned.push(badge);
+}
 
 const missionsInProgress = [];
 
