@@ -10,33 +10,37 @@
 
         {{!-- TEAM IDENTITY --}}
         <section class="admin-team-report-section admin-team-identity-section">
-          <div class="admin-team-identity-main">
-            <img
-              src="{{this.groupImage}}"
-              alt="group image"
-              class="admin-team-image"
-            >
+<div class="admin-team-identity-main">
 
-            <div class="admin-team-identity-text">
-              <h3 class="admin-team-name">{{this.teamName}}</h3>
+  <div class="admin-team-image-wrap">
+    <img
+      src="{{this.groupImage}}"
+      alt="group image"
+      class="admin-team-image"
+    >
 
-              <div class="admin-team-leader-row">
-                {{#if this.teamLeaderImage}}
-                  <img
-                    src="{{this.teamLeaderImage}}"
-                    alt="leader image"
-                    class="admin-team-leader-image"
-                  >
-                {{/if}}
+    {{#if this.teamLeaderImage}}
+      <img
+        src="{{this.teamLeaderImage}}"
+        alt="leader image"
+        class="admin-team-leader-image"
+      >
+    {{/if}}
+  </div>
 
-                <p class="admin-team-meta">
-                  leader: {{#if this.teamLeaderName}}{{this.teamLeaderName}}{{else}}—{{/if}}
-                </p>
-              </div>
+  <div class="admin-team-identity-text">
+    <h3 class="admin-team-name">{{this.teamName}}</h3>
 
-              <p class="admin-team-meta">members: {{this.memberCount}}</p>
-            </div>
-          </div>
+    <p class="admin-team-meta">
+      leader: {{#if this.teamLeaderName}}{{this.teamLeaderName}}{{else}}—{{/if}}
+    </p>
+
+    <p class="admin-team-meta">
+      members: {{this.memberCount}}
+    </p>
+  </div>
+
+</div>
         </section>
 
         {{!-- TOPICS AND UNITS --}}
