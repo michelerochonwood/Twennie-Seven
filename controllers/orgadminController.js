@@ -777,13 +777,9 @@ async function buildAdminTeamEngagement(orgId) {
 
     Tag.find({ 'assignedTo.member': { $in: allPersonIds } }).lean(),
 
-    AssignPromptSet.find({
-      $or: [
-        { assignedTo: { $in: allPersonIds } },
-        { assignedToMember: { $in: allPersonIds } },
-        { memberId: { $in: allPersonIds } }
-      ]
-    })
+AssignPromptSet.find({
+  assignedMemberIds: { $in: allPersonIds }
+})
       .populate('promptSetId', 'promptset_title badge_name badgeImage badgeImagePath main_topic secondary_topics')
       .lean(),
 
@@ -980,13 +976,13 @@ async function buildAdminTeamEngagement(orgId) {
     const promptSetsInProgress = [];
 
     for (const assignment of promptAssignments || []) {
-      const assignedToCandidates = [
-        assignment.assignedTo?.toString?.(),
-        assignment.assignedToMember?.toString?.(),
-        assignment.memberId?.toString?.()
-      ].filter(Boolean);
 
-      const belongsToTeam = assignedToCandidates.some(id => teamPersonIdSet.has(id));
+      const assignedIds = Array.isArray(assignment.assignedMemberIds)
+  ? assignment.assignedMemberIds.map(id => id.toString())
+  : [];
+
+const belongsToTeam = assignedIds.some(id => teamPersonIdSet.has(id));
+
       if (!belongsToTeam) continue;
 
       const psId =
