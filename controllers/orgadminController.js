@@ -1557,7 +1557,18 @@ async markAdminTabSeen(req, res) {
     }
 
     const tabKey = req.body?.tab || req.body?.tabKey;
-    const currentCount = req.body?.count ?? req.body?.currentCount;
+let currentCount = req.body?.count ?? req.body?.currentCount;
+
+if (currentCount === undefined || currentCount === null || currentCount === '') {
+  const orgId = await getOrgIdForAdmin(req);
+
+  if (orgId) {
+    const payload = await buildAdminPayload(orgId, adminId);
+    currentCount = payload.adminCounts?.[tabKey] ?? 0;
+  } else {
+    currentCount = 0;
+  }
+}
 
     if (!tabKey) {
       return res.status(400).json({ ok: false, error: 'missing tab key' });
