@@ -27,47 +27,114 @@ const NuggetMonitoringNoteSchema = new mongoose.Schema({
 }, { _id: true });
 
 const NuggetSchema = new mongoose.Schema({
-  // Required core
   title: { type: String, required: true, trim: true },
   client: { type: String, required: true, trim: true },
-  horizon: { type: String, enum: ['1y', '3y', '5y'], required: true },
 
-  // Classification
-  discipline: { type: String, trim: true },
-  region: { type: String, trim: true },
-
-  // Scale
-  estimatedValue: {
-    amount: { type: Number, min: 0, default: null },
-    currency: { type: String, default: 'CAD', trim: true }
+  horizon: {
+    type: String,
+    enum: ['1y', '3y', '5y'],
+    required: true
   },
 
-  // Delivery / procurement
+  discipline: {
+    type: String,
+    enum: [
+      'Architecture',
+      'Bridges',
+      'Buildings',
+      'Electrical',
+      'Environmental',
+      'Geotechnical',
+      'Hydrology',
+      'Interior Design',
+      'Landscape Architecture',
+      'Land Development',
+      'Mechanical',
+      'Planning',
+      'Transit',
+      'Transportation',
+      'Water and Wastewater',
+      'Other'
+    ],
+    required: true,
+    trim: true
+  },
+
+  region: {
+    type: String,
+    enum: [
+      'Northwestern',
+      'Northeastern',
+      'Central',
+      'Eastern',
+      'Southwestern',
+      'Prairies',
+      'BC',
+      'Quebec',
+      'Maritimes',
+      'Nunavut, NWT, and the Yukon',
+      'Other'
+    ],
+    required: true,
+    trim: true
+  },
+
+  estimatedValue: {
+    bucket: {
+      type: String,
+      enum: [
+        '<$100K',
+        '$100K - $1M',
+        '$1M - $10M',
+        '>$10M',
+        'unknown'
+      ],
+      default: 'unknown'
+    },
+    currency: {
+      type: String,
+      default: 'CAD',
+      trim: true
+    }
+  },
+
   projectDeliveryType: {
     type: String,
-    enum: ['design', 'design-build', 'CMAR', 'P3', 'DBFM', 'DBF', 'unknown'],
+    enum: [
+      'design',
+      'design-build',
+      'CMAR',
+      'P3',
+      'DBFM',
+      'DBF',
+      'unknown',
+      'Other'
+    ],
     default: 'unknown'
   },
 
-  // Source
   originalSource: {
     label: { type: String, required: true, trim: true },
     url: { type: String, trim: true }
   },
 
-  // Prioritization
-  likelihood: { type: Number, min: 0, max: 100, default: 50 },
+  likelihood: {
+    type: Number,
+    min: 0,
+    max: 100,
+    default: 50
+  },
 
-  // Original nugget notes / description
-  notes: { type: String, trim: true },
+  notes: {
+    type: String,
+    trim: true
+  },
 
-  // Ongoing monitoring notes - append only
   monitoringNotes: {
     type: [NuggetMonitoringNoteSchema],
     default: []
   },
 
-  // Ownership & visibility
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Member',
@@ -82,7 +149,6 @@ const NuggetSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-// Indexes
 NuggetSchema.index({
   title: 'text',
   client: 'text',
@@ -91,8 +157,7 @@ NuggetSchema.index({
 });
 
 NuggetSchema.index({ horizon: 1, likelihood: -1 });
-NuggetSchema.index({ 'estimatedValue.amount': -1 });
+NuggetSchema.index({ 'estimatedValue.bucket': 1 });
 NuggetSchema.index({ 'monitoringNotes.createdAt': -1 });
 
 module.exports = mongoose.model('Nugget', NuggetSchema);
-

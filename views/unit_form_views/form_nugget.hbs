@@ -99,37 +99,22 @@
         <label for="region">Region</label>
         <select id="region" name="region" required>
           <option value="">Select region</option>
-<option value="GTA (Toronto Core)" {{#ifEquals data.region "GTA (Toronto Core)"}}selected{{/ifEquals}}>
-  GTA (Toronto Core – Toronto, Etobicoke, North York, Scarborough)
-</option>
+<option value="Northwestern" {{#ifEquals data.region "Northwestern"}}selected{{/ifEquals}}>Northwestern Ontario</option>
 
-<option value="GTA (Outer 905)" {{#ifEquals data.region "GTA (Outer 905)"}}selected{{/ifEquals}}>
-  GTA (Outer 905 – Mississauga, Brampton, Vaughan, Markham, Richmond Hill, Pickering, Ajax, Whitby, Oshawa)
-</option>
+<option value="Northeastern" {{#ifEquals data.region "Northeastern"}}selected{{/ifEquals}}>Northeastern Ontario</option>
 
-<option value="Southwestern Ontario" {{#ifEquals data.region "Southwestern Ontario"}}selected{{/ifEquals}}>
-  Southwestern Ontario (London, Windsor, Waterloo, Sarnia, Stratford, Guelph, Cambridge)
-</option>
+<option value="Central" {{#ifEquals data.region "Central"}}selected{{/ifEquals}}>Central Ontario</option>
 
-<option value="Golden Horseshoe (Non-GTA)" {{#ifEquals data.region "Golden Horseshoe (Non-GTA)"}}selected{{/ifEquals}}>
-  Golden Horseshoe (Non-GTA – Hamilton, Burlington, Oakville, St. Catharines, Niagara Falls, Welland)
-</option>
+<option value="Eastern" {{#ifEquals data.region "Eastern"}}selected{{/ifEquals}}>Eastern Ontario</option>
 
-<option value="Central Ontario (Simcoe / Muskoka)" {{#ifEquals data.region "Central Ontario (Simcoe / Muskoka)"}}selected{{/ifEquals}}>
-  Central Ontario (Simcoe / Muskoka – Barrie, Orillia, Collingwood, Bracebridge, Huntsville)
-</option>
+<option value="Southwestern" {{#ifEquals data.region "Southwestern"}}selected{{/ifEquals}}>Southwestern Ontario</option>
 
-<option value="Eastern Ontario" {{#ifEquals data.region "Eastern Ontario"}}selected{{/ifEquals}}>
-  Eastern Ontario (Ottawa, Kingston, Cornwall, Brockville, Belleville)
-</option>
-          <option value="Northeastern Ontario"                  {{#ifEquals data.region "Northeastern Ontario"}}selected{{/ifEquals}}>Northeastern Ontario</option>
-          <option value="Northwestern Ontario"                  {{#ifEquals data.region "Northwestern Ontario"}}selected{{/ifEquals}}>Northwestern Ontario</option>
           <option value="Prairies"                          {{#ifEquals data.region "Prairies"}}selected{{/ifEquals}}>Prairies</option>
           <option value="BC"                                {{#ifEquals data.region "BC"}}selected{{/ifEquals}}>BC</option>
           <option value="Quebec"                            {{#ifEquals data.region "Quebec"}}selected{{/ifEquals}}>Quebec</option>
           <option value="Maritimes"                         {{#ifEquals data.region "Maritimes"}}selected{{/ifEquals}}>Maritimes</option>
           <option value="Nunavut, NWT, and the Yukon"       {{#ifEquals data.region "Nunavut, NWT, and the Yukon"}}selected{{/ifEquals}}>Nunavut, NWT, and the Yukon</option>
-          <option value="Other"                             {{#ifEquals data.discipline "Water and Wastewater"}}selected{{/ifEquals}}>Other</option>
+          <option value="Other" {{#ifEquals data.region "Other"}}selected{{/ifEquals}}>Other</option>
         </select>
       </div>
 
@@ -138,15 +123,11 @@
   <label for="estimated-value-bucket">Estimated Value (CAD)</label>
   <p>If you choose the Unknown option from this list, make sure you update the nugget as soon as you have further information.</p>
   <select id="estimated-value-bucket" name="estimatedValue.bucket">
-    <option value="">Select range</option>
-    <option value="<$100K"        {{#ifEquals data.estimatedValue.bucket "<$100K"}}selected{{/ifEquals}}>&lt;$100K</option>
-    <option value="$100K - $500K" {{#ifEquals data.estimatedValue.bucket "$100K - $500K"}}selected{{/ifEquals}}>$100K - $500K</option>
-    <option value="$500K - $1M"   {{#ifEquals data.estimatedValue.bucket "$500K - $1M"}}selected{{/ifEquals}}>$500K - $1M</option>
-    <option value="$1M - $5M"     {{#ifEquals data.estimatedValue.bucket "$1M - $5M"}}selected{{/ifEquals}}>$1M - $5M</option>
-    <option value="$5M - $10M"    {{#ifEquals data.estimatedValue.bucket "$5M - $10M"}}selected{{/ifEquals}}>$5M - $10M</option>
-    <option value="$10M - $50M"   {{#ifEquals data.estimatedValue.bucket "$10M - $50M"}}selected{{/ifEquals}}>$10M - $50M</option>
-    <option value=">$50M"         {{#ifEquals data.estimatedValue.bucket ">$50M"}}selected{{/ifEquals}}>&gt;$50M</option>
-    <option value="unknown"       {{#ifEquals data.estimatedValue.bucket "unknown"}}selected{{/ifEquals}}>unknown</option>
+<option value="<$100K">&lt;$100K</option>
+<option value="$100K - $1M">$100K - $1M</option>
+<option value="$1M - $10M">$1M - $10M</option>
+<option value=">$10M">&gt;$10M</option>
+<option value="unknown">unknown</option>
   </select>
 
   <input
