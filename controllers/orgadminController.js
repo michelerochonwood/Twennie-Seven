@@ -1013,34 +1013,64 @@ const belongsToTeam = assignedIds.some(id => teamPersonIdSet.has(id));
       promptSetsInProgressUnique.push(item);
     }
 
-    const nuggetsMonitored = (nuggets || [])
-      .filter(nugget => {
-        const notes = Array.isArray(nugget.monitoringNotes) ? nugget.monitoringNotes : [];
-        return notes.some(note => {
+const nuggetsMonitored = [];
+
+for (const tag of tags || []) {
+  const assignedTo = Array.isArray(tag.assignedTo) ? tag.assignedTo : [];
+
+  const teamAssignments = assignedTo.filter(a => {
+    const memberId = a?.member?.toString?.() || '';
+    return teamPersonIdSet.has(memberId);
+  });
+
+  if (!teamAssignments.length) continue;
+
+  const associatedUnits = Array.isArray(tag.associatedUnits) ? tag.associatedUnits : [];
+
+  for (const au of associatedUnits) {
+    const unitId = au.item?.toString?.() || au.unitId?.toString?.() || '';
+    const unitType = String(au.unitType || au.itemType || '').toLowerCase();
+
+    if (unitType !== 'nugget') continue;
+    if (!unitId) continue;
+
+    const nugget = await Nugget.findById(unitId)
+      .select('title client region discipline monitoringNotes')
+      .lean();
+
+    if (!nugget) continue;
+
+    const teamMonitoringNotes = Array.isArray(nugget.monitoringNotes)
+      ? nugget.monitoringNotes.filter(note => {
           const addedBy = note.addedBy?.toString?.() || '';
           return teamPersonIdSet.has(addedBy);
-        });
-      })
-      .map(nugget => {
-        const notes = Array.isArray(nugget.monitoringNotes) ? nugget.monitoringNotes : [];
+        })
+      : [];
 
-        const teamMonitoringNotes = notes.filter(note => {
-          const addedBy = note.addedBy?.toString?.() || '';
-          return teamPersonIdSet.has(addedBy);
-        });
+    const lastNote = teamMonitoringNotes
+      .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))[0];
 
-        const lastNote = teamMonitoringNotes
-          .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))[0];
+    nuggetsMonitored.push({
+      title: nugget.title || tag.tagName || 'Nugget',
+      client: nugget.client || '',
+      region: nugget.region || '',
+      discipline: nugget.discipline || '',
+      assignedAtFormatted: fmtDate(tag.createdAt || tag.updatedAt),
+      lastMonitoredFormatted: fmtDate(lastNote?.createdAt),
+      viewPath: viewPathForUnit('nugget', unitId)
+    });
+  }
+}
 
-        return {
-          title: nugget.title || 'Untitled nugget',
-          client: nugget.client || '',
-          region: nugget.region || '',
-          discipline: nugget.discipline || '',
-          lastMonitoredFormatted: fmtDate(lastNote?.createdAt),
-          viewPath: viewPathForUnit('nugget', nugget._id)
-        };
-      });
+const nuggetsMonitoredUnique = [];
+const seenNuggets = new Set();
+
+for (const nugget of nuggetsMonitored) {
+  const key = `${nugget.title}:${nugget.viewPath}`;
+  if (seenNuggets.has(key)) continue;
+  seenNuggets.add(key);
+  nuggetsMonitoredUnique.push(nugget);
+}
 
     const missionLookup = new Map(
       (missions || []).map(m => [m._id.toString(), m])
@@ -1136,7 +1166,7 @@ const belongsToTeam = assignedIds.some(id => teamPersonIdSet.has(id));
       promptSetBadgesEarned: promptSetBadgesUnique,
       promptSetsInProgress: promptSetsInProgressUnique,
 
-      nuggetsMonitored,
+nuggetsMonitored: nuggetsMonitoredUnique,
 
       missionsInProgress,
       missionsCompleted,

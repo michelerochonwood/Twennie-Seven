@@ -151,20 +151,30 @@
           <div class="admin-team-section-grid">
             <div class="admin-team-report-block">
               <h5>in progress</h5>
-              {{#each this.missionsInProgress}}
-                <div class="admin-report-list-item">{{this}}</div>
-              {{else}}
-                <p class="no-data">—</p>
-              {{/each}}
+{{#each this.missionsInProgress}}
+  <div class="admin-report-list-item">
+    <strong>{{this.title}}</strong>
+    {{#if this.assignedAtFormatted}}
+      <span>assigned: {{this.assignedAtFormatted}}</span>
+    {{/if}}
+  </div>
+{{else}}
+  <p class="no-data">—</p>
+{{/each}}
             </div>
 
             <div class="admin-team-report-block">
               <h5>completed</h5>
-              {{#each this.missionsCompleted}}
-                <div class="admin-report-list-item">{{this}}</div>
-              {{else}}
-                <p class="no-data">—</p>
-              {{/each}}
+{{#each this.missionsCompleted}}
+  <div class="admin-report-list-item">
+    <strong>{{this.title}}</strong>
+    {{#if this.completedAtFormatted}}
+      <span>completed: {{this.completedAtFormatted}}</span>
+    {{/if}}
+  </div>
+{{else}}
+  <p class="no-data">—</p>
+{{/each}}
             </div>
 
             <div class="admin-team-report-block">
