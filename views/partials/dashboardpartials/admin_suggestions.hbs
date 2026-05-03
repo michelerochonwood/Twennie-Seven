@@ -4,72 +4,91 @@
   <div class="tagged-units-grid">
     {{#if mySuggestions.length}}
       {{#each mySuggestions}}
-        <div class="leader-assigned-unit-card leader-suggested-unit-card">
+        <div class="leader-assigned-unit-card leader-suggested-unit-card leader-dashboard-wave-card">
 
-          <!-- Icon -->
-          <div class="tagged-unit-icon">
-            <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
+          <!-- TOP WAVE SVG -->
+          <div class="leader-dashboard-wave-header">
+            <img
+              src="/icons/{{#if (eq unitType 'mission')}}onyxsvg.svg{{else}}{{#if (eq unitType 'nugget')}}goldsvg.svg{{else}}unitsvg.svg{{/if}}{{/if}}"
+              alt=""
+              class="leader-dashboard-wave-image"
+            >
           </div>
 
-          <!-- Info -->
-          <div class="tagged-unit-info">
-            <h3 class="tagged-unit-title">{{unitTitle}}</h3>
+          <!-- CARD CONTENT -->
+          <div class="leader-dashboard-wave-content">
 
-            {{#if main_topic}}
-              <p class="tagged-unit-topic">{{main_topic}}</p>
-            {{/if}}
+            <!-- Icon -->
+            <div class="tagged-unit-icon">
+              <img src="/icons/{{unitType}}.svg" alt="{{unitType}} icon">
+            </div>
 
-            <!-- Suggested to -->
-            {{#if suggestedToNames.length}}
-              <p class="leader-assigned-to">
-                suggested to:
-                {{#each suggestedToNames}}
-                  <span class="leader-assigned-name">
-                    {{this}}{{#unless @last}}, {{/unless}}
-                  </span>
-                {{/each}}
+            <!-- Info -->
+            <div class="tagged-unit-info">
+              <h3 class="tagged-unit-title">{{unitTitle}}</h3>
 
-                {{#if suggestedAtFormatted}}
-                  <span class="muted">({{suggestedAtFormatted}})</span>
-                {{/if}}
-              </p>
-            {{else}}
-              <p class="leader-assigned-to muted">
-                suggested to: —
-              </p>
-            {{/if}}
+              {{#if main_topic}}
+                <p class="tagged-unit-topic">{{main_topic}}</p>
+              {{/if}}
 
-            <!-- ✅ Seen / Thanks status -->
-            {{#if isAcknowledged}}
-              <p class="leader-assigned-to muted" style="margin-top: 0.35rem;">
-                ✅ seen{{#if acknowledgedAtFormatted}} <span class="muted">({{acknowledgedAtFormatted}})</span>{{/if}}
-              </p>
-            {{else}}
-              <p class="leader-assigned-to muted" style="margin-top: 0.35rem;">
-                ⏳ waiting for leader
-              </p>
-            {{/if}}
+              <!-- Suggested to -->
+              {{#if suggestedToNames.length}}
+                <p class="leader-assigned-to">
+                  suggested to:
+                  {{#each suggestedToNames}}
+                    <span class="leader-assigned-name">
+                      {{this}}{{#unless @last}}, {{/unless}}
+                    </span>
+                  {{/each}}
 
-            <!-- Note -->
-            {{#if note}}
-              <p class="leader-assigned-instructions">
-                <em>{{note}}</em>
-              </p>
-            {{/if}}
+                  {{#if suggestedAtFormatted}}
+                    <span class="muted">({{suggestedAtFormatted}})</span>
+                  {{/if}}
+                </p>
+              {{else}}
+                <p class="leader-assigned-to muted">
+                  suggested to: —
+                </p>
+              {{/if}}
+
+              <!-- Seen status -->
+{{#if isAcknowledged}}
+  <div class="leader-suggestion-status leader-suggestion-status--seen">
+    <span class="leader-suggestion-icon">✓</span>
+    <span class="leader-suggestion-text">
+      seen{{#if acknowledgedAtFormatted}} <span class="leader-suggestion-date">({{acknowledgedAtFormatted}})</span>{{/if}}
+    </span>
+  </div>
+{{else}}
+  <div class="leader-suggestion-status leader-suggestion-status--waiting">
+    <span class="leader-suggestion-icon">⏳</span>
+    <span class="leader-suggestion-text">
+      waiting for leader
+    </span>
+  </div>
+{{/if}}
+
+              <!-- Note -->
+              {{#if note}}
+                <p class="leader-assigned-instructions">
+                  <em>{{note}}</em>
+                </p>
+              {{/if}}
+            </div>
+
+            <!-- Actions -->
+            <div
+              class="tagged-unit-actions"
+              style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;"
+            >
+              {{#if viewPath}}
+                <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
+              {{else}}
+                <span class="tagged-unit-link muted">view unavailable</span>
+              {{/if}}
+            </div>
+
           </div>
-
-          <!-- Actions -->
-          <div
-            class="tagged-unit-actions"
-            style="display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:6px;"
-          >
-            {{#if viewPath}}
-              <a href="{{viewPath}}" class="tagged-unit-link">view unit</a>
-            {{else}}
-              <span class="tagged-unit-link muted">view unavailable</span>
-            {{/if}}
-          </div>
-
         </div>
       {{/each}}
     {{else}}
