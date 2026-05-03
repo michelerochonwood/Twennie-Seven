@@ -112,11 +112,16 @@
 
             <div class="admin-team-report-block">
               <h5>in progress</h5>
-              {{#each this.promptSetsInProgress}}
-                <div class="admin-report-list-item">{{this}}</div>
-              {{else}}
-                <p class="no-data">—</p>
-              {{/each}}
+{{#each this.promptSetsInProgress}}
+  <div class="admin-report-list-item">
+    <strong>{{this.title}}</strong>
+    {{#if this.assignedAtFormatted}}
+      <span>assigned: {{this.assignedAtFormatted}}</span>
+    {{/if}}
+  </div>
+{{else}}
+  <p class="no-data">—</p>
+{{/each}}
             </div>
           </div>
         </section>
