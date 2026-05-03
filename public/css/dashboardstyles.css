@@ -6259,13 +6259,12 @@ box-shadow: none !important;
   height: 92px;
   border-radius: 14px;
   object-fit: cover;
-  right: -70px;
-  bottom: -70px;
+
 }
 
 .admin-team-leader-image {
   position: absolute;
-  right: -70px;
+  right: -50px;
   bottom: -70px;
   width: 100px;
   height: 100px;
