@@ -1171,25 +1171,22 @@ html, body {
 }
 
 
-/* === CHARACTERISTIC BADGES (NEW STYLE) === */
+/* === CHARACTERISTIC BADGES === */
 
 .bytopic-card-characteristics {
   position: absolute;
-  top: -1.2rem;          /* pull above card edge */
-  left: 1rem;            /* opposite side from author/org */
+  top: -1.2rem;
+  left: 1rem;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
   z-index: 6;
   pointer-events: none;
 }
 
-/* Each circle */
 .bytopic-characteristic-pill {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: #dc176a;
+  background: #4e50a2;
   color: white;
 
   display: flex;
@@ -1203,29 +1200,23 @@ html, body {
   padding: 6px;
 
   box-shadow: 0 6px 14px rgba(0,0,0,0.18);
-
-  opacity: 0.95;
-}
-
-/* overlap effect */
-.bytopic-characteristic-pill + .bytopic-characteristic-pill {
-  margin-top: -12px;
-  margin-left: -16px;
-}
-
-/* subtle variation for second badge */
-.bytopic-characteristic-pill:nth-child(2) {
-  background: #4e50a2;
-}
-
-.bytopic-characteristic-pill {
-  opacity: 0.85;
+  opacity: 0.9;
   transform: rotate(-10deg);
 }
 
-.bytopic-characteristic-pill:nth-child(2) {
-  transform: rotate(8deg);
+/* === RECENTLY ADDED BADGE === */
+
+.bytopic-recent-badge {
+  position: absolute;
+  right: -20px;
+  bottom: -20px;
+  z-index: 7;
+  width: 70px;
+  height: auto;
+  pointer-events: none;
+  opacity: 0.9;
 }
+
 
 /* === LATEST PROMOTIONS === */
 

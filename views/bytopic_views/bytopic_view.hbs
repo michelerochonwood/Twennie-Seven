@@ -10,23 +10,33 @@
     <hr class="bytopic-key-divider">
 
     <!-- Unit Card SVG Key -->
-    <div class="bytopic-unit-key" aria-label="Unit card key">
-      <div class="bytopic-unit-key-item">
-        <span class="bytopic-unit-key-label">ready to go</span>
-        <img src="/images/unitsvg.svg"
-             alt=""
-             aria-hidden="true"
-             class="bytopic-unit-key-svg">
-      </div>
+<div class="bytopic-unit-key" aria-label="Unit card key">
 
-      <div class="bytopic-unit-key-item">
-        <span class="bytopic-unit-key-label">upcoming unit</span>
-        <img src="/images/newupcomingsvg.svg"
-             alt=""
-             aria-hidden="true"
-             class="bytopic-unit-key-svg">
-      </div>
-    </div>
+  <div class="bytopic-unit-key-item">
+    <span class="bytopic-unit-key-label">ready to go</span>
+    <img src="/images/unitsvg.svg"
+         alt=""
+         aria-hidden="true"
+         class="bytopic-unit-key-svg">
+  </div>
+
+  <div class="bytopic-unit-key-item">
+    <span class="bytopic-unit-key-label">upcoming unit</span>
+    <img src="/images/newupcomingsvg.svg"
+         alt=""
+         aria-hidden="true"
+         class="bytopic-unit-key-svg">
+  </div>
+
+  <div class="bytopic-unit-key-item">
+    <span class="bytopic-unit-key-label">recently added</span>
+    <img src="/images/radio wave svg.svg"
+         alt=""
+         aria-hidden="true"
+         class="bytopic-unit-key-svg">
+  </div>
+
+</div>
 
     <hr class="bytopic-key-divider">
 
@@ -91,6 +101,15 @@
     <img src="/icons/upcomingsvg.svg" alt="" aria-hidden="true" class="bytopic-upcoming-badge">
   {{/if}}
 
+    {{#if isRecent}}
+    <img
+      src="/images/radio wave svg.svg"
+      alt=""
+      aria-hidden="true"
+      class="bytopic-recent-badge"
+    >
+  {{/if}}
+
   {{#unless (eq this.type "upcoming")}}
     <div class="bytopic-card-top-badges">
       <div class="bytopic-card-top-badge bytopic-card-author-badge">
@@ -117,13 +136,11 @@
     {{#if (eq this.type "promptset")}}
       {{#if characteristics}}
         <div class="bytopic-card-characteristics">
-          {{#each characteristics}}
-            {{#if @first}}
-              <span class="bytopic-characteristic-pill">{{this}}</span>
-            {{/if}}
-            {{#if (eq @index 1)}}
-              <span class="bytopic-characteristic-pill">{{this}}</span>
-            {{/if}}
+{{#each characteristics}}
+  {{#if @first}}
+    <span class="bytopic-characteristic-pill">{{this}}</span>
+  {{/if}}
+{{/each}}
           {{/each}}
         </div>
       {{/if}}
@@ -259,6 +276,15 @@
                       <img src="/icons/upcomingsvg.svg" alt="" aria-hidden="true" class="bytopic-upcoming-badge">
                     {{/if}}
 
+                      {{#if isRecent}}
+    <img
+      src="/images/radio wave svg.svg"
+      alt=""
+      aria-hidden="true"
+      class="bytopic-recent-badge"
+    >
+  {{/if}}
+
 {{#unless (eq this.type "upcoming")}}
   <div class="bytopic-card-top-badges">
     <div class="bytopic-card-top-badge bytopic-card-author-badge">
@@ -285,13 +311,11 @@
   {{#if (eq this.type "promptset")}}
     {{#if characteristics}}
       <div class="bytopic-card-characteristics">
-        {{#each characteristics}}
-          {{#if @first}}
-            <span class="bytopic-characteristic-pill">{{this}}</span>
-          {{/if}}
-          {{#if (eq @index 1)}}
-            <span class="bytopic-characteristic-pill">{{this}}</span>
-          {{/if}}
+{{#each characteristics}}
+  {{#if @first}}
+    <span class="bytopic-characteristic-pill">{{this}}</span>
+  {{/if}}
+{{/each}}
         {{/each}}
       </div>
     {{/if}}

@@ -1149,24 +1149,23 @@ groupLibraryUnits = [...groupLibraryUnits, ...gmUpcomingRows2];
 
 // Build current counts from arrays you already computed above
 const gmCounts = {
-group: (leaderDoc?.members || []).length,
-  topics:   (topicSuggestions || []).length,          // my suggested topics
+  group: (leaderDoc?.members || []).length,
+  topics: (topicSuggestions || []).length,
 
-  // prompts: both self-registered + assigned to me
-  prompts:  (memberRegistrations || []).length + (assignedPromptSets || []).length,
+  prompts: (memberRegistrations || []).length + (assignedPromptSets || []).length,
 
-  // progress: completed sets count
   progress: (formattedCompletedSets || []).length,
 
-  // library: my contributions (incl. upcoming)
-  library:  (groupMemberUnits || []).length,
+  library: (groupMemberUnits || []).length,
 
-  // tagged: self-tagged + leader-assigned (all types, incl nuggets + missions)
-  tagged:   (groupMemberSelfTaggedUnits || []).length
-          + (groupMemberAssignedUnits || []).length,
+  // learning and assignments = normal units only
+  tagged: (groupMemberSelfTaggedNonMissionUnits || []).length
+        + (groupMemberAssignedNonMissionUnits || []).length,
 
-  // ✅ NEW: missions tab count (self-tagged + assigned missions)
-  missions: (groupMemberTaggedMissions || []).length
+  // nuggets and missions tab = nuggets + missions only
+  missions: (groupMemberTaggedNuggets || []).length
+          + (groupMemberAssignedNuggets || []).length
+          + (groupMemberTaggedMissions || []).length
           + (groupMemberAssignedMissions || []).length
 };
 

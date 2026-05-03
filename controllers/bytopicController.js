@@ -529,18 +529,27 @@ const loggedIn = !!user;
 const accessLevel = user?.accessLevel || null;
 const membershipType = user?.membershipType || null;
 
+const recentCutoff = new Date();
+recentCutoff.setMonth(recentCutoff.getMonth() - 3);
+
 const injectAccessData = (units) =>
-  units.map(unit => ({
-    ...unit,
-    loggedIn,
-    isLeaderOrGroupMember:
-      membershipType === "leader" || membershipType === "group_member",
-    isPaid:
-      membershipType === "member" &&
-      (accessLevel === "paid_individual" || accessLevel === "contributor_individual"),
-    isFree: membershipType === "member" && accessLevel === "free_individual",
-    isVideoOrArticle: unit.type === "video" || unit.type === "article"
-  }));
+  units.map(unit => {
+    const addedDate = unit.createdAt || unit.publishedAt || unit.updatedAt || null;
+    const isRecent = addedDate ? new Date(addedDate) >= recentCutoff : false;
+
+    return {
+      ...unit,
+      isRecent,
+      loggedIn,
+      isLeaderOrGroupMember:
+        membershipType === "leader" || membershipType === "group_member",
+      isPaid:
+        membershipType === "member" &&
+        (accessLevel === "paid_individual" || accessLevel === "contributor_individual"),
+      isFree: membershipType === "member" && accessLevel === "free_individual",
+      isVideoOrArticle: unit.type === "video" || unit.type === "article"
+    };
+  });
 
 const sectionedUnits = [
   {

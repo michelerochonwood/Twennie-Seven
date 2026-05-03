@@ -370,10 +370,10 @@ panels.forEach(p => {
 if (scopeName === 'admin') {
   const count = btn.dataset.count || 0;
 
-  markSeenAdmin(tabId, count);
-
   const dot = btn.querySelector('.tab-dot');
   if (dot) dot.style.display = 'none';
+
+  await markSeenAdmin(tabId, count);
 
   if (href) {
     window.location.href = href;
@@ -459,7 +459,7 @@ if (scopeName === 'admin') {
 
         document.addEventListener('DOMContentLoaded', () => {
           document.querySelectorAll('[data-tabs-scope="leader"] .dashboard-tab[data-tab]').forEach(btn => {
-            btn.addEventListener('click', () => {
+            btn.addEventListener('click', async () => {
               const tab = btn.dataset.tab;
               const count = btn.dataset.count || 0;
 

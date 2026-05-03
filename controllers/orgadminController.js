@@ -36,6 +36,26 @@ const ArchivedUnit = require('../models/archivedUnit');
 // -----------------------------
 
 
+function ensureTabsMap(seenDoc) {
+  if (!seenDoc) return;
+
+  const t = seenDoc.tabs;
+
+  // already Map-like → do nothing
+  if (t && typeof t.get === 'function' && typeof t.set === 'function') return;
+
+  // convert plain object → Map
+  const raw = (t && typeof t === 'object') ? t : {};
+  const m = new Map();
+
+  for (const [k, v] of Object.entries(raw)) {
+    m.set(k, v);
+  }
+
+  seenDoc.tabs = m;
+}
+
+
 const resolveUnitDetails = async (unitID) => {
   if (!unitID) {
     return {
@@ -1300,6 +1320,8 @@ async function buildAdminPayload(orgId, adminId) {
     role: 'org_admin'
   });
 
+  ensureTabsMap(seenDocAdmin);
+
   if (!seenDocAdmin) {
     // First time: baseline all tabs to current counts (no dots on first render)
     seenDocAdmin = new DashboardSeen({
@@ -1578,6 +1600,8 @@ if (currentCount === undefined || currentCount === null || currentCount === '') 
       userId: adminId,
       role: 'org_admin'
     });
+
+    ensureTabsMap(seenDoc);
 
     if (!seenDoc) {
       seenDoc = new DashboardSeen({
