@@ -1101,37 +1101,56 @@ for (const nugget of nuggetsMonitored) {
       });
     }
 
-    const missionsInProgress = [];
+const missionsInProgress = [];
 
-    for (const tag of tags || []) {
-      const assignedTo = Array.isArray(tag.assignedTo) ? tag.assignedTo : [];
+for (const tag of tags || []) {
+  const assignedTo = Array.isArray(tag.assignedTo) ? tag.assignedTo : [];
 
-      const teamAssignments = assignedTo.filter(a => {
-        const memberId = a?.member?.toString?.() || '';
-        return teamPersonIdSet.has(memberId);
-      });
+  const teamAssignments = assignedTo.filter(a => {
+    const memberId = a?.member?.toString?.() || '';
+    return teamPersonIdSet.has(memberId);
+  });
 
-      if (!teamAssignments.length) continue;
+  if (!teamAssignments.length) continue;
 
-      const associatedUnits = Array.isArray(tag.associatedUnits) ? tag.associatedUnits : [];
+  const associatedUnits = Array.isArray(tag.associatedUnits) ? tag.associatedUnits : [];
 
-      for (const au of associatedUnits) {
-        const unitId = au.item?.toString?.() || au.unitId?.toString?.() || '';
-        const unitType = String(au.unitType || au.itemType || '').toLowerCase();
+  for (const au of associatedUnits) {
+    const unitId = au.item?.toString?.() || au.unitId?.toString?.() || '';
+    const unitType = String(au.unitType || au.itemType || '').toLowerCase();
 
-        if (unitType !== 'mission') continue;
-        if (!unitId) continue;
-        if (completedMissionIdSet.has(unitId)) continue;
+    if (unitType !== 'mission') continue;
+    if (!unitId) continue;
 
-        const mission = missionLookup.get(unitId);
+    const mission = missionLookup.get(unitId);
+    const title = mission?.mission_title || tag.tagName || 'Mission';
 
+    for (const assignmentRow of teamAssignments) {
+      if (assignmentRow.completedAt) {
+        missionsCompleted.push({
+          title,
+          completedAtFormatted: fmtDate(assignmentRow.completedAt),
+          viewPath: viewPathForUnit('mission', unitId)
+        });
+
+        missionsBadgesEarnedSafePush({
+          badgeName: mission?.badge_name || title || 'mission badge',
+          badgeImage:
+            mission?.badgeImagePath ||
+            mission?.badge_image ||
+            mission?.badgeImage ||
+            ''
+        });
+      } else {
         missionsInProgress.push({
-          title: mission?.mission_title || tag.tagName || 'Mission in progress',
+          title,
           assignedAtFormatted: fmtDate(tag.createdAt || tag.updatedAt),
           viewPath: viewPathForUnit('mission', unitId)
         });
       }
     }
+  }
+}
 
     const allTopics = [...topicsFromCompletions, ...topicsFromCompletedUnits].filter(Boolean);
 
