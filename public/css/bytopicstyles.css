@@ -1214,7 +1214,7 @@ html, body {
 .bytopic-recent-badge {
   position: absolute;
   left: 20%;
-  top: -68px;
+  top: -66px;
   transform: translateX(-50%);
   z-index: 7;
   width: 70px;
