@@ -1151,8 +1151,8 @@ html, body {
 }
 
 .bytopic-card-author-mini {
-  width: 58px;
-  height: 58px;
+  width: 68px;
+  height: 68px;
   object-fit: cover;
   border-radius: 50%;
   border: 3px solid #fff;
