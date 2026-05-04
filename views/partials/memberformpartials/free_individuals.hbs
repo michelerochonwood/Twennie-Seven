@@ -1,4 +1,4 @@
-{{#*inline "title"}}Free Membership Form | Twennie{{/inline}}
+{{#*inline "title"}}Free Contributor Membership Form | Twennie{{/inline}}
 
 <form id="member-form" action="/member/form" method="POST" class="membership-form">
   <input type="hidden" name="_csrf" value="{{csrfToken}}">
@@ -11,16 +11,14 @@
       <img src="/images/freebluey.png" alt="Free Membership" class="membership-hero-image">
     </div>
 
-    <h1 class="form-title">free membership form</h1>
+    <h1 class="form-title">free contributor membership form</h1>
 
-    <div class="form-field-access-level">
-      <label for="accessLevel">Choose your membership type</label>
-      <select id="accessLevel" name="accessLevel" required onchange="handleAccessLevelChange(this.value)">
-        <option value="">Please select an access level</option>
-        <option value="free_individual">Free Member</option>
-        <option value="contributor_individual">Contributor Member</option>
-      </select>
-    </div>
+<div class="form-field-access-level">
+  <label>Membership type</label>
+  <div class="form-static-value">Contributor Member</div>
+
+  <input type="hidden" name="accessLevel" value="contributor_individual">
+</div>
 
     <div id="contributor-terms" class="form-field hidden">
       <p><strong>Contributor Agreement</strong></p>
