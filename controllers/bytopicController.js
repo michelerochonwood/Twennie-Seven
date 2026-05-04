@@ -530,7 +530,7 @@ const accessLevel = user?.accessLevel || null;
 const membershipType = user?.membershipType || null;
 
 const recentCutoff = new Date();
-recentCutoff.setMonth(recentCutoff.getMonth() - 3);
+recentCutoff.setMonth(recentCutoff.getMonth() - 1);
 
 const injectAccessData = (units) =>
   units.map(unit => {
