@@ -1176,7 +1176,7 @@ html, body {
 .bytopic-card-characteristics {
   position: absolute;
   top: -1.2rem;
-  left: 1rem;
+  left: 1.5rem;
   display: flex;
   z-index: 6;
   pointer-events: none;
