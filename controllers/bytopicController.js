@@ -534,7 +534,7 @@ recentCutoff.setMonth(recentCutoff.getMonth() - 3);
 
 const injectAccessData = (units) =>
   units.map(unit => {
-    const addedDate = unit.createdAt || unit.publishedAt || unit.updatedAt || null;
+    const addedDate = unit.created_at || unit.publishedAt || unit.updatedAt || null;
     const isRecent = addedDate ? new Date(addedDate) >= recentCutoff : false;
 
     return {
