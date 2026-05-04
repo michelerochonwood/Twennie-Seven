@@ -253,6 +253,9 @@
     </div>
   </div>
 </article>
+                                  <p style="color:red; font-weight:bold;">
+  recent: {{isRecent}}
+</p>
             {{/each}}
           </div>
         {{else}}
@@ -406,9 +409,7 @@
                               {{#if loggedIn}}
                                 {{#if isLeaderOrGroupMember}}
                                   <a href="/unitviews/{{capitalize type}}s/view/{{_id}}" class="bytopic-unit-review-btn">review this unit</a>
-                                  <p style="color:red; font-weight:bold;">
-  recent: {{isRecent}}
-</p>
+
                                 {{else if isPaid}}
                                   <a href="/unitviews/{{capitalize type}}s/view/{{_id}}" class="bytopic-unit-review-btn">review this unit</a>
                                 {{else}}
