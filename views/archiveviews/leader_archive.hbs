@@ -67,6 +67,11 @@
                           {{/if}}
                         </p>
                       {{/if}}
+                      {{#if assignedToNameSnapshot}}
+  <p class="leader-archive-card-meta">
+    <strong>assigned to:</strong> {{assignedToNameSnapshot}}
+  </p>
+{{/if}}
 
                       {{#if unitAuthorName}}
                         <p class="leader-archive-card-meta">
@@ -187,6 +192,11 @@
                     {{/if}}
                   </p>
                 {{/if}}
+                {{#if assignedToNameSnapshot}}
+  <p class="leader-archive-card-meta">
+    <strong>assigned to:</strong> {{assignedToNameSnapshot}}
+  </p>
+{{/if}}
 
                 {{#if isCompleted}}
                   <p class="leader-archive-card-meta">
@@ -291,6 +301,11 @@
                       {{/if}}
                     </p>
                   {{/if}}
+                  {{#if assignedToNameSnapshot}}
+  <p class="leader-archive-card-meta">
+    <strong>assigned to:</strong> {{assignedToNameSnapshot}}
+  </p>
+{{/if}}
 
                   {{#if completedByName}}
                     <p class="leader-archive-card-meta">
