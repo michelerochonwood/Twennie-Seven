@@ -60,8 +60,7 @@
     type="button"
 data-tab="requests"
 data-panel="admin-requests"
-data-count="{{adminCounts.requests}}"
-    data-href="/dashboard/leader/org-admin/requests"
+
   >
     <span class="tab-title">requests from leaders to join</span>
     {{#if adminBadges.requests}}<span class="tab-dot"></span>{{/if}}
@@ -322,79 +321,65 @@ data-count="{{adminCounts.companyLibrary}}"
 
     {{/if}}
 
-    {{!-- =========================================================
-         ONE TAB SCRIPT (handles leader + admin, safely scoped)
-    ========================================================= --}}
-    <script>
+{{!-- =========================================================
+     ONE TAB SCRIPT
+     - Handles leader + admin tabs
+     - Admin green-dot / mark-seen logic removed
+========================================================= --}}
+<script>
+  (function () {
+    function initTabs(scopeName) {
+      const scopeRoot = document.querySelector(`[data-tabs-scope="${scopeName}"]`);
+      const panelsScope = document.querySelector(`[data-panels-scope="${scopeName}"]`);
+      const panelRoot = panelsScope || document;
 
-      async function markSeenAdmin(tab, count) {
-  try {
-    await fetch('/dashboard/leader/org-admin/mark-seen', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-csrf-token': '{{csrfToken}}'
-      },
-      body: JSON.stringify({ tab, count: Number(count || 0) })
-    });
-  } catch (e) { /* no-op */ }
-} 
+      if (!scopeRoot) return;
 
+      const tabs = Array.from(scopeRoot.querySelectorAll('.dashboard-tab[data-tab]'));
+      if (!tabs.length) return;
 
-      (function () {
-        function initTabs(scopeName) {
-          const scopeRoot = document.querySelector(`[data-tabs-scope="${scopeName}"]`);
-          const panelsScope = document.querySelector(`[data-panels-scope="${scopeName}"]`);
-          const panelRoot = panelsScope || document;
+      function getPanelId(tab) {
+        return tab.dataset.panel || tab.dataset.tab;
+      }
 
-          if (!scopeRoot) return;
+      function setActive(tabId) {
+        const activeTab = tabs.find(t => t.dataset.tab === tabId);
+        const activePanelId = activeTab ? getPanelId(activeTab) : tabId;
 
-          const tabs = Array.from(scopeRoot.querySelectorAll('.dashboard-tab[data-tab]'));
-          if (!tabs.length) return;
+        tabs.forEach(t => {
+          t.classList.toggle('active', t.dataset.tab === tabId);
+        });
 
-          function setActive(tabId) {
-            tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === tabId));
+        const panels = Array.from(panelRoot.querySelectorAll('.dashboard-tab-content'));
+        panels.forEach(p => {
+          p.classList.toggle('active', p.id === activePanelId);
+        });
+      }
 
-            const panels = Array.from(panelRoot.querySelectorAll('.dashboard-tab-content'));
-panels.forEach(p => {
-  const panelId = tabs.find(t => t.dataset.tab === tabId)?.dataset.panel || tabId;
-  p.classList.toggle('active', p.id === panelId);
-});
+      tabs.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tabId = btn.dataset.tab;
+          const href = btn.dataset.href;
+
+          if (scopeName === 'admin' && href) {
+            window.location.href = href;
+            return;
           }
 
-          tabs.forEach(btn => {
-            btn.addEventListener('click', () => {
-              const tabId = btn.dataset.tab;
-              const href = btn.dataset.href;
-
-if (scopeName === 'admin') {
-  const count = btn.dataset.count || 0;
-
-  const dot = btn.querySelector('.tab-dot');
-  if (dot) dot.style.display = 'none';
-
-  await markSeenAdmin(tabId, count);
-
-  if (href) {
-    window.location.href = href;
-    return;
-  }
-}
-
-              setActive(tabId);
-            });
-          });
-
-          const preActive = tabs.find(t => t.classList.contains('active')) || tabs[0];
-          if (preActive) setActive(preActive.dataset.tab);
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-          initTabs('admin');
-          initTabs('leader');
+          setActive(tabId);
         });
-      })();
-    </script>
+      });
+
+      const preActive = tabs.find(t => t.classList.contains('active')) || tabs[0];
+      if (preActive) setActive(preActive.dataset.tab);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initTabs('admin');
+      initTabs('leader');
+    });
+  })();
+</script>
 
     <!-- 
     ✅ OPTIONAL: tiny client script (so the "thanks!" button works)
