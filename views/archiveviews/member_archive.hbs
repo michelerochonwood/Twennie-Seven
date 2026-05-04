@@ -3,12 +3,16 @@
 <section class="leader-archive-page">
   <header class="leader-archive-header">
     <div class="leader-archive-hero-image-wrap">
-      <img src="/images/archive bluey.png" alt="Archive Bluey" class="leader-archive-hero-image">
+      <img
+        src="/images/archive bluey.png"
+        alt="Archive Bluey"
+        class="leader-archive-hero-image"
+      >
     </div>
 
     <h1 class="leader-archive-title">learning archive</h1>
     <p class="leader-archive-intro">
-      Review the learning units and prompt sets you have moved out of your active dashboard.
+      Review archived work by topic, see what has been completed, and jump back to the unit or report center whenever you need more detail.
     </p>
   </header>
 
@@ -54,6 +58,23 @@
                     <div class="leader-archive-card-body">
                       <h3 class="leader-archive-card-title">{{titleSnapshot}}</h3>
 
+                      {{#if archiveScope}}
+                        <p class="leader-archive-card-meta">
+                          <strong>assignment type:</strong>
+                          {{#if (eq archiveScope "self_assigned")}}
+                            self-assigned
+                          {{else}}
+                            assigned
+                          {{/if}}
+                        </p>
+                      {{/if}}
+
+                      {{#if assignedToNameSnapshot}}
+                        <p class="leader-archive-card-meta">
+                          <strong>assigned to:</strong> {{assignedToNameSnapshot}}
+                        </p>
+                      {{/if}}
+
                       {{#if unitAuthorName}}
                         <p class="leader-archive-card-meta">
                           <strong>unit author:</strong> {{unitAuthorName}}
@@ -62,7 +83,8 @@
 
                       {{#if isCompleted}}
                         <p class="leader-archive-card-meta">
-                          <strong>completed:</strong> {{completedWhenFormatted}}
+                          <strong>completed by:</strong>
+                          {{#if completedByName}}{{completedByName}}{{else}}{{assignedToNameSnapshot}}{{/if}}{{#if completedWhenFormatted}}, {{completedWhenFormatted}}{{/if}}
                         </p>
 
                         {{#if this.badgeImagePath}}
@@ -110,7 +132,7 @@
                       {{#if archiveNoteInstruction}}
                         {{#if (eq unitType "promptset")}}
                           <div class="archive-prompt-report-cta-wrap">
-                            <a href="/reports/mylearningnotes_individual" class="archive-prompt-report-cta">
+                            <a href="/reports/mycompletedpromptsets-individual" class="archive-prompt-report-cta">
                               {{archiveNoteInstruction}}
                             </a>
                           </div>

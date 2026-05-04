@@ -307,12 +307,21 @@
   </p>
 {{/if}}
 
-                  {{#if completedByName}}
-                    <p class="leader-archive-card-meta">
-                      <strong>archived for:</strong>
-                      {{completedByName}}{{#if completedWhenFormatted}}, {{completedWhenFormatted}}{{/if}}
-                    </p>
-                  {{/if}}
+{{#if isCompleted}}
+  {{#if completedByName}}
+    <p class="leader-archive-card-meta">
+      <strong>archived for:</strong>
+      {{completedByName}}{{#if completedWhenFormatted}}, {{completedWhenFormatted}}{{/if}}
+    </p>
+  {{/if}}
+{{else}}
+  <div class="leader-archive-not-completed">
+    <span class="leader-archive-not-completed-dot"></span>
+    <strong>not completed</strong>
+  </div>
+{{/if}}
+
+
 
                   {{#if mainTopicSnapshot}}
                     <p class="leader-archive-card-meta">
