@@ -622,7 +622,7 @@ viewMineRegions: async (req, res) => {
       { sectionTitle: 'Created by Me', nuggets: createdByMe, emptyMessage: 'No region nuggets created by you yet.' },
       { sectionTitle: 'Created by My Group', nuggets: createdByMyGroup, emptyMessage: 'No region nuggets from your group yet.' },
       { sectionTitle: 'Created by My Organization', nuggets: createdByMyOrg, emptyMessage: 'No region nuggets from your organization yet.' },
-      { sectionTitle: 'From All Members', nuggets: fromAllMembers, emptyMessage: 'No region nuggets available.' },
+      { sectionTitle: 'Sample Nuggets from Twennie', nuggets: fromAllMembers, emptyMessage: 'No region nuggets available.' },
     ]);
 
     return res.render('unit_views/region_view', {
@@ -738,7 +738,7 @@ viewMineDisciplines: async (req, res) => {
       { sectionTitle: 'Created by Me', nuggets: createdByMe, emptyMessage: 'No region nuggets created by you yet.' },
       { sectionTitle: 'Created by My Group', nuggets: createdByMyGroup, emptyMessage: 'No region nuggets from your group yet.' },
       { sectionTitle: 'Created by My Organization', nuggets: createdByMyOrg, emptyMessage: 'No region nuggets from your organization yet.' },
-      { sectionTitle: 'From All Members', nuggets: fromAllMembers, emptyMessage: 'No region nuggets available.' },
+      { sectionTitle: 'Sample Nuggets from Twennie', nuggets: fromAllMembers, emptyMessage: 'No region nuggets available.' },
     ]);
 
     return res.render('unit_views/discipline_view', {

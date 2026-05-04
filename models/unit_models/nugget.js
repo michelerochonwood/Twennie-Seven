@@ -85,8 +85,8 @@ const NuggetSchema = new mongoose.Schema({
       enum: [
         '<$100K',
         '$100K - $1M',
-        '$1M - $10M',
-        '>$10M',
+        '$1M - $5M',
+        '>$5M',
         'unknown'
       ],
       default: 'unknown'
