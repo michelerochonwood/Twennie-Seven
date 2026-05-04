@@ -1213,8 +1213,8 @@ html, body {
 
 .bytopic-recent-badge {
   position: absolute;
-  left: 50%;
-  top: -30px;
+  left: 30%;
+  top: -70px;
   transform: translateX(-50%);
   z-index: 7;
   width: 70px;
