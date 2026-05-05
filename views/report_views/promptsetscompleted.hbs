@@ -1,239 +1,130 @@
-{{!-- views/report_views/promptsetscompleted.hbs --}}
-{{#*inline "title"}}Prompt Sets Completed | Twennie{{/inline}}
+{{!-- =========================================================
+    ACCORDION: Prompt Notes History
+========================================================= --}}
+<h2 class="dashboard-section-title">Prompt Notes (History)</h2>
 
-<section class="dashboard-section">
-  <h1 class="dashboard-section-title">{{leaderGroupName}}; Prompt Sets Completed</h1>
+<div class="prompt-notes-accordion">
 
-  {{!-- =========================================================
-      TABLE 1: Prompt Set Overview (grouped by prompt set)
-      - one row per prompt set
-      - completedBy lists members + dates
-  ========================================================= --}}
-  <div class="table-container" style="margin-bottom: -100px;">
-    <table class="dashboard-library-table">
-      <thead>
-        <tr>
-          <th class="dashboard-library-header">prompt set title</th>
-          <th class="dashboard-library-header">topics</th>
-          <th class="dashboard-library-header">purpose</th>
-          <th class="dashboard-library-header">completed by</th>
-          <th class="dashboard-library-header">completion date</th>
-        </tr>
-      </thead>
+  {{#each promptNotesReports}}
 
-      <tbody>
-        {{#each completedPromptSetsReports}}
-          <tr class="dashboard-library-row">
-            <td class="dashboard-library-cell">
-              {{#if this.promptSetTitle}}
-                {{this.promptSetTitle}}
-              {{else}}
-                <span class="no-data">Untitled prompt set</span>
-              {{/if}}
-            </td>
+    <article class="promptset-accordion-card">
 
-            <td class="dashboard-library-cell">
-              {{#if this.main_topic}}
-                <div class="multi-record-item">{{this.main_topic}}</div>
-              {{else}}
-                <span class="no-data">No main topic</span>
-              {{/if}}
+      <button class="promptset-accordion-toggle" type="button">
+        <span>
+          <strong>{{this.promptSetTitle}}</strong>
+          <small>prompt notes and completion history</small>
+        </span>
+        <span class="promptset-accordion-icon">+</span>
+      </button>
 
-              {{#each this.secondary_topics}}
-                <div class="multi-record-item">{{this}}</div>
-              {{else}}
-                <span class="no-data">No secondary topics</span>
-              {{/each}}
-            </td>
+      <div class="promptset-accordion-panel">
 
-            <td class="dashboard-library-cell">
-              {{#if this.purpose}}
-                {{this.purpose}}
-              {{else}}
-                <span class="no-data">No purpose provided</span>
-              {{/if}}
-            </td>
+        {{#if this.prompts.[0].promptText}}
+          <div class="promptset-orientation-card">
+            <h3>orientation</h3>
+            <p>{{this.prompts.[0].promptText}}</p>
+          </div>
+        {{/if}}
 
-            <td class="dashboard-library-cell">
-              {{#each this.completedBy}}
-                <div class="multi-record-item">{{this.memberName}}</div>
-              {{else}}
-                <span class="no-data">No completions</span>
-              {{/each}}
-            </td>
+        {{#each this.completedBy}}
 
-            <td class="dashboard-library-cell">
-              {{#each this.completedBy}}
-                <div class="multi-record-item">{{formatDate this.dateCompleted}}</div>
-              {{else}}
-                <span class="no-data">No completions</span>
-              {{/each}}
-            </td>
-          </tr>
-        {{else}}
-          <tr>
-            <td colspan="5" class="no-data">No prompt set completion data available.</td>
-          </tr>
-        {{/each}}
-      </tbody>
-    </table>
-  </div>
+          <section class="promptset-member-card">
 
-  {{!-- =========================================================
-      TABLE 2: Prompt Notes History
-      - intro/orientation prompt shown in first column
-      - prompts 1–20 shown once as header row
-      - member rows aligned under headers
-      - notes can include prompt sets still in progress
-  ========================================================= --}}
-  <h2 class="dashboard-section-title">Prompt Notes (History)</h2>
+            <div class="promptset-member-header">
+              <h3>{{this.memberName}}</h3>
+              <span>
+                {{#if this.dateCompleted}}
+                  completed: {{formatDate this.dateCompleted}}
+                {{else}}
+                  in progress
+                {{/if}}
+              </span>
+            </div>
 
-  <div class="table-container wide-table-container">
-    <table class="dashboard-library-table wide-table">
-      <thead>
-        <tr>
-          <th class="dashboard-library-header">prompt set / member</th>
+            <div class="prompt-response-list">
 
-          {{#if promptNotesReports.[0].prompts}}
-            {{#each promptNotesReports.[0].prompts}}
-              {{#unless @first}}
-                <th class="dashboard-library-header">
-                  prompt {{@index}}
-                </th>
-              {{/unless}}
-            {{/each}}
-          {{/if}}
-        </tr>
-      </thead>
-
-      <tbody>
-        {{#each promptNotesReports}}
-
-          {{!-- Prompt Set Header Row --}}
-          <tr class="dashboard-library-row promptset-header-row">
-            <td class="dashboard-library-cell">
-              <strong>{{this.promptSetTitle}}</strong><br>
-              <span class="multi-record-item">prompt instructions</span>
-
-              {{#if this.prompts.[0].promptText}}
-                <div class="multi-record-item" style="margin-top: 0.5rem;">
-                  <strong>orientation:</strong> {{this.prompts.[0].promptText}}
-                </div>
-              {{/if}}
-            </td>
-
-            {{#each this.prompts}}
-              {{#unless @first}}
-                <td class="dashboard-library-cell" style="vertical-align: top;">
-                  <div class="multi-record-item">
-                    <strong>{{this.promptHeadline}}:</strong> {{this.promptText}}
-                  </div>
-                </td>
-              {{/unless}}
-            {{/each}}
-          </tr>
-
-          {{!-- Member rows --}}
-          {{#each this.completedBy}}
-            <tr class="dashboard-library-row">
-              <td class="dashboard-library-cell">
-                <strong>{{this.memberName}}</strong><br>
-                <span class="multi-record-item" style="opacity:0.8;">
-                  {{#if this.dateCompleted}}
-                    completed: {{formatDate this.dateCompleted}}
-                  {{else}}
-                    in progress
-                  {{/if}}
-                </span>
-              </td>
-
-              {{#each this.promptNotes}}
+              {{#each ../prompts}}
                 {{#unless @first}}
-                  <td class="dashboard-library-cell" style="vertical-align: top;">
-                    {{#each this.notes}}
-                      <div class="multi-record-item" style="margin-bottom: 0.6rem;">
-                        <div>{{this.content}}</div>
 
-                        {{#if this.dateSubmitted}}
-                          <div style="font-size: 0.8rem; opacity: 0.7;">
-                            {{formatDate this.dateSubmitted}}
-                          </div>
+                  <details class="prompt-response-details">
+                    <summary>
+                      <span class="prompt-number">prompt {{@index}}</span>
+                      <span class="prompt-title">
+                        {{#if this.promptHeadline}}
+                          {{this.promptHeadline}}
+                        {{else}}
+                          Untitled prompt
                         {{/if}}
+                      </span>
+                    </summary>
+
+                    <div class="prompt-response-body">
+
+                      <div class="prompt-question">
+                        <strong>question:</strong>
+                        <p>{{this.promptText}}</p>
                       </div>
-                    {{else}}
-                      <span class="no-data">No notes</span>
-                    {{/each}}
-                  </td>
+
+                      <div class="prompt-answer">
+                        <strong>notes:</strong>
+
+                        {{#with (lookup ../promptNotes @index)}}
+                          {{#each this.notes}}
+                            <div class="prompt-note-entry">
+                              <p>{{this.content}}</p>
+
+                              {{#if this.dateSubmitted}}
+                                <div class="prompt-note-date">
+                                  {{formatDate this.dateSubmitted}}
+                                </div>
+                              {{/if}}
+                            </div>
+                          {{else}}
+                            <span class="no-data">No notes</span>
+                          {{/each}}
+                        {{else}}
+                          <span class="no-data">No notes</span>
+                        {{/with}}
+
+                      </div>
+
+                    </div>
+                  </details>
+
                 {{/unless}}
               {{/each}}
-            </tr>
-          {{else}}
-            <tr class="dashboard-library-row">
-              <td class="dashboard-library-cell">
-                <strong>{{../promptSetTitle}}</strong>
-              </td>
-              <td colspan="20" class="no-data">No notes available.</td>
-            </tr>
-          {{/each}}
+
+            </div>
+          </section>
 
         {{else}}
-          <tr>
-            <td colspan="21" class="no-data">No prompt notes available.</td>
-          </tr>
+
+          <div class="promptset-member-card">
+            <p class="no-data">No notes available.</p>
+          </div>
+
         {{/each}}
-      </tbody>
-    </table>
-  </div>
 
-  {{!-- =========================================================
-      Report Navigation Links
-  ========================================================= --}}
-<div class="report-links-container report-links-enhanced">
+      </div>
+    </article>
 
-  {{#unless isMemberEngagement}}
-  <div class="report-card">
-    <a href="/reports/memberengagement" class="report-link">
-      <img src="/images/memberengagementreport.png" alt="Member Engagement Report">
-    </a>
-    <p class="report-description">
-      See how each team member is engaging with learning, including topics explored, units completed, and mission activity.
-    </p>
-  </div>
-  {{/unless}}
+  {{else}}
 
-  {{#unless isNuggetsMonitored}}
-  <div class="report-card">
-    <a href="/reports/nuggetsmonitored" class="report-link">
-      <img src="/images/nuggetsreport.png" alt="Nuggets Being Monitored Report">
-    </a>
-    <p class="report-description">
-      Track which nuggets are being monitored, who is responsible, and the latest insights being captured.
-    </p>
-  </div>
-  {{/unless}}
+    <p class="no-data">No prompt notes available.</p>
 
-  {{#unless isPromptSetsCompleted}}
-  <div class="report-card">
-    <a href="/reports/promptsetscompleted" class="report-link">
-      <img src="/images/promptsetsreport.png" alt="Prompt Sets Report">
-    </a>
-    <p class="report-description">
-      Review completed prompt sets across your team, including progress, notes, and learning patterns.
-    </p>
-  </div>
-  {{/unless}}
-
-  {{#unless isUnitsCompleted}}
-  <div class="report-card">
-    <a href="/reports/unitscompleted" class="report-link">
-      <img src="/images/libraryunitsreport.png" alt="Library Units Report">
-    </a>
-    <p class="report-description">
-      View all completed learning units, who completed them, and the notes recorded along the way.
-    </p>
-  </div>
-  {{/unless}}
+  {{/each}}
 
 </div>
-</section>
 
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.promptset-accordion-toggle').forEach(button => {
+      button.addEventListener('click', () => {
+        const card = button.closest('.promptset-accordion-card');
+        if (!card) return;
+        card.classList.toggle('is-open');
+      });
+    });
+  });
+</script>
