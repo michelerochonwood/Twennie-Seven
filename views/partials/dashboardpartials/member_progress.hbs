@@ -1,7 +1,5 @@
 <meta name="csrf-token" content="{{csrfToken}}">
 
-<!-- DEBUG current len={{currentPromptSets.length}} completed len={{completedPromptSets.length}} -->
-
 <div class="member-progress-container" style="overflow: hidden; padding-bottom: 2rem;">
 
   <style>
@@ -49,6 +47,8 @@
       </div>
     {{/if}}
 
+    <div class="tagged-section-divider" aria-hidden="true"></div>
+
     <div class="member-progress-completed">
       <h2 class="member-progress-completed-title">completed prompt sets</h2>
 
@@ -62,11 +62,15 @@
               >
                 <h3 class="member-progress-completed-title">{{this.promptSetTitle}}</h3>
 
-                <p class="member-progress-completed-main-topic">{{this.mainTopic}}</p>
+                {{#if this.mainTopic}}
+                  <p class="member-progress-completed-main-topic">{{this.mainTopic}}</p>
+                {{/if}}
 
-                <p class="member-progress-completed-date">
-                  completed: {{this.completedAt}}
-                </p>
+                {{#if this.completedAt}}
+                  <p class="member-progress-completed-date">
+                    completed: {{this.completedAt}}
+                  </p>
+                {{/if}}
 
                 <div class="member-progress-badge" style="text-align: center; margin-top: 1rem;">
                   {{#if this.badge}}
@@ -102,14 +106,40 @@
           You haven’t completed any prompt sets yet.
         </p>
       {{/if}}
+    </div>
 
+    <div class="tagged-section-divider" aria-hidden="true"></div>
 
+    <div class="member-report-actions">
 
-      <div class="leader-archive-button-wrap">
-        <a href="/archive/member" class="leader-archive-button">
-          learning archive
+      <div class="member-report-card">
+        <a href="/reports/mylearningnotes-individual" class="member-report-link">
+          <img
+            src="/images/libraryunitsreport.png"
+            alt="View my learning notes"
+            class="member-report-image"
+          >
         </a>
+
+        <p class="member-report-description">
+          This library unit report shows you all the notes you've kept on your completed library units.
+        </p>
       </div>
+
+      <div class="member-report-card">
+        <a href="/archive/member" class="member-report-link">
+          <img
+            src="/images/learningarchivebutton.png"
+            alt="View learning archive"
+            class="member-report-image"
+          >
+        </a>
+
+        <p class="member-report-description">
+          The learning archive contains units you've archived. These may or may not have been completed.
+        </p>
+      </div>
+
     </div>
 
   {{/if}}
@@ -152,8 +182,3 @@
     }
   }
 </script>
-
-
-
-
-
