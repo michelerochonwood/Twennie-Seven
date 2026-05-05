@@ -9,32 +9,20 @@
 
     <article class="promptset-accordion-card">
 
-      <div class="promptset-accordion-header">
+      <button class="promptset-accordion-toggle" type="button">
+        <span>
+          <strong>{{this.promptSetTitle}}</strong>
+          <small>
+            {{#if this.completedBy.length}}
+              {{this.completedBy.length}} team member response(s)
+            {{else}}
+              no responses yet
+            {{/if}}
+          </small>
+        </span>
 
-        <button class="promptset-accordion-toggle" type="button">
-          <span>
-            <strong>{{this.promptSetTitle}}</strong>
-            <small>
-              {{#if this.completedBy.length}}
-                {{this.completedBy.length}} team member response(s)
-              {{else}}
-                no responses yet
-              {{/if}}
-            </small>
-          </span>
-
-          <span class="promptset-accordion-icon">+</span>
-        </button>
-
-        <button
-          type="button"
-          class="print-promptset-btn"
-          onclick="event.stopPropagation(); printPromptSet(this);"
-        >
-          print this set
-        </button>
-
-      </div>
+        <span class="promptset-accordion-icon">+</span>
+      </button>
 
       <div class="promptset-accordion-panel">
 
@@ -147,24 +135,6 @@
         if (!card) return;
         card.classList.toggle('is-open');
       });
-    });
-  });
-
-  function printPromptSet(button) {
-    const card = button.closest('.promptset-accordion-card');
-    if (!card) return;
-
-    document.body.classList.add('printing-single-promptset');
-    card.classList.add('print-this-promptset');
-
-    window.print();
-  }
-
-  window.addEventListener('afterprint', () => {
-    document.body.classList.remove('printing-single-promptset');
-
-    document.querySelectorAll('.print-this-promptset').forEach(card => {
-      card.classList.remove('print-this-promptset');
     });
   });
 </script>
