@@ -7217,3 +7217,82 @@ box-shadow: none !important;
     grid-template-columns: 1fr;
   }
 }
+
+
+.promptset-accordion-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.print-promptset-btn,
+.print-report-btn {
+  background: #262262;
+  color: white;
+  font-family: "Figtree";
+  font-weight: 800;
+  border: none;
+  border-radius: 999px;
+  padding: 0.45rem 0.8rem;
+  font-size: 0.65rem;
+  cursor: pointer;
+  text-transform: lowercase;
+}
+
+.print-promptset-btn:hover,
+.print-report-btn:hover {
+  background: #4a4ab2;
+}
+
+@media print {
+  body.printing-single-promptset * {
+    visibility: hidden !important;
+  }
+
+  body.printing-single-promptset .print-this-promptset,
+  body.printing-single-promptset .print-this-promptset * {
+    visibility: visible !important;
+  }
+
+  body.printing-single-promptset .print-this-promptset {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  body.printing-single-promptset .print-this-promptset .promptset-accordion-panel {
+    display: block !important;
+  }
+
+  body.printing-single-promptset .print-this-promptset .prompt-response-details {
+    display: block !important;
+  }
+
+  body.printing-single-promptset .print-this-promptset .prompt-response-details summary {
+    display: none !important;
+  }
+
+  body.printing-single-promptset .print-this-promptset .prompt-response-body--grouped,
+  body.printing-single-promptset .print-this-promptset .prompt-member-notes-grid {
+    display: block !important;
+  }
+
+  body.printing-single-promptset .print-this-promptset .prompt-member-note-column {
+    margin-bottom: 14px;
+    page-break-inside: avoid;
+  }
+
+  body.printing-single-promptset .print-promptset-btn,
+  body.printing-single-promptset .promptset-accordion-icon {
+    display: none !important;
+  }
+
+  body.printing-single-promptset .promptset-accordion-toggle {
+    background: white !important;
+    color: black !important;
+    padding: 0 0 12px 0 !important;
+  }
+}
