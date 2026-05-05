@@ -12,7 +12,13 @@
       <button class="promptset-accordion-toggle" type="button">
         <span>
           <strong>{{this.promptSetTitle}}</strong>
-          <small>prompt notes and completion history</small>
+          <small>
+            {{#if this.completedBy.length}}
+              {{this.completedBy.length}} team member response(s)
+            {{else}}
+              no responses yet
+            {{/if}}
+          </small>
         </span>
         <span class="promptset-accordion-icon">+</span>
       </button>
@@ -26,84 +32,88 @@
           </div>
         {{/if}}
 
-        {{#each this.completedBy}}
+        <div class="prompt-response-list">
 
-          <section class="promptset-member-card">
+          {{#each this.prompts}}
+            {{#unless @first}}
 
-            <div class="promptset-member-header">
-              <h3>{{this.memberName}}</h3>
-              <span>
-                {{#if this.dateCompleted}}
-                  completed: {{formatDate this.dateCompleted}}
-                {{else}}
-                  in progress
-                {{/if}}
-              </span>
-            </div>
+              <details class="prompt-response-details">
 
-            <div class="prompt-response-list">
+                <summary>
+                  <span class="prompt-number">prompt {{@index}}</span>
+                  <span class="prompt-title">
+                    {{#if this.promptHeadline}}
+                      {{this.promptHeadline}}
+                    {{else}}
+                      Untitled prompt
+                    {{/if}}
+                  </span>
+                </summary>
 
-              {{#each ../prompts}}
-                {{#unless @first}}
+                <div class="prompt-response-body prompt-response-body--grouped">
 
-                  <details class="prompt-response-details">
-                    <summary>
-                      <span class="prompt-number">prompt {{@index}}</span>
-                      <span class="prompt-title">
-                        {{#if this.promptHeadline}}
-                          {{this.promptHeadline}}
-                        {{else}}
-                          Untitled prompt
-                        {{/if}}
-                      </span>
-                    </summary>
+                  <div class="prompt-question prompt-question--left">
+                    <strong>question:</strong>
+                    <p>{{this.promptText}}</p>
+                  </div>
 
-                    <div class="prompt-response-body">
+                  <div class="prompt-member-notes-grid">
 
-                      <div class="prompt-question">
-                        <strong>question:</strong>
-                        <p>{{this.promptText}}</p>
-                      </div>
+                    {{#each ../completedBy}}
 
-                      <div class="prompt-answer">
-                        <strong>notes:</strong>
+                      <section class="prompt-member-note-column">
 
-                        {{#with (lookup ../promptNotes @index)}}
-                          {{#each this.notes}}
-                            <div class="prompt-note-entry">
-                              <p>{{this.content}}</p>
+                        <div class="prompt-member-note-header">
+                          <h3>{{this.memberName}}</h3>
+                          <span>
+                            {{#if this.dateCompleted}}
+                              completed: {{formatDate this.dateCompleted}}
+                            {{else}}
+                              in progress
+                            {{/if}}
+                          </span>
+                        </div>
 
-                              {{#if this.dateSubmitted}}
-                                <div class="prompt-note-date">
-                                  {{formatDate this.dateSubmitted}}
-                                </div>
-                              {{/if}}
-                            </div>
+                        <div class="prompt-answer">
+                          <strong>notes:</strong>
+
+                          {{#with (lookup this.promptNotes @../index)}}
+                            {{#each this.notes}}
+                              <div class="prompt-note-entry">
+                                <p>{{this.content}}</p>
+
+                                {{#if this.dateSubmitted}}
+                                  <div class="prompt-note-date">
+                                    {{formatDate this.dateSubmitted}}
+                                  </div>
+                                {{/if}}
+                              </div>
+                            {{else}}
+                              <span class="no-data">No notes</span>
+                            {{/each}}
                           {{else}}
                             <span class="no-data">No notes</span>
-                          {{/each}}
-                        {{else}}
-                          <span class="no-data">No notes</span>
-                        {{/with}}
+                          {{/with}}
+                        </div>
 
-                      </div>
+                      </section>
 
-                    </div>
-                  </details>
+                    {{else}}
 
-                {{/unless}}
-              {{/each}}
+                      <p class="no-data">No notes available.</p>
 
-            </div>
-          </section>
+                    {{/each}}
 
-        {{else}}
+                  </div>
 
-          <div class="promptset-member-card">
-            <p class="no-data">No notes available.</p>
-          </div>
+                </div>
 
-        {{/each}}
+              </details>
+
+            {{/unless}}
+          {{/each}}
+
+        </div>
 
       </div>
     </article>
@@ -115,7 +125,6 @@
   {{/each}}
 
 </div>
-
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
