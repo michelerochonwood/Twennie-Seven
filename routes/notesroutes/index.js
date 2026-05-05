@@ -27,4 +27,10 @@ router.get('/unitnotessuccess', (req, res) => {
   res.render('unit_views/unitnotessuccess');
 });
 
+router.post(
+  '/submit-nugget-monitoring',
+  ensureAuthenticated,
+  notesController.createNote
+);
+
 module.exports = router;
