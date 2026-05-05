@@ -127,6 +127,54 @@
 
 </div>
 
+<div class="report-links-container report-links-enhanced">
+
+  {{#unless isMemberEngagement}}
+  <div class="report-card">
+    <a href="/reports/memberengagement" class="report-link">
+      <img src="/images/memberengagementreport.png" alt="Member Engagement Report">
+    </a>
+    <p class="report-description">
+      Explore how your team is engaging with learning, including topics, completed units, and mission activity.
+    </p>
+  </div>
+  {{/unless}}
+
+  {{#unless isNuggetsMonitored}}
+  <div class="report-card">
+    <a href="/reports/nuggetsmonitored" class="report-link">
+      <img src="/images/nuggetsreport.png" alt="Nuggets Being Monitored Report">
+    </a>
+    <p class="report-description">
+      Monitor active nuggets, see who is responsible, and review the latest insights being captured.
+    </p>
+  </div>
+  {{/unless}}
+
+  {{#unless isPromptSetsCompleted}}
+  <div class="report-card">
+    <a href="/reports/promptsetscompleted" class="report-link">
+      <img src="/images/promptsetsreport.png" alt="Prompt Sets Report">
+    </a>
+    <p class="report-description">
+      Review prompt set completion across your team, including participation, notes, and learning patterns.
+    </p>
+  </div>
+  {{/unless}}
+
+  {{#unless isUnitsCompleted}}
+  <div class="report-card">
+    <a href="/reports/unitscompleted" class="report-link">
+      <img src="/images/libraryunitsreport.png" alt="Library Units Report">
+    </a>
+    <p class="report-description">
+      View completed learning units along with contributor activity and recorded notes over time.
+    </p>
+  </div>
+  {{/unless}}
+
+</div>
+
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.promptset-accordion-toggle').forEach(button => {
