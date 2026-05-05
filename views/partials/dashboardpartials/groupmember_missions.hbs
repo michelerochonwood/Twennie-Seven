@@ -1,4 +1,3 @@
-
 <meta name="csrf-token" content="{{csrfToken}}">
 
 <section class="group-member-tagged-units-section">
@@ -103,7 +102,7 @@
                     <button
                       type="button"
                       class="tagged-unit-link"
-                      onclick="archiveUnit('{{tagId}}','{{_id}}','mission','{{assignedToId}}')"
+                      onclick="archiveUnit('{{tagId}}','{{_id}}','nugget','{{assignedToId}}')"
                     >
                       move to archive
                     </button>
@@ -131,12 +130,7 @@
           <div class="tagged-unit-card leader-dashboard-wave-card">
             <div class="leader-dashboard-wave-card-inner">
               <div class="leader-dashboard-wave-header">
-                <img
-                  src="/images/onyxsvg.svg"
-                  alt=""
-                  class="leader-dashboard-wave-image"
-                  aria-hidden="true"
-                >
+                <img src="/images/onyxsvg.svg" alt="" class="leader-dashboard-wave-image" aria-hidden="true">
               </div>
 
               <div class="leader-dashboard-wave-content">
@@ -197,12 +191,7 @@
           <div class="leader-assigned-unit-card leader-dashboard-wave-card">
             <div class="leader-dashboard-wave-card-inner">
               <div class="leader-dashboard-wave-header">
-                <img
-                  src="/images/onyxsvg.svg"
-                  alt=""
-                  class="leader-dashboard-wave-image"
-                  aria-hidden="true"
-                >
+                <img src="/images/onyxsvg.svg" alt="" class="leader-dashboard-wave-image" aria-hidden="true">
               </div>
 
               <div class="leader-dashboard-wave-content">
@@ -298,10 +287,36 @@
     {{/if}}
   </div>
 
-  <div class="leader-archive-button-wrap">
-    <a href="/archive/groupmember" class="leader-archive-button">
-      learning archive
-    </a>
+  <div class="tagged-section-divider" aria-hidden="true"></div>
+
+  <div class="member-report-actions">
+    <div class="member-report-card">
+      <a href="/reports/mylearningnotes" class="member-report-link">
+        <img
+          src="/images/libraryunitsreport.png"
+          alt="View my learning notes"
+          class="member-report-image"
+        >
+      </a>
+
+      <p class="member-report-description">
+        This library unit report shows you all the notes you've kept on your completed library units.
+      </p>
+    </div>
+
+    <div class="member-report-card">
+      <a href="/archive/groupmember" class="member-report-link">
+        <img
+          src="/images/learningarchivebutton.png"
+          alt="View learning archive"
+          class="member-report-image"
+        >
+      </a>
+
+      <p class="member-report-description">
+        The learning archive contains units you've archived. These may or may not have been completed.
+      </p>
+    </div>
   </div>
 </section>
 
