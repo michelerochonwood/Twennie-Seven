@@ -6,151 +6,201 @@
     {{leaderGroupName}}; Nuggets Being Monitored
   </h1>
 
-  <div class="table-container">
-    <table class="dashboard-library-table">
-      <thead>
-        <tr>
-          <th class="dashboard-library-header">nugget</th>
-<th class="dashboard-library-header">assignment</th>
-<th class="dashboard-library-header">latest monitoring note</th>
-<th class="dashboard-library-header">last update</th>
-<th class="dashboard-library-header">date assigned</th>
-        </tr>
-      </thead>
+  {{!-- =========================================================
+      ACCORDION: Nuggets Being Monitored
+  ========================================================= --}}
+  <div class="nuggets-monitored-accordion">
 
-      <tbody>
-        {{#each monitoredNuggets}}
-          <tr class="dashboard-library-row">
+    {{#each monitoredNuggets}}
 
-            {{!-- Nugget --}}
-            <td class="dashboard-library-cell">
-              <div class="multi-record-item">
-                {{#if this.nuggetTitle}}
-                  {{this.nuggetTitle}}
-                {{else}}
-                  Untitled Nugget
-                {{/if}}
-              </div>
+      <article class="nugget-monitored-card">
 
-              {{!-- Optional extra context (safe to leave blank until controller supplies it) --}}
+        <button class="nugget-monitored-toggle" type="button">
+          <span>
+            <strong>
+              {{#if this.nuggetTitle}}
+                {{this.nuggetTitle}}
+              {{else}}
+                Untitled Nugget
+              {{/if}}
+            </strong>
+
+            <small>
+              {{#if this.isAssigned}}
+                active assignment
+              {{else}}
+                unassigned
+              {{/if}}
+
+              {{#if this.monitoredBy.length}}
+                · {{this.monitoredBy.length}} monitor(s)
+              {{else}}
+                · no monitors listed
+              {{/if}}
+            </small>
+          </span>
+
+          <span class="nugget-monitored-icon">+</span>
+        </button>
+
+        <div class="nugget-monitored-panel">
+
+          <div class="nugget-monitored-overview">
+
+            <div class="nugget-monitored-overview-block">
+              <h3>assignment</h3>
+
+              {{#if this.assignmentName}}
+                <p><strong>{{this.assignmentName}}</strong></p>
+              {{else}}
+                <p class="no-data">No assignment name</p>
+              {{/if}}
+
+              {{#if this.assignedAt}}
+                <p class="nugget-muted">assigned: {{formatDate this.assignedAt}}</p>
+              {{else}}
+                <p class="nugget-muted">assigned: —</p>
+              {{/if}}
+            </div>
+
+            <div class="nugget-monitored-overview-block">
+              <h3>context</h3>
+
               {{#if this.client}}
-                <div class="multi-record-item" style="opacity:0.8;">client: {{this.client}}</div>
+                <span class="nugget-context-pill">client: {{this.client}}</span>
               {{/if}}
-              {{#if this.region}}
-                <div class="multi-record-item" style="opacity:0.8;">region: {{this.region}}</div>
-              {{/if}}
-              {{#if this.discipline}}
-                <div class="multi-record-item" style="opacity:0.8;">discipline: {{this.discipline}}</div>
-              {{/if}}
-            </td>
 
-            {{!-- Who’s Monitoring --}}
-            <td class="dashboard-library-cell">
+              {{#if this.region}}
+                <span class="nugget-context-pill">region: {{this.region}}</span>
+              {{/if}}
+
+              {{#if this.discipline}}
+                <span class="nugget-context-pill">discipline: {{this.discipline}}</span>
+              {{/if}}
+
+              {{#unless this.client}}
+                {{#unless this.region}}
+                  {{#unless this.discipline}}
+                    <p class="no-data">No extra context provided</p>
+                  {{/unless}}
+                {{/unless}}
+              {{/unless}}
+            </div>
+
+            <div class="nugget-monitored-overview-block">
+              <h3>monitored by</h3>
+
               {{#each this.monitoredBy}}
-                <div class="multi-record-item">
-                  {{this.memberName}}
+                <div class="nugget-monitor-person">
+                  <strong>{{this.memberName}}</strong>
+
                   {{#if this.role}}
-                    <span style="opacity:0.8;">({{this.role}})</span>
+                    <span>{{this.role}}</span>
                   {{/if}}
                 </div>
               {{else}}
-                <span class="no-data">No monitors listed</span>
+                <p class="no-data">No monitors listed</p>
               {{/each}}
-            </td>
+            </div>
 
-            {{!-- Tag / Assignment --}}
-<td class="dashboard-library-cell">
-  {{#if this.assignmentName}}
-    <div class="multi-record-item">{{this.assignmentName}}</div>
-  {{else}}
-    <span class="no-data">No assignment name</span>
-  {{/if}}
+          </div>
 
-  {{#if this.isAssigned}}
-    <div class="multi-record-item" style="opacity:0.9;">active</div>
-  {{else}}
-    <div class="multi-record-item" style="opacity:0.9;">unassigned</div>
-  {{/if}}
-</td>
+          <div class="nugget-monitoring-section">
 
-            {{!-- Notes / Instructions --}}
-<td class="dashboard-library-cell">
-  {{#if this.assignmentDescription}}
-    <div class="multi-record-item">{{this.assignmentDescription}}</div>
-  {{/if}}
+            <div class="nugget-monitoring-block">
+              <h3>assignment description</h3>
 
-  {{#each this.instructions}}
-    <div class="multi-record-item">• {{this}}</div>
-  {{else}}
-    <span class="no-data">No instructions</span>
-  {{/each}}
-</td>
+              {{#if this.assignmentDescription}}
+                <p>{{this.assignmentDescription}}</p>
+              {{else}}
+                <p class="no-data">No assignment description</p>
+              {{/if}}
+            </div>
 
-            {{!-- Date Tagged --}}
-<td class="dashboard-library-cell">
-  {{#if this.assignedAt}}
-    {{formatDate this.assignedAt}}
-  {{else}}
-    <span class="no-data">—</span>
-  {{/if}}
-</td>
+            <div class="nugget-monitoring-block">
+              <h3>monitoring instructions</h3>
 
-          </tr>
-        {{else}}
-          <tr>
-            <td colspan="5" class="no-data">No monitored nuggets available.</td>
-          </tr>
-        {{/each}}
-      </tbody>
-    </table>
+              {{#each this.instructions}}
+                <div class="nugget-instruction-item">
+                  {{this}}
+                </div>
+              {{else}}
+                <p class="no-data">No instructions</p>
+              {{/each}}
+            </div>
+
+          </div>
+
+        </div>
+
+      </article>
+
+    {{else}}
+
+      <p class="no-data">No monitored nuggets available.</p>
+
+    {{/each}}
+
   </div>
 
   {{!-- Report Navigation Links --}}
-<div class="report-links-container report-links-enhanced">
+  <div class="report-links-container report-links-enhanced">
 
-  {{#unless isMemberEngagement}}
-  <div class="report-card">
-    <a href="/reports/memberengagement" class="report-link">
-      <img src="/images/memberengagementreport.png" alt="Member Engagement Report">
-    </a>
-    <p class="report-description">
-      See how each team member is engaging with learning, including topics explored, units completed, and mission activity.
-    </p>
+    {{#unless isMemberEngagement}}
+      <div class="report-card">
+        <a href="/reports/memberengagement" class="report-link">
+          <img src="/images/memberengagementreport.png" alt="Member Engagement Report">
+        </a>
+        <p class="report-description">
+          See how each team member is engaging with learning, including topics explored, units completed, and mission activity.
+        </p>
+      </div>
+    {{/unless}}
+
+    {{#unless isNuggetsMonitored}}
+      <div class="report-card">
+        <a href="/reports/nuggetsmonitored" class="report-link">
+          <img src="/images/nuggetsreport.png" alt="Nuggets Being Monitored Report">
+        </a>
+        <p class="report-description">
+          Track which nuggets are being monitored, who is responsible, and the latest insights being recorded.
+        </p>
+      </div>
+    {{/unless}}
+
+    {{#unless isPromptSetsCompleted}}
+      <div class="report-card">
+        <a href="/reports/promptsetscompleted" class="report-link">
+          <img src="/images/promptsetsreport.png" alt="Prompt Sets Report">
+        </a>
+        <p class="report-description">
+          Review completed prompt sets across your team, including progress, notes, and learning patterns.
+        </p>
+      </div>
+    {{/unless}}
+
+    {{#unless isUnitsCompleted}}
+      <div class="report-card">
+        <a href="/reports/unitscompleted" class="report-link">
+          <img src="/images/libraryunitsreport.png" alt="Library Units Report">
+        </a>
+        <p class="report-description">
+          View all completed learning units, who completed them, and the notes recorded along the way.
+        </p>
+      </div>
+    {{/unless}}
+
   </div>
-  {{/unless}}
-
-  {{#unless isNuggetsMonitored}}
-  <div class="report-card">
-    <a href="/reports/nuggetsmonitored" class="report-link">
-      <img src="/images/nuggetsreport.png" alt="Nuggets Being Monitored Report">
-    </a>
-    <p class="report-description">
-      Track which nuggets are being monitored, who is responsible, and the latest insights being recorded.
-    </p>
-  </div>
-  {{/unless}}
-
-  {{#unless isPromptSetsCompleted}}
-  <div class="report-card">
-    <a href="/reports/promptsetscompleted" class="report-link">
-      <img src="/images/promptsetsreport.png" alt="Prompt Sets Report">
-    </a>
-    <p class="report-description">
-      Review completed prompt sets across your team, including progress, notes, and learning patterns.
-    </p>
-  </div>
-  {{/unless}}
-
-  {{#unless isUnitsCompleted}}
-  <div class="report-card">
-    <a href="/reports/unitscompleted" class="report-link">
-      <img src="/images/libraryunitsreport.png" alt="Library Units Report">
-    </a>
-    <p class="report-description">
-      View all completed learning units, who completed them, and the notes recorded along the way.
-    </p>
-  </div>
-  {{/unless}}
-
-</div>
 </section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.nugget-monitored-toggle').forEach(button => {
+      button.addEventListener('click', () => {
+        const card = button.closest('.nugget-monitored-card');
+        if (!card) return;
+        card.classList.toggle('is-open');
+      });
+    });
+  });
+</script>

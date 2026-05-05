@@ -7578,3 +7578,224 @@ box-shadow: none !important;
     grid-template-columns: 1fr;
   }
 }
+
+/* ================================
+   NUGGETS MONITORED ACCORDION REPORT
+================================ */
+
+.nuggets-monitored-accordion,
+.nuggets-monitored-accordion * {
+  box-sizing: border-box;
+}
+
+.nuggets-monitored-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 90vw;
+  max-width: 90vw;
+  margin: 1.5rem auto 0 auto;
+  font-family: "Figtree", sans-serif;
+  text-align: left;
+}
+
+.nuggets-monitored-accordion .no-data {
+  text-align: left;
+  padding: 0;
+  font-size: 0.68rem;
+  color: #777;
+  font-style: italic;
+}
+
+.nugget-monitored-card {
+  border: 1px solid rgba(38, 34, 98, 0.14);
+  border-radius: 18px;
+  background: #fffaf0;
+  box-shadow: 0 8px 22px rgba(38, 34, 98, 0.08);
+  overflow: hidden;
+}
+
+.nugget-monitored-toggle {
+  width: 100%;
+  border: none;
+  background: #c69a28;
+  color: #fff;
+  padding: 0.9rem 1.15rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+  cursor: pointer;
+  font-family: "Figtree", sans-serif;
+}
+
+.nugget-monitored-toggle strong {
+  display: block;
+  font-size: 0.95rem;
+  line-height: 1.25;
+}
+
+.nugget-monitored-toggle small {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.68rem;
+  opacity: 0.9;
+}
+
+.nugget-monitored-icon {
+  font-size: 1.45rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.nugget-monitored-panel {
+  display: none;
+  padding: 1rem;
+}
+
+.nugget-monitored-card.is-open .nugget-monitored-panel {
+  display: block;
+}
+
+.nugget-monitored-card.is-open .nugget-monitored-icon {
+  transform: rotate(45deg);
+}
+
+/* compact first row */
+.nugget-monitored-overview {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1.4fr;
+  gap: 0.75rem;
+  align-items: start;
+  margin-bottom: 0.85rem;
+  background: #fff;
+  border: 1px solid rgba(38, 34, 98, 0.1);
+  border-radius: 14px;
+  padding: 0.75rem 0.9rem;
+}
+
+.nugget-monitored-overview-block {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+}
+
+.nugget-monitored-overview-block:not(:last-child) {
+  border-right: 1px solid rgba(38, 34, 98, 0.12);
+  padding-right: 0.9rem;
+}
+
+.nugget-monitored-overview-block h3,
+.nugget-monitoring-block h3 {
+  margin: 0 0 0.4rem 0;
+  color: #262262;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: lowercase;
+}
+
+.nugget-monitored-overview-block p {
+  margin: 0 0 0.3rem 0;
+  font-size: 0.68rem;
+  line-height: 1.35;
+  color: #333;
+}
+
+.nugget-muted {
+  color: #666 !important;
+  font-size: 0.62rem !important;
+}
+
+.nugget-context-pill {
+  display: inline-block;
+  width: fit-content;
+  margin: 0.1rem 0.25rem 0.1rem 0;
+  padding: 0.2rem 0.45rem;
+  border-radius: 999px;
+  background: #fff3d7;
+  color: #7a5600;
+  font-size: 0.62rem;
+  font-weight: 800;
+}
+
+.nugget-monitor-person {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  margin-right: 0.85rem;
+  padding: 0;
+  border-bottom: none;
+}
+
+.nugget-monitor-person strong {
+  display: inline;
+  color: #262262;
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.nugget-monitor-person span {
+  display: inline;
+  margin-top: 0;
+  font-size: 0.6rem;
+  color: #666;
+}
+
+/* monitoring details */
+.nugget-monitoring-section {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 0.85rem;
+  background: #fffdf7;
+  border-radius: 16px;
+  padding: 1rem;
+  border: 1px solid rgba(198, 154, 40, 0.24);
+}
+
+.nugget-monitoring-block {
+  background: #fff;
+  border-radius: 14px;
+  padding: 0.85rem;
+  border: 1px solid rgba(38, 34, 98, 0.08);
+}
+
+.nugget-monitoring-block p {
+  margin: 0;
+  font-size: 0.7rem;
+  line-height: 1.45;
+  color: #333;
+}
+
+.nugget-instruction-item {
+  position: relative;
+  padding: 0.45rem 0 0.45rem 0.85rem;
+  border-left: 3px solid #c69a28;
+  margin-bottom: 0.6rem;
+  font-size: 0.7rem;
+  line-height: 1.45;
+  color: #333;
+}
+
+.nugget-instruction-item:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 900px) {
+  .nuggets-monitored-accordion {
+    width: 94vw;
+    max-width: 94vw;
+  }
+
+  .nugget-monitored-overview,
+  .nugget-monitoring-section {
+    grid-template-columns: 1fr;
+  }
+
+  .nugget-monitored-overview-block:not(:last-child) {
+    border-right: none;
+    border-bottom: 1px solid rgba(38, 34, 98, 0.12);
+    padding-right: 0;
+    padding-bottom: 0.65rem;
+  }
+}
