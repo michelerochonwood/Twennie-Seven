@@ -5,157 +5,216 @@
     {{leaderGroupName}}; Units Completed
   </h1>
 
-  <div class="table-container">
-    <table class="dashboard-library-table">
-      <thead>
-        <tr>
-          <th class="dashboard-library-header">unit title</th>
-          <th class="dashboard-library-header">unit type</th>
-          <th class="dashboard-library-header">topics</th>
-          <th class="dashboard-library-header">completed by</th>
-          <th class="dashboard-library-header">notes history</th>
-        </tr>
-      </thead>
+  {{!-- =========================================================
+      ACCORDION: Units Completed
+  ========================================================= --}}
+  <div class="units-completed-accordion">
 
-      <tbody>
-        {{#each unitsCompletedReports}}
-          <tr class="dashboard-library-row">
+    {{#each unitsCompletedReports}}
 
-            <td class="dashboard-library-cell">
+      <article class="unit-completed-card">
+
+        <button class="unit-completed-toggle" type="button">
+          <span>
+            <strong>
               {{#if this.unitTitle}}
                 {{this.unitTitle}}
               {{else}}
-                <span class="no-data">Untitled unit</span>
+                Untitled unit
               {{/if}}
-            </td>
+            </strong>
 
-            <td class="dashboard-library-cell">
+            <small>
               {{#if this.unitType}}
                 {{this.unitType}}
               {{else}}
-                <span class="no-data">Unknown type</span>
+                unknown type
               {{/if}}
-            </td>
 
-            <td class="dashboard-library-cell">
-              {{#if this.main_topic}}
-                <div class="multi-record-item">{{this.main_topic}}</div>
+              {{#if this.completedBy.length}}
+                · {{this.completedBy.length}} completion(s)
               {{else}}
-                <span class="no-data">No main topic</span>
+                · no completions
+              {{/if}}
+            </small>
+          </span>
+
+          <span class="unit-completed-icon">+</span>
+        </button>
+
+        <div class="unit-completed-panel">
+
+          <div class="unit-completed-overview">
+
+            <div class="unit-completed-overview-block">
+              <h3>unit type</h3>
+              <p>
+                {{#if this.unitType}}
+                  {{this.unitType}}
+                {{else}}
+                  <span class="no-data">Unknown type</span>
+                {{/if}}
+              </p>
+            </div>
+
+            <div class="unit-completed-overview-block">
+              <h3>topics</h3>
+
+              {{#if this.main_topic}}
+                <p class="unit-topic-pill">{{this.main_topic}}</p>
+              {{else}}
+                <p class="no-data">No main topic</p>
               {{/if}}
 
               {{#each this.secondary_topics}}
-                <div class="multi-record-item">{{this}}</div>
+                <p class="unit-topic-pill unit-topic-pill--secondary">{{this}}</p>
               {{else}}
-                <span class="no-data">No secondary topics</span>
+                <p class="no-data">No secondary topics</p>
               {{/each}}
-            </td>
+            </div>
 
-            <td class="dashboard-library-cell">
+            <div class="unit-completed-overview-block">
+              <h3>completed by</h3>
+
               {{#each this.completedBy}}
-                <div class="multi-record-item">
-                  {{#if this.memberName}}
-                    {{this.memberName}}
-                  {{else}}
-                    Unknown member
-                  {{/if}}
+                <div class="unit-completed-person">
+                  <strong>
+                    {{#if this.memberName}}
+                      {{this.memberName}}
+                    {{else}}
+                      Unknown member
+                    {{/if}}
+                  </strong>
 
                   {{#if this.dateCompleted}}
-                    <span style="opacity:0.8;">({{formatDate this.dateCompleted}})</span>
+                    <span>{{formatDate this.dateCompleted}}</span>
                   {{/if}}
                 </div>
               {{else}}
-                <span class="no-data">No completions</span>
+                <p class="no-data">No completions</p>
               {{/each}}
-            </td>
+            </div>
 
-            <td class="dashboard-library-cell notes-top-align">
+          </div>
+
+          <div class="unit-notes-section">
+            <h3 class="unit-notes-section-title">notes history</h3>
+
+            <div class="unit-member-notes-grid">
+
               {{#each this.memberNotes}}
-                <div class="multi-record-item" style="margin-bottom: 0.75rem;">
-                  {{#if this.memberName}}
-                    <div style="font-weight:600; margin-bottom: 0.2rem;">
-                      {{this.memberName}}
-                    </div>
-                  {{/if}}
 
-                  {{#each this.notes}}
-                    <div class="multi-record-item" style="margin-bottom: 0.5rem;">
-                      <div>{{this.content}}</div>
+                <section class="unit-member-notes-column">
 
-                      {{#if this.dateSubmitted}}
-                        <div style="font-size: 0.85rem; opacity: 0.75; margin-top: 0.25rem;">
-                          {{formatDate this.dateSubmitted}}
-                        </div>
+                  <div class="unit-member-notes-header">
+                    <h4>
+                      {{#if this.memberName}}
+                        {{this.memberName}}
+                      {{else}}
+                        Unknown member
                       {{/if}}
-                    </div>
-                  {{else}}
-                    <span class="no-data">No notes</span>
-                  {{/each}}
-                </div>
+                    </h4>
+                  </div>
+
+                  <div class="unit-member-notes-timeline">
+
+                    {{#each this.notes}}
+                      <div class="unit-note-entry">
+                        <p>{{this.content}}</p>
+
+                        {{#if this.dateSubmitted}}
+                          <span>{{formatDate this.dateSubmitted}}</span>
+                        {{/if}}
+                      </div>
+                    {{else}}
+                      <p class="no-data">No notes</p>
+                    {{/each}}
+
+                  </div>
+
+                </section>
+
               {{else}}
-                <span class="no-data">No notes</span>
+
+                <p class="no-data">No notes available.</p>
+
               {{/each}}
-            </td>
 
-          </tr>
-        {{else}}
-          <tr>
-            <td colspan="5" class="no-data">
-              No unit completion data available.
-            </td>
-          </tr>
-        {{/each}}
-      </tbody>
-    </table>
+            </div>
+          </div>
+
+        </div>
+
+      </article>
+
+    {{else}}
+
+      <p class="no-data">No unit completion data available.</p>
+
+    {{/each}}
+
   </div>
 
-<div class="report-links-container report-links-enhanced">
+  {{!-- =========================================================
+      Report Navigation Links
+  ========================================================= --}}
+  <div class="report-links-container report-links-enhanced">
 
-  {{#unless isMemberEngagement}}
-  <div class="report-card">
-    <a href="/reports/memberengagement" class="report-link">
-      <img src="/images/memberengagementreport.png" alt="Member Engagement Report">
-    </a>
-    <p class="report-description">
-      Explore how your team is engaging with learning, including topics, completed units, and mission activity.
-    </p>
+    {{#unless isMemberEngagement}}
+      <div class="report-card">
+        <a href="/reports/memberengagement" class="report-link">
+          <img src="/images/memberengagementreport.png" alt="Member Engagement Report">
+        </a>
+        <p class="report-description">
+          Explore how your team is engaging with learning, including topics, completed units, and mission activity.
+        </p>
+      </div>
+    {{/unless}}
+
+    {{#unless isNuggetsMonitored}}
+      <div class="report-card">
+        <a href="/reports/nuggetsmonitored" class="report-link">
+          <img src="/images/nuggetsreport.png" alt="Nuggets Being Monitored Report">
+        </a>
+        <p class="report-description">
+          Monitor active nuggets, see who is responsible, and review the latest insights being captured.
+        </p>
+      </div>
+    {{/unless}}
+
+    {{#unless isPromptSetsCompleted}}
+      <div class="report-card">
+        <a href="/reports/promptsetscompleted" class="report-link">
+          <img src="/images/promptsetsreport.png" alt="Prompt Sets Report">
+        </a>
+        <p class="report-description">
+          Review prompt set completion across your team, including participation, notes, and learning patterns.
+        </p>
+      </div>
+    {{/unless}}
+
+    {{#unless isUnitsCompleted}}
+      <div class="report-card">
+        <a href="/reports/unitscompleted" class="report-link">
+          <img src="/images/libraryunitsreport.png" alt="Library Units Report">
+        </a>
+        <p class="report-description">
+          View completed learning units along with contributor activity and recorded notes over time.
+        </p>
+      </div>
+    {{/unless}}
+
   </div>
-  {{/unless}}
-
-  {{#unless isNuggetsMonitored}}
-  <div class="report-card">
-    <a href="/reports/nuggetsmonitored" class="report-link">
-      <img src="/images/nuggetsreport.png" alt="Nuggets Being Monitored Report">
-    </a>
-    <p class="report-description">
-      Monitor active nuggets, see who is responsible, and review the latest insights being captured.
-    </p>
-  </div>
-  {{/unless}}
-
-  {{#unless isPromptSetsCompleted}}
-  <div class="report-card">
-    <a href="/reports/promptsetscompleted" class="report-link">
-      <img src="/images/promptsetsreport.png" alt="Prompt Sets Report">
-    </a>
-    <p class="report-description">
-      Review prompt set completion across your team, including participation, notes, and learning patterns.
-    </p>
-  </div>
-  {{/unless}}
-
-  {{#unless isUnitsCompleted}}
-  <div class="report-card">
-    <a href="/reports/unitscompleted" class="report-link">
-      <img src="/images/libraryunitsreport.png" alt="Library Units Report">
-    </a>
-    <p class="report-description">
-      View completed learning units along with contributor activity and recorded notes over time.
-    </p>
-  </div>
-  {{/unless}}
-
-</div>
 </section>
 
-
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.unit-completed-toggle').forEach(button => {
+      button.addEventListener('click', () => {
+        const card = button.closest('.unit-completed-card');
+        if (!card) return;
+        card.classList.toggle('is-open');
+      });
+    });
+  });
+</script>
