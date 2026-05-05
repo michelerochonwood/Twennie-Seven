@@ -94,12 +94,37 @@ if (!effectiveUnitType || !effectiveMainTopic) {
 
 const content = (note_content || '').trim();
 
+if (!content) {
+  return res.status(400).send('Please enter a note before submitting.');
+}
+
 let memberType = 'member';
 if (isLeader) memberType = 'leader';
 else if (isGroupMember) memberType = 'group_member';
 
-if (effectiveUnitType === 'nugget' || effectiveUnitType === 'mission') {
-  // Nuggets and missions keep a running history of notes
+if (effectiveUnitType === 'nugget') {
+  await Nugget.findByIdAndUpdate(
+    unitId,
+    {
+      $push: {
+        monitoringNotes: {
+          note: content,
+          addedBy: userId,
+          addedByModel: memberType,
+          addedByNameSnapshot:
+            req.user?.name ||
+            req.user?.groupLeaderName ||
+            req.user?.username ||
+            req.user?.email ||
+            'Twennie member',
+          createdAt: new Date()
+        }
+      }
+    },
+    { new: true, runValidators: true }
+  );
+
+} else if (effectiveUnitType === 'mission') {
   await Note.create({
     unitID: unitId,
     memberID: userId,
@@ -109,6 +134,7 @@ if (effectiveUnitType === 'nugget' || effectiveUnitType === 'mission') {
     secondary_topic: effectiveSecondary,
     note_content: content
   });
+
 } else {
   // Learning units keep one current note per user/unit
   await Note.findOneAndUpdate(
