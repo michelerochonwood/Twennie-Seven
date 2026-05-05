@@ -5,195 +5,245 @@
     {{leaderGroupName}}; Member Engagement
   </h1>
 
-  <p style="width: 50%; margin: 0 auto; padding-top: 20px; padding-bottom: 20px;">
+  <p class="member-engagement-intro">
     These reports show the units your team members have completed. Your group members may have other units assigned but not yet completed, or prompt sets and missions still in progress. For prompt sets in progress, see the prompt sets completed and in progress report.
   </p>
 
   {{#if groupedUnits.length}}
-    <div class="table-container">
-      <h2 class="dashboard-section-title" style="margin-bottom: 14px; margin-top: -30px;">
-        units completed (grouped)
-      </h2>
+    <div class="member-grouped-units-block">
+      <h2>units completed by more than one member</h2>
 
-      <table class="dashboard-library-table">
-        <thead>
-          <tr>
-            <th class="dashboard-library-header">unit</th>
-            <th class="dashboard-library-header">type</th>
-            <th class="dashboard-library-header">members</th>
-          </tr>
-        </thead>
+      <div class="member-grouped-units-grid">
+        {{#each groupedUnits}}
+          <article class="member-grouped-unit-card">
+            <h3>
+              {{#if this.unitTitle}}
+                {{this.unitTitle}}
+              {{else}}
+                Untitled unit
+              {{/if}}
+            </h3>
 
-        <tbody>
-          {{#each groupedUnits}}
-            <tr class="dashboard-library-row">
-              <td class="dashboard-library-cell">
-                {{#if this.unitTitle}}
-                  {{this.unitTitle}}
-                {{else}}
-                  <span class="no-data">Untitled unit</span>
-                {{/if}}
-              </td>
+            <p class="member-grouped-unit-type">
+              {{#if this.unitType}}
+                {{this.unitType}}
+              {{else}}
+                unknown type
+              {{/if}}
+            </p>
 
-              <td class="dashboard-library-cell">
-                {{#if this.unitType}}
-                  {{this.unitType}}
-                {{else}}
-                  <span class="no-data">Unknown type</span>
-                {{/if}}
-              </td>
-
-              <td class="dashboard-library-cell">
-                {{#each this.members}}
-                  <div class="multi-record-item">{{this}}</div>
-                {{else}}
-                  <span class="no-data">No members listed</span>
-                {{/each}}
-              </td>
-            </tr>
-          {{/each}}
-        </tbody>
-      </table>
+            <div class="member-grouped-unit-members">
+              {{#each this.members}}
+                <span>{{this}}</span>
+              {{else}}
+                <span class="no-data">No members listed</span>
+              {{/each}}
+            </div>
+          </article>
+        {{/each}}
+      </div>
     </div>
   {{/if}}
 
-  <div class="table-container">
-    <table class="dashboard-library-table">
+  <div class="member-engagement-accordion">
 
-      <thead>
-        <tr>
-          <th class="dashboard-library-header">member</th>
-          <th class="dashboard-library-header">topics engaged</th>
-          <th class="dashboard-library-header">units completed</th>
-          <th class="dashboard-library-header">prompt sets completed</th>
-          <th class="dashboard-library-header">missions completed</th>
-        </tr>
-      </thead>
+    {{#each memberEngagementReports}}
 
-      <tbody>
-        {{#each memberEngagementReports}}
-          <tr class="dashboard-library-row">
+      <article class="member-engagement-card">
 
-            <td class="dashboard-library-cell member-name">
+        <button class="member-engagement-toggle" type="button">
+          <span>
+            <strong>
               {{#if this.memberName}}
                 {{this.memberName}}
               {{else}}
-                <span class="no-data">Unnamed member</span>
+                Unnamed member
               {{/if}}
+            </strong>
 
-              {{#if ../leaderName}}
-                <div class="multi-record-item" style="opacity:0.75; font-size:0.85em;">
-                  leader: {{../leaderName}}
-                </div>
-              {{/if}}
-            </td>
+            <small>
+              {{this.unitsCompleted.length}} unit(s)
+              · {{this.promptSetsCompleted.length}} prompt set(s)
+              · {{this.missionsCompleted.length}} mission(s)
+            </small>
+          </span>
 
-            <td class="dashboard-library-cell">
-              {{#each this.topicsEngaged}}
-                <div class="multi-record-item">{{this}}</div>
-              {{else}}
-                <span class="no-data">No topics engaged</span>
-              {{/each}}
-            </td>
+          <span class="member-engagement-icon">+</span>
+        </button>
 
-            <td class="dashboard-library-cell">
+        <div class="member-engagement-panel">
+
+          <div class="member-engagement-summary-strip">
+
+            <div class="member-engagement-stat">
+              <strong>{{this.topicsEngaged.length}}</strong>
+              <span>topics</span>
+            </div>
+
+            <div class="member-engagement-stat">
+              <strong>{{this.unitsCompleted.length}}</strong>
+              <span>units completed</span>
+            </div>
+
+            <div class="member-engagement-stat">
+              <strong>{{this.promptSetsCompleted.length}}</strong>
+              <span>prompt sets</span>
+            </div>
+
+            <div class="member-engagement-stat">
+              <strong>{{this.missionsCompleted.length}}</strong>
+              <span>missions</span>
+            </div>
+
+            {{#if ../leaderName}}
+              <div class="member-engagement-stat member-engagement-stat--leader">
+                <strong>{{../leaderName}}</strong>
+                <span>leader</span>
+              </div>
+            {{/if}}
+
+          </div>
+
+          <div class="member-engagement-grid">
+
+            <section class="member-engagement-column member-engagement-column--topics">
+              <h3>topics engaged</h3>
+
+              <div class="member-engagement-topic-list">
+                {{#each this.topicsEngaged}}
+                  <span class="member-engagement-topic-pill">{{this}}</span>
+                {{else}}
+                  <p class="no-data">No topics engaged</p>
+                {{/each}}
+              </div>
+            </section>
+
+            <section class="member-engagement-column">
+              <h3>units completed</h3>
+
               {{#each this.unitsCompleted}}
-                <div class="multi-record-item">
-                  {{this.unitTitle}} {{#if this.unitType}}({{this.unitType}}){{/if}}
+                <div class="member-engagement-item">
+                  <strong>{{this.unitTitle}}</strong>
+
+                  {{#if this.unitType}}
+                    <span>{{this.unitType}}</span>
+                  {{/if}}
                 </div>
               {{else}}
-                <span class="no-data">No units completed</span>
+                <p class="no-data">No units completed</p>
               {{/each}}
-            </td>
+            </section>
 
-            <td class="dashboard-library-cell">
+            <section class="member-engagement-column">
+              <h3>prompt sets completed</h3>
+
               {{#each this.promptSetsCompleted}}
-                <div class="multi-record-item">
-                  {{this.name}}
+                <div class="member-engagement-item">
+                  <strong>{{this.name}}</strong>
+
                   {{#if this.dateCompleted}}
-                    <span style="opacity:0.8;">({{formatDate this.dateCompleted}})</span>
+                    <span>{{formatDate this.dateCompleted}}</span>
                   {{/if}}
                 </div>
               {{else}}
-                <span class="no-data">No prompt sets completed</span>
+                <p class="no-data">No prompt sets completed</p>
               {{/each}}
-            </td>
+            </section>
 
-            <td class="dashboard-library-cell">
+            <section class="member-engagement-column">
+              <h3>missions completed</h3>
+
               {{#each this.missionsCompleted}}
-                <div class="multi-record-item">
-                  {{#if this.missionTitle}}
-                    {{this.missionTitle}}
-                  {{else}}
-                    Untitled mission
-                  {{/if}}
+                <div class="member-engagement-item">
+                  <strong>
+                    {{#if this.missionTitle}}
+                      {{this.missionTitle}}
+                    {{else}}
+                      Untitled mission
+                    {{/if}}
+                  </strong>
 
                   {{#if this.dateCompleted}}
-                    <span style="opacity:0.8;">({{formatDate this.dateCompleted}})</span>
+                    <span>{{formatDate this.dateCompleted}}</span>
                   {{/if}}
                 </div>
               {{else}}
-                <span class="no-data">No missions completed</span>
+                <p class="no-data">No missions completed</p>
               {{/each}}
-            </td>
+            </section>
 
-          </tr>
-        {{else}}
-          <tr>
-            <td colspan="5" class="no-data">No engagement data available.</td>
-          </tr>
-        {{/each}}
-      </tbody>
+          </div>
 
-    </table>
+        </div>
+
+      </article>
+
+    {{else}}
+
+      <p class="no-data">No engagement data available.</p>
+
+    {{/each}}
+
   </div>
 
-<div class="report-links-container report-links-enhanced">
+  <div class="report-links-container report-links-enhanced">
 
-  {{#unless isMemberEngagement}}
-  <div class="report-card">
-    <a href="/reports/memberengagement" class="report-link">
-      <img src="/images/memberengagementreport.png" alt="Member Engagement Report">
-    </a>
-    <p class="report-description">
-      Understand how each team member is engaging with learning, including topics explored, units completed, and mission activity.
-    </p>
+    {{#unless isMemberEngagement}}
+      <div class="report-card">
+        <a href="/reports/memberengagement" class="report-link">
+          <img src="/images/memberengagementreport.png" alt="Member Engagement Report">
+        </a>
+        <p class="report-description">
+          Understand how each team member is engaging with learning, including topics explored, units completed, and mission activity.
+        </p>
+      </div>
+    {{/unless}}
+
+    {{#unless isNuggetsMonitored}}
+      <div class="report-card">
+        <a href="/reports/nuggetsmonitored" class="report-link">
+          <img src="/images/nuggetsreport.png" alt="Nuggets Being Monitored Report">
+        </a>
+        <p class="report-description">
+          See which nuggets are being monitored, who is responsible, and the most recent insights being captured.
+        </p>
+      </div>
+    {{/unless}}
+
+    {{#unless isPromptSetsCompleted}}
+      <div class="report-card">
+        <a href="/reports/promptsetscompleted" class="report-link">
+          <img src="/images/promptsetsreport.png" alt="Prompt Sets Report">
+        </a>
+        <p class="report-description">
+          Review prompt set completion across your team, including notes, participation, and learning trends.
+        </p>
+      </div>
+    {{/unless}}
+
+    {{#unless isUnitsCompleted}}
+      <div class="report-card">
+        <a href="/reports/unitscompleted" class="report-link">
+          <img src="/images/libraryunitsreport.png" alt="Library Units Report">
+        </a>
+        <p class="report-description">
+          View completed learning units along with contributor activity and recorded notes for deeper insight.
+        </p>
+      </div>
+    {{/unless}}
+
   </div>
-  {{/unless}}
-
-  {{#unless isNuggetsMonitored}}
-  <div class="report-card">
-    <a href="/reports/nuggetsmonitored" class="report-link">
-      <img src="/images/nuggetsreport.png" alt="Nuggets Being Monitored Report">
-    </a>
-    <p class="report-description">
-      See which nuggets are being monitored, who is responsible, and the most recent insights being captured.
-    </p>
-  </div>
-  {{/unless}}
-
-  {{#unless isPromptSetsCompleted}}
-  <div class="report-card">
-    <a href="/reports/promptsetscompleted" class="report-link">
-      <img src="/images/promptsetsreport.png" alt="Prompt Sets Report">
-    </a>
-    <p class="report-description">
-      Review prompt set completion across your team, including notes, participation, and learning trends.
-    </p>
-  </div>
-  {{/unless}}
-
-  {{#unless isUnitsCompleted}}
-  <div class="report-card">
-    <a href="/reports/unitscompleted" class="report-link">
-      <img src="/images/libraryunitsreport.png" alt="Library Units Report">
-    </a>
-    <p class="report-description">
-      View completed learning units along with contributor activity and recorded notes for deeper insight.
-    </p>
-  </div>
-  {{/unless}}
-
-</div>
 </section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.member-engagement-toggle').forEach(button => {
+      button.addEventListener('click', () => {
+        const card = button.closest('.member-engagement-card');
+        if (!card) return;
+        card.classList.toggle('is-open');
+      });
+    });
+  });
+</script>
 
