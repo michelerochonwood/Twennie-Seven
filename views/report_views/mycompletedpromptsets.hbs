@@ -3,147 +3,115 @@
 <section class="dashboard-section">
   <h1 class="dashboard-section-title">Your Completed Prompt Sets</h1>
 
-  <!-- Table 1: Prompt Set Overview -->
-  <div class="table-container" style="margin-bottom: -100px;"> 
-    <table class="dashboard-library-table">
-      <thead>
-        <tr>
-          <th class="dashboard-library-header">Prompt Set Title</th>
-          <th class="dashboard-library-header">Topics</th>
-          <th class="dashboard-library-header">Purpose</th>
-          <th class="dashboard-library-header">Characteristics</th>
-          <th class="dashboard-library-header">Target Audience</th>
-          <th class="dashboard-library-header">Completion Date</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{#each completedPromptSetsReports}}
-        <tr class="dashboard-library-row">
-          <td class="dashboard-library-cell">{{this.promptSetTitle}}</td>
+  <div class="prompt-notes-accordion">
 
-          <td class="dashboard-library-cell">
-            {{#if this.main_topic}}
-              <div class="multi-record-item">{{this.main_topic}}</div>
-            {{else}}
-              <span class="no-data">No main topic</span>
-            {{/if}}
+    {{#each promptNotesReports}}
 
-            {{#each this.secondary_topics}}
-              <div class="multi-record-item">{{this}}</div>
-            {{else}}
-              <span class="no-data">No secondary topics</span>
-            {{/each}}
-          </td>
+      <article class="promptset-accordion-card">
 
-          <td class="dashboard-library-cell">
-            {{#if this.purpose}}
-              {{this.purpose}}
-            {{else}}
-              <span class="no-data">No purpose provided</span>
-            {{/if}}
-          </td>
-
-          <td class="dashboard-library-cell">
-            {{#each this.characteristics}}
-              <div class="multi-record-item">{{this}}</div>
-            {{else}}
-              <span class="no-data">No characteristics provided</span>
-            {{/each}}
-          </td>
-
-          <td class="dashboard-library-cell">
-            {{#if this.targetAudience}}
-              {{this.targetAudience}}
-            {{else}}
-              <span class="no-data">No target audience provided</span>
-            {{/if}}
-          </td>
-
-          <td class="dashboard-library-cell">
-            {{#if this.dateCompleted}}
-              {{formatDate this.dateCompleted}}
-            {{else}}
-              <span class="no-data">No completion date</span>
-            {{/if}}
-          </td>
-        </tr>
-        {{else}}
-        <tr>
-          <td colspan="6" class="no-data">You have not completed any prompt sets yet.</td>
-        </tr>
-        {{/each}}
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Table 2: Prompt Notes -->
-  <h2 class="dashboard-section-title">Your Prompt Notes</h2>
-  <div class="table-container wide-table-container">
-    <table class="dashboard-library-table wide-table">
-      <thead>
-        <tr>
-          <th class="dashboard-library-header">Prompt Set Title</th>
-          {{#each (range 1 21)}}
-            <th class="dashboard-library-header">Prompt {{this}}</th>
-          {{/each}}
-        </tr>
-      </thead>
-      <tbody>
-        {{#each promptNotesReports}}
-        <!-- Row 1: Prompt Texts -->
-        <tr class="dashboard-library-row">
-          <td class="dashboard-library-cell">
-            <strong>{{this.promptSetTitle}}</strong><br>
-            <span class="multi-record-item" style="opacity:0.8;">
+        <button class="promptset-accordion-toggle" type="button">
+          <span>
+            <strong>{{this.promptSetTitle}}</strong>
+            <small>
               {{#if this.dateCompleted}}
                 completed: {{formatDate this.dateCompleted}}
               {{else}}
                 in progress
               {{/if}}
-            </span>
-          </td>
+            </small>
+          </span>
 
-          {{#each this.prompts}}
-            {{#unless @first}}
-              <td class="dashboard-library-cell" style="vertical-align: top;">
-                <div class="multi-record-item">
-                  <strong>{{this.promptHeadline}}:</strong> {{this.promptText}}
-                </div>
-              </td>
-            {{/unless}}
-          {{/each}}
-        </tr>
+          <span class="promptset-accordion-icon">+</span>
+        </button>
 
-        <!-- Row 2: Notes -->
-        <tr class="dashboard-library-row">
-          <td class="dashboard-library-cell"><strong>your notes (history)</strong></td>
+        <div class="promptset-accordion-panel">
 
-          {{#each this.promptNotes}}
-            {{#unless @first}}
-              <td class="dashboard-library-cell" style="vertical-align: top;">
-                {{#each this.notes}}
-                  <div class="multi-record-item" style="margin-bottom: 0.75rem;">
-                    <div>{{this.content}}</div>
+          {{!-- ORIENTATION --}}
+          {{#if this.prompts.[0].promptText}}
+            <div class="promptset-orientation-card">
+              <h3>orientation</h3>
+              <p>{{this.prompts.[0].promptText}}</p>
+            </div>
+          {{/if}}
 
-                    {{#if this.dateSubmitted}}
-                      <div style="font-size: 0.85rem; opacity: 0.75; margin-top: 0.25rem;">
-                        {{formatDate this.dateSubmitted}}
-                      </div>
-                    {{/if}}
+          <div class="prompt-response-list">
+
+            {{#each this.prompts}}
+              {{#unless @first}}
+
+                <details class="prompt-response-details">
+
+                  <summary>
+                    <span class="prompt-number">prompt {{@index}}</span>
+                    <span class="prompt-title">
+                      {{#if this.promptHeadline}}
+                        {{this.promptHeadline}}
+                      {{else}}
+                        Untitled prompt
+                      {{/if}}
+                    </span>
+                  </summary>
+
+                  <div class="prompt-response-body">
+
+                    <div class="prompt-question">
+                      <strong>question:</strong>
+                      <p>{{this.promptText}}</p>
+                    </div>
+
+                    <div class="prompt-answer">
+                      <strong>your notes:</strong>
+
+                      {{#with (lookup ../promptNotes @index)}}
+                        {{#each this.notes}}
+                          <div class="prompt-note-entry">
+                            <p>{{this.content}}</p>
+
+                            {{#if this.dateSubmitted}}
+                              <div class="prompt-note-date">
+                                {{formatDate this.dateSubmitted}}
+                              </div>
+                            {{/if}}
+                          </div>
+                        {{else}}
+                          <span class="no-data">No notes</span>
+                        {{/each}}
+                      {{else}}
+                        <span class="no-data">No notes</span>
+                      {{/with}}
+
+                    </div>
+
                   </div>
-                {{else}}
-                  <span class="no-data">No notes</span>
-                {{/each}}
-              </td>
-            {{/unless}}
-          {{/each}}
-        </tr>
-        {{else}}
-        <tr>
-          <td colspan="21" class="no-data">You haven’t started any prompt sets yet.</td>
-        </tr>
-        {{/each}}
-      </tbody>
-    </table>
+
+                </details>
+
+              {{/unless}}
+            {{/each}}
+
+          </div>
+
+        </div>
+      </article>
+
+    {{else}}
+
+      <p class="no-data">You haven’t started any prompt sets yet.</p>
+
+    {{/each}}
+
   </div>
+
 </section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.promptset-accordion-toggle').forEach(button => {
+      button.addEventListener('click', () => {
+        const card = button.closest('.promptset-accordion-card');
+        if (!card) return;
+        card.classList.toggle('is-open');
+      });
+    });
+  });
+</script>
