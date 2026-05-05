@@ -242,6 +242,13 @@
 {{#if canAddNuggetMonitoringNotes}}
   <div class="single_nugget-notes-container">
     <h3 class="single_nugget-notes-title">record monitoring notes for this nugget</h3>
+
+    {{#if monitoringNoteSuccess}}
+      <div class="nugget-monitoring-note-success">
+        Monitoring note saved. This nugget’s history has been updated.
+      </div>
+    {{/if}}
+
     <p class="single_nugget-notes-instructions">
       Use this space to record what you are learning as you monitor this opportunity. Add updates, new signals, changes in timing, client movement, risk, or anything your team should know. These notes help maintain continuity as monitoring changes hands.
     </p>
@@ -258,17 +265,13 @@
         class="single_nugget-notes-textarea"
         rows="5"
         maxlength="2000"
+        required
         placeholder="Record what you are noticing about this nugget..."
       ></textarea>
 
-      <button type="submit" class="single_nugget-notes-submit">save monitoring notes</button>
+      <button type="submit" class="single_nugget-notes-submit">save monitoring note</button>
     </form>
   </div>
-  {{#if monitoringNoteSuccess}}
-  <div class="nugget-monitoring-note-success">
-    Monitoring note saved. This nugget’s history has been updated.
-  </div>
-{{/if}}
 {{else}}
   <div class="single_nugget-notes-container">
     <h3 class="single_nugget-notes-title">record monitoring notes for this nugget</h3>
@@ -277,6 +280,36 @@
     </p>
   </div>
 {{/if}}
+
+<div class="single_nugget-monitoring-history white-container">
+  <h3 class="single_nugget-notes-title">monitoring history</h3>
+
+  {{#if monitoringNotes.length}}
+    <div class="single_nugget-monitoring-list">
+      {{#each monitoringNotes}}
+        <article class="single_nugget-monitoring-entry">
+          <div class="single_nugget-monitoring-meta">
+            {{#if addedByNameSnapshot}}
+              <strong>{{addedByNameSnapshot}}</strong>
+            {{else}}
+              <strong>Twennie member</strong>
+            {{/if}}
+
+            {{#if createdAt}}
+              <span>{{formatDate createdAt}}</span>
+            {{/if}}
+          </div>
+
+          <p class="single_nugget-monitoring-note">{{note}}</p>
+        </article>
+      {{/each}}
+    </div>
+  {{else}}
+    <p class="single_nugget-notes-instructions">
+      No monitoring notes have been added yet.
+    </p>
+  {{/if}}
+</div>
 
   <!-- Sidebar -->
   <aside class="single_nugget-sidebar">

@@ -4382,3 +4382,15 @@ label {
 .promptset-assign-member-option.selected .promptset-fake-checkbox {
   background-color: #4a4ab2;
 }
+
+
+
+/*NUGGET VIEW*/
+
+nugget-monitoring-note-success {
+  margin-top: 40px;
+  color:#dc176a; 
+  font-weight: 600;
+  font-size: 1rem;
+  text-align: center;
+}
