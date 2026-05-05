@@ -264,6 +264,11 @@
       <button type="submit" class="single_nugget-notes-submit">save monitoring notes</button>
     </form>
   </div>
+  {{#if monitoringNoteSuccess}}
+  <div class="nugget-monitoring-note-success">
+    Monitoring note saved. This nugget’s history has been updated.
+  </div>
+{{/if}}
 {{else}}
   <div class="single_nugget-notes-container">
     <h3 class="single_nugget-notes-title">record monitoring notes for this nugget</h3>
