@@ -124,6 +124,8 @@ if (effectiveUnitType === 'nugget') {
     { new: true, runValidators: true }
   );
 
+  return res.redirect(`/unitviews/nuggets/view/${unitId}?monitoringNote=ok`);
+
 } else if (effectiveUnitType === 'mission') {
   await Note.create({
     unitID: unitId,
