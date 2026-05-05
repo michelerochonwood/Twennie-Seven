@@ -1,3 +1,5 @@
+<meta name="csrf-token" content="{{csrfToken}}">
+
 <div class="group-member-tagged-units-section">
 
   {{#if currentPromptSets.length}}
@@ -84,13 +86,13 @@
                 </a>
 
                 <div class="tagged-unit-actions">
-<button
-  type="button"
-  class="tagged-unit-link"
-  onclick="archiveCompletedPromptSet('{{this.promptSetId}}','{{this.assignedToId}}')"
->
-  move to archive
-</button>
+                  <button
+                    type="button"
+                    class="tagged-unit-link"
+                    onclick="archiveCompletedPromptSet('{{this.promptSetId}}','{{this.assignedToId}}')"
+                  >
+                    move to archive
+                  </button>
                 </div>
               </div>
 
@@ -98,73 +100,76 @@
           </div>
         {{/each}}
       {{else}}
-        <p class="tagged-no-units">You haven’t completed any prompt sets recently, but check the archive for any you might have moved.</p>
+        <p class="tagged-no-units">
+          You haven’t completed any prompt sets recently, but check the archive for any you might have moved.
+        </p>
       {{/if}}
     </div>
-
-
-  <div class="tagged-section-divider" aria-hidden="true"></div>
-<div class="member-report-actions">
-
-  <!-- Learning Notes -->
-  <div class="member-report-card">
-    <a href="/reports/mylearningnotes" class="member-report-link">
-      <img
-        src="/images/libraryunitsreport.png"
-        alt="View my learning notes"
-        class="member-report-image"
-      >
-    </a>
-    <p class="member-report-description">
-      This library unit report shows you all the notes you've kept on your completed library units.
-    </p>
   </div>
 
-  <!-- Learning Archive -->
-  <div class="member-report-card">
-    <a href="/archive/groupmember" class="member-report-link">
-      <img
-        src="/images/learningarchivebutton.png"
-        alt="View learning archive"
-        class="member-report-image"
-      >
-    </a>
-    <p class="member-report-description">
-      The learning archive contains units you've archived. These may or may not have been completed.
-    </p>
+  <div class="tagged-section-divider" aria-hidden="true"></div>
+
+  <div class="member-report-actions">
+
+    <div class="member-report-card">
+      <a href="/reports/mylearningnotes" class="member-report-link">
+        <img
+          src="/images/libraryunitsreport.png"
+          alt="View my learning notes"
+          class="member-report-image"
+        >
+      </a>
+
+      <p class="member-report-description">
+        This library unit report shows you all the notes you've kept on your completed library units.
+      </p>
+    </div>
+
+    <div class="member-report-card">
+      <a href="/archive/groupmember" class="member-report-link">
+        <img
+          src="/images/learningarchivebutton.png"
+          alt="View learning archive"
+          class="member-report-image"
+        >
+      </a>
+
+      <p class="member-report-description">
+        The learning archive contains units you've archived. These may or may not have been completed.
+      </p>
+    </div>
+
   </div>
 
 </div>
 
-
-
 <script>
-async function archiveCompletedPromptSet(promptSetId, assignedToMemberId = null) {
-  if (!confirm('Move this prompt set to archive?')) return;
+  async function archiveCompletedPromptSet(promptSetId, assignedToMemberId = null) {
+    if (!confirm('Move this prompt set to archive?')) return;
 
-  try {
-    const res = await fetch('/archive/completed-promptset', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
-      },
-      body: JSON.stringify({
-        promptSetId,
-        assignedToMemberId
-      })
-    });
+    try {
+      const res = await fetch('/archive/completed-promptset', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+        },
+        body: JSON.stringify({
+          promptSetId,
+          assignedToMemberId
+        })
+      });
 
-    const data = await res.json().catch(() => ({}));
+      const data = await res.json().catch(() => ({}));
 
-    if (res.ok && data.ok) {
-      location.reload();
-    } else {
-      alert(data.message || 'Could not archive this prompt set.');
+      if (res.ok && data.ok) {
+        location.reload();
+      } else {
+        alert(data.message || 'Could not archive this prompt set.');
+      }
+    } catch (e) {
+      console.error('archiveCompletedPromptSet error', e);
+      alert('An error occurred while archiving this prompt set.');
     }
-  } catch (e) {
-    console.error('archiveCompletedPromptSet error', e);
-    alert('An error occurred while archiving this prompt set.');
   }
-}
 </script>
