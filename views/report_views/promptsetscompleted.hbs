@@ -9,30 +9,32 @@
 
     <article class="promptset-accordion-card">
 
-      <button class="promptset-accordion-toggle" type="button">
-        <span>
-          <strong>{{this.promptSetTitle}}</strong>
-          <small>
-            {{#if this.completedBy.length}}
-              {{this.completedBy.length}} team member response(s)
-            {{else}}
-              no responses yet
-            {{/if}}
-          </small>
-        </span>
-<span class="promptset-accordion-actions">
-  <button
-    type="button"
-    class="print-promptset-btn"
-    onclick="event.stopPropagation(); printPromptSet(this);"
-  >
-    print this set
-  </button>
+      <div class="promptset-accordion-header">
 
-  <span class="promptset-accordion-icon">+</span>
-</span>
-        <span class="promptset-accordion-icon">+</span>
-      </button>
+        <button class="promptset-accordion-toggle" type="button">
+          <span>
+            <strong>{{this.promptSetTitle}}</strong>
+            <small>
+              {{#if this.completedBy.length}}
+                {{this.completedBy.length}} team member response(s)
+              {{else}}
+                no responses yet
+              {{/if}}
+            </small>
+          </span>
+
+          <span class="promptset-accordion-icon">+</span>
+        </button>
+
+        <button
+          type="button"
+          class="print-promptset-btn"
+          onclick="event.stopPropagation(); printPromptSet(this);"
+        >
+          print this set
+        </button>
+
+      </div>
 
       <div class="promptset-accordion-panel">
 
@@ -148,7 +150,6 @@
     });
   });
 
-
   function printPromptSet(button) {
     const card = button.closest('.promptset-accordion-card');
     if (!card) return;
@@ -157,11 +158,13 @@
     card.classList.add('print-this-promptset');
 
     window.print();
-
-    setTimeout(() => {
-      document.body.classList.remove('printing-single-promptset');
-      card.classList.remove('print-this-promptset');
-    }, 500);
   }
 
+  window.addEventListener('afterprint', () => {
+    document.body.classList.remove('printing-single-promptset');
+
+    document.querySelectorAll('.print-this-promptset').forEach(card => {
+      card.classList.remove('print-this-promptset');
+    });
+  });
 </script>
