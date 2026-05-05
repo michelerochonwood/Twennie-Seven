@@ -760,7 +760,7 @@ viewMineDisciplines: async (req, res) => {
 
 
 
-  viewNugget: async (req, res) => {
+viewNugget: async (req, res) => {
   try {
     const { id } = req.params;
     console.log(`💎 Fetching nugget with ID: ${id}`);
@@ -778,7 +778,13 @@ viewMineDisciplines: async (req, res) => {
 
     // 2) Enforce membership: nuggets are for paying members only
     const membershipType = req.user?.accessLevel || req.user?.membershipType;
-    const paidMemberships = ['paid_individual', 'leader', 'group_member'];
+    const paidMemberships = [
+      'paid_individual',
+      'contributor_individual',
+      'leader',
+      'group_member'
+    ];
+
     if (!membershipType || !paidMemberships.includes(membershipType)) {
       console.log(`🚫 Access denied for membership type: ${membershipType}`);
       return res.status(403).render('unit_views/error', {
@@ -797,11 +803,11 @@ viewMineDisciplines: async (req, res) => {
     const currentMembership = req.user?.membershipType || req.user?.accessLevel;
     const isOwner = !!(currentUserId && creatorId && currentUserId === creatorId);
 
-    // 5) Leader assignment context (if leader)
+    // 5) Leader assignment context
     const isLeader = currentMembership === 'leader';
     let groupMembers = [];
-    let leaderId;
-    let leaderName;
+    let leaderId = null;
+    let leaderName = null;
 
     if (isLeader && currentUserId) {
       const leaderDoc = await Leader.findById(currentUserId)
@@ -809,21 +815,25 @@ viewMineDisciplines: async (req, res) => {
         .lean();
 
       if (leaderDoc) {
-        groupMembers = await GroupMember.find({ groupId: leaderDoc._id })
+        groupMembers = await GroupMember.find({
+          $or: [{ leader: leaderDoc._id }, { groupId: leaderDoc._id }]
+        })
           .select('_id name')
           .lean();
+
         leaderId = leaderDoc._id.toString();
         leaderName = leaderDoc.groupLeaderName || leaderDoc.username || 'You';
       }
     }
 
-    // 6) ✅ Org Admin suggestion context
+    // 6) Org Admin suggestion context
     const adminSuggest = await buildOrgLeaderListForAdmin(req);
 
+    // 7) Assignment / monitoring-note permissions
+    const isAssignedToCurrentUser = await isUserAssignedToUnit(req, nugget._id, 'nugget');
+    const canAddNuggetMonitoringNotes = isOwner || isAssignedToCurrentUser;
 
-const isAssignedToCurrentUser = await isUserAssignedToUnit(req, nugget._id, 'nugget');
-const canAddNuggetMonitoringNotes = isOwner || isAssignedToCurrentUser;
-    // 7) Render the nugget view
+    // 8) Render the nugget view
     return res.render('unit_views/single_nugget', {
       layout: 'unitviewlayout',
 
@@ -841,10 +851,14 @@ const canAddNuggetMonitoringNotes = isOwner || isAssignedToCurrentUser;
       projectDeliveryType: nugget.projectDeliveryType,
       originalSource: nugget.originalSource,
       likelihood: nugget.likelihood,
-      monitoringNotes: nugget.monitoringNotes || [],
       notes: nugget.notes,
 
-      currentUserId: currentUserId,
+      // Monitoring notes
+      monitoringNotes: nugget.monitoringNotes || [],
+      monitoringNoteSuccess: req.query.monitoringNote === 'ok',
+
+      // Assignment / note access
+      currentUserId,
       isAssignedToCurrentUser,
       canAddNuggetMonitoringNotes,
 
@@ -854,17 +868,18 @@ const canAddNuggetMonitoringNotes = isOwner || isAssignedToCurrentUser;
         image: creator?.image || '/images/default-avatar.png',
       },
 
-tagSuccess: req.query.tag === 'ok',
-monitoringNoteSuccess: req.query.monitoringNote === 'ok',
+      // Success flags
+      tagSuccess: req.query.tag === 'ok',
 
-      // Flags
+      // Role flags
       isOwner,
       isAuthenticated: !!req.user,
       isLeader,
       isGroupMemberOrLeader: isLeader || currentMembership === 'group_member',
-      isGroupMemberOrMember: currentMembership === 'group_member' || currentMembership === 'member',
+      isGroupMemberOrMember:
+        currentMembership === 'group_member' || currentMembership === 'member',
 
-      // ✅ Admin suggest vars (top-level)
+      // Admin suggest vars
       ...adminSuggest,
 
       // Leader-only assignment data
