@@ -4387,10 +4387,71 @@ label {
 
 /*NUGGET VIEW*/
 
-nugget-monitoring-note-success {
-  margin-top: 40px;
-  color:#dc176a; 
+/* =========================
+   NUGGET MONITORING HISTORY
+   ========================= */
+
+.single_nugget-monitoring-history {
+  width: 80%;
+  margin: 0 auto 1.5rem auto;
+  padding: 20px;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 2px 2px 10px rgba(0,0,0,0.08);
+}
+
+.single_nugget-monitoring-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.single_nugget-monitoring-entry {
+  background: white;
+  border-left: 4px solid #4a4ab2;
+  border-radius: 8px;
+  padding: 14px 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.single_nugget-monitoring-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.single_nugget-monitoring-meta strong {
+  color: #262262;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.single_nugget-monitoring-meta span {
+  color: #777;
+  font-size: 0.72rem;
   font-weight: 600;
-  font-size: 1rem;
-  text-align: center;
+}
+
+.single_nugget-monitoring-note {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: #333;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.nugget-monitoring-note-success {
+  margin-bottom: 1rem;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: #eef8f1;
+  border-left: 4px solid #2e8b57;
+  color: #1f5f3f;
+  font-weight: 700;
+  font-size: 0.85rem;
 }
