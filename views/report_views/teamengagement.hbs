@@ -1,106 +1,218 @@
 {{#*inline "title"}}Team Engagement Report | Twennie{{/inline}}
+
 <section class="dashboard-section">
-    <h1 class="dashboard-section-title">{{leaderGroupName}}; Team Engagement</h1>
+  <h1 class="dashboard-section-title">{{leaderGroupName}}; Team Engagement</h1>
 
-    <div class="table-container">
-        <table class="dashboard-library-table">
-            <thead>
-                <tr>
-                    <th class="dashboard-library-header">Prompt Sets Completed</th>
-                    <th class="dashboard-library-header">Badges Earned</th>
-                    <th class="dashboard-library-header">Units Completed</th>
-                    <th class="dashboard-library-header">Units Contributed</th>
-                    <th class="dashboard-library-header">Topics Engaged</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{#each teamEngagementReports}}
-                <tr class="dashboard-library-row">
-                    <!-- Prompt Sets Completed -->
-                    <td class="dashboard-library-cell">
-                        {{#each this.promptSetsCompleted}}
-                            <div class="multi-record-item">{{this.name}} ({{formatDate this.dateCompleted}})</div>
-                        {{else}}
-                            <span class="no-data">No prompt sets completed</span>
-                        {{/each}}
-                    </td>
+  {{!-- =========================================================
+      ACCORDION: Team Engagement
+  ========================================================= --}}
+  <div class="team-engagement-accordion">
 
-                    <!-- Badges Earned -->
-                    <td class="dashboard-library-cell">
-                        {{#each this.badgesEarned}}
-                            <div class="multi-record-item">
-                                <img src="{{this.badgeImage}}" alt="Badge" class="badge-icon"> {{this.badgeName}}
-                            </div>
-                        {{else}}
-                            <span class="no-data">No badges earned</span>
-                        {{/each}}
-                    </td>
+    {{#each teamEngagementReports}}
 
-                    <!-- Units Completed -->
-                    <td class="dashboard-library-cell">
-                        {{#each this.unitsCompleted}}
-                            <div class="multi-record-item">{{this.unitTitle}} ({{this.unitType}})</div>
-                        {{else}}
-                            <span class="no-data">No units completed</span>
-                        {{/each}}
-                    </td>
+      <article class="team-engagement-card">
 
-                    <!-- Units Contributed -->
-                    <td class="dashboard-library-cell">
-                        {{#each this.unitsContributed}}
-                            <div class="multi-record-item">{{this.unitTitle}} ({{this.unitType}})</div>
-                        {{else}}
-                            <span class="no-data">No units contributed</span>
-                        {{/each}}
-                    </td>
+        <button class="team-engagement-toggle" type="button">
+          <span>
+            <strong>
+              {{#if this.memberName}}
+                {{this.memberName}}
+              {{else}}
+                Team engagement record
+              {{/if}}
+            </strong>
 
-                    <!-- Topics Engaged -->
-                    <td class="dashboard-library-cell">
-                        {{#each this.topicsEngaged}}
-                            <div class="multi-record-item">{{this}}</div>
-                        {{else}}
-                            <span class="no-data">No topics engaged</span>
-                        {{/each}}
-                    </td>
-                </tr>
+            <small>
+              {{this.promptSetsCompleted.length}} prompt set(s)
+              · {{this.badgesEarned.length}} badge(s)
+              · {{this.unitsCompleted.length}} unit(s)
+            </small>
+          </span>
+
+          <span class="team-engagement-icon">+</span>
+        </button>
+
+        <div class="team-engagement-panel">
+
+          <div class="team-engagement-summary-strip">
+
+            <div class="team-engagement-stat">
+              <strong>{{this.promptSetsCompleted.length}}</strong>
+              <span>prompt sets</span>
+            </div>
+
+            <div class="team-engagement-stat">
+              <strong>{{this.badgesEarned.length}}</strong>
+              <span>badges</span>
+            </div>
+
+            <div class="team-engagement-stat">
+              <strong>{{this.unitsCompleted.length}}</strong>
+              <span>units completed</span>
+            </div>
+
+            <div class="team-engagement-stat">
+              <strong>{{this.unitsContributed.length}}</strong>
+              <span>units contributed</span>
+            </div>
+
+            <div class="team-engagement-stat">
+              <strong>{{this.topicsEngaged.length}}</strong>
+              <span>topics</span>
+            </div>
+
+          </div>
+
+          <div class="team-engagement-grid">
+
+            <section class="team-engagement-column">
+              <h3>prompt sets completed</h3>
+
+              {{#each this.promptSetsCompleted}}
+                <div class="team-engagement-item">
+                  <strong>{{this.name}}</strong>
+
+                  {{#if this.dateCompleted}}
+                    <span>{{formatDate this.dateCompleted}}</span>
+                  {{/if}}
+                </div>
+              {{else}}
+                <p class="no-data">No prompt sets completed</p>
+              {{/each}}
+            </section>
+
+            <section class="team-engagement-column">
+              <h3>badges earned</h3>
+
+              {{#each this.badgesEarned}}
+                <div class="team-engagement-badge-item">
+                  {{#if this.badgeImage}}
+                    <img src="{{this.badgeImage}}" alt="Badge">
+                  {{/if}}
+
+                  <strong>{{this.badgeName}}</strong>
+                </div>
+              {{else}}
+                <p class="no-data">No badges earned</p>
+              {{/each}}
+            </section>
+
+            <section class="team-engagement-column">
+              <h3>units completed</h3>
+
+              {{#each this.unitsCompleted}}
+                <div class="team-engagement-item">
+                  <strong>{{this.unitTitle}}</strong>
+
+                  {{#if this.unitType}}
+                    <span>{{this.unitType}}</span>
+                  {{/if}}
+                </div>
+              {{else}}
+                <p class="no-data">No units completed</p>
+              {{/each}}
+            </section>
+
+            <section class="team-engagement-column">
+              <h3>units contributed</h3>
+
+              {{#each this.unitsContributed}}
+                <div class="team-engagement-item">
+                  <strong>{{this.unitTitle}}</strong>
+
+                  {{#if this.unitType}}
+                    <span>{{this.unitType}}</span>
+                  {{/if}}
+                </div>
+              {{else}}
+                <p class="no-data">No units contributed</p>
+              {{/each}}
+            </section>
+
+            <section class="team-engagement-column team-engagement-column--topics">
+              <h3>topics engaged</h3>
+
+              <div class="team-engagement-topic-list">
+                {{#each this.topicsEngaged}}
+                  <span class="team-engagement-topic-pill">{{this}}</span>
                 {{else}}
-                <tr>
-                    <td colspan="5" class="no-data">No team engagement data available.</td>
-                </tr>
+                  <p class="no-data">No topics engaged</p>
                 {{/each}}
-            </tbody>
-        </table>
-    </div>
+              </div>
+            </section>
 
-    <!-- Report Navigation Links -->
-<div class="report-links-container">
+          </div>
 
+        </div>
+
+      </article>
+
+    {{else}}
+
+      <p class="no-data">No team engagement data available.</p>
+
+    {{/each}}
+
+  </div>
+
+  {{!-- Report Navigation Links --}}
+  <div class="report-links-container report-links-enhanced">
 
     {{#unless isMemberEngagement}}
-    <a href="/reports/memberengagement" class="report-link">
-        <img src="https://www.twennie.com/icons/memberengagement.svg" alt="Member Engagement Report">
-    </a>
+      <div class="report-card">
+        <a href="/reports/memberengagement" class="report-link">
+          <img src="/images/memberengagementreport.png" alt="Member Engagement Report">
+        </a>
+        <p class="report-description">
+          See how each team member is engaging with learning, including topics explored, units completed, and mission activity.
+        </p>
+      </div>
     {{/unless}}
 
-    {{#unless isTeamEngagement}}
-    <a href="/reports/teamengagement" class="report-link">
-        <img src="https://www.twennie.com/icons/teamengagement.svg" alt="Team Engagement Report">
-    </a>
+    {{#unless isNuggetsMonitored}}
+      <div class="report-card">
+        <a href="/reports/nuggetsmonitored" class="report-link">
+          <img src="/images/nuggetsreport.png" alt="Nuggets Being Monitored Report">
+        </a>
+        <p class="report-description">
+          Track which nuggets are being monitored, who is responsible, and the latest insights being recorded.
+        </p>
+      </div>
     {{/unless}}
 
     {{#unless isPromptSetsCompleted}}
-    <a href="/reports/promptsetscompleted" class="report-link">
-        <img src="https://www.twennie.com/icons/promptsets.svg" alt="Prompt Sets Report">
-    </a>
+      <div class="report-card">
+        <a href="/reports/promptsetscompleted" class="report-link">
+          <img src="/images/promptsetsreport.png" alt="Prompt Sets Report">
+        </a>
+        <p class="report-description">
+          Review completed prompt sets across your team, including progress, notes, and learning patterns.
+        </p>
+      </div>
     {{/unless}}
 
     {{#unless isUnitsCompleted}}
-    <a href="/reports/unitscompleted" class="report-link">
-        <img src="https://www.twennie.com/icons/libraryunits.svg" alt="Library Units Report">
-    </a>
+      <div class="report-card">
+        <a href="/reports/unitscompleted" class="report-link">
+          <img src="/images/libraryunitsreport.png" alt="Library Units Report">
+        </a>
+        <p class="report-description">
+          View all completed learning units, who completed them, and the notes recorded along the way.
+        </p>
+      </div>
     {{/unless}}
-</div>
 
-
+  </div>
 </section>
 
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.team-engagement-toggle').forEach(button => {
+      button.addEventListener('click', () => {
+        const card = button.closest('.team-engagement-card');
+        if (!card) return;
+        card.classList.toggle('is-open');
+      });
+    });
+  });
+</script>
