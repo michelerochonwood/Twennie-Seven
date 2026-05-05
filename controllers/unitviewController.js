@@ -854,7 +854,8 @@ const canAddNuggetMonitoringNotes = isOwner || isAssignedToCurrentUser;
         image: creator?.image || '/images/default-avatar.png',
       },
 
-      tagSuccess: req.query.tag === 'ok',
+tagSuccess: req.query.tag === 'ok',
+monitoringNoteSuccess: req.query.monitoringNote === 'ok',
 
       // Flags
       isOwner,
