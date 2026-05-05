@@ -20,7 +20,7 @@
             {{/if}}
           </small>
         </span>
-        <span class="promptset-accordion-actions">
+<span class="promptset-accordion-actions">
   <button
     type="button"
     class="print-promptset-btn"
@@ -147,4 +147,21 @@
       });
     });
   });
+
+
+  function printPromptSet(button) {
+    const card = button.closest('.promptset-accordion-card');
+    if (!card) return;
+
+    document.body.classList.add('printing-single-promptset');
+    card.classList.add('print-this-promptset');
+
+    window.print();
+
+    setTimeout(() => {
+      document.body.classList.remove('printing-single-promptset');
+      card.classList.remove('print-this-promptset');
+    }, 500);
+  }
+
 </script>
