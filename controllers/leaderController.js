@@ -529,7 +529,7 @@ showAddGroupMemberSuccess: async (req, res) => {
     const { memberId } = req.query;
 
 const [leader, member] = await Promise.all([
-  Leader.findById(leaderId).select('_id'),
+  Leader.findById(leaderId).select('_id members'),
   GroupMember.findById(memberId).select('_id groupId leader')
 ]);
 
@@ -634,8 +634,14 @@ deleteGroupMember: async (req, res) => {
     }
 
 const memberLeaderId = member.leader || member.groupId;
+const memberIsInLeaderArray = Array.isArray(leader.members)
+  ? leader.members.map(id => String(id)).includes(String(member._id))
+  : false;
 
-if (String(memberLeaderId) !== String(leader._id)) {
+if (
+  String(memberLeaderId || '') !== String(leader._id) &&
+  !memberIsInLeaderArray
+) {
   return res.status(403).render('member_form_views/error', {
     layout: 'memberformlayout',
     title: 'Access Denied',
