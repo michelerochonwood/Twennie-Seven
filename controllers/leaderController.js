@@ -441,13 +441,16 @@ addGroupMember: async (req, res) => {
     }
 
     // Prevent exceeding declared group size
-    if (Array.isArray(leader.members) && leader.members.length >= leader.groupSize) {
-      return res.status(400).render('member_form_views/error', {
-        layout: 'mainlayout',
-        title: 'Group Full',
-        errorMessage: 'This group already has the maximum number of members.'
-      });
-    }
+const currentMemberCount = Array.isArray(leader.members) ? leader.members.length : 0;
+const maxGroupMembers = 10;
+
+if (currentMemberCount >= maxGroupMembers) {
+  return res.status(400).render('member_form_views/error', {
+    layout: 'mainlayout',
+    title: 'Group Full',
+    errorMessage: 'This group already has the maximum number of members.'
+  });
+}
 
     // Prevent duplicate group member email
     const existingMember = await GroupMember.findOne({ email }).lean();
