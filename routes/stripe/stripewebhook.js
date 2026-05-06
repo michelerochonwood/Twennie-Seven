@@ -82,18 +82,32 @@ if (updatedMember) {
   console.warn(`⚠️ No Member found for checkout.session.completed: ${memberId}`);
 }
 
-  if (leaderId) {
-    await Leader.findByIdAndUpdate(leaderId, {
-      $set: {
-        stripeCustomerId: session.customer || null,
-        stripeSubscriptionId: session.subscription || null,
-        paymentStatus: 'paid',
-        subscriptionStatus: 'active',
-        isActive: true
-      }
-    });
-    console.log(`✅ Leader updated from checkout.session.completed: ${leaderId}`);
-  }
+if (leaderId) {
+
+  // Retrieve full subscription so we can access the subscription item
+  const subscription = await stripe.subscriptions.retrieve(session.subscription);
+
+  const subscriptionItem = subscription.items?.data?.[0];
+
+  await Leader.findByIdAndUpdate(leaderId, {
+    $set: {
+      stripeCustomerId: session.customer || null,
+      stripeSubscriptionId: session.subscription || null,
+
+      // REQUIRED FOR SEAT SYNCING
+      stripeSubscriptionItemId: subscriptionItem?.id || null,
+      stripePriceId: subscriptionItem?.price?.id || null,
+      lastSeatQuantity: subscriptionItem?.quantity || 0,
+      lastSeatSyncAt: new Date(),
+
+      paymentStatus: 'paid',
+      subscriptionStatus: 'active',
+      isActive: true
+    }
+  });
+
+  console.log(`✅ Leader updated from checkout.session.completed: ${leaderId}`);
+}
 
   break;
 }

@@ -8,6 +8,7 @@ const GroupProfile = require('../models/profile_models/group_profile');
 const Organization = require('../models/member_models/organization');
 const OrganizationJoinRequest = require('../models/member_models/organization_join_request');
 const OrganizationProfile = require('../models/profile_models/organization_profile');
+const { syncLeaderSeatQuantity } = require('../billing/stripeSeats');
 
 
 const bcrypt = require('bcrypt');
@@ -474,11 +475,27 @@ if (currentMemberCount >= maxGroupMembers) {
       password: await bcrypt.hash(`Temp!${leader._id.toString().slice(-8)}${leader.members.length}`, 10),
     });
 
-    const savedMember = await groupMember.save();
-    leader.members.push(savedMember._id);
-    await leader.save();
+const savedMember = await groupMember.save();
+leader.members.push(savedMember._id);
+await leader.save();
 
-    return res.redirect(`/leader/${leader._id}/add_group_member/success?memberId=${savedMember._id.toString()}`);
+// Sync Stripe seat count after adding a member
+try {
+  const refreshedLeader = await Leader.findById(leader._id).populate('members');
+
+  if (refreshedLeader?.stripeSubscriptionItemId) {
+    await syncLeaderSeatQuantity(refreshedLeader, {
+      proration: true,
+      reason: 'group_member_added'
+    });
+  } else {
+    console.warn(`⚠️ No Stripe subscription item found for leader ${leader._id}. Seat sync skipped.`);
+  }
+} catch (seatSyncErr) {
+  console.error('⚠️ Member added, but Stripe seat sync failed:', seatSyncErr);
+}
+
+return res.redirect(`/leader/${leader._id}/add_group_member/success?memberId=${savedMember._id.toString()}`);
   } catch (err) {
     console.error('Error adding group member:', err.message);
     return res.status(500).render('member_form_views/error', {
@@ -511,10 +528,10 @@ showAddGroupMemberSuccess: async (req, res) => {
     const { leaderId } = req.params;
     const { memberId } = req.query;
 
-    const [leader, member] = await Promise.all([
-      Leader.findById(leaderId).select('groupName registration_code').lean(),
-      GroupMember.findById(memberId).select('name email username').lean()
-    ]);
+const [leader, member] = await Promise.all([
+  Leader.findById(leaderId).select('_id'),
+  GroupMember.findById(memberId).select('_id groupId leader')
+]);
 
     if (!leader || !member) {
       return res.status(404).render('member_form_views/error', {
@@ -616,22 +633,43 @@ deleteGroupMember: async (req, res) => {
       });
     }
 
-    if (String(member.groupId) !== String(leader._id)) {
-      return res.status(403).render('member_form_views/error', {
-        layout: 'memberformlayout',
-        title: 'Access Denied',
-        errorMessage: 'This member does not belong to the specified leader.'
-      });
-    }
+const memberLeaderId = member.leader || member.groupId;
+
+if (String(memberLeaderId) !== String(leader._id)) {
+  return res.status(403).render('member_form_views/error', {
+    layout: 'memberformlayout',
+    title: 'Access Denied',
+    errorMessage: 'This member does not belong to the specified leader.'
+  });
+}
 
     // Delete profile first (if present), then member, then pull from leader
     const GroupMemberProfile = require('../models/profile_models/groupmember_profile');
-    await GroupMemberProfile.deleteOne({ groupMemberId: member._id });
-    await GroupMember.deleteOne({ _id: member._id });
-    await Leader.updateOne({ _id: leader._id }, { $pull: { members: member._id } });
+await GroupMemberProfile.deleteOne({ groupMemberId: member._id });
+await GroupMember.deleteOne({ _id: member._id });
+await Leader.updateOne(
+  { _id: leader._id },
+  { $pull: { members: member._id } }
+);
 
-    // Back to the list with a "deleted" flag
-    return res.redirect(`/leader/${leaderId}/delete_group_member?deleted=1`);
+// Sync Stripe seats after deletion
+try {
+  const refreshedLeader = await Leader.findById(leader._id).populate('members');
+
+  if (refreshedLeader?.stripeSubscriptionItemId) {
+    await syncLeaderSeatQuantity(refreshedLeader, {
+      proration: true,
+      reason: 'group_member_deleted'
+    });
+  } else {
+    console.warn(`⚠️ No Stripe subscription item found for leader ${leader._id}. Seat sync skipped.`);
+  }
+} catch (seatSyncErr) {
+  console.error('⚠️ Member deleted, but Stripe seat sync failed:', seatSyncErr);
+}
+
+// Back to the list with a "deleted" flag
+return res.redirect(`/leader/${leaderId}/delete_group_member?deleted=1`);
   } catch (err) {
     console.error('Error deleting group member:', err);
     return res.status(500).render('member_form_views/error', {
