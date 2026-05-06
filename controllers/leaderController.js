@@ -647,6 +647,7 @@ const [leader, member] = await Promise.all([
     }
 
 const memberLeaderId = member.leader || member.groupId;
+
 const memberIsInLeaderArray = Array.isArray(leader.members)
   ? leader.members.map(id => String(id)).includes(String(member._id))
   : false;
@@ -655,6 +656,12 @@ if (
   String(memberLeaderId || '') !== String(leader._id) &&
   !memberIsInLeaderArray
 ) {
+  console.log('🚫 DELETE DENIED', {
+    memberLeaderId: String(memberLeaderId || ''),
+    leaderId: String(leader._id),
+    memberIsInLeaderArray
+  });
+
   return res.status(403).render('member_form_views/error', {
     layout: 'memberformlayout',
     title: 'Access Denied',
