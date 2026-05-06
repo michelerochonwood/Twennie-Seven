@@ -8,7 +8,7 @@ const GroupProfile = require('../models/profile_models/group_profile');
 const Organization = require('../models/member_models/organization');
 const OrganizationJoinRequest = require('../models/member_models/organization_join_request');
 const OrganizationProfile = require('../models/profile_models/organization_profile');
-const { syncLeaderSeatQuantity } = require('../billing/stripeSeats');
+const { syncLeaderSeatQuantity } = require('../billings/stripeSeats');
 
 
 const bcrypt = require('bcrypt');
