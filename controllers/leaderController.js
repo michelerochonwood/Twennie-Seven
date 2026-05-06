@@ -133,7 +133,48 @@ const {
         });
       }
 
-      // 2) Hash leader password
+      // 2) Validate group members BEFORE saving anything
+      const memberList = coerceMembers(members);
+      const expectedCount = Number(groupSize);
+
+      if (!Array.isArray(memberList) || memberList.length !== expectedCount) {
+        return res.status(400).render('member_form_views/form_leader', {
+          layout: 'memberformlayout',
+          title: 'Leader Membership Form',
+          csrfToken: req.csrfToken ? req.csrfToken() : null,
+          errorMessage: `Please enter names and email addresses for all ${expectedCount} group members.`
+        });
+      }
+
+      const memberErrors = [];
+
+      memberList.forEach((m, index) => {
+        const name = String(m?.name || '').trim();
+        const email = String(m?.email || '').trim().toLowerCase();
+
+        if (!name) memberErrors.push(`Member ${index + 1}: Name is required.`);
+
+        if (!email) {
+          memberErrors.push(`Member ${index + 1}: Email is required.`);
+        } else if (!/^\S+@\S+\.\S+$/.test(email)) {
+          memberErrors.push(`Member ${index + 1}: Please enter a valid email address.`);
+        }
+
+        m.name = name;
+        m.email = email;
+      });
+
+      if (memberErrors.length > 0) {
+        console.error('Group member validation errors:', memberErrors);
+        return res.status(400).render('member_form_views/form_leader', {
+          layout: 'memberformlayout',
+          title: 'Leader Membership Form',
+          csrfToken: req.csrfToken ? req.csrfToken() : null,
+          errorMessage: memberErrors.join(" "),
+        });
+      }
+
+      // 3) Hash leader password
       const hashedPassword = await bcrypt.hash(password, 10);
 
       // 3) Create Leader (keeps topics because your schema currently has them)
@@ -207,30 +248,7 @@ const groupProfile = await GroupProfile.findOneAndUpdate(
 console.log(`✅ Group Profile ensured: ${groupProfile._id}`);
 
 
-      // 6) Validate & create GroupMembers (default password, hashed)
-      const memberList = coerceMembers(members);
-      const memberErrors = [];
-      memberList.forEach((m, index) => {
-        const errors = validateGroupMemberData({
-          groupId: savedLeader._id.toString(),
-          groupName,
-          ...m,
-          username: `member_${index}_${groupName.toLowerCase().replace(/\s+/g, '_')}`,
-          password: 'defaultPassword123',
-          topics: { topic1, topic2, topic3 }
-        });
-        if (errors.length > 0) memberErrors.push(`Member ${index + 1}: ${errors.join(", ")}`);
-      });
 
-      if (memberErrors.length > 0) {
-        console.error('Group member validation errors:', memberErrors);
-        return res.status(400).render('member_form_views/form_leader', {
-          layout: 'memberformlayout',
-          title: 'Leader Membership Form',
-          csrfToken: req.csrfToken ? req.csrfToken() : null,
-          errorMessage: memberErrors.join(" "),
-        });
-      }
 
       const groupMemberPromises = memberList.map(async (m, index) => {
 const gm = new GroupMember({
@@ -244,7 +262,7 @@ const gm = new GroupMember({
   name: m.name,
   email: m.email,
   username: `member_${index}_${groupName.toLowerCase().replace(/\s+/g, '_')}`,
-  password: await bcrypt.hash('defaultPassword123', 10),
+  password: await bcrypt.hash(`Temp!${savedLeader._id.toString().slice(-8)}${index}`, 10),
   topics: { topic1, topic2, topic3 }
 });
 
