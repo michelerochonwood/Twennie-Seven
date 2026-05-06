@@ -615,15 +615,28 @@ showDeleteGroupMemberForm: async (req, res) => {
 
 // --- Handle Delete Group Member POST ---
 deleteGroupMember: async (req, res) => {
+  console.log('🧨 DELETE MEMBER DEBUG', {
+  routeLeaderId: leaderId,
+  bodyMemberId: memberId,
+  foundLeader: leader ? {
+    _id: leader._id?.toString(),
+    members: (leader.members || []).map(id => id.toString())
+  } : null,
+  foundMember: member ? {
+    _id: member._id?.toString(),
+    leader: member.leader?.toString(),
+    groupId: member.groupId?.toString()
+  } : null
+});
   try {
     const { leaderId } = req.params;
     const { memberId } = req.body;
 
     // Basic guard
-    const [leader, member] = await Promise.all([
-      Leader.findById(leaderId).select('_id'),
-      GroupMember.findById(memberId).select('_id groupId')
-    ]);
+const [leader, member] = await Promise.all([
+  Leader.findById(leaderId).select('_id members'),
+  GroupMember.findById(memberId).select('_id groupId leader')
+]);
 
     if (!leader || !member) {
       return res.status(404).render('member_form_views/error', {
