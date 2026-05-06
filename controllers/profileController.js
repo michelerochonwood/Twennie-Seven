@@ -27,7 +27,12 @@ const topics = require("../config/topics");
 // ✅ Utility: Check Profile Ownership
 // ✅ Utility: Check Profile Ownership
 const checkProfileOwnership = (req, profileOwnerId) => {
-  const userId = req.user?._id || req.user?.id;
+  const userId =
+    req.user?._id ||
+    req.user?.id ||
+    req.session?.user?._id ||
+    req.session?.user?.id;
+
   return userId?.toString() === profileOwnerId?.toString();
 };
 
