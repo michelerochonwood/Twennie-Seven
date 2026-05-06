@@ -2,7 +2,7 @@
 const Leader = require('../models/member_models/leader');
 const GroupMember = require('../models/member_models/group_member');
 const { validateLeaderData } = require('../utils/validateLeader');
-const { validateGroupMemberData } = require('../utils/validateGroupMember');
+
 const LeaderProfile = require('../models/profile_models/leader_profile');
 const GroupProfile = require('../models/profile_models/group_profile');
 const Organization = require('../models/member_models/organization');
@@ -468,7 +468,7 @@ addGroupMember: async (req, res) => {
       name,
       email,
       username: `member_${leader.members.length}_${leader.groupName.toLowerCase().replace(/\s+/g, '_')}`,
-      password: await bcrypt.hash('defaultPassword123', 10),
+      password: await bcrypt.hash(`Temp!${leader._id.toString().slice(-8)}${leader.members.length}`, 10),
     });
 
     const savedMember = await groupMember.save();
