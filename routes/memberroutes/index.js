@@ -33,7 +33,9 @@ router.get('/payment/success', (req, res) => {
     layout: 'memberformlayout',
     title: 'Registration Successful',
     username,
-    dashboardLink
+    user: req.session.user,
+    dashboardLink,
+    csrfToken: req.csrfToken ? req.csrfToken() : null
   });
 });
 
