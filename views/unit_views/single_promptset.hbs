@@ -479,34 +479,20 @@
     <hr class="promptsetdivider" style="margin-bottom: 40px"></hr>
 
     <!-- Prompt Cards -->
-
-    
-<!-- Prompt Cards -->
 <!-- Prompt Cards -->
 <!-- Prompt Cards -->
 <div class="view-promptset-prompts">
   {{#each prompts}}
     <div class="view-promptset-card">
-      
       <div class="view-promptset-card-headline">
-        <span class="view-promptset-number">
-          prompt {{add @index 1}}
-        </span>
-
-        <span class="view-promptset-headline-text">
-          {{prompt_headline}}
-        </span>
+        <span class="view-promptset-number">prompt {{add @index 1}}</span>
+        <span class="view-promptset-headline-text">{{lookup ../prompt_headlines @index}}</span>
       </div>
 
-      <p class="view-promptset-card-text">
-        {{prompt}}
-      </p>
-
+      <p class="view-promptset-card-text">{{this}}</p>
     </div>
   {{/each}}
 </div>
-
-{{else}}
 
     <div class="promptset-access-denied-message" style="padding: 100px 0;">
       <p style="text-align: center; color: #4e50a2; font-weight: 600;">
@@ -706,17 +692,15 @@ function ensureDateBeforeSubmit() {
   };
 })();
 
+document.addEventListener('click', function (e) {
+  const headline = e.target.closest('.view-promptset-card-headline');
+  if (!headline) return;
 
-  document.addEventListener('click', function (e) {
-    const headline = e.target.closest('.view-promptset-card-headline');
-    if (!headline) return;
+  const card = headline.closest('.view-promptset-card');
+  if (!card) return;
 
-    const card = headline.closest('.view-promptset-card');
-    if (!card) return;
-
-    card.classList.toggle('is-open');
-  });
-
+  card.classList.toggle('is-open');
+});
 </script>
 
 
