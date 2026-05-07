@@ -482,21 +482,30 @@
 
     
 <!-- Prompt Cards -->
+<!-- Prompt Cards -->
 <div class="view-promptset-prompts">
   {{#each prompts}}
     <div class="view-promptset-card">
       <div class="view-promptset-card-headline">
-        <span class="view-promptset-number">prompt {{number}}</span>
-        <span class="view-promptset-headline-text">{{headline}}</span>
+        <span class="view-promptset-number">prompt {{add @index 1}}</span>
+
+        {{#if this.headline}}
+          <span class="view-promptset-headline-text">{{this.headline}}</span>
+        {{else}}
+          <span class="view-promptset-headline-text">work prompt</span>
+        {{/if}}
       </div>
 
-      <p class="view-promptset-card-text">{{prompt}}</p>
+      {{#if this.prompt}}
+        <p class="view-promptset-card-text">{{this.prompt}}</p>
+      {{else}}
+        <p class="view-promptset-card-text">{{this}}</p>
+      {{/if}}
     </div>
   {{/each}}
 </div>
 
-
-  {{else}}
+{{else}}
 
     <div class="promptset-access-denied-message" style="padding: 100px 0;">
       <p style="text-align: center; color: #4e50a2; font-weight: 600;">
