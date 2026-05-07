@@ -478,21 +478,22 @@
 {{/if}}
     <hr class="promptsetdivider" style="margin-bottom: 40px"></hr>
 
+0
     <!-- Prompt Cards -->
-<!-- Prompt Cards -->
-<!-- Prompt Cards -->
-<div class="view-promptset-prompts">
-  {{#each prompts}}
-    <div class="view-promptset-card">
-      <div class="view-promptset-card-headline">
-        <span class="view-promptset-number">prompt {{add @index 1}}</span>
-        <span class="view-promptset-headline-text">{{lookup ../prompt_headlines @index}}</span>
-      </div>
+    <div class="view-promptset-prompts">
+      {{#each prompts}}
+        <div class="view-promptset-card">
+          <div class="view-promptset-card-headline">
+            <span class="view-promptset-number">prompt {{add @index 1}}</span>
+            <span class="view-promptset-headline-text">{{lookup ../prompt_headlines @index}}</span>
+          </div>
 
-      <p class="view-promptset-card-text">{{this}}</p>
+          <p class="view-promptset-card-text">{{this}}</p>
+        </div>
+      {{/each}}
     </div>
-  {{/each}}
-</div>
+
+{{else}}
 
     <div class="promptset-access-denied-message" style="padding: 100px 0;">
       <p style="text-align: center; color: #4e50a2; font-weight: 600;">
@@ -503,8 +504,7 @@
       </p>
     </div>
 
-    {{/if}}
-    </div>
+{{/if}}
 
   <!-- Right Sidebar -->
 <aside class="promptset-right-sidebar" style="margin-bottom: 100px;">
