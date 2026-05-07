@@ -626,19 +626,7 @@ const [leader, member] = await Promise.all([
   GroupMember.findById(memberId).select('_id groupId leader')
 ]);
 
-  console.log('🧨 DELETE MEMBER DEBUG', {
-  routeLeaderId: leaderId,
-  bodyMemberId: memberId,
-  foundLeader: leader ? {
-    _id: leader._id?.toString(),
-    members: (leader.members || []).map(id => id.toString())
-  } : null,
-  foundMember: member ? {
-    _id: member._id?.toString(),
-    leader: member.leader?.toString(),
-    groupId: member.groupId?.toString()
-  } : null
-});
+
 
     if (!leader || !member) {
       return res.status(404).render('member_form_views/error', {
