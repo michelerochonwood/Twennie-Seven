@@ -713,6 +713,18 @@ function ensureDateBeforeSubmit() {
     }
   };
 })();
+
+
+  document.addEventListener('click', function (e) {
+    const headline = e.target.closest('.view-promptset-card-headline');
+    if (!headline) return;
+
+    const card = headline.closest('.view-promptset-card');
+    if (!card) return;
+
+    card.classList.toggle('is-open');
+  });
+
 </script>
 
 

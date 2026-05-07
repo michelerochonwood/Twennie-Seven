@@ -1087,58 +1087,93 @@ html, body {
 }
 
 
-
 /* Prompt Cards Grid */
 .view-promptset-prompts {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 30px;
-  margin-bottom: 30px;
+  margin: 2rem 0 30px 0;
+  align-items: start;
 }
 
-/* Prompt Card */
+/* Prompt Accordion Card */
 .view-promptset-card {
   background-color: rgb(188, 188, 188);
-  border-radius: 0 0 15px 15px;
+  border-radius: 15px;
   color: black;
   text-align: left;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
   overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
-/* SVG Border */
+/* Remove old SVG border area */
 .view-promptset-card-border {
-  width: 100%;
-  height: auto;
-  display: flex;
-  justify-content: center;
+  display: none !important;
 }
 
 .view-promptset-card-border svg {
-  width: 100%;
-  height: auto;
+  display: none !important;
+}
+
+/* Clickable Accordion Header */
+.view-promptset-card-headline {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #262262;
+  text-align: left;
+  padding: 14px 38px 14px 16px;
+  margin: 0;
+  cursor: pointer;
+  position: relative;
+  background-color: #e7e7e7;
+  line-height: 1.25;
+}
+
+/* Accordion Indicator */
+.view-promptset-card-headline::after {
+  content: "+";
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #4a4ab2;
+}
+
+/* Open State Indicator */
+.view-promptset-card.is-open .view-promptset-card-headline::after {
+  content: "–";
+}
+
+/* Prompt Text Hidden by Default */
+.view-promptset-card-text {
+  display: none;
+  font-size: 0.75rem;
+  padding: 14px 16px 18px 16px;
+  color: #333;
+  line-height: 1.4;
+  margin: 0;
+  background-color: rgb(188, 188, 188);
+}
+
+/* Prompt Text Open */
+.view-promptset-card.is-open .view-promptset-card-text {
   display: block;
 }
 
-/* Prompt Headline */
-.view-promptset-card-headline {
-  font-size: 0.8rem;
-  font-weight: 800;
-  color: #4a4ab2;
-  text-align: left;
-  padding: 8px 12px;
-  margin-top: 10px;
+/* Responsive */
+@media screen and (max-width: 840px) {
+  .view-promptset-prompts {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
 }
 
-/* Prompt Text */
-.view-promptset-card-text {
-  font-size: 0.7rem;
-  padding: 8px 12px;
-  color: #333;
-  line-height: 1.2;
-  margin-top: -10px;
+@media screen and (max-width: 520px) {
+  .view-promptset-prompts {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Sidebar Title */
