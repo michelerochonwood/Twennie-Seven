@@ -1126,7 +1126,8 @@ html, body {
   cursor: pointer;
   position: relative;
   background-color: #e7e7e7;
-  line-height: 1.25;
+  line-height: 1.35;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
 }
 
 /* Accordion Indicator */
