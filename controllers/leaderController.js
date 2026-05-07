@@ -529,8 +529,8 @@ showAddGroupMemberSuccess: async (req, res) => {
     const { memberId } = req.query;
 
 const [leader, member] = await Promise.all([
-  Leader.findById(leaderId).select('_id members'),
-  GroupMember.findById(memberId).select('_id groupId leader')
+  Leader.findById(leaderId).select('groupName registration_code').lean(),
+  GroupMember.findById(memberId).select('name email username').lean()
 ]);
 
     if (!leader || !member) {
@@ -615,6 +615,17 @@ showDeleteGroupMemberForm: async (req, res) => {
 
 // --- Handle Delete Group Member POST ---
 deleteGroupMember: async (req, res) => {
+
+  try {
+    const { leaderId } = req.params;
+    const { memberId } = req.body;
+
+    // Basic guard
+const [leader, member] = await Promise.all([
+  Leader.findById(leaderId).select('_id members'),
+  GroupMember.findById(memberId).select('_id groupId leader')
+]);
+
   console.log('🧨 DELETE MEMBER DEBUG', {
   routeLeaderId: leaderId,
   bodyMemberId: memberId,
@@ -628,15 +639,6 @@ deleteGroupMember: async (req, res) => {
     groupId: member.groupId?.toString()
   } : null
 });
-  try {
-    const { leaderId } = req.params;
-    const { memberId } = req.body;
-
-    // Basic guard
-const [leader, member] = await Promise.all([
-  Leader.findById(leaderId).select('_id members'),
-  GroupMember.findById(memberId).select('_id groupId leader')
-]);
 
     if (!leader || !member) {
       return res.status(404).render('member_form_views/error', {
