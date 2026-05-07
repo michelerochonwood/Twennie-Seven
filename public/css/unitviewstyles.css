@@ -1155,7 +1155,7 @@ html, body {
   color: #333;
   line-height: 1.4;
   margin: 0;
-  background-color: rgb(199, 199, 199);
+  background-color: rgb(208, 208, 208);
 }
 
 /* Prompt Text Open */
@@ -1166,7 +1166,7 @@ html, body {
 .view-promptset-number {
   display: inline-block;
   background-color:#bdbdbd;
-  color: grey;
+  color: white;
   border-radius: 999px;
   border-color: rgb(91, 91, 91);
   padding: 4px 10px;
