@@ -483,24 +483,25 @@
     
 <!-- Prompt Cards -->
 <!-- Prompt Cards -->
+<!-- Prompt Cards -->
 <div class="view-promptset-prompts">
   {{#each prompts}}
     <div class="view-promptset-card">
+      
       <div class="view-promptset-card-headline">
-        <span class="view-promptset-number">prompt {{add @index 1}}</span>
+        <span class="view-promptset-number">
+          prompt {{add @index 1}}
+        </span>
 
-        {{#if this.headline}}
-          <span class="view-promptset-headline-text">{{this.headline}}</span>
-        {{else}}
-          <span class="view-promptset-headline-text">work prompt</span>
-        {{/if}}
+        <span class="view-promptset-headline-text">
+          {{prompt_headline}}
+        </span>
       </div>
 
-      {{#if this.prompt}}
-        <p class="view-promptset-card-text">{{this.prompt}}</p>
-      {{else}}
-        <p class="view-promptset-card-text">{{this}}</p>
-      {{/if}}
+      <p class="view-promptset-card-text">
+        {{prompt}}
+      </p>
+
     </div>
   {{/each}}
 </div>
