@@ -20,7 +20,6 @@
       <div class="single_article-content hidden">
         {{{article_body}}}
 
-        {{!-- Leader: assign to self or group - always visible for leaders --}}
         {{#if isLeader}}
           <div class="assign-tag-form white-container">
             <h4 class="assign-tag-title">Assign this unit to yourself or your group</h4>
@@ -80,7 +79,6 @@
           </div>
         {{/if}}
 
-        {{!-- Admin: suggest this unit to org leaders --}}
         {{#if isOrgAdmin}}
           <div class="assign-tag-form white-container" style="margin-top:1.25rem;">
             {{#if (and suggestionSuccess (eq suggestedUnitId _id))}}
@@ -98,7 +96,7 @@
 
             <h4 class="assign-tag-title">Suggest this unit to organization leaders</h4>
             <p class="groupsection-org-card-info" style="margin-top:0.25rem;">
-              Send a suggestion (with optional note) to one or more leaders in your organization.
+              Send a suggestion with an optional note to one or more leaders in your organization.
             </p>
 
             <form id="suggestUnitForm" action="/unitsuggestions/org-suggestions/create" method="POST">
@@ -134,7 +132,6 @@
           </div>
         {{/if}}
 
-        {{!-- Member/Group member: self-assign only if not already assigned --}}
         {{#if isGroupMemberOrMember}}
           {{#unless isAssignedToCurrentUser}}
             <div class="single_unit-tag-container" style="margin-bottom:200px;">
@@ -159,13 +156,12 @@
           {{/unless}}
         {{/if}}
 
-        {{!-- Notes --}}
         {{#if isGroupMemberOrLeaderOrMember}}
           {{#if isAssignedToCurrentUser}}
             <div class="single_article-notes-container">
               <h3 class="single_article-notes-title">complete this unit by recording notes</h3>
               <p class="single_article-notes-instructions">
-                To complete this unit, record notes on this article. Consider how it relates to your work and how it might change your approach. These notes will be part of your Twennie learning record. (Keep your learning data hygienic - only post notes on a unit once you've completed all the tasks.)
+                To complete this unit, record notes on this article. Consider how it relates to your work and how it might change your approach. These notes will be part of your Twennie learning record. Keep your learning data hygienic — only post notes on a unit once you've completed all the tasks.
               </p>
 
               <form action="/notes/submit" method="POST" class="single_article-notes-form">
@@ -220,14 +216,7 @@
 
     <p class="single_article-title-sidebar">{{article_title}}</p>
 
-    <div class="single_article-sidebar-toggle" onclick="toggleSidebarContent(this)">
-      <svg class="single_article-sidebar-arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99">
-        <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
-        <g><polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/></g>
-      </svg>
-    </div>
-
-    <div class="single_article-sidebar-content hidden">
+    <div class="single_article-sidebar-content">
       <div class="single_article-author">
         <img src="{{author.image}}" alt="Author Image" class="single_article-author-image">
         <p class="single_article-author-name">Author: {{author.name}}</p>
@@ -265,6 +254,7 @@
     const memberId = checkbox.value;
     const selector = `textarea[name="assignedTo[${memberId}][instructions]"]`;
     const textarea = document.querySelector(selector);
+
     if (textarea) {
       textarea.style.display = checkbox.checked ? 'block' : 'none';
     }
