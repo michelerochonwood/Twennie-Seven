@@ -415,6 +415,7 @@ const getNuggetsMonitoredReport = async (req, res) => {
     console.log("✅ Fetching Nuggets Being Monitored Report…");
 
     const leaderId = (req.user?._id || req.user?.id || req.session?.user?.id)?.toString();
+
     if (!leaderId) {
       return res.status(403).render("member_form_views/error", {
         layout: "memberformlayout",
@@ -457,7 +458,6 @@ const getNuggetsMonitoredReport = async (req, res) => {
     const nameById = new Map(people.map(p => [p._id.toString(), p.name]));
     const roleById = new Map(people.map(p => [p._id.toString(), p.role]));
 
-    // Assignment records for nuggets
     const nuggetTags = await Tag.find({
       "associatedUnits.unitType": "nugget"
     })
@@ -473,12 +473,14 @@ const getNuggetsMonitoredReport = async (req, res) => {
       });
     }
 
-    // Collect nugget ids
     const nuggetIds = [];
+
     for (const t of nuggetTags) {
       const units = Array.isArray(t.associatedUnits) ? t.associatedUnits : [];
+
       for (const u of units) {
         if (String(u.unitType || "").toLowerCase() !== "nugget") continue;
+
         const id = u.item?.toString?.();
         if (id) nuggetIds.push(id);
       }
@@ -496,49 +498,50 @@ const getNuggetsMonitoredReport = async (req, res) => {
       uniqueNuggetIds.length
         ? Notes.find({
             unitID: { $in: uniqueNuggetIds },
-            unitType: "nugget",
-            memberID: { $in: personIds }
+            memberID: { $in: personIds },
+            $or: [
+              { unitType: "nugget" },
+              { unitType: "Nugget" },
+              { unitType: { $exists: false } },
+              { unitType: null },
+              { unitType: "" }
+            ]
           })
             .select("unitID memberID note_content createdAt updatedAt")
+            .sort({ createdAt: 1 })
             .lean()
         : []
     ]);
 
     const nuggetById = new Map(nuggets.map(n => [n._id.toString(), n]));
 
-    // Latest monitoring note per nugget across all current report people
-    const latestNoteByNuggetId = new Map();
+    const notesByNuggetId = new Map();
 
     for (const note of nuggetNotes) {
       const nid = note.unitID?.toString?.();
+      const mid = note.memberID?.toString?.();
+
       if (!nid) continue;
 
-      const noteDate = note.updatedAt || note.createdAt || null;
-      const existing = latestNoteByNuggetId.get(nid);
-
-      if (!existing) {
-        latestNoteByNuggetId.set(nid, {
-          latestMonitoringNote: note.note_content || "",
-          latestMonitoringNoteAt: noteDate
-        });
-        continue;
+      if (!notesByNuggetId.has(nid)) {
+        notesByNuggetId.set(nid, []);
       }
 
-      const existingDate = existing.latestMonitoringNoteAt
-        ? new Date(existing.latestMonitoringNoteAt)
-        : new Date(0);
-
-      const nextDate = noteDate ? new Date(noteDate) : new Date(0);
-
-      if (nextDate > existingDate) {
-        latestNoteByNuggetId.set(nid, {
-          latestMonitoringNote: note.note_content || "",
-          latestMonitoringNoteAt: noteDate
-        });
-      }
+      notesByNuggetId.get(nid).push({
+        note: note.note_content || "",
+        addedByNameSnapshot: nameById.get(mid) || "Twennie member",
+        memberRole: roleById.get(mid) || "",
+        createdAt: note.createdAt || note.updatedAt || null
+      });
     }
 
-    // Build rows merged by nugget
+    for (const [nid, notes] of notesByNuggetId.entries()) {
+      notesByNuggetId.set(
+        nid,
+        notes.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0))
+      );
+    }
+
     const rowByNuggetId = new Map();
 
     for (const t of nuggetTags) {
@@ -574,14 +577,12 @@ const getNuggetsMonitoredReport = async (req, res) => {
 
       for (const u of units) {
         if (String(u.unitType || "").toLowerCase() !== "nugget") continue;
+
         const nid = u.item?.toString?.();
         if (!nid) continue;
 
         const nug = nuggetById.get(nid);
-        const latest = latestNoteByNuggetId.get(nid) || {
-          latestMonitoringNote: "",
-          latestMonitoringNoteAt: null
-        };
+        const monitoringNotes = notesByNuggetId.get(nid) || [];
 
         const baseRow = rowByNuggetId.get(nid) || {
           nuggetId: nid,
@@ -597,9 +598,7 @@ const getNuggetsMonitoredReport = async (req, res) => {
           isAssigned,
           monitoredBy: [],
           instructions: [],
-
-          latestMonitoringNote: latest.latestMonitoringNote || "",
-          latestMonitoringNoteAt: latest.latestMonitoringNoteAt || null
+          monitoringNotes
         };
 
         if (!baseRow.assignedAt || (assignedAt && new Date(assignedAt) < new Date(baseRow.assignedAt))) {
@@ -615,6 +614,7 @@ const getNuggetsMonitoredReport = async (req, res) => {
 
         for (const m of monitors) {
           const k = `${m.memberName}::${m.role || ""}`;
+
           if (!existingMonitorKeys.has(k)) {
             existingMonitorKeys.add(k);
             baseRow.monitoredBy.push(m);
@@ -622,13 +622,17 @@ const getNuggetsMonitoredReport = async (req, res) => {
         }
 
         const instrSet = new Set(baseRow.instructions || []);
+
         for (const ins of instructions) {
           if (!ins) continue;
+
           if (!instrSet.has(ins)) {
             instrSet.add(ins);
             baseRow.instructions.push(ins);
           }
         }
+
+        baseRow.monitoringNotes = monitoringNotes;
 
         rowByNuggetId.set(nid, baseRow);
       }
@@ -639,9 +643,15 @@ const getNuggetsMonitoredReport = async (req, res) => {
         r.monitoredBy = (r.monitoredBy || []).sort((a, b) =>
           (a.memberName || "").localeCompare(b.memberName || "")
         );
+
         r.instructions = (r.instructions || []).sort((a, b) =>
           (a || "").localeCompare(b || "")
         );
+
+        r.monitoringNotes = Array.isArray(r.monitoringNotes)
+          ? r.monitoringNotes
+          : [];
+
         return r;
       })
       .sort((a, b) => (a.nuggetTitle || "").localeCompare(b.nuggetTitle || ""));
