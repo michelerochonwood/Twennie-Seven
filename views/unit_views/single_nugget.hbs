@@ -228,35 +228,7 @@
       {{/unless}}
     {{/if}}
 
-    <div class="single_nugget-monitoring-history white-container">
-      <h3 class="single_nugget-notes-title">monitoring history</h3>
 
-      {{#if monitoringNotes.length}}
-        <div class="single_nugget-monitoring-list">
-          {{#each monitoringNotes}}
-            <article class="single_nugget-monitoring-entry">
-              <div class="single_nugget-monitoring-meta">
-                {{#if addedByNameSnapshot}}
-                  <strong>{{addedByNameSnapshot}}</strong>
-                {{else}}
-                  <strong>Twennie member</strong>
-                {{/if}}
-
-                {{#if createdAt}}
-                  <span>{{formatDate createdAt}}</span>
-                {{/if}}
-              </div>
-
-              <p class="single_nugget-monitoring-note">{{note}}</p>
-            </article>
-          {{/each}}
-        </div>
-      {{else}}
-        <p class="single_nugget-notes-instructions">
-          No monitoring notes have been added yet.
-        </p>
-      {{/if}}
-    </div>
 
     {{#if canAddNuggetMonitoringNotes}}
       <div class="single_nugget-notes-container">
@@ -301,6 +273,36 @@
       </div>
     {{/if}}
   </div>
+
+      <div class="single_nugget-monitoring-history white-container">
+      <h3 class="single_nugget-notes-title">monitoring history</h3>
+
+      {{#if monitoringNotes.length}}
+        <div class="single_nugget-monitoring-list">
+          {{#each monitoringNotes}}
+            <article class="single_nugget-monitoring-entry">
+              <div class="single_nugget-monitoring-meta">
+                {{#if addedByNameSnapshot}}
+                  <strong>{{addedByNameSnapshot}}</strong>
+                {{else}}
+                  <strong>Twennie member</strong>
+                {{/if}}
+
+                {{#if createdAt}}
+                  <span>{{formatDate createdAt}}</span>
+                {{/if}}
+              </div>
+
+              <p class="single_nugget-monitoring-note">{{note}}</p>
+            </article>
+          {{/each}}
+        </div>
+      {{else}}
+        <p class="single_nugget-notes-instructions">
+          No monitoring notes have been added yet.
+        </p>
+      {{/if}}
+    </div>
 
   <aside class="single_nugget-sidebar">
     <div class="single_nugget-sideheader">

@@ -7800,6 +7800,50 @@ box-shadow: none !important;
   }
 }
 
+/* Monitoring notes column in nuggets report */
+.nugget-monitoring-notes-block {
+  grid-column: 1 / -1;
+}
+
+.nugget-report-notes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.nugget-report-note-entry {
+  background: #fffaf0;
+  border-left: 4px solid #c69a28;
+  border-radius: 12px;
+  padding: 0.75rem 0.85rem;
+}
+
+.nugget-report-note-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: baseline;
+  margin-bottom: 0.4rem;
+}
+
+.nugget-report-note-meta strong {
+  color: #262262;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.nugget-report-note-meta span {
+  color: #777;
+  font-size: 0.62rem;
+}
+
+.nugget-report-note-entry p {
+  margin: 0;
+  font-size: 0.7rem;
+  line-height: 1.5;
+  color: #333;
+}
+
 
 
 

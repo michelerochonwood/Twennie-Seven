@@ -6,15 +6,9 @@
     {{leaderGroupName}}; Nuggets Being Monitored
   </h1>
 
-  {{!-- =========================================================
-      ACCORDION: Nuggets Being Monitored
-  ========================================================= --}}
   <div class="nuggets-monitored-accordion">
-
     {{#each monitoredNuggets}}
-
       <article class="nugget-monitored-card">
-
         <button class="nugget-monitored-toggle" type="button">
           <span>
             <strong>
@@ -37,6 +31,12 @@
               {{else}}
                 · no monitors listed
               {{/if}}
+
+              {{#if this.monitoringNotes.length}}
+                · {{this.monitoringNotes.length}} note(s)
+              {{else}}
+                · no notes yet
+              {{/if}}
             </small>
           </span>
 
@@ -44,9 +44,7 @@
         </button>
 
         <div class="nugget-monitored-panel">
-
           <div class="nugget-monitored-overview">
-
             <div class="nugget-monitored-overview-block">
               <h3>assignment</h3>
 
@@ -102,11 +100,9 @@
                 <p class="no-data">No monitors listed</p>
               {{/each}}
             </div>
-
           </div>
 
           <div class="nugget-monitoring-section">
-
             <div class="nugget-monitoring-block">
               <h3>assignment description</h3>
 
@@ -129,23 +125,46 @@
               {{/each}}
             </div>
 
+            <div class="nugget-monitoring-block nugget-monitoring-notes-block">
+              <h3>monitoring notes</h3>
+
+              {{#if this.monitoringNotes.length}}
+                <div class="nugget-report-notes-list">
+                  {{#each this.monitoringNotes}}
+                    <article class="nugget-report-note-entry">
+                      <div class="nugget-report-note-meta">
+                        {{#if this.addedByNameSnapshot}}
+                          <strong>{{this.addedByNameSnapshot}}</strong>
+                        {{else}}
+                          <strong>Twennie member</strong>
+                        {{/if}}
+
+                        {{#if this.createdAt}}
+                          <span>{{formatDate this.createdAt}}</span>
+                        {{/if}}
+                      </div>
+
+                      {{#if this.note}}
+                        <p>{{this.note}}</p>
+                      {{else}}
+                        <p class="no-data">No note text recorded.</p>
+                      {{/if}}
+                    </article>
+                  {{/each}}
+                </div>
+              {{else}}
+                <p class="no-data">No monitoring notes have been added yet.</p>
+              {{/if}}
+            </div>
           </div>
-
         </div>
-
       </article>
-
     {{else}}
-
       <p class="no-data">No monitored nuggets available.</p>
-
     {{/each}}
-
   </div>
 
-  {{!-- Report Navigation Links --}}
   <div class="report-links-container report-links-enhanced">
-
     {{#unless isMemberEngagement}}
       <div class="report-card">
         <a href="/reports/memberengagement" class="report-link">
@@ -189,7 +208,6 @@
         </p>
       </div>
     {{/unless}}
-
   </div>
 </section>
 
