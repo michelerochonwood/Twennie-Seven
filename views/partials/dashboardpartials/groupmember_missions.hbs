@@ -357,26 +357,5 @@
     }
   }
 
-  (async function markMissionsSeenOnce() {
-    try {
-      const count = Number('{{@root.gmCounts.missions}}') || 0;
 
-      await fetch('/dashboard/groupmember/mark-seen', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': getCsrfGM()
-        },
-        body: JSON.stringify({
-          tabKey: 'missions',
-          currentCount: count
-        })
-      });
-
-      const dot = document.querySelector('.dashboard-tab[data-tab="missions"] .tab-dot');
-      if (dot) dot.remove();
-    } catch (e) {
-      /* no-op */
-    }
-  })();
 </script>
