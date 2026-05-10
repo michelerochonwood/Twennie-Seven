@@ -8849,16 +8849,26 @@ overflow: visible;
 
 .latest-unit-topic-link {
   display: inline-block;
-  margin: 0.35rem auto 0.75rem;
+  margin: 0.45rem auto 0.9rem;
+  padding: 0.45rem 1rem;
+  background: #eef0ff;
+  border: 1px solid #cfd4ff;
+  border-radius: 999px;
   color: #4e50a2;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 700;
-  text-decoration: underline;
+  text-decoration: none;
   text-align: center;
+  width: auto;
+  max-width: 90%;
+  transition: all 0.18s ease;
 }
 
 .latest-unit-topic-link:hover {
-  color: #dc176a;
+  background: #4e50a2;
+  border-color: #4e50a2;
+  color: #ffffff;
+  transform: translateY(-1px);
 }
 
 
