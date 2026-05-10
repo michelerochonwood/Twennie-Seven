@@ -45,7 +45,9 @@
     <div class="single_mission-main-body hidden" id="singleMissionBody">
       {{#if badgeImagePath}}
         <section class="white-container single_mission-badge">
+
           <div class="single_mission-badge-inner">
+            <p class="single-mission-long-summary" style="color: #5e5e5e; font-weight: 600; font-size: 0.9rem; text-align: center;">Completing this mission earns you the {{badge_name}} badge.</p>
             <img src="{{badgeImagePath}}" alt="{{badge_name}}" class="single_mission-badge-image" />
             {{#if badge_name}}
               <p class="single_mission-badge-name">{{badge_name}}</p>
