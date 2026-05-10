@@ -36,6 +36,11 @@ const NuggetSchema = new mongoose.Schema({
     required: true
   },
 
+  is_sample: {
+    type: Boolean,
+    default: false,
+  },
+
   discipline: {
     type: String,
     enum: [
