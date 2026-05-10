@@ -1356,15 +1356,30 @@ updateAccountDetails: async (req, res) => {
 markGroupMemberTabSeen: async (req, res) => {
   try {
     const memberId = req.session?.user?.id;
+
     if (!memberId) {
       return res.status(401).json({ ok: false, error: 'unauthorized' });
     }
 
+    const allowedTabs = new Set([
+      'group',
+      'topics',
+      'prompts',
+      'progress',
+      'tagged',
+      'missions',
+      'library'
+    ]);
+
     const tabKey = req.body?.tab || req.body?.tabKey;
-    const currentCount = req.body?.count ?? req.body?.currentCount;
+    const currentCount = Number(req.body?.count ?? req.body?.currentCount ?? 0);
 
     if (!tabKey) {
       return res.status(400).json({ ok: false, error: 'missing tab key' });
+    }
+
+    if (!allowedTabs.has(tabKey)) {
+      return res.status(400).json({ ok: false, error: 'invalid tab key' });
     }
 
     let seenDoc = await DashboardSeen.findOne({
@@ -1383,13 +1398,20 @@ markGroupMemberTabSeen: async (req, res) => {
     ensureTabsMap(seenDoc);
 
     seenDoc.tabs.set(tabKey, {
-      count: Number(currentCount) || 0,
+      count: Number.isFinite(currentCount) ? currentCount : 0,
       seenAt: new Date()
     });
 
+    seenDoc.markModified('tabs');
+
     await seenDoc.save();
 
-    return res.json({ ok: true });
+    return res.json({
+      ok: true,
+      tab: tabKey,
+      count: Number.isFinite(currentCount) ? currentCount : 0
+    });
+
   } catch (e) {
     console.error('markGroupMemberTabSeen error:', e);
     return res.status(500).json({ ok: false });
