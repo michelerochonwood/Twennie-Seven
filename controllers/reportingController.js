@@ -15,6 +15,8 @@ const Upcoming = require('../models/unit_models/upcoming');
 const Nugget   = require('../models/unit_models/nugget');
 const Tag = require('../models/tag'); 
 const Member = require('../models/member_models/member');
+const LeaderProfile = require('../models/profile_models/leader_profile');
+const GroupMemberProfile = require('../models/profile_models/groupmember_profile');
 
 
 
