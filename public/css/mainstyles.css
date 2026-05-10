@@ -8860,7 +8860,7 @@ overflow: visible;
   text-decoration: none;
   text-align: center;
   width: auto;
-  max-width: 90%;
+  max-width: calc(90% - 12px);
   transition: all 0.18s ease;
 }
 
