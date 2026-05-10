@@ -7780,13 +7780,14 @@ box-shadow: none !important;
   text-align: left;
   cursor: pointer;
   font-family: "Figtree", sans-serif;
-    background: linear-gradient(
+  background: linear-gradient(
     135deg,
     #8c6a12 0%,
     #c69a28 22%,
     #f2d16b 50%,
     #c69a28 78%,
-    #7a5a0d 100%),
+    #7a5a0d 100%
+  );
 }
 
 .nugget-monitored-toggle strong {
