@@ -2802,8 +2802,8 @@ line-height: 1.5;
   top: -12px;     /* pushes it slightly outside */
   right: -12px;   /* pushes it slightly outside */
 
-  width: 42px;    /* much smaller */
-  height: 42px;
+  width: 80px;    /* much smaller */
+  height: auto;
 
   background-image: url('/images/newtopic bluey.png');
   background-repeat: no-repeat;
