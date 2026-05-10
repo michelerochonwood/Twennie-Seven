@@ -1676,16 +1676,11 @@ const leaderAccount = {
 const assignedPromptSets = await buildAssignedPromptSets(id);
 
 // ---------- TAB COUNTS: DOT TRIGGERS ONLY ----------
-// Keep these counts tightly aligned to what each tab is meant to signal.
 
-// TAB 1: complete a prompt
-// Trigger = a new prompt set has been registered by this leader
 const promptRegistrationsCount = Array.isArray(leaderRegistrations)
   ? leaderRegistrations.length
   : 0;
 
-// TAB 2: prompt set progress and completions
-// Trigger = a new prompt set has been assigned OR a prompt set has been completed / badge earned
 const assignedPromptSetsCount = Array.isArray(assignedPromptSets)
   ? assignedPromptSets.length
   : 0;
@@ -1696,8 +1691,6 @@ const completedPromptSetsCount = Array.isArray(formattedCompletedSets)
 
 const promptProgressSignalCount = assignedPromptSetsCount + completedPromptSetsCount;
 
-// TAB 3: my group's learning and assignments
-// Trigger = a new article, video, interview, exercise, or template has been assigned
 const assignedLearningUnitsCount = Array.isArray(leaderAssignedNonMissionUnits)
   ? leaderAssignedNonMissionUnits.filter(u =>
       ['article', 'video', 'interview', 'exercise', 'template'].includes(
@@ -1706,8 +1699,6 @@ const assignedLearningUnitsCount = Array.isArray(leaderAssignedNonMissionUnits)
     ).length
   : 0;
 
-// TAB 4: nuggets and missions
-// Trigger = a new nugget/mission has been assigned OR a mission has been completed
 const assignedMissionsCount = Array.isArray(leaderAssignedMissions)
   ? leaderAssignedMissions.length
   : 0;
@@ -1734,6 +1725,24 @@ const missionSignalCount =
   selfTaggedMissionsCount +
   selfTaggedNuggetsCount +
   completedMissionsCount;
+
+const libraryContributionsCount = Array.isArray(leaderUnits)
+  ? leaderUnits.length
+  : 0;
+
+const registeredGroupMembersCount = Array.isArray(resolvedGroupMembers)
+  ? resolvedGroupMembers.filter(member => member.isVerified === true).length
+  : 0;
+
+const leaderCounts = {
+  group: registeredGroupMembersCount,
+  topics: Array.isArray(topicSuggestions) ? topicSuggestions.length : 0,
+  prompts: promptRegistrationsCount,
+  progress: promptProgressSignalCount,
+  tagged: assignedLearningUnitsCount,
+  missions: missionSignalCount,
+  library: libraryContributionsCount
+};
 
 // Load/create seen doc for this leader
 let seenDocLeader = await DashboardSeen.findOne({ userId: id, role: 'leader' });
