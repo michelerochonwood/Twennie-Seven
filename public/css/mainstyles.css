@@ -2845,7 +2845,7 @@ line-height: 1.5;
 .topic-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 15px;
+  gap: 30px;
   margin-bottom: 60px;
   width: 80%;
   margin: auto;
