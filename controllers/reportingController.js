@@ -439,6 +439,7 @@ const getNuggetsMonitoredReport = async (req, res) => {
     const leaderName = leaderDoc.groupLeaderName || leaderDoc.name || "Leader";
 
     const memberIdsFromLeader = Array.isArray(leaderDoc.members) ? leaderDoc.members : [];
+
     const groupMembers = memberIdsFromLeader.length
       ? await GroupMember.find({ _id: { $in: memberIdsFromLeader } })
           .select("_id name")
@@ -454,7 +455,6 @@ const getNuggetsMonitoredReport = async (req, res) => {
       }))
     ];
 
-    const personIds = people.map(p => p._id);
     const nameById = new Map(people.map(p => [p._id.toString(), p.name]));
     const roleById = new Map(people.map(p => [p._id.toString(), p.role]));
 
@@ -475,95 +475,57 @@ const getNuggetsMonitoredReport = async (req, res) => {
 
     const nuggetIds = [];
 
-    for (const t of nuggetTags) {
-      const units = Array.isArray(t.associatedUnits) ? t.associatedUnits : [];
+    for (const tag of nuggetTags) {
+      const units = Array.isArray(tag.associatedUnits) ? tag.associatedUnits : [];
 
-      for (const u of units) {
-        if (String(u.unitType || "").toLowerCase() !== "nugget") continue;
+      for (const unit of units) {
+        if (String(unit.unitType || "").toLowerCase() !== "nugget") continue;
 
-        const id = u.item?.toString?.();
-        if (id) nuggetIds.push(id);
+        const nuggetId = unit.item?.toString?.();
+
+        if (nuggetId) {
+          nuggetIds.push(nuggetId);
+        }
       }
     }
 
     const uniqueNuggetIds = Array.from(new Set(nuggetIds));
 
-    const [nuggets, nuggetNotes] = await Promise.all([
-      uniqueNuggetIds.length
-        ? Nugget.find({ _id: { $in: uniqueNuggetIds } })
-            .select("title discipline client region")
-            .lean()
-        : [],
+    const nuggets = uniqueNuggetIds.length
+      ? await Nugget.find({ _id: { $in: uniqueNuggetIds } })
+          .select("title discipline client region monitoringNotes")
+          .lean()
+      : [];
 
-      uniqueNuggetIds.length
-        ? Notes.find({
-            unitID: { $in: uniqueNuggetIds },
-            memberID: { $in: personIds },
-            $or: [
-              { unitType: "nugget" },
-              { unitType: "Nugget" },
-              { unitType: { $exists: false } },
-              { unitType: null },
-              { unitType: "" }
-            ]
-          })
-            .select("unitID memberID note_content createdAt updatedAt")
-            .sort({ createdAt: 1 })
-            .lean()
-        : []
-    ]);
-
-    const nuggetById = new Map(nuggets.map(n => [n._id.toString(), n]));
-
-    const notesByNuggetId = new Map();
-
-    for (const note of nuggetNotes) {
-      const nid = note.unitID?.toString?.();
-      const mid = note.memberID?.toString?.();
-
-      if (!nid) continue;
-
-      if (!notesByNuggetId.has(nid)) {
-        notesByNuggetId.set(nid, []);
-      }
-
-      notesByNuggetId.get(nid).push({
-        note: note.note_content || "",
-        addedByNameSnapshot: nameById.get(mid) || "Twennie member",
-        memberRole: roleById.get(mid) || "",
-        createdAt: note.createdAt || note.updatedAt || null
-      });
-    }
-
-    for (const [nid, notes] of notesByNuggetId.entries()) {
-      notesByNuggetId.set(
-        nid,
-        notes.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0))
-      );
-    }
+    const nuggetById = new Map(
+      nuggets.map(nugget => [nugget._id.toString(), nugget])
+    );
 
     const rowByNuggetId = new Map();
 
-    for (const t of nuggetTags) {
-      const assignmentName = t.name || "Untitled Assignment";
-      const assignedAt = t.createdAt || null;
+    for (const tag of nuggetTags) {
+      const assignmentName = tag.name || "Untitled Assignment";
+      const assignedAt = tag.createdAt || null;
 
-      const units = Array.isArray(t.associatedUnits) ? t.associatedUnits : [];
-      const assignedTo = Array.isArray(t.assignedTo) ? t.assignedTo : [];
+      const units = Array.isArray(tag.associatedUnits) ? tag.associatedUnits : [];
+      const assignedTo = Array.isArray(tag.assignedTo) ? tag.assignedTo : [];
 
       const monitors = [];
       const instructions = [];
 
-      for (const a of assignedTo) {
-        const mid = a.member?.toString?.();
-        if (!mid) continue;
+      for (const assignment of assignedTo) {
+        const memberId = assignment.member?.toString?.();
+
+        if (!memberId) continue;
 
         monitors.push({
-          memberName: nameById.get(mid) || "Unknown",
-          role: roleById.get(mid) || ""
+          memberName: nameById.get(memberId) || "Unknown",
+          role: roleById.get(memberId) || ""
         });
 
-        if (a.instructions) instructions.push(a.instructions);
+        if (assignment.instructions) {
+          instructions.push(assignment.instructions);
+        }
       }
 
       if (!monitors.length) {
@@ -575,21 +537,47 @@ const getNuggetsMonitoredReport = async (req, res) => {
 
       const isAssigned = assignedTo.length > 0;
 
-      for (const u of units) {
-        if (String(u.unitType || "").toLowerCase() !== "nugget") continue;
+      for (const unit of units) {
+        if (String(unit.unitType || "").toLowerCase() !== "nugget") continue;
 
-        const nid = u.item?.toString?.();
-        if (!nid) continue;
+        const nuggetId = unit.item?.toString?.();
 
-        const nug = nuggetById.get(nid);
-        const monitoringNotes = notesByNuggetId.get(nid) || [];
+        if (!nuggetId) continue;
 
-        const baseRow = rowByNuggetId.get(nid) || {
-          nuggetId: nid,
-          nuggetTitle: nug?.title || "Untitled Nugget",
-          discipline: nug?.discipline || "",
-          client: nug?.client || "",
-          region: nug?.region || "",
+        const nugget = nuggetById.get(nuggetId);
+
+        const monitoringNotes = Array.isArray(nugget?.monitoringNotes)
+          ? nugget.monitoringNotes
+              .map(note => {
+                const addedById =
+                  note.addedBy ||
+                  note.memberID ||
+                  note.memberId ||
+                  note.createdBy ||
+                  null;
+
+                const addedByIdString = addedById?.toString?.();
+
+                return {
+                  note: note.note || note.note_content || "",
+                  addedByNameSnapshot:
+                    note.addedByNameSnapshot ||
+                    (addedByIdString ? nameById.get(addedByIdString) : null) ||
+                    "Twennie member",
+                  memberRole:
+                    addedByIdString ? roleById.get(addedByIdString) || "" : "",
+                  createdAt: note.createdAt || note.updatedAt || null
+                };
+              })
+              .sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0))
+          : [];
+
+        const baseRow = rowByNuggetId.get(nuggetId) || {
+          nuggetId,
+          nuggetTitle: nugget?.title || "Untitled Nugget",
+          discipline: nugget?.discipline || "",
+          client: nugget?.client || "",
+          region: nugget?.region || "",
 
           assignmentName,
           assignmentDescription: "",
@@ -605,56 +593,63 @@ const getNuggetsMonitoredReport = async (req, res) => {
           baseRow.assignedAt = assignedAt;
         }
 
-        if (!baseRow.assignmentName) baseRow.assignmentName = assignmentName;
-        if (isAssigned) baseRow.isAssigned = true;
+        if (!baseRow.assignmentName) {
+          baseRow.assignmentName = assignmentName;
+        }
+
+        if (isAssigned) {
+          baseRow.isAssigned = true;
+        }
 
         const existingMonitorKeys = new Set(
           (baseRow.monitoredBy || []).map(m => `${m.memberName}::${m.role || ""}`)
         );
 
-        for (const m of monitors) {
-          const k = `${m.memberName}::${m.role || ""}`;
+        for (const monitor of monitors) {
+          const key = `${monitor.memberName}::${monitor.role || ""}`;
 
-          if (!existingMonitorKeys.has(k)) {
-            existingMonitorKeys.add(k);
-            baseRow.monitoredBy.push(m);
+          if (!existingMonitorKeys.has(key)) {
+            existingMonitorKeys.add(key);
+            baseRow.monitoredBy.push(monitor);
           }
         }
 
-        const instrSet = new Set(baseRow.instructions || []);
+        const instructionSet = new Set(baseRow.instructions || []);
 
-        for (const ins of instructions) {
-          if (!ins) continue;
+        for (const instruction of instructions) {
+          if (!instruction) continue;
 
-          if (!instrSet.has(ins)) {
-            instrSet.add(ins);
-            baseRow.instructions.push(ins);
+          if (!instructionSet.has(instruction)) {
+            instructionSet.add(instruction);
+            baseRow.instructions.push(instruction);
           }
         }
 
         baseRow.monitoringNotes = monitoringNotes;
 
-        rowByNuggetId.set(nid, baseRow);
+        rowByNuggetId.set(nuggetId, baseRow);
       }
     }
 
     const monitoredNuggets = Array.from(rowByNuggetId.values())
-      .map(r => {
-        r.monitoredBy = (r.monitoredBy || []).sort((a, b) =>
+      .map(row => {
+        row.monitoredBy = (row.monitoredBy || []).sort((a, b) =>
           (a.memberName || "").localeCompare(b.memberName || "")
         );
 
-        r.instructions = (r.instructions || []).sort((a, b) =>
+        row.instructions = (row.instructions || []).sort((a, b) =>
           (a || "").localeCompare(b || "")
         );
 
-        r.monitoringNotes = Array.isArray(r.monitoringNotes)
-          ? r.monitoringNotes
+        row.monitoringNotes = Array.isArray(row.monitoringNotes)
+          ? row.monitoringNotes
           : [];
 
-        return r;
+        return row;
       })
-      .sort((a, b) => (a.nuggetTitle || "").localeCompare(b.nuggetTitle || ""));
+      .sort((a, b) =>
+        (a.nuggetTitle || "").localeCompare(b.nuggetTitle || "")
+      );
 
     return res.render("report_views/nuggetsmonitored", {
       layout: "dashboardlayout",
@@ -662,6 +657,7 @@ const getNuggetsMonitoredReport = async (req, res) => {
       isNuggetsMonitored: true,
       monitoredNuggets
     });
+
   } catch (err) {
     console.error("❌ Error loading Nuggets Being Monitored Report:", err);
     return res.status(500).send("Server error");
