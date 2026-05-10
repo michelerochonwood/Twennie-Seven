@@ -15,6 +15,11 @@ const missionSchema = new mongoose.Schema({
     required: true,
   },
 
+    is_sample: {
+    type: Boolean,
+    default: false,
+  },
+
   mission_title: {
     type: String,
     required: true,

@@ -2027,6 +2027,7 @@ viewMission: async (req, res) => {
     console.log(`[viewMission] Fetching mission with ID: ${id}`);
 
     const mission = await Mission.findById(id).lean();
+
     if (!mission) {
       console.warn(`[viewMission] Mission with ID ${id} not found.`);
       return res.status(404).render('unit_views/error', {
@@ -2038,11 +2039,11 @@ viewMission: async (req, res) => {
 
     // --- Basic membership gate ---
     const membershipType = req.user?.membershipType || null;
-    const accessLevel    = req.user?.accessLevel || null;
+    const accessLevel = req.user?.accessLevel || null;
 
-    const isLeader         = membershipType === 'leader';
-    const isGroupMember    = membershipType === 'group_member';
-    const isMember         = membershipType === 'member';
+    const isLeader = membershipType === 'leader';
+    const isGroupMember = membershipType === 'group_member';
+    const isMember = membershipType === 'member';
     const isPaidIndividual = accessLevel === 'paid_individual';
 
     const canViewMission = isLeader || isGroupMember || isPaidIndividual;
@@ -2054,6 +2055,7 @@ viewMission: async (req, res) => {
         'accessLevel:',
         accessLevel
       );
+
       return res.status(403).render('unit_views/error', {
         layout: 'unitviewlayout',
         title: 'Access Restricted',
@@ -2061,8 +2063,12 @@ viewMission: async (req, res) => {
       });
     }
 
+    // --- Sample flag ---
+    const is_sample = !!mission.is_sample;
+
     // --- Badge fields ---
     const category = mission.category || 'other';
+
     const badge_name = (mission.badge_name && String(mission.badge_name).trim())
       ? String(mission.badge_name).trim()
       : '';
@@ -2073,7 +2079,7 @@ viewMission: async (req, res) => {
       mission.badgeImage ||
       getMissionBadgePath(category);
 
-    // --- Owner + creator (for sidebar) ---
+    // --- Owner + creator for sidebar ---
     const currentUserId = (req.user?._id || req.user?.id)?.toString();
 
     let rawOwnerId =
@@ -2097,12 +2103,14 @@ viewMission: async (req, res) => {
     const isOwner = !!(currentUserId && ownerId && currentUserId === ownerId);
 
     let creator = null;
+
     if (ownerId) {
       creator = await resolveAuthorById(ownerId);
     }
 
     // --- Build linked Twennie learning units for display ---
     let learningUnits = [];
+
     if (Array.isArray(mission.twennie_learning_units) && mission.twennie_learning_units.length) {
       const lookups = mission.twennie_learning_units.map(async (lu) => {
         if (!lu || !lu.unit_type || !lu.unit_id) return null;
@@ -2114,35 +2122,68 @@ viewMission: async (req, res) => {
 
         switch (lu.unit_type) {
           case 'article':
-            Model = Article; titleField = 'article_title'; basePath = '/unitviews/articles/view'; displayType = 'Article';
+            Model = Article;
+            titleField = 'article_title';
+            basePath = '/unitviews/articles/view';
+            displayType = 'Article';
             break;
+
           case 'video':
-            Model = Video; titleField = 'video_title'; basePath = '/unitviews/videos/view'; displayType = 'Video';
+            Model = Video;
+            titleField = 'video_title';
+            basePath = '/unitviews/videos/view';
+            displayType = 'Video';
             break;
+
           case 'interview':
-            Model = Interview; titleField = 'interview_title'; basePath = '/unitviews/interviews/view'; displayType = 'Interview';
+            Model = Interview;
+            titleField = 'interview_title';
+            basePath = '/unitviews/interviews/view';
+            displayType = 'Interview';
             break;
+
           case 'promptset':
-            Model = PromptSet; titleField = 'promptset_title'; basePath = '/unitviews/promptsets/view'; displayType = 'Prompt Set';
+            Model = PromptSet;
+            titleField = 'promptset_title';
+            basePath = '/unitviews/promptsets/view';
+            displayType = 'Prompt Set';
             break;
+
           case 'exercise':
-            Model = Exercise; titleField = 'exercise_title'; basePath = '/unitviews/exercises/view'; displayType = 'Exercise';
+            Model = Exercise;
+            titleField = 'exercise_title';
+            basePath = '/unitviews/exercises/view';
+            displayType = 'Exercise';
             break;
+
           case 'template':
-            Model = Template; titleField = 'template_title'; basePath = '/unitviews/templates/view'; displayType = 'Template';
+            Model = Template;
+            titleField = 'template_title';
+            basePath = '/unitviews/templates/view';
+            displayType = 'Template';
             break;
+
           case 'nugget':
-            Model = Nugget; titleField = 'title'; basePath = '/unitviews/nuggets/view'; displayType = 'Nugget';
+            Model = Nugget;
+            titleField = 'title';
+            basePath = '/unitviews/nuggets/view';
+            displayType = 'Nugget';
             break;
+
           case 'mission':
-            Model = Mission; titleField = 'mission_title'; basePath = '/unitviews/missions/view'; displayType = 'Mission';
+            Model = Mission;
+            titleField = 'mission_title';
+            basePath = '/unitviews/missions/view';
+            displayType = 'Mission';
             break;
+
           default:
             return null;
         }
 
         try {
           const doc = await Model.findById(lu.unit_id).lean();
+
           if (!doc) return null;
 
           const title = doc[titleField] || doc.title || '(untitled)';
@@ -2163,7 +2204,7 @@ viewMission: async (req, res) => {
       learningUnits = resolved.filter(Boolean);
     }
 
-    // --- Leader assign context (shared helper) ---
+    // --- Leader assign context ---
     const {
       isLeader: assignIsLeader,
       groupMembers,
@@ -2171,15 +2212,13 @@ viewMission: async (req, res) => {
       leaderName,
     } = await getLeaderAssignContext(req);
 
-const isAssignedToCurrentUser = await isUserAssignedToUnit(req, mission._id, 'mission');
+    const isAssignedToCurrentUser = await isUserAssignedToUnit(req, mission._id, 'mission');
 
+    const canAddMissionNotes = isOwner || isAssignedToCurrentUser;
 
-const canAddMissionNotes = isOwner || isAssignedToCurrentUser;
-
-    // ✅ Org Admin suggestion context
+    // --- Org admin suggestion context ---
     const adminSuggest = await buildOrgLeaderListForAdmin(req);
 
-    // --- Render single_mission view ---
     return res.render('unit_views/single_mission', {
       layout: 'unitviewlayout',
 
@@ -2187,8 +2226,12 @@ const canAddMissionNotes = isOwner || isAssignedToCurrentUser;
       _id: mission._id.toString(),
       unitType: 'mission',
 
+      // sample flag
+      is_sample,
+
       // title + summaries
       mission_title: mission.mission_title,
+      summary: mission.summary || '',
       short_purpose: mission.short_purpose || '',
       full_summary: mission.full_summary || '',
 
@@ -2207,10 +2250,11 @@ const canAddMissionNotes = isOwner || isAssignedToCurrentUser;
       purpose: mission.purpose,
       why_it_matters: mission.why_it_matters,
       background: mission.background,
+      additional_instructions: mission.additional_instructions || '',
 
-      currentUserId: currentUserId,
+      currentUserId,
       isAssignedToCurrentUser,
-        canAddMissionNotes,
+      canAddMissionNotes,
 
       // details
       department_requesting: mission.department_requesting,
@@ -2235,7 +2279,10 @@ const canAddMissionNotes = isOwner || isAssignedToCurrentUser;
 
       // creator for sidebar
       creator: creator
-        ? { name: creator.name || 'Unknown Author', image: creator.image || '/images/default-avatar.png' }
+        ? {
+            name: creator.name || 'Unknown Author',
+            image: creator.image || '/images/default-avatar.png',
+          }
         : null,
 
       // flags
@@ -2245,12 +2292,14 @@ const canAddMissionNotes = isOwner || isAssignedToCurrentUser;
       isGroupMemberOrMember: isGroupMember || isMember,
       isGroupMemberOrLeaderOrMember: isLeader || isGroupMember || isMember,
 
-      // ✅ Admin suggest vars (top-level)
+      // admin suggest vars
       ...adminSuggest,
-// ✅ Suggestion success banner (after redirect back)
-suggestionSuccess: req.query.suggested === '1',
-suggestedUnitId: req.query.unitId || '',
-suggestedUnitType: req.query.unitType || '',
+
+      // suggestion success banner
+      suggestionSuccess: req.query.suggested === '1',
+      suggestedUnitId: req.query.unitId || '',
+      suggestedUnitType: req.query.unitType || '',
+
       // leader assignment UI
       groupMembers,
       leaderId,
@@ -2261,6 +2310,7 @@ suggestedUnitType: req.query.unitType || '',
 
   } catch (err) {
     console.error('💥 Error fetching mission:', err.stack || err.message);
+
     return res.status(500).render('unit_views/error', {
       layout: 'unitviewlayout',
       title: 'Error',

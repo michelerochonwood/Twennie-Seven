@@ -1,16 +1,19 @@
 {{#*inline "title"}}View Mission | Twennie{{/inline}}
 
 <div class="single_mission-container">
-  <!-- Main Column -->
   <div class="single_mission-main">
-    <!-- Title -->
     <h1 class="single_mission-main-title">{{mission_title}}</h1>
 
-    <!-- Intro -->
     <section class="white-container single_mission-intro">
       <p class="single_mission-tagline">
         Your mission, should you choose to accept it, is to…
       </p>
+
+      {{#if is_sample}}
+        <p class="single_mission-long-summary">
+          This is a sample mission. Use it as a starting point, customize it, and create a team version before assigning it.
+        </p>
+      {{/if}}
 
       {{#if summary}}
         <p class="single_mission-long-summary">
@@ -32,16 +35,11 @@
       </button>
     </section>
 
-    <!-- MAIN BODY -->
     <div class="single_mission-main-body hidden" id="singleMissionBody">
       {{#if badgeImagePath}}
         <section class="white-container single_mission-badge">
           <div class="single_mission-badge-inner">
-            <img
-              src="{{badgeImagePath}}"
-              alt="{{badge_name}}"
-              class="single_mission-badge-image"
-            />
+            <img src="{{badgeImagePath}}" alt="{{badge_name}}" class="single_mission-badge-image" />
             {{#if badge_name}}
               <p class="single_mission-badge-name">{{badge_name}}</p>
             {{/if}}
@@ -63,10 +61,7 @@
 
       <section class="white-container single_mission-section">
         <h2 class="single_mission-section-title">learning units</h2>
-
-        <p class="form-hint">
-          These are the Twennie units that support this mission.
-        </p>
+        <p class="form-hint">These are the Twennie units that support this mission.</p>
 
         {{#if learningUnits.length}}
           <ul class="single_mission-learning-units" style="margin:0; padding-left:18px;">
@@ -88,8 +83,6 @@
       <section class="white-container single_mission-section">
         <h2 class="single_mission-section-title">mission details</h2>
         <dl class="single_mission-details-list">
-
-
           {{#if visibility}}
             <div class="details-row">
               <dt>Visibility</dt>
@@ -98,6 +91,13 @@
                 {{#ifEquals visibility "organization_only"}}organization only{{/ifEquals}}
                 {{#ifEquals visibility "all_members"}}all Twennie members{{/ifEquals}}
               </dd>
+            </div>
+          {{/if}}
+
+          {{#if is_sample}}
+            <div class="details-row">
+              <dt>Mission type</dt>
+              <dd>sample mission</dd>
             </div>
           {{/if}}
 
@@ -163,195 +163,186 @@
         </section>
       {{/if}}
 
-{{#if isLeader}}
-  <div class="assign-tag-form white-container">
-    <h4 class="assign-tag-title">Assign this mission to yourself or your group</h4>
+      {{#unless is_sample}}
 
-    <form id="assignMissionTagForm" action="/tags/create" method="POST">
-      <input type="hidden" name="_csrf" value="{{csrfToken}}">
-      <input type="hidden" name="itemId" value="{{_id}}">
-      <input type="hidden" name="itemType" value="mission">
+        {{#if isLeader}}
+          <div class="assign-tag-form white-container">
+            <h4 class="assign-tag-title">Assign this mission to yourself or your group</h4>
 
-      <div class="form-field">
-        <label for="missionTagName">Give the assignment a name</label>
-        <input type="text" id="missionTagName" name="tagName" required>
-      </div>
+            <form id="assignMissionTagForm" action="/tags/create" method="POST">
+              <input type="hidden" name="_csrf" value="{{csrfToken}}">
+              <input type="hidden" name="itemId" value="{{_id}}">
+              <input type="hidden" name="itemType" value="mission">
 
-      <fieldset class="assign-tag-members">
-        <legend class="assign-tag-legend">Select recipients and enter instructions:</legend>
+              <div class="form-field">
+                <label for="missionTagName">Give the assignment a name</label>
+                <input type="text" id="missionTagName" name="tagName" required>
+              </div>
 
-        <div class="assign-tag-member-block">
-          <label class="assign-tag-member-label">
-            <input
-              type="checkbox"
-              name="assignedTo[{{leaderId}}][member]"
-              value="{{leaderId}}"
-              onchange="toggleInstructionField(this)">
-            {{leaderName}} (you)
-          </label>
-          <textarea
-            class="assign-tag-instructions"
-            name="assignedTo[{{leaderId}}][instructions]"
-            placeholder="Instructions for yourself"
-            style="display:none;"></textarea>
-        </div>
+              <fieldset class="assign-tag-members">
+                <legend class="assign-tag-legend">Select recipients and enter instructions:</legend>
 
-        <hr class="assign-tag-divider">
-
-        {{#each groupMembers}}
-          <div class="assign-tag-member-block">
-            <label class="assign-tag-member-label">
-              <input
-                type="checkbox"
-                name="assignedTo[{{_id}}][member]"
-                value="{{_id}}"
-                onchange="toggleInstructionField(this)">
-              {{name}}
-            </label>
-            <textarea
-              class="assign-tag-instructions"
-              name="assignedTo[{{_id}}][instructions]"
-              placeholder="Instructions for {{name}}"
-              style="display:none;"></textarea>
-          </div>
-        {{/each}}
-      </fieldset>
-
-      <button type="submit" class="form-button submit-button">assign mission</button>
-    </form>
-  </div>
-{{/if}}
-      {{#if isOrgAdmin}}
-        <div class="assign-tag-form white-container" style="margin-top:1.25rem;">
-          {{#if (and suggestionSuccess (eq suggestedUnitId _id))}}
-            <div class="success-message" style="
-              margin-bottom:0.75rem;
-              padding:0.6rem 0.75rem;
-              background:#e9f7ef;
-              color:#0f5132;
-              border-radius:6px;
-              font-weight:600;
-            ">
-              ✅ Suggestions sent successfully.
-            </div>
-          {{/if}}
-
-          <h4 class="assign-tag-title">Suggest this mission to organization leaders</h4>
-          <p class="groupsection-org-card-info" style="margin-top:0.25rem;">
-            Send a suggestion, with an optional note, to one or more leaders in your organization.
-          </p>
-
-          <form id="suggestMissionForm-{{_id}}" action="/unitsuggestions/org-suggestions/create" method="POST">
-            <input type="hidden" name="_csrf" value="{{csrfToken}}">
-            <input type="hidden" name="unitId" value="{{_id}}">
-            <input type="hidden" name="unitType" value="mission">
-
-            <fieldset class="assign-tag-members">
-              <legend class="assign-tag-legend">Select leaders and optionally add a note:</legend>
-
-              {{#each orgLeaders}}
                 <div class="assign-tag-member-block">
                   <label class="assign-tag-member-label">
                     <input
                       type="checkbox"
-                      name="suggestTo[{{_id}}][leader]"
-                      value="{{_id}}"
-                      onchange="toggleSuggestNoteField(this)">
-                    {{groupLeaderName}}{{#if groupName}} — {{groupName}}{{/if}}
+                      name="assignedTo[{{leaderId}}][member]"
+                      value="{{leaderId}}"
+                      onchange="toggleInstructionField(this)">
+                    {{leaderName}} (you)
                   </label>
-
                   <textarea
                     class="assign-tag-instructions"
-                    name="suggestTo[{{_id}}][note]"
-                    placeholder="Optional note for {{groupLeaderName}}"
+                    name="assignedTo[{{leaderId}}][instructions]"
+                    placeholder="Instructions for yourself"
                     style="display:none;"></textarea>
                 </div>
-              {{/each}}
-            </fieldset>
 
-            <button type="submit" class="form-button submit-button">send suggestions</button>
-          </form>
-        </div>
-      {{/if}}
+                <hr class="assign-tag-divider">
 
-{{#if isGroupMemberOrMember}}
-  {{#unless canAddMissionNotes}}
-    <div class="single_unit-tag-container" style="margin-bottom:200px;">
-      <form action="/tags/create" method="POST" class="inline" id="missionTagForm">
-        <input type="hidden" name="_csrf" value="{{csrfToken}}">
-        <input type="hidden" name="itemId" value="{{_id}}">
-        <input type="hidden" name="itemType" value="mission">
-        <input type="hidden" name="selfAssign" value="true">
+                {{#each groupMembers}}
+                  <div class="assign-tag-member-block">
+                    <label class="assign-tag-member-label">
+                      <input
+                        type="checkbox"
+                        name="assignedTo[{{_id}}][member]"
+                        value="{{_id}}"
+                        onchange="toggleInstructionField(this)">
+                      {{name}}
+                    </label>
+                    <textarea
+                      class="assign-tag-instructions"
+                      name="assignedTo[{{_id}}][instructions]"
+                      placeholder="Instructions for {{name}}"
+                      style="display:none;"></textarea>
+                  </div>
+                {{/each}}
+              </fieldset>
 
-        <div class="form-field" style="margin-bottom:10px;">
-          <label for="missionTagName-{{_id}}">Name this assignment</label>
-          <input
-            type="text"
-            id="missionTagName-{{_id}}"
-            name="tagName"
-            value="Work on this mission"
-            required
-          >
-        </div>
+              <button type="submit" class="form-button submit-button">assign mission</button>
+            </form>
+          </div>
+        {{/if}}
 
-        <button type="submit"
-                class="tag-this-unit-link"
-                style="background:none;border:none;padding:0;cursor:pointer;">
-          assign this mission to myself
-          <svg class="tag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 39.48 36.66">
-            <path class="cls-1" d="M38.77,21.12L16.05.56C15.65.19,15.13,0,14.59,0L2.12.16c-1.18.01-2.12.97-2.12,2.15v11.2c0,.63.28,1.24.77,1.64l24.95,21c.9.76,2.24.65,3.01-.24l10.23-11.8c.77-.88.69-2.22-.18-3ZM6.28,8.87c-1.57,0-2.84-1.27-2.84-2.84s1.27-2.84,2.84-2.84,2.84,1.27,2.84,2.84-1.27,2.84-2.84,2.84Z"/>
-          </svg>
-        </button>
-      </form>
-    </div>
-  {{/unless}}
-{{/if}}
+        {{#if isOrgAdmin}}
+          <div class="assign-tag-form white-container" style="margin-top:1.25rem;">
+            {{#if (and suggestionSuccess (eq suggestedUnitId _id))}}
+              <div class="success-message" style="margin-bottom:0.75rem;padding:0.6rem 0.75rem;background:#e9f7ef;color:#0f5132;border-radius:6px;font-weight:600;">
+                ✅ Suggestions sent successfully.
+              </div>
+            {{/if}}
 
-{{#if isGroupMemberOrLeaderOrMember}}
+            <h4 class="assign-tag-title">Suggest this mission to organization leaders</h4>
+            <p class="groupsection-org-card-info" style="margin-top:0.25rem;">
+              Send a suggestion, with an optional note, to one or more leaders in your organization.
+            </p>
 
-  {{#if canAddMissionNotes}}
+            <form id="suggestMissionForm-{{_id}}" action="/unitsuggestions/org-suggestions/create" method="POST">
+              <input type="hidden" name="_csrf" value="{{csrfToken}}">
+              <input type="hidden" name="unitId" value="{{_id}}">
+              <input type="hidden" name="unitType" value="mission">
 
-    <div class="single_mission-notes-container">
-      <h3 class="single_mission-notes-title">record progress notes for this mission</h3>
-      <p class="single_mission-notes-instructions">
-        Use this space to record progress, setbacks, decisions, observations, and what you are learning as this mission unfolds. These notes create an ongoing record of the work and can be updated over time.
-      </p>
+              <fieldset class="assign-tag-members">
+                <legend class="assign-tag-legend">Select leaders and optionally add a note:</legend>
 
-      <form action="/notes/submit" method="POST" class="single_mission-notes-form">
-        <input type="hidden" name="_csrf" value="{{csrfToken}}">
-        <input type="hidden" name="unitId" value="{{_id}}">
-        <input type="hidden" name="unitType" value="mission">
-        <input type="hidden" name="main_topic" value="{{category}}">
-        <input type="hidden" name="secondary_topic" value="mission">
+                {{#each orgLeaders}}
+                  <div class="assign-tag-member-block">
+                    <label class="assign-tag-member-label">
+                      <input
+                        type="checkbox"
+                        name="suggestTo[{{_id}}][leader]"
+                        value="{{_id}}"
+                        onchange="toggleSuggestNoteField(this)">
+                      {{groupLeaderName}}{{#if groupName}} — {{groupName}}{{/if}}
+                    </label>
 
-        <textarea
-          name="note_content"
-          class="single_mission-notes-textarea"
-          rows="6"
-          maxlength="2000"
-          placeholder="Record progress notes for this mission..."
-        ></textarea>
+                    <textarea
+                      class="assign-tag-instructions"
+                      name="suggestTo[{{_id}}][note]"
+                      placeholder="Optional note for {{groupLeaderName}}"
+                      style="display:none;"></textarea>
+                  </div>
+                {{/each}}
+              </fieldset>
 
-        <button type="submit" class="single_mission-notes-submit">save mission notes</button>
-      </form>
-    </div>
+              <button type="submit" class="form-button submit-button">send suggestions</button>
+            </form>
+          </div>
+        {{/if}}
 
-  {{else}}
+        {{#if isGroupMemberOrMember}}
+          {{#unless canAddMissionNotes}}
+            <div class="single_unit-tag-container" style="margin-bottom:200px;">
+              <form action="/tags/create" method="POST" class="inline" id="missionTagForm">
+                <input type="hidden" name="_csrf" value="{{csrfToken}}">
+                <input type="hidden" name="itemId" value="{{_id}}">
+                <input type="hidden" name="itemType" value="mission">
+                <input type="hidden" name="selfAssign" value="true">
 
-    <div class="single_mission-notes-container">
-      <h3 class="single_mission-notes-title">record progress notes for this mission</h3>
-      <p class="single_mission-notes-instructions">
-        Before recording mission notes, assign this mission to yourself so it appears in your dashboard with your other assigned learning.
-      </p>
-    </div>
+                <div class="form-field" style="margin-bottom:10px;">
+                  <label for="missionTagName-{{_id}}">Name this assignment</label>
+                  <input
+                    type="text"
+                    id="missionTagName-{{_id}}"
+                    name="tagName"
+                    value="Work on this mission"
+                    required
+                  >
+                </div>
 
-  {{/if}}
+                <button type="submit"
+                        class="tag-this-unit-link"
+                        style="background:none;border:none;padding:0;cursor:pointer;">
+                  assign this mission to myself
+                  <svg class="tag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 39.48 36.66">
+                    <path class="cls-1" d="M38.77,21.12L16.05.56C15.65.19,15.13,0,14.59,0L2.12.16c-1.18.01-2.12.97-2.12,2.15v11.2c0,.63.28,1.24.77,1.64l24.95,21c.9.76,2.24.65,3.01-.24l10.23-11.8c.77-.88.69-2.22-.18-3ZM6.28,8.87c-1.57,0-2.84-1.27-2.84-2.84s1.27-2.84,2.84-2.84,2.84,1.27,2.84,2.84-1.27,2.84-2.84,2.84Z"/>
+                  </svg>
+                </button>
+              </form>
+            </div>
+          {{/unless}}
+        {{/if}}
 
-{{/if}}
+        {{#if isGroupMemberOrLeaderOrMember}}
+          {{#if canAddMissionNotes}}
+            <div class="single_mission-notes-container">
+              <h3 class="single_mission-notes-title">record progress notes for this mission</h3>
+              <p class="single_mission-notes-instructions">
+                Use this space to record progress, setbacks, decisions, observations, and what you are learning as this mission unfolds. These notes create an ongoing record of the work and can be updated over time.
+              </p>
+
+              <form action="/notes/submit" method="POST" class="single_mission-notes-form">
+                <input type="hidden" name="_csrf" value="{{csrfToken}}">
+                <input type="hidden" name="unitId" value="{{_id}}">
+                <input type="hidden" name="unitType" value="mission">
+                <input type="hidden" name="main_topic" value="{{category}}">
+                <input type="hidden" name="secondary_topic" value="mission">
+
+                <textarea
+                  name="note_content"
+                  class="single_mission-notes-textarea"
+                  rows="6"
+                  maxlength="2000"
+                  placeholder="Record progress notes for this mission..."
+                ></textarea>
+
+                <button type="submit" class="single_mission-notes-submit">save mission notes</button>
+              </form>
+            </div>
+          {{else}}
+            <div class="single_mission-notes-container">
+              <h3 class="single_mission-notes-title">record progress notes for this mission</h3>
+              <p class="single_mission-notes-instructions">
+                Before recording mission notes, assign this mission to yourself so it appears in your dashboard with your other assigned learning.
+              </p>
+            </div>
+          {{/if}}
+        {{/if}}
+
+      {{/unless}}
     </div>
   </div>
 
-  <!-- Sidebar -->
   <aside class="single_mission-sidebar">
     <div class="single_mission-icon-container">
       <img src="/icons/mission.svg" alt="Mission icon" class="single_mission-icon">
@@ -361,9 +352,7 @@
       <p class="single_mission-title-sidebar">{{mission_title}}</p>
 
       <div class="single_mission-sidebar-toggle" onclick="toggleSidebarContent(this)">
-        <svg class="single_mission-sidebar-arrow-icon"
-             xmlns="http://www.w3.org/2000/svg"
-             viewBox="0 0 331.65 100.99">
+        <svg class="single_mission-sidebar-arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99">
           <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>
           <g><polygon class="cls-1" points="0 0 161.57 100.99 331.65 0 0 0"/></g>
         </svg>
@@ -376,6 +365,15 @@
             <div class="single_mission-creator-block">
               <img src="{{creator.image}}" alt="{{creator.name}}" class="single_mission-creator-image">
               <p class="single_mission-creator-name">{{creator.name}}</p>
+            </div>
+          </div>
+        {{/if}}
+
+        {{#if is_sample}}
+          <div class="sidebar-block">
+            <p class="sidebar-label">Mission Type</p>
+            <div class="sidebar-chip-row">
+              <span class="mission-chip mission-category">sample mission</span>
             </div>
           </div>
         {{/if}}
@@ -412,9 +410,7 @@
           <div class="sidebar-block">
             <p class="sidebar-label">Effort</p>
             <div class="sidebar-chip-row">
-              <span class="mission-chip mission-effort">
-                approx. {{estimated_effort_hours}} hours
-              </span>
+              <span class="mission-chip mission-effort">approx. {{estimated_effort_hours}} hours</span>
             </div>
           </div>
         {{/if}}
@@ -423,9 +419,7 @@
           <div class="sidebar-block">
             <p class="sidebar-label">Open&nbsp;To</p>
             <div class="sidebar-chip-row">
-              <span class="mission-chip mission-open-to">
-                {{open_to}}
-              </span>
+              <span class="mission-chip mission-open-to">{{open_to}}</span>
             </div>
           </div>
         {{/if}}
@@ -467,19 +461,6 @@
     }
   }
 
-  function promptAndSubmitTag(formId) {
-    var form = document.getElementById(formId);
-    var btn  = form.querySelector('.tag-this-unit-link');
-    var input = form.querySelector('input[name="tagName"]');
-    var suggested = (input.value || 'Work on this mission').trim();
-    var entered = window.prompt('Name this tag', suggested);
-    if (!entered) return;
-    input.value = entered.trim();
-    if (!input.value) return;
-    if (btn) btn.disabled = true;
-    form.submit();
-  }
-
   function toggleMissionDetails(button) {
     var body = document.getElementById('singleMissionBody');
     if (!body) return;
@@ -495,65 +476,4 @@
       button.classList.remove('open');
     }
   }
-
-  async function markTagComplete(tagId) {
-    try {
-      await fetch('/tags/' + tagId + '/complete', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': '{{csrfToken}}'
-        },
-        body: JSON.stringify({ _csrf: '{{csrfToken}}' })
-      });
-      var btn = document.querySelector(
-        '.tag-action[data-action="complete"][data-tag="' + tagId + '"]'
-      );
-      if (btn) {
-        btn.outerHTML = '<span class="tag-status" style="font-size:12px; color:#0ea75a;">completed</span>';
-      }
-    } catch (e) {
-      alert('Could not mark complete. Please try again.');
-    }
-  }
-
-  async function removeTagFromUnit(tagId, itemId, itemType) {
-    try {
-      await fetch('/tags/remove/' + tagId + '/' + itemId + '/' + itemType, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': '{{csrfToken}}'
-        },
-        body: JSON.stringify({ _csrf: '{{csrfToken}}' })
-      });
-      var btn = document.querySelector(
-        '.tag-action[data-action="remove"][data-tag="' + tagId +
-        '"][data-item="' + itemId +
-        '"][data-type="' + itemType + '"]'
-      );
-      if (btn) {
-        var pill = btn.closest('.tag-pill');
-        if (pill) pill.remove();
-      }
-    } catch (e) {
-      alert('Could not remove tag from this unit. Please try again.');
-    }
-  }
-
-  document.addEventListener('click', function (e) {
-    var btn = e.target.closest('.tag-action');
-    if (!btn) return;
-    var action = btn.dataset.action;
-    if (action === 'complete') {
-      return markTagComplete(btn.dataset.tag);
-    }
-    if (action === 'remove') {
-      return removeTagFromUnit(
-        btn.dataset.tag,
-        btn.dataset.item,
-        btn.dataset.type
-      );
-    }
-  });
 </script>
