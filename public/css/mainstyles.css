@@ -2165,16 +2165,25 @@ img[alt="Free"] {
 
 .membership-grid-inner {
   display: grid;
-  grid-template-rows: auto auto auto 1fr auto auto;
+  grid-template-rows: auto auto auto 1fr auto auto auto;
   grid-template-areas:
     "icon"
     "title"
     "subtitle"
     "benefits"
     "altplan"
-    "price";
+    "price"
+    "buttons";
   height: 100%;
   gap: 5px;
+}
+
+.membership-buttons {
+  grid-area: buttons;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 0.75rem;
 }
 
 .membership-icon-area      { grid-area: icon; display: flex; justify-content: center; }
