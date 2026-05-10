@@ -767,6 +767,7 @@ viewNugget: async (req, res) => {
 
     // 1) Fetch the nugget
     const nugget = await Nugget.findById(id);
+
     if (!nugget) {
       console.warn(`❌ Nugget with ID ${id} not found.`);
       return res.status(404).render('unit_views/error', {
@@ -778,6 +779,7 @@ viewNugget: async (req, res) => {
 
     // 2) Enforce membership: nuggets are for paying members only
     const membershipType = req.user?.accessLevel || req.user?.membershipType;
+
     const paidMemberships = [
       'paid_individual',
       'contributor_individual',
@@ -794,16 +796,19 @@ viewNugget: async (req, res) => {
       });
     }
 
-    // 3) Resolve creator
+    // 3) Sample flag
+    const is_sample = !!nugget.is_sample;
+
+    // 4) Resolve creator
     const creatorId = nugget.createdBy?.toString();
     const creator = await resolveAuthorById(creatorId);
 
-    // 4) Current user helpers
+    // 5) Current user helpers
     const currentUserId = (req.user?._id || req.user?.id)?.toString();
     const currentMembership = req.user?.membershipType || req.user?.accessLevel;
     const isOwner = !!(currentUserId && creatorId && currentUserId === creatorId);
 
-    // 5) Leader assignment context
+    // 6) Leader assignment context
     const isLeader = currentMembership === 'leader';
     let groupMembers = [];
     let leaderId = null;
@@ -816,7 +821,10 @@ viewNugget: async (req, res) => {
 
       if (leaderDoc) {
         groupMembers = await GroupMember.find({
-          $or: [{ leader: leaderDoc._id }, { groupId: leaderDoc._id }]
+          $or: [
+            { leader: leaderDoc._id },
+            { groupId: leaderDoc._id }
+          ]
         })
           .select('_id name')
           .lean();
@@ -826,20 +834,23 @@ viewNugget: async (req, res) => {
       }
     }
 
-    // 6) Org Admin suggestion context
+    // 7) Org Admin suggestion context
     const adminSuggest = await buildOrgLeaderListForAdmin(req);
 
-    // 7) Assignment / monitoring-note permissions
+    // 8) Assignment / monitoring-note permissions
     const isAssignedToCurrentUser = await isUserAssignedToUnit(req, nugget._id, 'nugget');
     const canAddNuggetMonitoringNotes = isOwner || isAssignedToCurrentUser;
 
-    // 8) Render the nugget view
+    // 9) Render the nugget view
     return res.render('unit_views/single_nugget', {
       layout: 'unitviewlayout',
 
       // Unit identity
       _id: nugget._id.toString(),
       unitType: 'nugget',
+
+      // Sample flag
+      is_sample,
 
       // Core fields
       title: nugget.title,
@@ -882,6 +893,11 @@ viewNugget: async (req, res) => {
       // Admin suggest vars
       ...adminSuggest,
 
+      // Suggestion success banner
+      suggestionSuccess: req.query.suggested === '1',
+      suggestedUnitId: req.query.unitId || '',
+      suggestedUnitType: req.query.unitType || '',
+
       // Leader-only assignment data
       groupMembers,
       leaderId,
@@ -892,6 +908,7 @@ viewNugget: async (req, res) => {
 
   } catch (err) {
     console.error('💥 Error fetching nugget:', err.stack || err.message);
+
     return res.status(500).render('unit_views/error', {
       layout: 'unitviewlayout',
       title: 'Error',
