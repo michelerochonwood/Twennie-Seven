@@ -2803,7 +2803,7 @@ line-height: 1.5;
   right: -12px;   /* pushes it slightly outside */
 
   width: 80px;    /* much smaller */
-  height: auto;
+  height: 80px;
 
   background-image: url('/images/newtopic bluey.png');
   background-repeat: no-repeat;
