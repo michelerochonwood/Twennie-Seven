@@ -525,13 +525,14 @@ const getMemberEngagementReport = async (req, res) => {
 
 
 
-
-
 const getNuggetsMonitoredReport = async (req, res) => {
   try {
     console.log("✅ Fetching Nuggets Being Monitored Report…");
 
-    const leaderId = (req.user?._id || req.user?.id || req.session?.user?.id)?.toString();
+    const safeArray = (v) => (Array.isArray(v) ? v : []);
+    const toIdString = (v) => (v && typeof v.toString === "function" ? v.toString() : "");
+
+    const leaderId = toIdString(req.user?._id || req.user?.id || req.session?.user?.id);
 
     if (!leaderId) {
       return res.status(403).render("member_form_views/error", {
@@ -555,7 +556,12 @@ const getNuggetsMonitoredReport = async (req, res) => {
 
     const leaderName = leaderDoc.groupLeaderName || leaderDoc.name || "Leader";
 
-    const memberIdsFromLeader = Array.isArray(leaderDoc.members) ? leaderDoc.members : [];
+    const leaderProfile = await LeaderProfile
+      .findOne({ $or: [{ leaderId: leaderDoc._id }, { groupId: leaderDoc._id }] })
+      .select("profileImage")
+      .lean();
+
+    const memberIdsFromLeader = safeArray(leaderDoc.members);
 
     const groupMembers = memberIdsFromLeader.length
       ? await GroupMember.find({ _id: { $in: memberIdsFromLeader } })
@@ -563,17 +569,39 @@ const getNuggetsMonitoredReport = async (req, res) => {
           .lean()
       : [];
 
+    const groupMemberProfiles = groupMembers.length
+      ? await GroupMemberProfile.find({
+          groupMemberId: { $in: groupMembers.map(m => m._id) }
+        })
+          .select("groupMemberId profileImage")
+          .lean()
+      : [];
+
+    const profileImageByMemberId = new Map(
+      groupMemberProfiles.map(profile => [
+        toIdString(profile.groupMemberId),
+        profile.profileImage || "/images/default-avatar.png"
+      ])
+    );
+
     const people = [
-      { _id: leaderDoc._id, name: leaderName, role: "leader" },
+      {
+        _id: leaderDoc._id,
+        name: leaderName,
+        role: "leader",
+        memberImage: leaderProfile?.profileImage || "/images/default-avatar.png"
+      },
       ...groupMembers.map(m => ({
         _id: m._id,
         name: m.name || "Group Member",
-        role: "member"
+        role: "member",
+        memberImage: profileImageByMemberId.get(toIdString(m._id)) || "/images/default-avatar.png"
       }))
     ];
 
-    const nameById = new Map(people.map(p => [p._id.toString(), p.name]));
-    const roleById = new Map(people.map(p => [p._id.toString(), p.role]));
+    const nameById = new Map(people.map(p => [toIdString(p._id), p.name]));
+    const roleById = new Map(people.map(p => [toIdString(p._id), p.role]));
+    const imageById = new Map(people.map(p => [toIdString(p._id), p.memberImage]));
 
     const nuggetTags = await Tag.find({
       "associatedUnits.unitType": "nugget"
@@ -593,7 +621,7 @@ const getNuggetsMonitoredReport = async (req, res) => {
     const nuggetIds = [];
 
     for (const tag of nuggetTags) {
-      const units = Array.isArray(tag.associatedUnits) ? tag.associatedUnits : [];
+      const units = safeArray(tag.associatedUnits);
 
       for (const unit of units) {
         if (String(unit.unitType || "").toLowerCase() !== "nugget") continue;
@@ -615,7 +643,7 @@ const getNuggetsMonitoredReport = async (req, res) => {
       : [];
 
     const nuggetById = new Map(
-      nuggets.map(nugget => [nugget._id.toString(), nugget])
+      nuggets.map(nugget => [toIdString(nugget._id), nugget])
     );
 
     const rowByNuggetId = new Map();
@@ -624,19 +652,21 @@ const getNuggetsMonitoredReport = async (req, res) => {
       const assignmentName = tag.name || "Untitled Assignment";
       const assignedAt = tag.createdAt || null;
 
-      const units = Array.isArray(tag.associatedUnits) ? tag.associatedUnits : [];
-      const assignedTo = Array.isArray(tag.assignedTo) ? tag.assignedTo : [];
+      const units = safeArray(tag.associatedUnits);
+      const assignedTo = safeArray(tag.assignedTo);
 
       const monitors = [];
       const instructions = [];
 
       for (const assignment of assignedTo) {
-        const memberId = assignment.member?.toString?.();
+        const memberId = toIdString(assignment.member);
 
         if (!memberId) continue;
 
         monitors.push({
+          memberId,
           memberName: nameById.get(memberId) || "Unknown",
+          memberImage: imageById.get(memberId) || "/images/default-avatar.png",
           role: roleById.get(memberId) || ""
         });
 
@@ -647,7 +677,9 @@ const getNuggetsMonitoredReport = async (req, res) => {
 
       if (!monitors.length) {
         monitors.push({
+          memberId: toIdString(leaderDoc._id),
           memberName: leaderName,
+          memberImage: leaderProfile?.profileImage || "/images/default-avatar.png",
           role: "leader"
         });
       }
@@ -663,31 +695,35 @@ const getNuggetsMonitoredReport = async (req, res) => {
 
         const nugget = nuggetById.get(nuggetId);
 
-        const monitoringNotes = Array.isArray(nugget?.monitoringNotes)
-          ? nugget.monitoringNotes
-              .map(note => {
-                const addedById =
-                  note.addedBy ||
-                  note.memberID ||
-                  note.memberId ||
-                  note.createdBy ||
-                  null;
+        const monitoringNotes = safeArray(nugget?.monitoringNotes)
+          .map(note => {
+            const addedById =
+              note.addedBy ||
+              note.memberID ||
+              note.memberId ||
+              note.createdBy ||
+              null;
 
-                const addedByIdString = addedById?.toString?.();
+            const addedByIdString = toIdString(addedById);
 
-                return {
-                  note: note.note || note.note_content || "",
-                  addedByNameSnapshot:
-                    note.addedByNameSnapshot ||
-                    (addedByIdString ? nameById.get(addedByIdString) : null) ||
-                    "Twennie member",
-                  memberRole:
-                    addedByIdString ? roleById.get(addedByIdString) || "" : "",
-                  createdAt: note.createdAt || note.updatedAt || null
-                };
-              })
-              .sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0))
-          : [];
+            return {
+              note: note.note || note.note_content || "",
+              addedByNameSnapshot:
+                note.addedByNameSnapshot ||
+                (addedByIdString ? nameById.get(addedByIdString) : null) ||
+                "Twennie member",
+              addedByImage:
+                (addedByIdString ? imageById.get(addedByIdString) : null) ||
+                "/images/default-avatar.png",
+              memberImage:
+                (addedByIdString ? imageById.get(addedByIdString) : null) ||
+                "/images/default-avatar.png",
+              memberRole:
+                addedByIdString ? roleById.get(addedByIdString) || "" : "",
+              createdAt: note.createdAt || note.updatedAt || null
+            };
+          })
+          .sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
 
         const baseRow = rowByNuggetId.get(nuggetId) || {
           nuggetId,
@@ -719,11 +755,11 @@ const getNuggetsMonitoredReport = async (req, res) => {
         }
 
         const existingMonitorKeys = new Set(
-          (baseRow.monitoredBy || []).map(m => `${m.memberName}::${m.role || ""}`)
+          safeArray(baseRow.monitoredBy).map(m => `${m.memberId || ""}::${m.memberName}::${m.role || ""}`)
         );
 
         for (const monitor of monitors) {
-          const key = `${monitor.memberName}::${monitor.role || ""}`;
+          const key = `${monitor.memberId || ""}::${monitor.memberName}::${monitor.role || ""}`;
 
           if (!existingMonitorKeys.has(key)) {
             existingMonitorKeys.add(key);
@@ -750,17 +786,15 @@ const getNuggetsMonitoredReport = async (req, res) => {
 
     const monitoredNuggets = Array.from(rowByNuggetId.values())
       .map(row => {
-        row.monitoredBy = (row.monitoredBy || []).sort((a, b) =>
+        row.monitoredBy = safeArray(row.monitoredBy).sort((a, b) =>
           (a.memberName || "").localeCompare(b.memberName || "")
         );
 
-        row.instructions = (row.instructions || []).sort((a, b) =>
+        row.instructions = safeArray(row.instructions).sort((a, b) =>
           (a || "").localeCompare(b || "")
         );
 
-        row.monitoringNotes = Array.isArray(row.monitoringNotes)
-          ? row.monitoringNotes
-          : [];
+        row.monitoringNotes = safeArray(row.monitoringNotes);
 
         return row;
       })

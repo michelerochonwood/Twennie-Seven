@@ -89,12 +89,20 @@
               <h3>monitored by</h3>
 
               {{#each this.monitoredBy}}
-                <div class="nugget-monitor-person">
-                  <strong>{{this.memberName}}</strong>
+                <div class="nugget-monitor-person nugget-monitor-person--with-image">
+                  <img
+                    src="{{#if this.memberImage}}{{this.memberImage}}{{else}}/images/default-avatar.png{{/if}}"
+                    alt="{{#if this.memberName}}{{this.memberName}}{{else}}Member{{/if}} profile image"
+                    class="nugget-monitor-person-image"
+                  >
 
-                  {{#if this.role}}
-                    <span>{{this.role}}</span>
-                  {{/if}}
+                  <div class="nugget-monitor-person-text">
+                    <strong>{{this.memberName}}</strong>
+
+                    {{#if this.role}}
+                      <span>{{this.role}}</span>
+                    {{/if}}
+                  </div>
                 </div>
               {{else}}
                 <p class="no-data">No monitors listed</p>
@@ -132,16 +140,24 @@
                 <div class="nugget-report-notes-list">
                   {{#each this.monitoringNotes}}
                     <article class="nugget-report-note-entry">
-                      <div class="nugget-report-note-meta">
-                        {{#if this.addedByNameSnapshot}}
-                          <strong>{{this.addedByNameSnapshot}}</strong>
-                        {{else}}
-                          <strong>Twennie member</strong>
-                        {{/if}}
+                      <div class="nugget-report-note-meta nugget-report-note-meta--with-image">
+                        <img
+                          src="{{#if this.addedByImage}}{{this.addedByImage}}{{else}}{{#if this.memberImage}}{{this.memberImage}}{{else}}/images/default-avatar.png{{/if}}{{/if}}"
+                          alt="{{#if this.addedByNameSnapshot}}{{this.addedByNameSnapshot}}{{else}}Twennie member{{/if}} profile image"
+                          class="nugget-report-note-image"
+                        >
 
-                        {{#if this.createdAt}}
-                          <span>{{formatDate this.createdAt}}</span>
-                        {{/if}}
+                        <div class="nugget-report-note-person">
+                          {{#if this.addedByNameSnapshot}}
+                            <strong>{{this.addedByNameSnapshot}}</strong>
+                          {{else}}
+                            <strong>Twennie member</strong>
+                          {{/if}}
+
+                          {{#if this.createdAt}}
+                            <span>{{formatDate this.createdAt}}</span>
+                          {{/if}}
+                        </div>
                       </div>
 
                       {{#if this.note}}
