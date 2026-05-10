@@ -2799,11 +2799,11 @@ line-height: 1.5;
   content: "";
   position: absolute;
 
-  top: -12px;     /* pushes it slightly outside */
-  right: -12px;   /* pushes it slightly outside */
+  top: -25px;     /* pushes it slightly outside */
+  right: -25px;   /* pushes it slightly outside */
 
-  width: 80px;    /* much smaller */
-  height: 80px;
+  width: 100px;    /* much smaller */
+  height: 100px;
 
   background-image: url('/images/newtopic bluey.png');
   background-repeat: no-repeat;
