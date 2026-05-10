@@ -226,6 +226,12 @@
             <img src="{{getUnitTypeIcon this.type}}" alt="Unit Type Icon" class="latest-unit-type-icon">
             <h2 class="latest-unit-title">{{this.title}}</h2>
 
+            {{#if this.main_topic}}
+  <a href="/bytopic/{{this.main_topic}}" class="latest-unit-topic-link">
+    {{this.main_topic}}
+  </a>
+{{/if}}
+
             <div class="latest-expand-toggle" onclick="toggleLatestCard(this)">
               <svg class="latest-arrow-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99">
                 <defs><style>.cls-1 { fill: #4e50a2; }</style></defs>

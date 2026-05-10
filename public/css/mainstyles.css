@@ -8847,6 +8847,20 @@ overflow: visible;
   margin-bottom: 1rem;
 }
 
+.latest-unit-topic-link {
+  display: inline-block;
+  margin: 0.35rem auto 0.75rem;
+  color: #4e50a2;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-align: center;
+}
+
+.latest-unit-topic-link:hover {
+  color: #dc176a;
+}
+
 
 /* =========================
    BUTTON
