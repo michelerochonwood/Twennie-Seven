@@ -1,9 +1,9 @@
 const express = require('express');
-const mongoose = require('mongoose');
+
 const router = express.Router();
 
 const leaderDashboardController = require('../../controllers/leaderdashboardController');
-const DashboardSeen = require('../../models/dashboard_seen');
+
 
 // --- Auth gate ---
 const ensureAuthenticated = require('../../middleware/ensureAuthenticated');
@@ -63,46 +63,14 @@ router.post('/account/email-preferences', ensureAuthenticated, async (req, res, 
 
 // --- POST /dashboard/leader/mark-seen ---
 // Persist "last seen" count for a tab so green dots only show on increases
-router.post('/mark-seen', ensureAuthenticated, async (req, res) => {
+// --- POST /dashboard/leader/mark-seen ---
+// Persist "last seen" count for a tab so green dots only show on increases
+router.post('/mark-seen', ensureAuthenticated, async (req, res, next) => {
   try {
-    const rawId = req.session?.user?.id || req.user?._id;
-    if (!rawId) {
-      console.warn('mark-seen: missing user');
-      return res.status(401).json({ ok: false, reason: 'unauthorized' });
-    }
-
-    const { tab, count } = req.body || {};
-    if (!tab || typeof count !== 'number' || Number.isNaN(count)) {
-      console.warn('mark-seen: bad payload', req.body);
-      return res.status(400).json({ ok: false, reason: 'bad payload' });
-    }
-
-    // Mongoose will cast strings, but we can be explicit:
-    const userId = new mongoose.Types.ObjectId(String(rawId));
-
-    const update = {
-      $set: {
-        [`tabs.${tab}.count`]: count,
-        [`tabs.${tab}.seenAt`]: new Date()
-      }
-    };
-
-    const doc = await DashboardSeen.findOneAndUpdate(
-      { userId, role: 'leader' },
-      update,
-      { new: true, upsert: true }
-    );
-
-    console.log('mark-seen OK:', {
-      tab,
-      count,
-      saved: doc?.tabs?.get(tab)
-    });
-
-    return res.json({ ok: true });
-  } catch (e) {
-    console.error('mark-seen error:', e);
-    return res.status(500).json({ ok: false, reason: 'server' });
+    await leaderDashboardController.markLeaderTabSeen(req, res);
+  } catch (err) {
+    console.error('Error marking leader tab seen:', err);
+    next(err);
   }
 });
 

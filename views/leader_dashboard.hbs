@@ -424,37 +424,60 @@ data-panel="admin-company-library"
          LEADER "MARK SEEN" SCRIPT (leader mode only)
          - safe: only binds if leader tab buttons exist
     ========================================================= --}}
-    {{#unless adminMode}}
-      <script>
-        async function markSeenLeader(tab, count) {
-          try {
-            await fetch('/dashboard/leader/mark-seen', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'x-csrf-token': '{{csrfToken}}'
-              },
-              body: JSON.stringify({ tab, count: Number(count || 0) })
-            });
-          } catch (e) { /* no-op */ }
+{{#unless adminMode}}
+  <script>
+    (function () {
+      const seenTabs = [
+        'group',
+        'topics',
+        'prompts',
+        'progress',
+        'library',
+        'tagged',
+        'missions'
+      ];
+
+      async function markSeenLeader(tabKey, currentCount) {
+        if (!seenTabs.includes(tabKey)) return false;
+
+        try {
+          const response = await fetch('/dashboard/leader/mark-seen', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-Token': '{{csrfToken}}'
+            },
+            body: JSON.stringify({
+              tab: tabKey,
+              count: Number(currentCount || 0)
+            })
+          });
+
+          return response.ok;
+        } catch (e) {
+          console.error('[leader dashboard] mark seen failed:', e);
+          return false;
         }
+      }
 
-        document.addEventListener('DOMContentLoaded', () => {
-          document.querySelectorAll('[data-tabs-scope="leader"] .dashboard-tab[data-tab]').forEach(btn => {
-            btn.addEventListener('click', async () => {
-              const tab = btn.dataset.tab;
-              const count = btn.dataset.count || 0;
+      document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('[data-tabs-scope="leader"] .dashboard-tab[data-tab]').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const tabKey = btn.dataset.tab;
+            const currentCount = btn.dataset.count || 0;
 
-              if (['group','topics','prompts','progress','library','tagged','missions'].includes(tab)) {
-                markSeenLeader(tab, count);
-                const dot = btn.querySelector('.tab-dot');
-                if (dot) dot.style.display = 'none';
-              }
-            });
+            const saved = await markSeenLeader(tabKey, currentCount);
+
+            if (saved) {
+              const dot = btn.querySelector('.tab-dot');
+              if (dot) dot.remove();
+            }
           });
         });
-      </script>
-    {{/unless}}
+      });
+    })();
+  </script>
+{{/unless}}
 
   </div>
 </div>

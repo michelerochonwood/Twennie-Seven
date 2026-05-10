@@ -1706,39 +1706,34 @@ const assignedLearningUnitsCount = Array.isArray(leaderAssignedNonMissionUnits)
     ).length
   : 0;
 
-// TAB 4: my group's missions
-// Trigger = a new mission has been assigned OR a mission has been completed
+// TAB 4: nuggets and missions
+// Trigger = a new nugget/mission has been assigned OR a mission has been completed
 const assignedMissionsCount = Array.isArray(leaderAssignedMissions)
   ? leaderAssignedMissions.length
+  : 0;
+
+const assignedNuggetsCount = Array.isArray(leaderAssignedNuggets)
+  ? leaderAssignedNuggets.length
+  : 0;
+
+const selfTaggedMissionsCount = Array.isArray(leaderSelfTaggedMissions)
+  ? leaderSelfTaggedMissions.length
+  : 0;
+
+const selfTaggedNuggetsCount = Array.isArray(leaderSelfAssignedVisibleUnits)
+  ? leaderSelfAssignedVisibleUnits.filter(u => u.unitType === 'nugget').length
   : 0;
 
 const completedMissionsCount = Array.isArray(leaderSelfTaggedMissions)
   ? leaderSelfTaggedMissions.filter(m => !!m.completedAtFormatted).length
   : 0;
 
-const missionSignalCount = assignedMissionsCount + completedMissionsCount;
-
-// TAB 7: my library contributions
-// Trigger = a new unit has been created by this leader
-const libraryContributionsCount = Array.isArray(leaderUnits)
-  ? leaderUnits.length
-  : 0;
-
-// TAB 9: my group members
-// Trigger = a pending member has completed registration
-const registeredGroupMembersCount = Array.isArray(resolvedGroupMembers)
-  ? resolvedGroupMembers.filter(member => member.isVerified === true).length
-  : 0;
-
-const leaderCounts = {
-  group: registeredGroupMembersCount,
-  topics: Array.isArray(topicSuggestions) ? topicSuggestions.length : 0,
-  prompts: promptRegistrationsCount,
-  progress: promptProgressSignalCount,
-  tagged: assignedLearningUnitsCount,
-  missions: missionSignalCount,
-  library: libraryContributionsCount
-};
+const missionSignalCount =
+  assignedMissionsCount +
+  assignedNuggetsCount +
+  selfTaggedMissionsCount +
+  selfTaggedNuggetsCount +
+  completedMissionsCount;
 
 // Load/create seen doc for this leader
 let seenDocLeader = await DashboardSeen.findOne({ userId: id, role: 'leader' });
@@ -2246,7 +2241,79 @@ unassignAssignedNugget: async (req, res) => {
 },
 
 
+markLeaderTabSeen: async (req, res) => {
+  try {
+    const leaderId = req.session?.user?.id;
 
+    if (!leaderId) {
+      return res.status(401).json({ ok: false, error: 'unauthorized' });
+    }
+
+    const allowedTabs = new Set([
+      'group',
+      'topics',
+      'prompts',
+      'progress',
+      'tagged',
+      'missions',
+      'library'
+    ]);
+
+    const tabKey = req.body?.tab || req.body?.tabKey;
+    const currentCount = Number(req.body?.count ?? req.body?.currentCount ?? 0);
+
+    if (!tabKey) {
+      return res.status(400).json({ ok: false, error: 'missing tab key' });
+    }
+
+    if (!allowedTabs.has(tabKey)) {
+      return res.status(400).json({ ok: false, error: 'invalid tab key' });
+    }
+
+    let seenDoc = await DashboardSeen.findOne({
+      userId: leaderId,
+      role: 'leader'
+    });
+
+    if (!seenDoc) {
+      seenDoc = new DashboardSeen({
+        userId: leaderId,
+        role: 'leader',
+        tabs: new Map()
+      });
+    }
+
+    if (!seenDoc.tabs || typeof seenDoc.tabs.set !== 'function') {
+      const raw = seenDoc.tabs && typeof seenDoc.tabs === 'object' ? seenDoc.tabs : {};
+      const fixed = new Map();
+
+      for (const [key, value] of Object.entries(raw)) {
+        fixed.set(key, value);
+      }
+
+      seenDoc.tabs = fixed;
+    }
+
+    seenDoc.tabs.set(tabKey, {
+      count: Number.isFinite(currentCount) ? currentCount : 0,
+      seenAt: new Date()
+    });
+
+    seenDoc.markModified('tabs');
+
+    await seenDoc.save();
+
+    return res.json({
+      ok: true,
+      tab: tabKey,
+      count: Number.isFinite(currentCount) ? currentCount : 0
+    });
+
+  } catch (e) {
+    console.error('markLeaderTabSeen error:', e);
+    return res.status(500).json({ ok: false });
+  }
+},
 
 }; // ← CLOSES module.exports
 
