@@ -8222,6 +8222,23 @@ box-shadow: none !important;
   min-height: 4.4rem;
 }
 
+.member-engagement-toggle-image {
+  position: absolute;
+  left: -1.45rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4.2rem;
+  height: 4.2rem;
+  max-width: 4.2rem;
+  max-height: 4.2rem;
+  border-radius: 999px;
+  object-fit: cover;
+  border: 4px solid #ffffff;
+  background: #ffffff;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.22);
+  display: block;
+}
+
 .member-engagement-toggle-text {
   display: block;
   padding-left: 0.35rem;
