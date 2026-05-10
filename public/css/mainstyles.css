@@ -2799,7 +2799,7 @@ line-height: 1.5;
   content: "";
   position: absolute;
 
-  top: -50px;     /* pushes it slightly outside */
+  bottom: -50px;     /* pushes it slightly outside */
   left: -25px;   /* pushes it slightly outside */
 
   width: 100px;    /* much smaller */
