@@ -34,48 +34,100 @@ const resolveUnitDetails = async (unitID) => {
   const id = unitID.toString();
 
   // Helper to normalize common fields
-  const normalize = (doc, title, type) => ({
-    unitTitle: title || "Unknown Unit",
-    unitType: type || "Unknown",
-    main_topic: doc?.main_topic || "Unknown Topic",
-    secondary_topics: Array.isArray(doc?.secondary_topics) ? doc.secondary_topics : []
-  });
+const normalize = (doc, title, type) => ({
+  unitTitle: title || "Unknown Unit",
+  unitType: type || "Unknown",
+  main_topic: doc?.main_topic || "Unknown Topic",
+  secondary_topics: Array.isArray(doc?.secondary_topics)
+    ? doc.secondary_topics
+    : [],
+  long_summary:
+    doc?.long_summary ||
+    doc?.full_summary ||
+    doc?.summary ||
+    ""
+});
 
-  // Try each model in priority order
-  const article = await Article.findById(id).select("article_title main_topic secondary_topics").lean();
-  if (article) return normalize(article, article.article_title, "Article");
+// Try each model in priority order
+const article = await Article.findById(id)
+  .select("article_title main_topic secondary_topics long_summary full_summary summary")
+  .lean();
 
-  const video = await Video.findById(id).select("video_title main_topic secondary_topics").lean();
-  if (video) return normalize(video, video.video_title, "Video");
+if (article) {
+  return normalize(article, article.article_title, "Article");
+}
 
-  const interview = await Interview.findById(id).select("interview_title main_topic secondary_topics").lean();
-  if (interview) return normalize(interview, interview.interview_title, "Interview");
+const video = await Video.findById(id)
+  .select("video_title main_topic secondary_topics long_summary full_summary summary")
+  .lean();
 
-  const exercise = await Exercise.findById(id).select("exercise_title main_topic secondary_topics").lean();
-  if (exercise) return normalize(exercise, exercise.exercise_title, "Exercise");
+if (video) {
+  return normalize(video, video.video_title, "Video");
+}
 
-  const template = await Template.findById(id).select("template_title main_topic secondary_topics").lean();
-  if (template) return normalize(template, template.template_title, "Template");
+const interview = await Interview.findById(id)
+  .select("interview_title main_topic secondary_topics long_summary full_summary summary")
+  .lean();
 
-  const promptSet = await PromptSet.findById(id).select("promptset_title main_topic secondary_topics").lean();
-  if (promptSet) return normalize(promptSet, promptSet.promptset_title, "Prompt Set");
+if (interview) {
+  return normalize(interview, interview.interview_title, "Interview");
+}
 
-  // ✅ Missions
-  // Your mission topics live on main_topic/secondary_topics; title is mission_title
-  const mission = await Mission.findById(id).select("mission_title main_topic secondary_topics").lean();
-  if (mission) return normalize(mission, mission.mission_title, "Mission");
+const exercise = await Exercise.findById(id)
+  .select("exercise_title main_topic secondary_topics long_summary full_summary summary")
+  .lean();
 
-  // ✅ Nuggets
-  // Nuggets don’t necessarily have topics; treat discipline/client/region as the “main_topic”
-  const nugget = await Nugget.findById(id).select("title discipline client region").lean();
-  if (nugget) {
-    return {
-      unitTitle: nugget.title || "Untitled Nugget",
-      unitType: "Nugget",
-      main_topic: nugget.discipline || nugget.client || nugget.region || "Unknown Topic",
-      secondary_topics: []
-    };
-  }
+if (exercise) {
+  return normalize(exercise, exercise.exercise_title, "Exercise");
+}
+
+const template = await Template.findById(id)
+  .select("template_title main_topic secondary_topics long_summary full_summary summary")
+  .lean();
+
+if (template) {
+  return normalize(template, template.template_title, "Template");
+}
+
+const promptSet = await PromptSet.findById(id)
+  .select("promptset_title main_topic secondary_topics long_summary full_summary summary")
+  .lean();
+
+if (promptSet) {
+  return normalize(promptSet, promptSet.promptset_title, "Prompt Set");
+}
+
+// ✅ Missions
+const mission = await Mission.findById(id)
+  .select("mission_title main_topic secondary_topics long_summary full_summary summary")
+  .lean();
+
+if (mission) {
+  return normalize(mission, mission.mission_title, "Mission");
+}
+
+// ✅ Nuggets
+const nugget = await Nugget.findById(id)
+  .select("title discipline client region long_summary full_summary summary")
+  .lean();
+
+if (nugget) {
+  return {
+    unitTitle: nugget.title || "Untitled Nugget",
+    unitType: "Nugget",
+    main_topic:
+      nugget.discipline ||
+      nugget.client ||
+      nugget.region ||
+      "Unknown Topic",
+    secondary_topics: [],
+    long_summary:
+      nugget.long_summary ||
+      nugget.full_summary ||
+      nugget.summary ||
+      ""
+  };
+}
 
   // ✅ Upcoming Units
   // Upcoming uses title + main_topic; no secondary_topics typically
