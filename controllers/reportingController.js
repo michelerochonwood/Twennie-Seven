@@ -745,6 +745,7 @@ const getPromptSetsCompletedReport = async (req, res) => {
     const sortAZ = (a, b) => safeString(a).localeCompare(safeString(b));
 
     const leaderId = toIdString(req.user?._id || req.user?.id || req.session?.user?.id);
+
     if (!leaderId) {
       return res.status(403).render("member_form_views/error", {
         layout: "memberformlayout",
@@ -767,20 +768,50 @@ const getPromptSetsCompletedReport = async (req, res) => {
 
     const leaderName = leaderDoc.groupLeaderName || "Leader";
 
+    const leaderProfile = await LeaderProfile
+      .findOne({ $or: [{ leaderId: leaderDoc._id }, { groupId: leaderDoc._id }] })
+      .select("profileImage")
+      .lean();
+
     const memberIdsFromLeader = safeArray(leaderDoc.members);
+
     const groupMembers = memberIdsFromLeader.length
       ? await GroupMember.find({ _id: { $in: memberIdsFromLeader } })
           .select("_id name")
           .lean()
       : [];
 
+    const groupMemberProfiles = groupMembers.length
+      ? await GroupMemberProfile.find({
+          groupMemberId: { $in: groupMembers.map(m => m._id) }
+        })
+          .select("groupMemberId profileImage")
+          .lean()
+      : [];
+
+    const profileImageByMemberId = new Map(
+      groupMemberProfiles.map(profile => [
+        toIdString(profile.groupMemberId),
+        profile.profileImage || "/images/default-avatar.png"
+      ])
+    );
+
     const reportPeople = [
-      { _id: leaderDoc._id, name: leaderName },
-      ...groupMembers.map(m => ({ _id: m._id, name: m.name || "Group Member" }))
+      {
+        _id: leaderDoc._id,
+        name: leaderName,
+        memberImage: leaderProfile?.profileImage || "/images/default-avatar.png"
+      },
+      ...groupMembers.map(m => ({
+        _id: m._id,
+        name: m.name || "Group Member",
+        memberImage: profileImageByMemberId.get(toIdString(m._id)) || "/images/default-avatar.png"
+      }))
     ];
 
     const personIds = reportPeople.map(p => p._id);
     const nameById = new Map(reportPeople.map(p => [toIdString(p._id), p.name]));
+    const imageById = new Map(reportPeople.map(p => [toIdString(p._id), p.memberImage]));
 
     if (!personIds.length) {
       return res.render("report_views/promptsetscompleted", {
@@ -804,10 +835,6 @@ const getPromptSetsCompletedReport = async (req, res) => {
 
     const TOTAL_PROMPTS = 21;
 
-    // =========================================================
-    // TABLE 1 DATA: COMPLETED PROMPT SETS ONLY
-    // Source of truth = PromptSetCompletion
-    // =========================================================
     const completedByPromptSet = new Map();
 
     for (const comp of safeArray(completions)) {
@@ -830,6 +857,7 @@ const getPromptSetsCompletedReport = async (req, res) => {
       completedByPromptSet.get(psId).completedBy.push({
         memberId,
         memberName: nameById.get(memberId) || "Unknown Member",
+        memberImage: imageById.get(memberId) || "/images/default-avatar.png",
         dateCompleted: comp.completedAt || comp.createdAt || comp.updatedAt || null
       });
     }
@@ -840,9 +868,7 @@ const getPromptSetsCompletedReport = async (req, res) => {
 
         for (const entry of safeArray(row.completedBy)) {
           const key = `${entry.memberId}::${entry.dateCompleted ? new Date(entry.dateCompleted).getTime() : 0}`;
-          if (!deduped.has(key)) {
-            deduped.set(key, entry);
-          }
+          if (!deduped.has(key)) deduped.set(key, entry);
         }
 
         row.completedBy = Array.from(deduped.values()).sort((a, b) => {
@@ -856,11 +882,6 @@ const getPromptSetsCompletedReport = async (req, res) => {
       })
       .sort((a, b) => sortAZ(a.promptSetTitle, b.promptSetTitle));
 
-    // =========================================================
-    // TABLE 2 DATA: PROMPT NOTES HISTORY
-    // Can include in-progress sets
-    // Source = PromptSetProgress
-    // =========================================================
     const notesByPromptSet = new Map();
 
     for (const prog of safeArray(progresses)) {
@@ -895,7 +916,7 @@ const getPromptSetsCompletedReport = async (req, res) => {
 
       const promptNotes = Array.from({ length: TOTAL_PROMPTS }, (_, idx) => {
         const noteIndex = idx === 0 ? -1 : idx - 1;
-        const content = noteIndex >= 0 ? safeString(notesArr[noteIndex]).trim() : '';
+        const content = noteIndex >= 0 ? safeString(notesArr[noteIndex]).trim() : "";
 
         return {
           notes: content
@@ -910,7 +931,8 @@ const getPromptSetsCompletedReport = async (req, res) => {
       notesByPromptSet.get(psId).completedBy.push({
         memberId,
         memberName: nameById.get(memberId) || "Unknown Member",
-        dateCompleted: null, // because this table is really note history, not completions only
+        memberImage: imageById.get(memberId) || "/images/default-avatar.png",
+        dateCompleted: null,
         promptNotes
       });
     }
@@ -921,9 +943,7 @@ const getPromptSetsCompletedReport = async (req, res) => {
 
         for (const entry of safeArray(row.completedBy)) {
           const key = entry.memberId || entry.memberName;
-          if (!byMember.has(key)) {
-            byMember.set(key, entry);
-          }
+          if (!byMember.has(key)) byMember.set(key, entry);
         }
 
         row.completedBy = Array.from(byMember.values()).sort((a, b) =>
@@ -941,13 +961,12 @@ const getPromptSetsCompletedReport = async (req, res) => {
       completedPromptSetsReports,
       promptNotesReports
     });
+
   } catch (err) {
     console.error("❌ Error loading Prompt Sets Completed Report:", err);
     return res.status(500).send("Server error");
   }
 };
-
-
 
 
 

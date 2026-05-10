@@ -64,15 +64,23 @@
 
                       <section class="prompt-member-note-column">
 
-                        <div class="prompt-member-note-header">
-                          <h3>{{this.memberName}}</h3>
-                          <span>
-                            {{#if this.dateCompleted}}
-                              completed: {{formatDate this.dateCompleted}}
-                            {{else}}
-                              in progress
-                            {{/if}}
-                          </span>
+                        <div class="prompt-member-note-header prompt-member-note-header--with-image">
+                          <img
+                            src="{{#if this.memberImage}}{{this.memberImage}}{{else}}/images/default-avatar.png{{/if}}"
+                            alt="{{this.memberName}} profile image"
+                            class="prompt-member-note-image"
+                          >
+
+                          <div class="prompt-member-note-identity">
+                            <h3>{{this.memberName}}</h3>
+                            <span>
+                              {{#if this.dateCompleted}}
+                                completed: {{formatDate this.dateCompleted}}
+                              {{else}}
+                                in progress
+                              {{/if}}
+                            </span>
+                          </div>
                         </div>
 
                         <div class="prompt-answer">

@@ -7244,6 +7244,53 @@ box-shadow: none !important;
   background: #4a4ab2;
 }
 
+.prompt-member-note-header--with-image {
+  position: relative;
+  min-height: 5.4rem;
+  padding-left: 5.65rem !important;
+  display: flex;
+  align-items: center;
+}
+
+.prompt-member-note-image {
+  position: absolute;
+  left: -1.15rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4.7rem;
+  height: 4.7rem;
+  max-width: 4.7rem;
+  max-height: 4.7rem;
+  border-radius: 999px;
+  object-fit: cover;
+  border: 4px solid #ffffff;
+  background: #ffffff;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.22);
+  display: block;
+}
+
+.prompt-member-note-identity {
+  min-width: 0;
+}
+
+.prompt-member-note-identity h3 {
+  margin: 0;
+}
+
+@media (max-width: 700px) {
+  .prompt-member-note-header--with-image {
+    padding-left: 4.6rem !important;
+  }
+
+  .prompt-member-note-image {
+    left: -0.65rem;
+    width: 3.7rem;
+    height: 3.7rem;
+    max-width: 3.7rem;
+    max-height: 3.7rem;
+  }
+}
+
 @media print {
   body.printing-single-promptset * {
     visibility: hidden !important;
