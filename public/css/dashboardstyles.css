@@ -7674,6 +7674,35 @@ box-shadow: none !important;
   margin: 0;
 }
 
+.unit-completed-overview--with-summary {
+  grid-template-columns: 0.7fr 1.4fr 1.6fr;
+}
+
+.unit-completed-overview-block--summary {
+  text-align: left;
+}
+
+.unit-completed-summary {
+  margin-top: 0.8rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(38, 34, 98, 0.12);
+}
+
+.unit-completed-summary h3 {
+  margin: 0 0 0.35rem 0;
+  color: #262262;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: lowercase;
+}
+
+.unit-completed-summary p {
+  margin: 0;
+  font-size: 0.7rem;
+  line-height: 1.5;
+  color: #333;
+}
+
 @media (max-width: 700px) {
   .unit-completed-person--with-image,
   .unit-member-notes-header--with-image {

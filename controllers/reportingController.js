@@ -1099,6 +1099,7 @@ const getUnitsCompletedReport = async (req, res) => {
           unitType: details.unitType,
           main_topic: details.main_topic,
           secondary_topics: details.secondary_topics || [],
+          long_summary: details.long_summary || details.full_summary || details.summary || "",
           memberNotesMap: new Map()
         });
       }
@@ -1137,6 +1138,7 @@ const getUnitsCompletedReport = async (req, res) => {
         unitType: unit.unitType,
         main_topic: unit.main_topic,
         secondary_topics: unit.secondary_topics,
+        long_summary: unit.long_summary || "",
 
         completedBy: memberNotes.map(m => ({
           memberId: m.memberId,

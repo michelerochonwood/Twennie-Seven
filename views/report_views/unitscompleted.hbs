@@ -41,60 +41,67 @@
 
         <div class="unit-completed-panel">
 
-          <div class="unit-completed-overview">
+<div class="unit-completed-overview unit-completed-overview--with-summary">
 
-            <div class="unit-completed-overview-block">
-              <h3>unit type</h3>
-              <p>
-                {{#if this.unitType}}
-                  {{this.unitType}}
-                {{else}}
-                  <span class="no-data">Unknown type</span>
-                {{/if}}
-              </p>
-            </div>
+  <div class="unit-completed-overview-block">
+    <h3>unit type</h3>
+    <p>
+      {{#if this.unitType}}
+        {{this.unitType}}
+      {{else}}
+        <span class="no-data">Unknown type</span>
+      {{/if}}
+    </p>
+  </div>
 
-            <div class="unit-completed-overview-block">
-              <h3>topics</h3>
+  <div class="unit-completed-overview-block unit-completed-overview-block--summary">
+    <h3>topics</h3>
 
-              {{#if this.main_topic}}
-                <p class="unit-topic-pill">{{this.main_topic}}</p>
-              {{else}}
-                <p class="no-data">No main topic</p>
-              {{/if}}
-            </div>
+    {{#if this.main_topic}}
+      <p class="unit-topic-pill">{{this.main_topic}}</p>
+    {{else}}
+      <p class="no-data">No main topic</p>
+    {{/if}}
 
-            <div class="unit-completed-overview-block">
-              <h3>completed by</h3>
+    {{#if this.long_summary}}
+      <div class="unit-completed-summary">
+        <h3>unit summary</h3>
+        <p>{{this.long_summary}}</p>
+      </div>
+    {{/if}}
+  </div>
 
-              {{#each this.completedBy}}
-                <div class="unit-completed-person unit-completed-person--with-image">
-                  <img
-                    src="{{#if this.memberImage}}{{this.memberImage}}{{else}}/images/default-avatar.png{{/if}}"
-                    alt="{{#if this.memberName}}{{this.memberName}}{{else}}Member{{/if}} profile image"
-                    class="unit-completed-person-image"
-                  >
+  <div class="unit-completed-overview-block">
+    <h3>completed by</h3>
 
-                  <div class="unit-completed-person-text">
-                    <strong>
-                      {{#if this.memberName}}
-                        {{this.memberName}}
-                      {{else}}
-                        Unknown member
-                      {{/if}}
-                    </strong>
+    {{#each this.completedBy}}
+      <div class="unit-completed-person unit-completed-person--with-image">
+        <img
+          src="{{#if this.memberImage}}{{this.memberImage}}{{else}}/images/default-avatar.png{{/if}}"
+          alt="{{#if this.memberName}}{{this.memberName}}{{else}}Member{{/if}} profile image"
+          class="unit-completed-person-image"
+        >
 
-                    {{#if this.dateCompleted}}
-                      <span>{{formatDate this.dateCompleted}}</span>
-                    {{/if}}
-                  </div>
-                </div>
-              {{else}}
-                <p class="no-data">No completions</p>
-              {{/each}}
-            </div>
+        <div class="unit-completed-person-text">
+          <strong>
+            {{#if this.memberName}}
+              {{this.memberName}}
+            {{else}}
+              Unknown member
+            {{/if}}
+          </strong>
 
-          </div>
+          {{#if this.dateCompleted}}
+            <span>{{formatDate this.dateCompleted}}</span>
+          {{/if}}
+        </div>
+      </div>
+    {{else}}
+      <p class="no-data">No completions</p>
+    {{/each}}
+  </div>
+
+</div>
 
           <div class="unit-notes-section">
             <h3 class="unit-notes-section-title">notes history</h3>
