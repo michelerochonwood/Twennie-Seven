@@ -2799,7 +2799,7 @@ line-height: 1.5;
   content: "";
   position: absolute;
 
-  top: -25px;     /* pushes it slightly outside */
+  top: -75px;     /* pushes it slightly outside */
   left: -25px;   /* pushes it slightly outside */
 
   width: 100px;    /* much smaller */
@@ -2846,7 +2846,7 @@ line-height: 1.5;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 15px;
-  margin-bottom: 30px;
+  margin-bottom: 60px;
   width: 80%;
   margin: auto;
 }
