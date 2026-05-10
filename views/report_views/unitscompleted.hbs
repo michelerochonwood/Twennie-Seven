@@ -5,9 +5,6 @@
     {{leaderGroupName}}; Units Completed
   </h1>
 
-  {{!-- =========================================================
-      ACCORDION: Units Completed
-  ========================================================= --}}
   <div class="units-completed-accordion">
 
     {{#each unitsCompletedReports}}
@@ -65,26 +62,32 @@
               {{else}}
                 <p class="no-data">No main topic</p>
               {{/if}}
-
-
             </div>
 
             <div class="unit-completed-overview-block">
               <h3>completed by</h3>
 
               {{#each this.completedBy}}
-                <div class="unit-completed-person">
-                  <strong>
-                    {{#if this.memberName}}
-                      {{this.memberName}}
-                    {{else}}
-                      Unknown member
-                    {{/if}}
-                  </strong>
+                <div class="unit-completed-person unit-completed-person--with-image">
+                  <img
+                    src="{{#if this.memberImage}}{{this.memberImage}}{{else}}/images/default-avatar.png{{/if}}"
+                    alt="{{#if this.memberName}}{{this.memberName}}{{else}}Member{{/if}} profile image"
+                    class="unit-completed-person-image"
+                  >
 
-                  {{#if this.dateCompleted}}
-                    <span>{{formatDate this.dateCompleted}}</span>
-                  {{/if}}
+                  <div class="unit-completed-person-text">
+                    <strong>
+                      {{#if this.memberName}}
+                        {{this.memberName}}
+                      {{else}}
+                        Unknown member
+                      {{/if}}
+                    </strong>
+
+                    {{#if this.dateCompleted}}
+                      <span>{{formatDate this.dateCompleted}}</span>
+                    {{/if}}
+                  </div>
                 </div>
               {{else}}
                 <p class="no-data">No completions</p>
@@ -102,14 +105,22 @@
 
                 <section class="unit-member-notes-column">
 
-                  <div class="unit-member-notes-header">
-                    <h4>
-                      {{#if this.memberName}}
-                        {{this.memberName}}
-                      {{else}}
-                        Unknown member
-                      {{/if}}
-                    </h4>
+                  <div class="unit-member-notes-header unit-member-notes-header--with-image">
+                    <img
+                      src="{{#if this.memberImage}}{{this.memberImage}}{{else}}/images/default-avatar.png{{/if}}"
+                      alt="{{#if this.memberName}}{{this.memberName}}{{else}}Member{{/if}} profile image"
+                      class="unit-member-notes-image"
+                    >
+
+                    <div class="unit-member-notes-identity">
+                      <h4>
+                        {{#if this.memberName}}
+                          {{this.memberName}}
+                        {{else}}
+                          Unknown member
+                        {{/if}}
+                      </h4>
+                    </div>
                   </div>
 
                   <div class="unit-member-notes-timeline">
@@ -151,9 +162,6 @@
 
   </div>
 
-  {{!-- =========================================================
-      Report Navigation Links
-  ========================================================= --}}
   <div class="report-links-container report-links-enhanced">
 
     {{#unless isMemberEngagement}}

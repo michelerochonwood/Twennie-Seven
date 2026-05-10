@@ -977,13 +977,15 @@ const getPromptSetsCompletedReport = async (req, res) => {
 // UPDATED to:
 // - use leader.members as source of truth (like Member Engagement)
 // - include leader as a “person” (optional; harmless if leader has no Notes)
-// - EXCLUDE missions from this report (missions are not "library units")
-// - keep output shape exactly as the view expects
 const getUnitsCompletedReport = async (req, res) => {
   try {
     console.log("✅ Fetching Units Completed Report (grouped by unit; leader+members)…");
 
-    const leaderId = (req.user?._id || req.user?.id || req.session?.user?.id)?.toString();
+    const safeArray = (v) => (Array.isArray(v) ? v : []);
+    const toIdString = (v) => (v && typeof v.toString === "function" ? v.toString() : "");
+
+    const leaderId = toIdString(req.user?._id || req.user?.id || req.session?.user?.id);
+
     if (!leaderId) {
       return res.status(403).render("member_form_views/error", {
         layout: "memberformlayout",
@@ -992,7 +994,10 @@ const getUnitsCompletedReport = async (req, res) => {
       });
     }
 
-    const leaderDoc = await Leader.findById(leaderId).select("_id name groupName members").lean();
+    const leaderDoc = await Leader.findById(leaderId)
+      .select("_id name groupLeaderName groupName members")
+      .lean();
+
     if (!leaderDoc) {
       return res.status(403).render("member_form_views/error", {
         layout: "memberformlayout",
@@ -1001,20 +1006,58 @@ const getUnitsCompletedReport = async (req, res) => {
       });
     }
 
-    const memberIdsFromLeader = Array.isArray(leaderDoc.members) ? leaderDoc.members : [];
+    const leaderName = leaderDoc.groupLeaderName || leaderDoc.name || "Leader";
+
+    const leaderProfile = await LeaderProfile
+      .findOne({ $or: [{ leaderId: leaderDoc._id }, { groupId: leaderDoc._id }] })
+      .select("profileImage")
+      .lean();
+
+    const memberIdsFromLeader = safeArray(leaderDoc.members);
+
     const groupMembers = memberIdsFromLeader.length
       ? await GroupMember.find({ _id: { $in: memberIdsFromLeader } })
           .select("_id name")
           .lean()
       : [];
 
+    const groupMemberProfiles = groupMembers.length
+      ? await GroupMemberProfile.find({
+          groupMemberId: { $in: groupMembers.map(m => m._id) }
+        })
+          .select("groupMemberId profileImage")
+          .lean()
+      : [];
+
+    const profileImageByMemberId = new Map(
+      groupMemberProfiles.map(profile => [
+        toIdString(profile.groupMemberId),
+        profile.profileImage || "/images/default-avatar.png"
+      ])
+    );
+
     const reportPeople = [
-      { _id: leaderDoc._id, name: leaderDoc.name || "Leader" },
-      ...groupMembers
+      {
+        _id: leaderDoc._id,
+        name: leaderName,
+        memberImage: leaderProfile?.profileImage || "/images/default-avatar.png"
+      },
+      ...groupMembers.map(m => ({
+        _id: m._id,
+        name: m.name || "Group Member",
+        memberImage: profileImageByMemberId.get(toIdString(m._id)) || "/images/default-avatar.png"
+      }))
     ];
 
     const personIds = reportPeople.map(p => p._id);
-    const nameById = new Map(reportPeople.map(p => [p._id.toString(), p.name]));
+
+    const nameById = new Map(
+      reportPeople.map(p => [toIdString(p._id), p.name])
+    );
+
+    const imageById = new Map(
+      reportPeople.map(p => [toIdString(p._id), p.memberImage])
+    );
 
     if (!personIds.length) {
       return res.render("report_views/unitscompleted", {
@@ -1025,11 +1068,9 @@ const getUnitsCompletedReport = async (req, res) => {
       });
     }
 
-    // Fetch notes
     const notes = await Notes.find({ memberID: { $in: personIds } }).lean();
 
-    // Remove missions (handled elsewhere)
-    const filteredNotes = (notes || []).filter(n => {
+    const filteredNotes = safeArray(notes).filter(n => {
       return String(n.unitType || "").toLowerCase() !== "mission";
     });
 
@@ -1042,11 +1083,10 @@ const getUnitsCompletedReport = async (req, res) => {
       });
     }
 
-    // Group notes by unit
     const byUnit = new Map();
 
     for (const n of filteredNotes) {
-      const unitId = (n.unitID || "").toString();
+      const unitId = toIdString(n.unitID);
       if (!unitId) continue;
 
       if (!byUnit.has(unitId)) {
@@ -1065,12 +1105,14 @@ const getUnitsCompletedReport = async (req, res) => {
 
       const unitEntry = byUnit.get(unitId);
 
-      const memberId = (n.memberID || "").toString();
+      const memberId = toIdString(n.memberID);
       if (!memberId) continue;
 
       if (!unitEntry.memberNotesMap.has(memberId)) {
         unitEntry.memberNotesMap.set(memberId, {
+          memberId,
           memberName: nameById.get(memberId) || "Unknown Member",
+          memberImage: imageById.get(memberId) || "/images/default-avatar.png",
           notes: []
         });
       }
@@ -1081,12 +1123,12 @@ const getUnitsCompletedReport = async (req, res) => {
       });
     }
 
-    // Final structure
     const unitsCompletedReports = Array.from(byUnit.values()).map(unit => {
       const memberNotes = Array.from(unit.memberNotesMap.values()).map(m => {
         m.notes.sort((a, b) => {
           return new Date(a.dateSubmitted || 0) - new Date(b.dateSubmitted || 0);
         });
+
         return m;
       });
 
@@ -1095,10 +1137,14 @@ const getUnitsCompletedReport = async (req, res) => {
         unitType: unit.unitType,
         main_topic: unit.main_topic,
         secondary_topics: unit.secondary_topics,
+
         completedBy: memberNotes.map(m => ({
+          memberId: m.memberId,
           memberName: m.memberName,
+          memberImage: m.memberImage || "/images/default-avatar.png",
           dateCompleted: m.notes[0]?.dateSubmitted || null
         })),
+
         memberNotes
       };
     });
