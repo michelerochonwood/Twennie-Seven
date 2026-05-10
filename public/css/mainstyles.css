@@ -2800,7 +2800,7 @@ line-height: 1.5;
   position: absolute;
 
   top: -25px;     /* pushes it slightly outside */
-  right: -25px;   /* pushes it slightly outside */
+  left: -25px;   /* pushes it slightly outside */
 
   width: 100px;    /* much smaller */
   height: 100px;
