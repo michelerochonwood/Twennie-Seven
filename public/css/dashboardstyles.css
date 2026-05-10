@@ -8252,7 +8252,7 @@ box-shadow: none !important;
 
 .member-engagement-summary-strip {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 0.65rem;
   background: #fff;
   border: 1px solid rgba(38, 34, 98, 0.1);
@@ -8278,10 +8278,7 @@ box-shadow: none !important;
   line-height: 1;
 }
 
-.member-engagement-stat--leader strong {
-  font-size: 0.75rem;
-  line-height: 1.2;
-}
+
 
 .member-engagement-stat span {
   display: block;
