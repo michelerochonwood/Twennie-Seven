@@ -7254,6 +7254,7 @@ box-shadow: none !important;
 
 .prompt-member-note-image {
   position: absolute;
+  left: -1.15rem;
   top: 50%;
   transform: translateY(-50%);
   width: 4.7rem;
