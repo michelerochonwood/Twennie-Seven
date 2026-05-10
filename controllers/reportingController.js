@@ -191,20 +191,50 @@ const getMemberEngagementReport = async (req, res) => {
 
     const leaderName = leaderDoc.groupLeaderName || "Leader";
 
+    const leaderProfile = await LeaderProfile
+      .findOne({ $or: [{ leaderId: leaderDoc._id }, { groupId: leaderDoc._id }] })
+      .select("profileImage")
+      .lean();
+
     const memberIdsFromLeader = safeArray(leaderDoc.members);
+
     const groupMembers = memberIdsFromLeader.length
       ? await GroupMember.find({ _id: { $in: memberIdsFromLeader } })
           .select("_id name")
           .lean()
       : [];
 
+    const groupMemberProfiles = groupMembers.length
+      ? await GroupMemberProfile.find({
+          groupMemberId: { $in: groupMembers.map(m => m._id) }
+        })
+          .select("groupMemberId profileImage")
+          .lean()
+      : [];
+
+    const profileImageByMemberId = new Map(
+      groupMemberProfiles.map(profile => [
+        toIdString(profile.groupMemberId),
+        profile.profileImage || "/images/default-avatar.png"
+      ])
+    );
+
     const reportPeople = [
-      { _id: leaderDoc._id, name: leaderName },
-      ...groupMembers.map(m => ({ _id: m._id, name: m.name || "Group Member" }))
+      {
+        _id: leaderDoc._id,
+        name: leaderName,
+        memberImage: leaderProfile?.profileImage || "/images/default-avatar.png"
+      },
+      ...groupMembers.map(m => ({
+        _id: m._id,
+        name: m.name || "Group Member",
+        memberImage: profileImageByMemberId.get(toIdString(m._id)) || "/images/default-avatar.png"
+      }))
     ];
 
     const personIds = reportPeople.map(p => p._id);
     const nameById = new Map(reportPeople.map(p => [toIdString(p._id), p.name]));
+    const imageById = new Map(reportPeople.map(p => [toIdString(p._id), p.memberImage]));
 
     if (!personIds.length) {
       return res.render("report_views/memberengagement", {
@@ -230,7 +260,10 @@ const getMemberEngagementReport = async (req, res) => {
     ]);
 
     const missionTitleById = new Map(
-      safeArray(missions).map(m => [toIdString(m._id), m.mission_title || "Untitled mission"])
+      safeArray(missions).map(m => [
+        toIdString(m._id),
+        m.mission_title || "Untitled mission"
+      ])
     );
 
     const missionTopicsById = new Map(
@@ -244,18 +277,28 @@ const getMemberEngagementReport = async (req, res) => {
     );
 
     const completionsByPerson = new Map();
+
     for (const c of safeArray(promptCompletions)) {
       const key = toIdString(c.memberId);
       if (!key) continue;
-      if (!completionsByPerson.has(key)) completionsByPerson.set(key, []);
+
+      if (!completionsByPerson.has(key)) {
+        completionsByPerson.set(key, []);
+      }
+
       completionsByPerson.get(key).push(c);
     }
 
     const notesByPerson = new Map();
+
     for (const n of safeArray(notes)) {
       const key = toIdString(n.memberID);
       if (!key) continue;
-      if (!notesByPerson.has(key)) notesByPerson.set(key, []);
+
+      if (!notesByPerson.has(key)) {
+        notesByPerson.set(key, []);
+      }
+
       notesByPerson.get(key).push(n);
     }
 
@@ -285,8 +328,10 @@ const getMemberEngagementReport = async (req, res) => {
     for (const p of reportPeople) {
       const pid = toIdString(p._id);
       const personName = nameById.get(pid) || "Unknown";
+      const memberImage = imageById.get(pid) || "/images/default-avatar.png";
 
       const myComps = completionsByPerson.get(pid) || [];
+
       const promptSetsCompleted = myComps
         .map(c => ({
           name: c.promptSetId?.promptset_title || "Unknown Prompt Set",
@@ -296,7 +341,10 @@ const getMemberEngagementReport = async (req, res) => {
 
       const topicsFromComps = myComps.flatMap(c => {
         const main = c.promptSetId?.main_topic ? [c.promptSetId.main_topic] : [];
-        const secs = Array.isArray(c.promptSetId?.secondary_topics) ? c.promptSetId.secondary_topics : [];
+        const secs = Array.isArray(c.promptSetId?.secondary_topics)
+          ? c.promptSetId.secondary_topics
+          : [];
+
         return [...main, ...secs];
       });
 
@@ -321,6 +369,7 @@ const getMemberEngagementReport = async (req, res) => {
         if (unitTypeLower === "mission") {
           if (!missionSeen.has(unitIdStr)) {
             missionSeen.add(unitIdStr);
+
             missionsCompleted.push({
               missionId: unitIdStr,
               missionTitle: missionTitleById.get(unitIdStr) || unitTitle || "Untitled mission",
@@ -329,13 +378,22 @@ const getMemberEngagementReport = async (req, res) => {
           }
 
           const mt = missionTopicsById.get(unitIdStr);
+
           if (mt?.main) topicsFromCompleted.push(mt.main);
+
           if (Array.isArray(mt?.secondary) && mt.secondary.length) {
             topicsFromCompleted.push(...mt.secondary);
           }
 
-          if (!mt?.main && d.main_topic) topicsFromCompleted.push(d.main_topic);
-          if ((!mt?.secondary || !mt.secondary.length) && Array.isArray(d.secondary_topics) && d.secondary_topics.length) {
+          if (!mt?.main && d.main_topic) {
+            topicsFromCompleted.push(d.main_topic);
+          }
+
+          if (
+            (!mt?.secondary || !mt.secondary.length) &&
+            Array.isArray(d.secondary_topics) &&
+            d.secondary_topics.length
+          ) {
             topicsFromCompleted.push(...d.secondary_topics);
           }
 
@@ -343,6 +401,7 @@ const getMemberEngagementReport = async (req, res) => {
         }
 
         if (unitSeen.has(unitIdStr)) continue;
+
         unitSeen.add(unitIdStr);
 
         unitsCompleted.push({
@@ -350,7 +409,10 @@ const getMemberEngagementReport = async (req, res) => {
           unitType
         });
 
-        if (d.main_topic) topicsFromCompleted.push(d.main_topic);
+        if (d.main_topic) {
+          topicsFromCompleted.push(d.main_topic);
+        }
+
         if (Array.isArray(d.secondary_topics) && d.secondary_topics.length) {
           topicsFromCompleted.push(...d.secondary_topics);
         }
@@ -377,6 +439,7 @@ const getMemberEngagementReport = async (req, res) => {
 
       memberEngagementReports.push({
         memberName: personName,
+        memberImage,
         topicsEngaged,
         unitsCompleted,
         promptSetsCompleted,
@@ -399,12 +462,12 @@ const getMemberEngagementReport = async (req, res) => {
       memberEngagementReports,
       groupedUnits
     });
+
   } catch (err) {
     console.error("❌ Error loading Member Engagement Report:", err);
     return res.status(500).send("Server error");
   }
 };
-
 
 
 

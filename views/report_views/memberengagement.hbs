@@ -16,20 +16,10 @@
       <div class="member-grouped-units-grid">
         {{#each groupedUnits}}
           <article class="member-grouped-unit-card">
-            <h3>
-              {{#if this.unitTitle}}
-                {{this.unitTitle}}
-              {{else}}
-                Untitled unit
-              {{/if}}
-            </h3>
+            <h3>{{#if this.unitTitle}}{{this.unitTitle}}{{else}}Untitled unit{{/if}}</h3>
 
             <p class="member-grouped-unit-type">
-              {{#if this.unitType}}
-                {{this.unitType}}
-              {{else}}
-                unknown type
-              {{/if}}
+              {{#if this.unitType}}{{this.unitType}}{{else}}unknown type{{/if}}
             </p>
 
             <div class="member-grouped-unit-members">
@@ -46,13 +36,17 @@
   {{/if}}
 
   <div class="member-engagement-accordion">
-
     {{#each memberEngagementReports}}
-
       <article class="member-engagement-card">
 
         <button class="member-engagement-toggle" type="button">
-          <span>
+          <img
+            src="{{#if this.memberImage}}{{this.memberImage}}{{else}}/images/default-avatar.png{{/if}}"
+            alt="{{#if this.memberName}}{{this.memberName}}{{else}}Member{{/if}} profile image"
+            class="member-engagement-toggle-image"
+          >
+
+          <span class="member-engagement-toggle-text">
             <strong>
               {{#if this.memberName}}
                 {{this.memberName}}
@@ -72,7 +66,6 @@
         </button>
 
         <div class="member-engagement-panel">
-
           <div class="member-engagement-summary-strip">
 
             <div class="member-engagement-stat">
@@ -94,8 +87,6 @@
               <strong>{{this.missionsCompleted.length}}</strong>
               <span>missions</span>
             </div>
-
-]
 
           </div>
 
@@ -168,21 +159,14 @@
             </section>
 
           </div>
-
         </div>
-
       </article>
-
     {{else}}
-
       <p class="no-data">No engagement data available.</p>
-
     {{/each}}
-
   </div>
 
   <div class="report-links-container report-links-enhanced">
-
     {{#unless isMemberEngagement}}
       <div class="report-card">
         <a href="/reports/memberengagement" class="report-link">
@@ -226,7 +210,6 @@
         </p>
       </div>
     {{/unless}}
-
   </div>
 </section>
 
@@ -241,4 +224,3 @@
     });
   });
 </script>
-

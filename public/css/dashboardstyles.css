@@ -8201,7 +8201,8 @@ box-shadow: none !important;
   border-radius: 18px;
   background: #f9f9ff;
   box-shadow: 0 8px 22px rgba(38, 34, 98, 0.08);
-  overflow: hidden;
+    position: relative;
+  overflow: visible;
 }
 
 .member-engagement-toggle {
@@ -8216,6 +8217,26 @@ box-shadow: none !important;
   text-align: left;
   cursor: pointer;
   font-family: "Figtree", sans-serif;
+    position: relative;
+  padding-left: 4.7rem;
+  min-height: 4.4rem;
+}
+
+.member-engagement-toggle-text {
+  display: block;
+  padding-left: 0.35rem;
+}
+
+@media (max-width: 700px) {
+  .member-engagement-toggle {
+    padding-left: 3.8rem;
+  }
+
+  .member-engagement-toggle-image {
+    left: -0.75rem;
+    width: 3.4rem;
+    height: 3.4rem;
+  }
 }
 
 .member-engagement-toggle strong {
