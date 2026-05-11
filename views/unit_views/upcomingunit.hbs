@@ -13,14 +13,7 @@
       <p class="single_article-long-summary">{{long_teaser}}</p>
     {{/if}}
 
-    <!-- Meta: status + projected date -->
-    <p class="single_article-wordcount">
-      <em>Status: {{status}}</em>
-      {{#if projected_release_at}}
-        &nbsp;|&nbsp;
-        <em>Projected release: {{formatDate projected_release_at}}</em>
-      {{/if}}
-    </p>
+
 
     <!-- Toggle (visual consistency) -->
     <div class="single_article-toggle" onclick="toggleArticleContent(this)" data-authorized="true">

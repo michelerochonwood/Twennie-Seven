@@ -14,8 +14,8 @@ exports.getTeachMe = (req, res) => {
         },
         {
           src: "/images/kpiviewscreenshot.png",
-          alt: "Topic breakdown and KPIs",
-          title: "Topic breakdown + KPIs",
+          alt: "Topic breakdown",
+          title: "Topic breakdown",
           desc: "Your next step is the topic breakdown. Twennie doesn't use courses, quizzes, or tests - instead we provide key performance indicators(KPIs) here. This shows you how to apply topic-specific learning directly to your work performance. The KPIs are transferrable to a career plan and applicable to a range of professional roles."
         },
         {
