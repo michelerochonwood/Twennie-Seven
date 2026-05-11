@@ -363,95 +363,198 @@ const updateMemberProfile = async (req, res) => {
 
 
 const viewLeaderProfile = async (req, res) => {
+  try {
+    const profile = await LeaderProfile.findOne({ leaderId: req.params.id });
+    const leader = await Leader.findOne({ _id: req.params.id }).populate("members");
+    const group = await GroupProfile.findOne({ groupId: req.params.id }).populate("members");
 
-    try {
-      const profile = await LeaderProfile.findOne({ leaderId: req.params.id });
-      const leader = await Leader.findOne({ _id: req.params.id }).populate("members");
-      const group = await GroupProfile.findOne({ groupId: req.params.id }).populate("members");
-  
-      if (!profile) {
-        return res.status(404).send("Profile not found.");
-      }
-  
-      // ✅ Safe Cloudinary fallback
-      const safeProfileImage = profile.profileImage?.startsWith("http")
-        ? profile.profileImage
-        : "https://www.twennie.com/images/default-avatar.png";
-  
-      const topics = profile.topics || {};
-  
-      const profileData = {
-        profileImage: safeProfileImage,
-        name: profile.name || "No Name Provided",
-        professionalTitle: profile.professionalTitle || "No Title Provided",
-        biography: profile.biography || "",
-        goals: profile.goals || "",
-        groupLeadershipGoals: profile.groupLeadershipGoals || "",
-        topics,
-        leaderId: profile.leaderId.toString()
-      };
-  
-      // ✅ Get leader's content contributions
-      const [leaderArticles, leaderVideos, leaderPromptSets, leaderInterviews, leaderExercises, leaderTemplates] = await Promise.all([
-        Article.find({ 'author.id': req.params.id }).lean(),
-        Video.find({ 'author.id': req.params.id }).lean(),
-        PromptSet.find({ 'author.id': req.params.id }).lean(),
-        Interview.find({ 'author.id': req.params.id }).lean(),
-        Exercise.find({ 'author.id': req.params.id }).lean(),
-        Template.find({ 'author.id': req.params.id }).lean()
-      ]);
-  
-      const leaderUnits = [
-        ...leaderArticles.map(unit => ({ unitType: 'article', title: unit.article_title, status: unit.status, mainTopic: unit.main_topic, _id: unit._id })),
-        ...leaderVideos.map(unit => ({ unitType: 'video', title: unit.video_title, status: unit.status, mainTopic: unit.main_topic, _id: unit._id })),
-        ...leaderPromptSets.map(unit => ({ unitType: 'promptset', title: unit.promptset_title, status: unit.status, mainTopic: unit.main_topic, _id: unit._id })),
-        ...leaderInterviews.map(unit => ({ unitType: 'interview', title: unit.interview_title, status: unit.status, mainTopic: unit.main_topic, _id: unit._id })),
-        ...leaderExercises.map(unit => ({ unitType: 'exercise', title: unit.exercise_title, status: unit.status, mainTopic: unit.main_topic, _id: unit._id })),
-        ...leaderTemplates.map(unit => ({ unitType: 'template', title: unit.template_title, status: unit.status, mainTopic: unit.main_topic, _id: unit._id }))
-      ];
-  
-      console.log("✅ Leader Units Found:", JSON.stringify(leaderUnits, null, 2));
-  
-      // ✅ Leader badges
-      const badgeRecords = await Badge.find({ memberId: leader._id }).populate("promptSetId").lean();
-  
-      const leaderBadges = badgeRecords.map(record => ({
-        earnedBadge: {
-          image: record.earnedBadge?.image || "https://www.twennie.com/images/default-badge.png",
-          name: record.earnedBadge?.name || "Unknown Badge"
-        },
-        promptSetTitle: record.promptSetId?.promptset_title || "Unknown Prompt Set",
-        mainTopic: record.promptSetId?.main_topic || "No topic"
-      }));
-  
-      console.log("✅ Leader Earned Badges:", JSON.stringify(leaderBadges, null, 2));
-  
-      // ✅ Selected topics using DRY reduce
-const selectedTopics = ["topic1", "topic2", "topic3"].reduce((acc, key) => {
-  acc[key] = buildSelectedTopic(topics[key]);
-  return acc;
-}, {});
-  
-      console.log("✅ Selected Topics for Leader:", JSON.stringify(selectedTopics));
-  
-      // ✅ Render view
-      res.render("profile_views/leader_profile", {
-        layout: "profilelayout",
-        leader: {
-          ...profileData,
-          selectedTopics
-        },
-        leaderUnits,
-        leaderBadges,
-        group: group || {},
-        groupMembers: leader?.members || []
-      });
-  
-    } catch (error) {
-      console.error("❌ Error fetching leader profile:", error);
-      res.status(500).send("Internal Server Error");
+    if (!profile) {
+      return res.status(404).send("Profile not found.");
     }
-  };
+
+    if (!leader) {
+      return res.status(404).send("Leader not found.");
+    }
+
+    const safeProfileImage = profile.profileImage?.startsWith("http")
+      ? profile.profileImage
+      : "https://www.twennie.com/images/default-avatar.png";
+
+    const topics = profile.topics || {};
+
+    const profileData = {
+      profileImage: safeProfileImage,
+      name: profile.name || "No Name Provided",
+      professionalTitle: profile.professionalTitle || "No Title Provided",
+      biography: profile.biography || "",
+      goals: profile.goals || "",
+      groupLeadershipGoals: profile.groupLeadershipGoals || "",
+      topics,
+      leaderId: profile.leaderId.toString()
+    };
+
+    const [
+      leaderArticles,
+      leaderVideos,
+      leaderPromptSets,
+      leaderInterviews,
+      leaderExercises,
+      leaderTemplates
+    ] = await Promise.all([
+      Article.find({ "author.id": req.params.id }).lean(),
+      Video.find({ "author.id": req.params.id }).lean(),
+      PromptSet.find({ "author.id": req.params.id }).lean(),
+      Interview.find({ "author.id": req.params.id }).lean(),
+      Exercise.find({ "author.id": req.params.id }).lean(),
+      Template.find({ "author.id": req.params.id }).lean()
+    ]);
+
+    const leaderUnits = [
+      ...leaderArticles.map(unit => ({
+        unitType: "article",
+        title: unit.article_title,
+        status: unit.status,
+        mainTopic: unit.main_topic,
+        _id: unit._id
+      })),
+
+      ...leaderVideos.map(unit => ({
+        unitType: "video",
+        title: unit.video_title,
+        status: unit.status,
+        mainTopic: unit.main_topic,
+        _id: unit._id
+      })),
+
+      ...leaderPromptSets.map(unit => ({
+        unitType: "promptset",
+        title: unit.promptset_title,
+        status: unit.status,
+        mainTopic: unit.main_topic,
+        _id: unit._id
+      })),
+
+      ...leaderInterviews.map(unit => ({
+        unitType: "interview",
+        title: unit.interview_title,
+        status: unit.status,
+        mainTopic: unit.main_topic,
+        _id: unit._id
+      })),
+
+      ...leaderExercises.map(unit => ({
+        unitType: "exercise",
+        title: unit.exercise_title,
+        status: unit.status,
+        mainTopic: unit.main_topic,
+        _id: unit._id
+      })),
+
+      ...leaderTemplates.map(unit => ({
+        unitType: "template",
+        title: unit.template_title,
+        status: unit.status,
+        mainTopic: unit.main_topic,
+        _id: unit._id
+      }))
+    ];
+
+    const badgeRecords = await Badge.find({ memberId: leader._id })
+      .populate("promptSetId")
+      .lean();
+
+    const leaderBadges = badgeRecords.map(record => ({
+      earnedBadge: {
+        image:
+          record.earnedBadge?.image ||
+          "https://www.twennie.com/images/default-badge.png",
+        name: record.earnedBadge?.name || "Unknown Badge"
+      },
+      promptSetTitle:
+        record.promptSetId?.promptset_title || "Unknown Prompt Set",
+      mainTopic: record.promptSetId?.main_topic || "No topic"
+    }));
+
+    const completedPromptSets = badgeRecords.map(record => ({
+      promptSetTitle:
+        record.promptSetId?.promptset_title || "Unknown Prompt Set",
+      mainTopic: record.promptSetId?.main_topic || "No topic",
+      completionDate: record.completedAt
+        ? new Date(record.completedAt).toDateString()
+        : "Unknown Date",
+      badgeEarned: record.earnedBadge?.name || ""
+    }));
+
+    const selectedTopics = ["topic1", "topic2", "topic3"].reduce((acc, key) => {
+      acc[key] = buildSelectedTopic(topics[key]);
+      return acc;
+    }, {});
+
+    const groupMemberDocs = Array.isArray(leader.members) ? leader.members : [];
+    const groupMemberIds = groupMemberDocs.map(member => member._id);
+
+    const groupMemberProfiles = groupMemberIds.length
+      ? await GroupMemberProfile.find({
+          groupMemberId: { $in: groupMemberIds }
+        })
+          .select("groupMemberId profileImage professionalTitle name")
+          .lean()
+      : [];
+
+    const groupMemberProfileMap = new Map(
+      groupMemberProfiles.map(memberProfile => [
+        memberProfile.groupMemberId.toString(),
+        memberProfile
+      ])
+    );
+
+    const enrichedGroupMembers = groupMemberDocs.map(member => {
+      const memberObject =
+        typeof member.toObject === "function" ? member.toObject() : member;
+
+      const profileForMember = groupMemberProfileMap.get(
+        memberObject._id.toString()
+      );
+
+      const safeMemberImage = profileForMember?.profileImage?.startsWith("http")
+        ? profileForMember.profileImage
+        : memberObject.profileImage?.startsWith?.("http")
+          ? memberObject.profileImage
+          : "/images/default-avatar.png";
+
+      return {
+        ...memberObject,
+        name:
+          profileForMember?.name ||
+          memberObject.name ||
+          "Group member",
+        profileImage: safeMemberImage,
+        professionalTitle:
+          profileForMember?.professionalTitle ||
+          memberObject.professionalTitle ||
+          "No title added"
+      };
+    });
+
+    return res.render("profile_views/leader_profile", {
+      layout: "profilelayout",
+      leader: {
+        ...profileData,
+        selectedTopics,
+        maxGroupSize: leader.maxGroupSize || 10,
+        members: groupMemberDocs
+      },
+      leaderUnits,
+      leaderBadges,
+      completedPromptSets,
+      group: group || {},
+      groupMembers: enrichedGroupMembers
+    });
+  } catch (error) {
+    console.error("❌ Error fetching leader profile:", error);
+    return res.status(500).send("Internal Server Error");
+  }
+};
   
 
 
