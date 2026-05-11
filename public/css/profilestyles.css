@@ -2646,6 +2646,7 @@ html, body {
 
 /* =========================
    LEADER PROFILE — LIBRARY UNITS
+   dashboard wave-card style
    ========================= */
 
 .leader-profile-library-section {
@@ -2655,108 +2656,124 @@ html, body {
 .leader-profile-library-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1.4rem;
+  gap: 1.25rem;
 }
 
 .leader-profile-library-card {
-  position: relative;
+  background-color: #cfcece;
+  border-radius: 12px;
+  padding: 0 !important;
   overflow: hidden;
-  background: #fff;
-  border-radius: 24px;
-  box-shadow: 0 14px 30px rgba(38, 34, 98, 0.12);
-  border: 1px solid rgba(38, 34, 98, 0.08);
-  display: flex;
-  flex-direction: column;
-  min-height: 320px;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  min-height: 260px;
 }
 
-.leader-profile-library-wave {
+.leader-profile-library-card .leader-dashboard-wave-card-inner {
   position: relative;
-  width: 100%;
-  height: 92px;
-  overflow: hidden;
-}
-
-.leader-profile-library-wave img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  min-height: 260px;
+  border-radius: inherit;
+  overflow: hidden;
+  background: inherit;
+}
+
+.leader-profile-library-card .leader-dashboard-wave-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  line-height: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.leader-profile-library-card .leader-dashboard-wave-image {
   display: block;
-  opacity: 0.96;
+  width: 100%;
+  height: auto;
+}
+
+.leader-profile-library-wave-content {
+  position: relative;
+  z-index: 2;
+  padding: 11.25px;
+  padding-top: calc(11.25px + 3.2rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 260px;
+  box-sizing: border-box;
 }
 
 .leader-profile-library-icon {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  width: 54px;
-  height: 54px;
-  background: rgba(255,255,255,0.96);
-  border-radius: 16px;
   display: flex;
-  align-items: center;
   justify-content: center;
-  box-shadow: 0 6px 16px rgba(38, 34, 98, 0.16);
+  align-items: center;
+  margin-bottom: 0.5rem;
 }
 
 .leader-profile-library-icon img {
-  width: 28px;
-  height: 28px;
+  width: 64px;
+  height: 64px;
   object-fit: contain;
+  display: block;
 }
 
 .leader-profile-library-content {
-  padding: 1.2rem 1.2rem 0;
+  width: 100%;
   text-align: center;
   flex: 1;
 }
 
 .leader-profile-library-title {
-  margin: 0 0 0.7rem;
-  color: #262262;
-  font-size: 0.98rem;
+  margin: 0 0 0.45rem;
+  color: #4a4ab2;
+  font-size: 0.92rem;
   font-weight: 800;
   line-height: 1.3;
+  text-align: center;
 }
 
 .leader-profile-library-topic {
-  margin: 0 0 0.65rem;
-  color: #4e50a2;
-  font-size: 0.78rem;
-  font-weight: 800;
-  line-height: 1.3;
+  margin: 0 0 0.45rem;
+  color: #777;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  text-align: center;
 }
 
 .leader-profile-library-status {
   display: inline-block;
-  margin: 0 auto;
-  padding: 0.38rem 0.75rem;
-  background: #f2f2f7;
+  margin: 0.25rem auto 0;
+  padding: 0.25rem 0.6rem;
   border-radius: 999px;
-  color: #666;
+  background: #e9e9ff;
+  color: #262262;
   font-size: 0.68rem;
-  font-weight: 700;
+  font-weight: 800;
   text-transform: lowercase;
 }
 
 .leader-profile-library-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin: 1.2rem;
-  padding: 0.9rem 1rem;
+  display: inline-block;
+  margin-top: 0.85rem;
+  padding: 0.6rem 0.9rem;
   border-radius: 999px;
-  background: #262262;
-  color: #fff;
-  font-size: 0.74rem;
+  background-color: #262262;
+  color: #ffffff;
+  font-family: "Figtree", sans-serif;
+  font-size: 0.7rem;
   font-weight: 800;
+  text-align: center;
   text-decoration: none;
   text-transform: lowercase;
-  transition: background 0.2s ease;
 }
 
 .leader-profile-library-link:hover {
-  background: #4e50a2;
+  background-color: #4a4ab2;
 }
 
 @media screen and (max-width: 1100px) {

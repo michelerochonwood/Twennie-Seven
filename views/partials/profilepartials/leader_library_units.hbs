@@ -10,39 +10,53 @@
   {{#if leaderUnits.length}}
     <div class="leader-profile-library-grid">
       {{#each leaderUnits}}
-        <article class="leader-profile-library-card">
+        <article class="leader-profile-library-card leader-dashboard-wave-card {{toLowerCase this.unitType}}-dashboard-card">
+          <div class="leader-dashboard-wave-card-inner">
 
-          <div class="leader-profile-library-wave">
-            <img src="/icons/unitsvg.svg" alt="Decorative wave">
+            <div class="leader-dashboard-wave-header">
+              <img
+                src="/icons/unitsvg.svg"
+                alt=""
+                aria-hidden="true"
+                class="leader-dashboard-wave-image"
+              >
+            </div>
+
+            <div class="leader-dashboard-wave-content leader-profile-library-wave-content">
+              <div class="leader-profile-library-icon">
+                <img
+                  src="/icons/{{toLowerCase this.unitType}}.svg"
+                  alt="{{unitType}} icon"
+                >
+              </div>
+
+              <div class="leader-profile-library-content">
+                <h3 class="leader-profile-library-title">
+                  {{title}}
+                </h3>
+
+                {{#if mainTopic}}
+                  <p class="leader-profile-library-topic">
+                    {{mainTopic}}
+                  </p>
+                {{/if}}
+
+                {{#if status}}
+                  <p class="leader-profile-library-status">
+                    {{status}}
+                  </p>
+                {{/if}}
+              </div>
+
+              <a
+                href="/unitviews/{{toLowerCase this.unitType}}s/view/{{this._id}}"
+                class="leader-profile-library-link"
+              >
+                view or edit
+              </a>
+            </div>
+
           </div>
-
-          <div class="leader-profile-library-icon">
-            <img
-              src="/icons/{{toLowerCase this.unitType}}.svg"
-              alt="{{unitType}} icon"
-            >
-          </div>
-
-          <div class="leader-profile-library-content">
-            <h3 class="leader-profile-library-title">
-              {{title}}
-            </h3>
-
-            <p class="leader-profile-library-topic">
-              {{mainTopic}}
-            </p>
-
-            <p class="leader-profile-library-status">
-              {{status}}
-            </p>
-          </div>
-
-          <a
-            href="/unitviews/{{toLowerCase this.unitType}}s/view/{{this._id}}"
-            class="leader-profile-library-link"
-          >
-            view or edit
-          </a>
         </article>
       {{/each}}
     </div>
