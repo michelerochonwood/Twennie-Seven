@@ -1,67 +1,103 @@
-<!-- PROFILE TOPICS VERSION -->
-<div class="groupmember-profile-topics-container">
-  <h3 class="groupmember-profile-topics-title">my topics</h3>
+<section class="groupmember-profile-panel groupmember-profile-topics-section">
+  <div class="groupmember-profile-panel-header">
+    <p class="groupmember-profile-eyebrow">learning direction</p>
+    <h2 class="groupmember-profile-panel-title">my topics</h2>
 
-  <p>
-    These topics help focus your learning and make it easier to navigate Twennie around your strongest areas of interest.
-  </p>
-
-  <div class="groupmember-profile-topics-grid">
-    {{#if selectedTopics.topic1.title}}
-      <div class="groupmember-profile-topic-card" data-topic-id="{{selectedTopics.topic1.slug}}">
-        <div class="groupmember-profile-topic-title">{{selectedTopics.topic1.title}}</div>
-        <ul class="groupmember-profile-topic-subtopics">
-          {{#each selectedTopics.topic1.subtopics}}
-            <li>{{this}}</li>
-          {{else}}
-            <li>No subtopics available</li>
-          {{/each}}
-        </ul>
-        {{#if selectedTopics.topic1.viewName}}
-          <a href="/membertopics/{{selectedTopics.topic1.viewName}}" class="groupmember-profile-topic-review">
-            review this topic
-          </a>
-        {{/if}}
-      </div>
-    {{/if}}
-
-    {{#if selectedTopics.topic2.title}}
-      <div class="groupmember-profile-topic-card" data-topic-id="{{selectedTopics.topic2.slug}}">
-        <div class="groupmember-profile-topic-title">{{selectedTopics.topic2.title}}</div>
-        <ul class="groupmember-profile-topic-subtopics">
-          {{#each selectedTopics.topic2.subtopics}}
-            <li>{{this}}</li>
-          {{else}}
-            <li>No subtopics available</li>
-          {{/each}}
-        </ul>
-        {{#if selectedTopics.topic2.viewName}}
-          <a href="/membertopics/{{selectedTopics.topic2.viewName}}" class="groupmember-profile-topic-review">
-            review this topic
-          </a>
-        {{/if}}
-      </div>
-    {{/if}}
-
-    {{#if selectedTopics.topic3.title}}
-      <div class="groupmember-profile-topic-card" data-topic-id="{{selectedTopics.topic3.slug}}">
-        <div class="groupmember-profile-topic-title">{{selectedTopics.topic3.title}}</div>
-        <ul class="groupmember-profile-topic-subtopics">
-          {{#each selectedTopics.topic3.subtopics}}
-            <li>{{this}}</li>
-          {{else}}
-            <li>No subtopics available</li>
-          {{/each}}
-        </ul>
-        {{#if selectedTopics.topic3.viewName}}
-          <a href="/membertopics/{{selectedTopics.topic3.viewName}}" class="groupmember-profile-topic-review">
-            review this topic
-          </a>
-        {{/if}}
-      </div>
-    {{/if}}
+    <p class="groupmember-profile-panel-intro">
+      These topics help focus your learning and make it easier to navigate
+      Twennie around your strongest areas of interest.
+    </p>
   </div>
 
+  {{#if selectedTopics.topic1.title}}
+    <div class="groupmember-profile-topics-grid">
 
-  </div>
-</div>
+      <article class="groupmember-profile-topic-card" data-topic-id="{{selectedTopics.topic1.slug}}">
+        <div class="groupmember-profile-topic-content">
+          <h3 class="groupmember-profile-topic-title">
+            {{selectedTopics.topic1.title}}
+          </h3>
+
+          <ul class="groupmember-profile-topic-subtopics">
+            {{#each selectedTopics.topic1.subtopics}}
+              <li>{{this}}</li>
+            {{else}}
+              <li>No subtopics available</li>
+            {{/each}}
+          </ul>
+
+          {{#if selectedTopics.topic1.viewName}}
+            <a
+              href="/membertopics/{{selectedTopics.topic1.viewName}}"
+              class="groupmember-profile-topic-link"
+            >
+              review this topic
+            </a>
+          {{/if}}
+        </div>
+      </article>
+
+      {{#if selectedTopics.topic2.title}}
+        <article class="groupmember-profile-topic-card" data-topic-id="{{selectedTopics.topic2.slug}}">
+          <div class="groupmember-profile-topic-content">
+            <h3 class="groupmember-profile-topic-title">
+              {{selectedTopics.topic2.title}}
+            </h3>
+
+            <ul class="groupmember-profile-topic-subtopics">
+              {{#each selectedTopics.topic2.subtopics}}
+                <li>{{this}}</li>
+              {{else}}
+                <li>No subtopics available</li>
+              {{/each}}
+            </ul>
+
+            {{#if selectedTopics.topic2.viewName}}
+              <a
+                href="/membertopics/{{selectedTopics.topic2.viewName}}"
+                class="groupmember-profile-topic-link"
+              >
+                review this topic
+              </a>
+            {{/if}}
+          </div>
+        </article>
+      {{/if}}
+
+      {{#if selectedTopics.topic3.title}}
+        <article class="groupmember-profile-topic-card" data-topic-id="{{selectedTopics.topic3.slug}}">
+          <div class="groupmember-profile-topic-content">
+            <h3 class="groupmember-profile-topic-title">
+              {{selectedTopics.topic3.title}}
+            </h3>
+
+            <ul class="groupmember-profile-topic-subtopics">
+              {{#each selectedTopics.topic3.subtopics}}
+                <li>{{this}}</li>
+              {{else}}
+                <li>No subtopics available</li>
+              {{/each}}
+            </ul>
+
+            {{#if selectedTopics.topic3.viewName}}
+              <a
+                href="/membertopics/{{selectedTopics.topic3.viewName}}"
+                class="groupmember-profile-topic-link"
+              >
+                review this topic
+              </a>
+            {{/if}}
+          </div>
+        </article>
+      {{/if}}
+
+    </div>
+  {{else}}
+    <div class="groupmember-profile-empty-state">
+      <p class="groupmember-profile-empty-kicker">No topics selected</p>
+      <p class="groupmember-profile-empty-text">
+        This group member has not selected learning topics yet.
+      </p>
+    </div>
+  {{/if}}
+</section>

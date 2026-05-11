@@ -1,20 +1,39 @@
-<section class="groupmember-completed-prompts-section">
-  <h2 class="groupmember-completed-prompts-title">completed prompt sets</h2>
+<section class="groupmember-profile-panel groupmember-profile-prompts-section">
+  <div class="groupmember-profile-panel-header">
+    <p class="groupmember-profile-eyebrow">prompt set progress</p>
+    <h2 class="groupmember-profile-panel-title">completed prompt sets</h2>
+  </div>
 
   {{#if completedPromptSets.length}}
-    <div class="groupmember-completed-prompts-grid">
+    <div class="groupmember-profile-prompts-grid">
       {{#each completedPromptSets}}
-        <div class="groupmember-completed-prompts-card">
-          <h3 class="groupmember-completed-prompts-title">{{this.promptSetTitle}}</h3>
-          <p class="groupmember-completed-prompts-main-topic">main topic: {{this.mainTopic}}</p>
-          <div class="groupmember-completed-prompts-badge"></div>
-        </div>
+        <article class="groupmember-profile-prompts-card">
+          <h3 class="groupmember-profile-prompts-title">
+            {{this.promptSetTitle}}
+          </h3>
+
+          <p class="groupmember-profile-prompts-topic">
+            {{#if this.mainTopic}}
+              {{this.mainTopic}}
+            {{else}}
+              No topic recorded
+            {{/if}}
+          </p>
+
+          {{#if this.badgeEarned}}
+            <p class="groupmember-profile-prompts-badge">
+              {{this.badgeEarned}}
+            </p>
+          {{/if}}
+        </article>
       {{/each}}
     </div>
   {{else}}
-    <div class="groupmember-completed-prompts-empty-container">
-      <p class="groupmember-no-completed-prompts">No completed prompt sets yet.</p>
+    <div class="groupmember-profile-empty-state">
+      <p class="groupmember-profile-empty-kicker">No completed prompt sets yet</p>
+      <p class="groupmember-profile-empty-text">
+        Completed prompt sets will appear here.
+      </p>
     </div>
   {{/if}}
 </section>
-

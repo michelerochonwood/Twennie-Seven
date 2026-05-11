@@ -1,25 +1,65 @@
-<section class="groupmember-library-section">
-  <h2 class="groupmember-library-title">my library units</h2>
+<section class="groupmember-profile-panel groupmember-profile-library-section">
+  <div class="groupmember-profile-panel-header">
+    <p class="groupmember-profile-eyebrow">learning contributions</p>
+    <h2 class="groupmember-profile-panel-title">my library units</h2>
+    <p class="groupmember-profile-panel-intro">
+      Units this group member has contributed to the Twennie learning library.
+    </p>
+  </div>
 
   {{#if memberLibraryUnits.length}}
-    <div class="groupmember-library-grid">
+    <div class="groupmember-profile-library-grid">
       {{#each memberLibraryUnits}}
-        <div class="groupmember-library-card">
-          <div class="groupmember-library-icon">
-            <img src="/icons/{{toLowerCase this.unitType}}.svg" alt="{{unitType}} icon">
+        <article class="groupmember-profile-library-card groupmember-dashboard-wave-card {{toLowerCase this.unitType}}-dashboard-card">
+          <div class="groupmember-dashboard-wave-card-inner">
+
+            <div class="groupmember-dashboard-wave-header">
+              <img
+                src="/icons/unitsvg.svg"
+                alt=""
+                aria-hidden="true"
+                class="groupmember-dashboard-wave-image"
+              >
+            </div>
+
+            <div class="groupmember-dashboard-wave-content groupmember-profile-library-wave-content">
+              <div class="groupmember-profile-library-icon">
+                <img
+                  src="/icons/{{toLowerCase this.unitType}}.svg"
+                  alt="{{unitType}} icon"
+                >
+              </div>
+
+              <div class="groupmember-profile-library-content">
+                <h3 class="groupmember-profile-library-title">{{title}}</h3>
+
+                {{#if mainTopic}}
+                  <p class="groupmember-profile-library-topic">{{mainTopic}}</p>
+                {{/if}}
+
+                {{#if status}}
+                  <p class="groupmember-profile-library-status">{{status}}</p>
+                {{/if}}
+              </div>
+
+              <a
+                href="/unitviews/{{toLowerCase this.unitType}}s/view/{{this._id}}"
+                class="groupmember-profile-library-link"
+              >
+                view unit
+              </a>
+            </div>
+
           </div>
-          <div class="groupmember-library-info">
-            <h3 class="groupmember-library-title">{{title}}</h3>
-            <p class="groupmember-library-topic">{{mainTopic}}</p>
-            <p class="groupmember-library-status">status: {{status}}</p>
-          </div>
-          <a href="/unitviews/{{toLowerCase this.unitType}}s/view/{{this._id}}" class="groupmember-library-link">view unit</a>
-        </div>
+        </article>
       {{/each}}
     </div>
   {{else}}
-    <div class="groupmember-library-empty-container">
-      <p class="groupmember-library-no-units">You haven't submitted any units yet.</p>
+    <div class="groupmember-profile-empty-state">
+      <p class="groupmember-profile-empty-kicker">No library units yet</p>
+      <p class="groupmember-profile-empty-text">
+        This group member has not submitted any learning units yet.
+      </p>
     </div>
   {{/if}}
 </section>
