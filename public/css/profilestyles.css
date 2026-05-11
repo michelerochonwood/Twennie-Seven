@@ -2842,6 +2842,7 @@ html, body {
 
 /* =========================
    LEADER PROFILE — TOPICS
+   mirrors main dashboard topic cards
    ========================= */
 
 .leader-profile-topics-section {
@@ -2850,44 +2851,41 @@ html, body {
 
 .leader-profile-topics-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1.4rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  justify-content: center;
+  margin-top: 20px;
 }
 
 .leader-profile-topic-card {
-  overflow: hidden;
-  background: #fff;
-  border-radius: 24px;
-  border: 1px solid rgba(38, 34, 98, 0.08);
-  box-shadow: 0 14px 30px rgba(38, 34, 98, 0.12);
+  background: rgb(245, 245, 245);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 3px 6px 12px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
-  min-height: 100%;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 350px;
+  text-align: center;
+  box-sizing: border-box;
 }
 
 .leader-profile-topic-wave {
-  width: 100%;
-  height: 92px;
-  overflow: hidden;
-}
-
-.leader-profile-topic-wave img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+  display: none;
 }
 
 .leader-profile-topic-content {
-  padding: 1.3rem;
   display: flex;
   flex-direction: column;
+  align-items: center;
   flex: 1;
+  width: 100%;
   text-align: center;
 }
 
 .leader-profile-topic-title {
-  margin: 0 0 1rem;
+  margin: 0 0 12px;
   color: #262262;
   font-size: 1rem;
   font-weight: 800;
@@ -2897,49 +2895,53 @@ html, body {
 .leader-profile-topic-subtopics {
   list-style: none;
   padding: 0;
-  margin: 0 0 1.2rem;
+  margin: 0 auto;
+  width: 100%;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 .leader-profile-topic-subtopics li {
-  padding: 0.7rem 0;
-  font-size: 0.76rem;
-  line-height: 1.4;
-  color: #444;
+  padding: 8px 0;
+  color: #333;
+  font-size: 0.7rem;
+  line-height: 1.35;
+  text-align: center;
 }
 
 .leader-profile-topic-subtopics li:not(:last-child) {
-  border-bottom: 1px solid #ececf4;
+  border-bottom: 1px solid #ccc;
+  width: 90%;
+  margin: 0 auto;
 }
 
 .leader-profile-topic-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: auto;
-  align-self: center;
-  padding: 0.9rem 1rem;
-  min-width: 170px;
-  background: #262262;
+  display: inline-block;
+  margin-top: 15px;
   color: #fff;
-  border-radius: 999px;
-  text-decoration: none;
+  background: #262262;
+  padding: 10px 15px;
   text-transform: lowercase;
-  font-size: 0.74rem;
+  border-radius: 30px;
+  text-decoration: none;
+  font-size: 0.7rem;
   font-weight: 800;
-  transition: background 0.2s ease;
+  transition: background 0.3s ease-in-out;
 }
 
 .leader-profile-topic-link:hover {
-  background: #4e50a2;
+  background: #4a4ab2;
 }
 
-@media screen and (max-width: 1000px) {
+@media screen and (max-width: 768px) {
   .leader-profile-topics-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media screen and (max-width: 640px) {
+@media screen and (max-width: 600px) {
   .leader-profile-topics-grid {
     grid-template-columns: 1fr;
   }
