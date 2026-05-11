@@ -5,35 +5,11 @@
     {{leaderGroupName}}; Member Engagement
   </h1>
 
-  <p class="member-engagement-intro">
+  <p class="member-engagement-intro" style="width 70%; text-align: center; margin: 0 auto;">
     These reports show the units your team members have completed. Your group members may have other units assigned but not yet completed, or prompt sets and missions still in progress. For prompt sets in progress, see the prompt sets completed and in progress report.
   </p>
 
-  {{#if groupedUnits.length}}
-    <div class="member-grouped-units-block">
-      <h2>units completed by more than one member</h2>
 
-      <div class="member-grouped-units-grid">
-        {{#each groupedUnits}}
-          <article class="member-grouped-unit-card">
-            <h3>{{#if this.unitTitle}}{{this.unitTitle}}{{else}}Untitled unit{{/if}}</h3>
-
-            <p class="member-grouped-unit-type">
-              {{#if this.unitType}}{{this.unitType}}{{else}}unknown type{{/if}}
-            </p>
-
-            <div class="member-grouped-unit-members">
-              {{#each this.members}}
-                <span>{{this}}</span>
-              {{else}}
-                <span class="no-data">No members listed</span>
-              {{/each}}
-            </div>
-          </article>
-        {{/each}}
-      </div>
-    </div>
-  {{/if}}
 
   <div class="member-engagement-accordion">
     {{#each memberEngagementReports}}
@@ -56,6 +32,7 @@
             </strong>
 
             <small>
+              {{this.topicsEngaged.length}} topics engaged
               {{this.unitsCompleted.length}} unit(s)
               · {{this.promptSetsCompleted.length}} prompt set(s)
               · {{this.missionsCompleted.length}} mission(s)
