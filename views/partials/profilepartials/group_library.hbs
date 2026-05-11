@@ -1,26 +1,53 @@
-<section class="group-library-section">
-  <h2 class="group-library-title">group library contributions</h2>
+<section class="group-profile-panel group-profile-library-section">
+  <div class="group-profile-panel-header">
+    <p class="group-profile-eyebrow">group contributions</p>
+    <h2 class="group-profile-panel-title">group library contributions</h2>
+  </div>
 
   {{#if groupLibraryUnits.length}}
-    <div class="group-library-grid">
+    <div class="group-profile-library-grid">
       {{#each groupLibraryUnits}}
-        <div class="group-library-card">
-          <div class="group-library-icon">
-            <img src="/icons/{{toLowerCase this.unitType}}.svg" alt="{{unitType}} icon">
+        <article class="group-profile-library-card group-dashboard-wave-card {{toLowerCase this.unitType}}-dashboard-card">
+          <div class="group-dashboard-wave-card-inner">
+            <div class="group-dashboard-wave-header">
+              <img src="/icons/unitsvg.svg" alt="" aria-hidden="true" class="group-dashboard-wave-image">
+            </div>
+
+            <div class="group-dashboard-wave-content group-profile-library-wave-content">
+              <div class="group-profile-library-icon">
+                <img src="/icons/{{toLowerCase this.unitType}}.svg" alt="{{unitType}} icon">
+              </div>
+
+              <div class="group-profile-library-content">
+                <h3 class="group-profile-library-title">{{title}}</h3>
+
+                {{#if author}}
+                  <p class="group-profile-library-author">by {{author}}</p>
+                {{/if}}
+
+                {{#if mainTopic}}
+                  <p class="group-profile-library-topic">{{mainTopic}}</p>
+                {{/if}}
+
+                {{#if status}}
+                  <p class="group-profile-library-status">{{status}}</p>
+                {{/if}}
+              </div>
+
+              <a href="/unitviews/{{toLowerCase this.unitType}}s/view/{{this._id}}" class="group-profile-library-link">
+                view unit
+              </a>
+            </div>
           </div>
-          <div class="group-library-info">
-            <h3 class="group-library-title">{{title}}</h3>
-            <p class="group-library-author">by {{author}}</p>
-            <p class="group-library-topic">{{mainTopic}}</p>
-            <p class="group-library-status">status: {{status}}</p>
-          </div>
-          <a href="/unitviews/{{toLowerCase this.unitType}}s/view/{{this._id}}" class="group-library-link">view unit</a>
-        </div>
+        </article>
       {{/each}}
     </div>
   {{else}}
-    <div class="group-library-empty-container">
-      <p class="group-library-no-units">No group contributions submitted yet.</p>
+    <div class="group-profile-empty-state">
+      <p class="group-profile-empty-kicker">No group contributions yet</p>
+      <p class="group-profile-empty-text">
+        Group library contributions will appear here after they are submitted.
+      </p>
     </div>
   {{/if}}
 </section>

@@ -1,25 +1,72 @@
-<section class="member-library-units-section">
-  <h2 class="member-library-units-title">my library units</h2>
+<section class="member-profile-panel member-profile-library-section">
+  <div class="member-profile-panel-header">
+    <p class="member-profile-eyebrow">learning contributions</p>
+    <h2 class="member-profile-panel-title">my library units</h2>
+
+    <p class="member-profile-panel-intro">
+      Units this member has contributed to the Twennie learning library.
+    </p>
+  </div>
 
   {{#if memberUnits.length}}
-    <div class="member-library-units-grid">
+    <div class="member-profile-library-grid">
       {{#each memberUnits}}
-        <div class="member-library-unit-card">
-          <div class="member-library-unit-icon">
-            <img src="/icons/{{toLowerCase this.unitType}}.svg" alt="{{unitType}} icon">
+        <article class="member-profile-library-card member-dashboard-wave-card {{toLowerCase this.unitType}}-dashboard-card">
+          <div class="member-dashboard-wave-card-inner">
+
+            <div class="member-dashboard-wave-header">
+              <img
+                src="/icons/unitsvg.svg"
+                alt=""
+                aria-hidden="true"
+                class="member-dashboard-wave-image"
+              >
+            </div>
+
+            <div class="member-dashboard-wave-content member-profile-library-wave-content">
+              <div class="member-profile-library-icon">
+                <img
+                  src="/icons/{{toLowerCase this.unitType}}.svg"
+                  alt="{{unitType}} icon"
+                >
+              </div>
+
+              <div class="member-profile-library-content">
+                <h3 class="member-profile-library-title">
+                  {{title}}
+                </h3>
+
+                {{#if mainTopic}}
+                  <p class="member-profile-library-topic">
+                    {{mainTopic}}
+                  </p>
+                {{/if}}
+
+                {{#if status}}
+                  <p class="member-profile-library-status">
+                    {{status}}
+                  </p>
+                {{/if}}
+              </div>
+
+              <a
+                href="/unitviews/{{toLowerCase this.unitType}}s/view/{{this._id}}"
+                class="member-profile-library-link"
+              >
+                view and/or edit
+              </a>
+            </div>
+
           </div>
-          <div class="member-library-unit-info">
-            <h3 class="member-library-unit-title">{{title}}</h3>
-            <p class="member-library-unit-topic">{{mainTopic}}</p>
-            <p class="member-library-unit-status">Status: {{status}}</p>
-          </div>
-          <a href="/unitviews/{{toLowerCase this.unitType}}s/view/{{this._id}}" class="member-library-unit-link">view and/or edit</a>
-        </div>
+        </article>
       {{/each}}
     </div>
   {{else}}
-    <div class="member-no-library-units-container">
-      <p class="member-no-library-units">No units submitted yet.</p>
+    <div class="member-profile-empty-state">
+      <p class="member-profile-empty-kicker">No library units yet</p>
+      <p class="member-profile-empty-text">
+        This member has not submitted any learning units yet.
+      </p>
     </div>
   {{/if}}
 </section>

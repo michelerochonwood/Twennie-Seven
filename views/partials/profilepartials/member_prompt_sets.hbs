@@ -1,20 +1,39 @@
-<section class="member-completed-prompts-section">
-  <h2 class="member-completed-prompts-title">completed prompt sets</h2>
+<section class="member-profile-panel member-profile-prompts-section">
+  <div class="member-profile-panel-header">
+    <p class="member-profile-eyebrow">prompt set progress</p>
+    <h2 class="member-profile-panel-title">completed prompt sets</h2>
+  </div>
 
   {{#if completedPromptSets.length}}
-    <div class="member-completed-prompts-grid">
+    <div class="member-profile-prompts-grid">
       {{#each completedPromptSets}}
-        <div class="member-completed-prompts-card">
-          <h3 class="member-completed-prompts-title">{{this.promptSetTitle}}</h3>
-          <p class="member-completed-prompts-main-topic">main topic: {{this.mainTopic}}</p>
-          <div class="member-completed-prompts-badge"></div>
-        </div>
+        <article class="member-profile-prompts-card">
+          <h3 class="member-profile-prompts-title">
+            {{this.promptSetTitle}}
+          </h3>
+
+          <p class="member-profile-prompts-topic">
+            {{#if this.mainTopic}}
+              {{this.mainTopic}}
+            {{else}}
+              No topic recorded
+            {{/if}}
+          </p>
+
+          {{#if this.badgeEarned}}
+            <p class="member-profile-prompts-badge">
+              {{this.badgeEarned}}
+            </p>
+          {{/if}}
+        </article>
       {{/each}}
     </div>
   {{else}}
-    <div class="member-no-completed-prompts-container">
-      <p class="member-no-completed-prompts">No completed prompt sets yet.</p>
+    <div class="member-profile-empty-state">
+      <p class="member-profile-empty-kicker">No completed prompt sets yet</p>
+      <p class="member-profile-empty-text">
+        Completed prompt sets will appear here.
+      </p>
     </div>
   {{/if}}
 </section>
-

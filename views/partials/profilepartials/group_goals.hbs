@@ -1,4 +1,21 @@
-<div class="group-goals-container">
-    <h3 class="group-profile-subtitle">my goals</h3>
-    <p class="group-goals-text">{{group.goals}}</p>
-</div>
+<section class="group-profile-panel group-profile-goals-section">
+  <div class="group-profile-panel-header">
+    <p class="group-profile-eyebrow">group goals</p>
+    <h2 class="group-profile-panel-title">our goals</h2>
+  </div>
+
+  {{#if group.goals}}
+    <div class="group-profile-goals-body">
+      <p class="group-profile-goals-text">
+        {{group.goals}}
+      </p>
+    </div>
+  {{else}}
+    <div class="group-profile-empty-state">
+      <p class="group-profile-empty-kicker">No group goals added</p>
+      <p class="group-profile-empty-text">
+        This group has not added goals yet.
+      </p>
+    </div>
+  {{/if}}
+</section>

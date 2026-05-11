@@ -1,4 +1,21 @@
-<div class="member-bio-container">
-    <h3 class="member-profile-subtitle">my biography</h3>
-    <p class="member-bio-text">{{member.biography}}</p>
-</div>
+<section class="member-profile-panel member-profile-biography-section">
+  <div class="member-profile-panel-header">
+    <p class="member-profile-eyebrow">profile biography</p>
+    <h2 class="member-profile-panel-title">my biography</h2>
+  </div>
+
+  {{#if member.biography}}
+    <div class="member-profile-biography-body">
+      <p class="member-profile-biography-text">
+        {{member.biography}}
+      </p>
+    </div>
+  {{else}}
+    <div class="member-profile-empty-state">
+      <p class="member-profile-empty-kicker">No biography added</p>
+      <p class="member-profile-empty-text">
+        This member has not added a biography yet.
+      </p>
+    </div>
+  {{/if}}
+</section>

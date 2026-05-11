@@ -1,49 +1,94 @@
-{{!-- PROFILE VERSION: Topics shown in the group profile --}}
-<div class="group-profile-topics-container">
-    <h3 class="group-profile-topics-title">group topics</h3>
+<section class="group-profile-panel group-profile-topics-section">
+  <div class="group-profile-panel-header">
+    <p class="group-profile-eyebrow">group learning direction</p>
+    <h2 class="group-profile-panel-title">group topics</h2>
 
+    <p class="group-profile-panel-intro">
+      These topics help organize the group profile around the learning areas most relevant to this team.
+    </p>
+  </div>
+
+  {{#if group.selectedTopics.topic1.title}}
     <div class="group-profile-topics-grid">
-        {{#if group.selectedTopics.topic1}}
-            <div class="group-profile-topic-card" data-topic-id="{{group.selectedTopics.topic1.slug}}">
-                <div class="group-profile-topic-title">{{group.selectedTopics.topic1.title}}</div>
-                <ul class="group-profile-topic-subtopics">
-                    {{#each group.selectedTopics.topic1.subtopics}}
-                        <li>{{this}}</li>
-                    {{else}}
-                        <li>No subtopics available</li>
-                    {{/each}}
-                </ul>
-                <a href="/membertopics/{{group.selectedTopics.topic1.viewName}}" class="group-profile-topic-review">review this topic</a>
-            </div>
-        {{/if}}
 
-        {{#if group.selectedTopics.topic2}}
-            <div class="group-profile-topic-card" data-topic-id="{{group.selectedTopics.topic2.slug}}">
-                <div class="group-profile-topic-title">{{group.selectedTopics.topic2.title}}</div>
-                <ul class="group-profile-topic-subtopics">
-                    {{#each group.selectedTopics.topic2.subtopics}}
-                        <li>{{this}}</li>
-                    {{else}}
-                        <li>No subtopics available</li>
-                    {{/each}}
-                </ul>
-                <a href="/membertopics/{{group.selectedTopics.topic2.viewName}}" class="group-profile-topic-review">review this topic</a>
-            </div>
-        {{/if}}
+      <article class="group-profile-topic-card" data-topic-id="{{group.selectedTopics.topic1.slug}}">
+        <div class="group-profile-topic-content">
+          <h3 class="group-profile-topic-title">
+            {{group.selectedTopics.topic1.title}}
+          </h3>
 
-        {{#if group.selectedTopics.topic3}}
-            <div class="group-profile-topic-card" data-topic-id="{{group.selectedTopics.topic3.slug}}">
-                <div class="group-profile-topic-title">{{group.selectedTopics.topic3.title}}</div>
-                <ul class="group-profile-topic-subtopics">
-                    {{#each group.selectedTopics.topic3.subtopics}}
-                        <li>{{this}}</li>
-                    {{else}}
-                        <li>No subtopics available</li>
-                    {{/each}}
-                </ul>
-                <a href="/membertopics/{{group.selectedTopics.topic3.viewName}}" class="group-profile-topic-review">review this topic</a>
-            </div>
-        {{/if}}
+          <ul class="group-profile-topic-subtopics">
+            {{#each group.selectedTopics.topic1.subtopics}}
+              <li>{{this}}</li>
+            {{else}}
+              <li>No subtopics available</li>
+            {{/each}}
+          </ul>
+
+          {{#if group.selectedTopics.topic1.viewName}}
+            <a href="/membertopics/{{group.selectedTopics.topic1.viewName}}" class="group-profile-topic-link">
+              review this topic
+            </a>
+          {{/if}}
+        </div>
+      </article>
+
+      {{#if group.selectedTopics.topic2.title}}
+        <article class="group-profile-topic-card" data-topic-id="{{group.selectedTopics.topic2.slug}}">
+          <div class="group-profile-topic-content">
+            <h3 class="group-profile-topic-title">
+              {{group.selectedTopics.topic2.title}}
+            </h3>
+
+            <ul class="group-profile-topic-subtopics">
+              {{#each group.selectedTopics.topic2.subtopics}}
+                <li>{{this}}</li>
+              {{else}}
+                <li>No subtopics available</li>
+              {{/each}}
+            </ul>
+
+            {{#if group.selectedTopics.topic2.viewName}}
+              <a href="/membertopics/{{group.selectedTopics.topic2.viewName}}" class="group-profile-topic-link">
+                review this topic
+              </a>
+            {{/if}}
+          </div>
+        </article>
+      {{/if}}
+
+      {{#if group.selectedTopics.topic3.title}}
+        <article class="group-profile-topic-card" data-topic-id="{{group.selectedTopics.topic3.slug}}">
+          <div class="group-profile-topic-content">
+            <h3 class="group-profile-topic-title">
+              {{group.selectedTopics.topic3.title}}
+            </h3>
+
+            <ul class="group-profile-topic-subtopics">
+              {{#each group.selectedTopics.topic3.subtopics}}
+                <li>{{this}}</li>
+              {{else}}
+                <li>No subtopics available</li>
+              {{/each}}
+            </ul>
+
+            {{#if group.selectedTopics.topic3.viewName}}
+              <a href="/membertopics/{{group.selectedTopics.topic3.viewName}}" class="group-profile-topic-link">
+                review this topic
+              </a>
+            {{/if}}
+          </div>
+        </article>
+      {{/if}}
+
     </div>
-</div>
+  {{else}}
+    <div class="group-profile-empty-state">
+      <p class="group-profile-empty-kicker">No group topics selected</p>
+      <p class="group-profile-empty-text">
+        This group has not selected learning topics yet.
+      </p>
+    </div>
+  {{/if}}
+</section>
 

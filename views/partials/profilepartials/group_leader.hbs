@@ -1,11 +1,46 @@
-<div class="group-leader-container">
-    <div class="group-leader-image">
-        <img src="{{groupLeader.profileImage}}" alt="{{groupLeader.name}}'s Profile Picture">
-    </div>
-    <div class="group-leader-info">
-        <h2 class="group-leader-name">{{groupLeader.name}}</h2>
-        <p class="group-leader-title">{{groupLeader.professionalTitle}}</p>
-        <a href="/profile/leader/{{groupLeader._id}}" class="group-leader-profile-btn">view leader's profile</a>
-    </div>
-</div>
+<section class="group-profile-panel group-profile-leader-section">
+  <div class="group-profile-panel-header">
+    <p class="group-profile-eyebrow">group leadership</p>
+    <h2 class="group-profile-panel-title">group leader</h2>
+  </div>
 
+  {{#if groupLeader}}
+    <div class="group-profile-leader-card">
+      <div class="group-profile-leader-image-wrap">
+        <img
+          src="{{#if groupLeader.profileImage}}{{groupLeader.profileImage}}{{else}}/images/default-avatar.png{{/if}}"
+          alt="{{groupLeader.name}} profile picture"
+          class="group-profile-leader-image"
+        >
+      </div>
+
+      <div class="group-profile-leader-info">
+        <h3 class="group-profile-leader-name">
+          {{groupLeader.name}}
+        </h3>
+
+        <p class="group-profile-leader-title">
+          {{#if groupLeader.professionalTitle}}
+            {{groupLeader.professionalTitle}}
+          {{else}}
+            No title added
+          {{/if}}
+        </p>
+
+        <a
+          href="/profile/leader/{{groupLeader._id}}"
+          class="group-profile-leader-link"
+        >
+          view leader's profile
+        </a>
+      </div>
+    </div>
+  {{else}}
+    <div class="group-profile-empty-state">
+      <p class="group-profile-empty-kicker">No leader assigned</p>
+      <p class="group-profile-empty-text">
+        This group does not currently have a visible leader profile.
+      </p>
+    </div>
+  {{/if}}
+</section>

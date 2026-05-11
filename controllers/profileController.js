@@ -889,144 +889,239 @@ const editGroupMemberProfile = async (req, res) => {
 
 
 const viewGroupProfile = async (req, res) => {
+  try {
+    const leader = await Leader.findOne({ _id: req.params.id }).populate("members");
+    const groupProfile = await GroupProfile.findOne({ groupId: req.params.id });
 
-    try {
-      const leader = await Leader.findOne({ _id: req.params.id }).populate("members");
-      const groupProfile = await GroupProfile.findOne({ groupId: req.params.id });
-  
-      if (!leader || !groupProfile) {
-        return res.status(404).send("Group not found.");
-      }
-  
-      console.log("✅ Leader Data:", JSON.stringify(leader, null, 2));
-  
-      // ✅ Cloud-safe fallback for group image
-      const safeGroupImage = leader.profileImage?.startsWith("http")
+    if (!leader || !groupProfile) {
+      return res.status(404).send("Group not found.");
+    }
+
+    const safeGroupImage = groupProfile.groupImage?.startsWith?.("http")
+      ? groupProfile.groupImage
+      : leader.profileImage?.startsWith?.("http")
         ? leader.profileImage
         : "https://www.twennie.com/images/defaultgroupavatar.jpg";
-  
-      const groupData = {
-        groupImage: safeGroupImage,
-        groupName: leader.groupName || "No Group Name Provided",
-        organization: leader.organization || "No Organization Provided",
-        biography: groupProfile.biography || "No biography available.",
-        goals: groupProfile.groupGoals || "No goals set.",
-        topics: leader.topics || {},
-        leaderId: leader._id.toString()
+
+    const topics = leader.topics || groupProfile.groupTopics || {};
+
+    const selectedTopics = ["topic1", "topic2", "topic3"].reduce((acc, key) => {
+      acc[key] = buildSelectedTopic(topics[key]);
+      return acc;
+    }, {});
+
+    const groupData = {
+      groupImage: safeGroupImage,
+      groupName: groupProfile.groupName || leader.groupName || "No Group Name Provided",
+      organization: groupProfile.organization || leader.organization || "No Organization Provided",
+      biography: groupProfile.biography || leader.biography || "",
+      goals: groupProfile.groupGoals || leader.goals || "",
+      topics,
+      selectedTopics,
+      leaderId: leader._id.toString(),
+      maxGroupSize: leader.maxGroupSize || 10,
+      members: leader.members || []
+    };
+
+    const leaderProfile = await LeaderProfile.findOne({ leaderId: leader._id })
+      .select("profileImage name professionalTitle")
+      .lean();
+
+    const groupLeader = {
+      _id: leader._id,
+      name:
+        leaderProfile?.name ||
+        leader.groupLeaderName ||
+        leader.name ||
+        "Unknown Leader",
+      profileImage:
+        leaderProfile?.profileImage?.startsWith?.("http")
+          ? leaderProfile.profileImage
+          : leader.profileImage?.startsWith?.("http")
+            ? leader.profileImage
+            : "https://www.twennie.com/images/default-avatar.png",
+      professionalTitle:
+        leaderProfile?.professionalTitle ||
+        leader.professionalTitle ||
+        "No Title Provided"
+    };
+
+    const groupMemberDocs = Array.isArray(leader.members) ? leader.members : [];
+    const groupMemberIds = groupMemberDocs.map(member => member._id);
+
+    const groupMemberProfiles = groupMemberIds.length
+      ? await GroupMemberProfile.find({
+          groupMemberId: { $in: groupMemberIds }
+        })
+          .select("groupMemberId profileImage professionalTitle name")
+          .lean()
+      : [];
+
+    const groupMemberProfileMap = new Map(
+      groupMemberProfiles.map(profile => [
+        profile.groupMemberId.toString(),
+        profile
+      ])
+    );
+
+    const enrichedGroupMembers = groupMemberDocs.map(member => {
+      const memberObject =
+        typeof member.toObject === "function" ? member.toObject() : member;
+
+      const profileForMember = groupMemberProfileMap.get(
+        memberObject._id.toString()
+      );
+
+      return {
+        ...memberObject,
+        name:
+          profileForMember?.name ||
+          memberObject.name ||
+          "Group member",
+        profileImage:
+          profileForMember?.profileImage?.startsWith?.("http")
+            ? profileForMember.profileImage
+            : memberObject.profileImage?.startsWith?.("http")
+              ? memberObject.profileImage
+              : "/images/default-avatar.png",
+        professionalTitle:
+          profileForMember?.professionalTitle ||
+          memberObject.professionalTitle ||
+          "No title added"
       };
-  
-      const leaderData = await resolveAuthorById(leader._id);
-      const groupLeader = {
-        _id: leader._id,
-        name: leaderData.name || leader.groupLeaderName || "Unknown Leader",
-        profileImage: leader.profileImage?.startsWith("http")
-          ? leader.profileImage
-          : "https://www.twennie.com/images/default-avatar.png",
-        professionalTitle: leader.professionalTitle || "No Title Provided"
-      };
-  
-      console.log("✅ Group Leader Data:", JSON.stringify(groupLeader, null, 2));
-  
-      // ✅ Topic structure (DRY)
-      const topics = leader.topics || {};
-const selectedTopics = ["topic1", "topic2", "topic3"].reduce((acc, key) => {
-  acc[key] = buildSelectedTopic(topics[key]);
-  return acc;
-}, {});
-  
-      console.log("✅ Selected Topics for Group:", selectedTopics);
-  
-      // ✅ Leader's library units
-      const [leaderArticles, leaderVideos, leaderPromptSets, leaderInterviews, leaderExercises, leaderTemplates] = await Promise.all([
-        Article.find({ 'author.id': leader._id }).lean(),
-        Video.find({ 'author.id': leader._id }).lean(),
-        PromptSet.find({ 'author.id': leader._id }).lean(),
-        Interview.find({ 'author.id': leader._id }).lean(),
-        Exercise.find({ 'author.id': leader._id }).lean(),
-        Template.find({ 'author.id': leader._id }).lean()
-      ]);
-  
-      // ✅ Group members' units
-      const groupMemberIds = leader.members.map(member => member._id);
-      const [memberArticles, memberVideos, memberPromptSets, memberInterviews, memberExercises, memberTemplates] = await Promise.all([
-        Article.find({ 'author.id': { $in: groupMemberIds } }).lean(),
-        Video.find({ 'author.id': { $in: groupMemberIds } }).lean(),
-        PromptSet.find({ 'author.id': { $in: groupMemberIds } }).lean(),
-        Interview.find({ 'author.id': { $in: groupMemberIds } }).lean(),
-        Exercise.find({ 'author.id': { $in: groupMemberIds } }).lean(),
-        Template.find({ 'author.id': { $in: groupMemberIds } }).lean()
-      ]);
-  
-      // ✅ Helper to format units
-      const formatUnits = async (units, unitType) => {
-        return Promise.all(units.map(async (unit) => {
-          const authorData = await resolveAuthorById(unit.author?.id);
+    });
+
+    const [
+      leaderArticles,
+      leaderVideos,
+      leaderPromptSets,
+      leaderInterviews,
+      leaderExercises,
+      leaderTemplates,
+      memberArticles,
+      memberVideos,
+      memberPromptSets,
+      memberInterviews,
+      memberExercises,
+      memberTemplates
+    ] = await Promise.all([
+      Article.find({ "author.id": leader._id }).lean(),
+      Video.find({ "author.id": leader._id }).lean(),
+      PromptSet.find({ "author.id": leader._id }).lean(),
+      Interview.find({ "author.id": leader._id }).lean(),
+      Exercise.find({ "author.id": leader._id }).lean(),
+      Template.find({ "author.id": leader._id }).lean(),
+
+      Article.find({ "author.id": { $in: groupMemberIds } }).lean(),
+      Video.find({ "author.id": { $in: groupMemberIds } }).lean(),
+      PromptSet.find({ "author.id": { $in: groupMemberIds } }).lean(),
+      Interview.find({ "author.id": { $in: groupMemberIds } }).lean(),
+      Exercise.find({ "author.id": { $in: groupMemberIds } }).lean(),
+      Template.find({ "author.id": { $in: groupMemberIds } }).lean()
+    ]);
+
+    const formatUnits = async (units, unitType) => {
+      return Promise.all(
+        units.map(async unit => {
+          const authorData = await resolveAuthorById(unit.author?.id || unit.author);
+
           return {
             unitType,
-            title: unit.article_title || unit.video_title || unit.promptset_title || unit.interview_title || unit.exercise_title || unit.template_title,
-            status: unit.status,
-            mainTopic: unit.main_topic,
+            title:
+              unit.article_title ||
+              unit.video_title ||
+              unit.promptset_title ||
+              unit.interview_title ||
+              unit.exercise_title ||
+              unit.template_title ||
+              "Untitled Unit",
+            status: unit.status || "unknown",
+            mainTopic: unit.main_topic || "",
             _id: unit._id,
             author: authorData.name || "Unknown Author"
           };
-        }));
-      };
-  
-      const groupLibraryUnits = [
-        ...(await formatUnits(leaderArticles, "article")),
-        ...(await formatUnits(leaderVideos, "video")),
-        ...(await formatUnits(leaderPromptSets, "promptset")),
-        ...(await formatUnits(leaderInterviews, "interview")),
-        ...(await formatUnits(leaderExercises, "exercise")),
-        ...(await formatUnits(leaderTemplates, "template")),
-        ...(await formatUnits(memberArticles, "article")),
-        ...(await formatUnits(memberVideos, "video")),
-        ...(await formatUnits(memberPromptSets, "promptset")),
-        ...(await formatUnits(memberInterviews, "interview")),
-        ...(await formatUnits(memberExercises, "exercise")),
-        ...(await formatUnits(memberTemplates, "template"))
-      ];
-  
-      console.log("✅ Group Library Units:", JSON.stringify(groupLibraryUnits, null, 2));
-  
-      // ✅ Badges for leader + group members
-      const badgeRecords = await Badge.find({ memberId: { $in: [leader._id, ...groupMemberIds] } }).populate("promptSetId").lean();
-  
-      const groupBadges = await Promise.all(
-        badgeRecords.map(async (record) => {
-          const memberData = await resolveAuthorById(record.memberId);
-          return {
-            earnedBadge: {
-              image: record.earnedBadge?.image || "https://www.twennie.com/images/default-badge.png",
-              name: record.earnedBadge?.name || "Unknown Badge"
-            },
-            earnedBy: memberData.name || "Unknown Member",
-            promptSetTitle: record.promptSetId?.promptset_title || "Unknown Prompt Set",
-            mainTopic: record.promptSetId?.main_topic || "No topic",
-            purpose: record.promptSetId?.purpose || "No purpose provided"
-          };
         })
       );
-  
-      console.log("✅ Group Earned Badges:", JSON.stringify(groupBadges, null, 2));
-  
-      res.render("profile_views/group_profile", {
-        layout: "profilelayout",
-        group: {
-          ...groupData,
-          selectedTopics
+    };
+
+    const groupLibraryUnits = [
+      ...(await formatUnits(leaderArticles, "article")),
+      ...(await formatUnits(leaderVideos, "video")),
+      ...(await formatUnits(leaderPromptSets, "promptset")),
+      ...(await formatUnits(leaderInterviews, "interview")),
+      ...(await formatUnits(leaderExercises, "exercise")),
+      ...(await formatUnits(leaderTemplates, "template")),
+      ...(await formatUnits(memberArticles, "article")),
+      ...(await formatUnits(memberVideos, "video")),
+      ...(await formatUnits(memberPromptSets, "promptset")),
+      ...(await formatUnits(memberInterviews, "interview")),
+      ...(await formatUnits(memberExercises, "exercise")),
+      ...(await formatUnits(memberTemplates, "template"))
+    ];
+
+    const badgeRecords = await Badge.find({
+      memberId: { $in: [leader._id, ...groupMemberIds] }
+    })
+      .populate("promptSetId")
+      .lean();
+
+    const memberNameMap = new Map([
+      [leader._id.toString(), groupLeader.name],
+      ...enrichedGroupMembers.map(member => [
+        member._id.toString(),
+        member.name || "Group member"
+      ])
+    ]);
+
+    const groupBadges = badgeRecords.map(record => {
+      const memberId = record.memberId?.toString?.();
+
+      return {
+        earnedBadge: {
+          image:
+            record.earnedBadge?.image ||
+            "https://www.twennie.com/images/default-badge.png",
+          name: record.earnedBadge?.name || "Unknown Badge"
         },
-        groupLeader,
-        groupLibraryUnits,
-        groupBadges,
-        isGroupLeader: req.user && req.user.id === leader._id.toString(),
-        groupMembers: leader.members || []
-      });
-    } catch (error) {
-      console.error("❌ Error fetching group profile:", error);
-      res.status(500).send("Internal Server Error");
-    }
-  };
+        earnedBy: memberNameMap.get(memberId) || "Unknown Member",
+        promptSetTitle:
+          record.promptSetId?.promptset_title || "Unknown Prompt Set",
+        mainTopic: record.promptSetId?.main_topic || "No topic",
+        purpose: record.promptSetId?.purpose || "No purpose provided",
+        completedAt: record.completedAt || null
+      };
+    });
+
+    const groupCompletedPromptSets = badgeRecords.map(record => {
+      const memberId = record.memberId?.toString?.();
+
+      return {
+        promptSetTitle:
+          record.promptSetId?.promptset_title || "Unknown Prompt Set",
+        mainTopic: record.promptSetId?.main_topic || "No topic",
+        completionDate: record.completedAt
+          ? new Date(record.completedAt).toDateString()
+          : "Unknown Date",
+        badgeEarned: record.earnedBadge?.name || "",
+        earnedBy: memberNameMap.get(memberId) || "Unknown Member"
+      };
+    });
+
+    return res.render("profile_views/group_profile", {
+      layout: "profilelayout",
+      group: groupData,
+      groupLeader,
+      groupMembers: enrichedGroupMembers,
+      groupLibraryUnits,
+      groupBadges,
+      groupCompletedPromptSets,
+      isGroupLeader: req.user && req.user.id === leader._id.toString()
+    });
+  } catch (error) {
+    console.error("❌ Error fetching group profile:", error);
+    return res.status(500).send("Internal Server Error");
+  }
+};
   
 
 

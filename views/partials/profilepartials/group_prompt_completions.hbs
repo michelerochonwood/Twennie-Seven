@@ -1,20 +1,39 @@
-<section class="group-completed-prompts-section">
-  <h2 class="group-completed-prompts-title">group completed prompt sets</h2>
+<section class="group-profile-panel group-profile-prompts-section">
+  <div class="group-profile-panel-header">
+    <p class="group-profile-eyebrow">group prompt set progress</p>
+    <h2 class="group-profile-panel-title">group completed prompt sets</h2>
+  </div>
 
   {{#if groupCompletedPromptSets.length}}
-    <div class="group-completed-prompts-grid">
+    <div class="group-profile-prompts-grid">
       {{#each groupCompletedPromptSets}}
-        <div class="group-completed-prompts-card">
-          <h3 class="group-completed-prompts-title">{{this.promptSetTitle}}</h3>
-          <p class="group-completed-prompts-main-topic">main topic: {{this.mainTopic}}</p>
-          <div class="group-completed-prompts-badge"></div>
-        </div>
+        <article class="group-profile-prompts-card">
+          <h3 class="group-profile-prompts-title">
+            {{this.promptSetTitle}}
+          </h3>
+
+          <p class="group-profile-prompts-topic">
+            {{#if this.mainTopic}}
+              {{this.mainTopic}}
+            {{else}}
+              No topic recorded
+            {{/if}}
+          </p>
+
+          {{#if this.badgeEarned}}
+            <p class="group-profile-prompts-badge">
+              {{this.badgeEarned}}
+            </p>
+          {{/if}}
+        </article>
       {{/each}}
     </div>
   {{else}}
-    <div class="group-completed-prompts-empty-container">
-      <p class="group-no-completed-prompts">No completed prompt sets yet.</p>
+    <div class="group-profile-empty-state">
+      <p class="group-profile-empty-kicker">No completed prompt sets yet</p>
+      <p class="group-profile-empty-text">
+        Completed prompt sets for this group will appear here.
+      </p>
     </div>
   {{/if}}
 </section>
-

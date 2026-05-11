@@ -1,4 +1,21 @@
-<div class="group-bio-container">
-    <h3 class="group-profile-subtitle">my biography</h3>
-    <p class="group-bio-text">{{group.biography}}</p>
-</div>
+<section class="group-profile-panel group-profile-biography-section">
+  <div class="group-profile-panel-header">
+    <p class="group-profile-eyebrow">group biography</p>
+    <h2 class="group-profile-panel-title">our biography</h2>
+  </div>
+
+  {{#if group.biography}}
+    <div class="group-profile-biography-body">
+      <p class="group-profile-biography-text">
+        {{group.biography}}
+      </p>
+    </div>
+  {{else}}
+    <div class="group-profile-empty-state">
+      <p class="group-profile-empty-kicker">No biography added</p>
+      <p class="group-profile-empty-text">
+        This group has not added a biography yet.
+      </p>
+    </div>
+  {{/if}}
+</section>

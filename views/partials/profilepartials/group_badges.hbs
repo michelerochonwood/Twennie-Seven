@@ -1,30 +1,59 @@
-<section class="group-earned-badges-section">
-  <h2 class="group-earned-badges-title">group earned badges</h2>
+<section class="group-profile-panel group-profile-badges-section">
+  <div class="group-profile-panel-header">
+    <p class="group-profile-eyebrow">group achievements</p>
+    <h2 class="group-profile-panel-title">group earned badges</h2>
+
+    <p class="group-profile-panel-intro">
+      These badges have been earned by members of this group through completed prompt sets and applied learning.
+    </p>
+  </div>
 
   {{#if groupBadges.length}}
-    <div class="group-earned-badges-grid">
+    <div class="group-profile-badges-grid">
       {{#each groupBadges}}
-        <div class="group-earned-badge-card">
-          <!-- Badge Image -->
-          <div class="group-earned-badge-icon">
-            <img src="{{earnedBadge.image}}" alt="{{earnedBadge.name}} badge">
+        <article class="group-profile-badge-card">
+          <div class="group-profile-badge-image-wrap">
+            <img
+              src="{{earnedBadge.image}}"
+              alt="{{earnedBadge.name}} badge"
+              class="group-profile-badge-image"
+            >
           </div>
-          <div class="group-earned-badge-info">
-            <h3 class="group-earned-badge-title">{{earnedBadge.name}}</h3>
-            <p class="group-earned-badge-promptset">{{promptSetTitle}}</p>
-            <p class="group-earned-badge-member">{{earnedBy}}</p>
-            <p class="group-earned-badge-topic">{{mainTopic}}</p>
+
+          <div class="group-profile-badge-content">
+            <h3 class="group-profile-badge-title">
+              {{earnedBadge.name}}
+            </h3>
+
+            <p class="group-profile-badge-set">
+              {{#if promptSetTitle}}
+                {{promptSetTitle}}
+              {{else}}
+                Unknown prompt set
+              {{/if}}
+            </p>
+
+            <p class="group-profile-badge-earnedby">
+              earned by {{earnedBy}}
+            </p>
+
+            <p class="group-profile-badge-topic">
+              {{#if mainTopic}}
+                {{mainTopic}}
+              {{else}}
+                No topic recorded
+              {{/if}}
+            </p>
           </div>
-        </div>
+        </article>
       {{/each}}
     </div>
   {{else}}
-    <div class="group-earned-badge-empty-container">
-      <p class="group-earned-badge-no-badges">No badges earned yet.</p>
+    <div class="group-profile-empty-state">
+      <p class="group-profile-empty-kicker">No badges earned yet</p>
+      <p class="group-profile-empty-text">
+        Group badges will appear here as members complete prompt sets.
+      </p>
     </div>
   {{/if}}
 </section>
-
-
-
-

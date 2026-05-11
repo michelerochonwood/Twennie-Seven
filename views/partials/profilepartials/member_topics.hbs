@@ -1,79 +1,94 @@
-{{!-- PROFILE VERSION: Topics shown in the member profile --}}
-<div class="member-profile-topics-container">
-  <h3 class="member-profile-topics-title">my topics</h3>
+<section class="member-profile-panel member-profile-topics-section">
+  <div class="member-profile-panel-header">
+    <p class="member-profile-eyebrow">learning direction</p>
+    <h2 class="member-profile-panel-title">my topics</h2>
 
-  <p>
-    These topics provide some focus for your learning in key areas of interest.
-    Having a top three topics streamlines navigation through the library.
-  </p>
-
-  <div class="member-profile-topics-grid">
-
-    {{#if member.selectedTopics.topic1.title}}
-      <div class="member-profile-topic-card" data-topic-id="{{member.selectedTopics.topic1.slug}}">
-        <div class="member-profile-topic-title">{{member.selectedTopics.topic1.title}}</div>
-        <ul class="member-profile-topic-subtopics">
-          {{#each member.selectedTopics.topic1.subtopics}}
-            <li>{{this}}</li>
-          {{else}}
-            <li>No subtopics available</li>
-          {{/each}}
-        </ul>
-
-        {{#if member.selectedTopics.topic1.viewName}}
-          <a href="/membertopics/{{member.selectedTopics.topic1.viewName}}" class="member-profile-topic-review">
-            review this topic
-          </a>
-        {{/if}}
-      </div>
-    {{/if}}
-
-    {{#if member.selectedTopics.topic2.title}}
-      <div class="member-profile-topic-card" data-topic-id="{{member.selectedTopics.topic2.slug}}">
-        <div class="member-profile-topic-title">{{member.selectedTopics.topic2.title}}</div>
-        <ul class="member-profile-topic-subtopics">
-          {{#each member.selectedTopics.topic2.subtopics}}
-            <li>{{this}}</li>
-          {{else}}
-            <li>No subtopics available</li>
-          {{/each}}
-        </ul>
-
-        {{#if member.selectedTopics.topic2.viewName}}
-          <a href="/membertopics/{{member.selectedTopics.topic2.viewName}}" class="member-profile-topic-review">
-            review this topic
-          </a>
-        {{/if}}
-      </div>
-    {{/if}}
-
-    {{#if member.selectedTopics.topic3.title}}
-      <div class="member-profile-topic-card" data-topic-id="{{member.selectedTopics.topic3.slug}}">
-        <div class="member-profile-topic-title">{{member.selectedTopics.topic3.title}}</div>
-        <ul class="member-profile-topic-subtopics">
-          {{#each member.selectedTopics.topic3.subtopics}}
-            <li>{{this}}</li>
-          {{else}}
-            <li>No subtopics available</li>
-          {{/each}}
-        </ul>
-
-        {{#if member.selectedTopics.topic3.viewName}}
-          <a href="/membertopics/{{member.selectedTopics.topic3.viewName}}" class="member-profile-topic-review">
-            review this topic
-          </a>
-        {{/if}}
-      </div>
-    {{/if}}
-
+    <p class="member-profile-panel-intro">
+      These topics provide some focus for your learning in key areas of interest.
+      Having a top three topics streamlines navigation through the library.
+    </p>
   </div>
 
+  {{#if member.selectedTopics.topic1.title}}
+    <div class="member-profile-topics-grid">
 
-  </div>
-</div>
+      <article class="member-profile-topic-card" data-topic-id="{{member.selectedTopics.topic1.slug}}">
+        <div class="member-profile-topic-content">
+          <h3 class="member-profile-topic-title">
+            {{member.selectedTopics.topic1.title}}
+          </h3>
 
+          <ul class="member-profile-topic-subtopics">
+            {{#each member.selectedTopics.topic1.subtopics}}
+              <li>{{this}}</li>
+            {{else}}
+              <li>No subtopics available</li>
+            {{/each}}
+          </ul>
 
+          {{#if member.selectedTopics.topic1.viewName}}
+            <a href="/membertopics/{{member.selectedTopics.topic1.viewName}}" class="member-profile-topic-link">
+              review this topic
+            </a>
+          {{/if}}
+        </div>
+      </article>
 
+      {{#if member.selectedTopics.topic2.title}}
+        <article class="member-profile-topic-card" data-topic-id="{{member.selectedTopics.topic2.slug}}">
+          <div class="member-profile-topic-content">
+            <h3 class="member-profile-topic-title">
+              {{member.selectedTopics.topic2.title}}
+            </h3>
 
+            <ul class="member-profile-topic-subtopics">
+              {{#each member.selectedTopics.topic2.subtopics}}
+                <li>{{this}}</li>
+              {{else}}
+                <li>No subtopics available</li>
+              {{/each}}
+            </ul>
 
+            {{#if member.selectedTopics.topic2.viewName}}
+              <a href="/membertopics/{{member.selectedTopics.topic2.viewName}}" class="member-profile-topic-link">
+                review this topic
+              </a>
+            {{/if}}
+          </div>
+        </article>
+      {{/if}}
 
+      {{#if member.selectedTopics.topic3.title}}
+        <article class="member-profile-topic-card" data-topic-id="{{member.selectedTopics.topic3.slug}}">
+          <div class="member-profile-topic-content">
+            <h3 class="member-profile-topic-title">
+              {{member.selectedTopics.topic3.title}}
+            </h3>
+
+            <ul class="member-profile-topic-subtopics">
+              {{#each member.selectedTopics.topic3.subtopics}}
+                <li>{{this}}</li>
+              {{else}}
+                <li>No subtopics available</li>
+              {{/each}}
+            </ul>
+
+            {{#if member.selectedTopics.topic3.viewName}}
+              <a href="/membertopics/{{member.selectedTopics.topic3.viewName}}" class="member-profile-topic-link">
+                review this topic
+              </a>
+            {{/if}}
+          </div>
+        </article>
+      {{/if}}
+
+    </div>
+  {{else}}
+    <div class="member-profile-empty-state">
+      <p class="member-profile-empty-kicker">No topics selected</p>
+      <p class="member-profile-empty-text">
+        This member has not selected learning topics yet.
+      </p>
+    </div>
+  {{/if}}
+</section>

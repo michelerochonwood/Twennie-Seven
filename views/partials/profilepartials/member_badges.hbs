@@ -1,26 +1,55 @@
-<section class="profile-earned-badges-section">
-  <h2 class="profile-earned-badges-title">my earned badges</h2>
+<section class="member-profile-panel member-profile-badges-section">
+  <div class="member-profile-panel-header">
+    <p class="member-profile-eyebrow">profile badges</p>
+    <h2 class="member-profile-panel-title">my earned badges</h2>
+
+    <p class="member-profile-panel-intro">
+      Badges appear here when prompt sets are completed and applied learning milestones are achieved.
+    </p>
+  </div>
 
   {{#if memberBadges.length}}
-    <div class="profile-badges-grid">
+    <div class="member-profile-badges-grid">
       {{#each memberBadges}}
-        <div class="profile-badge-card">
-          <!-- Badge Image -->
-          <div class="profile-badge-icon">
-            <img src="{{earnedBadge.image}}" alt="{{earnedBadge.name}} badge">
+        <article class="member-profile-badge-card">
+          <div class="member-profile-badge-image-wrap">
+            <img
+              src="{{earnedBadge.image}}"
+              alt="{{earnedBadge.name}} badge"
+              class="member-profile-badge-image"
+            >
           </div>
-          <div class="profile-badge-info">
-            <h3 class="profile-badge-title">{{earnedBadge.name}}</h3>
-            <p class="profile-badge-promptset">{{promptSetTitle}}</p>
-            <p class="profile-badge-topic">{{mainTopic}}</p>
+
+          <div class="member-profile-badge-content">
+            <h3 class="member-profile-badge-title">
+              {{earnedBadge.name}}
+            </h3>
+
+            <p class="member-profile-badge-set">
+              {{#if promptSetTitle}}
+                {{promptSetTitle}}
+              {{else}}
+                Unknown prompt set
+              {{/if}}
+            </p>
+
+            <p class="member-profile-badge-topic">
+              {{#if mainTopic}}
+                {{mainTopic}}
+              {{else}}
+                No topic recorded
+              {{/if}}
+            </p>
           </div>
-        </div>
+        </article>
       {{/each}}
     </div>
   {{else}}
-    <div class="profile-no-badges-container">
-      <p class="profile-no-badges">You haven't earned any badges yet.</p>
+    <div class="member-profile-empty-state">
+      <p class="member-profile-empty-kicker">No badges yet</p>
+      <p class="member-profile-empty-text">
+        Complete a prompt set to begin earning badges.
+      </p>
     </div>
   {{/if}}
 </section>
-

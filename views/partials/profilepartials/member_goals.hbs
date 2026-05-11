@@ -1,4 +1,21 @@
-<div class="member-goals-container">
-    <h3 class="member-profile-subtitle">my goals</h3>
-    <p class="member-goals-text">{{member.goals}}</p>
-</div>
+<section class="member-profile-panel member-profile-goals-section">
+  <div class="member-profile-panel-header">
+    <p class="member-profile-eyebrow">professional goals</p>
+    <h2 class="member-profile-panel-title">my goals</h2>
+  </div>
+
+  {{#if member.goals}}
+    <div class="member-profile-goals-body">
+      <p class="member-profile-goals-text">
+        {{member.goals}}
+      </p>
+    </div>
+  {{else}}
+    <div class="member-profile-empty-state">
+      <p class="member-profile-empty-kicker">No goals added</p>
+      <p class="member-profile-empty-text">
+        This member has not added goals yet.
+      </p>
+    </div>
+  {{/if}}
+</section>
