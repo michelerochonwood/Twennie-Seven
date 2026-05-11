@@ -1,67 +1,115 @@
-{{!-- PROFILE VERSION: Topics shown in the leader profile --}}
-<div class="leader-profile-topics-container">
-  <h3 class="leader-profile-topics-title">my topics</h3>
+<section class="leader-profile-panel leader-profile-topics-section">
+  <div class="leader-profile-panel-header">
+    <p class="leader-profile-eyebrow">learning direction</p>
+    <h2 class="leader-profile-panel-title">my topics</h2>
 
-  <p>
-    These topics help focus your learning and make it easier to navigate Twennie around the areas most relevant to your work and leadership.
-  </p>
-
-  <div class="leader-profile-topics-grid">
-    {{#if leader.selectedTopics.topic1.title}}
-      <div class="leader-profile-topic-card" data-topic-id="{{leader.selectedTopics.topic1.slug}}">
-        <div class="leader-profile-topic-title">{{leader.selectedTopics.topic1.title}}</div>
-        <ul class="leader-profile-topic-subtopics">
-          {{#each leader.selectedTopics.topic1.subtopics}}
-            <li>{{this}}</li>
-          {{else}}
-            <li>No subtopics available</li>
-          {{/each}}
-        </ul>
-        {{#if leader.selectedTopics.topic1.viewName}}
-          <a href="/membertopics/{{leader.selectedTopics.topic1.viewName}}" class="leader-profile-topic-review">
-            review this topic
-          </a>
-        {{/if}}
-      </div>
-    {{/if}}
-
-    {{#if leader.selectedTopics.topic2.title}}
-      <div class="leader-profile-topic-card" data-topic-id="{{leader.selectedTopics.topic2.slug}}">
-        <div class="leader-profile-topic-title">{{leader.selectedTopics.topic2.title}}</div>
-        <ul class="leader-profile-topic-subtopics">
-          {{#each leader.selectedTopics.topic2.subtopics}}
-            <li>{{this}}</li>
-          {{else}}
-            <li>No subtopics available</li>
-          {{/each}}
-        </ul>
-        {{#if leader.selectedTopics.topic2.viewName}}
-          <a href="/membertopics/{{leader.selectedTopics.topic2.viewName}}" class="leader-profile-topic-review">
-            review this topic
-          </a>
-        {{/if}}
-      </div>
-    {{/if}}
-
-    {{#if leader.selectedTopics.topic3.title}}
-      <div class="leader-profile-topic-card" data-topic-id="{{leader.selectedTopics.topic3.slug}}">
-        <div class="leader-profile-topic-title">{{leader.selectedTopics.topic3.title}}</div>
-        <ul class="leader-profile-topic-subtopics">
-          {{#each leader.selectedTopics.topic3.subtopics}}
-            <li>{{this}}</li>
-          {{else}}
-            <li>No subtopics available</li>
-          {{/each}}
-        </ul>
-        {{#if leader.selectedTopics.topic3.viewName}}
-          <a href="/membertopics/{{leader.selectedTopics.topic3.viewName}}" class="leader-profile-topic-review">
-            review this topic
-          </a>
-        {{/if}}
-      </div>
-    {{/if}}
+    <p class="leader-profile-panel-intro">
+      These topics help focus your learning and make it easier to navigate
+      Twennie around the areas most relevant to your work and leadership.
+    </p>
   </div>
 
+  {{#if leader.selectedTopics.topic1.title}}
+    <div class="leader-profile-topics-grid">
 
-  </div>
-</div>
+      <article class="leader-profile-topic-card">
+        <div class="leader-profile-topic-wave">
+          <img src="/icons/unitsvg.svg" alt="Decorative wave">
+        </div>
+
+        <div class="leader-profile-topic-content">
+          <h3 class="leader-profile-topic-title">
+            {{leader.selectedTopics.topic1.title}}
+          </h3>
+
+          <ul class="leader-profile-topic-subtopics">
+            {{#each leader.selectedTopics.topic1.subtopics}}
+              <li>{{this}}</li>
+            {{else}}
+              <li>No subtopics available</li>
+            {{/each}}
+          </ul>
+
+          {{#if leader.selectedTopics.topic1.viewName}}
+            <a
+              href="/membertopics/{{leader.selectedTopics.topic1.viewName}}"
+              class="leader-profile-topic-link"
+            >
+              review this topic
+            </a>
+          {{/if}}
+        </div>
+      </article>
+
+      {{#if leader.selectedTopics.topic2.title}}
+        <article class="leader-profile-topic-card">
+          <div class="leader-profile-topic-wave">
+            <img src="/icons/unitsvg.svg" alt="Decorative wave">
+          </div>
+
+          <div class="leader-profile-topic-content">
+            <h3 class="leader-profile-topic-title">
+              {{leader.selectedTopics.topic2.title}}
+            </h3>
+
+            <ul class="leader-profile-topic-subtopics">
+              {{#each leader.selectedTopics.topic2.subtopics}}
+                <li>{{this}}</li>
+              {{else}}
+                <li>No subtopics available</li>
+              {{/each}}
+            </ul>
+
+            {{#if leader.selectedTopics.topic2.viewName}}
+              <a
+                href="/membertopics/{{leader.selectedTopics.topic2.viewName}}"
+                class="leader-profile-topic-link"
+              >
+                review this topic
+              </a>
+            {{/if}}
+          </div>
+        </article>
+      {{/if}}
+
+      {{#if leader.selectedTopics.topic3.title}}
+        <article class="leader-profile-topic-card">
+          <div class="leader-profile-topic-wave">
+            <img src="/icons/unitsvg.svg" alt="Decorative wave">
+          </div>
+
+          <div class="leader-profile-topic-content">
+            <h3 class="leader-profile-topic-title">
+              {{leader.selectedTopics.topic3.title}}
+            </h3>
+
+            <ul class="leader-profile-topic-subtopics">
+              {{#each leader.selectedTopics.topic3.subtopics}}
+                <li>{{this}}</li>
+              {{else}}
+                <li>No subtopics available</li>
+              {{/each}}
+            </ul>
+
+            {{#if leader.selectedTopics.topic3.viewName}}
+              <a
+                href="/membertopics/{{leader.selectedTopics.topic3.viewName}}"
+                class="leader-profile-topic-link"
+              >
+                review this topic
+              </a>
+            {{/if}}
+          </div>
+        </article>
+      {{/if}}
+
+    </div>
+  {{else}}
+    <div class="leader-profile-empty-state">
+      <p class="leader-profile-empty-kicker">No topics selected</p>
+      <p class="leader-profile-empty-text">
+        This leader has not selected learning topics yet.
+      </p>
+    </div>
+  {{/if}}
+</section>

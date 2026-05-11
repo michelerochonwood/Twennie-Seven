@@ -530,9 +530,12 @@ const getNuggetsMonitoredReport = async (req, res) => {
     console.log("✅ Fetching Nuggets Being Monitored Report…");
 
     const safeArray = (v) => (Array.isArray(v) ? v : []);
-    const toIdString = (v) => (v && typeof v.toString === "function" ? v.toString() : "");
+    const toIdString = (v) =>
+      v && typeof v.toString === "function" ? v.toString() : "";
 
-    const leaderId = toIdString(req.user?._id || req.user?.id || req.session?.user?.id);
+    const leaderId = toIdString(
+      req.user?._id || req.user?.id || req.session?.user?.id
+    );
 
     if (!leaderId) {
       return res.status(403).render("member_form_views/error", {
@@ -556,8 +559,9 @@ const getNuggetsMonitoredReport = async (req, res) => {
 
     const leaderName = leaderDoc.groupLeaderName || leaderDoc.name || "Leader";
 
-    const leaderProfile = await LeaderProfile
-      .findOne({ $or: [{ leaderId: leaderDoc._id }, { groupId: leaderDoc._id }] })
+    const leaderProfile = await LeaderProfile.findOne({
+      $or: [{ leaderId: leaderDoc._id }, { groupId: leaderDoc._id }]
+    })
       .select("profileImage")
       .lean();
 
@@ -571,14 +575,14 @@ const getNuggetsMonitoredReport = async (req, res) => {
 
     const groupMemberProfiles = groupMembers.length
       ? await GroupMemberProfile.find({
-          groupMemberId: { $in: groupMembers.map(m => m._id) }
+          groupMemberId: { $in: groupMembers.map((m) => m._id) }
         })
           .select("groupMemberId profileImage")
           .lean()
       : [];
 
     const profileImageByMemberId = new Map(
-      groupMemberProfiles.map(profile => [
+      groupMemberProfiles.map((profile) => [
         toIdString(profile.groupMemberId),
         profile.profileImage || "/images/default-avatar.png"
       ])
@@ -591,20 +595,28 @@ const getNuggetsMonitoredReport = async (req, res) => {
         role: "leader",
         memberImage: leaderProfile?.profileImage || "/images/default-avatar.png"
       },
-      ...groupMembers.map(m => ({
+      ...groupMembers.map((m) => ({
         _id: m._id,
         name: m.name || "Group Member",
         role: "member",
-        memberImage: profileImageByMemberId.get(toIdString(m._id)) || "/images/default-avatar.png"
+        memberImage:
+          profileImageByMemberId.get(toIdString(m._id)) ||
+          "/images/default-avatar.png"
       }))
     ];
 
-    const nameById = new Map(people.map(p => [toIdString(p._id), p.name]));
-    const roleById = new Map(people.map(p => [toIdString(p._id), p.role]));
-    const imageById = new Map(people.map(p => [toIdString(p._id), p.memberImage]));
+    const personIds = people.map((p) => p._id);
+    const personIdStrings = new Set(people.map((p) => toIdString(p._id)));
+
+    const nameById = new Map(people.map((p) => [toIdString(p._id), p.name]));
+    const roleById = new Map(people.map((p) => [toIdString(p._id), p.role]));
+    const imageById = new Map(
+      people.map((p) => [toIdString(p._id), p.memberImage])
+    );
 
     const nuggetTags = await Tag.find({
-      "associatedUnits.unitType": "nugget"
+      "associatedUnits.unitType": "nugget",
+      "assignedTo.member": { $in: personIds }
     })
       .select("name createdAt associatedUnits assignedTo")
       .lean();
@@ -621,16 +633,11 @@ const getNuggetsMonitoredReport = async (req, res) => {
     const nuggetIds = [];
 
     for (const tag of nuggetTags) {
-      const units = safeArray(tag.associatedUnits);
-
-      for (const unit of units) {
+      for (const unit of safeArray(tag.associatedUnits)) {
         if (String(unit.unitType || "").toLowerCase() !== "nugget") continue;
 
         const nuggetId = unit.item?.toString?.();
-
-        if (nuggetId) {
-          nuggetIds.push(nuggetId);
-        }
+        if (nuggetId) nuggetIds.push(nuggetId);
       }
     }
 
@@ -643,7 +650,7 @@ const getNuggetsMonitoredReport = async (req, res) => {
       : [];
 
     const nuggetById = new Map(
-      nuggets.map(nugget => [toIdString(nugget._id), nugget])
+      nuggets.map((nugget) => [toIdString(nugget._id), nugget])
     );
 
     const rowByNuggetId = new Map();
@@ -653,20 +660,25 @@ const getNuggetsMonitoredReport = async (req, res) => {
       const assignedAt = tag.createdAt || null;
 
       const units = safeArray(tag.associatedUnits);
-      const assignedTo = safeArray(tag.assignedTo);
+
+      const assignedTo = safeArray(tag.assignedTo).filter((assignment) =>
+        personIdStrings.has(toIdString(assignment.member))
+      );
+
+      if (!assignedTo.length) continue;
 
       const monitors = [];
       const instructions = [];
 
       for (const assignment of assignedTo) {
         const memberId = toIdString(assignment.member);
-
         if (!memberId) continue;
 
         monitors.push({
           memberId,
           memberName: nameById.get(memberId) || "Unknown",
-          memberImage: imageById.get(memberId) || "/images/default-avatar.png",
+          memberImage:
+            imageById.get(memberId) || "/images/default-avatar.png",
           role: roleById.get(memberId) || ""
         });
 
@@ -675,28 +687,28 @@ const getNuggetsMonitoredReport = async (req, res) => {
         }
       }
 
-      if (!monitors.length) {
-        monitors.push({
-          memberId: toIdString(leaderDoc._id),
-          memberName: leaderName,
-          memberImage: leaderProfile?.profileImage || "/images/default-avatar.png",
-          role: "leader"
-        });
-      }
-
-      const isAssigned = assignedTo.length > 0;
-
       for (const unit of units) {
         if (String(unit.unitType || "").toLowerCase() !== "nugget") continue;
 
         const nuggetId = unit.item?.toString?.();
-
         if (!nuggetId) continue;
 
         const nugget = nuggetById.get(nuggetId);
 
         const monitoringNotes = safeArray(nugget?.monitoringNotes)
-          .map(note => {
+          .filter((note) => {
+            const addedById =
+              note.addedBy ||
+              note.memberID ||
+              note.memberId ||
+              note.createdBy ||
+              null;
+
+            const addedByIdString = toIdString(addedById);
+
+            return !addedByIdString || personIdStrings.has(addedByIdString);
+          })
+          .map((note) => {
             const addedById =
               note.addedBy ||
               note.memberID ||
@@ -723,7 +735,10 @@ const getNuggetsMonitoredReport = async (req, res) => {
               createdAt: note.createdAt || note.updatedAt || null
             };
           })
-          .sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
+          .sort(
+            (a, b) =>
+              new Date(a.createdAt || 0) - new Date(b.createdAt || 0)
+          );
 
         const baseRow = rowByNuggetId.get(nuggetId) || {
           nuggetId,
@@ -736,13 +751,16 @@ const getNuggetsMonitoredReport = async (req, res) => {
           assignmentDescription: "",
           assignedAt,
 
-          isAssigned,
+          isAssigned: true,
           monitoredBy: [],
           instructions: [],
           monitoringNotes
         };
 
-        if (!baseRow.assignedAt || (assignedAt && new Date(assignedAt) < new Date(baseRow.assignedAt))) {
+        if (
+          !baseRow.assignedAt ||
+          (assignedAt && new Date(assignedAt) < new Date(baseRow.assignedAt))
+        ) {
           baseRow.assignedAt = assignedAt;
         }
 
@@ -750,12 +768,10 @@ const getNuggetsMonitoredReport = async (req, res) => {
           baseRow.assignmentName = assignmentName;
         }
 
-        if (isAssigned) {
-          baseRow.isAssigned = true;
-        }
-
         const existingMonitorKeys = new Set(
-          safeArray(baseRow.monitoredBy).map(m => `${m.memberId || ""}::${m.memberName}::${m.role || ""}`)
+          safeArray(baseRow.monitoredBy).map(
+            (m) => `${m.memberId || ""}::${m.memberName}::${m.role || ""}`
+          )
         );
 
         for (const monitor of monitors) {
@@ -785,7 +801,7 @@ const getNuggetsMonitoredReport = async (req, res) => {
     }
 
     const monitoredNuggets = Array.from(rowByNuggetId.values())
-      .map(row => {
+      .map((row) => {
         row.monitoredBy = safeArray(row.monitoredBy).sort((a, b) =>
           (a.memberName || "").localeCompare(b.memberName || "")
         );
@@ -808,7 +824,6 @@ const getNuggetsMonitoredReport = async (req, res) => {
       isNuggetsMonitored: true,
       monitoredNuggets
     });
-
   } catch (err) {
     console.error("❌ Error loading Nuggets Being Monitored Report:", err);
     return res.status(500).send("Server error");

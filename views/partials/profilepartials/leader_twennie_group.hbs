@@ -1,42 +1,78 @@
-<section class="groupsection">
-    <h2 class="groupsection-title">group overview</h2>
-    <p class="groupsection-title2">{{group.groupName}}</p>
-    <div class="groupsection-stats">
-        <p>Total Members: {{groupMembers.length}} of possible 10</p>
-    </div>
-    <div class="groupsection-grid">
-        {{#each groupMembers}}
-            <div class="groupsection-card">
-                <div class="groupsection-card-image">
-                    {{#if profileImage}}
-                        <img src="{{profileImage}}" alt="{{name}}'s profile">
-                    {{else}}
-                        <img src="/images/default-avatar.png" alt="Default profile">
-                    {{/if}}
-                </div>
-                <div class="groupsection-card-info">
-                    <h3 class="groupsection-card-name">{{name}}</h3>
-                    <p class="groupsection-card-title">{{professionalTitle}}</p>
-                </div>
-                <button type="button" class="groupsection-card-button" onclick="window.location.href='/profile/group_member/{{_id}}'">
-                    view profile
-                </button>
-            </div>
-        {{/each}}
+<section class="leader-profile-panel leader-profile-group-section">
+  <div class="leader-profile-panel-header">
+    <p class="leader-profile-eyebrow">twennie group</p>
+    <h2 class="leader-profile-panel-title">group overview</h2>
+
+    <p class="leader-profile-panel-intro">
+      {{#if group.groupName}}
+        {{group.groupName}}
+      {{else}}
+        My Twennie group
+      {{/if}}
+      · {{groupMembers.length}} of 10 member spots filled
+    </p>
+  </div>
+
+  {{#if groupMembers.length}}
+    <div class="leader-profile-group-grid">
+      {{#each groupMembers}}
+        <article class="leader-profile-group-card">
+          <div class="leader-profile-group-image-wrap">
+            <img
+              src="{{#if profileImage}}{{profileImage}}{{else}}/images/default-avatar.png{{/if}}"
+              alt="{{#if name}}{{name}}{{else}}Group member{{/if}} profile"
+              class="leader-profile-group-image"
+            >
+          </div>
+
+          <div class="leader-profile-group-info">
+            <h3 class="leader-profile-group-name">
+              {{#if name}}{{name}}{{else}}Group member{{/if}}
+            </h3>
+
+            <p class="leader-profile-group-title">
+              {{#if professionalTitle}}{{professionalTitle}}{{else}}No title added{{/if}}
+            </p>
+          </div>
+
+          <a
+            href="/profile/groupmember/{{_id}}"
+            class="leader-profile-group-link"
+          >
+            view profile
+          </a>
+        </article>
+      {{/each}}
+
+      {{#if leader.maxGroupSize}}
         {{#if (lt leader.members.length leader.maxGroupSize)}}
-            {{#each (range leader.members.length leader.maxGroupSize)}}
-                <div class="groupsection-card groupsection-empty">
-                    <div class="groupsection-card-image">
-                        <img src="/images/default-avatar.png" alt="Empty slot">
-                    </div>
-                    <div class="groupsection-card-info">
-                        <h3 class="groupsection-card-name">Available Slot</h3>
-                        <p class="groupsection-card-title">Available</p>
-                    </div>
-                </div>
-            {{/each}}
+          {{#each (range leader.members.length leader.maxGroupSize)}}
+            <article class="leader-profile-group-card leader-profile-group-card-empty">
+              <div class="leader-profile-group-image-wrap">
+                <img
+                  src="/images/default-avatar.png"
+                  alt="Available group member slot"
+                  class="leader-profile-group-image"
+                >
+              </div>
+
+              <div class="leader-profile-group-info">
+                <h3 class="leader-profile-group-name">Available slot</h3>
+                <p class="leader-profile-group-title">Available</p>
+              </div>
+            </article>
+          {{/each}}
         {{/if}}
+      {{/if}}
     </div>
+  {{else}}
+    <div class="leader-profile-empty-state">
+      <p class="leader-profile-empty-kicker">No group members yet</p>
+      <p class="leader-profile-empty-text">
+        Group members will appear here after they are added.
+      </p>
+    </div>
+  {{/if}}
 </section>
 
 

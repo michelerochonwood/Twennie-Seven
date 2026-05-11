@@ -1,4 +1,21 @@
-<div class="leader-goals-container">
-    <h3 class="leader-profile-subtitle">my goals</h3>
-    <p class="leader-goals-text">{{leader.goals}}</p>
-</div>
+<section class="leader-profile-panel leader-profile-goals-section">
+  <div class="leader-profile-panel-header">
+    <p class="leader-profile-eyebrow">professional goals</p>
+    <h2 class="leader-profile-panel-title">my goals</h2>
+  </div>
+
+  {{#if leader.goals}}
+    <div class="leader-profile-goals-body">
+      <p class="leader-profile-goals-text">
+        {{leader.goals}}
+      </p>
+    </div>
+  {{else}}
+    <div class="leader-profile-empty-state">
+      <p class="leader-profile-empty-kicker">No goals added</p>
+      <p class="leader-profile-empty-text">
+        This leader has not added goals yet.
+      </p>
+    </div>
+  {{/if}}
+</section>

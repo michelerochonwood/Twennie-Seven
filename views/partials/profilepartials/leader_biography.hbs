@@ -1,4 +1,21 @@
-<div class="leader-bio-container">
-    <h3 class="leader-profile-subtitle">my biography</h3>
-    <p class="leader-bio-text">{{leader.biography}}</p>
-</div>
+<section class="leader-profile-panel leader-profile-biography-section">
+  <div class="leader-profile-panel-header">
+    <p class="leader-profile-eyebrow">profile biography</p>
+    <h2 class="leader-profile-panel-title">my biography</h2>
+  </div>
+
+  {{#if leader.biography}}
+    <div class="leader-profile-biography-body">
+      <p class="leader-profile-biography-text">
+        {{leader.biography}}
+      </p>
+    </div>
+  {{else}}
+    <div class="leader-profile-empty-state">
+      <p class="leader-profile-empty-kicker">No biography added</p>
+      <p class="leader-profile-empty-text">
+        This leader has not added a biography yet.
+      </p>
+    </div>
+  {{/if}}
+</section>

@@ -1,25 +1,57 @@
-<section class="leader-library-units-section">
-  <h2 class="leader-library-units-title">my library units</h2>
+<section class="leader-profile-panel leader-profile-library-section">
+  <div class="leader-profile-panel-header">
+    <p class="leader-profile-eyebrow">learning contributions</p>
+    <h2 class="leader-profile-panel-title">my library units</h2>
+    <p class="leader-profile-panel-intro">
+      Units this leader has contributed to the Twennie learning library.
+    </p>
+  </div>
 
   {{#if leaderUnits.length}}
-    <div class="leader-library-units-grid">
+    <div class="leader-profile-library-grid">
       {{#each leaderUnits}}
-        <div class="leader-library-unit-card">
-          <div class="leader-library-unit-icon">
-            <img src="/icons/{{toLowerCase this.unitType}}.svg" alt="{{unitType}} icon">
+        <article class="leader-profile-library-card">
+
+          <div class="leader-profile-library-wave">
+            <img src="/icons/unitsvg.svg" alt="Decorative wave">
           </div>
-          <div class="leader-library-unit-info">
-            <h3 class="leader-library-unit-title">{{title}}</h3>
-            <p class="leader-library-unit-topic">{{mainTopic}}</p>
-            <p class="leader-library-unit-status">Status: {{status}}</p>
+
+          <div class="leader-profile-library-icon">
+            <img
+              src="/icons/{{toLowerCase this.unitType}}.svg"
+              alt="{{unitType}} icon"
+            >
           </div>
-          <a href="/unitviews/{{toLowerCase this.unitType}}s/view/{{this._id}}" class="leader-library-unit-link">view or edit</a>
-        </div>
+
+          <div class="leader-profile-library-content">
+            <h3 class="leader-profile-library-title">
+              {{title}}
+            </h3>
+
+            <p class="leader-profile-library-topic">
+              {{mainTopic}}
+            </p>
+
+            <p class="leader-profile-library-status">
+              {{status}}
+            </p>
+          </div>
+
+          <a
+            href="/unitviews/{{toLowerCase this.unitType}}s/view/{{this._id}}"
+            class="leader-profile-library-link"
+          >
+            view or edit
+          </a>
+        </article>
       {{/each}}
     </div>
   {{else}}
-    <div class="leader-no-library-units-container">
-      <p class="leader-no-library-units">No units submitted yet.</p>
+    <div class="leader-profile-empty-state">
+      <p class="leader-profile-empty-kicker">No library units yet</p>
+      <p class="leader-profile-empty-text">
+        This leader has not submitted any learning units yet.
+      </p>
     </div>
   {{/if}}
 </section>
