@@ -15,6 +15,7 @@
     {{/if}}
 
     <!-- Document Viewing Section (gated) -->
+    <!-- Document Viewing Section (gated + protected download route) -->
     {{#if isAuthorizedToViewFullContent}}
       {{#if document_uploads}}
         <div class="single_exercise-download">
@@ -24,14 +25,19 @@
 
           <div class="single_exercise-documents" id="exerciseDocs-{{_id}}">
             {{#each document_uploads}}
-              <a
-                href="{{this.url}}"
-                class="single_exercise-download-btn"
-                target="_blank"
-                rel="noopener"
-              >
-                View and download {{this.filename}}
-              </a>
+
+              {{#if (eq this.fileType "pdf")}}
+                <a
+                  href="/exercises/{{../_id}}/download/{{this.fileRole}}"
+                  class="single_exercise-download-btn"
+                >
+                  Download PDF
+                  {{#if this.filename}}
+                    — {{this.filename}}
+                  {{/if}}
+                </a>
+              {{/if}}
+
             {{/each}}
           </div>
         </div>

@@ -39,20 +39,20 @@
           </svg>
         </div>
 
-        {{#if documentUploads}}
-          <div class="single_template-documents">
-            {{#each documentUploads}}
-              <a
-                href="{{this.url}}"
-                class="single_template-download-btn"
-                target="_blank"
-                rel="noopener"
-              >
-                View and download {{this.filename}}
-              </a>
-            {{/each}}
-          </div>
-        {{/if}}
+{{#if documentUploads}}
+  <div class="single_template-documents">
+    {{#each documentUploads}}
+      {{#if (eq this.fileType "pdf")}}
+        <a
+          href="/templates/{{../_id}}/download/{{this.fileRole}}"
+          class="single_template-download-btn"
+        >
+          Download PDF {{#if this.filename}}— {{this.filename}}{{/if}}
+        </a>
+      {{/if}}
+    {{/each}}
+  </div>
+{{/if}}
       </div>
     {{else}}
       <div class="single_template-download">

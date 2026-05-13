@@ -461,7 +461,11 @@ router.post('/submit_interview', ensureAuthenticated, csrfProtection, unitFormCo
 
 
 
-// Route to display the template form (Create New)
+// =========================
+// Template Routes
+// =========================
+
+// Create template form
 router.get(
   '/form_template',
   ensureAuthenticated,
@@ -471,63 +475,91 @@ router.get(
 );
 
 
-// Route to display the edit form for an existing template
-router.get('/edit_template/:id', ensureAuthenticated, csrfProtection, async (req, res) => {
-  try {
-    const { id } = req.params;
-    console.log(`Edit form requested for template ID: ${id}`);
+// Edit template form
+router.get(
+  '/edit_template/:id',
+  ensureAuthenticated,
+  csrfProtection,
+  async (req, res) => {
+    try {
+      const { id } = req.params;
 
-    const template = await Template.findById(id).populate({
-      path: 'author.id',
-      model: 'Member',
-      select: 'name profileImage',
-    });
+      console.log(`Edit form requested for template ID: ${id}`);
 
-    if (!template) {
-      console.warn(`Template with ID ${id} not found.`);
-      return res.status(404).render('unit_form_views/error', {
+      const template = await Template.findById(id).populate({
+        path: 'author.id',
+        model: 'Member',
+        select: 'name profileImage',
+      });
+
+      if (!template) {
+        console.warn(`Template with ID ${id} not found.`);
+
+        return res.status(404).render('unit_form_views/error', {
+          layout: 'unitformlayout',
+          title: 'Template Not Found',
+          errorMessage: `The template with ID ${id} does not exist.`,
+        });
+      }
+
+      const secondaryTopics = buildSecondaryTopicOptions(template.secondary_topics);
+
+      return res.render('unit_form_views/form_template', {
         layout: 'unitformlayout',
-        title: 'Template Not Found',
-        errorMessage: `The template with ID ${id} does not exist.`,
+
+        data: {
+          ...template.toObject(),
+
+          author: {
+            name: template.author?.id?.name || 'Unknown Author',
+            image:
+              template.author?.id?.profileImage ||
+              '/images/default-avatar.png',
+          },
+        },
+
+        mainTopics,
+        secondaryTopics,
+        csrfToken: req.csrfToken(),
+      });
+
+    } catch (error) {
+      console.error(
+        `Error loading edit form for template ID ${req.params.id}:`,
+        error
+      );
+
+      return res.status(500).render('unit_form_views/error', {
+        layout: 'unitformlayout',
+        title: 'Error',
+        errorMessage: 'An error occurred while loading the edit form.',
       });
     }
-
-    const secondaryTopics = buildSecondaryTopicOptions(template.secondary_topics);
-
-    res.render('unit_form_views/form_template', {
-      layout: 'unitformlayout',
-      data: {
-        ...template.toObject(),
-        author: {
-          name: template.author?.id?.name || 'Unknown Author',
-          image: template.author?.id?.profileImage || '/images/default-avatar.png',
-        },
-      },
-      mainTopics,
-      secondaryTopics,
-      csrfToken: req.csrfToken(),
-    });
-  } catch (error) {
-    console.error(`Error loading edit form for template ID ${req.params.id}:`, error);
-    res.status(500).render('unit_form_views/error', {
-      layout: 'unitformlayout',
-      title: 'Error',
-      errorMessage: 'An error occurred while loading the edit form.',
-    });
   }
-});
+);
 
-// Route to handle form submission for templates
 
+// Submit template form
 router.post(
   '/submit_template',
   ensureAuthenticated,
+
+  // multer must come before csrf for multipart/form-data
   uploadDocs.fields([
-    { name: 'template_pdf', maxCount: 1 },
-    { name: 'template_working', maxCount: 1 }
+    { name: 'template_pdf', maxCount: 1 }
   ]),
+
   csrfProtection,
+
   unitFormController.submitTemplate
+);
+
+
+// Download template PDF through protected Twennie route
+router.get(
+  '/templates/:templateId/download/:fileRole',
+  ensureAuthenticated,
+  unitViewController.downloadTemplateFile
 );
   
   
@@ -627,63 +659,82 @@ router.get('/edit_promptset/:id', ensureAuthenticated, csrfProtection, async (re
 router.post('/submit_promptset', ensureAuthenticated, csrfProtection, unitFormController.submitPromptSet);
 
 
+// =========================
 // Exercise Routes
-router.get('/form_exercise', ensureAuthenticated, ensureCanContribute, csrfProtection, unitFormController.getExerciseForm);
+// =========================
+
+// Create exercise form
+router.get(
+  '/form_exercise',
+  ensureAuthenticated,
+  ensureCanContribute,
+  csrfProtection,
+  unitFormController.getExerciseForm
+);
 
 
-router.get('/edit_exercise/:id', ensureAuthenticated, csrfProtection, async (req, res) => {
-  try {
-    const { id } = req.params;
-    console.log(`Edit form requested for exercise ID: ${id}`);
+// Edit exercise form
+router.get(
+  '/edit_exercise/:id',
+  ensureAuthenticated,
+  csrfProtection,
+  async (req, res) => {
+    try {
+      const { id } = req.params;
 
-    const exercise = await Exercise.findById(id).populate({
-      path: 'author.id',
-      model: 'Member',
-      select: 'name profileImage',
-    });
+      console.log(`Edit form requested for exercise ID: ${id}`);
 
-    if (!exercise) {
-      return res.status(404).render('unit_form_views/error', {
+      const exercise = await Exercise.findById(id).populate({
+        path: 'author.id',
+        model: 'Member',
+        select: 'name profileImage',
+      });
+
+      if (!exercise) {
+        return res.status(404).render('unit_form_views/error', {
+          layout: 'unitformlayout',
+          title: 'Exercise Not Found',
+          errorMessage: `The exercise with ID ${id} does not exist.`,
+        });
+      }
+
+      const secondaryTopics = buildSecondaryTopicOptions(exercise.secondary_topics);
+
+      return res.render('unit_form_views/form_exercise', {
         layout: 'unitformlayout',
-        title: 'Exercise Not Found',
-        errorMessage: `The exercise with ID ${id} does not exist.`,
+        data: {
+          ...exercise.toObject(),
+          author: {
+            name: exercise.author?.id?.name || 'Unknown Author',
+            image: exercise.author?.id?.profileImage || '/images/default-avatar.png',
+          },
+        },
+        mainTopics,
+        secondaryTopics,
+        csrfToken: req.csrfToken(),
+      });
+
+    } catch (error) {
+      console.error(`Error loading edit form for exercise ID ${req.params.id}:`, error);
+
+      return res.status(500).render('unit_form_views/error', {
+        layout: 'unitformlayout',
+        title: 'Error',
+        errorMessage: 'An error occurred while loading the edit form.',
       });
     }
-
-    const secondaryTopics = buildSecondaryTopicOptions(exercise.secondary_topics);
-
-    res.render('unit_form_views/form_exercise', {
-      layout: 'unitformlayout',
-      data: {
-        ...exercise.toObject(),
-        author: {
-          name: exercise.author?.id?.name || 'Unknown Author',
-          image: exercise.author?.id?.profileImage || '/images/default-avatar.png',
-        },
-      },
-      mainTopics,
-      secondaryTopics,
-      csrfToken: req.csrfToken(),
-    });
-  } catch (error) {
-    console.error(`Error loading edit form for exercise ID ${req.params.id}:`, error);
-    res.status(500).render('unit_form_views/error', {
-      layout: 'unitformlayout',
-      title: 'Error',
-      errorMessage: 'An error occurred while loading the edit form.',
-    });
   }
-});
-  
+);
 
-  router.post(
-    '/submit_exercise',
-    ensureAuthenticated,
-    uploadDocs.array('document_uploads', 3), // ✅ multer FIRST
-    csrfProtection,                          // ✅ csrf AFTER multer
-    unitFormController.submitExercise
-  );
 
+// Submit exercise form
+router.post(
+  '/submit_exercise',
+  ensureAuthenticated,
+  uploadDocs.array('document_uploads', 3), // multer first for multipart/form-data
+  csrfProtection,                          // csrf after multer
+  unitFormController.submitExercise
+);
   // =========================
 // Mission Form Routes
 // =========================

@@ -19,6 +19,8 @@ const Nugget = require('../models/unit_models/nugget'); // add this at the top w
 const OrganizationProfile = require('../models/profile_models/organization_profile');
 const Tag = require('../models/tag');
 
+const https = require('https');
+
 function canAccessMineAndMissions(req) {
   const membershipType = req.user?.membershipType;
   return membershipType === 'leader' || membershipType === 'group_member';
@@ -1624,49 +1626,48 @@ viewExercise: async (req, res) => {
     // 6) Org Admin suggestion context
     const adminSuggest = await buildOrgLeaderListForAdmin(req);
 
-    // 7) Normalize document uploads for the view
+    // 7) Normalize document uploads for the protected download view
     const rawDocs = Array.isArray(exercise.document_uploads)
       ? exercise.document_uploads.filter(Boolean)
       : exercise.document_uploads
         ? [exercise.document_uploads]
         : [];
 
-    const extensionMap = {
-      'MS Word': '.docx',
-      'MS Excel': '.xlsx',
-      'MS PowerPoint': '.pptx',
-      'PDF': '.pdf',
-      'Mural': '.pdf'
-    };
+    const document_uploads = rawDocs
+      .map((doc, index) => {
+        const url = typeof doc === 'string' ? doc : (doc?.url || '');
 
-    const fallbackExt = extensionMap[exercise.file_format] || '';
+        let filename =
+          typeof doc === 'object' && doc?.filename
+            ? doc.filename
+            : '';
 
-    const document_uploads = rawDocs.map((doc, index) => {
-      const url = typeof doc === 'string' ? doc : (doc?.url || '');
-      let filename = typeof doc === 'object' && doc?.filename ? doc.filename : '';
-
-      if (!filename && url) {
-        try {
-          const parsed = new URL(url, 'https://www.twennie.com');
-          filename = decodeURIComponent(parsed.pathname.split('/').pop() || '');
-        } catch {
-          filename = decodeURIComponent((url.split('?')[0].split('/').pop()) || '');
+        if (!filename && url) {
+          try {
+            const parsed = new URL(url, 'https://www.twennie.com');
+            filename = decodeURIComponent(parsed.pathname.split('/').pop() || '');
+          } catch {
+            filename = decodeURIComponent((url.split('?')[0].split('/').pop()) || '');
+          }
         }
-      }
 
-      if (!filename) {
-        filename = `${exercise.exercise_title || 'exercise-download'}-${index + 1}`;
-      }
+        if (!filename) {
+          filename = `${exercise.exercise_title || 'exercise-download'}-${index + 1}`;
+        }
 
-      if (!/\.[a-z0-9]+$/i.test(filename) && fallbackExt) {
-        filename += fallbackExt;
-      }
+        const lowerFilename = filename.toLowerCase();
+        const isPdf =
+          lowerFilename.endsWith('.pdf') ||
+          exercise.file_format === 'PDF' ||
+          exercise.file_format === 'Mural';
 
-      return {
-        url,
-        filename
-      };
-    });
+        return {
+          filename,
+          fileType: isPdf ? 'pdf' : 'blocked',
+          fileRole: `document-${index}`,
+        };
+      })
+      .filter(doc => doc.fileType === 'pdf');
 
 const isAssignedToCurrentUser = await isUserAssignedToUnit(req, exercise._id, 'exercise');
 
@@ -1846,32 +1847,45 @@ viewTemplate: async (req, res) => {
     // 6) Org Admin suggestion context
     const adminSuggest = await buildOrgLeaderListForAdmin(req);
 
-    // 7) Normalize document uploads
+    // 7) Normalize document uploads for the protected download view
     const toFilename = (u) => {
       try {
-        const last = (u || '').split('/').pop() || 'download';
+        const last = (u || '').split('?')[0].split('/').pop() || 'download';
         return decodeURIComponent(last);
       } catch {
         return 'download';
       }
     };
 
-    let documentUploads = [];
-    const rawDocs = template.documentUploads;
+    const rawDocs = Array.isArray(template.documentUploads)
+      ? template.documentUploads.filter(Boolean)
+      : template.documentUploads
+        ? [template.documentUploads]
+        : [];
 
-    if (Array.isArray(rawDocs)) {
-      documentUploads = rawDocs.map((d) =>
-        typeof d === 'string'
-          ? { url: d, filename: toFilename(d) }
-          : { url: d.url || '', filename: d.filename || toFilename(d.url || '') }
-      );
-    } else if (rawDocs) {
-      documentUploads = [
-        typeof rawDocs === 'string'
-          ? { url: rawDocs, filename: toFilename(rawDocs) }
-          : { url: rawDocs.url || '', filename: rawDocs.filename || toFilename(rawDocs.url || '') }
-      ];
-    }
+    const documentUploads = rawDocs
+      .map((doc, index) => {
+        const url = typeof doc === 'string' ? doc : (doc?.url || '');
+
+        const filename =
+          typeof doc === 'object' && doc?.filename
+            ? doc.filename
+            : toFilename(url);
+
+        const lowerFilename = filename.toLowerCase();
+
+        const isPdf =
+          lowerFilename.endsWith('.pdf') ||
+          template.file_format === 'PDF' ||
+          template.fileFormat === 'PDF';
+
+        return {
+          filename,
+          fileType: isPdf ? 'pdf' : 'blocked',
+          fileRole: `document-${index}`,
+        };
+      })
+      .filter((doc) => doc.fileType === 'pdf');
 
     // 8) Check assignment state for current user
     const isAssignedToCurrentUser = await isUserAssignedToUnit(req, template._id, 'template');
@@ -2339,8 +2353,278 @@ viewMission: async (req, res) => {
 
 
 
+downloadTemplateFile: async (req, res) => {
+  const { templateId, fileRole } = req.params;
 
+  const logDownload = (result, reason = '') => {
+    console.log('📥 Template download attempt:', {
+      userId: req.user?._id?.toString() || null,
+      unitId: templateId,
+      unitType: 'template',
+      fileRole,
+      result,
+      reason,
+      timestamp: new Date().toISOString(),
+    });
+  };
 
+  try {
+    const template = await Template.findById(templateId);
 
+    if (!template) {
+      logDownload('denied', 'template not found');
+      return res.status(404).send('Template not found.');
+    }
+
+    const authorIdRaw = template.author?.id || template.author;
+    const authorId = authorIdRaw ? authorIdRaw.toString() : null;
+    const currentUserId = (req.user?._id || req.user?.id)?.toString();
+
+    const isOwner = !!(currentUserId && authorId && currentUserId === authorId);
+
+    let authorOrg = null;
+    let authorGroupId = null;
+
+    const [authorAsLeader, authorAsGroupMember] = await Promise.all([
+      Leader.findById(authorId).select('_id organization').lean(),
+      GroupMember.findById(authorId).select('_id organization groupId leader').lean(),
+    ]);
+
+    if (authorAsLeader) {
+      authorOrg = authorAsLeader.organization || null;
+      authorGroupId = authorAsLeader._id;
+    } else if (authorAsGroupMember) {
+      authorOrg = authorAsGroupMember.organization || null;
+      authorGroupId = authorAsGroupMember.leader || authorAsGroupMember.groupId || null;
+    }
+
+    let isAuthorized = false;
+
+    if (template.visibility === 'all_members') {
+      isAuthorized = !!req.user;
+    } else if (template.visibility === 'organization_only') {
+      isAuthorized =
+        isOwner ||
+        (
+          req.user?.organization &&
+          authorOrg &&
+          String(req.user.organization) === String(authorOrg)
+        );
+    } else if (template.visibility === 'team_only') {
+      isAuthorized =
+        isOwner ||
+        (
+          req.user?.groupId &&
+          authorGroupId &&
+          String(req.user.groupId) === String(authorGroupId)
+        );
+    } else {
+      isAuthorized = isOwner;
+    }
+
+    if (!isAuthorized) {
+      logDownload('denied', 'not authorized');
+      return res.status(403).send('You do not have permission to download this file.');
+    }
+
+    const rawDocs = Array.isArray(template.documentUploads)
+      ? template.documentUploads.filter(Boolean)
+      : template.documentUploads
+        ? [template.documentUploads]
+        : [];
+
+    const docIndex = Number(String(fileRole || '').replace('document-', ''));
+
+    if (!Number.isInteger(docIndex) || docIndex < 0) {
+      logDownload('denied', 'invalid file role');
+      return res.status(400).send('Invalid file request.');
+    }
+
+    const pdfDocs = rawDocs.filter((doc) => {
+      const filename = String(doc?.filename || '').toLowerCase();
+      const mimetype = String(doc?.mimetype || '').toLowerCase();
+
+      return (
+        doc?.url &&
+        (
+          filename.endsWith('.pdf') ||
+          mimetype === 'application/pdf' ||
+          doc?.fileType === 'pdf'
+        )
+      );
+    });
+
+    const selectedDoc = pdfDocs[docIndex];
+
+    if (!selectedDoc?.url) {
+      logDownload('denied', 'file not found');
+      return res.status(404).send('File not found.');
+    }
+
+    const filename = String(selectedDoc.filename || 'template.pdf').replace(/["\r\n]/g, '');
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+
+    logDownload('allowed', 'streaming file');
+
+    https.get(selectedDoc.url, (fileRes) => {
+      if (fileRes.statusCode !== 200) {
+        console.error('Cloudinary file fetch failed:', fileRes.statusCode);
+        return res.status(502).send('Could not retrieve file.');
+      }
+
+      fileRes.pipe(res);
+    }).on('error', (err) => {
+      console.error('Template download stream error:', err);
+      if (!res.headersSent) {
+        return res.status(500).send('Could not download file.');
+      }
+    });
+
+  } catch (err) {
+    console.error('Template download error:', err);
+    logDownload('denied', 'server error');
+    return res.status(500).send('An error occurred while downloading the file.');
+  }
+},
+
+downloadExerciseFile: async (req, res) => {
+  const { exerciseId, fileRole } = req.params;
+
+  const logDownload = (result, reason = '') => {
+    console.log('📥 Exercise download attempt:', {
+      userId: req.user?._id?.toString() || null,
+      unitId: exerciseId,
+      unitType: 'exercise',
+      fileRole,
+      result,
+      reason,
+      timestamp: new Date().toISOString(),
+    });
+  };
+
+  try {
+    const exercise = await Exercise.findById(exerciseId);
+
+    if (!exercise) {
+      logDownload('denied', 'exercise not found');
+      return res.status(404).send('Exercise not found.');
+    }
+
+    const authorIdRaw = exercise.author?.id || exercise.author;
+    const authorId = authorIdRaw ? authorIdRaw.toString() : null;
+    const currentUserId = (req.user?._id || req.user?.id)?.toString();
+
+    const isOwner = !!(currentUserId && authorId && currentUserId === authorId);
+
+    let authorOrg = null;
+    let authorGroupId = null;
+
+    const [authorAsLeader, authorAsGroupMember] = await Promise.all([
+      Leader.findById(authorId).select('_id organization').lean(),
+      GroupMember.findById(authorId).select('_id organization groupId leader').lean(),
+    ]);
+
+    if (authorAsLeader) {
+      authorOrg = authorAsLeader.organization || null;
+      authorGroupId = authorAsLeader._id;
+    } else if (authorAsGroupMember) {
+      authorOrg = authorAsGroupMember.organization || null;
+      authorGroupId = authorAsGroupMember.leader || authorAsGroupMember.groupId || null;
+    }
+
+    let isAuthorized = false;
+
+    if (exercise.visibility === 'all_members') {
+      isAuthorized = !!req.user;
+    } else if (exercise.visibility === 'organization_only') {
+      isAuthorized =
+        isOwner ||
+        (
+          req.user?.organization &&
+          authorOrg &&
+          String(req.user.organization) === String(authorOrg)
+        );
+    } else if (exercise.visibility === 'team_only') {
+      isAuthorized =
+        isOwner ||
+        (
+          req.user?.groupId &&
+          authorGroupId &&
+          String(req.user.groupId) === String(authorGroupId)
+        );
+    } else {
+      isAuthorized = isOwner;
+    }
+
+    if (!isAuthorized) {
+      logDownload('denied', 'not authorized');
+      return res.status(403).send('You do not have permission to download this file.');
+    }
+
+    const rawDocs = Array.isArray(exercise.document_uploads)
+      ? exercise.document_uploads.filter(Boolean)
+      : exercise.document_uploads
+        ? [exercise.document_uploads]
+        : [];
+
+    const docIndex = Number(String(fileRole || '').replace('document-', ''));
+
+    if (!Number.isInteger(docIndex) || docIndex < 0) {
+      logDownload('denied', 'invalid file role');
+      return res.status(400).send('Invalid file request.');
+    }
+
+    const pdfDocs = rawDocs.filter((doc) => {
+      const filename = String(doc?.filename || '').toLowerCase();
+      const mimetype = String(doc?.mimetype || '').toLowerCase();
+
+      return (
+        doc?.url &&
+        (
+          filename.endsWith('.pdf') ||
+          mimetype === 'application/pdf' ||
+          doc?.fileType === 'pdf'
+        )
+      );
+    });
+
+    const selectedDoc = pdfDocs[docIndex];
+
+    if (!selectedDoc?.url) {
+      logDownload('denied', 'file not found');
+      return res.status(404).send('File not found.');
+    }
+
+    const filename = String(selectedDoc.filename || 'exercise.pdf').replace(/["\r\n]/g, '');
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+
+    logDownload('allowed', 'streaming file');
+
+    https.get(selectedDoc.url, (fileRes) => {
+      if (fileRes.statusCode !== 200) {
+        console.error('Cloudinary file fetch failed:', fileRes.statusCode);
+        return res.status(502).send('Could not retrieve file.');
+      }
+
+      fileRes.pipe(res);
+    }).on('error', (err) => {
+      console.error('Exercise download stream error:', err);
+      if (!res.headersSent) {
+        return res.status(500).send('Could not download file.');
+      }
+    });
+
+  } catch (err) {
+    console.error('Exercise download error:', err);
+    logDownload('denied', 'server error');
+    return res.status(500).send('An error occurred while downloading the file.');
+  }
+},
 
 };    

@@ -1429,21 +1429,28 @@ submitExercise: async (req, res) => {
     }
 
     exerciseData.author = { id: req.user._id };
+    exerciseData.file_format = 'PDF';
 
-    // Normalize existing docs passed back from edit form, if any
+    // Preserve existing PDF docs on edit
     let preservedDocuments = [];
+
     if (existing_document_uploads) {
       try {
-        const parsed = typeof existing_document_uploads === 'string'
-          ? JSON.parse(existing_document_uploads)
-          : existing_document_uploads;
+        const parsed =
+          typeof existing_document_uploads === 'string'
+            ? JSON.parse(existing_document_uploads)
+            : existing_document_uploads;
 
         if (Array.isArray(parsed)) {
           preservedDocuments = parsed
-            .filter(doc => doc && doc.url && doc.filename)
-            .map(doc => ({
+            .filter((doc) => {
+              const filename = String(doc?.filename || '').toLowerCase();
+              return doc?.url && doc?.filename && filename.endsWith('.pdf');
+            })
+            .map((doc) => ({
               url: String(doc.url).trim(),
               filename: String(doc.filename).trim(),
+              fileType: 'pdf',
             }));
         }
       } catch (err) {
@@ -1455,13 +1462,32 @@ submitExercise: async (req, res) => {
       ? req.files
       : req.files?.document_uploads || [];
 
-    const totalDocumentCount = preservedDocuments.length + uploadedFiles.length;
+    const files = Array.isArray(uploadedFiles) ? uploadedFiles : [uploadedFiles].filter(Boolean);
+
+    const hasNonPdf = files.some((file) => {
+      const mimetype = String(file?.mimetype || '').toLowerCase();
+      const originalname = String(file?.originalname || '').toLowerCase();
+
+      return mimetype !== 'application/pdf' && !originalname.endsWith('.pdf');
+    });
+
+    if (hasNonPdf) {
+      return res.status(400).render('unit_form_views/form_exercise', {
+        layout: 'unitformlayout',
+        data: req.body,
+        errorMessage: 'Only PDF files are allowed for exercises.',
+        mainTopics,
+        csrfToken: getCsrfToken(req),
+      });
+    }
+
+    const totalDocumentCount = preservedDocuments.length + files.length;
 
     if (totalDocumentCount > 3) {
       return res.status(400).render('unit_form_views/form_exercise', {
         layout: 'unitformlayout',
         data: req.body,
-        errorMessage: 'You may upload up to 3 documents only.',
+        errorMessage: 'You may upload up to 3 PDF files only.',
         mainTopics,
         csrfToken: getCsrfToken(req),
       });
@@ -1469,8 +1495,8 @@ submitExercise: async (req, res) => {
 
     let uploadedDocuments = [];
 
-    if (uploadedFiles.length > 0) {
-      const uploadPromises = uploadedFiles.map((file) => {
+    if (files.length > 0) {
+      const uploadPromises = files.map((file) => {
         return new Promise((resolve, reject) => {
           if (!file?.buffer || !file.originalname) {
             return resolve(null);
@@ -1498,6 +1524,7 @@ submitExercise: async (req, res) => {
               resolve({
                 url: result.secure_url,
                 filename: file.originalname,
+                fileType: 'pdf',
               });
             }
           );
@@ -1509,8 +1536,6 @@ submitExercise: async (req, res) => {
       uploadedDocuments = (await Promise.all(uploadPromises)).filter(Boolean);
     }
 
-    // Keep existing docs if no new upload.
-    // If there are new uploads, append them to preserved docs.
     exerciseData.document_uploads =
       uploadedDocuments.length > 0
         ? [...preservedDocuments, ...uploadedDocuments]
@@ -1581,6 +1606,7 @@ submitExercise: async (req, res) => {
     }
 
     const isCsrfError = error.code === 'EBADCSRFTOKEN';
+
     if (isCsrfError) {
       return res.status(403).render('unit_form_views/error', {
         layout: 'unitformlayout',
@@ -1631,23 +1657,39 @@ submitTemplate: async (req, res) => {
     }
 
     templateData.author = { id: req.user._id };
+    templateData.file_format = 'PDF';
 
-    // Preserve existing uploads on edit
+    // Preserve existing PDF uploads on edit
     let preservedDocuments = [];
+
     if (existing_document_uploads) {
       try {
-        const parsed = typeof existing_document_uploads === 'string'
-          ? JSON.parse(existing_document_uploads)
-          : existing_document_uploads;
+        const parsed =
+          typeof existing_document_uploads === 'string'
+            ? JSON.parse(existing_document_uploads)
+            : existing_document_uploads;
 
         if (Array.isArray(parsed)) {
           preservedDocuments = parsed
-            .filter(doc => doc && doc.url && doc.filename && doc.role)
-            .map(doc => ({
+            .filter((doc) => {
+              const filename = String(doc?.filename || '').toLowerCase();
+              const mimetype = String(doc?.mimetype || '').toLowerCase();
+
+              return (
+                doc?.url &&
+                doc?.filename &&
+                (
+                  filename.endsWith('.pdf') ||
+                  mimetype === 'application/pdf'
+                )
+              );
+            })
+            .map((doc) => ({
               url: String(doc.url).trim(),
               filename: String(doc.filename).trim(),
-              mimetype: doc.mimetype ? String(doc.mimetype).trim() : 'application/octet-stream',
-              role: String(doc.role).trim(),
+              mimetype: 'application/pdf',
+              fileType: 'pdf',
+              role: 'view',
             }));
         }
       } catch (err) {
@@ -1655,99 +1697,58 @@ submitTemplate: async (req, res) => {
       }
     }
 
-    // Support multer field-based uploads:
-    // template_pdf = required view file
-    // template_working = optional editable file
+    // New form only has template_pdf now
     const pdfFiles = req.files?.template_pdf || [];
-    const workingFiles = req.files?.template_working || [];
+    const files = Array.isArray(pdfFiles) ? pdfFiles : [pdfFiles].filter(Boolean);
 
-    if (pdfFiles.length > 1) {
+    if (files.length > 1) {
       return res.status(400).render('unit_form_views/form_template', {
         layout: 'unitformlayout',
         data: req.body,
-        errorMessage: 'Please upload only one PDF view file.',
+        errorMessage: 'Please upload only one PDF file.',
         csrfToken: getCsrfToken(req),
       });
     }
 
-    if (workingFiles.length > 1) {
-      return res.status(400).render('unit_form_views/form_template', {
-        layout: 'unitformlayout',
-        data: req.body,
-        errorMessage: 'Please upload only one working file.',
-        csrfToken: getCsrfToken(req),
-      });
-    }
+    const uploadedPdf = files[0];
 
-    const uploadedPdf = pdfFiles[0];
-    const uploadedWorking = workingFiles[0];
-
-    const preservedView = preservedDocuments.find(doc => doc.role === 'view');
-    const preservedWorking = preservedDocuments.find(doc => doc.role === 'working');
-
-    // New template must always have a PDF view file
     if (!_id && !uploadedPdf) {
       return res.status(400).render('unit_form_views/form_template', {
         layout: 'unitformlayout',
         data: req.body,
-        errorMessage: 'Please upload a PDF view file for this template.',
+        errorMessage: 'Please upload a PDF file for this template.',
         csrfToken: getCsrfToken(req),
       });
     }
 
-    // On edit, must still end up with a PDF view file
-    if (_id && !uploadedPdf && !preservedView) {
+    if (_id && !uploadedPdf && preservedDocuments.length === 0) {
       return res.status(400).render('unit_form_views/form_template', {
         layout: 'unitformlayout',
         data: req.body,
-        errorMessage: 'A template must have one PDF view file.',
+        errorMessage: 'A template must have one PDF file.',
         csrfToken: getCsrfToken(req),
       });
     }
 
-    // Validate uploaded PDF
-    if (
-      uploadedPdf &&
-      !(
-        uploadedPdf.mimetype === 'application/pdf' ||
-        /\.pdf$/i.test(uploadedPdf.originalname)
-      )
-    ) {
-      return res.status(400).render('unit_form_views/form_template', {
-        layout: 'unitformlayout',
-        data: req.body,
-        errorMessage: 'The view file must be a PDF.',
-        csrfToken: getCsrfToken(req),
-      });
-    }
+    if (uploadedPdf) {
+      const mimetype = String(uploadedPdf.mimetype || '').toLowerCase();
+      const originalname = String(uploadedPdf.originalname || '').toLowerCase();
 
-    // Validate uploaded working file
-    if (uploadedWorking) {
-      const allowedWorkingExtensions = /\.(doc|docx|xls|xlsx|ppt|pptx)$/i;
-      const allowedWorkingMimes = [
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'application/vnd.ms-excel',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'application/vnd.ms-powerpoint',
-        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-      ];
+      const isPdf =
+        mimetype === 'application/pdf' ||
+        originalname.endsWith('.pdf');
 
-      const validWorkingFile =
-        allowedWorkingExtensions.test(uploadedWorking.originalname) ||
-        allowedWorkingMimes.includes(uploadedWorking.mimetype);
-
-      if (!validWorkingFile) {
+      if (!isPdf) {
         return res.status(400).render('unit_form_views/form_template', {
           layout: 'unitformlayout',
           data: req.body,
-          errorMessage: 'The working file must be a Word, Excel, or PowerPoint file.',
+          errorMessage: 'Only PDF files are allowed for templates.',
           csrfToken: getCsrfToken(req),
         });
       }
     }
 
-    const uploadToCloudinary = (file, { folder, resource_type, role }) => {
+    const uploadToCloudinary = (file) => {
       return new Promise((resolve, reject) => {
         if (!file?.buffer || !file.originalname) {
           return resolve(null);
@@ -1758,8 +1759,8 @@ submitTemplate: async (req, res) => {
 
         const stream = uploader.upload_stream(
           {
-            resource_type,
-            folder,
+            resource_type: 'raw',
+            folder: 'twennie_templates',
             public_id: safePublicId,
             overwrite: false,
           },
@@ -1776,9 +1777,10 @@ submitTemplate: async (req, res) => {
 
             resolve({
               filename: file.originalname,
-              mimetype: file.mimetype || 'application/octet-stream',
+              mimetype: 'application/pdf',
               url: result.secure_url,
-              role,
+              fileType: 'pdf',
+              role: 'view',
             });
           }
         );
@@ -1787,28 +1789,13 @@ submitTemplate: async (req, res) => {
       });
     };
 
-    // Upload new files if provided
-    const uploadedViewDoc = uploadedPdf
-      ? await uploadToCloudinary(uploadedPdf, {
-          folder: 'twennie_templates',
-          resource_type: 'image',
-          role: 'view',
-        })
+    const uploadedDocument = uploadedPdf
+      ? await uploadToCloudinary(uploadedPdf)
       : null;
 
-    const uploadedWorkingDoc = uploadedWorking
-      ? await uploadToCloudinary(uploadedWorking, {
-          folder: 'twennie_templates',
-          resource_type: 'raw',
-          role: 'working',
-        })
-      : null;
-
-    // Build final uploads array
-    const finalViewDoc = uploadedViewDoc || preservedView || null;
-    const finalWorkingDoc = uploadedWorkingDoc || preservedWorking || null;
-
-    const finalDocumentUploads = [finalViewDoc, finalWorkingDoc].filter(Boolean);
+    const finalDocumentUploads = uploadedDocument
+      ? [uploadedDocument]
+      : preservedDocuments.slice(0, 1);
 
     let templateDoc;
 
@@ -1885,6 +1872,7 @@ submitTemplate: async (req, res) => {
     }
 
     const isCsrfError = error.code === 'EBADCSRFTOKEN';
+
     if (isCsrfError) {
       return res.status(403).render('unit_form_views/error', {
         layout: 'unitformlayout',

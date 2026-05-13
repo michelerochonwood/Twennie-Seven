@@ -1,8 +1,6 @@
 {{#*inline "title"}}Create a Template | Twennie{{/inline}}
 {{> mainpartials/templateinstructions_partial}}
 
-<input type="hidden" name="fromUpcomingId" value="{{fromUpcomingId}}">
-
 <div class="contribute-wave-divider">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 160">
     <path fill="#939598" fill-opacity="1" d="M0,64L80,58.7C160,53,320,43,480,58.7C640,75,800,117,960,122.7C1120,128,1280,96,1360,80L1440,64L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z"></path>
@@ -11,8 +9,11 @@
 
 <div class="form-template-background">
   <div class="form-template-container">
+
     <form id="template-form" action="/unitform/submit_template" method="POST" enctype="multipart/form-data">
+
       <input type="hidden" name="_csrf" value="{{csrfToken}}">
+      <input type="hidden" name="fromUpcomingId" value="{{fromUpcomingId}}">
 
       {{#if data._id}}
         <input type="hidden" name="_id" value="{{data._id}}">
@@ -49,56 +50,62 @@
         <div class="uploaded-files">
           {{#each data.documentUploads}}
             <p>
-              {{#ifEquals this.role "view"}}
-                📄 View File:
-              {{else}}
-                🛠️ Working File:
-              {{/ifEquals}}
-              <a href="{{this.url}}" target="_blank" rel="noopener">{{this.filename}}</a>
+              📄 Existing PDF:
+              <span>{{this.filename}}</span>
             </p>
           {{/each}}
         </div>
       {{/if}}
 
       <div class="form-field">
-        <label for="template_pdf">Upload Template (PDF – required for new templates)</label>
+        <label for="template_pdf">Upload Template PDF</label>
+
         <input
           type="file"
           id="template_pdf"
           name="template_pdf"
-          accept=".pdf,application/pdf"
+          accept="application/pdf,.pdf"
           {{#unless data._id}}required{{/unless}}
+
+          onchange="
+            const file = this.files[0];
+
+            if (!file) return;
+
+            const isPdf =
+              file.type === 'application/pdf' ||
+              file.name.toLowerCase().endsWith('.pdf');
+
+            if (!isPdf) {
+              alert('Only PDF files are allowed.');
+              this.value = '';
+            }
+          "
         >
-        <small>This file is used for viewing in the browser.</small>
+
+        <p class="form-field-help">
+          PDF only. Word, Excel, and PowerPoint uploads are no longer permitted.
+        </p>
       </div>
 
-      <div class="form-field">
-        <label for="template_working">Upload Working File (optional)</label>
-        <input
-          type="file"
-          id="template_working"
-          name="template_working"
-          accept=".doc,.docx,.xls,.xlsx,.ppt,.pptx"
-        >
-        <small>Optional editable version.</small>
-      </div>
+      <div class="form-toggle">
+        <label>
+          <input
+            type="checkbox"
+            name="permission"
+            {{#if data.permission}}checked{{/if}}
+          >
+          I consent to Twennie using this library unit (with attribution) for promotional purposes.
+        </label>
 
-<div class="form-toggle">
-  <label>
-    <input
-      type="checkbox"
-      name="permission"
-      {{#if data.permission}}checked{{/if}}
-    >
-    I consent to Twennie using this library unit (with attribution) for promotional purposes.
-  </label>
-  <p class="form-field-help">
-    This consent is optional and does not affect your membership or access.
-  </p>
-</div>
+        <p class="form-field-help">
+          This consent is optional and does not affect your membership or access.
+        </p>
+      </div>
 
       <div class="form-field">
         <label for="short_summary">Short Summary</label>
+
         <textarea
           id="short_summary"
           name="short_summary"
@@ -108,63 +115,66 @@
 
       <div class="form-field">
         <label for="full_summary">Full Summary (optional)</label>
+
         <textarea
           id="full_summary"
           name="full_summary"
         >{{data.full_summary}}</textarea>
       </div>
 
-{{!-- Visibility Toggles --}}
-<div class="form-field">
-  <label>Who can access this template?</label>
+      <div class="form-field">
+        <label>Who can access this template?</label>
 
-  <div class="visibility-toggle-row">
-    {{#unless (eq user.membershipType "member")}}
-      <label class="visibility-option">
-        <input
-          type="radio"
-          name="visibility"
-          value="team_only"
-          {{#ifEquals data.visibility "team_only"}}checked{{/ifEquals}}
-        >
-        share with my group only
-      </label>
+        <div class="visibility-toggle-row">
 
-      <label class="visibility-option">
-        <input
-          type="radio"
-          name="visibility"
-          value="organization_only"
-          {{#ifEquals data.visibility "organization_only"}}checked{{/ifEquals}}
-        >
-        share with my organization only
-      </label>
-    {{/unless}}
+          {{#unless (eq user.membershipType "member")}}
 
-    <label class="visibility-option">
-      <input
-        type="radio"
-        name="visibility"
-        value="all_members"
-        {{#ifEquals data.visibility "all_members"}}checked{{/ifEquals}}
-        {{#if (eq user.membershipType "member")}}checked{{/if}}
-        required
-      >
-      share with all Twennie members
-    </label>
-  </div>
-</div>
+            <label class="visibility-option">
+              <input
+                type="radio"
+                name="visibility"
+                value="team_only"
+                {{#ifEquals data.visibility "team_only"}}checked{{/ifEquals}}
+              >
+              share with my group only
+            </label>
+
+            <label class="visibility-option">
+              <input
+                type="radio"
+                name="visibility"
+                value="organization_only"
+                {{#ifEquals data.visibility "organization_only"}}checked{{/ifEquals}}
+              >
+              share with my organization only
+            </label>
+
+          {{/unless}}
+
+          <label class="visibility-option">
+            <input
+              type="radio"
+              name="visibility"
+              value="all_members"
+              {{#ifEquals data.visibility "all_members"}}checked{{/ifEquals}}
+              {{#if (eq user.membershipType "member")}}checked{{/if}}
+              required
+            >
+            share with all Twennie members
+          </label>
+
+        </div>
+      </div>
 
       <div class="form-buttons">
         <button type="submit" class="form-button submit-button">
           {{#if data._id}}save template{{else}}submit{{/if}}
         </button>
       </div>
+
     </form>
   </div>
 </div>
 
 {{> mainpartials/home_subfooter}}
 {{> mainpartials/footer}}
-
-
