@@ -22,11 +22,12 @@ const uploadImg = require('../../middleware/multerImages');
 const csrf = require('csurf');
 const csrfProtection = csrf();
 const ensureCanContribute = require('../../middleware/ensureCanContribute');
-
+const unitviewController = require('../../controllers/unitviewController');
 // Debugging
 console.log('ensureAuthenticated:', ensureAuthenticated);
 console.log('ensureAuthenticated is a function:', typeof ensureAuthenticated === 'function');
 console.log('unitFormController:', unitFormController);
+
 
 
 
@@ -552,14 +553,6 @@ router.post(
   csrfProtection,
 
   unitFormController.submitTemplate
-);
-
-
-// Download template PDF through protected Twennie route
-router.get(
-  '/templates/:templateId/download/:fileRole',
-  ensureAuthenticated,
-  unitViewController.downloadTemplateFile
 );
   
   
