@@ -544,14 +544,11 @@ router.get(
 router.post(
   '/submit_template',
   ensureAuthenticated,
-
-  // multer must come before csrf for multipart/form-data
   uploadDocs.fields([
     { name: 'template_pdf', maxCount: 1 }
   ]),
-
   csrfProtection,
-
+  ensureCanContribute,
   unitFormController.submitTemplate
 );
   
@@ -657,12 +654,13 @@ router.post('/submit_promptset', ensureAuthenticated, csrfProtection, unitFormCo
 // =========================
 
 // Create exercise form
-router.get(
-  '/form_exercise',
+router.post(
+  '/submit_exercise',
   ensureAuthenticated,
-  ensureCanContribute,
+  uploadDocs.array('document_uploads', 3),
   csrfProtection,
-  unitFormController.getExerciseForm
+  ensureCanContribute,
+  unitFormController.submitExercise
 );
 
 
