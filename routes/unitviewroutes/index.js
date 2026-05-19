@@ -71,6 +71,16 @@ router.get('/unitnotessuccess', (req, res) => {
   res.render('unit_views/unitnotessuccess', { layout: 'unitviewlayout' });
 });
 
+router.get('/exercises/view/:id', unitviewController.viewExercise);
+
+router.get(
+  '/exercises/:exerciseId/download/:fileRole',
+  isAuthenticated,
+  unitviewController.downloadExerciseFile
+);
+
+router.get('/templates/view/:id', unitviewController.viewTemplate);
+
 module.exports = router;
 
 
