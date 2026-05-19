@@ -437,13 +437,18 @@ async function canDownloadScopedUnit(req, unit) {
     );
   }
 
-  if (visibility === 'team_only') {
-    return !!(
-      req.user?.groupId &&
-      authorTeamId &&
-      String(req.user.groupId) === String(authorTeamId)
-    );
-  }
+if (visibility === 'team_only') {
+  const currentUserTeamId =
+    req.user?.membershipType === 'leader'
+      ? req.user?._id || req.user?.id
+      : req.user?.groupId || req.user?.leader;
+
+  return !!(
+    currentUserTeamId &&
+    authorTeamId &&
+    String(currentUserTeamId) === String(authorTeamId)
+  );
+}
 
   return false;
 }
