@@ -44,7 +44,7 @@
     {{#each documentUploads}}
       {{#if (eq this.fileType "pdf")}}
         <a
-          href="/templates/{{../_id}}/download/{{this.fileRole}}"
+          href="/unitviews/templates/{{../_id}}/download/{{this.fileRole}}"
           class="single_template-download-btn"
         >
           Download PDF {{#if this.filename}}— {{this.filename}}{{/if}}

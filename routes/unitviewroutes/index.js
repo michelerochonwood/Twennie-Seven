@@ -21,6 +21,12 @@ router.get('/exercises/view/:id', unitviewController.viewExercise);
 router.get('/templates/view/:id', unitviewController.viewTemplate);
 router.get('/missions/view/:id', unitviewController.viewMission);
 
+
+router.get(
+  '/templates/:templateId/download/:fileRole',
+  isAuthenticated,
+  unitviewController.downloadTemplateFile
+);
 // ----- The Mine (section root and landing) -----
 // Visiting /unitviews will bounce to the Mine landing for convenience
 router.get('/', (req, res) => res.redirect('/unitviews/mine'));
