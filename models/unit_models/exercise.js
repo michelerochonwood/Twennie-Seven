@@ -50,14 +50,39 @@ const exerciseSchema = new mongoose.Schema({
 document_uploads: {
   type: [
     {
+      public_id: {
+        type: String,
+        trim: true,
+      },
+      resource_type: {
+        type: String,
+        default: 'raw',
+        trim: true,
+      },
+      type: {
+        type: String,
+        trim: true,
+      },
+
+      // temporary legacy fallback for old public Cloudinary files
       url: {
+        type: String,
+        trim: true,
+      },
+
+      filename: {
         type: String,
         required: true,
         trim: true,
       },
-      filename: {
+      mimetype: {
         type: String,
-        required: true,
+        default: 'application/pdf',
+        trim: true,
+      },
+      fileType: {
+        type: String,
+        default: 'pdf',
         trim: true,
       },
     }

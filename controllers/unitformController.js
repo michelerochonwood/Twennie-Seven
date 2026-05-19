@@ -1431,7 +1431,8 @@ submitExercise: async (req, res) => {
     exerciseData.author = { id: req.user._id };
     exerciseData.file_format = 'PDF';
 
-    // Preserve existing PDF docs on edit
+    // Preserve existing PDF docs on edit.
+    // These may still have public url fields for now.
     let preservedDocuments = [];
 
     if (existing_document_uploads) {
@@ -1445,11 +1446,28 @@ submitExercise: async (req, res) => {
           preservedDocuments = parsed
             .filter((doc) => {
               const filename = String(doc?.filename || '').toLowerCase();
-              return doc?.url && doc?.filename && filename.endsWith('.pdf');
+              const mimetype = String(doc?.mimetype || '').toLowerCase();
+
+              return (
+                doc?.filename &&
+                (
+                  filename.endsWith('.pdf') ||
+                  mimetype === 'application/pdf' ||
+                  doc?.fileType === 'pdf'
+                ) &&
+                (doc?.public_id || doc?.url)
+              );
             })
             .map((doc) => ({
-              url: String(doc.url).trim(),
+              public_id: doc.public_id ? String(doc.public_id).trim() : undefined,
+              resource_type: doc.resource_type || 'raw',
+              type: doc.type || undefined,
+
+              // temporary legacy fallback
+              url: doc.url ? String(doc.url).trim() : undefined,
+
               filename: String(doc.filename).trim(),
+              mimetype: 'application/pdf',
               fileType: 'pdf',
             }));
         }
@@ -1462,7 +1480,9 @@ submitExercise: async (req, res) => {
       ? req.files
       : req.files?.document_uploads || [];
 
-    const files = Array.isArray(uploadedFiles) ? uploadedFiles : [uploadedFiles].filter(Boolean);
+    const files = Array.isArray(uploadedFiles)
+      ? uploadedFiles
+      : [uploadedFiles].filter(Boolean);
 
     const hasNonPdf = files.some((file) => {
       const mimetype = String(file?.mimetype || '').toLowerCase();
@@ -1509,21 +1529,25 @@ submitExercise: async (req, res) => {
             {
               folder: 'twennie_exercises',
               resource_type: 'raw',
+              type: 'authenticated',
               public_id: safePublicId,
               overwrite: false,
             },
             (error, result) => {
               if (error) return reject(error);
 
-              if (!result?.secure_url) {
+              if (!result?.public_id) {
                 return reject(
                   new Error(`Cloudinary upload failed for file: ${file.originalname}`)
                 );
               }
 
               resolve({
-                url: result.secure_url,
+                public_id: result.public_id,
+                resource_type: result.resource_type || 'raw',
+                type: result.type || 'authenticated',
                 filename: file.originalname,
+                mimetype: 'application/pdf',
                 fileType: 'pdf',
               });
             }
@@ -1659,7 +1683,8 @@ submitTemplate: async (req, res) => {
     templateData.author = { id: req.user._id };
     templateData.file_format = 'PDF';
 
-    // Preserve existing PDF uploads on edit
+    // Preserve existing PDF uploads on edit.
+    // Legacy records may still have public url fields for now.
     let preservedDocuments = [];
 
     if (existing_document_uploads) {
@@ -1676,16 +1701,23 @@ submitTemplate: async (req, res) => {
               const mimetype = String(doc?.mimetype || '').toLowerCase();
 
               return (
-                doc?.url &&
                 doc?.filename &&
                 (
                   filename.endsWith('.pdf') ||
-                  mimetype === 'application/pdf'
-                )
+                  mimetype === 'application/pdf' ||
+                  doc?.fileType === 'pdf'
+                ) &&
+                (doc?.public_id || doc?.url)
               );
             })
             .map((doc) => ({
-              url: String(doc.url).trim(),
+              public_id: doc.public_id ? String(doc.public_id).trim() : undefined,
+              resource_type: doc.resource_type || 'raw',
+              type: doc.type || undefined,
+
+              // temporary legacy fallback
+              url: doc.url ? String(doc.url).trim() : undefined,
+
               filename: String(doc.filename).trim(),
               mimetype: 'application/pdf',
               fileType: 'pdf',
@@ -1699,7 +1731,9 @@ submitTemplate: async (req, res) => {
 
     // New form only has template_pdf now
     const pdfFiles = req.files?.template_pdf || [];
-    const files = Array.isArray(pdfFiles) ? pdfFiles : [pdfFiles].filter(Boolean);
+    const files = Array.isArray(pdfFiles)
+      ? pdfFiles
+      : [pdfFiles].filter(Boolean);
 
     if (files.length > 1) {
       return res.status(400).render('unit_form_views/form_template', {
@@ -1760,6 +1794,7 @@ submitTemplate: async (req, res) => {
         const stream = uploader.upload_stream(
           {
             resource_type: 'raw',
+            type: 'authenticated',
             folder: 'twennie_templates',
             public_id: safePublicId,
             overwrite: false,
@@ -1769,16 +1804,18 @@ submitTemplate: async (req, res) => {
               return reject(new Error('Cloudinary upload failed: ' + error.message));
             }
 
-            if (!result?.secure_url) {
+            if (!result?.public_id) {
               return reject(
                 new Error(`Cloudinary upload failed for file: ${file.originalname}`)
               );
             }
 
             resolve({
+              public_id: result.public_id,
+              resource_type: result.resource_type || 'raw',
+              type: result.type || 'authenticated',
               filename: file.originalname,
               mimetype: 'application/pdf',
-              url: result.secure_url,
               fileType: 'pdf',
               role: 'view',
             });

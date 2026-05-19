@@ -3,6 +3,26 @@ const topics = require('../../config/topics');
 
 const templateUploadSchema = new mongoose.Schema(
   {
+    public_id: {
+      type: String,
+      trim: true,
+    },
+    resource_type: {
+      type: String,
+      default: 'raw',
+      trim: true,
+    },
+    type: {
+      type: String,
+      trim: true,
+    },
+
+    // temporary legacy fallback for old public Cloudinary files
+    url: {
+      type: String,
+      trim: true,
+    },
+
     filename: {
       type: String,
       required: true,
@@ -11,17 +31,19 @@ const templateUploadSchema = new mongoose.Schema(
     mimetype: {
       type: String,
       required: true,
+      default: 'application/pdf',
       trim: true,
     },
-    url: {
+    fileType: {
       type: String,
-      required: true,
+      default: 'pdf',
       trim: true,
     },
     role: {
       type: String,
       enum: ['view', 'working'],
       required: true,
+      default: 'view',
     },
   },
   { _id: false }
