@@ -2354,7 +2354,7 @@ viewMission: async (req, res) => {
 
 
 
-ddownloadTemplateFile: async (req, res) => {
+downloadTemplateFile: async (req, res) => {
   const { templateId, fileRole } = req.params;
 
   const logDownload = (result, reason = '') => {
