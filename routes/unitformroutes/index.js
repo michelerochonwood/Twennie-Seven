@@ -654,15 +654,13 @@ router.post('/submit_promptset', ensureAuthenticated, csrfProtection, unitFormCo
 // =========================
 
 // Create exercise form
-router.post(
-  '/submit_exercise',
+router.get(
+  '/form_exercise',
   ensureAuthenticated,
-  uploadDocs.array('document_uploads', 3),
-  csrfProtection,
   ensureCanContribute,
-  unitFormController.submitExercise
+  csrfProtection,
+  unitFormController.getExerciseForm
 );
-
 
 // Edit exercise form
 router.get(
@@ -717,13 +715,13 @@ router.get(
   }
 );
 
-
 // Submit exercise form
 router.post(
   '/submit_exercise',
   ensureAuthenticated,
-  uploadDocs.array('document_uploads', 3), // multer first for multipart/form-data
-  csrfProtection,                          // csrf after multer
+  uploadDocs.array('document_uploads', 3),
+  csrfProtection,
+  ensureCanContribute,
   unitFormController.submitExercise
 );
   // =========================
