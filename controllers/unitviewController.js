@@ -18,6 +18,7 @@ const UpcomingUnit = require('../models/unit_models/upcoming'); // models/unit_m
 const Nugget = require('../models/unit_models/nugget'); // add this at the top with other models
 const OrganizationProfile = require('../models/profile_models/organization_profile');
 const Tag = require('../models/tag');
+const cloudinary = require('cloudinary').v2;
 
 const https = require('https');
 
@@ -2353,7 +2354,7 @@ viewMission: async (req, res) => {
 
 
 
-downloadTemplateFile: async (req, res) => {
+ddownloadTemplateFile: async (req, res) => {
   const { templateId, fileRole } = req.params;
 
   const logDownload = (result, reason = '') => {
@@ -2369,62 +2370,16 @@ downloadTemplateFile: async (req, res) => {
   };
 
   try {
-    const template = await Template.findById(templateId);
+    if (!req.user) {
+      logDownload('denied', 'not authenticated');
+      return res.status(401).send('Please log in to download this file.');
+    }
+
+    const template = await Template.findById(templateId).lean();
 
     if (!template) {
       logDownload('denied', 'template not found');
       return res.status(404).send('Template not found.');
-    }
-
-    const authorIdRaw = template.author?.id || template.author;
-    const authorId = authorIdRaw ? authorIdRaw.toString() : null;
-    const currentUserId = (req.user?._id || req.user?.id)?.toString();
-
-    const isOwner = !!(currentUserId && authorId && currentUserId === authorId);
-
-    let authorOrg = null;
-    let authorGroupId = null;
-
-    const [authorAsLeader, authorAsGroupMember] = await Promise.all([
-      Leader.findById(authorId).select('_id organization').lean(),
-      GroupMember.findById(authorId).select('_id organization groupId leader').lean(),
-    ]);
-
-    if (authorAsLeader) {
-      authorOrg = authorAsLeader.organization || null;
-      authorGroupId = authorAsLeader._id;
-    } else if (authorAsGroupMember) {
-      authorOrg = authorAsGroupMember.organization || null;
-      authorGroupId = authorAsGroupMember.leader || authorAsGroupMember.groupId || null;
-    }
-
-    let isAuthorized = false;
-
-    if (template.visibility === 'all_members') {
-      isAuthorized = !!req.user;
-    } else if (template.visibility === 'organization_only') {
-      isAuthorized =
-        isOwner ||
-        (
-          req.user?.organization &&
-          authorOrg &&
-          String(req.user.organization) === String(authorOrg)
-        );
-    } else if (template.visibility === 'team_only') {
-      isAuthorized =
-        isOwner ||
-        (
-          req.user?.groupId &&
-          authorGroupId &&
-          String(req.user.groupId) === String(authorGroupId)
-        );
-    } else {
-      isAuthorized = isOwner;
-    }
-
-    if (!isAuthorized) {
-      logDownload('denied', 'not authorized');
-      return res.status(403).send('You do not have permission to download this file.');
     }
 
     const rawDocs = Array.isArray(template.documentUploads)
@@ -2443,45 +2398,69 @@ downloadTemplateFile: async (req, res) => {
     const pdfDocs = rawDocs.filter((doc) => {
       const filename = String(doc?.filename || '').toLowerCase();
       const mimetype = String(doc?.mimetype || '').toLowerCase();
+      const fileType = String(doc?.fileType || '').toLowerCase();
 
       return (
-        doc?.url &&
-        (
-          filename.endsWith('.pdf') ||
-          mimetype === 'application/pdf' ||
-          doc?.fileType === 'pdf'
-        )
+        doc?.public_id || doc?.url
+      ) && (
+        filename.endsWith('.pdf') ||
+        mimetype === 'application/pdf' ||
+        fileType === 'pdf'
       );
     });
 
     const selectedDoc = pdfDocs[docIndex];
 
-    if (!selectedDoc?.url) {
+    if (!selectedDoc) {
       logDownload('denied', 'file not found');
       return res.status(404).send('File not found.');
     }
 
     const filename = String(selectedDoc.filename || 'template.pdf').replace(/["\r\n]/g, '');
 
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    res.setHeader('X-Content-Type-Options', 'nosniff');
+    // ✅ New secure path: authenticated Cloudinary public_id
+    if (selectedDoc.public_id) {
+      const signedUrl = cloudinary.url(selectedDoc.public_id, {
+        resource_type: selectedDoc.resource_type || 'raw',
+        type: selectedDoc.type || 'authenticated',
+        secure: true,
+        sign_url: true,
+        expires_at: Math.floor(Date.now() / 1000) + 60,
+        flags: 'attachment',
+      });
 
-    logDownload('allowed', 'streaming file');
+      logDownload('allowed', 'signed Cloudinary redirect');
+      return res.redirect(signedUrl);
+    }
 
-    https.get(selectedDoc.url, (fileRes) => {
-      if (fileRes.statusCode !== 200) {
-        console.error('Cloudinary file fetch failed:', fileRes.statusCode);
-        return res.status(502).send('Could not retrieve file.');
-      }
+    // ⚠️ Temporary legacy fallback for old records with stored URL
+    if (selectedDoc.url) {
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.setHeader('X-Content-Type-Options', 'nosniff');
 
-      fileRes.pipe(res);
-    }).on('error', (err) => {
-      console.error('Template download stream error:', err);
-      if (!res.headersSent) {
-        return res.status(500).send('Could not download file.');
-      }
-    });
+      logDownload('allowed', 'legacy URL streaming fallback');
+
+      return https.get(selectedDoc.url, (fileRes) => {
+        if (fileRes.statusCode !== 200) {
+          console.error('Cloudinary legacy file fetch failed:', fileRes.statusCode);
+          if (!res.headersSent) {
+            return res.status(502).send('Could not retrieve file.');
+          }
+          return;
+        }
+
+        fileRes.pipe(res);
+      }).on('error', (err) => {
+        console.error('Template legacy download stream error:', err);
+        if (!res.headersSent) {
+          return res.status(500).send('Could not download file.');
+        }
+      });
+    }
+
+    logDownload('denied', 'no public_id or legacy url');
+    return res.status(404).send('File not found.');
 
   } catch (err) {
     console.error('Template download error:', err);
@@ -2506,62 +2485,16 @@ downloadExerciseFile: async (req, res) => {
   };
 
   try {
-    const exercise = await Exercise.findById(exerciseId);
+    if (!req.user) {
+      logDownload('denied', 'not authenticated');
+      return res.status(401).send('Please log in to download this file.');
+    }
+
+    const exercise = await Exercise.findById(exerciseId).lean();
 
     if (!exercise) {
       logDownload('denied', 'exercise not found');
       return res.status(404).send('Exercise not found.');
-    }
-
-    const authorIdRaw = exercise.author?.id || exercise.author;
-    const authorId = authorIdRaw ? authorIdRaw.toString() : null;
-    const currentUserId = (req.user?._id || req.user?.id)?.toString();
-
-    const isOwner = !!(currentUserId && authorId && currentUserId === authorId);
-
-    let authorOrg = null;
-    let authorGroupId = null;
-
-    const [authorAsLeader, authorAsGroupMember] = await Promise.all([
-      Leader.findById(authorId).select('_id organization').lean(),
-      GroupMember.findById(authorId).select('_id organization groupId leader').lean(),
-    ]);
-
-    if (authorAsLeader) {
-      authorOrg = authorAsLeader.organization || null;
-      authorGroupId = authorAsLeader._id;
-    } else if (authorAsGroupMember) {
-      authorOrg = authorAsGroupMember.organization || null;
-      authorGroupId = authorAsGroupMember.leader || authorAsGroupMember.groupId || null;
-    }
-
-    let isAuthorized = false;
-
-    if (exercise.visibility === 'all_members') {
-      isAuthorized = !!req.user;
-    } else if (exercise.visibility === 'organization_only') {
-      isAuthorized =
-        isOwner ||
-        (
-          req.user?.organization &&
-          authorOrg &&
-          String(req.user.organization) === String(authorOrg)
-        );
-    } else if (exercise.visibility === 'team_only') {
-      isAuthorized =
-        isOwner ||
-        (
-          req.user?.groupId &&
-          authorGroupId &&
-          String(req.user.groupId) === String(authorGroupId)
-        );
-    } else {
-      isAuthorized = isOwner;
-    }
-
-    if (!isAuthorized) {
-      logDownload('denied', 'not authorized');
-      return res.status(403).send('You do not have permission to download this file.');
     }
 
     const rawDocs = Array.isArray(exercise.document_uploads)
@@ -2580,45 +2513,69 @@ downloadExerciseFile: async (req, res) => {
     const pdfDocs = rawDocs.filter((doc) => {
       const filename = String(doc?.filename || '').toLowerCase();
       const mimetype = String(doc?.mimetype || '').toLowerCase();
+      const fileType = String(doc?.fileType || '').toLowerCase();
 
       return (
-        doc?.url &&
-        (
-          filename.endsWith('.pdf') ||
-          mimetype === 'application/pdf' ||
-          doc?.fileType === 'pdf'
-        )
+        doc?.public_id || doc?.url
+      ) && (
+        filename.endsWith('.pdf') ||
+        mimetype === 'application/pdf' ||
+        fileType === 'pdf'
       );
     });
 
     const selectedDoc = pdfDocs[docIndex];
 
-    if (!selectedDoc?.url) {
+    if (!selectedDoc) {
       logDownload('denied', 'file not found');
       return res.status(404).send('File not found.');
     }
 
     const filename = String(selectedDoc.filename || 'exercise.pdf').replace(/["\r\n]/g, '');
 
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    res.setHeader('X-Content-Type-Options', 'nosniff');
+    // New secure path: authenticated Cloudinary public_id
+    if (selectedDoc.public_id) {
+      const signedUrl = cloudinary.url(selectedDoc.public_id, {
+        resource_type: selectedDoc.resource_type || 'raw',
+        type: selectedDoc.type || 'authenticated',
+        secure: true,
+        sign_url: true,
+        expires_at: Math.floor(Date.now() / 1000) + 60,
+        flags: 'attachment',
+      });
 
-    logDownload('allowed', 'streaming file');
+      logDownload('allowed', 'signed Cloudinary redirect');
+      return res.redirect(signedUrl);
+    }
 
-    https.get(selectedDoc.url, (fileRes) => {
-      if (fileRes.statusCode !== 200) {
-        console.error('Cloudinary file fetch failed:', fileRes.statusCode);
-        return res.status(502).send('Could not retrieve file.');
-      }
+    // Temporary legacy fallback for old records with stored URL
+    if (selectedDoc.url) {
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.setHeader('X-Content-Type-Options', 'nosniff');
 
-      fileRes.pipe(res);
-    }).on('error', (err) => {
-      console.error('Exercise download stream error:', err);
-      if (!res.headersSent) {
-        return res.status(500).send('Could not download file.');
-      }
-    });
+      logDownload('allowed', 'legacy URL streaming fallback');
+
+      return https.get(selectedDoc.url, (fileRes) => {
+        if (fileRes.statusCode !== 200) {
+          console.error('Cloudinary legacy file fetch failed:', fileRes.statusCode);
+          if (!res.headersSent) {
+            return res.status(502).send('Could not retrieve file.');
+          }
+          return;
+        }
+
+        fileRes.pipe(res);
+      }).on('error', (err) => {
+        console.error('Exercise legacy download stream error:', err);
+        if (!res.headersSent) {
+          return res.status(500).send('Could not download file.');
+        }
+      });
+    }
+
+    logDownload('denied', 'no public_id or legacy url');
+    return res.status(404).send('File not found.');
 
   } catch (err) {
     console.error('Exercise download error:', err);
