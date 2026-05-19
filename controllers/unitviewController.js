@@ -408,6 +408,46 @@ async function getAuthorOrgTeam(authorId) {
   };
 }
 
+async function canDownloadScopedUnit(req, unit) {
+  if (!req.user || !unit) return false;
+
+  const visibility = unit.visibility || 'all_members';
+
+  const authorIdRaw = unit.author?.id || unit.author || unit.createdBy || unit.created_by;
+  const authorId = authorIdRaw ? authorIdRaw.toString() : null;
+  const currentUserId = (req.user?._id || req.user?.id)?.toString();
+
+  const isOwner = !!(currentUserId && authorId && currentUserId === authorId);
+
+  if (visibility === 'all_members') {
+    return true;
+  }
+
+  if (isOwner) {
+    return true;
+  }
+
+  const { authorOrg, authorTeamId } = await getAuthorOrgTeam(authorId);
+
+  if (visibility === 'organization_only') {
+    return !!(
+      req.user?.organization &&
+      authorOrg &&
+      String(req.user.organization) === String(authorOrg)
+    );
+  }
+
+  if (visibility === 'team_only') {
+    return !!(
+      req.user?.groupId &&
+      authorTeamId &&
+      String(req.user.groupId) === String(authorTeamId)
+    );
+  }
+
+  return false;
+}
+
 module.exports = {
 
 
@@ -2382,6 +2422,13 @@ downloadTemplateFile: async (req, res) => {
       return res.status(404).send('Template not found.');
     }
 
+    const isAuthorized = await canDownloadScopedUnit(req, template);
+
+if (!isAuthorized) {
+  logDownload('denied', 'not authorized for visibility scope');
+  return res.status(403).send('You do not have permission to download this file.');
+}
+
     const rawDocs = Array.isArray(template.documentUploads)
       ? template.documentUploads.filter(Boolean)
       : template.documentUploads
@@ -2497,6 +2544,13 @@ downloadExerciseFile: async (req, res) => {
       return res.status(404).send('Exercise not found.');
     }
 
+    const isAuthorized = await canDownloadScopedUnit(req, exercise);
+
+if (!isAuthorized) {
+  logDownload('denied', 'not authorized for visibility scope');
+  return res.status(403).send('You do not have permission to download this file.');
+}
+
     const rawDocs = Array.isArray(exercise.document_uploads)
       ? exercise.document_uploads.filter(Boolean)
       : exercise.document_uploads
@@ -2583,5 +2637,7 @@ downloadExerciseFile: async (req, res) => {
     return res.status(500).send('An error occurred while downloading the file.');
   }
 },
+
+
 
 };    

@@ -23,6 +23,8 @@ function dashboardHomeForUser(user) {
   return '/dashboard/member';
 }
 
+
+
 // Migrate tags from 'upcoming' → new unit, then delete the upcoming doc.
 // Called by each submit handler IFF fromUpcomingId exists.
 async function migrateAndDeleteUpcoming({ fromUpcomingId, toItemId, toUnitType }) {
@@ -80,7 +82,27 @@ function requireTermsForPosting(req, res) {
   return false;
 }
 
+async function validatePdfUpload(file) {
+  if (!file?.buffer) {
+    throw new Error('No file uploaded.');
+  }
 
+  const mimetype = String(file.mimetype || '').toLowerCase();
+  const originalname = String(file.originalname || '').toLowerCase();
+
+  if (mimetype !== 'application/pdf' || !originalname.endsWith('.pdf')) {
+    throw new Error('Only PDF files are allowed.');
+  }
+
+  const { fileTypeFromBuffer } = await import('file-type');
+  const detectedType = await fileTypeFromBuffer(file.buffer);
+
+  if (!detectedType || detectedType.mime !== 'application/pdf') {
+    throw new Error('The uploaded file is not a valid PDF.');
+  }
+
+  return true;
+}
 
 
 
@@ -1484,22 +1506,19 @@ submitExercise: async (req, res) => {
       ? uploadedFiles
       : [uploadedFiles].filter(Boolean);
 
-    const hasNonPdf = files.some((file) => {
-      const mimetype = String(file?.mimetype || '').toLowerCase();
-      const originalname = String(file?.originalname || '').toLowerCase();
-
-      return mimetype !== 'application/pdf' && !originalname.endsWith('.pdf');
-    });
-
-    if (hasNonPdf) {
-      return res.status(400).render('unit_form_views/form_exercise', {
-        layout: 'unitformlayout',
-        data: req.body,
-        errorMessage: 'Only PDF files are allowed for exercises.',
-        mainTopics,
-        csrfToken: getCsrfToken(req),
-      });
-    }
+try {
+  for (const file of files) {
+    await validatePdfUpload(file);
+  }
+} catch (validationError) {
+  return res.status(400).render('unit_form_views/form_exercise', {
+    layout: 'unitformlayout',
+    data: req.body,
+    errorMessage: validationError.message,
+    mainTopics,
+    csrfToken: getCsrfToken(req),
+  });
+}
 
     const totalDocumentCount = preservedDocuments.length + files.length;
 
@@ -1764,23 +1783,18 @@ submitTemplate: async (req, res) => {
       });
     }
 
-    if (uploadedPdf) {
-      const mimetype = String(uploadedPdf.mimetype || '').toLowerCase();
-      const originalname = String(uploadedPdf.originalname || '').toLowerCase();
-
-      const isPdf =
-        mimetype === 'application/pdf' ||
-        originalname.endsWith('.pdf');
-
-      if (!isPdf) {
-        return res.status(400).render('unit_form_views/form_template', {
-          layout: 'unitformlayout',
-          data: req.body,
-          errorMessage: 'Only PDF files are allowed for templates.',
-          csrfToken: getCsrfToken(req),
-        });
-      }
-    }
+if (uploadedPdf) {
+  try {
+    await validatePdfUpload(uploadedPdf);
+  } catch (validationError) {
+    return res.status(400).render('unit_form_views/form_template', {
+      layout: 'unitformlayout',
+      data: req.body,
+      errorMessage: validationError.message,
+      csrfToken: getCsrfToken(req),
+    });
+  }
+}
 
     const uploadToCloudinary = (file) => {
       return new Promise((resolve, reject) => {
