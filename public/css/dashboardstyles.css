@@ -8800,22 +8800,24 @@ box-shadow: none !important;
 .dashboard-explanation-title {
   margin: 0 0 0.65rem;
   font-family: "Figtree", sans-serif;
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 800;
   color: #262262;
   text-transform: lowercase;
   position: relative;
   z-index: 1;
+  text-align: left;
 }
 
 .dashboard-explanation-text {
   margin: 0;
   font-family: "Figtree", sans-serif;
-  font-size: 1rem;
+  font-size: 0.8rem;
   line-height: 1.65;
   color: #262262;
   position: relative;
   z-index: 1;
+  text-align: left;
 }
 
 .dashboard-explanation-text strong {
