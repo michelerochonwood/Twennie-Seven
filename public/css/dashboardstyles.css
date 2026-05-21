@@ -8840,3 +8840,14 @@ box-shadow: none !important;
     font-size: 0.95rem;
   }
 }
+
+.report-link-text {
+  color: #4e50a2;
+  font-weight: 700;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.report-link-text:hover {
+  color: #262262;
+}
