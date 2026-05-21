@@ -283,6 +283,12 @@ router.get('/sample_upcoming', (req, res) => {
   res.render('promo_views/sample_upcoming', { layout: 'mainlayout' });
 });
 
+router.get('/security_privacy', (req, res) => {
+  res.render('promo_views/security_privacy', {
+    layout: 'mainlayout'
+  });
+});
+
 router.get('/teach_me', twenniemapController.getTeachMe);
 
 router.get('/training_bingo', (req, res) => {
