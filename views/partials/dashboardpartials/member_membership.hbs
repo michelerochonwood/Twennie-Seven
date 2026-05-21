@@ -1,22 +1,39 @@
-<section class="individual-membership-tab">
-  <h2 class="individual-membership-title">membership snapshot</h2>
-  <div class="individual-membership-grid">
-    <!-- Column 1 -->
-    <div class="individual-membership-column">
-<p class="individual-membership-access">
-  You have a <strong class="highlight-access">{{member.accessLevelLabel}}</strong> membership.
-</p>
+<div class="dashboard-explanation-block">
+  <h3 class="dashboard-explanation-title">how this tab works</h3>
+  <p class="dashboard-explanation-text">
+    This tab shows your account settings, email preferences, and access details. Use this to make changes to your membership settings.
+  </p>
+</div>
+
+<section class="group-membership-tab">
+  <h2 class="group-membership-title">membership snapshot</h2>
+  <p class="group-membership-welcome">Welcome to the Twennie dashboard, {{member.name}}!</p>
+
+  <div class="group-membership-grid">
+
+    <!-- LEFT COLUMN -->
+    <div class="group-membership-column">
+
+      <p class="group-membership-line">
+        <span class="group-membership-label">Membership:</span>
+        <strong class="highlight-access">{{member.accessLevelLabel}}</strong>
+      </p>
 
       {{#if (eq member.accessLevel "free_individual")}}
-        <p class="individual-membership-section-title">You can access:</p>
-        <ul class="individual-membership-access-list">
+
+        <p class="group-membership-access-title">You can access:</p>
+
+        <ul class="group-membership-access-list">
           <li>all Twennie-generated articles and videos</li>
           <li>your submitted library units</li>
           <li>your tagged units</li>
         </ul>
+
       {{else}}
-        <p class="individual-membership-section-title">You can access:</p>
-        <ul class="individual-membership-access-list">
+
+        <p class="group-membership-access-title">You can access:</p>
+
+        <ul class="group-membership-access-list">
           <li>all Twennie-generated library units</li>
           <li>your chosen topics</li>
           <li>your registered prompt sets and notes forms</li>
@@ -25,160 +42,233 @@
           <li>your submitted library units</li>
           <li>your tagged units</li>
         </ul>
+
         {{#if (eq member.accessLevel "contributor_individual")}}
-          <p class="individual-membership-contributor-note">
+          <p class="group-membership-contributor-note">
             As a contributing member, you must submit units to the library once a month.<br>
-            If you have any questions, reach out to Twennie at <a href="mailto:info@twennie.com">info@twennie.com</a>.
+            If you have any questions, reach out to Twennie at
+            <a href="mailto:info@twennie.com">info@twennie.com</a>.
           </p>
         {{/if}}
+
       {{/if}}
 
-<div class="group-membership-button-container">
-  <a href="/change_membership" class="group-membership-btn" style="text-decoration: none">change my membership</a>
-</div>
-
-
-
     </div>
-  </div>
-</section>
-
-<section class="individual-membership-tab">
-  <h2 class="individual-membership-title">account & email preferences</h2>
-
-  <div class="individual-membership-grid">
-    <!-- Column 1: Account info -->
-    <div class="individual-membership-column">
-      <form action="/dashboard/member/account/details" method="POST" novalidate>
-        <input type="hidden" name="_csrf" value="{{csrfToken}}">
-
-        <p class="individual-membership-line">
-          <label class="individual-membership-label" for="m_acc_name">Name:</label>
-          <input id="m_acc_name" class="individual-membership-input" type="text" name="name" value="{{memberAccount.name}}" required style="border-radius: 55px; height: 30px; border-width: 1px">
-        </p>
-
-        <p class="individual-membership-line">
-          <label class="individual-membership-label" for="m_acc_email">Email:</label>
-          <input id="m_acc_email" class="individual-membership-input" type="email" name="email" value="{{memberAccount.email}}" required style="border-radius: 55px; height: 30px; border-width: 1px">
-        </p>
-
-        {{#if memberAccount.username}}
-        <p class="individual-membership-line">
-          <label class="individual-membership-label" for="m_acc_username">Username:</label>
-          <input id="m_acc_username" class="individual-membership-input" type="text" name="username" value="{{memberAccount.username}}" style="border-radius: 55px; height: 30px; border-width: 1px">
-        </p>
-        {{/if}}
-
-        <div class="group-membership-button-container">
-          <button type="submit" class="group-membership-btn">save my account information</button>
-        </div>
-      </form>
-    </div>
-
-    <!-- MFA (inline status card in dashboard) -->
-<div class="mfa-inline">
-  <div class="mfa-inline-header">
-    <h3 class="mfa-inline-title">multi-factor authentication</h3>
-    {{#if mfaStatus.enabled}}
-      <span class="mfa-chip mfa-chip--on">enabled</span>
-    {{else}}
-      <span class="mfa-chip mfa-chip--off">not enabled</span>
-    {{/if}}
-  </div>
-
-  <p class="mfa-inline-desc">
-    Add an extra layer of security to your account. Manage your authenticator app and backup codes. This function will require the Passwords app on your Smartphone.
-  </p>
-
-  <dl class="mfa-inline-meta">
-    <div class="mfa-inline-row">
-      <dt>method</dt>
-      <dd>
-        {{#if mfaStatus.enabled}}
-          Authenticator app (TOTP)
-        {{else}}
-          —
-        {{/if}}
-      </dd>
-    </div>
-
-    <div class="mfa-inline-row">
-      <dt>backup codes remaining</dt>
-      <dd>{{mfaStatus.recoveryCodesRemaining}}</dd>
-    </div>
-
-    <div class="mfa-inline-row">
-      <dt>last updated</dt>
-      <dd>{{#if mfaStatus.updatedAtFormatted}}{{mfaStatus.updatedAtFormatted}}{{else}}—{{/if}}</dd>
-    </div>
-  </dl>
-
-  <div class="mfa-inline-actions">
-    <a href="/mfa" class="mfa-button">manage my mfa settings</a>
-  </div>
-</div>
-<!-- /MFA (inline) -->
-
-
-    <!-- Column 2: Email preferences -->
-    <div class="individual-membership-column">
-<p class="individual-membership-access-title">email notifications</p>
-
-<form action="/dashboard/member/account/email-preferences" method="POST" novalidate>
-  <input type="hidden" name="_csrf" value="{{csrfToken}}">
-
-  <div class="email-preference-cards">
-    
-    <!-- Level 1: Security Only -->
-    <label class="email-pref-card">
-      <input
-        id="m_email_pref_1"
-        type="radio"
-        name="email_preference_level"
-        value="1"
-        {{#if (eq emailPreferenceLevel 1)}}checked{{/if}}
-      >
-      <div class="email-pref-content">
-        <h4>security emails only</h4>
-        <p>Only essential emails related to your account and security.</p>
-        <ul>
-          <li>account changes</li>
-          <li>password resets</li>
-          <li>security alerts</li>
-        </ul>
-      </div>
-    </label>
-
-    <!-- Level 2: All Emails -->
-    <label class="email-pref-card">
-      <input
-        id="m_email_pref_2"
-        type="radio"
-        name="email_preference_level"
-        value="2"
-        {{#if (eq emailPreferenceLevel 2)}}checked{{/if}}
-      >
-      <div class="email-pref-content">
-        <h4>all emails</h4>
-        <p>Stay informed with everything happening on Twennie.</p>
-        <ul>
-          <li>account updates</li>
-          <li>new units in your favorite topics</li>
-          <li>platform updates</li>
-          <li>learning events and updates</li>
-        </ul>
-      </div>
-    </label>
 
   </div>
 
   <div class="group-membership-button-container">
-    <button type="submit" class="group-membership-btn">save my email preferences</button>
+    <a href="/change_membership" class="group-membership-btn" style="text-decoration: none">
+      change my membership
+    </a>
   </div>
-</form>
 
-    </div>
-  </div>
 </section>
 
 
+<section class="group-membership-tab">
+  <h2 class="group-membership-title">account & email preferences</h2>
+
+  <div class="group-membership-grid">
+
+    <!-- COLUMN 1 -->
+    <div class="group-membership-column">
+
+      <form action="/dashboard/member/account/details" method="POST" novalidate>
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+
+        <p class="group-membership-line">
+          <label class="group-membership-label" for="m_acc_name">Name:</label>
+          <input
+            id="m_acc_name"
+            class="group-membership-input"
+            type="text"
+            name="name"
+            value="{{memberAccount.name}}"
+            required
+            style="border-radius: 55px; height: 30px; border-width: 1px"
+          >
+        </p>
+
+        <p class="group-membership-line">
+          <label class="group-membership-label" for="m_acc_email">Email:</label>
+          <input
+            id="m_acc_email"
+            class="group-membership-input"
+            type="email"
+            name="email"
+            value="{{memberAccount.email}}"
+            required
+            style="border-radius: 55px; height: 30px; border-width: 1px"
+          >
+        </p>
+
+        {{#if memberAccount.username}}
+        <p class="group-membership-line">
+          <label class="group-membership-label" for="m_acc_username">Username:</label>
+          <input
+            id="m_acc_username"
+            class="group-membership-input"
+            type="text"
+            name="username"
+            value="{{memberAccount.username}}"
+            style="border-radius: 55px; height: 30px; border-width: 1px"
+          >
+        </p>
+        {{/if}}
+
+        <div class="group-membership-button-container">
+          <button type="submit" class="group-membership-btn">
+            save my account information
+          </button>
+        </div>
+      </form>
+
+    </div>
+
+
+    <!-- MFA -->
+    <div class="mfa-inline">
+
+      <div class="mfa-inline-header">
+        <h3 class="mfa-inline-title">multi-factor authentication</h3>
+
+        {{#if mfaStatus.enabled}}
+          <span class="mfa-chip mfa-chip--on">enabled</span>
+        {{else}}
+          <span class="mfa-chip mfa-chip--off">not enabled</span>
+        {{/if}}
+      </div>
+
+      <p class="mfa-inline-desc">
+        Add an extra layer of security to your account. Manage your authenticator app and backup codes. This function will require the Passwords app on your Smartphone.
+      </p>
+
+      <dl class="mfa-inline-meta">
+
+        <div class="mfa-inline-row">
+          <dt>method</dt>
+          <dd>
+            {{#if mfaStatus.enabled}}
+              Authenticator app (TOTP)
+            {{else}}
+              —
+            {{/if}}
+          </dd>
+        </div>
+
+        <div class="mfa-inline-row">
+          <dt>backup codes remaining</dt>
+          <dd>{{mfaStatus.recoveryCodesRemaining}}</dd>
+        </div>
+
+        <div class="mfa-inline-row">
+          <dt>last updated</dt>
+          <dd>
+            {{#if mfaStatus.updatedAtFormatted}}
+              {{mfaStatus.updatedAtFormatted}}
+            {{else}}
+              —
+            {{/if}}
+          </dd>
+        </div>
+
+      </dl>
+
+      <div class="mfa-inline-actions">
+        <a href="/mfa" class="mfa-button">
+          manage my mfa settings
+        </a>
+      </div>
+
+    </div>
+    <!-- /MFA -->
+
+
+    <!-- COLUMN 2 -->
+    <div class="group-membership-column">
+
+      <p class="group-membership-access-title">email notifications</p>
+
+      <form action="/dashboard/member/account/email-preferences" method="POST" novalidate>
+
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+
+        <ul class="group-membership-access-list">
+
+          <!-- LEVEL 1 -->
+          <li>
+
+            <div class="group-membership-line" style="display:flex; gap:.5rem; align-items:flex-start;">
+
+              <input
+                id="m_email_pref_1"
+                type="radio"
+                name="email_preference_level"
+                value="1"
+                {{#if (eq emailPreferenceLevel 1)}}checked{{/if}}
+              >
+
+              <label for="m_email_pref_1">
+                <span class="group-membership-label">
+                  security emails only
+                </span>
+              </label>
+
+            </div>
+
+            <ul class="group-preference-list">
+              <li>account changes</li>
+              <li>password resets</li>
+              <li>security alerts</li>
+            </ul>
+
+          </li>
+
+
+          <!-- LEVEL 2 -->
+          <li>
+
+            <div class="group-membership-line" style="display:flex; gap:.5rem; align-items:flex-start;">
+
+              <input
+                id="m_email_pref_2"
+                type="radio"
+                name="email_preference_level"
+                value="2"
+                {{#if (eq emailPreferenceLevel 2)}}checked{{/if}}
+              >
+
+              <label for="m_email_pref_2">
+                <span class="group-membership-label">
+                  all emails
+                </span>
+              </label>
+
+            </div>
+
+            <ul class="group-preference-list">
+              <li>account changes</li>
+              <li>password resets</li>
+              <li>new units in my favorite topics</li>
+              <li>changes to the Twennie platform</li>
+              <li>learning updates and events</li>
+            </ul>
+
+          </li>
+
+        </ul>
+
+        <div class="group-membership-button-container">
+          <button type="submit" class="group-membership-btn">
+            save my email preferences
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+</section>
