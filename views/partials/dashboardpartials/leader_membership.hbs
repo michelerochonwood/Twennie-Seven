@@ -1,3 +1,10 @@
+<div class="dashboard-explanation-block">
+  <h3 class="dashboard-explanation-title">how this tab works</h3>
+  <p class="dashboard-explanation-text">
+    This tab shows your account settings, email preferences, and access details. Use this to make changes to your membership settings. If you want to add or delete group members, do that in the next tab, "my group members".
+  </p>
+
+</div>
 <section class="leader-membership-tab">
   <h2 class="leader-membership-title">membership snapshot</h2>
   <div class="leader-membership-grid">
@@ -8,12 +15,6 @@
         <span class="leader-membership-label">Group Name:</span> {{leader.groupName}}
       </p>
 
-      <p class="leader-membership-line">
-        <span class="leader-membership-label">Members:</span>
-        {{#each leaderGroupMembers}}
-          <br>{{this.name}}
-        {{/each}}
-      </p>
 
 <p class="leader-membership-line">
   <span class="leader-membership-label">Organization:</span>
