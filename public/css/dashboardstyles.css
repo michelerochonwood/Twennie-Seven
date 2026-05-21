@@ -8844,7 +8844,6 @@ box-shadow: none !important;
 .report-link-text {
   color: #4e50a2;
   font-weight: 700;
-  text-decoration: underline;
   transition: color 0.2s ease;
 }
 
