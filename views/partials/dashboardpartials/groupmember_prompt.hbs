@@ -3,72 +3,37 @@
 <div class="dashboard-explanation-block">
   <h3 class="dashboard-explanation-title">how this tab works</h3>
   <p class="dashboard-explanation-text">
-    In this tab you will complete prompts. You can have up to three prompt sets in progress. Each prompt set contains 20 prompts. 
+    In this tab you will complete prompts. You can have up to three prompt sets in progress. Each prompt set contains 20 prompts.
     Read the prompt, record your notes, and click <strong>submit this prompt</strong>.
-    When you return to the dashboard, the next prompt in the set will show in this tab. When you've completed all 20 prompts in the set, you earn the prompt set's badge. 
+    When you return to the dashboard, the next prompt in the set will show here. When you've completed all 20 prompts, you earn the badge.
   </p>
 </div>
 
-<div class="groupmember-prompt-tab" id="groupmemberPromptTab" data-member-id="{{@root.user.id}}">
-  {{#if promptSets}}
-    {{#each promptSets}}
-      {{> _gm_prompt_card promptSet=this csrfToken=@root.csrfToken}}
-    {{/each}}
-  {{else if promptSet}}
-    {{> _gm_prompt_card promptSet=promptSet csrfToken=@root.csrfToken}}
-  {{else}}
-    <h2 class="leader-assigned-title">
-      You have no prompt sets in progress at the moment.
-    </h2>
-
-    <div class="leader-prompt-container leader-prompt-empty-state">
-      <img
-        src="/images/blueyplaying.png"
-        alt="Bluey encouraging prompt set progress"
-        class="leader-prompt-empty-image"
-      >
-
-      <p class="leader-prompt-empty-message">
-        <b>We have some fun prompt sets you might enjoy for stress relief and better mental health.</b>
-      </p>
-
-      <p class="leader-prompt-empty-message">
-        Go to the
-        <a href="/bytopic/thepowerofplayintheworkplace" class="leader-prompt-empty-link">
-          The Power of Play in the Workplace
-        </a>
-        topic!
-      </p>
-    </div>
-  {{/if}}
-</div>
-
-{{#*inline "_gm_prompt_card"}}
-  {{#with promptSet as |ps|}}
-  <div class="leader-prompt-container" data-psid="{{ps.promptSetId}}" data-regid="{{ps.registrationId}}">
-    <h2 class="leader-prompt-title">{{ps.frequency}} prompt</h2>
+{{#if promptSet}}
+  <div class="leader-prompt-container" data-psid="{{promptSet.promptSetId}}" data-regid="{{promptSet.registrationId}}">
+    <h2 class="leader-prompt-title">{{promptSet.frequency}} prompt</h2>
 
     <p class="leader-prompt-set-title">
-      <strong>{{ps.promptSetTitle}}</strong> - {{ps.mainTopic}}
+      <strong>{{promptSet.promptSetTitle}}</strong> - {{promptSet.mainTopic}}
     </p>
 
     <p class="leader-prompt-purpose">
-      <strong>Purpose of this prompt set:</strong> {{ps.purpose}}
+      <strong>Purpose of this prompt set:</strong> {{promptSet.purpose}}
     </p>
 
-    {{#if (or ../promptSchedule ps.promptSchedule)}}
+    {{#if promptSchedule}}
       <p class="leader-prompt-schedule">
         To stay on schedule, Twennie recommends completing this prompt by:
       </p>
       <p class="leader-prompt-schedule-date">
-        {{#if ../promptSchedule}}{{../promptSchedule.recommendedCompletionDate}}{{else}}{{ps.promptSchedule.recommendedCompletionDate}}{{/if}}
+        {{promptSchedule.recommendedCompletionDate}}
       </p>
     {{/if}}
 
-    {{#if ps.leaderNotes}}
+    {{#if promptSet.leaderNotes}}
       <div class="leader-leader-notes">
-        <h4 class="leader-leader-notes-title">instructions from {{ps.leaderName}}:</h4>
-        <p class="leader-leader-notes-text">{{ps.leaderNotes}}</p>
+        <h4 class="leader-leader-notes-title">instructions from {{promptSet.leaderName}}:</h4>
+        <p class="leader-leader-notes-text">{{promptSet.leaderNotes}}</p>
       </div>
     {{/if}}
 
@@ -84,24 +49,24 @@
         </svg>
       </div>
 
-      <p class="leader-prompt-headline">{{ps.promptHeadline}}</p>
-      <p class="leader-prompt-text">{{ps.promptText}}</p>
+      <p class="leader-prompt-headline">{{promptSet.promptHeadline}}</p>
+      <p class="leader-prompt-text">{{promptSet.promptText}}</p>
     </div>
 
-    {{#if ps.promptIndex}}
+    {{#if promptSet.promptIndex}}
       <form action="/promptsetnotes/submit-prompt-notes" method="POST">
-        <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
-        <input type="hidden" name="promptSetId" value="{{ps.promptSetId}}">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        <input type="hidden" name="promptSetId" value="{{promptSet.promptSetId}}">
 
-        <label for="notes-{{ps.promptSetId}}" class="leader-prompt-notes-label">Record your notes here:</label>
+        <label for="notes-{{promptSet.promptSetId}}" class="leader-prompt-notes-label">Record your notes here:</label>
         <textarea
           name="notes"
-          id="notes-{{ps.promptSetId}}"
+          id="notes-{{promptSet.promptSetId}}"
           class="leader-prompt-notes"
           placeholder="Write your notes here..."
           required></textarea>
 
-        {{#if (eq ps.promptIndex 20)}}
+        {{#if (eq promptSet.promptIndex 20)}}
           <p class="final-prompt-message">
             <strong>Final Prompt!</strong> This is the last prompt in the set. Add your final thoughts about what you learned.
           </p>
@@ -111,37 +76,39 @@
       </form>
     {{else}}
       <form action="/promptsetstart/start" method="POST">
-        <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
-        <input type="hidden" name="promptSetId" value="{{ps.promptSetId}}">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        <input type="hidden" name="promptSetId" value="{{promptSet.promptSetId}}">
         <button type="submit" class="leader-prompt-submit">get started completing prompts</button>
       </form>
     {{/if}}
 
-    <button type="button" class="leader-unregister-btn" data-id="{{ps.registrationId}}">
+    <button type="button" class="leader-unregister-btn" data-id="{{promptSet.registrationId}}">
       unregister for this prompt set
     </button>
   </div>
-  {{/with}}
-{{/inline}}
 
-<script>
-(function () {
-  var root = document.getElementById('groupmemberPromptTab');
-  if (!root) return;
+{{else}}
+  <h2 class="leader-assigned-title">
+    You have no prompt sets in progress at the moment.
+  </h2>
 
-  var seen = Object.create(null);
-  var cards = root.querySelectorAll('.leader-prompt-container[data-psid]');
+  <div class="leader-prompt-container leader-prompt-empty-state">
+    <img
+      src="/images/blueyplaying.png"
+      alt="Bluey encouraging prompt set progress"
+      class="leader-prompt-empty-image"
+    >
 
-  for (var i = 0; i < cards.length; i++) {
-    var card = cards[i];
-    var key = card.getAttribute('data-psid') || '';
-    if (!key) continue;
+    <p class="leader-prompt-empty-message">
+      <b>We have some fun prompt sets you might enjoy for stress relief and better mental health.</b>
+    </p>
 
-    if (seen[key]) {
-      card.parentNode && card.parentNode.removeChild(card);
-    } else {
-      seen[key] = true;
-    }
-  }
-})();
-</script>
+    <p class="leader-prompt-empty-message">
+      Go to the
+      <a href="/bytopic/thepowerofplayintheworkplace" class="leader-prompt-empty-link">
+        The Power of Play in the Workplace
+      </a>
+      topic!
+    </p>
+  </div>
+{{/if}}
