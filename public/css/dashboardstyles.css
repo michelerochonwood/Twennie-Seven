@@ -8850,3 +8850,44 @@ box-shadow: none !important;
 .report-link-text:hover {
   color: #262262;
 }
+
+
+
+.orientation-security-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.orientation-security-text {
+  flex: 1 1 620px;
+}
+
+.orientation-security-image {
+  flex: 0 0 220px;
+  text-align: center;
+}
+
+.orientation-locksmith-bluey {
+  width: 100%;
+  max-width: 220px;
+  height: auto;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .orientation-security-wrap {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .orientation-security-text {
+    flex: 1 1 auto;
+  }
+
+  .orientation-security-image {
+    flex: 0 0 auto;
+  }
+}

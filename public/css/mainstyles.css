@@ -9036,3 +9036,18 @@ overflow: visible;
   border: none;
 }
 
+
+
+
+.terms-security-bluey {
+  text-align: center;
+  margin: 2rem auto 2.5rem;
+}
+
+.terms-security-bluey-image {
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  display: inline-block;
+}
+
