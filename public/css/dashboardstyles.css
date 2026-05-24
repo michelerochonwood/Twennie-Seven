@@ -8874,12 +8874,7 @@ box-shadow: none !important;
   display: inline-block;
   margin-top: 1.4rem;
   padding: 0.9rem 1.6rem;
-  background: linear-gradient(
-    135deg,
-    #262262 0%,
-    #4e50a2 45%,
-    #7b7fbd 100%
-  );
+  background: #262262;
   color: #fff;
   text-decoration: none;
   border-radius: 999px;
@@ -8893,4 +8888,5 @@ box-shadow: none !important;
 .orientation-security-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 14px 30px rgba(38, 34, 98, 0.25);
+  background-color: #4a4ab2;
 }
