@@ -1080,9 +1080,15 @@ const groupMemberAccount = {
 };
 
 // 👇 build "my group's library units" (other members in my group)
+// 👇 build "my group's library units" including other group members + leader
 const otherMemberIds = (leaderDoc?.members || [])
   .map(m => m._id)
   .filter(mid => String(mid) !== String(id));
+
+const groupAuthorIds = [
+  ...otherMemberIds,
+  leaderDoc._id
+];
 
 const [
   groupArticles2,
@@ -1093,18 +1099,27 @@ const [
   groupTemplates2,
   groupUpcomings2
 ] = await Promise.all([
-  Article.find({ 'author.id': { $in: otherMemberIds } }),
-  Video.find({ 'author.id': { $in: otherMemberIds } }),
-  PromptSet.find({ 'author.id': { $in: otherMemberIds } }),
-  Interview.find({ 'author.id': { $in: otherMemberIds } }),
-  Exercise.find({ 'author.id': { $in: otherMemberIds } }),
-  Template.find({ 'author.id': { $in: otherMemberIds } }),
-  Upcoming.find({ createdBy: { $in: otherMemberIds } })
+  Article.find({ 'author.id': { $in: groupAuthorIds } }),
+  Video.find({ 'author.id': { $in: groupAuthorIds } }),
+  PromptSet.find({ 'author.id': { $in: groupAuthorIds } }),
+  Interview.find({ 'author.id': { $in: groupAuthorIds } }),
+  Exercise.find({ 'author.id': { $in: groupAuthorIds } }),
+  Template.find({ 'author.id': { $in: groupAuthorIds } }),
+  Upcoming.find({ createdBy: { $in: groupAuthorIds } })
 ]);
 
 let groupLibraryUnits = await Promise.all(
-  [...groupArticles2, ...groupVideos2, ...groupPromptSets2, ...groupInterviews2, ...groupExercises2, ...groupTemplates2].map(async (unit) => {
-    const author = await resolveAuthorById(unit.author?.id || unit.author);
+  [
+    ...groupArticles2,
+    ...groupVideos2,
+    ...groupPromptSets2,
+    ...groupInterviews2,
+    ...groupExercises2,
+    ...groupTemplates2
+  ].map(async (unit) => {
+    const authorId = unit.author?.id || unit.author;
+    const author = await resolveAuthorById(authorId);
+
     return {
       author: author.name,
       unitType: unit.unitType || unit.constructor?.modelName || 'Unknown',
@@ -1123,10 +1138,11 @@ let groupLibraryUnits = await Promise.all(
   })
 );
 
-// 👇 append upcoming rows for other members
+// 👇 append upcoming rows for other members + leader
 const gmUpcomingRows2 = await Promise.all(
   (groupUpcomings2 || []).map(async (u) => {
     const author = await resolveAuthorById(u.createdBy);
+
     return {
       author: author?.name || 'Group Member',
       unitType: 'upcoming',
