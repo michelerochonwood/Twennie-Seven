@@ -878,7 +878,14 @@ const topicSuggestions = await TopicSuggestion.find({
 
 
     
-const [memberArticles, memberVideos, memberPromptSets, memberInterviews, memberExercises, memberTemplates] = await Promise.all([
+const [
+  memberArticles,
+  memberVideos,
+  memberPromptSets,
+  memberInterviews,
+  memberExercises,
+  memberTemplates
+] = await Promise.all([
   Article.find({ 'author.id': id }),
   Video.find({ 'author.id': id }),
   PromptSet.find({ 'author.id': id }),
@@ -887,40 +894,52 @@ const [memberArticles, memberVideos, memberPromptSets, memberInterviews, memberE
   Template.find({ 'author.id': id })
 ]);
 
-// 👇 my upcoming units (ownership via createdBy)
 const memberUpcomings = await Upcoming.find({ createdBy: id });
 
-let groupMemberUnits = await Promise.all(
-  [...memberArticles, ...memberVideos, ...memberPromptSets, ...memberInterviews, ...memberExercises, ...memberTemplates].map(async (unit) => {
-    const author = await resolveAuthorById(unit.author?.id || unit.author);
-    return {
-      unitType: unit.unitType || unit.constructor?.modelName || 'Unknown',
-      title:
-        unit.article_title ||
-        unit.video_title ||
-        unit.promptset_title ||
-        unit.interview_title ||
-        unit.exercise_title ||
-        unit.template_title ||
-        'Untitled Unit',
-      status: unit.status || 'Unknown',
-      mainTopic: unit.main_topic || 'No topic',
-      _id: unit._id,
-      author: author.name,
-      authorImage: author.image
-    };
-  })
-);
+const buildLibraryUnitRow = async (unit, unitType) => {
+  const author = await resolveAuthorById(unit.author?.id || unit.author || id);
 
-// 👇 append my upcoming rows
+  return {
+    unitType,
+    title:
+      unit.article_title ||
+      unit.video_title ||
+      unit.promptset_title ||
+      unit.interview_title ||
+      unit.exercise_title ||
+      unit.template_title ||
+      'Untitled Unit',
+    status: unit.status || 'Unknown',
+    mainTopic: unit.main_topic || 'No topic',
+    _id: unit._id,
+    author: author.name,
+    authorImage: author.image,
+    viewPath: `/unitviews/${unitType}s/view/${unit._id}`
+  };
+};
+
+let groupMemberUnits = await Promise.all([
+  ...memberArticles.map(unit => buildLibraryUnitRow(unit, 'article')),
+  ...memberVideos.map(unit => buildLibraryUnitRow(unit, 'video')),
+  ...memberPromptSets.map(unit => buildLibraryUnitRow(unit, 'promptset')),
+  ...memberInterviews.map(unit => buildLibraryUnitRow(unit, 'interview')),
+  ...memberExercises.map(unit => buildLibraryUnitRow(unit, 'exercise')),
+  ...memberTemplates.map(unit => buildLibraryUnitRow(unit, 'template'))
+]);
+
+const myAuthor = await resolveAuthorById(id);
+
 const myUpcomingRows = (memberUpcomings || []).map((u) => ({
   unitType: 'upcoming',
-  plannedType: u.unit_type,                 // e.g., 'video'
-  title: u.title,
+  plannedType: u.unit_type,
+  title: u.title || 'Untitled upcoming',
   status: u.status || 'in production',
   mainTopic: u.main_topic || 'No topic',
   _id: u._id,
-  projectedRelease: u.projected_release_at
+  projectedRelease: u.projected_release_at,
+  author: myAuthor.name,
+  authorImage: myAuthor.image,
+  viewPath: `/unitviews/upcoming/view/${u._id}`
 }));
 
 groupMemberUnits = [...groupMemberUnits, ...myUpcomingRows];
@@ -1081,6 +1100,7 @@ const groupMemberAccount = {
 
 // 👇 build "my group's library units" (other members in my group)
 // 👇 build "my group's library units" including other group members + leader
+// 👇 build "my group's library units" including other group members + leader
 const otherMemberIds = (leaderDoc?.members || [])
   .map(m => m._id)
   .filter(mid => String(mid) !== String(id));
@@ -1108,56 +1128,58 @@ const [
   Upcoming.find({ createdBy: { $in: groupAuthorIds } })
 ]);
 
-let groupLibraryUnits = await Promise.all(
-  [
-    ...groupArticles2,
-    ...groupVideos2,
-    ...groupPromptSets2,
-    ...groupInterviews2,
-    ...groupExercises2,
-    ...groupTemplates2
-  ].map(async (unit) => {
-    const authorId = unit.author?.id || unit.author;
-    const author = await resolveAuthorById(authorId);
+const buildGroupLibraryUnitRow = async (unit, unitType) => {
+  const authorId = unit.author?.id || unit.author;
+  const author = await resolveAuthorById(authorId);
 
-    return {
-      author: author.name,
-      unitType: unit.unitType || unit.constructor?.modelName || 'Unknown',
-      title:
-        unit.article_title ||
-        unit.video_title ||
-        unit.promptset_title ||
-        unit.interview_title ||
-        unit.exercise_title ||
-        unit.template_title ||
-        'Untitled Unit',
-      status: unit.status || 'Unknown',
-      mainTopic: unit.main_topic || 'No topic',
-      _id: unit._id
-    };
-  })
-);
+  return {
+    author: author.name,
+    authorImage: author.image,
+    unitType,
+    title:
+      unit.article_title ||
+      unit.video_title ||
+      unit.promptset_title ||
+      unit.interview_title ||
+      unit.exercise_title ||
+      unit.template_title ||
+      'Untitled Unit',
+    status: unit.status || 'Unknown',
+    mainTopic: unit.main_topic || 'No topic',
+    _id: unit._id,
+    viewPath: `/unitviews/${unitType}s/view/${unit._id}`
+  };
+};
 
-// 👇 append upcoming rows for other members + leader
+let groupLibraryUnits = await Promise.all([
+  ...groupArticles2.map(unit => buildGroupLibraryUnitRow(unit, 'article')),
+  ...groupVideos2.map(unit => buildGroupLibraryUnitRow(unit, 'video')),
+  ...groupPromptSets2.map(unit => buildGroupLibraryUnitRow(unit, 'promptset')),
+  ...groupInterviews2.map(unit => buildGroupLibraryUnitRow(unit, 'interview')),
+  ...groupExercises2.map(unit => buildGroupLibraryUnitRow(unit, 'exercise')),
+  ...groupTemplates2.map(unit => buildGroupLibraryUnitRow(unit, 'template'))
+]);
+
 const gmUpcomingRows2 = await Promise.all(
   (groupUpcomings2 || []).map(async (u) => {
     const author = await resolveAuthorById(u.createdBy);
 
     return {
       author: author?.name || 'Group Member',
+      authorImage: author?.image || '/images/default-avatar.png',
       unitType: 'upcoming',
       plannedType: u.unit_type,
-      title: u.title,
+      title: u.title || 'Untitled upcoming',
       status: u.status || 'in production',
       mainTopic: u.main_topic || 'No topic',
       _id: u._id,
-      projectedRelease: u.projected_release_at
+      projectedRelease: u.projected_release_at,
+      viewPath: `/unitviews/upcoming/view/${u._id}`
     };
   })
 );
 
 groupLibraryUnits = [...groupLibraryUnits, ...gmUpcomingRows2];
-
 
 
 
