@@ -2,17 +2,10 @@
 <div class="dashboard-explanation-block">
   <h3 class="dashboard-explanation-title">how this tab works</h3>
   <p class="dashboard-explanation-text">
-    This tab shows your account settings, email preferences, and access details. Use this to make changes to your membership settings.
+    This tab shows your account settings, email preferences, and access details. Use this to make changes to your membership.
   </p>
 
-</div>
-<div class="dashboard-explanation-block">
-  <h3 class="dashboard-explanation-title">how this tab works</h3>
-  <p class="dashboard-explanation-text">
-    This tab shows your account settings, email preferences, and access details. Use this to make changes to your membership settings.
-  </p>
 
-</div>
 <section class="group-membership-tab">
   <h2 class="group-membership-title">membership snapshot</h2>
   <p class="group-membership-welcome">Welcome to the Twennie dashboard, {{groupMember.name}}!</p>
@@ -20,7 +13,7 @@
 <div class="group-membership-grid">
   <div class="group-membership-column">
     <p class="group-membership-line">
-      <span class="group-membership-label">Group Name:</span> {{groupMember.groupId.groupName}}
+      <span class="group-membership-label">Group Name:</span> {{group.groupName}}
     </p>
     <p class="group-membership-line">
       <span class="group-membership-label">Leader:</span> {{leaderName}}
@@ -31,7 +24,7 @@
       <p class="group-membership-access-title">You can access:</p>
       <ul class="group-membership-access-list">
         <li>Twennie-generated library units</li>
-        <li><em>{{groupMember.groupId.groupName}}</em>-generated library units</li>
+        <li><em>{{group.groupName}}</em>-generated library units</li>
         <li><em>{{organization}}</em>-generated library units</li>
         <li>profiles and content of your group members and leader</li>
         <li>your chosen topics</li>
