@@ -3,15 +3,13 @@
 <div class="dashboard-explanation-block">
   <h3 class="dashboard-explanation-title">how this tab works</h3>
   <p class="dashboard-explanation-text">
-    In this tab you will complete prompts. You can have up to three prompt sets in progress at a time.
-    The prompt set title will show in the card along with a suggested completion date and instructions from your leader. Read the prompt
-    and record your notes in the field. Click <strong>submit this prompt</strong>. When you return to
-    the dashboard, the next prompt in the set will show in this tab.
+    In this tab you will complete prompts. You can have up to three prompt sets in progress. Each prompt set contains 20 prompts. 
+    Read the prompt, record your notes, and click <strong>submit this prompt</strong>.
+    When you return to the dashboard, the next prompt in the set will show in this tab.
   </p>
 </div>
 
 <div class="groupmember-prompt-tab" id="groupmemberPromptTab" data-member-id="{{@root.user.id}}">
-  {{!-- Prefer rendering from an array (promptSets) if the controller provides one; otherwise fall back to single promptSet --}}
   {{#if promptSets}}
     {{#each promptSets}}
       {{> _gm_prompt_card promptSet=this csrfToken=@root.csrfToken}}
@@ -23,20 +21,20 @@
       You have no prompt sets in progress at the moment.
     </h2>
 
-    <div class="groupmember-prompt-container groupmember-prompt-empty-state">
+    <div class="leader-prompt-container leader-prompt-empty-state">
       <img
         src="/images/blueyplaying.png"
         alt="Bluey encouraging prompt set progress"
-        class="groupmember-prompt-empty-image"
+        class="leader-prompt-empty-image"
       >
 
-      <p class="groupmember-prompt-empty-message">
+      <p class="leader-prompt-empty-message">
         <b>We have some fun prompt sets you might enjoy for stress relief and better mental health.</b>
       </p>
 
-      <p class="groupmember-prompt-empty-message">
+      <p class="leader-prompt-empty-message">
         Go to the
-        <a href="/bytopic/thepowerofplayintheworkplace" class="groupmember-prompt-empty-link">
+        <a href="/bytopic/thepowerofplayintheworkplace" class="leader-prompt-empty-link">
           The Power of Play in the Workplace
         </a>
         topic!
@@ -45,41 +43,37 @@
   {{/if}}
 </div>
 
-{{!-- Inline sub-partial that mirrors your original markup/behavior one-for-one --}}
 {{#*inline "_gm_prompt_card"}}
-  {{!-- Expect: promptSet = { promptSetId, registrationId, frequency, promptSetTitle, mainTopic, purpose, leaderNotes?, leaderName?, promptHeadline, promptText, promptIndex?, promptSchedule? } --}}
-  {{!-- Use external promptSchedule if provided at root-level for back-compat --}}
   {{#with promptSet as |ps|}}
-  <div class="groupmember-prompt-container" data-psid="{{ps.promptSetId}}" data-regid="{{ps.registrationId}}">
-    <h2 class="groupmember-prompt-title">{{ps.frequency}} prompt</h2>
+  <div class="leader-prompt-container" data-psid="{{ps.promptSetId}}" data-regid="{{ps.registrationId}}">
+    <h2 class="leader-prompt-title">{{ps.frequency}} prompt</h2>
 
-    <h5 class="groupmember-prompt-set-title" style="font-size: 1rem;">
+    <p class="leader-prompt-set-title">
       <strong>{{ps.promptSetTitle}}</strong> - {{ps.mainTopic}}
-    </h5>
+    </p>
 
-    <p class="groupmember-prompt-purpose">
+    <p class="leader-prompt-purpose">
       <strong>Purpose of this prompt set:</strong> {{ps.purpose}}
     </p>
 
-    {{!-- schedule: support legacy {{promptSchedule}} OR ps.promptSchedule --}}
     {{#if (or ../promptSchedule ps.promptSchedule)}}
-      <p class="groupmember-prompt-schedule">
-        To stay on schedule with this prompt set, Twennie recommends you complete this prompt by:
+      <p class="leader-prompt-schedule">
+        To stay on schedule, Twennie recommends completing this prompt by:
       </p>
-      <p class="groupmember-prompt-schedule-date">
+      <p class="leader-prompt-schedule-date">
         {{#if ../promptSchedule}}{{../promptSchedule.recommendedCompletionDate}}{{else}}{{ps.promptSchedule.recommendedCompletionDate}}{{/if}}
       </p>
     {{/if}}
 
     {{#if ps.leaderNotes}}
-      <div class="groupmember-leader-notes">
-        <h4 class="groupmember-leader-notes-title">instructions from {{ps.leaderName}}:</h4>
-        <p class="groupmember-leader-notes-text">{{ps.leaderNotes}}</p>
+      <div class="leader-leader-notes">
+        <h4 class="leader-leader-notes-title">instructions from {{ps.leaderName}}:</h4>
+        <p class="leader-leader-notes-text">{{ps.leaderNotes}}</p>
       </div>
     {{/if}}
 
-    <div class="groupmember-prompt-card">
-      <div class="groupmember-prompt-border">
+    <div class="leader-prompt-card">
+      <div class="leader-prompt-border">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1224.99 153.32">
           <defs><style>.cls-777 {fill: #4e50a2;}</style></defs>
           <g>
@@ -90,60 +84,59 @@
         </svg>
       </div>
 
-      <p class="groupmember-prompt-headline">{{ps.promptHeadline}}</p>
-      <p class="groupmember-prompt-text">{{ps.promptText}}</p>
+      <p class="leader-prompt-headline">{{ps.promptHeadline}}</p>
+      <p class="leader-prompt-text">{{ps.promptText}}</p>
     </div>
 
     {{#if ps.promptIndex}}
-      {{!-- Notes form for prompts 1–20 (kept identical, ids made unique per set) --}}
-      <form action="/promptsetnotes/submit-prompt-notes" method="POST" class="groupmember-prompt-form">
+      <form action="/promptsetnotes/submit-prompt-notes" method="POST">
         <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
         <input type="hidden" name="promptSetId" value="{{ps.promptSetId}}">
 
-        <label for="notes-{{ps.promptSetId}}" class="groupmember-prompt-notes-label">Record your notes here:</label>
-        <textarea name="notes"
-                  id="notes-{{ps.promptSetId}}"
-                  class="groupmember-prompt-notes"
-                  placeholder="Write your notes here..."
-                  required></textarea>
+        <label for="notes-{{ps.promptSetId}}" class="leader-prompt-notes-label">Record your notes here:</label>
+        <textarea
+          name="notes"
+          id="notes-{{ps.promptSetId}}"
+          class="leader-prompt-notes"
+          placeholder="Write your notes here..."
+          required></textarea>
 
         {{#if (eq ps.promptIndex 20)}}
           <p class="final-prompt-message">
-            <strong>Final Prompt!</strong> This is the last prompt in the set. Make sure to complete the prompt and add your final thoughts about what you learned and discovered!
+            <strong>Final Prompt!</strong> This is the last prompt in the set. Add your final thoughts about what you learned.
           </p>
         {{/if}}
 
-        <button type="submit" class="groupmember-prompt-submit">submit this prompt</button>
+        <button type="submit" class="leader-prompt-submit">submit this prompt</button>
       </form>
     {{else}}
-      {{!-- Start form for Prompt 0 (kept identical) --}}
       <form action="/promptsetstart/start" method="POST">
         <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
         <input type="hidden" name="promptSetId" value="{{ps.promptSetId}}">
-        <button type="submit" class="groupmember-prompt-submit">get started completing prompts</button>
+        <button type="submit" class="leader-prompt-submit">get started completing prompts</button>
       </form>
     {{/if}}
 
-    <button class="groupmember-unregister-btn" data-id="{{ps.registrationId}}">
+    <button type="button" class="leader-unregister-btn" data-id="{{ps.registrationId}}">
       unregister for this prompt set
     </button>
   </div>
   {{/with}}
 {{/inline}}
 
-{{!-- Small client-side de-duplication: if upstream accidentally sends duplicates, keep the first per promptSetId --}}
 <script>
 (function () {
   var root = document.getElementById('groupmemberPromptTab');
   if (!root) return;
 
   var seen = Object.create(null);
-  var cards = root.querySelectorAll('.groupmember-prompt-container');
+  var cards = root.querySelectorAll('.leader-prompt-container[data-psid]');
 
   for (var i = 0; i < cards.length; i++) {
     var card = cards[i];
     var key = card.getAttribute('data-psid') || '';
     if (!key) continue;
+
     if (seen[key]) {
       card.parentNode && card.parentNode.removeChild(card);
     } else {
@@ -152,5 +145,3 @@
   }
 })();
 </script>
-
-
