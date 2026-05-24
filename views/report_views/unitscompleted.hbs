@@ -29,9 +29,9 @@
               {{/if}}
 
               {{#if this.completedBy.length}}
-                · {{this.completedBy.length}} completion(s)
+                · {{this.completedBy.length}} completed
               {{else}}
-                · no completions
+                · no units completed
               {{/if}}
             </small>
           </span>
@@ -97,7 +97,7 @@
         </div>
       </div>
     {{else}}
-      <p class="no-data">No completions</p>
+      <p class="no-data">No units completed</p>
     {{/each}}
   </div>
 
