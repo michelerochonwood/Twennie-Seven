@@ -18,31 +18,22 @@
         <div class="leader-dashboard-wave-card-inner">
 
           <div class="leader-dashboard-wave-header">
-            <img
-              src="{{waveSvgPath}}"
-              alt=""
-              class="leader-dashboard-wave-image"
-              aria-hidden="true"
-            >
+            {{#if (eq unitType "nugget")}}
+              <img src="/images/goldsvg.svg" alt="" class="leader-dashboard-wave-image" aria-hidden="true">
+            {{else if (eq unitType "mission")}}
+              <img src="/images/onyxsvg.svg" alt="" class="leader-dashboard-wave-image" aria-hidden="true">
+            {{else}}
+              <img src="/images/unitsvg.svg" alt="" class="leader-dashboard-wave-image" aria-hidden="true">
+            {{/if}}
           </div>
 
           <div class="leader-dashboard-wave-content dashboard-library-wave-content">
-
-            <img
-              src="{{authorImage}}"
-              alt="{{author}}"
-              class="dashboard-library-author-image"
-            >
+            <img src="{{authorImage}}" alt="{{author}}" class="dashboard-library-author-image">
 
             <div class="dashboard-library-card-body">
+              <p class="dashboard-library-card-type">{{displayType}}</p>
 
-              <p class="dashboard-library-card-type">
-                {{displayType}}
-              </p>
-
-              <h3 class="dashboard-library-card-heading">
-                {{title}}
-              </h3>
+              <h3 class="dashboard-library-card-heading">{{title}}</h3>
 
               <p class="dashboard-library-card-meta">
                 <strong>status:</strong> {{status}}
@@ -54,18 +45,13 @@
 
               {{#if projectedRelease}}
                 <p class="dashboard-library-card-meta">
-                  <strong>projected release:</strong>
-                  {{formatDate projectedRelease}}
+                  <strong>projected release:</strong> {{formatDate projectedRelease}}
                 </p>
               {{/if}}
 
-              <a
-                href="{{viewPath}}"
-                class="dashboard-library-card-link"
-              >
+              <a href="{{viewPath}}" class="dashboard-library-card-link">
                 view and/or edit
               </a>
-
             </div>
           </div>
 
@@ -90,35 +76,24 @@
         <div class="leader-dashboard-wave-card-inner">
 
           <div class="leader-dashboard-wave-header">
-            <img
-              src="{{waveSvgPath}}"
-              alt=""
-              class="leader-dashboard-wave-image"
-              aria-hidden="true"
-            >
+            {{#if (eq unitType "nugget")}}
+              <img src="/images/goldsvg.svg" alt="" class="leader-dashboard-wave-image" aria-hidden="true">
+            {{else if (eq unitType "mission")}}
+              <img src="/images/onyxsvg.svg" alt="" class="leader-dashboard-wave-image" aria-hidden="true">
+            {{else}}
+              <img src="/images/unitsvg.svg" alt="" class="leader-dashboard-wave-image" aria-hidden="true">
+            {{/if}}
           </div>
 
           <div class="leader-dashboard-wave-content dashboard-library-wave-content">
-
-            <img
-              src="{{authorImage}}"
-              alt="{{author}}"
-              class="dashboard-library-author-image"
-            >
+            <img src="{{authorImage}}" alt="{{author}}" class="dashboard-library-author-image">
 
             <div class="dashboard-library-card-body">
+              <p class="dashboard-library-card-author">{{author}}</p>
 
-              <p class="dashboard-library-card-author">
-                {{author}}
-              </p>
+              <p class="dashboard-library-card-type">{{displayType}}</p>
 
-              <p class="dashboard-library-card-type">
-                {{displayType}}
-              </p>
-
-              <h3 class="dashboard-library-card-heading">
-                {{title}}
-              </h3>
+              <h3 class="dashboard-library-card-heading">{{title}}</h3>
 
               <p class="dashboard-library-card-meta">
                 <strong>status:</strong> {{status}}
@@ -130,18 +105,13 @@
 
               {{#if projectedRelease}}
                 <p class="dashboard-library-card-meta">
-                  <strong>projected release:</strong>
-                  {{formatDate projectedRelease}}
+                  <strong>projected release:</strong> {{formatDate projectedRelease}}
                 </p>
               {{/if}}
 
-              <a
-                href="{{viewPath}}"
-                class="dashboard-library-card-link"
-              >
+              <a href="{{viewPath}}" class="dashboard-library-card-link">
                 view only
               </a>
-
             </div>
           </div>
 
