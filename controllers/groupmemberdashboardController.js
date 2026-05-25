@@ -894,8 +894,10 @@ const [
   Interview.find({ 'author.id': id }),
   Exercise.find({ 'author.id': id }),
   Template.find({ 'author.id': id }),
-  Nugget.find({ 'author.id': id }),
-  Mission.find({ 'author.id': id })
+
+  // ✅ IMPORTANT: nuggets + missions use createdBy / created_by
+  Nugget.find({ createdBy: id }),
+  Mission.find({ created_by: id })
 ]);
 
 const memberUpcomings = await Upcoming.find({ createdBy: id });
@@ -1149,8 +1151,11 @@ const [
   Interview.find({ 'author.id': { $in: groupAuthorIds } }),
   Exercise.find({ 'author.id': { $in: groupAuthorIds } }),
   Template.find({ 'author.id': { $in: groupAuthorIds } }),
-  Nugget.find({ 'author.id': { $in: groupAuthorIds } }),
-  Mission.find({ 'author.id': { $in: groupAuthorIds } }),
+
+  // ✅ IMPORTANT: nuggets + missions use createdBy / created_by
+  Nugget.find({ createdBy: { $in: groupAuthorIds } }),
+  Mission.find({ created_by: { $in: groupAuthorIds } }),
+
   Upcoming.find({ createdBy: { $in: groupAuthorIds } })
 ]);
 
