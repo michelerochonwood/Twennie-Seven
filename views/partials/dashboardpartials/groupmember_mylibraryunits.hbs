@@ -7,60 +7,151 @@
 
 <section class="dashboard-library-units-card-section">
 
-  <h2 class="dashboard-section-title dashboard-library-card-title">my library contributions</h2>
+  <h2 class="dashboard-section-title dashboard-library-card-title">
+    my library units
+  </h2>
 
   <div class="dashboard-library-card-grid">
     {{#each groupMemberUnits}}
-      <article class="dashboard-library-card">
-        <img src="{{authorImage}}" alt="{{author}}" class="dashboard-library-author-image">
 
-        <div class="dashboard-library-card-body">
-          <p class="dashboard-library-card-type">{{displayType}}</p>
-          <h3 class="dashboard-library-card-heading">{{title}}</h3>
+      <article class="dashboard-library-card leader-dashboard-wave-card">
+        <div class="leader-dashboard-wave-card-inner">
 
-          <p class="dashboard-library-card-meta"><strong>status:</strong> {{status}}</p>
-          <p class="dashboard-library-card-meta"><strong>topic:</strong> {{mainTopic}}</p>
+          <div class="leader-dashboard-wave-header">
+            <img
+              src="{{waveSvgPath}}"
+              alt=""
+              class="leader-dashboard-wave-image"
+              aria-hidden="true"
+            >
+          </div>
 
-          {{#if projectedRelease}}
-            <p class="dashboard-library-card-meta">
-              <strong>projected release:</strong> {{formatDate projectedRelease}}
-            </p>
-          {{/if}}
+          <div class="leader-dashboard-wave-content dashboard-library-wave-content">
 
-          <a href="{{viewPath}}" class="dashboard-library-card-link">view and/or edit</a>
+            <img
+              src="{{authorImage}}"
+              alt="{{author}}"
+              class="dashboard-library-author-image"
+            >
+
+            <div class="dashboard-library-card-body">
+
+              <p class="dashboard-library-card-type">
+                {{displayType}}
+              </p>
+
+              <h3 class="dashboard-library-card-heading">
+                {{title}}
+              </h3>
+
+              <p class="dashboard-library-card-meta">
+                <strong>status:</strong> {{status}}
+              </p>
+
+              <p class="dashboard-library-card-meta">
+                <strong>topic:</strong> {{mainTopic}}
+              </p>
+
+              {{#if projectedRelease}}
+                <p class="dashboard-library-card-meta">
+                  <strong>projected release:</strong>
+                  {{formatDate projectedRelease}}
+                </p>
+              {{/if}}
+
+              <a
+                href="{{viewPath}}"
+                class="dashboard-library-card-link"
+              >
+                view and/or edit
+              </a>
+
+            </div>
+          </div>
+
         </div>
       </article>
+
     {{else}}
-      <p class="dashboard-library-empty">no contributions submitted yet.</p>
+      <p class="dashboard-library-empty">
+        no contributions submitted yet.
+      </p>
     {{/each}}
   </div>
 
-  <h2 class="dashboard-section-title dashboard-library-card-title">my group's library units</h2>
+  <h2 class="dashboard-section-title dashboard-library-card-title">
+    my group's library units
+  </h2>
 
   <div class="dashboard-library-card-grid">
     {{#each groupLibraryUnits}}
-      <article class="dashboard-library-card">
-        <img src="{{authorImage}}" alt="{{author}}" class="dashboard-library-author-image">
 
-        <div class="dashboard-library-card-body">
-          <p class="dashboard-library-card-author">{{author}}</p>
-          <p class="dashboard-library-card-type">{{displayType}}</p>
-          <h3 class="dashboard-library-card-heading">{{title}}</h3>
+      <article class="dashboard-library-card leader-dashboard-wave-card">
+        <div class="leader-dashboard-wave-card-inner">
 
-          <p class="dashboard-library-card-meta"><strong>status:</strong> {{status}}</p>
-          <p class="dashboard-library-card-meta"><strong>topic:</strong> {{mainTopic}}</p>
+          <div class="leader-dashboard-wave-header">
+            <img
+              src="{{waveSvgPath}}"
+              alt=""
+              class="leader-dashboard-wave-image"
+              aria-hidden="true"
+            >
+          </div>
 
-          {{#if projectedRelease}}
-            <p class="dashboard-library-card-meta">
-              <strong>projected release:</strong> {{formatDate projectedRelease}}
-            </p>
-          {{/if}}
+          <div class="leader-dashboard-wave-content dashboard-library-wave-content">
 
-          <a href="{{viewPath}}" class="dashboard-library-card-link">view only</a>
+            <img
+              src="{{authorImage}}"
+              alt="{{author}}"
+              class="dashboard-library-author-image"
+            >
+
+            <div class="dashboard-library-card-body">
+
+              <p class="dashboard-library-card-author">
+                {{author}}
+              </p>
+
+              <p class="dashboard-library-card-type">
+                {{displayType}}
+              </p>
+
+              <h3 class="dashboard-library-card-heading">
+                {{title}}
+              </h3>
+
+              <p class="dashboard-library-card-meta">
+                <strong>status:</strong> {{status}}
+              </p>
+
+              <p class="dashboard-library-card-meta">
+                <strong>topic:</strong> {{mainTopic}}
+              </p>
+
+              {{#if projectedRelease}}
+                <p class="dashboard-library-card-meta">
+                  <strong>projected release:</strong>
+                  {{formatDate projectedRelease}}
+                </p>
+              {{/if}}
+
+              <a
+                href="{{viewPath}}"
+                class="dashboard-library-card-link"
+              >
+                view only
+              </a>
+
+            </div>
+          </div>
+
         </div>
       </article>
+
     {{else}}
-      <p class="dashboard-library-empty">no group contributions submitted yet.</p>
+      <p class="dashboard-library-empty">
+        no group contributions submitted yet.
+      </p>
     {{/each}}
   </div>
 

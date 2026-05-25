@@ -8988,3 +8988,126 @@ box-shadow: none !important;
   color: #777;
   font-style: italic;
 }
+
+
+.dashboard-library-units-card-section {
+  max-width: 920px;
+  margin: 0 auto 3rem;
+}
+
+.dashboard-library-card-title {
+  margin-top: 2rem;
+}
+
+.dashboard-library-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.dashboard-library-card.leader-dashboard-wave-card {
+  background: rgb(245, 245, 245);
+  border-radius: 14px;
+  box-shadow: 3px 6px 12px rgba(0, 0, 0, 0.15);
+
+  padding: 0 !important;
+  overflow: hidden;
+  position: relative;
+}
+
+.dashboard-library-wave-content {
+  min-height: 100%;
+}
+
+.dashboard-library-card .leader-dashboard-wave-content {
+  padding-top: calc(11.25px + 3.2rem);
+}
+
+.dashboard-library-author-image {
+  width: 76px;
+  height: 76px;
+  border-radius: 999px;
+  object-fit: cover;
+  border: 3px solid #fff;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+
+  margin: 0 auto 0.75rem;
+  display: block;
+}
+
+.dashboard-library-card-body {
+  text-align: center;
+}
+
+.dashboard-library-card-author {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #dc176a;
+  margin: 0 0 0.35rem;
+}
+
+.dashboard-library-card-type {
+  display: inline-block;
+  background: #f0efff;
+  color: #262262;
+
+  font-size: 0.65rem;
+  font-weight: 800;
+
+  border-radius: 999px;
+
+  padding: 0.25rem 0.6rem;
+  margin: 0 0 0.7rem;
+}
+
+.dashboard-library-card-heading {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #262262;
+
+  line-height: 1.25;
+  margin: 0 0 0.75rem;
+}
+
+.dashboard-library-card-meta {
+  font-size: 0.72rem;
+  color: #444;
+  line-height: 1.4;
+  margin: 0.25rem 0;
+}
+
+.dashboard-library-card-meta strong {
+  color: #4e50a2;
+}
+
+.dashboard-library-card-link {
+  display: inline-block;
+
+  margin-top: 0.9rem;
+  padding: 0.55rem 0.9rem;
+
+  border-radius: 999px;
+
+  background: #262262;
+  color: #fff;
+
+  font-size: 0.7rem;
+  font-weight: 800;
+
+  text-decoration: none;
+}
+
+.dashboard-library-card-link:hover {
+  background: #4a4ab2;
+}
+
+.dashboard-library-empty {
+  grid-column: 1 / -1;
+
+  text-align: center;
+
+  font-size: 0.8rem;
+  color: #777;
+  font-style: italic;
+}
