@@ -26,7 +26,9 @@
       <ul class="group-membership-access-list">
         <li>Twennie-generated library units</li>
         <li><em>{{group.groupName}}</em>-generated library units</li>
-        <li><em>{{organization}}</em>-generated library units</li>
+{{#if organization}}
+  <li><em>{{organization}}</em>-generated library units</li>
+{{/if}}
         <li>profiles and content of your group members and leader</li>
         <li>your chosen topics</li>
         <li>your registered prompt sets and notes forms</li>

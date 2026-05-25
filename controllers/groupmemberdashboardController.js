@@ -1335,7 +1335,7 @@ return res.render('groupmember_dashboard', {
   completedPromptSets: formattedCompletedSets,
   selectedTopics,
   leaderName: leader ? leader.groupLeaderName : "Group Leader",
-  organization: leader?.organization || 'Unknown',
+organization: leader?.organizationName || '',
   topicSuggestions,
   groupMemberAccount,
   emailPreferenceLevel,
