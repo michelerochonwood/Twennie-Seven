@@ -12,35 +12,22 @@
   <div class="dashboard-library-card-grid">
     {{#each groupMemberUnits}}
       <article class="dashboard-library-card">
-        <img
-          src="{{this.authorImage}}"
-          alt="{{this.author}}"
-          class="dashboard-library-author-image"
-        >
+        <img src="{{authorImage}}" alt="{{author}}" class="dashboard-library-author-image">
 
         <div class="dashboard-library-card-body">
-          <p class="dashboard-library-card-type">
-            {{#if (eq this.unitType "upcoming")}}
-              upcoming {{#if this.plannedType}}({{this.plannedType}}){{/if}}
-            {{else}}
-              {{this.unitType}}
-            {{/if}}
-          </p>
+          <p class="dashboard-library-card-type">{{displayType}}</p>
+          <h3 class="dashboard-library-card-heading">{{title}}</h3>
 
-          <h3 class="dashboard-library-card-heading">{{this.title}}</h3>
+          <p class="dashboard-library-card-meta"><strong>status:</strong> {{status}}</p>
+          <p class="dashboard-library-card-meta"><strong>topic:</strong> {{mainTopic}}</p>
 
-          <p class="dashboard-library-card-meta"><strong>status:</strong> {{this.status}}</p>
-          <p class="dashboard-library-card-meta"><strong>topic:</strong> {{this.mainTopic}}</p>
-
-          {{#if this.projectedRelease}}
+          {{#if projectedRelease}}
             <p class="dashboard-library-card-meta">
-              <strong>projected release:</strong> {{formatDate this.projectedRelease}}
+              <strong>projected release:</strong> {{formatDate projectedRelease}}
             </p>
           {{/if}}
 
-          <a href="{{this.viewPath}}" class="dashboard-library-card-link">
-            view and/or edit
-          </a>
+          <a href="{{viewPath}}" class="dashboard-library-card-link">view and/or edit</a>
         </div>
       </article>
     {{else}}
@@ -53,37 +40,23 @@
   <div class="dashboard-library-card-grid">
     {{#each groupLibraryUnits}}
       <article class="dashboard-library-card">
-        <img
-          src="{{this.authorImage}}"
-          alt="{{this.author}}"
-          class="dashboard-library-author-image"
-        >
+        <img src="{{authorImage}}" alt="{{author}}" class="dashboard-library-author-image">
 
         <div class="dashboard-library-card-body">
-          <p class="dashboard-library-card-author">{{this.author}}</p>
+          <p class="dashboard-library-card-author">{{author}}</p>
+          <p class="dashboard-library-card-type">{{displayType}}</p>
+          <h3 class="dashboard-library-card-heading">{{title}}</h3>
 
-          <p class="dashboard-library-card-type">
-            {{#if (eq this.unitType "upcoming")}}
-              upcoming {{#if this.plannedType}}({{this.plannedType}}){{/if}}
-            {{else}}
-              {{this.unitType}}
-            {{/if}}
-          </p>
+          <p class="dashboard-library-card-meta"><strong>status:</strong> {{status}}</p>
+          <p class="dashboard-library-card-meta"><strong>topic:</strong> {{mainTopic}}</p>
 
-          <h3 class="dashboard-library-card-heading">{{this.title}}</h3>
-
-          <p class="dashboard-library-card-meta"><strong>status:</strong> {{this.status}}</p>
-          <p class="dashboard-library-card-meta"><strong>topic:</strong> {{this.mainTopic}}</p>
-
-          {{#if this.projectedRelease}}
+          {{#if projectedRelease}}
             <p class="dashboard-library-card-meta">
-              <strong>projected release:</strong> {{formatDate this.projectedRelease}}
+              <strong>projected release:</strong> {{formatDate projectedRelease}}
             </p>
           {{/if}}
 
-          <a href="{{this.viewPath}}" class="dashboard-library-card-link">
-            view only
-          </a>
+          <a href="{{viewPath}}" class="dashboard-library-card-link">view only</a>
         </div>
       </article>
     {{else}}
@@ -92,6 +65,3 @@
   </div>
 
 </section>
-
-
-
