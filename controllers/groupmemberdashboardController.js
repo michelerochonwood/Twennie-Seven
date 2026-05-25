@@ -884,23 +884,35 @@ const [
   memberPromptSets,
   memberInterviews,
   memberExercises,
-  memberTemplates
+  memberTemplates,
+  memberNuggets,
+  memberMissions
 ] = await Promise.all([
   Article.find({ 'author.id': id }),
   Video.find({ 'author.id': id }),
   PromptSet.find({ 'author.id': id }),
   Interview.find({ 'author.id': id }),
   Exercise.find({ 'author.id': id }),
-  Template.find({ 'author.id': id })
+  Template.find({ 'author.id': id }),
+  Nugget.find({ 'author.id': id }),
+  Mission.find({ 'author.id': id })
 ]);
 
 const memberUpcomings = await Upcoming.find({ createdBy: id });
+
+const viewPathForLibraryUnit = (unitType, unitId) => {
+  if (unitType === 'nugget') return `/unitviews/nuggets/view/${unitId}`;
+  if (unitType === 'mission') return `/unitviews/missions/view/${unitId}`;
+  if (unitType === 'upcoming') return `/unitviews/upcoming/view/${unitId}`;
+  return `/unitviews/${unitType}s/view/${unitId}`;
+};
 
 const buildLibraryUnitRow = async (unit, unitType) => {
   const author = await resolveAuthorById(unit.author?.id || unit.author || id);
 
   return {
     unitType,
+    displayType: unitType,
     title:
       unit.article_title ||
       unit.video_title ||
@@ -908,13 +920,20 @@ const buildLibraryUnitRow = async (unit, unitType) => {
       unit.interview_title ||
       unit.exercise_title ||
       unit.template_title ||
+      unit.title ||
+      unit.mission_title ||
       'Untitled Unit',
     status: unit.status || 'Unknown',
-    mainTopic: unit.main_topic || 'No topic',
+    mainTopic:
+      unit.main_topic ||
+      unit.discipline ||
+      unit.client ||
+      unit.region ||
+      'No topic',
     _id: unit._id,
     author: author.name,
     authorImage: author.image,
-    viewPath: `/unitviews/${unitType}s/view/${unit._id}`
+    viewPath: viewPathForLibraryUnit(unitType, unit._id)
   };
 };
 
@@ -924,13 +943,16 @@ let groupMemberUnits = await Promise.all([
   ...memberPromptSets.map(unit => buildLibraryUnitRow(unit, 'promptset')),
   ...memberInterviews.map(unit => buildLibraryUnitRow(unit, 'interview')),
   ...memberExercises.map(unit => buildLibraryUnitRow(unit, 'exercise')),
-  ...memberTemplates.map(unit => buildLibraryUnitRow(unit, 'template'))
+  ...memberTemplates.map(unit => buildLibraryUnitRow(unit, 'template')),
+  ...memberNuggets.map(unit => buildLibraryUnitRow(unit, 'nugget')),
+  ...memberMissions.map(unit => buildLibraryUnitRow(unit, 'mission'))
 ]);
 
 const myAuthor = await resolveAuthorById(id);
 
 const myUpcomingRows = (memberUpcomings || []).map((u) => ({
   unitType: 'upcoming',
+  displayType: u.unit_type ? `upcoming (${u.unit_type})` : 'upcoming',
   plannedType: u.unit_type,
   title: u.title || 'Untitled upcoming',
   status: u.status || 'in production',
@@ -939,7 +961,7 @@ const myUpcomingRows = (memberUpcomings || []).map((u) => ({
   projectedRelease: u.projected_release_at,
   author: myAuthor.name,
   authorImage: myAuthor.image,
-  viewPath: `/unitviews/upcoming/view/${u._id}`
+  viewPath: viewPathForLibraryUnit('upcoming', u._id)
 }));
 
 groupMemberUnits = [...groupMemberUnits, ...myUpcomingRows];
@@ -1117,6 +1139,8 @@ const [
   groupInterviews2,
   groupExercises2,
   groupTemplates2,
+  groupNuggets2,
+  groupMissions2,
   groupUpcomings2
 ] = await Promise.all([
   Article.find({ 'author.id': { $in: groupAuthorIds } }),
@@ -1125,17 +1149,22 @@ const [
   Interview.find({ 'author.id': { $in: groupAuthorIds } }),
   Exercise.find({ 'author.id': { $in: groupAuthorIds } }),
   Template.find({ 'author.id': { $in: groupAuthorIds } }),
+  Nugget.find({ 'author.id': { $in: groupAuthorIds } }),
+  Mission.find({ 'author.id': { $in: groupAuthorIds } }),
   Upcoming.find({ createdBy: { $in: groupAuthorIds } })
 ]);
 
 const buildGroupLibraryUnitRow = async (unit, unitType) => {
-  const authorId = unit.author?.id || unit.author;
+  const authorId = unit.author?.id || unit.author || unit.createdBy;
   const author = await resolveAuthorById(authorId);
 
   return {
     author: author.name,
     authorImage: author.image,
+
     unitType,
+    displayType: unitType,
+
     title:
       unit.article_title ||
       unit.video_title ||
@@ -1143,11 +1172,31 @@ const buildGroupLibraryUnitRow = async (unit, unitType) => {
       unit.interview_title ||
       unit.exercise_title ||
       unit.template_title ||
+      unit.title ||
+      unit.mission_title ||
       'Untitled Unit',
+
     status: unit.status || 'Unknown',
-    mainTopic: unit.main_topic || 'No topic',
+
+    mainTopic:
+      unit.main_topic ||
+      unit.discipline ||
+      unit.client ||
+      unit.region ||
+      'No topic',
+
     _id: unit._id,
-    viewPath: `/unitviews/${unitType}s/view/${unit._id}`
+
+    projectedRelease: unit.projected_release_at || null,
+
+    viewPath:
+      unitType === 'nugget'
+        ? `/unitviews/nuggets/view/${unit._id}`
+        : unitType === 'mission'
+          ? `/unitviews/missions/view/${unit._id}`
+          : unitType === 'upcoming'
+            ? `/unitviews/upcoming/view/${unit._id}`
+            : `/unitviews/${unitType}s/view/${unit._id}`
   };
 };
 
@@ -1157,7 +1206,9 @@ let groupLibraryUnits = await Promise.all([
   ...groupPromptSets2.map(unit => buildGroupLibraryUnitRow(unit, 'promptset')),
   ...groupInterviews2.map(unit => buildGroupLibraryUnitRow(unit, 'interview')),
   ...groupExercises2.map(unit => buildGroupLibraryUnitRow(unit, 'exercise')),
-  ...groupTemplates2.map(unit => buildGroupLibraryUnitRow(unit, 'template'))
+  ...groupTemplates2.map(unit => buildGroupLibraryUnitRow(unit, 'template')),
+  ...groupNuggets2.map(unit => buildGroupLibraryUnitRow(unit, 'nugget')),
+  ...groupMissions2.map(unit => buildGroupLibraryUnitRow(unit, 'mission'))
 ]);
 
 const gmUpcomingRows2 = await Promise.all(
