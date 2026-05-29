@@ -50,6 +50,7 @@ const mainTopics = [
   'Cross Selling in Multi-Disciplinary Firms',
   'Creativity and Innovation',
   'CRM Software',
+  'Cures for Operational Headaches',
   'Designing a Proposal Process',
   'Emotional Intelligence',
   'Employee Experience',

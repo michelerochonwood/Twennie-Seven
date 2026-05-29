@@ -808,6 +808,30 @@
     "leveraging platforms like LinkedIn to demonstrate problem-solving ability",
     "creating a culture where innovation compounds over time"
   ]
+},
+
+{
+"id": 223,
+"title": "Cures for Operational Headaches",
+"shortSummary": "Most operational headaches are symptoms, not root causes. This topic teaches practical diagnostic tools that help technical teams identify what is actually creating friction before they waste time, money, or people trying to solve the wrong problem.",
+"longSummary": "Cures for Operational Headaches focuses on one of the most common challenges in technical services: organizations often feel pain long before they understand what is causing it. Teams become overwhelmed, deadlines are missed, communication breaks down, and productivity suffers. The instinctive response is often to hire more people, add new software, create another process, or launch a new initiative. Sometimes those solutions work. Frequently they do not because the underlying problem was never properly diagnosed.\n\nThis topic introduces practical diagnostic frameworks designed specifically for engineering, architecture, environmental consulting, construction, and other technical organizations. Learners explore how to identify symptoms, categorize organizational pain, uncover root causes, and distinguish capacity problems from communication, process, technology, leadership, coordination, or accountability problems. Through exercises, case studies, and systems-thinking approaches, participants learn how to move beyond assumptions and begin making operational decisions based on evidence.\n\nThe topic includes diagnostic tools such as A Practical Guide to Effective Complaining, root cause analysis techniques, systems-thinking exercises, organizational pain mapping, workflow diagnostics, and methods for identifying recurring sources of friction. Rather than immediately jumping to solutions, learners are encouraged to investigate why problems occur, how they interact with other organizational systems, and what evidence supports potential interventions. The goal is to improve the quality of operational decision-making, reduce recurring frustrations, and help organizations solve the right problems before investing time, money, or resources in the wrong solutions.",
+"subtopics": [
+"distinguishing symptoms from root causes",
+"using complaints as operational data",
+"conducting root cause analysis in technical organizations",
+"identifying organizational pain categories and patterns",
+"mapping operational friction across workflows and teams",
+"applying systems thinking to recurring business problems",
+"diagnosing communication, process, and accountability failures",
+"determining when a problem is truly a capacity issue",
+"identifying hidden causes of missed deadlines and rework",
+"using evidence-based approaches to operational improvement",
+"recognizing recurring organizational patterns and bottlenecks",
+"conducting operational diagnostics before hiring decisions",
+"analyzing workflow inefficiencies and administrative burdens",
+"evaluating technology, knowledge management, and information flow problems",
+"prioritizing operational improvements based on impact and frequency"
+]
 }
 
 
