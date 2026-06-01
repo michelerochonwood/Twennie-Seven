@@ -1,8 +1,10 @@
 // controllers/demoController.js
 const DemoRequest = require('../models/DemoRequest');
 
+const DEMO_VIEW = 'promo_views/demo';
+
 exports.showDemoForm = (req, res) => {
-  res.render('demo/book_demo', {
+  res.render(DEMO_VIEW, {
     layout: 'mainlayout',
     csrfToken: req.csrfToken ? req.csrfToken() : null
   });
@@ -25,19 +27,21 @@ exports.submitDemoRequest = async (req, res) => {
       email: email?.trim().toLowerCase(),
       organization: organization?.trim(),
       jobTitle: jobTitle?.trim(),
-      teamSize,
-      interestArea,
+      teamSize: teamSize?.trim(),
+      interestArea: interestArea?.trim(),
       message: message?.trim()
     });
 
-    res.render('demo/demo', {
-      layout: 'mainlayout'
+    return res.render(DEMO_VIEW, {
+      layout: 'mainlayout',
+      success: 'Thank you! Your demo request has been submitted.',
+      csrfToken: req.csrfToken ? req.csrfToken() : null
     });
 
   } catch (err) {
     console.error('Demo request error:', err);
 
-    res.status(500).render('demo/demo', {
+    return res.status(500).render(DEMO_VIEW, {
       layout: 'mainlayout',
       error: 'Something went wrong. Please try again.',
       csrfToken: req.csrfToken ? req.csrfToken() : null,
