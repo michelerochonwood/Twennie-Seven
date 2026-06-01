@@ -9238,7 +9238,7 @@ overflow: visible;
 }
 
 .demo-info-block {
-  width: 80%;
+  width: 50%;
   background: linear-gradient(135deg, #f4f6ff, #eef1ff);
   border: 1px solid rgba(41, 49, 102, 0.08);
   border-left: 5px solid #4a4ab2;
