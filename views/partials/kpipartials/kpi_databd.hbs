@@ -1,0 +1,113 @@
+<section class="topic-kpi-section" aria-labelledby="kpi-topic-heading">
+  <h2 id="kpi-topic-heading" class="kpi-topic-title">suggested KPIs for this topic</h2>
+
+  <p class="kpi-topic-intro">
+    These KPIs help you connect project analytics to the real numbers that determine
+    project health — write-offs, profit margin, utilization, revenue predictability,
+    and multipliers. Choose a few to build stronger PM habits.
+  </p>
+
+  <div class="expandable-container kpi-expandable-container">
+
+    <!-- 1. Write-Off Prevention -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-writeoffs">
+        write-off prevention
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2" points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+      <div class="expandable-content" id="kpi-writeoffs">
+        <ul class="kpi-list">
+          <li>Identify and log scope risks within the first 10 days of the project.</li>
+          <li>Flag potential rework items as soon as they appear — not after the fact.</li>
+          <li>Review scope vs. effort weekly to predict where write-offs are forming.</li>
+          <li>Capture each write-off’s root cause to prevent repetition.</li>
+          <li>Hold one “scope alignment check-in” with the client each month.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 2. Margin Protection -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-margin">
+        margin protection
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2" points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+      <div class="expandable-content" id="kpi-margin">
+        <ul class="kpi-list">
+          <li>Forecast cost-to-complete weekly to protect margin.</li>
+          <li>Identify top three margin risks at project midpoint.</li>
+          <li>Document and submit change-orders within 5 days of scope changes.</li>
+          <li>Maintain labor mix consistent with target multiplier for the project.</li>
+          <li>Track variance between planned and actual effort per task.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 3. Utilization & Workload Balance -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-utilization">
+        utilization &amp; workload
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2" points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+      <div class="expandable-content" id="kpi-utilization">
+        <ul class="kpi-list">
+          <li>Review team workload distribution weekly to avoid burnout and bottlenecks.</li>
+          <li>Ensure no team member exceeds utilization targets due to PM delays.</li>
+          <li>Flag over-allocation at least 2 weeks before it impacts delivery.</li>
+          <li>Rebalance work based on skill level and billability.</li>
+          <li>Track hours on non-billable tasks to reduce hidden utilization losses.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 4. Revenue Predictability & Multipliers -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-revenue">
+        revenue predictability &amp; multipliers
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2" points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+      <div class="expandable-content" id="kpi-revenue">
+        <ul class="kpi-list">
+          <li>Forecast monthly revenue for all active projects with at least 80% accuracy.</li>
+          <li>Review burn rate vs. planned revenue weekly.</li>
+          <li>Track the project multiplier monthly and adjust staffing as needed.</li>
+          <li>Ensure invoices reflect completed work each month — no late billing.</li>
+          <li>Identify revenue risks 30 days before month-end.</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="kpi-topic-footer">
+    Choose a KPI from each category to build predictable, healthy, profitable projects
+    — and give yourself fewer write-off meetings to survive.
+  </p>
+</section>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const titles = document.querySelectorAll('.kpi-expandable-container .expandable-title');
+    titles.forEach(function (title) {
+      title.addEventListener('click', function () {
+        const parent = this.closest('.expandable-item');
+        const targetId = this.getAttribute('data-target');
+        const content = document.getElementById(targetId);
+        if (!parent || !content) return;
+
+        const isActive = parent.classList.contains('active');
+        parent.classList.toggle('active', !isActive);
+        content.style.display = !isActive ? 'block' : 'none';
+      });
+    });
+  });
+</script>

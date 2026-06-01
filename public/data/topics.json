@@ -832,6 +832,54 @@
 "evaluating technology, knowledge management, and information flow problems",
 "prioritizing operational improvements based on impact and frequency"
 ]
+},
+
+{
+  "id": 224,
+  "title": "Never Let Good Data Get Away Business Development",
+  "shortSummary": "Every project generates valuable business development evidence, but most firms fail to capture it. This topic teaches technical organizations how to collect, organize, and use data that strengthens proposals, demonstrates expertise, reduces perceived risk, and helps win more work.",
+  "longSummary": "Never Let Good Data Get Away - Business Development focuses on one of the most overlooked competitive advantages in technical services: the ability to systematically capture and use evidence of organizational success. Every completed project generates valuable information about experience, outcomes, client satisfaction, technical expertise, project scale, and team capabilities. Unfortunately, much of this information is never recorded, becomes difficult to retrieve, or disappears entirely as staff move on and projects fade from memory.\n\nThis topic explores how engineering, architecture, environmental consulting, construction, and other technical organizations can transform project information into business development assets. Learners examine the difference between proxy evidence and direct evidence, why quantified accomplishments are often more persuasive than years of experience, and how clients use evidence to assess risk when selecting consultants. The topic emphasizes practical methods for capturing project experience, outcome metrics, client feedback, specialized expertise, and other forms of evidence that can strengthen proposals, qualifications packages, interviews, presentations, and marketing materials.\n\nThe topic includes methods for building evidence collection systems, conducting project closeout interviews, creating expertise databases, tracking client satisfaction, cataloguing lessons learned, developing project intelligence libraries, and organizing information for future retrieval. Rather than relying on assumptions, anecdotes, or generic claims of excellence, learners are encouraged to develop systems that continuously collect and preserve information that can be used to differentiate their organizations. The goal is to help firms transform everyday project information into measurable competitive advantages that support stronger proposals, more persuasive business development efforts, and increased success in winning work.",
+  "subtopics": [
+    "distinguishing direct evidence from proxy evidence",
+    "quantifying team experience beyond years of experience",
+    "collecting project experience metrics and qualifications data",
+    "capturing project outcomes and measurable client benefits",
+    "tracking client satisfaction and repeat assignments",
+    "building evidence collection systems for business development",
+    "conducting project closeout interviews for future proposals",
+    "creating expertise databases and organizational capability inventories",
+    "organizing project information for rapid proposal development",
+    "using data to reduce perceived client risk",
+    "transforming project information into marketing assets",
+    "developing stronger project profiles and staff resumes",
+    "capturing testimonials, references, and client success stories",
+    "building proposal intelligence libraries",
+    "turning organizational knowledge into competitive advantage"
+  ]
+},
+
+{
+  "id": 225,
+  "title": "Never Let Good Data Get Away Project Management",
+  "shortSummary": "Every project generates lessons, insights, and performance data, but most organizations lose them. This topic teaches technical teams how to capture project knowledge, improve future performance, and prevent valuable information from disappearing.",
+  "longSummary": "Never Let Good Data Get Away - Project Management focuses on a challenge that affects nearly every technical organization: valuable project knowledge is constantly being created but rarely preserved. Teams solve difficult problems, identify risks, develop innovative approaches, improve workflows, and learn important lessons throughout project delivery. Yet much of this knowledge remains trapped in project files, scattered across emails, buried in reports, or stored only in the memories of individual staff members.\n\nThis topic explores how engineering, architecture, environmental consulting, construction, and other technical organizations can build systems that capture and preserve project intelligence. Learners examine the role of project data in continuous improvement, risk management, forecasting, resource planning, quality management, and organizational learning. The topic emphasizes practical methods for collecting lessons learned, documenting project outcomes, tracking performance metrics, conducting project closeout reviews, and transforming project experiences into reusable organizational knowledge.\n\nThe topic includes methods for developing lessons learned programs, conducting project debriefs, maintaining knowledge repositories, tracking schedule and budget performance, documenting recurring risks, analyzing project trends, and preserving institutional memory. Rather than repeatedly solving the same problems or losing valuable expertise when staff move on, learners are encouraged to create systems that continuously capture, organize, and share project knowledge. The goal is to improve project performance, reduce repeated mistakes, strengthen organizational learning, and ensure that valuable information generated by one project benefits future projects across the organization.",
+  "subtopics": [
+    "capturing lessons learned before they are forgotten",
+    "conducting project closeout reviews and debriefs",
+    "preserving institutional memory in technical organizations",
+    "tracking schedule, budget, and performance metrics",
+    "identifying recurring project risks and trends",
+    "developing project knowledge repositories",
+    "using project data to improve future project outcomes",
+    "documenting successful project approaches and best practices",
+    "preventing knowledge loss when staff leave organizations",
+    "building continuous improvement systems from project experience",
+    "tracking project outcomes and performance indicators",
+    "organizing information for future project teams",
+    "analyzing historical project data to improve forecasting",
+    "using evidence to support project management decisions",
+    "transforming project experience into organizational knowledge"
+  ]
 }
 
 

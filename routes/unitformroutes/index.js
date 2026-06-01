@@ -63,6 +63,8 @@ const mainTopics = [
   'Making Safety a Part of Your Culture',
   'Managing Scope So It Doesnt Manage You',
   'Mental Health in Consulting Environments',
+  'Never Let Good Data Get Away Business Development',
+  'Never Let Good Data Get Away Project Management',
   'Non-Technical Roles in Technical Environments',
   'People Before Profit',
   'Program Management',

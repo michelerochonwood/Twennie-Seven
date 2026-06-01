@@ -1,0 +1,112 @@
+<section class="topic-kpi-section" aria-labelledby="kpi-topic-heading">
+  <h2 id="kpi-topic-heading" class="kpi-topic-title">suggested KPIs for this topic</h2>
+
+  <p class="kpi-topic-intro">
+    These KPIs help technical teams capture project knowledge before it disappears.
+    Every project creates lessons, risks, performance data, and improvement opportunities.
+    The goal is to make sure future projects benefit from what previous projects already learned.
+  </p>
+
+  <div class="expandable-container kpi-expandable-container">
+
+    <!-- 1. Lessons Learned Capture -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-pm-lessons">
+        lessons learned capture
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2" points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+      <div class="expandable-content" id="kpi-pm-lessons">
+        <ul class="kpi-list">
+          <li>Conduct a lessons learned review for every completed project.</li>
+          <li>Document the top three successes and top three challenges from each project.</li>
+          <li>Complete lessons learned documentation within 30 days of project closeout.</li>
+          <li>Share lessons learned with future project teams.</li>
+          <li>Review previous lessons learned before starting similar projects.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 2. Project Performance Tracking -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-pm-performance">
+        project performance tracking
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2" points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+      <div class="expandable-content" id="kpi-pm-performance">
+        <ul class="kpi-list">
+          <li>Record schedule performance at project completion.</li>
+          <li>Record budget performance at project completion.</li>
+          <li>Document significant scope changes and their causes.</li>
+          <li>Track recurring project risks and issues.</li>
+          <li>Analyze performance trends across completed projects.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 3. Knowledge Preservation -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-pm-knowledge">
+        knowledge preservation
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2" points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+      <div class="expandable-content" id="kpi-pm-knowledge">
+        <ul class="kpi-list">
+          <li>Store project closeout information in a centralized location.</li>
+          <li>Capture specialized technical solutions for future reference.</li>
+          <li>Document key decisions and their outcomes.</li>
+          <li>Maintain project records that are searchable and retrievable.</li>
+          <li>Reduce reliance on individual staff memory for critical information.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 4. Continuous Improvement -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-pm-improvement">
+        continuous improvement
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2" points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+      <div class="expandable-content" id="kpi-pm-improvement">
+        <ul class="kpi-list">
+          <li>Identify recurring operational issues across projects.</li>
+          <li>Track implementation of lessons learned recommendations.</li>
+          <li>Measure reductions in repeated project problems.</li>
+          <li>Review project performance data quarterly.</li>
+          <li>Use historical project information to improve forecasting and planning.</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="kpi-topic-footer">
+    The value of project data is not created when a project finishes.
+    The value is created when future projects benefit from what previous projects already learned.
+  </p>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const titles = document.querySelectorAll('.kpi-expandable-container .expandable-title');
+    titles.forEach(function (title) {
+      title.addEventListener('click', function () {
+        const parent = this.closest('.expandable-item');
+        const targetId = this.getAttribute('data-target');
+        const content = document.getElementById(targetId);
+        if (!parent || !content) return;
+
+        const isActive = parent.classList.contains('active');
+        parent.classList.toggle('active', !isActive);
+        content.style.display = !isActive ? 'block' : 'none';
+      });
+    });
+  });
+</script>
