@@ -30,14 +30,14 @@ exports.submitDemoRequest = async (req, res) => {
       message: message?.trim()
     });
 
-    res.render('demo/book_demo_success', {
+    res.render('demo/demo', {
       layout: 'mainlayout'
     });
 
   } catch (err) {
     console.error('Demo request error:', err);
 
-    res.status(500).render('demo/book_demo', {
+    res.status(500).render('demo/demo', {
       layout: 'mainlayout',
       error: 'Something went wrong. Please try again.',
       csrfToken: req.csrfToken ? req.csrfToken() : null,
