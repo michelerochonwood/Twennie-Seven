@@ -4510,3 +4510,26 @@ label {
   font-weight: 700;
   font-size: 0.85rem;
 }
+
+.single-unit-explanation {
+  background: #f4f6ff;
+  border-left: 5px solid #4e50a2;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+}
+
+.single-unit-explanation-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: lowercase;
+  color: #4e50a2;
+}
+
+.single-unit-explanation-text {
+  margin: 0.4rem 0;
+  line-height: 1.5;
+  font-size: 0.95rem;
+  color: #333;
+}
