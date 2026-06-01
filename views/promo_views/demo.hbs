@@ -1,0 +1,120 @@
+```hbs
+{{#*inline "title"}}Book a Demo | Twennie{{/inline}}
+
+<div class="demo-container">
+
+  <img
+    src="/images/executivebluey.png"
+    alt="Executive Bluey"
+    class="demo-hero-image"
+  >
+
+  <h1 class="demo-title">book a demo</h1>
+
+  <p class="demo-intro">
+    Curious whether Twennie is right for your team?
+  </p>
+
+  <p class="demo-description">
+    During this demo, we'll explore your organization's challenges, learning goals,
+    business development priorities, project management needs, and team structure.
+    You'll see how Twennie works and discuss whether it is a good fit for your
+    organization.
+  </p>
+
+  <div class="demo-info-block">
+    <h3>what to expect</h3>
+
+    <ul>
+      <li>30–45 minute virtual meeting</li>
+      <li>Overview of the Twennie platform</li>
+      <li>Discussion of your organization's goals and challenges</li>
+      <li>Questions and answers</li>
+      <li>No obligation and no sales pressure</li>
+    </ul>
+  </div>
+
+  <form action="/book-a-demo" method="POST" class="demo-form">
+
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+
+    <div class="demo-field">
+      <label for="name">your name</label>
+      <input
+        type="text"
+        id="name"
+        name="name"
+        required>
+    </div>
+
+    <div class="demo-field">
+      <label for="email">email address</label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        required>
+    </div>
+
+    <div class="demo-field">
+      <label for="organization">organization</label>
+      <input
+        type="text"
+        id="organization"
+        name="organization">
+    </div>
+
+    <div class="demo-field">
+      <label for="jobTitle">job title</label>
+      <input
+        type="text"
+        id="jobTitle"
+        name="jobTitle">
+    </div>
+
+    <div class="demo-field">
+      <label for="teamSize">team size</label>
+      <select id="teamSize" name="teamSize">
+        <option value="">Select one</option>
+        <option>1-10</option>
+        <option>11-25</option>
+        <option>26-50</option>
+        <option>51-100</option>
+        <option>101-250</option>
+        <option>250+</option>
+      </select>
+    </div>
+
+    <div class="demo-field">
+      <label for="interestArea">what would you like to discuss?</label>
+      <select id="interestArea" name="interestArea">
+        <option value="">Select one</option>
+        <option>Project Management</option>
+        <option>Business Development</option>
+        <option>Leadership Development</option>
+        <option>Proposal Management</option>
+        <option>Technical Communication</option>
+        <option>Custom Organizational Portal</option>
+        <option>General Overview</option>
+      </select>
+    </div>
+
+    <div class="demo-field">
+      <label for="message">
+        tell us a little about your goals or challenges
+      </label>
+      <textarea
+        id="message"
+        name="message"
+        rows="6"
+        maxlength="2000"></textarea>
+    </div>
+
+    <button type="submit" class="demo-submit-button">
+      request a demo
+    </button>
+
+  </form>
+
+</div>
+```
