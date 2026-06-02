@@ -45,6 +45,7 @@ const mainTopics = [
   'Client Feedback Software',
   'Client Interactions',
   'Closing a Project Strategically',
+  'Competitor Intelligence A License to Differentiate',
   'Conducting Color Reviews of Proposals',
   'Conducting Market Research',
   'Cross Selling in Multi-Disciplinary Firms',
