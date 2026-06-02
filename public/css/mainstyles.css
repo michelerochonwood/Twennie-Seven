@@ -9191,197 +9191,180 @@ overflow: visible;
   }
 }
 
-
 /* ================================
-   BOOK A DEMO PAGE
+   BOOK A DEMO — ISOLATED VERSION
 ================================ */
 
-.demo-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 60%;
+.bookdemo-page {
+  width: min(92%, 900px);
   margin: 7rem auto 8rem auto;
+  padding: 0 1.5rem;
+  box-sizing: border-box;
   font-family: "Figtree", sans-serif;
   color: #262262;
-  text-align: center;
 }
 
-.demo-hero-image {
-  display: block;
-  width: 320px;
+.bookdemo-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.bookdemo-hero-image {
+  width: 260px;
   max-width: 100%;
   height: auto;
-  margin: 0 auto;
+  display: block;
+  margin: 0 auto 1rem auto;
 }
 
-.demo-title {
-  font-size: clamp(1.5rem, 5vw, 2.3rem);
+.bookdemo-title {
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
   font-weight: 800;
   color: #262262;
-  margin: 0 0 1rem 0;
-  text-align: center;
+  margin: 0 0 0.75rem 0;
+  text-transform: lowercase;
 }
 
-.demo-intro {
+.bookdemo-intro {
   font-size: 1.2rem;
   font-weight: 800;
   color: #4e50a2;
   margin: 0 0 0.75rem 0;
 }
 
-.demo-description {
+.bookdemo-description {
   max-width: 760px;
-  line-height: 1.6;
+  margin: 0 auto 1.5rem auto;
   color: #293166;
-  margin: 0 auto 1.75rem auto;
+  line-height: 1.6;
 }
 
-.demo-info-block {
-  width: 50%;
-  background: linear-gradient(135deg, #f4f6ff, #eef1ff);
-  border: 1px solid rgba(41, 49, 102, 0.08);
+.bookdemo-info-card {
+  max-width: 760px;
+  margin: 0 auto 2.25rem auto;
+  padding: 1.5rem 1.75rem;
+  background: #f4f6ff;
   border-left: 5px solid #4a4ab2;
-  border-radius: 16px;
-  padding: 1.4rem 1.6rem;
-  margin: 1rem auto 2rem auto;
+  border-radius: 18px;
   box-shadow: 0 10px 30px rgba(41, 49, 102, 0.08);
   text-align: left;
   box-sizing: border-box;
 }
 
-.demo-info-block h3 {
+.bookdemo-info-card h3 {
   margin: 0 0 0.85rem 0;
   color: #4e50a2;
   font-weight: 800;
   text-transform: lowercase;
 }
 
-.demo-info-block ul {
+.bookdemo-info-card ul {
   margin: 0;
   padding-left: 1.25rem;
   color: #293166;
   line-height: 1.6;
 }
 
-.demo-form {
+.bookdemo-form {
+  width: min(100%, 700px);
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 1.15rem;
-  width: 100%;
-  max-width: 700px;
 }
 
-.demo-field {
+.bookdemo-field {
   display: flex;
   flex-direction: column;
-  width: 80%;
   text-align: left;
 }
 
-.demo-field label {
-  margin-bottom: 5px;
+.bookdemo-label {
+  margin-bottom: 0.4rem;
   font-weight: 800;
   color: #4e50a2;
 }
 
-.demo-field input,
-.demo-field select,
-.demo-field textarea {
+.bookdemo-input,
+.bookdemo-select,
+.bookdemo-textarea {
   width: 100%;
   box-sizing: border-box;
   font-family: "Figtree", sans-serif;
   font-size: 1rem;
-  border: 1px solid #ccc;
-  background-color: #fff;
+  border: 1px solid #cfcfe2;
+  background: #ffffff;
   color: #262262;
 }
 
-.demo-field input,
-.demo-field select {
-  border-radius: 99px;
-  padding: 0.5rem 1rem;
+.bookdemo-input,
+.bookdemo-select {
+  min-height: 46px;
+  border-radius: 999px;
+  padding: 0.6rem 1rem;
 }
 
-.demo-field textarea {
+.bookdemo-textarea {
+  min-height: 150px;
   border-radius: 18px;
   padding: 0.9rem 1rem;
   resize: vertical;
-  min-height: 140px;
 }
 
-.demo-field select {
+.bookdemo-select {
   appearance: none;
-  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10' width='10' height='10'%3E%3Cpath fill='%234e50a2' d='M0 0 L10 0 L5 5 Z'/%3E%3C/svg%3E") no-repeat right 20px center;
+  background:
+    #ffffff
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10' width='10' height='10'%3E%3Cpath fill='%234e50a2' d='M0 0 L10 0 L5 5 Z'/%3E%3C/svg%3E")
+    no-repeat right 20px center;
   background-size: 10px;
   padding-right: 2.5rem;
 }
 
-.demo-field input:hover,
-.demo-field input:focus,
-.demo-field select:hover,
-.demo-field select:focus,
-.demo-field textarea:hover,
-.demo-field textarea:focus {
+.bookdemo-input:focus,
+.bookdemo-select:focus,
+.bookdemo-textarea:focus {
   border-color: #4a4ab2;
   outline: none;
+  box-shadow: 0 0 0 4px rgba(74, 74, 178, 0.12);
 }
 
-.demo-submit-button {
-  width: 50%;
-  margin-top: 1rem;
-  margin-bottom: 200px;
-  display: block;
-  font-family: "Figtree", sans-serif;
-  padding: 1rem;
-  background: #262262;
-  color: white;
-  font-weight: 800;
+.bookdemo-submit {
+  width: min(100%, 320px);
+  margin: 1.25rem auto 0 auto;
+  padding: 1rem 1.5rem;
   border: none;
-  border-radius: 99px;
-  cursor: pointer;
+  border-radius: 999px;
+  background: #262262;
+  color: #ffffff;
+  font-family: "Figtree", sans-serif;
   font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  text-align: center;
 }
 
-.demo-submit-button:hover {
+.bookdemo-submit:hover {
   background: #4a4ab2;
 }
 
-@media screen and (max-width: 1200px) {
-  .demo-container {
-    width: 80%;
-  }
+.bookdemo-return-link {
+  display: inline-block;
+  text-decoration: none;
 }
 
-@media screen and (max-width: 780px) {
-  .demo-container {
+@media screen and (max-width: 600px) {
+  .bookdemo-page {
     width: 100%;
-    padding: 0 1.5rem;
-    box-sizing: border-box;
-  }
-
-  .demo-info-block,
-  .demo-field {
-    width: 90%;
-  }
-
-  .demo-submit-button {
-    width: 70%;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .demo-container {
     margin-top: 5rem;
+    padding: 0 1.25rem;
   }
 
-  .demo-info-block,
-  .demo-field {
-    width: 100%;
+  .bookdemo-info-card {
+    padding: 1.25rem;
   }
 
-  .demo-submit-button {
+  .bookdemo-submit {
     width: 100%;
   }
 }

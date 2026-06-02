@@ -1,27 +1,27 @@
-{{#*inline "title"}}Book a Demo | Twennie{{/inline}}
+<div class="bookdemo-page">
 
-<div class="demo-container">
+  <div class="bookdemo-header">
+    <img
+      src="/images/executivebluey.png"
+      alt="Executive Bluey"
+      class="bookdemo-hero-image"
+    >
 
-  <img
-    src="/images/executivebluey.png"
-    alt="Executive Bluey"
-    class="demo-hero-image"
-  >
+    <h1 class="bookdemo-title">book a demo</h1>
 
-  <h1 class="demo-title">book a demo</h1>
+    <p class="bookdemo-intro">
+      Curious whether Twennie is right for your team?
+    </p>
 
-  <p class="demo-intro">
-    Curious whether Twennie is right for your team?
-  </p>
+    <p class="bookdemo-description">
+      During this demo, we'll explore your organization's challenges, learning goals,
+      business development priorities, project management needs, and team structure.
+      You'll see how Twennie works and discuss whether it is a good fit for your
+      organization.
+    </p>
+  </div>
 
-  <p class="demo-description">
-    During this demo, we'll explore your organization's challenges, learning goals,
-    business development priorities, project management needs, and team structure.
-    You'll see how Twennie works and discuss whether it is a good fit for your
-    organization.
-  </p>
-
-  <div class="demo-info-block">
+  <div class="bookdemo-info-card">
     <h3>what to expect</h3>
 
     <ul>
@@ -33,47 +33,33 @@
     </ul>
   </div>
 
-  <form action="/demo/book-a-demo" method="POST">
+  <form action="/demo/book-a-demo" method="POST" class="bookdemo-form">
 
     <input type="hidden" name="_csrf" value="{{csrfToken}}">
 
-    <div class="demo-field">
-      <label for="name">your name</label>
-      <input
-        type="text"
-        id="name"
-        name="name"
-        required>
+    <div class="bookdemo-field">
+      <label for="name" class="bookdemo-label">your name</label>
+      <input type="text" id="name" name="name" class="bookdemo-input" required>
     </div>
 
-    <div class="demo-field">
-      <label for="email">email address</label>
-      <input
-        type="email"
-        id="email"
-        name="email"
-        required>
+    <div class="bookdemo-field">
+      <label for="email" class="bookdemo-label">email address</label>
+      <input type="email" id="email" name="email" class="bookdemo-input" required>
     </div>
 
-    <div class="demo-field">
-      <label for="organization">organization</label>
-      <input
-        type="text"
-        id="organization"
-        name="organization">
+    <div class="bookdemo-field">
+      <label for="organization" class="bookdemo-label">organization</label>
+      <input type="text" id="organization" name="organization" class="bookdemo-input">
     </div>
 
-    <div class="demo-field">
-      <label for="jobTitle">job title</label>
-      <input
-        type="text"
-        id="jobTitle"
-        name="jobTitle">
+    <div class="bookdemo-field">
+      <label for="jobTitle" class="bookdemo-label">job title</label>
+      <input type="text" id="jobTitle" name="jobTitle" class="bookdemo-input">
     </div>
 
-    <div class="demo-field">
-      <label for="teamSize">team size</label>
-      <select id="teamSize" name="teamSize">
+    <div class="bookdemo-field">
+      <label for="teamSize" class="bookdemo-label">team size</label>
+      <select id="teamSize" name="teamSize" class="bookdemo-select">
         <option value="">Select one</option>
         <option>1-10</option>
         <option>11-25</option>
@@ -84,9 +70,9 @@
       </select>
     </div>
 
-    <div class="demo-field">
-      <label for="interestArea">what would you like to discuss?</label>
-      <select id="interestArea" name="interestArea">
+    <div class="bookdemo-field">
+      <label for="interestArea" class="bookdemo-label">what would you like to discuss?</label>
+      <select id="interestArea" name="interestArea" class="bookdemo-select">
         <option value="">Select one</option>
         <option>Project Management</option>
         <option>Business Development</option>
@@ -98,22 +84,19 @@
       </select>
     </div>
 
-    <div class="demo-field">
-      <label for="message">
+    <div class="bookdemo-field">
+      <label for="message" class="bookdemo-label">
         tell us a little about your goals or challenges
       </label>
-      <textarea
-        id="message"
-        name="message"
-        rows="6"
-        maxlength="2000"></textarea>
+      <textarea id="message" name="message" rows="6" maxlength="2000" class="bookdemo-textarea"></textarea>
     </div>
 
-    <button type="submit" class="demo-submit-button">
+    <button type="submit" class="bookdemo-submit">
       request a demo
     </button>
 
   </form>
 
 </div>
+
 {{> mainpartials/home_subfooter}}
