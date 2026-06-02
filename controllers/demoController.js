@@ -32,11 +32,7 @@ exports.submitDemoRequest = async (req, res) => {
       message: message?.trim()
     });
 
-    return res.render(DEMO_VIEW, {
-      layout: 'mainlayout',
-      success: 'Thank you! Your demo request has been submitted.',
-      csrfToken: req.csrfToken ? req.csrfToken() : null
-    });
+    return res.redirect('/book-a-demo/success');
 
   } catch (err) {
     console.error('Demo request error:', err);
