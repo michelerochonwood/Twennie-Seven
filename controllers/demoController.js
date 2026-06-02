@@ -1,7 +1,7 @@
-// controllers/demoController.js
 const DemoRequest = require('../models/DemoRequest');
 
 const DEMO_VIEW = 'promo_views/demo';
+const DEMO_SUCCESS_VIEW = 'promo_views/demo_success';
 
 exports.showDemoForm = (req, res) => {
   res.render(DEMO_VIEW, {
@@ -32,7 +32,7 @@ exports.submitDemoRequest = async (req, res) => {
       message: message?.trim()
     });
 
-    return res.redirect('/book-a-demo/success');
+    return res.redirect('/demo/book-a-demo/success');
 
   } catch (err) {
     console.error('Demo request error:', err);
@@ -44,6 +44,12 @@ exports.submitDemoRequest = async (req, res) => {
       formData: req.body
     });
   }
+};
+
+exports.showDemoSuccess = (req, res) => {
+  res.render(DEMO_SUCCESS_VIEW, {
+    layout: 'mainlayout'
+  });
 };
 
 

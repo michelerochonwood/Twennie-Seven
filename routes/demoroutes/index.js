@@ -5,11 +5,6 @@ const demoController = require('../../controllers/demoController');
 
 router.get('/book-a-demo', demoController.showDemoForm);
 router.post('/book-a-demo', demoController.submitDemoRequest);
-
-router.get('/book-a-demo/success', (req, res) => {
-res.render('promo_views/demo_success', {
-layout: 'mainlayout'
-});
-});
+router.get('/book-a-demo/success', demoController.showDemoSuccess);
 
 module.exports = router;
