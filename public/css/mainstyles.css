@@ -9368,3 +9368,108 @@ overflow: visible;
     width: 100%;
   }
 }
+
+
+/* ================================
+   DEMO SUCCESS PAGE
+================================ */
+
+.demo-success-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(900px, 90%);
+  margin: 7rem auto 8rem auto;
+  text-align: center;
+  font-family: "Figtree", sans-serif;
+}
+
+.demo-success-image {
+  width: 280px;
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 1rem;
+}
+
+.demo-success-title {
+  font-size: clamp(1.8rem, 5vw, 2.5rem);
+  font-weight: 800;
+  color: #262262;
+  margin-bottom: 0.75rem;
+  text-transform: lowercase;
+}
+
+.demo-success-intro {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #4a4ab2;
+  margin-bottom: 1rem;
+}
+
+.demo-success-description {
+  max-width: 760px;
+  line-height: 1.7;
+  color: #293166;
+  margin-bottom: 1.5rem;
+}
+
+.demo-success-card {
+  width: min(700px, 100%);
+  background: linear-gradient(135deg, #f4f6ff, #eef1ff);
+  border-left: 5px solid #4a4ab2;
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  margin: 1rem 0 2rem 0;
+  box-shadow: 0 10px 30px rgba(41, 49, 102, 0.08);
+  text-align: left;
+  box-sizing: border-box;
+}
+
+.demo-success-card h3 {
+  margin-top: 0;
+  color: #4e50a2;
+  font-weight: 800;
+  text-transform: lowercase;
+}
+
+.demo-success-card ul {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: #293166;
+  line-height: 1.7;
+}
+
+.demo-success-button {
+  display: inline-block;
+  width: min(320px, 100%);
+  padding: 1rem;
+  border-radius: 99px;
+  background: #262262;
+  color: white;
+  text-decoration: none;
+  font-weight: 800;
+  font-size: 1rem;
+  text-align: center;
+  margin-top: 1rem;
+  transition: background-color 0.2s ease;
+}
+
+.demo-success-button:hover {
+  background: #4a4ab2;
+}
+
+@media screen and (max-width: 780px) {
+  .demo-success-container {
+    width: 100%;
+    padding: 0 1.5rem;
+    box-sizing: border-box;
+  }
+
+  .demo-success-card {
+    padding: 1.25rem;
+  }
+
+  .demo-success-button {
+    width: 100%;
+  }
+}
