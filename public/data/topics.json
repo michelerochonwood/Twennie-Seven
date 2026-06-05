@@ -909,7 +909,58 @@
 "preserving competitor intelligence as organizational knowledge",
 "using competitor intelligence to strengthen proposal strategy and win more work"
 ]
+},
+
+{
+"id": 227,
+"title": "Proposal Pricing Strategies",
+"shortSummary": "Pricing is one of the most difficult and influential decisions in proposal development. This topic explores practical pricing strategies, data collection methods, competitor intelligence, and estimation techniques that help teams price work competitively without sacrificing profitability.",
+"longSummary": "Proposal Pricing Strategies examines one of the most challenging aspects of business development in technical services: determining what to charge for professional work. Engineering, architecture, environmental consulting, construction, and other technical organizations regularly face the difficult task of balancing competitiveness, profitability, client expectations, project risk, and strategic objectives. Price too high and valuable opportunities may be lost. Price too low and organizations can win projects that damage profitability, overextend resources, and create long-term operational challenges.",
+"subtopics": [
+"understanding the role of pricing in proposal strategy",
+"conducting go/no-go analysis based on pricing realities",
+"evaluating the influence of price in proposal scoring criteria",
+"assessing whether a project is strategically worth buying",
+"balancing competitiveness and profitability",
+"bottom-up pricing methodologies",
+"building work breakdown structures for pricing",
+"estimating level of effort by project phase",
+"using staffing plans to develop fee estimates",
+"the paper cutout exercise for project visualization",
+"accounting for supervision, coordination, and learning curves",
+"the Friday Afternoon Test for estimating realism",
+"identifying hidden effort through invisible work audits",
+"estimating uncertainty and project risk",
+"top-down pricing methodologies",
+"understanding client budget expectations",
+"using comparable projects to inform pricing",
+"collecting and maintaining historical pricing data",
+"the Project Clone Search technique",
+"analyzing project similarities beyond technical scope",
+"client habits and their impact on level of effort",
+"the Level-of-Effort Interrogation technique",
+"building and maintaining client profiles",
+"understanding client communication and management preferences",
+"competitive pricing methodologies",
+"using proposal debriefs to gather pricing intelligence",
+"collecting competitor pricing information ethically",
+"building competitor profiles and pricing histories",
+"analyzing competitor pricing patterns and habits",
+"using competitor intelligence to improve pricing decisions",
+"historical project analysis and pricing accuracy",
+"comparing estimated versus actual project performance",
+"identifying recurring estimation errors",
+"creating organizational pricing databases",
+"using research and business development personnel to support pricing",
+"pricing intelligence as organizational knowledge",
+"the triangulation method for pricing decisions",
+"interpreting conflicts between pricing methods",
+"using pricing discrepancies to identify unknown risks",
+"turning pricing into a continuous learning system",
+"building long-term competitive advantages through pricing data"
+]
 }
+
 
 
 

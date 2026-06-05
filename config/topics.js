@@ -36,6 +36,7 @@ const topics = [
   'Project Management',
   'Project Management Software',
   'Proposal Management',
+  'Proposal Pricing Strategies',
   'Proposal Strategy',
   'Pull Marketing',
   'Pursuing the Right Projects for Your Firm and Your Team',

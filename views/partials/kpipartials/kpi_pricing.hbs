@@ -1,0 +1,113 @@
+<section class="topic-kpi-section" aria-labelledby="kpi-topic-heading">
+  <h2 id="kpi-topic-heading" class="kpi-topic-title">suggested KPIs for this topic</h2>
+
+  <p class="kpi-topic-intro">
+    These KPIs help you turn proposal pricing into a disciplined learning system —
+    connecting estimates, actual effort, client expectations, competitor pricing, and
+    profitability. Choose a few to reduce guessing and improve pricing decisions over time.
+  </p>
+
+  <div class="expandable-container kpi-expandable-container">
+
+    <!-- 1. Bottom-Up Pricing Accuracy -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-bottom-up">
+        bottom-up pricing accuracy
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2" points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+      <div class="expandable-content" id="kpi-bottom-up">
+        <ul class="kpi-list">
+          <li>Build a work breakdown structure for every major proposal before final pricing.</li>
+          <li>Compare estimated hours to actual hours by phase after project completion.</li>
+          <li>Identify hidden effort such as coordination, review, revisions, and client meetings.</li>
+          <li>Record assumptions behind staffing, effort, and hourly rates for future review.</li>
+          <li>Flag high-risk scope items before pricing is finalized.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 2. Top-Down Pricing Intelligence -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-top-down">
+        top-down pricing intelligence
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2" points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+      <div class="expandable-content" id="kpi-top-down">
+        <ul class="kpi-list">
+          <li>Maintain pricing records for comparable projects by client, sector, geography, and scope.</li>
+          <li>Ask level-of-effort questions before RFP release whenever possible.</li>
+          <li>Track client expectations for meetings, reporting, responsiveness, and project manager involvement.</li>
+          <li>Update client profiles after each project or major pursuit.</li>
+          <li>Use at least three comparable projects to inform pricing assumptions.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 3. Competitive Pricing Awareness -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-competitive-pricing">
+        competitive pricing awareness
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2" points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+      <div class="expandable-content" id="kpi-competitive-pricing">
+        <ul class="kpi-list">
+          <li>Request competitor pricing information during proposal debriefs whenever available.</li>
+          <li>Record competitor pricing patterns by project type, client, and market.</li>
+          <li>Track win/loss outcomes alongside price position.</li>
+          <li>Identify competitors who regularly price low, premium, or unpredictably.</li>
+          <li>Review competitor pricing intelligence before major go/no-go decisions.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 4. Pricing Learning System -->
+    <div class="expandable-item">
+      <h3 class="expandable-title" data-target="kpi-pricing-system">
+        pricing learning system
+        <svg class="expand-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 331.65 100.99" style="width:24px">
+          <polygon fill="#4e50a2" points="0 0 161.57 100.99 331.65 0 0 0"/>
+        </svg>
+      </h3>
+      <div class="expandable-content" id="kpi-pricing-system">
+        <ul class="kpi-list">
+          <li>Conduct a pricing review after every completed project over a defined fee threshold.</li>
+          <li>Compare proposal fee, actual revenue, actual cost, and final profitability.</li>
+          <li>Identify recurring estimating errors by phase, discipline, or client type.</li>
+          <li>Update pricing assumptions quarterly using new project and pursuit data.</li>
+          <li>Use triangulation — bottom-up, top-down, and competitive pricing — before final fee decisions.</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="kpi-topic-footer">
+    Choose a KPI from each category to make pricing less like guessing in the dark
+    — and more like a system that gets smarter with every proposal.
+  </p>
+</section>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const titles = document.querySelectorAll('.kpi-expandable-container .expandable-title');
+    titles.forEach(function (title) {
+      title.addEventListener('click', function () {
+        const parent = this.closest('.expandable-item');
+        const targetId = this.getAttribute('data-target');
+        const content = document.getElementById(targetId);
+        if (!parent || !content) return;
+
+        const isActive = parent.classList.contains('active');
+        parent.classList.toggle('active', !isActive);
+        content.style.display = !isActive ? 'block' : 'none';
+      });
+    });
+  });
+</script>
