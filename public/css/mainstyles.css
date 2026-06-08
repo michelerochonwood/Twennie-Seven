@@ -9626,8 +9626,7 @@ overflow: visible;
 
 .feature-week-pullquote {
   margin: 2rem 0;
-  padding: 2rem;
-  border-left: 6px solid #da1c6c;
+  border-left: 6px solid #dc176a;
   border-radius: 18px;
   background: rgba(78, 80, 162, 0.06);
 }
