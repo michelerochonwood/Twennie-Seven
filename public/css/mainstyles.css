@@ -9664,7 +9664,7 @@ overflow: visible;
   border-left: 6px solid #dc176a;
   border-radius: 18px;
   background: rgba(78, 80, 162, 0.06);
-  padding: 5%;
+  padding: 1rem;
 }
 
 .feature-week-pullquote p {
