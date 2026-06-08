@@ -9730,3 +9730,23 @@ overflow: visible;
     align-items: flex-start;
   }
 }
+
+
+.feature-week-byline {
+  font-size: 1.15rem;
+  color: #666;
+  font-style: italic;
+  margin-bottom: 2rem;
+}
+
+.feature-week-article h3 {
+  color: #30327d;
+  font-size: 1.6rem;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.feature-week-article p {
+  margin-bottom: 1.25rem;
+}
