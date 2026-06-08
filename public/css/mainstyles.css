@@ -9592,6 +9592,41 @@ overflow: visible;
   align-items: start;
 }
 
+.feature-week-author {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+.feature-week-author-image {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.feature-week-author-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: #888;
+  margin-bottom: 0.25rem;
+}
+
+.feature-week-author-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #30327d;
+}
+
 .feature-week-content {
   display: flex;
   flex-direction: column;
