@@ -23,33 +23,27 @@
 
     <!-- Document Viewing Section (gated) -->
     <!-- Document Viewing Section (gated + protected download route) -->
-    {{#if isAuthorizedToViewFullContent}}
-      {{#if document_uploads}}
-        <div class="single_exercise-download">
-          <div class="single_exercise-download-icon">
-            <!-- SVG icon omitted for brevity -->
-          </div>
+{{#if isAuthorizedToViewFullContent}}
+  {{#if primaryDocument}}
+    <div class="single_exercise-download">
+      <div class="single_exercise-download-icon">
+        <!-- SVG icon omitted for brevity -->
+      </div>
 
-          <div class="single_exercise-documents" id="exerciseDocs-{{_id}}">
-            {{#each document_uploads}}
-
-              {{#if (eq this.fileType "pdf")}}
-                <a
-                  href="/unitviews/exercises/{{../_id}}/download/{{this.fileRole}}"
-                  class="single_exercise-download-btn"
-                >
-                  Download PDF
-                  {{#if this.filename}}
-                    — {{this.filename}}
-                  {{/if}}
-                </a>
-              {{/if}}
-
-            {{/each}}
-          </div>
-        </div>
-      {{/if}}
-    {{/if}}
+      <div class="single_exercise-documents" id="exerciseDocs-{{_id}}">
+        <a
+          href="/unitviews/exercises/{{_id}}/download/{{primaryDocument.fileRole}}"
+          class="single_exercise-download-btn"
+        >
+          Download PDF
+          {{#if primaryDocument.filename}}
+            — {{primaryDocument.filename}}
+          {{/if}}
+        </a>
+      </div>
+    </div>
+  {{/if}}
+{{/if}}
 
     <!-- Leader Assignment Form -->
 <!-- Leader Assignment Form - always visible for leaders -->
