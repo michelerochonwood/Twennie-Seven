@@ -121,6 +121,10 @@ router.get('/privacypolicy', (req, res) => {
   res.render('promo_views/privacypolicy', { layout: 'mainlayout' });
 });
 
+router.get('/featureweek', (req, res) => {
+  res.render('promo_views/feature_week', { layout: 'mainlayout' });
+});
+
 // ------------------------------------------------------------
 // Terms & Conditions
 // ------------------------------------------------------------
