@@ -32,15 +32,15 @@
 <div class="form-field">
   <label for="video-content">Videos should be a minimum of 3 minutes, maximum 20 minutes.</label>
 
-  <p class="form-help-text" style="margin-top: 0.5rem; font-size: 0.85rem; color: #555;">
-    <strong>Important:</strong> Upload your video to a personal or team YouTube channel and set the visibility to <strong>"Unlisted"</strong>.
-    This ensures your video is not public on YouTube but can still be viewed by Twennie members based on the visibility level you've set. 
-    <a href="https://support.google.com/youtube/answer/157177" target="_blank" rel="noopener noreferrer" style="color:#4a4ab2; text-decoration: underline;">
-      Learn how to change YouTube visibility settings
-    </a>.
-  </p>
+<p class="form-help-text" style="margin-top: 0.5rem; font-size: 0.85rem; color: #555;">
+  <strong>Important:</strong> We recommend uploading your video to a personal or team YouTube channel and setting the visibility to <strong>"Unlisted"</strong>. This ensures your video is not publicly searchable on YouTube but can still be viewed by Twennie members based on the visibility level you've selected.
+  <a href="https://support.google.com/youtube/answer/157177" target="_blank" rel="noopener noreferrer" style="color:#4a4ab2; text-decoration: underline;">
+    Learn how to change YouTube visibility settings
+  </a>.
+  If you prefer not to use YouTube, Twennie also supports videos hosted on <strong>Vimeo</strong>, <strong>Cloudinary</strong>, and <strong>Wistia</strong>. Simply paste the video URL into the field below.
+</p>
 
-  <textarea id="video-content" name="video_content" rows="25" placeholder="Paste your unlisted YouTube link here." required>{{data.video_content}}</textarea>
+  <textarea id="video-content" name="video_content" rows="25" placeholder="Paste your video link here." required>{{data.video_content}}</textarea>
 </div>
 
       <!-- Toggles -->
