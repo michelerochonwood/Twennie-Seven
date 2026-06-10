@@ -1185,14 +1185,12 @@ const viewGroupProfile = async (req, res) => {
       topics.topic2 = topics.topic2 || "";
       topics.topic3 = topics.topic3 || "";
   
-      const updateFields = {
-        groupName: req.body.groupName,
-        organization: req.body.organization || "No Organization Provided",
-        biography: req.body.biography || "No biography available.",
-        goals: req.body.goals || "No goals set.",
-        topics
-      };
-  
+const updateFields = {
+  groupName: req.body.groupName,
+  biography: req.body.biography || "No biography available.",
+  goals: req.body.goals || "No goals set.",
+  topics
+};
       // ✅ Cloudinary upload if valid image file
       if (req.file && req.file.mimetype.startsWith("image/")) {
         const buffer = req.file.buffer;
@@ -1212,7 +1210,6 @@ const viewGroupProfile = async (req, res) => {
         {
           $set: {
             groupName: updateFields.groupName,
-            organization: updateFields.organization,
             biography: updateFields.biography,
             goals: updateFields.goals,
             topics: updateFields.topics,
@@ -1233,7 +1230,6 @@ const viewGroupProfile = async (req, res) => {
         {
           $set: {
             groupName: updateFields.groupName,
-            organization: updateFields.organization,
             biography: updateFields.biography,
             groupGoals: updateFields.goals,
             groupTopics: updateFields.topics,
