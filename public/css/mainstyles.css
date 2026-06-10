@@ -9795,3 +9795,54 @@ overflow: visible;
   opacity: 1;
   transform: translateY(0);
 }
+
+
+/* === ASK TWENNIE AI PAGE === */
+
+.ask-twennie-page {
+  margin-top: 4rem;
+}
+
+.ask-twennie-hero {
+  background:
+    radial-gradient(circle at 18% 25%, rgba(78, 80, 162, 0.18), transparent 45%),
+    radial-gradient(circle at 82% 72%, rgba(220, 23, 106, 0.14), transparent 55%),
+    linear-gradient(145deg, rgba(246, 246, 248, 0.96), rgba(255, 255, 255, 1));
+}
+
+.ask-twennie-hero-image-frame {
+  background: #f4f6ff;
+}
+
+.ask-twennie-timeline {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 2rem;
+}
+
+.ask-twennie-timeline-item {
+  padding: 1.5rem;
+  border-radius: 20px;
+  background: #f4f6ff;
+  border-left: 5px solid #4e50a2;
+  box-shadow: 0 10px 24px rgba(41, 49, 102, 0.06);
+}
+
+.ask-twennie-timeline-item span {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  color: #dc176a;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.ask-twennie-timeline-item h3 {
+  margin-top: 0;
+  color: #30327d;
+}
+
+.ask-twennie-timeline-item p {
+  margin-bottom: 0;
+}
