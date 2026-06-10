@@ -9796,6 +9796,26 @@ overflow: visible;
   transform: translateY(0);
 }
 
+.feature-week-video-container {
+  width: 100%;
+  margin-top: 1.5rem;
+}
+
+.feature-week-video {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+}
+
+.feature-week-video-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 1.5rem auto 0;
+}
+
 
 /* === ASK TWENNIE AI PAGE === */
 
@@ -9974,3 +9994,4 @@ overflow: visible;
     padding: 34px 22px;
   }
 }
+
