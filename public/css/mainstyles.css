@@ -9846,3 +9846,75 @@ overflow: visible;
 .ask-twennie-timeline-item p {
   margin-bottom: 0;
 }
+
+
+
+/* =========================
+   ASK TWENNIE STRIP ON LATEST PAGE
+   ========================= */
+
+.ask-latest-featured-row {
+  width: min(78vw, 1220px);
+  margin: 4rem auto;
+}
+
+.ask-latest-featured-row .latest-featured-main {
+  padding: 2.5rem;
+}
+
+.ask-latest-featured-row .latest-featured-title {
+  max-width: 100%;
+}
+
+.ask-latest-featured-row .latest-featured-grid {
+  gap: 1.75rem;
+}
+
+.ask-latest-featured-row .latest-featured-content-row {
+  grid-template-columns: 260px 1fr;
+  align-items: center;
+}
+
+.ask-latest-featured-row .latest-featured-image-frame {
+  box-shadow: none;
+  background: transparent;
+}
+
+.ask-latest-featured-row .latest-featured-main-image {
+  max-width: 240px;
+  margin: 0 auto;
+  object-fit: contain;
+}
+
+.ask-latest-featured-row .latest-featured-author-row {
+  justify-content: center;
+}
+
+@media (max-width: 900px) {
+  .ask-latest-featured-row {
+    width: min(92vw, 1220px);
+  }
+
+  .ask-latest-featured-row .latest-featured-content-row {
+    grid-template-columns: 1fr;
+  }
+
+  .ask-latest-featured-row .latest-featured-main-image {
+    max-width: 220px;
+  }
+}
+
+@media (max-width: 600px) {
+  .ask-latest-featured-row .latest-featured-main {
+    padding: 1.75rem;
+  }
+
+  .ask-latest-featured-row .latest-featured-author-row {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .ask-latest-featured-row .latest-featured-divider {
+    display: none;
+  }
+}
