@@ -7,93 +7,102 @@
       class="bookdemo-hero-image"
     >
 
-    <h1 class="bookdemo-title">book a demo</h1>
+<h1 class="bookdemo-title">book a demo</h1>
 
-    <p class="bookdemo-intro">
-      Curious whether Twennie is right for your team?
-    </p>
+<p class="bookdemo-intro">
+  Curious whether Twennie is right for you, your group, or your organization?
+</p>
 
-    <p class="bookdemo-description">
-      During this demo, we'll explore your organization's challenges, learning goals,
-      business development priorities, project management needs, and team structure.
-      You'll see how Twennie works and discuss whether it is a good fit for your
-      organization.
-    </p>
+<p class="bookdemo-description">
+  During this conversation, we'll learn about your goals, challenges, and priorities,
+  demonstrate the areas of Twennie most relevant to your needs, and answer any
+  questions you may have.
+</p>
+
+
   </div>
 
   <div class="bookdemo-info-card">
     <h3>what to expect</h3>
 
-    <ul>
-      <li>30–45 minute virtual meeting</li>
-      <li>Overview of the Twennie platform</li>
-      <li>Discussion of your organization's goals and challenges</li>
-      <li>Questions and answers</li>
-      <li>No obligation and no sales pressure</li>
-    </ul>
+
+<ul>
+  <li>30-60 minute virtual meeting</li>
+  <li>Overview of the Twennie platform</li>
+  <li>Discussion of your goals and challenges</li>
+  <li>Questions and answers</li>
+</ul>
+
+<p class="bookdemo-note">
+  <strong>Only your name and email address are required.</strong>
+  All other fields are optional.
+</p>
+
+
   </div>
 
   <form action="/demo/book-a-demo" method="POST" class="bookdemo-form">
 
-    <input type="hidden" name="_csrf" value="{{csrfToken}}">
 
-    <div class="bookdemo-field">
-      <label for="name" class="bookdemo-label">your name</label>
-      <input type="text" id="name" name="name" class="bookdemo-input" required>
-    </div>
+<input type="hidden" name="_csrf" value="{{csrfToken}}">
 
-    <div class="bookdemo-field">
-      <label for="email" class="bookdemo-label">email address</label>
-      <input type="email" id="email" name="email" class="bookdemo-input" required>
-    </div>
+<div class="bookdemo-field">
+  <label for="name" class="bookdemo-label">
+    your name <span class="required">*</span>
+  </label>
+  <input type="text" id="name" name="name" class="bookdemo-input" required>
+</div>
 
-    <div class="bookdemo-field">
-      <label for="organization" class="bookdemo-label">organization</label>
-      <input type="text" id="organization" name="organization" class="bookdemo-input">
-    </div>
+<div class="bookdemo-field">
+  <label for="email" class="bookdemo-label">
+    email address <span class="required">*</span>
+  </label>
+  <input type="email" id="email" name="email" class="bookdemo-input" required>
+</div>
 
-    <div class="bookdemo-field">
-      <label for="jobTitle" class="bookdemo-label">job title</label>
-      <input type="text" id="jobTitle" name="jobTitle" class="bookdemo-input">
-    </div>
+<div class="bookdemo-field">
+  <label for="organization" class="bookdemo-label">
+    organization (optional)
+  </label>
+  <input type="text" id="organization" name="organization" class="bookdemo-input">
+</div>
 
-    <div class="bookdemo-field">
-      <label for="teamSize" class="bookdemo-label">team size</label>
-      <select id="teamSize" name="teamSize" class="bookdemo-select">
-        <option value="">Select one</option>
-        <option>1-10</option>
-        <option>11-25</option>
-        <option>26-50</option>
-        <option>51-100</option>
-        <option>101-250</option>
-        <option>250+</option>
-      </select>
-    </div>
+<div class="bookdemo-field">
+  <label for="jobTitle" class="bookdemo-label">
+    job title (optional)
+  </label>
+  <input type="text" id="jobTitle" name="jobTitle" class="bookdemo-input">
+</div>
 
-    <div class="bookdemo-field">
-      <label for="interestArea" class="bookdemo-label">what would you like to discuss?</label>
-      <select id="interestArea" name="interestArea" class="bookdemo-select">
-        <option value="">Select one</option>
-        <option>Project Management</option>
-        <option>Business Development</option>
-        <option>Leadership Development</option>
-        <option>Proposal Management</option>
-        <option>Technical Communication</option>
-        <option>Custom Organizational Portal</option>
-        <option>General Overview</option>
-      </select>
-    </div>
+<div class="bookdemo-field">
+  <label for="teamSize" class="bookdemo-label">
+    group size (optional)
+  </label>
+  <select id="teamSize" name="teamSize" class="bookdemo-select">
+    <option value="">Select one</option>
+    <option>individual</option>
+    <option>1-10</option>
+    <option>11-25</option>
+    <option>26-50</option>
+    <option>51-100</option>
+    <option>101-250</option>
+    <option>250+</option>
+  </select>
+</div>
 
-    <div class="bookdemo-field">
-      <label for="message" class="bookdemo-label">
-        tell us a little about your goals or challenges
-      </label>
-      <textarea id="message" name="message" rows="6" maxlength="2000" class="bookdemo-textarea"></textarea>
-    </div>
 
-    <button type="submit" class="bookdemo-submit">
-      request a demo
-    </button>
+
+<div class="bookdemo-field">
+  <label for="message" class="bookdemo-label">
+    additional information (optional)
+  </label>
+  <textarea id="message" name="message" rows="6" maxlength="2000" class="bookdemo-textarea"></textarea>
+</div>
+
+<button type="submit" class="bookdemo-submit">
+  request a demo
+</button>
+
 
   </form>
 
