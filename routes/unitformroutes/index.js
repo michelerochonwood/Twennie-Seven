@@ -59,7 +59,7 @@ const mainTopics = [
   'Integrated Project Delivery or IPD',
   'Leadership in Technical Consulting',
   'Leading Change',
-  'Leading Groups on Twennie',
+  'Leading Groups and Creating Content on Twennie',
   'Making a Proposal Easy to Read, Skim, and Evaluate',
   'Making Safety a Part of Your Culture',
   'Managing Scope So It Doesnt Manage You',

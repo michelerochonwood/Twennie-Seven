@@ -34,10 +34,6 @@ const demoRequestSchema = new mongoose.Schema(
       trim: true
     },
 
-    interestArea: {
-      type: String,
-      trim: true
-    },
 
     message: {
       type: String,
