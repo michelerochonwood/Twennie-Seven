@@ -125,6 +125,10 @@ router.get('/feature_week', (req, res) => {
   res.render('promo_views/feature_week', { layout: 'mainlayout' });
 });
 
+router.get('/feature_week_complaints', (req, res) => {
+  res.render('promo_views/feature_week_complaints', { layout: 'mainlayout' });
+});
+
 router.get('/ask_twennie_ai', (req, res) => {
   res.render('promo_views/ask_twennie_ai', { layout: 'mainlayout' });
 });
