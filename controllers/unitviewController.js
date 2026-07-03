@@ -1571,8 +1571,8 @@ viewExercise: async (req, res) => {
     const { id } = req.params;
     console.log(`📘 Fetching exercise with ID: ${id}`);
 
-    // 1) Load the exercise
     const exercise = await Exercise.findById(id);
+
     if (!exercise) {
       return res.status(404).render('unit_views/error', {
         layout: 'unitviewlayout',
@@ -1581,9 +1581,9 @@ viewExercise: async (req, res) => {
       });
     }
 
-    // 2) Resolve author (creator) for sidebar
     const authorIdRaw = exercise.author?.id || exercise.author;
     const authorId = authorIdRaw ? authorIdRaw.toString() : null;
+
     if (!authorId) {
       return res.status(500).render('unit_views/error', {
         layout: 'unitviewlayout',
@@ -1594,7 +1594,6 @@ viewExercise: async (req, res) => {
 
     const creator = await resolveAuthorById(authorId);
 
-    // 3) Current user helpers
     const currentUserId = (req.user?._id || req.user?.id)?.toString();
     const currentMembership = req.user?.membershipType || null;
 
@@ -1604,75 +1603,37 @@ viewExercise: async (req, res) => {
 
     const isOwner = !!(currentUserId && authorId && currentUserId === authorId);
 
-    // 4) Access control
-    let authorOrg = null;
-    let authorGroupId = null;
-
-    const [authorAsLeader, authorAsGroupMember] = await Promise.all([
-      Leader.findById(authorId).select('_id organization').lean(),
-      GroupMember.findById(authorId).select('_id organization groupId').lean()
-    ]);
-
-    if (authorAsLeader) {
-      authorOrg = authorAsLeader.organization || null;
-      authorGroupId = authorAsLeader._id;
-    } else if (authorAsGroupMember) {
-      authorOrg = authorAsGroupMember.organization || null;
-      authorGroupId = authorAsGroupMember.groupId || null;
-    }
+    const { authorOrg, authorTeamId } = await getAuthorOrgTeam(authorId);
 
     let isAuthorizedToViewFullContent = false;
-    let isOrgMatch = false;
-    let isTeamMatch = false;
 
     if (exercise.visibility === 'all_members') {
       isAuthorizedToViewFullContent = true;
     } else {
-      isOrgMatch =
+      const isOrgMatch =
         exercise.visibility === 'organization_only' &&
         req.user?.organization &&
         authorOrg &&
-        req.user.organization === authorOrg;
+        String(req.user.organization) === String(authorOrg);
 
-      isTeamMatch =
+      const currentUserTeamId =
+        isLeader
+          ? req.user?._id || req.user?.id
+          : req.user?.groupId || req.user?.leader;
+
+      const isTeamMatch =
         exercise.visibility === 'team_only' &&
-        req.user?.groupId &&
-        authorGroupId &&
-        req.user.groupId.toString() === authorGroupId.toString();
+        currentUserTeamId &&
+        authorTeamId &&
+        String(currentUserTeamId) === String(authorTeamId);
 
       isAuthorizedToViewFullContent = isOwner || isOrgMatch || isTeamMatch;
     }
 
-    console.log('🔒 Access breakdown (exercise):', {
-      isOwner,
-      isOrgMatch,
-      isTeamMatch,
-      isAuthorizedToViewFullContent
-    });
+    const { groupMembers, leaderId, leaderName } = await getLeaderAssignContext(req);
 
-    // 5) Leader context for assignment UI
-    let groupMembers = [];
-    let leaderId = undefined;
-    let leaderName = undefined;
-
-    if (isLeader && currentUserId) {
-      const leaderDoc = await Leader.findById(currentUserId)
-        .select('_id groupLeaderName username')
-        .lean();
-
-      if (leaderDoc) {
-        groupMembers = await GroupMember.find({ groupId: leaderDoc._id })
-          .select('_id name')
-          .lean();
-        leaderId = leaderDoc._id.toString();
-        leaderName = leaderDoc.groupLeaderName || leaderDoc.username || 'You';
-      }
-    }
-
-    // 6) Org Admin suggestion context
     const adminSuggest = await buildOrgLeaderListForAdmin(req);
 
-    // 7) Normalize document uploads for the protected download view
     const rawDocs = Array.isArray(exercise.document_uploads)
       ? exercise.document_uploads.filter(Boolean)
       : exercise.document_uploads
@@ -1698,12 +1659,17 @@ viewExercise: async (req, res) => {
         }
 
         if (!filename) {
-          filename = `${exercise.exercise_title || 'exercise-download'}-${index + 1}`;
+          filename = `${exercise.exercise_title || 'exercise-download'}-${index + 1}.pdf`;
         }
 
         const lowerFilename = filename.toLowerCase();
+        const mimetype = String(doc?.mimetype || '').toLowerCase();
+        const fileType = String(doc?.fileType || '').toLowerCase();
+
         const isPdf =
           lowerFilename.endsWith('.pdf') ||
+          mimetype === 'application/pdf' ||
+          fileType === 'pdf' ||
           exercise.file_format === 'PDF' ||
           exercise.file_format === 'Mural';
 
@@ -1715,20 +1681,28 @@ viewExercise: async (req, res) => {
       })
       .filter(doc => doc.fileType === 'pdf');
 
-const isAssignedToCurrentUser = await isUserAssignedToUnit(req, exercise._id, 'exercise');
+    const primaryDocument = document_uploads[0] || null;
 
-    // 8) Render
+    const isAssignedToCurrentUser = await isUserAssignedToUnit(
+      req,
+      exercise._id,
+      'exercise'
+    );
+
     return res.render('unit_views/single_exercise', {
       layout: 'unitviewlayout',
 
       _id: exercise._id.toString(),
       unitType: 'exercise',
+
       exercise_title: exercise.exercise_title,
       short_summary: exercise.short_summary,
       full_summary: exercise.full_summary,
       time_required: exercise.time_required,
       file_format: exercise.file_format,
+
       document_uploads,
+      primaryDocument,
 
       creator: {
         name: creator?.name || 'Unknown Creator',
@@ -1747,7 +1721,7 @@ const isAssignedToCurrentUser = await isUserAssignedToUnit(req, exercise._id, 'e
       isGroupMember,
       isMember,
 
-      currentUserId: currentUserId,
+      currentUserId,
       isAssignedToCurrentUser,
 
       tagSuccess: req.query.tag === 'ok',
@@ -1757,6 +1731,7 @@ const isAssignedToCurrentUser = await isUserAssignedToUnit(req, exercise._id, 'e
       isGroupMemberOrLeaderOrMember: isLeader || isGroupMember || isMember,
 
       ...adminSuggest,
+
       suggestionSuccess: req.query.suggested === '1',
       suggestedUnitId: req.query.unitId || '',
       suggestedUnitType: req.query.unitType || '',
@@ -1770,6 +1745,7 @@ const isAssignedToCurrentUser = await isUserAssignedToUnit(req, exercise._id, 'e
 
   } catch (err) {
     console.error('💥 Error fetching exercise:', err.stack || err.message);
+
     return res.status(500).render('unit_views/error', {
       layout: 'unitviewlayout',
       title: 'Error',
