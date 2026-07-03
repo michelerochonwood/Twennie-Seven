@@ -62,13 +62,21 @@ console.log("🧠 Member ID:", req.user?._id || req.user?.id);
       progress.notes ??= [];
 
       // Track current prompt
-      const currentPrompt = progress.currentPromptIndex;
-      if (!progress.completedPrompts.includes(currentPrompt)) {
-        progress.completedPrompts.push(currentPrompt);
-      }
-      progress.notes.push(notes);
-      progress.currentPromptIndex += 1;
-      await progress.save();
+// Track current prompt
+const completedPromptNumber = progress.currentPromptIndex;
+
+if (!progress.completedPrompts.includes(completedPromptNumber)) {
+  progress.completedPrompts.push(completedPromptNumber);
+}
+
+progress.notes.push({
+  promptNumber: completedPromptNumber,
+  note: notes,
+  submittedAt: new Date()
+});
+
+progress.currentPromptIndex += 1;
+await progress.save();
 
       const remainingPrompts = 20 - progress.completedPrompts.length;
       const targetDate = registration?.targetCompletionDate?.toDateString?.() || 'not set';
@@ -93,6 +101,7 @@ console.log("🧠 Member ID:", req.user?._id || req.user?.id);
       return res.render('prompt_views/notessuccess', {
         layout: 'unitviewlayout',
         title: 'Notes Posted',
+        completedPromptNumber,
         remainingPrompts,
         targetDate,
         timeRemaining,
