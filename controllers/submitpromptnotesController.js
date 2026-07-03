@@ -69,11 +69,7 @@ if (!progress.completedPrompts.includes(completedPromptNumber)) {
   progress.completedPrompts.push(completedPromptNumber);
 }
 
-progress.notes.push({
-  promptNumber: completedPromptNumber,
-  note: notes,
-  submittedAt: new Date()
-});
+progress.notes.push(notes);
 
 progress.currentPromptIndex += 1;
 await progress.save();
