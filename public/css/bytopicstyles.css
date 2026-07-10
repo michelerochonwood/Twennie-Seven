@@ -933,7 +933,7 @@ html, body {
 }
 
 .success-title {
-  margin-top: 200px;
+  margin-top: 0;
   color: #262262;
   font-size: 24px;
   font-weight: bold;
@@ -1932,6 +1932,27 @@ overflow: visible;
   .latest-about-text {
     line-height: 1.7;
   }
+}
+
+
+
+
+/* Prompt Success Video */
+
+.success-video-display {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto 2.5rem;
+}
+
+.success-video {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 14px;
 }
 
 
