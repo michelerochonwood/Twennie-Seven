@@ -163,9 +163,19 @@
         </button>
       </form>
 
-      <p class="groupsection-org-text" style="text-align:center; margin-top: 1rem;">
-        Not correct? You can create a new organization instead.
-      </p>
+<p class="groupsection-org-text" style="text-align:center; margin-top: 1rem;">
+  Not correct? You can create a new organization instead.
+</p>
+
+<div class="groupsection-org-actions">
+  <button
+    type="button"
+    class="groupsection-org-addbtn"
+    id="show-org-form-dashboard"
+  >
+    create a different organization
+  </button>
+</div>
 
 <div class="groupsection-org-formwrap" id="org-formwrap-dashboard" hidden>
   {{> memberformpartials/organization_form}}
