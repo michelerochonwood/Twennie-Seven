@@ -92,8 +92,7 @@ await progress.save();
         await markPromptSetAsCompleted(memberId, promptSetId, progress.notes);
         return res.redirect(`/promptsetcomplete/success?promptSetId=${promptSetId}`);
       }
-
-const blueyVideo = `/videos/prompt-celebrations/bluey-explodes-${completedPromptNumber}.mp4`;
+const blueyVideo = `/prompt-celebrations/bluey-explodes-${completedPromptNumber}.mp4`;
 
       // ✅ Show regular success page for prompts 1–19
       return res.render('prompt_views/notessuccess', {
