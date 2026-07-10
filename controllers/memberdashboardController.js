@@ -216,7 +216,7 @@ const topicViewMappings = {
   'projectmanagement': 'single_topic_projectmgmt',
   'projectmanagementsoftware': 'single_topic_pmsoftware',
   'proposalmanagement': 'single_topic_proposalmgmt',
-  'Proposal Pricing Strategies': 'proposalpricingstrategies',
+  'proposalpricingstrategies': 'single_topic_pricing',
   'proposalstrategy': 'single_topic_proposalstrat',
   'pullmarketing': 'single_topic_pullmarketing',
   'pursuingtherightprojects': 'single_topic_pursuing',
@@ -277,22 +277,22 @@ async function getPromptSchedule(memberId, promptSetId) {
   targetDate = new Date(targetDate);
   const remainingDays = Math.max(0, Math.ceil((targetDate - today) / (1000 * 60 * 60 * 24)));
 
-  // Prompt0 + Prompts 1–20, to match group member logic
-  const totalPrompts = 21;
+// Prompt 0 is orientation and is not counted toward completion.
+const totalPrompts = 20;
 
-  const progress = await PromptSetProgress.findOne({ memberId, promptSetId: psId });
-  const completedCount = progress?.completedPrompts?.length || 0;
-  const remainingPrompts = Math.max(0, totalPrompts - completedCount);
+const progress = await PromptSetProgress.findOne({
+  memberId,
+  promptSetId: psId
+});
 
-  const spread = remainingPrompts > 0 ? Math.floor(remainingDays / remainingPrompts) : 0;
+const completedCount = Array.isArray(progress?.completedPrompts)
+  ? progress.completedPrompts.length
+  : 0;
 
-  return {
-    targetCompletionDate: targetDate.toDateString(),
-    recommendedCompletionDate: new Date(today.getTime() + spread * 24 * 60 * 60 * 1000).toDateString(),
-    remainingDays,
-    remainingPrompts,
-    spread
-  };
+const remainingPrompts = Math.max(
+  0,
+  totalPrompts - completedCount
+);
 }
 
 
@@ -386,47 +386,95 @@ const memberRegistrations = await PromptSetRegistration
   .find({ memberId: memberOid }) // <-- memberOid
   .populate('promptSetId');
 
-const TOTAL_PROMPTS = 21; // Prompt0 + 1..20
+const TOTAL_PROMPTS = 20;
 
 // Active prompt cards (exclude completed)
 // Active prompt cards (exclude completed)
 await Promise.all(
-  memberRegistrations.map(async (registration) => {
+  memberRegistrations.map(async registration => {
     const psId = toId(registration.promptSetId);
+
     const promptSetDoc =
-      registration.promptSetId && registration.promptSetId.promptset_title
+      registration.promptSetId &&
+      registration.promptSetId.promptset_title
         ? registration.promptSetId
         : await PromptSet.findById(psId);
 
-    if (!promptSetDoc) return;
+    if (!promptSetDoc) {
+      return;
+    }
 
-    // Exclude completed
-    const completed = await PromptSetCompletion.findOne({ memberId: memberOid, promptSetId: psId });
-    if (completed) return;
+    const [completionRecord, progress] = await Promise.all([
+      PromptSetCompletion.findOne({
+        memberId: memberOid,
+        promptSetId: psId
+      })
+        .select('_id completedAt earnedBadge')
+        .lean(),
 
-    const progress = await PromptSetProgress.findOne({ memberId: memberOid, promptSetId: psId });
-    const currentPromptIndex = Number.isInteger(progress?.currentPromptIndex) ? progress.currentPromptIndex : 0;
+      PromptSetProgress.findOne({
+        memberId: memberOid,
+        promptSetId: psId
+      }).lean()
+    ]);
+
+    const currentPromptIndex = Number.isInteger(progress?.currentPromptIndex)
+      ? progress.currentPromptIndex
+      : 0;
+
+    const completedPromptCount = Array.isArray(progress?.completedPrompts)
+      ? progress.completedPrompts.length
+      : 0;
+
+    /*
+      Prompt 20 is the final real prompt, so it must still display.
+
+      The set is complete when:
+      - a completion record exists;
+      - 20 required prompts are completed; or
+      - the index has advanced beyond Prompt 20.
+    */
+    const isCompleted =
+      Boolean(completionRecord) ||
+      completedPromptCount >= 20 ||
+      currentPromptIndex >= 21;
+
+    console.log(`Member prompt progress for ${psId}:`, {
+      currentPromptIndex,
+      completedPromptCount,
+      hasCompletionRecord: Boolean(completionRecord),
+      isCompleted
+    });
+
+    if (isCompleted) {
+      return;
+    }
 
     const headlineKey = `prompt_headline${currentPromptIndex}`;
-    const promptKey   = `Prompt${currentPromptIndex}`;
+    const promptKey = `Prompt${currentPromptIndex}`;
 
     registeredPromptSets.push({
-      registrationId: registration._id,
+      registrationId: registration._id.toString(),
       promptSetId: psId.toString(),
       promptSetTitle: promptSetDoc.promptset_title,
-      frequency: registration.frequency || promptSetDoc.suggested_frequency,
+      frequency:
+        registration.frequency ||
+        promptSetDoc.suggested_frequency,
       mainTopic: promptSetDoc.main_topic,
       purpose: promptSetDoc.purpose,
-      promptHeadline: promptSetDoc[headlineKey] || 'No headline found',
-      promptText:     promptSetDoc[promptKey]   || 'No prompt text found',
+      promptHeadline:
+        promptSetDoc[headlineKey] || 'No headline found',
+      promptText:
+        promptSetDoc[promptKey] || 'No prompt text found',
       promptIndex: currentPromptIndex,
 
-      // 🔑 Only consider “started” once Prompt 1 begins
+      // Only consider the set started once Prompt 1 begins.
       hasStarted: currentPromptIndex > 0
     });
 
-    // Schedule for this set
-    promptSchedules.push(await getPromptSchedule(id, psId));
+    promptSchedules.push(
+      await getPromptSchedule(id, psId)
+    );
   })
 );
 
@@ -477,7 +525,22 @@ const completedIds = new Set(
       // Progress row for THIS registration
       const prog = await PromptSetProgress.findOne({ memberId: memberOid, promptSetId: psId });  // <-- memberOid
       const completedCount = Array.isArray(prog?.completedPrompts) ? prog.completedPrompts.length : 0;
-      const progressPct = Math.round((completedCount / TOTAL_PROMPTS) * 100);
+
+      const currentPromptIndex = Number.isInteger(prog?.currentPromptIndex)
+  ? prog.currentPromptIndex
+  : 0;
+
+const progressIndicatesCompletion =
+  completedCount >= 20 ||
+  currentPromptIndex >= 21;
+
+if (progressIndicatesCompletion) {
+  return;
+}
+const progressPct = Math.min(
+  100,
+  Math.round((completedCount / TOTAL_PROMPTS) * 100)
+);
 
       // Insert once per prompt set
       if (!currentByPsId.has(String(psId))) {

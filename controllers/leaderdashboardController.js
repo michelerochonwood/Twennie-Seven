@@ -1195,50 +1195,75 @@ function isArchivedDashboardItem(tagId, unitId, assignedToId = null) {
             let promptSchedules = [];
             
             // ✅ Fetch prompt progress from the database instead of using session storage
-            await Promise.all(
-                leaderRegistrations.map(async (registration) => {
-                    const promptSet = await PromptSet.findById(registration.promptSetId);
-                    if (!promptSet) return;
-            
-                    const progress = await PromptSetProgress.findOne({ memberId: id, promptSetId: registration.promptSetId });
-            
-                    const currentPromptIndex = progress?.currentPromptIndex ?? 0; // ✅ Ensure first prompt is always 0
-            
-                    console.log(`Progress for promptSetId ${registration.promptSetId._id}: ${currentPromptIndex}`);
-            
-                    const headlineKey = `prompt_headline${currentPromptIndex}`;
-                    const promptKey = `Prompt${currentPromptIndex}`;
-            
-                    const isCompleted = progress?.completedPrompts?.length >= 21;
-            
-if (!isCompleted) {
-  const currentPromptIndex = progress?.currentPromptIndex ?? 0;
-  const headlineKey = `prompt_headline${currentPromptIndex}`;
-  const promptKey = `Prompt${currentPromptIndex}`;
+await Promise.all(
+  leaderRegistrations.map(async registration => {
+    const promptSet = await PromptSet.findById(registration.promptSetId);
 
-leaderPrompts.push({
-  registrationId: registration._id.toString(), // ✅ this is what the unregister route needs
-  promptSetId: registration.promptSetId._id.toString(),
-  promptSetTitle: promptSet.promptset_title,
-  frequency: registration.frequency,
-  mainTopic: promptSet.main_topic,
-  purpose: promptSet.purpose,
-  promptIndex: currentPromptIndex,
-  promptHeadline: promptSet[headlineKey] || "No headline found",
-  promptText: promptSet[promptKey] || "No prompt text found"
-});
+    if (!promptSet) {
+      return;
+    }
 
-}
+    const [progress, completionRecord] = await Promise.all([
+      PromptSetProgress.findOne({
+        memberId: id,
+        promptSetId: registration.promptSetId
+      }).lean(),
 
-            
-                    promptSchedules.push(await getLeaderPromptSchedule(id, registration.promptSetId));
-                })
-            );
-            
-            console.log("Leader Prompts Data:", JSON.stringify(leaderPrompts, null, 2));
-            console.log("Prompt schedules:", JSON.stringify(promptSchedules, null, 2));
-            
-            // ✅ Fetch prompt set progress from MongoDB (No session-based tracking)
+      PromptSetCompletion.findOne({
+        memberId: id,
+        promptSetId: registration.promptSetId
+      })
+        .select('_id')
+        .lean()
+    ]);
+
+    const currentPromptIndex = Number.isInteger(progress?.currentPromptIndex)
+      ? progress.currentPromptIndex
+      : 0;
+
+    const completedPromptCount = Array.isArray(progress?.completedPrompts)
+      ? progress.completedPrompts.length
+      : 0;
+
+    const isCompleted =
+      Boolean(completionRecord) ||
+      currentPromptIndex >= 21 ||
+      completedPromptCount >= 21;
+
+    console.log(
+      `Progress for promptSetId ${registration.promptSetId._id}:`,
+      {
+        currentPromptIndex,
+        completedPromptCount,
+        hasCompletionRecord: Boolean(completionRecord),
+        isCompleted
+      }
+    );
+
+    if (isCompleted) {
+      return;
+    }
+
+    const headlineKey = `prompt_headline${currentPromptIndex}`;
+    const promptKey = `Prompt${currentPromptIndex}`;
+
+    leaderPrompts.push({
+      registrationId: registration._id.toString(),
+      promptSetId: registration.promptSetId._id.toString(),
+      promptSetTitle: promptSet.promptset_title,
+      frequency: registration.frequency,
+      mainTopic: promptSet.main_topic,
+      purpose: promptSet.purpose,
+      promptIndex: currentPromptIndex,
+      promptHeadline: promptSet[headlineKey] || 'No headline found',
+      promptText: promptSet[promptKey] || 'No prompt text found'
+    });
+
+    promptSchedules.push(
+      await getLeaderPromptSchedule(id, registration.promptSetId)
+    );
+  })
+);
 
 
 

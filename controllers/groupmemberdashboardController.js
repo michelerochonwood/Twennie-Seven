@@ -408,10 +408,22 @@ async function getPromptSchedule(memberId, promptSetId) {
     const remainingDays = Math.max(0, Math.ceil((targetDate - today) / (1000 * 60 * 60 * 24)));
 
     // Use a constant so that it's clear this is the total number of prompts.
-    const totalPrompts = 21; // For Prompt0 plus Prompts 1–20
+// Prompt 0 is orientation and is not counted toward completion.
+const totalPrompts = 20;
 
-    const progress = await PromptSetProgress.findOne({ memberId, promptSetId });
-    const remainingPrompts = progress ? totalPrompts - progress.completedPrompts.length : totalPrompts;
+const progress = await PromptSetProgress.findOne({
+  memberId,
+  promptSetId
+});
+
+const completedPromptCount = Array.isArray(progress?.completedPrompts)
+  ? progress.completedPrompts.length
+  : 0;
+
+const remainingPrompts = Math.max(
+  0,
+  totalPrompts - completedPromptCount
+);
 
     const spread = remainingPrompts > 0 ? Math.floor(remainingDays / remainingPrompts) : 0;
 
@@ -697,57 +709,114 @@ console.log(`Total prompt sets found for member ${id}: ${memberRegistrations.len
             let groupmemberPrompts = [];
             let promptSchedules = [];
     
-            await Promise.all(
-                [...memberRegistrations, ...assignedPromptSets].map(async (registration) => {
-                    const promptSet = await PromptSet.findById(registration.promptSetId);
-                    if (!promptSet) return;
-            
-                    // Check if a completion record exists
-                    const completion = await PromptSetCompletion.findOne({ memberId: id, promptSetId: registration.promptSetId });
-                    if (completion) {
-                        completedPromptSets.push({
-                            promptSetTitle: promptSet.promptset_title,
-                            frequency: registration.frequency,
-                            mainTopic: promptSet.main_topic,
-                            completedAt: completion.completedAt ? new Date(completion.completedAt).toDateString() : "Unknown Date",
-                            badge: promptSet.badge
-                        });
-                    } else {
-                        // Process progress for current prompt sets
-                        const progress = await PromptSetProgress.findOne({ memberId: id, promptSetId: registration.promptSetId });
-                        const currentPromptIndex = progress?.currentPromptIndex ?? 0;
-            
-                        console.log(`Progress for promptSetId ${registration.promptSetId._id}: ${currentPromptIndex}`);
-            
-                        const headlineKey = `prompt_headline${currentPromptIndex}`;
-                        const promptKey = `Prompt${currentPromptIndex}`;
-                        // ✅ Fetch the leader first, before using it
-                        const leader = leaderDoc;
+await Promise.all(
+  [...memberRegistrations, ...assignedPromptSets].map(async registration => {
+    const promptSet = await PromptSet.findById(registration.promptSetId);
 
+    if (!promptSet) {
+      return;
+    }
 
-                        if (!leader) {
-                            console.error("❌ ERROR: Leader not found for leaderDoc:", leaderDoc?._id);
-                        } else {
-                            console.log("✅ Leader Found:", leader.groupLeaderName);
-                        }
-                        groupmemberPrompts.push({
-                            registrationId: registration._id,
-                            promptSetId: registration.promptSetId._id.toString(),
-                            promptSetTitle: promptSet.promptset_title,
-                            frequency: registration.frequency,
-                            mainTopic: promptSet.main_topic,
-                            purpose: promptSet.purpose,
-                            promptHeadline: promptSet[headlineKey] || "No headline found",
-                            promptText: promptSet[promptKey] || "No prompt text found",
-                            promptIndex: currentPromptIndex,
-                            leaderNotes: registration.leaderNotes || null, // Ensure leaderNotes is included,
-                            leaderName: leader ? leader.groupLeaderName : "Group Leader"
-                        });
-            
-                        promptSchedules.push(await getPromptSchedule(id, registration.promptSetId));
-                    }
-                })
-            );
+    const [completion, progress] = await Promise.all([
+      PromptSetCompletion.findOne({
+        memberId: id,
+        promptSetId: registration.promptSetId
+      }).lean(),
+
+      PromptSetProgress.findOne({
+        memberId: id,
+        promptSetId: registration.promptSetId
+      }).lean()
+    ]);
+
+    const currentPromptIndex = Number.isInteger(progress?.currentPromptIndex)
+      ? progress.currentPromptIndex
+      : 0;
+
+    const completedPromptCount = Array.isArray(progress?.completedPrompts)
+      ? progress.completedPrompts.length
+      : 0;
+
+    /*
+      Prompt 20 must still be allowed to display.
+
+      Therefore:
+      - completedPromptCount >= 20 means complete
+      - currentPromptIndex >= 21 means progress has moved beyond Prompt 20
+      - a completion record is the authoritative completion signal
+    */
+    const isCompleted =
+      Boolean(completion) ||
+      completedPromptCount >= 20 ||
+      currentPromptIndex >= 21;
+
+    console.log(
+      `Progress for promptSetId ${registration.promptSetId._id}:`,
+      {
+        currentPromptIndex,
+        completedPromptCount,
+        hasCompletionRecord: Boolean(completion),
+        isCompleted
+      }
+    );
+
+    if (isCompleted) {
+      if (completion) {
+        completedPromptSets.push({
+          promptSetTitle: promptSet.promptset_title,
+          frequency:
+            registration.frequency ||
+            promptSet.suggested_frequency,
+          mainTopic: promptSet.main_topic,
+          completedAt: completion.completedAt
+            ? new Date(completion.completedAt).toDateString()
+            : 'Unknown Date',
+          badge: completion.earnedBadge || promptSet.badge
+        });
+      }
+
+      return;
+    }
+
+    const headlineKey = `prompt_headline${currentPromptIndex}`;
+    const promptKey = `Prompt${currentPromptIndex}`;
+
+    const leader = leaderDoc;
+
+    if (!leader) {
+      console.error(
+        '❌ ERROR: Leader not found for leaderDoc:',
+        leaderDoc?._id
+      );
+    } else {
+      console.log('✅ Leader Found:', leader.groupLeaderName);
+    }
+
+    groupmemberPrompts.push({
+      registrationId: registration._id.toString(),
+      promptSetId: registration.promptSetId._id.toString(),
+      promptSetTitle: promptSet.promptset_title,
+      frequency:
+        registration.frequency ||
+        promptSet.suggested_frequency,
+      mainTopic: promptSet.main_topic,
+      purpose: promptSet.purpose,
+      promptHeadline:
+        promptSet[headlineKey] || 'No headline found',
+      promptText:
+        promptSet[promptKey] || 'No prompt text found',
+      promptIndex: currentPromptIndex,
+      leaderNotes: registration.leaderNotes || null,
+      leaderName: leader
+        ? leader.groupLeaderName
+        : 'Group Leader'
+    });
+
+    promptSchedules.push(
+      await getPromptSchedule(id, registration.promptSetId)
+    );
+  })
+);
             
             
     
