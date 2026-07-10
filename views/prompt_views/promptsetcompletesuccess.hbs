@@ -2,8 +2,7 @@
 
 <div class="promptset-complete-success-container">
 <video
-  class="bluey-home-cta"
-  style="width: 500px; margin: 0 auto; display: block;"
+  class="promptset-complete-video"
   autoplay
   muted
   playsinline
@@ -28,54 +27,68 @@
 </div>
 
 <script>
-  // Minimal confetti burst using canvas
-  const confettiCanvas = document.createElement('canvas');
-  confettiCanvas.id = 'confetti-canvas';
-  document.body.appendChild(confettiCanvas);
+  function startConfetti() {
+    const confettiCanvas = document.createElement('canvas');
+    confettiCanvas.id = 'confetti-canvas';
+    document.body.appendChild(confettiCanvas);
 
-  const ctx = confettiCanvas.getContext('2d');
-  confettiCanvas.width = window.innerWidth;
-  confettiCanvas.height = window.innerHeight;
+    const ctx = confettiCanvas.getContext('2d');
+    const colors = ['#4e50a2', '#dc176a', '#8dc63f', '#fbb040', '#00a4e4'];
+    const confetti = [];
 
-  const colors = ['#4e50a2', '#dc176a', '#8dc63f', '#fbb040', '#00a4e4'];
-  const confetti = [];
+    function resizeCanvas() {
+      confettiCanvas.width = window.innerWidth;
+      confettiCanvas.height = window.innerHeight;
+    }
 
-  for (let i = 0; i < 150; i++) {
-    confetti.push({
-      x: Math.random() * confettiCanvas.width,
-      y: Math.random() * confettiCanvas.height - confettiCanvas.height,
-      r: Math.random() * 6 + 4,
-      d: Math.random() * 150 + 50,
-      color: colors[Math.floor(Math.random() * colors.length)],
-      tilt: Math.random() * 10 - 10
-    });
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    for (let i = 0; i < 150; i++) {
+      confetti.push({
+        x: Math.random() * confettiCanvas.width,
+        y: Math.random() * confettiCanvas.height - confettiCanvas.height,
+        r: Math.random() * 6 + 4,
+        d: Math.random() * 150 + 50,
+        color: colors[Math.floor(Math.random() * colors.length)]
+      });
+    }
+
+    function update() {
+      confetti.forEach(piece => {
+        piece.y += Math.cos(piece.d / 15) + 2;
+        piece.x += Math.sin(piece.d / 15);
+
+        if (piece.y > confettiCanvas.height) {
+          piece.y = -10;
+          piece.x = Math.random() * confettiCanvas.width;
+        }
+      });
+    }
+
+    function draw() {
+      ctx.clearRect(
+        0,
+        0,
+        confettiCanvas.width,
+        confettiCanvas.height
+      );
+
+      confetti.forEach(piece => {
+        ctx.beginPath();
+        ctx.arc(piece.x, piece.y, piece.r, 0, Math.PI * 2);
+        ctx.fillStyle = piece.color;
+        ctx.fill();
+      });
+
+      update();
+      requestAnimationFrame(draw);
+    }
+
+    draw();
   }
 
-  function draw() {
-    ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-    confetti.forEach(p => {
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = p.color;
-      ctx.fill();
-    });
-
-    update();
-    requestAnimationFrame(draw);
-  }
-
-  function update() {
-    confetti.forEach(p => {
-      p.y += Math.cos(p.d / 15) + 2;
-      p.x += Math.sin(p.d / 15);
-      if (p.y > confettiCanvas.height) {
-        p.y = -10;
-        p.x = Math.random() * confettiCanvas.width;
-      }
-    });
-  }
-
-  draw();
+  window.setTimeout(startConfetti, 10000);
 </script>
 
 

@@ -1959,3 +1959,46 @@ overflow: visible;
 
 
 
+/* =================================
+   PROMPT SET COMPLETION SUCCESS PAGE
+   ================================= */
+
+.promptset-complete-success-container {
+  width: 90%;
+  max-width: 1100px;
+  margin: 50px auto;
+  padding: 20px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.promptset-complete-video {
+  display: block;
+  width: 100%;
+  max-width: 1000px;
+  height: auto;
+  margin: 0 auto 2.5rem;
+  border-radius: 14px;
+}
+
+/* Keep the text comfortably readable beneath the large video */
+.promptset-complete-success-title,
+.promptset-complete-success-subtitle,
+.promptset-complete-success-message,
+.promptset-complete-success-badge-container {
+  max-width: 650px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media screen and (max-width: 700px) {
+  .promptset-complete-success-container {
+    width: 94%;
+    padding: 15px;
+  }
+
+  .promptset-complete-video {
+    width: 100%;
+    border-radius: 10px;
+  }
+}
