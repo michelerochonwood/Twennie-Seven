@@ -93,10 +93,13 @@ await progress.save();
         return res.redirect(`/promptsetcomplete/success?promptSetId=${promptSetId}`);
       }
 
+const blueyVideo = `/videos/prompt-celebrations/bluey-explodes-${completedPromptNumber}.mp4`;
+
       // ✅ Show regular success page for prompts 1–19
       return res.render('prompt_views/notessuccess', {
         layout: 'unitviewlayout',
         title: 'Notes Posted',
+        blueyVideo,
         completedPromptNumber,
         remainingPrompts,
         targetDate,

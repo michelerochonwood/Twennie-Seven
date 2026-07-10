@@ -9111,3 +9111,18 @@ box-shadow: none !important;
   color: #777;
   font-style: italic;
 }
+
+
+
+.success-video-display {
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto 2rem;
+}
+
+.success-video {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 12px;
+}
