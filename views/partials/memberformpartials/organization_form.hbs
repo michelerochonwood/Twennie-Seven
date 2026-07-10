@@ -1,17 +1,20 @@
 <div id="org-create-panel" class="leader-form-container" hidden>
 
-  <h2 class="form-title" style="margin-top: 2rem;">create your organization</h2>
+  <h2 class="form-title org-create-title">create your organization</h2>
 
   {{#if orgErrorMessage}}
     <div class="alert alert-error">{{orgErrorMessage}}</div>
   {{/if}}
 
-  <form action="/leader/organization" method="POST" class="individual-membership-form" novalidate>
+  <form
+    action="/leader/organization"
+    method="POST"
+    class="individual-membership-form org-create-form"
+    novalidate
+  >
     {{#if csrfToken}}
       <input type="hidden" name="_csrf" value="{{csrfToken}}">
     {{/if}}
-
-    
 
     <div class="form-field">
       <label for="orgName">organization name</label>
@@ -26,17 +29,20 @@
       >
     </div>
 
-    <div class="form-field-industry">
+    <div class="form-field org-create-industry-field">
       <label for="orgIndustry">industry (optional)</label>
+
       <select id="orgIndustry" name="industry">
         <option value="">select (optional)</option>
         <option value="Engineering">Engineering</option>
         <option value="Architecture">Architecture</option>
         <option value="Project Management">Project Management</option>
-        <option value="Information Technology(IT)">Information Technology (IT)</option>
+        <option value="Information Technology (IT)">Information Technology (IT)</option>
         <option value="Web Design">Web Design</option>
         <option value="Construction">Construction</option>
-        <option value="Community Planning/Landscape Architecture">Community Planning/Landscape Architecture</option>
+        <option value="Community Planning/Landscape Architecture">
+          Community Planning/Landscape Architecture
+        </option>
         <option value="Land Development">Land Development</option>
         <option value="Edtech">Edtech</option>
         <option value="Other">Other</option>
@@ -45,17 +51,211 @@
 
     <div class="form-field">
       <label for="orgDomains">company email domains (optional)</label>
+
       <input
         id="orgDomains"
         name="domains"
         type="text"
         placeholder="e.g., toma.com, tomaengineering.ca"
       >
+
       <p class="form-instructions">
-        Optional. Comma-separated. You can add or change these later.
+        Optional. Enter multiple domains separated by commas. You can add or change these later.
       </p>
     </div>
 
-    <button type="submit" class="make-member-button">create organization</button>
+    <section class="org-topic-visibility-section">
+      <div class="org-topic-visibility-header">
+        <p class="org-topic-visibility-eyebrow">library access</p>
+
+        <h3 class="org-topic-visibility-title">
+          choose the topics your organization can access
+        </h3>
+
+        <p class="org-topic-visibility-description">
+          All topics are included by default. Switch off any categories you do not
+          want organization leaders and group members to access. These settings can
+          be changed later in the organization dashboard.
+        </p>
+      </div>
+
+      <div class="org-topic-toggle-list">
+
+        <div class="org-topic-toggle-row">
+          <div class="org-topic-toggle-copy">
+            <label for="topicProjectManagement" class="org-topic-toggle-label">
+              project management
+            </label>
+            <p class="org-topic-toggle-description">
+              Planning, scope, budgets, risk, quality, delivery, and project recovery.
+            </p>
+          </div>
+
+          <label class="org-topic-switch">
+            <input
+              id="topicProjectManagement"
+              type="checkbox"
+              name="topicVisibility[projectmanagement]"
+              value="true"
+              checked
+            >
+            <span class="org-topic-switch-slider" aria-hidden="true"></span>
+            <span class="sr-only">Allow access to project management topics</span>
+          </label>
+        </div>
+
+        <div class="org-topic-toggle-row">
+          <div class="org-topic-toggle-copy">
+            <label
+              for="topicBusinessDevelopment"
+              class="org-topic-toggle-label"
+            >
+              business development and marketing
+            </label>
+            <p class="org-topic-toggle-description">
+              Markets, clients, positioning, opportunity development, and marketing.
+            </p>
+          </div>
+
+          <label class="org-topic-switch">
+            <input
+              id="topicBusinessDevelopment"
+              type="checkbox"
+              name="topicVisibility[businessdevelopmentandmarketing]"
+              value="true"
+              checked
+            >
+            <span class="org-topic-switch-slider" aria-hidden="true"></span>
+            <span class="sr-only">
+              Allow access to business development and marketing topics
+            </span>
+          </label>
+        </div>
+
+        <div class="org-topic-toggle-row">
+          <div class="org-topic-toggle-copy">
+            <label for="topicProposals" class="org-topic-toggle-label">
+              proposals
+            </label>
+            <p class="org-topic-toggle-description">
+              Proposal planning, strategy, writing, pricing, reviews, and submissions.
+            </p>
+          </div>
+
+          <label class="org-topic-switch">
+            <input
+              id="topicProposals"
+              type="checkbox"
+              name="topicVisibility[proposals]"
+              value="true"
+              checked
+            >
+            <span class="org-topic-switch-slider" aria-hidden="true"></span>
+            <span class="sr-only">Allow access to proposal topics</span>
+          </label>
+        </div>
+
+        <div class="org-topic-toggle-row">
+          <div class="org-topic-toggle-copy">
+            <label for="topicPeopleManagement" class="org-topic-toggle-label">
+              people management
+            </label>
+            <p class="org-topic-toggle-description">
+              Leadership, delegation, feedback, performance, coaching, and team development.
+            </p>
+          </div>
+
+          <label class="org-topic-switch">
+            <input
+              id="topicPeopleManagement"
+              type="checkbox"
+              name="topicVisibility[peoplemanagement]"
+              value="true"
+              checked
+            >
+            <span class="org-topic-switch-slider" aria-hidden="true"></span>
+            <span class="sr-only">Allow access to people management topics</span>
+          </label>
+        </div>
+
+        <div class="org-topic-toggle-row">
+          <div class="org-topic-toggle-copy">
+            <label for="topicWorkplaceCulture" class="org-topic-toggle-label">
+              workplace culture
+            </label>
+            <p class="org-topic-toggle-description">
+              Communication, trust, collaboration, workplace behaviour, and team culture.
+            </p>
+          </div>
+
+          <label class="org-topic-switch">
+            <input
+              id="topicWorkplaceCulture"
+              type="checkbox"
+              name="topicVisibility[workplaceculture]"
+              value="true"
+              checked
+            >
+            <span class="org-topic-switch-slider" aria-hidden="true"></span>
+            <span class="sr-only">Allow access to workplace culture topics</span>
+          </label>
+        </div>
+
+        <div class="org-topic-toggle-row">
+          <div class="org-topic-toggle-copy">
+            <label for="topicTechnology" class="org-topic-toggle-label">
+              technology
+            </label>
+            <p class="org-topic-toggle-description">
+              Digital tools, systems, workflows, implementation, and technology adoption.
+            </p>
+          </div>
+
+          <label class="org-topic-switch">
+            <input
+              id="topicTechnology"
+              type="checkbox"
+              name="topicVisibility[technology]"
+              value="true"
+              checked
+            >
+            <span class="org-topic-switch-slider" aria-hidden="true"></span>
+            <span class="sr-only">Allow access to technology topics</span>
+          </label>
+        </div>
+
+        <div class="org-topic-toggle-row">
+          <div class="org-topic-toggle-copy">
+            <label for="topicAi" class="org-topic-toggle-label">
+              ai
+            </label>
+            <p class="org-topic-toggle-description">
+              Artificial intelligence tools, responsible use, workflows, and practical applications.
+            </p>
+          </div>
+
+          <label class="org-topic-switch">
+            <input
+              id="topicAi"
+              type="checkbox"
+              name="topicVisibility[ai]"
+              value="true"
+              checked
+            >
+            <span class="org-topic-switch-slider" aria-hidden="true"></span>
+            <span class="sr-only">Allow access to artificial intelligence topics</span>
+          </label>
+        </div>
+
+      </div>
+
+      <p class="org-topic-visibility-note">
+        Missions and nuggets are not affected by these settings.
+      </p>
+    </section>
+
+    <button type="submit" class="make-member-button org-create-submit-button">
+      create organization
+    </button>
   </form>
 </div>

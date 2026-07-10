@@ -1788,3 +1788,210 @@ html, body {
   padding: 0 20px;
   box-sizing: border-box;
 }
+
+
+
+/* ==================================================
+   ORGANIZATION CREATION — TOPIC VISIBILITY
+================================================== */
+
+.org-create-title {
+  margin-top: 2rem;
+}
+
+.org-create-form {
+  width: 100%;
+}
+
+.org-topic-visibility-section {
+  width: 80%;
+  margin: 1.5rem auto 0 auto;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  background: #f7f7fb;
+  border: 1px solid #d8d8ea;
+  border-radius: 16px;
+  font-family: "Figtree", sans-serif;
+  text-align: left;
+}
+
+.org-topic-visibility-header {
+  margin-bottom: 1.25rem;
+}
+
+.org-topic-visibility-eyebrow {
+  margin: 0 0 0.35rem 0;
+  color: #4e50a2;
+  font-family: "Figtree", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.org-topic-visibility-title {
+  margin: 0;
+  color: #262262;
+  font-family: "Figtree", sans-serif;
+  font-size: 1.3rem;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.org-topic-visibility-description {
+  margin: 0.75rem 0 0 0;
+  color: #555;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.org-topic-toggle-list {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border-top: 1px solid #d8d8ea;
+}
+
+.org-topic-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #d8d8ea;
+}
+
+.org-topic-toggle-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.org-topic-toggle-label {
+  display: block;
+  margin: 0;
+  color: #4e50a2;
+  font-family: "Figtree", sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.3;
+  cursor: pointer;
+}
+
+.org-topic-toggle-description {
+  margin: 0.3rem 0 0 0;
+  color: #555;
+  font-family: "Figtree", sans-serif;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+/* Sliding toggle wrapper */
+.org-topic-switch {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+  width: 3.5rem;
+  height: 2rem;
+  cursor: pointer;
+}
+
+/* Hide checkbox without triggering the global form input styles */
+.individual-membership-form
+.org-topic-switch
+input[type="checkbox"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.org-topic-switch-slider {
+  position: absolute;
+  inset: 0;
+  border: 1px solid #ccc;
+  border-radius: 999px;
+  background: #c9c9cf;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.org-topic-switch-slider::before {
+  content: "";
+  position: absolute;
+  top: 0.2rem;
+  left: 0.2rem;
+  width: 1.45rem;
+  height: 1.45rem;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 5px rgba(38, 34, 98, 0.22);
+  transition: transform 0.2s ease;
+}
+
+.org-topic-switch input:checked + .org-topic-switch-slider {
+  background: #4e50a2;
+  border-color: #4e50a2;
+}
+
+.org-topic-switch input:checked + .org-topic-switch-slider::before {
+  transform: translateX(1.5rem);
+}
+
+.org-topic-switch input:focus-visible + .org-topic-switch-slider {
+  outline: 3px solid rgba(78, 80, 162, 0.35);
+  outline-offset: 3px;
+}
+
+.org-topic-switch:hover .org-topic-switch-slider {
+  box-shadow: 0 0 0 4px rgba(78, 80, 162, 0.1);
+}
+
+.org-topic-visibility-note {
+  margin: 1rem 0 0 0;
+  color: #666;
+  font-family: "Figtree", sans-serif;
+  font-size: 0.85rem;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.org-create-submit-button {
+  margin-top: 1.5rem;
+}
+
+/* Accessible hidden text */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media screen and (max-width: 480px) {
+  .org-topic-visibility-section {
+    width: 90%;
+    padding: 1.25rem;
+  }
+
+  .org-topic-toggle-row {
+    gap: 1rem;
+  }
+
+  .org-topic-toggle-description {
+    font-size: 0.84rem;
+  }
+}

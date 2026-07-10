@@ -1,5 +1,47 @@
 const mongoose = require('mongoose');
 
+const topicVisibilitySchema = new mongoose.Schema(
+  {
+    projectmanagement: {
+      type: Boolean,
+      default: true
+    },
+
+    businessdevelopmentandmarketing: {
+      type: Boolean,
+      default: true
+    },
+
+    proposals: {
+      type: Boolean,
+      default: true
+    },
+
+    peoplemanagement: {
+      type: Boolean,
+      default: true
+    },
+
+    workplaceculture: {
+      type: Boolean,
+      default: true
+    },
+
+    technology: {
+      type: Boolean,
+      default: true
+    },
+
+    ai: {
+      type: Boolean,
+      default: true
+    }
+  },
+  {
+    _id: false
+  }
+);
+
 const organizationSchema = new mongoose.Schema(
   {
     name: {
@@ -32,9 +74,16 @@ const organizationSchema = new mongoose.Schema(
     isActive: {
       type: Boolean,
       default: true
+    },
+
+    topicVisibility: {
+      type: topicVisibilitySchema,
+      default: () => ({})
     }
   },
-  { timestamps: true }
+  {
+    timestamps: true
+  }
 );
 
 module.exports =
