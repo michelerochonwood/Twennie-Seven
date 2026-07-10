@@ -353,7 +353,27 @@
     }
   });
 })();
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const showButton = document.getElementById('show-org-form-dashboard');
+    const formWrapper = document.getElementById('org-formwrap-dashboard');
+
+    if (!showButton || !formWrapper) return;
+
+    showButton.addEventListener('click', () => {
+      const isHidden = formWrapper.hasAttribute('hidden');
+
+      if (isHidden) {
+        formWrapper.removeAttribute('hidden');
+        showButton.textContent = 'hide organization form';
+      } else {
+        formWrapper.setAttribute('hidden', '');
+        showButton.textContent = 'add my organization';
+      }
+    });
+  });
 </script>
+
 
 
   {{/if}}
