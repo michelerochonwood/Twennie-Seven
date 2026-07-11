@@ -9334,3 +9334,28 @@ input[type="checkbox"] {
     font-size: 0.84rem;
   }
 }
+
+
+.admin-topicvisibility-settings {
+  width: 100%;
+}
+
+.admin-topicvisibility-settings-actions {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 2rem;
+}
+
+.admin-topicvisibility-settings-submit {
+  margin: 0;
+}
+
+@media (max-width: 700px) {
+  .admin-topicvisibility-settings-actions {
+    display: block;
+  }
+
+  .admin-topicvisibility-settings-submit {
+    width: 100%;
+  }
+}

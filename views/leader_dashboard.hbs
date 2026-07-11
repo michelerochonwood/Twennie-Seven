@@ -66,6 +66,18 @@ data-panel="admin-requests"
     <div class="tab-arrow"></div>
   </button>
 
+    <button
+    class="dashboard-tab {{#if (eq adminTab "topicvisibility-settings")}}active{{/if}}"
+    type="button"
+    data-tab="organization-settings"
+    data-panel="admin-organization-settings"
+  >
+    <span class="tab-title">topic visibility settings</span>
+    <div class="tab-arrow"></div>
+  </button>
+
+
+
   <button
     class="dashboard-tab {{#if (eq adminTab "suggestions")}}active{{/if}}"
     type="button"
@@ -117,6 +129,13 @@ data-panel="admin-company-library"
           >
             {{> dashboardpartials/admin_groupsleaders }}
           </div>
+
+          <div
+  class="dashboard-tab-content admin-tab-content {{#if (eq adminTab "topicvisibility-settings")}}active{{/if}}"
+  id="admin-topicvisibility-settings"
+>
+  {{> dashboardpartials/admin_topicvisibility_settings }}
+</div>
 
           <div
             class="dashboard-tab-content admin-tab-content {{#if (eq adminTab "requests")}}active{{/if}}"
