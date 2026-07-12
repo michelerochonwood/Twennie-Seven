@@ -413,6 +413,9 @@ UnitSuggestion.countDocuments({
 }
 
 
+
+
+
 async function buildOrgLeaderLibraries(orgId) {
   const leaderFilter = { organization: orgId, organizationOptOut: { $ne: true } };
 
@@ -1271,7 +1274,9 @@ async function buildAdminPayload(orgId, adminId) {
   ] = await Promise.all([
     buildOrgSnapshot(orgId),
     buildOrgGroupsLeaders(orgId),
-    Organization.findById(orgId).select('name slug industry createdAt').lean(),
+    Organization.findById(orgId)
+  .select('name slug industry domains topicVisibility createdAt')
+  .lean(),
     buildAdminTeamEngagement(orgId),
 
     // TAB 4: learning suggestions
@@ -1286,6 +1291,12 @@ async function buildAdminPayload(orgId, adminId) {
       ]
     })
   ]);
+
+  const organizationDomains = Array.isArray(organization?.domains)
+  ? organization.domains.join(', ')
+  : '';
+
+
 
   const counts = orgSnapshot?.counts || {
     leaders: 0,
@@ -1365,29 +1376,31 @@ async function buildAdminPayload(orgId, adminId) {
     adminBadges[key] = val > last;
   }
 
-  return {
-    orgSnapshot,
+return {
+  orgSnapshot,
 
-    counts,
-    learningFootprint: orgSnapshot?.learningFootprint || {
-      activeLearners: 0,
-      unitsCompleted: 0,
-      promptSetsCompleted: 0,
-      avgCompletionsPerLearner: 0,
-      mostPopularTopic: '—'
-    },
-    pendingJoinRequestsList: orgSnapshot?.pendingJoinRequestsList || [],
+  counts,
+  learningFootprint: orgSnapshot?.learningFootprint || {
+    activeLearners: 0,
+    unitsCompleted: 0,
+    promptSetsCompleted: 0,
+    avgCompletionsPerLearner: 0,
+    mostPopularTopic: '—'
+  },
 
-    organization,
-    orgGroups,
-    adminTeamEngagementReports,
+  pendingJoinRequestsList:
+    orgSnapshot?.pendingJoinRequestsList || [],
 
-    adminCounts,
-    adminBadges
-  };
+  organization,
+  organizationDomains,
+  orgGroups,
+  adminTeamEngagementReports,
+
+  adminCounts,
+  adminBadges
+};
+
 }
-
-
 
 
 
@@ -1413,6 +1426,39 @@ const payload = await buildAdminPayload(orgId, adminId);
     return next(err);
   }
 },
+
+
+
+// =====================================================
+// Topic Visibility Settings
+// =====================================================
+async topicVisibilitySettings(req, res, next) {
+  try {
+    const orgId = await getOrgIdForAdmin(req);
+
+    if (!orgId) {
+      return res.redirect('/dashboard/leader');
+    }
+
+    const adminId = req.user?._id;
+    const payload = await buildAdminPayload(orgId, adminId);
+
+    return res.render('leader_dashboard', {
+      ...(await baseRenderData(req)),
+      adminTab: 'topicvisibility-settings',
+      ...payload
+    });
+  } catch (err) {
+    console.error(
+      'Org admin topicVisibilitySettings error:',
+      err
+    );
+
+    return next(err);
+  }
+},
+
+
 
 async groupsLeaders(req, res, next) {
   try {
