@@ -8,6 +8,7 @@ const createLearningController = require('../../controllers/createlearningContro
 const Member = require('../../models/member_models/member');
 const Leader = require('../../models/member_models/leader');
 const GroupMember = require('../../models/member_models/group_member');
+const topicsController = require('../../controllers/topicsController');
 
 // ✅ CSRF (needed for terms acceptance)
 const csrf = require('csurf');
