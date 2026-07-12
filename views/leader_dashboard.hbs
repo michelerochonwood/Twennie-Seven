@@ -56,6 +56,16 @@
   </button>
 
   <button
+  class="dashboard-tab {{#if (eq adminTab "topicvisibility-settings")}}active{{/if}}"
+  type="button"
+  data-tab="topicvisibility-settings"
+  data-panel="admin-topicvisibility-settings"
+>
+  <span class="tab-title">topic visibility settings</span>
+  <div class="tab-arrow"></div>
+</button>
+
+  <button
     class="dashboard-tab {{#if (eq adminTab "requests")}}active{{/if}}"
     type="button"
 data-tab="requests"
@@ -66,15 +76,6 @@ data-panel="admin-requests"
     <div class="tab-arrow"></div>
   </button>
 
-    <button
-    class="dashboard-tab {{#if (eq adminTab "topicvisibility-settings")}}active{{/if}}"
-    type="button"
-    data-tab="organization-settings"
-    data-panel="admin-organization-settings"
-  >
-    <span class="tab-title">topic visibility settings</span>
-    <div class="tab-arrow"></div>
-  </button>
 
 
 
