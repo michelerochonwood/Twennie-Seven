@@ -6,66 +6,75 @@ const topicAccessMap =
 /**
  * Extract topic names from a unit.
  *
- * This supports several possible field shapes until the
- * unit schemas are reviewed and standardized.
+ * Current Twennie unit records primarily use:
+ * - main_topic
+ * - secondary_topics
+ *
+ * Some older or future records may use other field names,
+ * so those are supported as fallbacks.
  */
 function getUnitTopicNames(unit = {}) {
-  const topics = [];
+  const topicNames = [];
 
-  const possibleValues = [
-    unit.topic,
-    unit.topicName,
-    unit.primaryTopic,
-    unit.secondaryTopic,
-    unit.topics
-  ];
-
-  for (const value of possibleValues) {
-    if (!value) continue;
+  function addTopic(value) {
+    if (!value) return;
 
     if (typeof value === 'string') {
-      topics.push(value);
-      continue;
+      const trimmed = value.trim();
+
+      if (trimmed) {
+        topicNames.push(trimmed);
+      }
+
+      return;
     }
 
     if (Array.isArray(value)) {
-      for (const item of value) {
-        if (typeof item === 'string') {
-          topics.push(item);
-        } else if (item?.name) {
-          topics.push(item.name);
-        } else if (item?.title) {
-          topics.push(item.title);
-        }
-      }
-
-      continue;
+      value.forEach(addTopic);
+      return;
     }
 
     if (typeof value === 'object') {
-      for (const item of Object.values(value)) {
-        if (typeof item === 'string') {
-          topics.push(item);
-        }
+      if (typeof value.name === 'string') {
+        addTopic(value.name);
+        return;
       }
+
+      if (typeof value.title === 'string') {
+        addTopic(value.title);
+        return;
+      }
+
+      Object.values(value).forEach(addTopic);
     }
   }
 
-  return [...new Set(
-    topics
-      .map(topic => topic.trim())
-      .filter(Boolean)
-  )];
+  // Current Twennie fields
+  addTopic(unit.main_topic);
+  addTopic(unit.secondary_topics);
+
+  // Fallback fields for older or differing schemas
+  addTopic(unit.topic);
+  addTopic(unit.topicName);
+  addTopic(unit.primaryTopic);
+  addTopic(unit.secondaryTopic);
+  addTopic(unit.topics);
+
+  return [
+    ...new Set(topicNames)
+  ];
 }
 
 /**
- * Temporary fail-open rule:
+ * Determine whether a unit should appear for the organization.
  *
- * - Units with no recognized mapped topics remain visible.
- * - A unit is hidden only when all recognized topic categories
- *   attached to it are disabled.
- * - If at least one recognized topic category is enabled,
- *   the unit remains visible.
+ * Temporary fail-open rules:
+ * - no recognized topic = visible
+ * - unmapped topic = visible
+ * - multi-topic unit remains visible when at least one mapped
+ *   topic belongs to an enabled category
+ * - unit is hidden only when all mapped topics belong to
+ *   disabled categories
  */
 function isUnitVisibleByTopic(
   unit,
@@ -77,7 +86,9 @@ function isUnitVisibleByTopic(
   const accessKeys = [
     ...new Set(
       topicNames
-        .map(topicName => topicAccessMap[topicName])
+        .map(topicName =>
+          topicAccessMap[topicName]
+        )
         .filter(Boolean)
     )
   ];
@@ -87,7 +98,8 @@ function isUnitVisibleByTopic(
   }
 
   return accessKeys.some(
-    key => topicVisibility[key] !== false
+    accessKey =>
+      topicVisibility[accessKey] !== false
   );
 }
 
