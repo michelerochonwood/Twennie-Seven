@@ -16,6 +16,12 @@ const orgadminController = require('../../controllers/orgadminController');
 // ------------------------------------------------------------
 router.get('/my-organization', ensureAuthenticated, requireOrgAdmin, orgadminController.myOrganization);
 router.get('/groups-leaders',  ensureAuthenticated, requireOrgAdmin, orgadminController.groupsLeaders);
+router.get(
+  '/topicvisibility-settings',
+  ensureAuthenticated,
+  requireOrgAdmin,
+  orgadminController.topicVisibilitySettings
+);
 router.get('/requests',        ensureAuthenticated, requireOrgAdmin, orgadminController.requests);
 router.get('/suggestions',     ensureAuthenticated, requireOrgAdmin, orgadminController.suggestions);
 router.get('/company-library', ensureAuthenticated, requireOrgAdmin, orgadminController.companyLibrary);
@@ -44,6 +50,14 @@ router.post(
   ensureAuthenticated,
   requireOrgAdmin,
   orgadminController.markAdminTabSeen
+);
+
+
+router.post(
+  '/topicvisibility-settings',
+  ensureAuthenticated,
+  requireOrgAdmin,
+  orgadminController.updateTopicVisibilitySettings
 );
 
 module.exports = router;
