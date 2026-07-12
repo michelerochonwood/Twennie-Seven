@@ -1,4 +1,8 @@
-<div class="topic-grid">
+<div
+  class="topic-grid {{#unless topicVisibility.proposals}}topic-category-locked{{/unless}}"
+  data-topic-category="proposals"
+  data-topic-open="{{topicVisibility.proposals}}"
+>
 
   <!-- Topic 1 -->
   <div class="single-topic-container">

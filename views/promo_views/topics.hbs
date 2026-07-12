@@ -163,3 +163,14 @@
     {{> topicpartials/topics_newtopic }}
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    document
+      .querySelectorAll('.topic-category-locked a')
+      .forEach(function (link) {
+        link.setAttribute('aria-disabled', 'true');
+        link.setAttribute('tabindex', '-1');
+      });
+  });
+</script>

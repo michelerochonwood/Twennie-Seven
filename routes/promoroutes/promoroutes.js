@@ -69,21 +69,10 @@ router.get('/avail_memberships', (req, res) => {
   res.render('promo_views/avail_memberships', { layout: 'mainlayout' });
 });
 
-router.get('/topics', (req, res) => {
-
-  const topicSignals = [
-    "Conducting Market Research",
-    "Proposal Strategy",
-    "Leadership in Technical Consulting",
-    "Managing Scope So It Doesnt Manage You"
-  ];
-
-  res.render('promo_views/topics', {
-    layout: 'mainlayout',
-    topicSignals
-  });
-
-});
+router.get(
+  '/topics',
+  topicsController.showTopics
+);
 
 router.get('/contributor_units', (req, res) => {
   res.render('promo_views/contributor_units', { layout: 'mainlayout' });
