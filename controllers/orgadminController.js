@@ -1458,7 +1458,92 @@ async topicVisibilitySettings(req, res, next) {
   }
 },
 
+// =====================================================
+// Update Topic Visibility Settings
+// =====================================================
+async updateTopicVisibilitySettings(req, res, next) {
+  const back =
+    '/dashboard/leader/org-admin/topicvisibility-settings';
 
+  try {
+    const orgId = await getOrgIdForAdmin(req);
+
+    if (!orgId) {
+      return res.redirect('/dashboard/leader');
+    }
+
+    const organization = await Organization.findById(orgId);
+
+    if (!organization) {
+      return res.redirect(`${back}?error=organization-not-found`);
+    }
+
+    const name = String(req.body?.name || '').trim();
+    const industry = String(req.body?.industry || '').trim();
+
+    if (!name) {
+      return res.redirect(`${back}?error=name-required`);
+    }
+
+    const domains = String(req.body?.domains || '')
+      .split(',')
+      .map(domain => domain.trim().toLowerCase())
+      .filter(Boolean);
+
+    const submittedVisibility =
+      req.body?.topicVisibility || {};
+
+    organization.name = name;
+    organization.industry = industry;
+    organization.domains = [...new Set(domains)];
+
+    organization.topicVisibility = {
+      projectmanagement:
+        submittedVisibility.projectmanagement === 'true',
+
+      businessdevelopmentandmarketing:
+        submittedVisibility.businessdevelopmentandmarketing === 'true',
+
+      proposals:
+        submittedVisibility.proposals === 'true',
+
+      peoplemanagement:
+        submittedVisibility.peoplemanagement === 'true',
+
+      workplaceculture:
+        submittedVisibility.workplaceculture === 'true',
+
+      technology:
+        submittedVisibility.technology === 'true',
+
+      ai:
+        submittedVisibility.ai === 'true'
+    };
+
+    await organization.save();
+
+    await Leader.updateMany(
+      {
+        organization: orgId,
+        organizationOptOut: { $ne: true }
+      },
+      {
+        $set: {
+          organizationName: organization.name
+        }
+      }
+    );
+
+    return res.redirect(`${back}?updated=true`);
+  } catch (err) {
+    console.error(
+      'Org admin updateTopicVisibilitySettings error:',
+      err
+    );
+
+    return next(err);
+  }
+},
 
 async groupsLeaders(req, res, next) {
   try {
