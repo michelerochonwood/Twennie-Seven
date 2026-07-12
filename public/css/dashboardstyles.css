@@ -1425,7 +1425,7 @@ html, body {
   color: #262262;
   margin-bottom: 1.45rem;
   text-align: center;
-  
+  margin-top: -40px;
 }
 
 /* Form */
@@ -1476,10 +1476,11 @@ html, body {
 }
 
 /* Instructions text */
-.form-instructions {
+.form-instructions-admintopicvisibility {
   margin-top: 0.65rem;
   font-size: 0.9rem;
   color: #555;
+  text-align: left;
 }
 
 /* Submit button */
