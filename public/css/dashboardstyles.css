@@ -1419,12 +1419,13 @@ html, body {
 }
 
 /* Title */
-.form-title {
+.form-title-admin-dashboard {
   font-size: clamp(1.5rem, 5vw, 2.3rem);
   font-weight: 800;
   color: #262262;
   margin-bottom: 1.45rem;
   text-align: center;
+  
 }
 
 /* Form */
