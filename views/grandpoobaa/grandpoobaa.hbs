@@ -1137,244 +1137,747 @@
 
 </div>
 
+{{!-- =================================================
+     TECH SUPPORT MODULE
+================================================== --}}
+<div
+  class="grand-poobaa-action-module"
+  data-grand-poobaa-module
+>
 
-      {{!-- =================================================
-           TECH SUPPORT MODULE
-      ================================================== --}}
-      <div
-        class="grand-poobaa-action-module"
-        data-grand-poobaa-module
-      >
+  <button
+    type="button"
+    class="grand-poobaa-action-card grand-poobaa-dropdown-trigger"
+    id="tech-support-trigger"
+    data-dropdown-trigger="tech-support-panel"
+    aria-expanded="false"
+    aria-controls="tech-support-panel"
+  >
 
-        <button
-          type="button"
-          class="grand-poobaa-action-card grand-poobaa-dropdown-trigger"
-          id="tech-support-trigger"
-          data-dropdown-trigger="tech-support-panel"
-          aria-expanded="false"
-          aria-controls="tech-support-panel"
-        >
+    <div class="grand-poobaa-action-card-top">
 
-          <div class="grand-poobaa-action-card-top">
-
-            <div class="grand-poobaa-action-icon">
-              <ion-icon name="construct-outline"></ion-icon>
-            </div>
-
-            <span class="grand-poobaa-action-count">
-              {{#if techSupportCount}}
-                {{techSupportCount}}
-              {{else}}
-                0
-              {{/if}}
-            </span>
-
-          </div>
-
-
-          <div class="grand-poobaa-action-card-copy">
-
-            <h3>tech support requests</h3>
-
-            <p>
-              Review problems and questions submitted by Twennie users.
-            </p>
-
-          </div>
-
-
-          <span class="grand-poobaa-action-link">
-
-            <span>review support requests</span>
-
-            <ion-icon
-              class="grand-poobaa-dropdown-arrow"
-              name="chevron-down-outline"
-            ></ion-icon>
-
-          </span>
-
-        </button>
-
-
-        <div
-          class="grand-poobaa-dropdown-panel grand-poobaa-placeholder-panel"
-          id="tech-support-panel"
-          data-dropdown-panel
-          aria-labelledby="tech-support-trigger"
-          hidden
-        >
-
-          <div class="grand-poobaa-dropdown-heading">
-
-            <div class="grand-poobaa-dropdown-heading-copy">
-
-              <p class="grand-poobaa-dropdown-kicker">
-                user support
-              </p>
-
-              <h3>tech support requests</h3>
-
-              <p>
-                The technical-support review tools will be added to this panel.
-              </p>
-
-            </div>
-
-
-            <button
-              type="button"
-              class="grand-poobaa-dropdown-close"
-              data-close-dropdown="tech-support-panel"
-              aria-label="Close tech support requests"
-            >
-              <ion-icon name="close-outline"></ion-icon>
-            </button>
-
-          </div>
-
-
-          {{!-- Tech support interface will be written later. --}}
-          <div class="grand-poobaa-panel-placeholder">
-
-            <ion-icon name="build-outline"></ion-icon>
-
-            <div>
-              <h4>panel ready for development</h4>
-
-              <p>
-                Support-request details, status controls, and responses will
-                appear here.
-              </p>
-            </div>
-
-          </div>
-
-        </div>
-
+      <div class="grand-poobaa-action-icon">
+        <ion-icon name="construct-outline"></ion-icon>
       </div>
 
-
-      {{!-- =================================================
-           ORGANIZATION JOIN REQUESTS MODULE
-      ================================================== --}}
-      <div
-        class="grand-poobaa-action-module"
-        data-grand-poobaa-module
-      >
-
-        <button
-          type="button"
-          class="grand-poobaa-action-card grand-poobaa-dropdown-trigger"
-          id="organization-requests-trigger"
-          data-dropdown-trigger="organization-requests-panel"
-          aria-expanded="false"
-          aria-controls="organization-requests-panel"
-        >
-
-          <div class="grand-poobaa-action-card-top">
-
-            <div class="grand-poobaa-action-icon">
-              <ion-icon name="business-outline"></ion-icon>
-            </div>
-
-            <span class="grand-poobaa-action-count">
-              {{#if joinRequestCount}}
-                {{joinRequestCount}}
-              {{else}}
-                0
-              {{/if}}
-            </span>
-
-          </div>
-
-
-          <div class="grand-poobaa-action-card-copy">
-
-            <h3>organization join requests</h3>
-
-            <p>
-              Review requests from leaders asking to join organizations.
-            </p>
-
-          </div>
-
-
-          <span class="grand-poobaa-action-link">
-
-            <span>review join requests</span>
-
-            <ion-icon
-              class="grand-poobaa-dropdown-arrow"
-              name="chevron-down-outline"
-            ></ion-icon>
-
-          </span>
-
-        </button>
-
-
-        <div
-          class="grand-poobaa-dropdown-panel grand-poobaa-placeholder-panel"
-          id="organization-requests-panel"
-          data-dropdown-panel
-          aria-labelledby="organization-requests-trigger"
-          hidden
-        >
-
-          <div class="grand-poobaa-dropdown-heading">
-
-            <div class="grand-poobaa-dropdown-heading-copy">
-
-              <p class="grand-poobaa-dropdown-kicker">
-                organization administration
-              </p>
-
-              <h3>organization join requests</h3>
-
-              <p>
-                The organization-request review tools will be added to this
-                panel.
-              </p>
-
-            </div>
-
-
-            <button
-              type="button"
-              class="grand-poobaa-dropdown-close"
-              data-close-dropdown="organization-requests-panel"
-              aria-label="Close organization join requests"
-            >
-              <ion-icon name="close-outline"></ion-icon>
-            </button>
-
-          </div>
-
-
-          {{!-- Organization request interface will be written later. --}}
-          <div class="grand-poobaa-panel-placeholder">
-
-            <ion-icon name="build-outline"></ion-icon>
-
-            <div>
-              <h4>panel ready for development</h4>
-
-              <p>
-                Join-request details, organization matches, and approval
-                actions will appear here.
-              </p>
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
+      <span class="grand-poobaa-action-count">
+        {{#if techSupportCount}}
+          {{techSupportCount}}
+        {{else}}
+          0
+        {{/if}}
+      </span>
 
     </div>
 
-  </section>
+
+    <div class="grand-poobaa-action-card-copy">
+
+      <h3>tech support</h3>
+
+      <p>
+        Review support activity and manage requests received through
+        info@twennie.com.
+      </p>
+
+    </div>
+
+
+    <span class="grand-poobaa-action-link">
+
+      <span>review support</span>
+
+      <ion-icon
+        class="grand-poobaa-dropdown-arrow"
+        name="chevron-down-outline"
+      ></ion-icon>
+
+    </span>
+
+  </button>
+
+
+  <div
+    class="grand-poobaa-dropdown-panel"
+    id="tech-support-panel"
+    data-dropdown-panel
+    aria-labelledby="tech-support-trigger"
+    hidden
+  >
+
+    <div class="grand-poobaa-dropdown-heading">
+
+      <div class="grand-poobaa-dropdown-heading-copy">
+
+        <p class="grand-poobaa-dropdown-kicker">
+          user support
+        </p>
+
+        <h3>tech support</h3>
+
+        <p>
+          Support requests are currently received and answered through
+          info@twennie.com. This panel can also retain a record of support
+          issues as the administrative system develops.
+        </p>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="grand-poobaa-dropdown-close"
+        data-close-dropdown="tech-support-panel"
+        aria-label="Close tech support"
+      >
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+
+    </div>
+
+
+    {{!-- CURRENT SUPPORT WORKFLOW --}}
+    <div class="grand-poobaa-support-workflow">
+
+      <div class="grand-poobaa-support-workflow-icon">
+        <ion-icon name="mail-outline"></ion-icon>
+      </div>
+
+
+      <div class="grand-poobaa-support-workflow-copy">
+
+        <p class="grand-poobaa-support-label">
+          current support inbox
+        </p>
+
+        <h4>info@twennie.com</h4>
+
+        <p>
+          Members send technical questions and problem reports to this
+          address. Replies and follow-up communication continue through email.
+        </p>
+
+      </div>
+
+
+      <a
+        href="mailto:info@twennie.com"
+        class="grand-poobaa-support-email-button"
+      >
+        <ion-icon name="mail-open-outline"></ion-icon>
+        email support inbox
+      </a>
+
+    </div>
+
+
+    {{!-- SAVED SUPPORT RECORDS --}}
+    {{#if techSupportRequests.length}}
+
+      <div class="grand-poobaa-support-records-heading">
+
+        <div>
+          <p class="grand-poobaa-support-label">
+            saved records
+          </p>
+
+          <h4>recent support activity</h4>
+        </div>
+
+        <span class="grand-poobaa-support-record-count">
+          {{techSupportCount}}
+          {{#if techSupportCount}}
+            records
+          {{else}}
+            record
+          {{/if}}
+        </span>
+
+      </div>
+
+
+      <div class="grand-poobaa-support-grid">
+
+        {{#each techSupportRequests}}
+
+          <article class="grand-poobaa-support-card">
+
+            <div class="grand-poobaa-support-card-header">
+
+              <div>
+
+                <h5>
+                  {{#if this.subject}}
+                    {{this.subject}}
+                  {{else}}
+                    support request
+                  {{/if}}
+                </h5>
+
+                <p>
+                  {{#if this.name}}
+                    {{this.name}}
+                  {{else}}
+                    Twennie member
+                  {{/if}}
+                </p>
+
+              </div>
+
+
+              {{#if this.isResolved}}
+
+                <span
+                  class="
+                    grand-poobaa-support-status
+                    grand-poobaa-support-status-resolved
+                  "
+                >
+                  <ion-icon name="checkmark-circle-outline"></ion-icon>
+                  resolved
+                </span>
+
+              {{else}}
+
+                <span
+                  class="
+                    grand-poobaa-support-status
+                    grand-poobaa-support-status-open
+                  "
+                >
+                  <ion-icon name="alert-circle-outline"></ion-icon>
+                  open
+                </span>
+
+              {{/if}}
+
+            </div>
+
+
+            <div class="grand-poobaa-support-meta">
+
+              <div>
+
+                <span class="grand-poobaa-support-label">
+                  email
+                </span>
+
+                {{#if this.email}}
+
+                  <a href="mailto:{{this.email}}">
+                    {{this.email}}
+                  </a>
+
+                {{else}}
+
+                  <span class="grand-poobaa-table-missing">
+                    no email recorded
+                  </span>
+
+                {{/if}}
+
+              </div>
+
+
+              <div>
+
+                <span class="grand-poobaa-support-label">
+                  received
+                </span>
+
+                {{#if this.createdAtDisplay}}
+
+                  <time datetime="{{this.createdAtISO}}">
+                    {{this.createdAtDisplay}}
+                  </time>
+
+                {{else}}
+
+                  <span class="grand-poobaa-table-missing">
+                    date unavailable
+                  </span>
+
+                {{/if}}
+
+              </div>
+
+            </div>
+
+
+            <div class="grand-poobaa-support-description">
+
+              <span class="grand-poobaa-support-label">
+                issue
+              </span>
+
+              {{#if this.description}}
+
+                <p>
+                  {{this.description}}
+                </p>
+
+              {{else}}
+
+                <p class="grand-poobaa-support-description-empty">
+                  No issue summary was recorded.
+                </p>
+
+              {{/if}}
+
+            </div>
+
+
+            <div class="grand-poobaa-support-actions">
+
+              {{#if this.email}}
+
+                <a
+                  href="mailto:{{this.email}}?subject=Twennie%20technical%20support"
+                  class="
+                    grand-poobaa-support-action-button
+                    grand-poobaa-support-action-button-email
+                  "
+                >
+                  <ion-icon name="mail-outline"></ion-icon>
+                  reply by email
+                </a>
+
+              {{/if}}
+
+            </div>
+
+          </article>
+
+        {{/each}}
+
+      </div>
+
+    {{else}}
+
+      <div class="grand-poobaa-support-empty">
+
+        <div class="grand-poobaa-support-empty-icon">
+          <ion-icon name="file-tray-outline"></ion-icon>
+        </div>
+
+        <div>
+
+          <h4>no saved support records</h4>
+
+          <p>
+            Technical support is currently handled through
+            info@twennie.com. A support-record model can be added later if
+            you decide that selected issues should also be retained here.
+          </p>
+
+        </div>
+
+      </div>
+
+    {{/if}}
+
+  </div>
+
+</div>
+
+
+{{!-- =================================================
+     NEW LIBRARY UNITS MODULE
+================================================== --}}
+<div
+  class="grand-poobaa-action-module"
+  data-grand-poobaa-module
+>
+
+  <button
+    type="button"
+    class="grand-poobaa-action-card grand-poobaa-dropdown-trigger"
+    id="new-library-units-trigger"
+    data-dropdown-trigger="new-library-units-panel"
+    aria-expanded="false"
+    aria-controls="new-library-units-panel"
+  >
+
+    <div class="grand-poobaa-action-card-top">
+
+      <div class="grand-poobaa-action-icon">
+        <ion-icon name="library-outline"></ion-icon>
+      </div>
+
+      <span class="grand-poobaa-action-count">
+        {{#if newLibraryUnitCount}}
+          {{newLibraryUnitCount}}
+        {{else}}
+          0
+        {{/if}}
+      </span>
+
+    </div>
+
+
+    <div class="grand-poobaa-action-card-copy">
+
+      <h3>new library units</h3>
+
+      <p>
+        Review recently added units from leaders, group members, and
+        individual contributors.
+      </p>
+
+    </div>
+
+
+    <span class="grand-poobaa-action-link">
+
+      <span>review new units</span>
+
+      <ion-icon
+        class="grand-poobaa-dropdown-arrow"
+        name="chevron-down-outline"
+      ></ion-icon>
+
+    </span>
+
+  </button>
+
+
+  <div
+    class="grand-poobaa-dropdown-panel"
+    id="new-library-units-panel"
+    data-dropdown-panel
+    aria-labelledby="new-library-units-trigger"
+    hidden
+  >
+
+    <div class="grand-poobaa-dropdown-heading">
+
+      <div class="grand-poobaa-dropdown-heading-copy">
+
+        <p class="grand-poobaa-dropdown-kicker">
+          content monitoring
+        </p>
+
+        <h3>new library units</h3>
+
+        <p>
+          Review the newest units added to the Twennie library, including
+          their authors, unit types, primary topics, and current status.
+        </p>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="grand-poobaa-dropdown-close"
+        data-close-dropdown="new-library-units-panel"
+        aria-label="Close new library units"
+      >
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+
+    </div>
+
+
+    {{#if newLibraryUnits.length}}
+
+      <div class="grand-poobaa-library-summary">
+
+        <div>
+
+          <p class="grand-poobaa-library-summary-label">
+            recently added
+          </p>
+
+          <strong>
+            {{newLibraryUnitCount}}
+          </strong>
+
+        </div>
+
+        <p>
+          These are the newest contributions currently available for review
+          across the Twennie library.
+        </p>
+
+      </div>
+
+
+      <div class="grand-poobaa-table-scroll">
+
+        <table
+          class="
+            grand-poobaa-table
+            grand-poobaa-library-table
+          "
+        >
+
+          <thead>
+            <tr>
+              <th scope="col">author</th>
+              <th scope="col">member type</th>
+              <th scope="col">unit type</th>
+              <th scope="col">title</th>
+              <th scope="col">main topic</th>
+              <th scope="col">status</th>
+              <th scope="col">added</th>
+              <th scope="col">unit</th>
+            </tr>
+          </thead>
+
+
+          <tbody>
+
+            {{#each newLibraryUnits}}
+
+              <tr>
+
+                {{!-- AUTHOR --}}
+                <td>
+
+                  <div class="grand-poobaa-table-person">
+
+                    <strong>
+                      {{#if this.author}}
+                        {{this.author}}
+                      {{else}}
+                        unknown author
+                      {{/if}}
+                    </strong>
+
+                    {{#if this.email}}
+                      <a href="mailto:{{this.email}}">
+                        {{this.email}}
+                      </a>
+                    {{/if}}
+
+                  </div>
+
+                </td>
+
+
+                {{!-- MEMBER TYPE --}}
+                <td>
+
+                  <div class="grand-poobaa-table-meta">
+
+                    <span>
+                      {{#if this.memberType}}
+                        {{this.memberType}}
+                      {{else}}
+                        contributor
+                      {{/if}}
+                    </span>
+
+                    {{#if this.groupName}}
+
+                      <small>
+                        {{this.groupName}}
+                      </small>
+
+                    {{else if this.organizationName}}
+
+                      <small>
+                        {{this.organizationName}}
+                      </small>
+
+                    {{else}}
+
+                      <small>
+                        independent
+                      </small>
+
+                    {{/if}}
+
+                  </div>
+
+                </td>
+
+
+                {{!-- UNIT TYPE --}}
+                <td>
+
+                  <span class="grand-poobaa-library-unit-type">
+
+                    {{#if (eq this.unitType "upcoming")}}
+
+                      upcoming
+
+                      {{#if this.plannedType}}
+                        <small>
+                          planned: {{this.plannedType}}
+                        </small>
+                      {{/if}}
+
+                    {{else}}
+
+                      {{this.unitType}}
+
+                    {{/if}}
+
+                  </span>
+
+                </td>
+
+
+                {{!-- TITLE --}}
+                <td class="grand-poobaa-library-title">
+
+                  <strong>
+                    {{#if this.title}}
+                      {{this.title}}
+                    {{else}}
+                      untitled unit
+                    {{/if}}
+                  </strong>
+
+                </td>
+
+
+                {{!-- MAIN TOPIC --}}
+                <td>
+
+                  {{#if this.mainTopic}}
+
+                    <span class="grand-poobaa-library-topic">
+                      {{this.mainTopic}}
+                    </span>
+
+                  {{else}}
+
+                    <span class="grand-poobaa-table-missing">
+                      no topic assigned
+                    </span>
+
+                  {{/if}}
+
+                </td>
+
+
+                {{!-- STATUS --}}
+                <td>
+
+                  {{#if (eq this.unitType "upcoming")}}
+
+                    <span
+                      class="
+                        grand-poobaa-library-status
+                        grand-poobaa-library-status-upcoming
+                      "
+                    >
+                      <ion-icon name="time-outline"></ion-icon>
+
+                      {{#if this.status}}
+                        {{this.status}}
+                      {{else}}
+                        in production
+                      {{/if}}
+                    </span>
+
+                  {{else}}
+
+                    <span
+                      class="
+                        grand-poobaa-library-status
+                        grand-poobaa-library-status-published
+                      "
+                    >
+                      <ion-icon name="checkmark-circle-outline"></ion-icon>
+
+                      {{#if this.status}}
+                        {{this.status}}
+                      {{else}}
+                        published
+                      {{/if}}
+                    </span>
+
+                  {{/if}}
+
+                </td>
+
+
+                {{!-- DATE ADDED --}}
+                <td>
+
+                  {{#if this.createdAtDisplay}}
+
+                    <time datetime="{{this.createdAtISO}}">
+                      {{this.createdAtDisplay}}
+                    </time>
+
+                  {{else}}
+
+                    <span class="grand-poobaa-table-missing">
+                      date unavailable
+                    </span>
+
+                  {{/if}}
+
+                </td>
+
+
+                {{!-- VIEW UNIT --}}
+                <td class="grand-poobaa-library-action">
+
+                  {{#if (eq this.unitType "upcoming")}}
+
+                    <a
+                      href="/unitviews/upcoming/view/{{this._id}}"
+                      class="grand-poobaa-library-view-button"
+                    >
+                      <ion-icon name="eye-outline"></ion-icon>
+                      view upcoming
+                    </a>
+
+                  {{else}}
+
+                    <a
+                      href="/unitviews/{{this.unitType}}s/view/{{this._id}}"
+                      class="grand-poobaa-library-view-button"
+                    >
+                      <ion-icon name="eye-outline"></ion-icon>
+                      view unit
+                    </a>
+
+                  {{/if}}
+
+                </td>
+
+              </tr>
+
+            {{/each}}
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    {{else}}
+
+      <div class="grand-poobaa-empty-state">
+
+        <div class="grand-poobaa-empty-icon">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+        </div>
+
+        <div>
+
+          <h4>no new library units</h4>
+
+          <p>
+            There are no recently added units waiting for review.
+          </p>
+
+        </div>
+
+      </div>
+
+    {{/if}}
+
+  </div>
+
+</div>
 
 
   {{!-- =====================================================
