@@ -1,7 +1,7 @@
 const express = require('express');
 
-const grandPoobaaController = require('../controllers/grandpoobaaController');
-const ensureGrandPoobaa = require('../middleware/ensureGrandPoobaa');
+const grandPoobaaController = require('../../controllers/grandpoobaaController');
+const ensureGrandPoobaa = require('../../middleware/ensureGrandPoobaa');
 
 const router = express.Router();
 
