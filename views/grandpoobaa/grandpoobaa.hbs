@@ -1,9 +1,17 @@
 <div class="grand-poobaa-page">
 
+  {{!-- =====================================================
+       PAGE HEADING
+  ====================================================== --}}
   <section class="grand-poobaa-page-heading">
-    <div>
-      <p class="grand-poobaa-eyebrow">Twennie administration</p>
+
+    <div class="grand-poobaa-page-heading-copy">
+      <p class="grand-poobaa-eyebrow">
+        Twennie administration
+      </p>
+
       <h1>grand poobaa dashboard</h1>
+
       <p class="grand-poobaa-page-intro">
         Review items requiring attention and manage activity across Twennie.
       </p>
@@ -11,571 +19,913 @@
 
     <div class="grand-poobaa-heading-date">
       <span>today</span>
-      <strong>{{currentDate}}</strong>
+
+      <strong>
+        {{#if currentDate}}
+          {{currentDate}}
+        {{else}}
+          —
+        {{/if}}
+      </strong>
     </div>
-  </section>
-
-
-  <section class="grand-poobaa-summary-grid">
-
-    <article class="grand-poobaa-summary-card">
-      <span class="grand-poobaa-summary-label">requires attention</span>
-      <strong class="grand-poobaa-summary-number">
-        {{#if totalActionItems}}{{totalActionItems}}{{else}}0{{/if}}
-      </strong>
-    </article>
-
-    <article class="grand-poobaa-summary-card">
-      <span class="grand-poobaa-summary-label">new today</span>
-      <strong class="grand-poobaa-summary-number">
-        {{#if newToday}}{{newToday}}{{else}}0{{/if}}
-      </strong>
-    </article>
-
-    <article class="grand-poobaa-summary-card">
-      <span class="grand-poobaa-summary-label">members</span>
-      <strong class="grand-poobaa-summary-number">
-        {{#if totalMembers}}{{totalMembers}}{{else}}0{{/if}}
-      </strong>
-    </article>
-
-    <article class="grand-poobaa-summary-card">
-      <span class="grand-poobaa-summary-label">organizations</span>
-      <strong class="grand-poobaa-summary-number">
-        {{#if totalOrganizations}}{{totalOrganizations}}{{else}}0{{/if}}
-      </strong>
-    </article>
 
   </section>
 
 
-  <section class="grand-poobaa-section">
+  {{!-- =====================================================
+       SUMMARY METRICS
+  ====================================================== --}}
+  <section
+    class="grand-poobaa-summary-grid"
+    aria-label="Platform summary"
+  >
+
+    <article class="grand-poobaa-summary-card">
+      <span class="grand-poobaa-summary-label">
+        requires attention
+      </span>
+
+      <strong class="grand-poobaa-summary-number">
+        {{#if totalActionItems}}
+          {{totalActionItems}}
+        {{else}}
+          0
+        {{/if}}
+      </strong>
+    </article>
+
+
+    <article class="grand-poobaa-summary-card">
+      <span class="grand-poobaa-summary-label">
+        new today
+      </span>
+
+      <strong class="grand-poobaa-summary-number">
+        {{#if newToday}}
+          {{newToday}}
+        {{else}}
+          0
+        {{/if}}
+      </strong>
+    </article>
+
+
+    <article class="grand-poobaa-summary-card">
+      <span class="grand-poobaa-summary-label">
+        members
+      </span>
+
+      <strong class="grand-poobaa-summary-number">
+        {{#if totalMembers}}
+          {{totalMembers}}
+        {{else}}
+          0
+        {{/if}}
+      </strong>
+    </article>
+
+
+    <article class="grand-poobaa-summary-card">
+      <span class="grand-poobaa-summary-label">
+        organizations
+      </span>
+
+      <strong class="grand-poobaa-summary-number">
+        {{#if totalOrganizations}}
+          {{totalOrganizations}}
+        {{else}}
+          0
+        {{/if}}
+      </strong>
+    </article>
+
+  </section>
+
+
+  {{!-- =====================================================
+       ACTION CENTRE
+  ====================================================== --}}
+  <section class="grand-poobaa-section grand-poobaa-action-section">
 
     <div class="grand-poobaa-section-heading">
+
       <div>
-        <p class="grand-poobaa-section-kicker">action centre</p>
+        <p class="grand-poobaa-section-kicker">
+          action centre
+        </p>
+
         <h2>items requiring attention</h2>
       </div>
 
       <p>
-        These are the administrative items that may require an immediate
-        response, review, or decision.
-      </p>
-    </div>
-
-
-<div class="grand-poobaa-action-grid">
-
-  {{!-- TOPIC SUGGESTIONS --}}
-  <button
-    type="button"
-    class="grand-poobaa-action-card grand-poobaa-dropdown-trigger"
-    id="topic-suggestions-trigger"
-    aria-expanded="false"
-    aria-controls="topic-suggestions-panel"
-  >
-    <div class="grand-poobaa-action-card-top">
-      <div class="grand-poobaa-action-icon">
-        <ion-icon name="bulb-outline"></ion-icon>
-      </div>
-
-      <span class="grand-poobaa-action-count">
-        {{#if topicSuggestionCount}}
-          {{topicSuggestionCount}}
-        {{else}}
-          0
-        {{/if}}
-      </span>
-    </div>
-
-    <div class="grand-poobaa-action-card-copy">
-      <h3>new topic suggestions</h3>
-      <p>
-        Review learning topics suggested by Twennie members.
-      </p>
-    </div>
-
-    <span class="grand-poobaa-action-link">
-      review suggestions
-
-      <ion-icon
-        class="grand-poobaa-dropdown-arrow"
-        name="chevron-down-outline"
-      ></ion-icon>
-    </span>
-  </button>
-
-
-  {{!-- MEMBER CANCELLATIONS --}}
-  <article class="grand-poobaa-action-card">
-
-    <div class="grand-poobaa-action-card-top">
-      <div class="grand-poobaa-action-icon">
-        <ion-icon name="person-remove-outline"></ion-icon>
-      </div>
-
-      <span class="grand-poobaa-action-count">
-        {{#if cancellationCount}}
-          {{cancellationCount}}
-        {{else}}
-          0
-        {{/if}}
-      </span>
-    </div>
-
-    <div class="grand-poobaa-action-card-copy">
-      <h3>member cancellations</h3>
-      <p>
-        Review recent and pending membership cancellations.
-      </p>
-    </div>
-
-    <a
-      href="/grand-poobaa/member-cancellations"
-      class="grand-poobaa-action-link"
-    >
-      review cancellations
-      <ion-icon name="arrow-forward-outline"></ion-icon>
-    </a>
-
-  </article>
-
-
-  {{!-- DEMO REQUESTS --}}
-  <article class="grand-poobaa-action-card">
-
-    <div class="grand-poobaa-action-card-top">
-      <div class="grand-poobaa-action-icon">
-        <ion-icon name="desktop-outline"></ion-icon>
-      </div>
-
-      <span class="grand-poobaa-action-count">
-        {{#if demoRequestCount}}
-          {{demoRequestCount}}
-        {{else}}
-          0
-        {{/if}}
-      </span>
-    </div>
-
-    <div class="grand-poobaa-action-card-copy">
-      <h3>demo requests</h3>
-      <p>
-        Review new requests from organizations interested in Twennie.
-      </p>
-    </div>
-
-    <a
-      href="/grand-poobaa/demo-requests"
-      class="grand-poobaa-action-link"
-    >
-      review demo requests
-      <ion-icon name="arrow-forward-outline"></ion-icon>
-    </a>
-
-  </article>
-
-
-  {{!-- TECH SUPPORT --}}
-  <article class="grand-poobaa-action-card">
-
-    <div class="grand-poobaa-action-card-top">
-      <div class="grand-poobaa-action-icon">
-        <ion-icon name="construct-outline"></ion-icon>
-      </div>
-
-      <span class="grand-poobaa-action-count">
-        {{#if techSupportCount}}
-          {{techSupportCount}}
-        {{else}}
-          0
-        {{/if}}
-      </span>
-    </div>
-
-    <div class="grand-poobaa-action-card-copy">
-      <h3>tech support requests</h3>
-      <p>
-        Review problems and questions submitted by Twennie users.
-      </p>
-    </div>
-
-    <a
-      href="/grand-poobaa/tech-support"
-      class="grand-poobaa-action-link"
-    >
-      review support requests
-      <ion-icon name="arrow-forward-outline"></ion-icon>
-    </a>
-
-  </article>
-
-
-  {{!-- ORGANIZATION JOIN REQUESTS --}}
-  <article class="grand-poobaa-action-card">
-
-    <div class="grand-poobaa-action-card-top">
-      <div class="grand-poobaa-action-icon">
-        <ion-icon name="business-outline"></ion-icon>
-      </div>
-
-      <span class="grand-poobaa-action-count">
-        {{#if joinRequestCount}}
-          {{joinRequestCount}}
-        {{else}}
-          0
-        {{/if}}
-      </span>
-    </div>
-
-    <div class="grand-poobaa-action-card-copy">
-      <h3>organization join requests</h3>
-      <p>
-        Review requests from leaders asking to join organizations.
-      </p>
-    </div>
-
-    <a
-      href="/grand-poobaa/organization-requests"
-      class="grand-poobaa-action-link"
-    >
-      review join requests
-      <ion-icon name="arrow-forward-outline"></ion-icon>
-    </a>
-
-  </article>
-
-</div>
-
-
-{{!-- TOPIC SUGGESTIONS DROPDOWN --}}
-<div
-  class="grand-poobaa-dropdown-panel"
-  id="topic-suggestions-panel"
-  aria-labelledby="topic-suggestions-trigger"
-  hidden
->
-  <div class="grand-poobaa-dropdown-heading">
-    <div>
-      <p class="grand-poobaa-dropdown-kicker">
-        content requests
+        Open an action card to review the related requests, submissions,
+        or administrative tasks directly beneath it.
       </p>
 
-      <h3>new topic suggestions</h3>
-
-      <p>
-        Review suggestions submitted by members and approve topics for future
-        development.
-      </p>
     </div>
 
-    <button
-      type="button"
-      class="grand-poobaa-dropdown-close"
-      data-close-dropdown="topic-suggestions-panel"
-      aria-label="Close topic suggestions"
-    >
-      <ion-icon name="close-outline"></ion-icon>
-    </button>
-  </div>
 
-  {{#if topicSuggestions}}
-
-    <div class="grand-poobaa-table-scroll">
-      <table class="grand-poobaa-table">
-        <thead>
-          <tr>
-            <th scope="col">suggested topic</th>
-            <th scope="col">description</th>
-            <th scope="col">submitted by</th>
-            <th scope="col">member details</th>
-            <th scope="col">submitted</th>
-            <th scope="col">approval</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {{#each topicSuggestions}}
-            <tr>
-              <td class="grand-poobaa-table-topic">
-                <strong>{{this.topicTitle}}</strong>
-              </td>
-
-              <td class="grand-poobaa-table-description">
-                <p>{{this.description}}</p>
-              </td>
-
-              <td>
-                <div class="grand-poobaa-table-person">
-                  <strong>{{this.name}}</strong>
-
-                  <a href="mailto:{{this.email}}">
-                    {{this.email}}
-                  </a>
-                </div>
-              </td>
-
-              <td>
-                <div class="grand-poobaa-table-meta">
-                  <span>{{this.memberType}}</span>
-
-                  {{#if this.groupName}}
-                    <small>{{this.groupName}}</small>
-                  {{else}}
-                    <small>no group</small>
-                  {{/if}}
-                </div>
-              </td>
-
-              <td>
-                <time datetime="{{this.submittedAt}}">
-                  {{this.submittedAt}}
-                </time>
-              </td>
-
-              <td class="grand-poobaa-table-action">
-                <form
-                  action="/grand-poobaa/topic-suggestions/{{this._id}}/approve"
-                  method="POST"
-                  class="grand-poobaa-approval-form"
-                >
-                  {{#if ../csrfToken}}
-                    <input
-                      type="hidden"
-                      name="_csrf"
-                      value="{{../csrfToken}}"
-                    >
-                  {{/if}}
-
-                  <div class="grand-poobaa-date-field">
-                    <label for="expectedLibraryDate-{{this._id}}">
-                      expected library date
-                    </label>
-
-                    <input
-                      type="date"
-                      id="expectedLibraryDate-{{this._id}}"
-                      name="expectedLibraryDate"
-                      required
-                    >
-                  </div>
-
-                  <button
-                    type="submit"
-                    class="grand-poobaa-approve-button"
-                  >
-                    <ion-icon name="checkmark-outline"></ion-icon>
-                    approve topic
-                  </button>
-                </form>
-              </td>
-            </tr>
-          {{/each}}
-        </tbody>
-      </table>
-    </div>
-
-  {{else}}
-
-    <div class="grand-poobaa-empty-state">
-      <div class="grand-poobaa-empty-icon">
-        <ion-icon name="checkmark-circle-outline"></ion-icon>
-      </div>
-
-      <div>
-        <h4>nothing waiting for review</h4>
-        <p>There are no new topic suggestions at the moment.</p>
-      </div>
-    </div>
-
-  {{/if}}
-</div>
+    <div class="grand-poobaa-action-grid">
 
 
-      <article class="grand-poobaa-action-card">
+      {{!-- =================================================
+           TOPIC SUGGESTIONS MODULE
+           This is the first fully developed action module.
+      ================================================== --}}
+      <div
+        class="grand-poobaa-action-module"
+        data-grand-poobaa-module
+      >
 
-        <div class="grand-poobaa-action-card-top">
-          <div class="grand-poobaa-action-icon">
-            <ion-icon name="person-remove-outline"></ion-icon>
+        <button
+          type="button"
+          class="grand-poobaa-action-card grand-poobaa-dropdown-trigger"
+          id="topic-suggestions-trigger"
+          data-dropdown-trigger="topic-suggestions-panel"
+          aria-expanded="false"
+          aria-controls="topic-suggestions-panel"
+        >
+
+          <div class="grand-poobaa-action-card-top">
+
+            <div class="grand-poobaa-action-icon">
+              <ion-icon name="bulb-outline"></ion-icon>
+            </div>
+
+            <span class="grand-poobaa-action-count">
+              {{#if topicSuggestionCount}}
+                {{topicSuggestionCount}}
+              {{else}}
+                0
+              {{/if}}
+            </span>
+
           </div>
 
-          <span class="grand-poobaa-action-count">
-            {{#if cancellationCount}}
-              {{cancellationCount}}
-            {{else}}
-              0
-            {{/if}}
-          </span>
-        </div>
 
-        <div class="grand-poobaa-action-card-copy">
-          <h3>member cancellations</h3>
-          <p>
-            Review recent and pending membership cancellations.
-          </p>
-        </div>
+          <div class="grand-poobaa-action-card-copy">
 
-        <a
-          href="/grand-poobaa/member-cancellations"
-          class="grand-poobaa-action-link"
-        >
-          review cancellations
-          <ion-icon name="arrow-forward-outline"></ion-icon>
-        </a>
+            <h3>new topic suggestions</h3>
 
-      </article>
+            <p>
+              Review learning topics suggested by Twennie members.
+            </p>
 
-
-      <article class="grand-poobaa-action-card">
-
-        <div class="grand-poobaa-action-card-top">
-          <div class="grand-poobaa-action-icon">
-            <ion-icon name="desktop-outline"></ion-icon>
           </div>
 
-          <span class="grand-poobaa-action-count">
-            {{#if demoRequestCount}}
-              {{demoRequestCount}}
-            {{else}}
-              0
-            {{/if}}
+
+          <span class="grand-poobaa-action-link">
+
+            <span>review suggestions</span>
+
+            <ion-icon
+              class="grand-poobaa-dropdown-arrow"
+              name="chevron-down-outline"
+            ></ion-icon>
+
           </span>
-        </div>
 
-        <div class="grand-poobaa-action-card-copy">
-          <h3>demo requests</h3>
-          <p>
-            Review new requests from organizations interested in Twennie.
-          </p>
-        </div>
+        </button>
 
-        <a
-          href="/grand-poobaa/demo-requests"
-          class="grand-poobaa-action-link"
+
+        <div
+          class="grand-poobaa-dropdown-panel"
+          id="topic-suggestions-panel"
+          data-dropdown-panel
+          aria-labelledby="topic-suggestions-trigger"
+          hidden
         >
-          review demo requests
-          <ion-icon name="arrow-forward-outline"></ion-icon>
-        </a>
 
-      </article>
+          <div class="grand-poobaa-dropdown-heading">
+
+            <div class="grand-poobaa-dropdown-heading-copy">
+
+              <p class="grand-poobaa-dropdown-kicker">
+                content requests
+              </p>
+
+              <h3>new topic suggestions</h3>
+
+              <p>
+                Review suggestions submitted by members and approve topics
+                for future development.
+              </p>
+
+            </div>
 
 
-      <article class="grand-poobaa-action-card">
+            <button
+              type="button"
+              class="grand-poobaa-dropdown-close"
+              data-close-dropdown="topic-suggestions-panel"
+              aria-label="Close topic suggestions"
+            >
+              <ion-icon name="close-outline"></ion-icon>
+            </button>
 
-        <div class="grand-poobaa-action-card-top">
-          <div class="grand-poobaa-action-icon">
-            <ion-icon name="construct-outline"></ion-icon>
           </div>
 
-          <span class="grand-poobaa-action-count">
-            {{#if techSupportCount}}
-              {{techSupportCount}}
-            {{else}}
-              0
-            {{/if}}
-          </span>
+
+          {{#if topicSuggestions}}
+
+            <div class="grand-poobaa-table-scroll">
+
+              <table class="grand-poobaa-table">
+
+                <thead>
+                  <tr>
+                    <th scope="col">suggested topic</th>
+                    <th scope="col">description</th>
+                    <th scope="col">submitted by</th>
+                    <th scope="col">member details</th>
+                    <th scope="col">submitted</th>
+                    <th scope="col">approval</th>
+                  </tr>
+                </thead>
+
+
+                <tbody>
+
+                  {{#each topicSuggestions}}
+
+                    <tr>
+
+                      <td class="grand-poobaa-table-topic">
+                        <strong>
+                          {{this.topicTitle}}
+                        </strong>
+                      </td>
+
+
+                      <td class="grand-poobaa-table-description">
+                        <p>
+                          {{this.description}}
+                        </p>
+                      </td>
+
+
+                      <td>
+
+                        <div class="grand-poobaa-table-person">
+
+                          <strong>
+                            {{this.name}}
+                          </strong>
+
+                          {{#if this.email}}
+                            <a href="mailto:{{this.email}}">
+                              {{this.email}}
+                            </a>
+                          {{else}}
+                            <span class="grand-poobaa-table-missing">
+                              no email provided
+                            </span>
+                          {{/if}}
+
+                        </div>
+
+                      </td>
+
+
+                      <td>
+
+                        <div class="grand-poobaa-table-meta">
+
+                          <span>
+                            {{#if this.memberType}}
+                              {{this.memberType}}
+                            {{else}}
+                              member
+                            {{/if}}
+                          </span>
+
+                          {{#if this.groupName}}
+                            <small>
+                              {{this.groupName}}
+                            </small>
+                          {{else}}
+                            <small>
+                              no group
+                            </small>
+                          {{/if}}
+
+                        </div>
+
+                      </td>
+
+
+                      <td>
+
+                        {{#if this.submittedAt}}
+                          <time datetime="{{this.submittedAt}}">
+                            {{this.submittedAt}}
+                          </time>
+                        {{else}}
+                          <span class="grand-poobaa-table-missing">
+                            not available
+                          </span>
+                        {{/if}}
+
+                      </td>
+
+
+                      <td class="grand-poobaa-table-action">
+
+                        <form
+                          action="/grand-poobaa/topic-suggestions/{{this._id}}/approve"
+                          method="POST"
+                          class="grand-poobaa-approval-form"
+                        >
+
+                          {{#if ../csrfToken}}
+                            <input
+                              type="hidden"
+                              name="_csrf"
+                              value="{{../csrfToken}}"
+                            >
+                          {{/if}}
+
+
+                          <div class="grand-poobaa-date-field">
+
+                            <label for="expectedLibraryDate-{{this._id}}">
+                              expected library date
+                            </label>
+
+                            <input
+                              type="date"
+                              id="expectedLibraryDate-{{this._id}}"
+                              name="expectedLibraryDate"
+                              required
+                            >
+
+                          </div>
+
+
+                          <button
+                            type="submit"
+                            class="grand-poobaa-approve-button"
+                          >
+
+                            <ion-icon name="checkmark-outline"></ion-icon>
+
+                            <span>approve topic</span>
+
+                          </button>
+
+                        </form>
+
+                      </td>
+
+                    </tr>
+
+                  {{/each}}
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+          {{else}}
+
+            <div class="grand-poobaa-empty-state">
+
+              <div class="grand-poobaa-empty-icon">
+                <ion-icon name="checkmark-circle-outline"></ion-icon>
+              </div>
+
+              <div>
+                <h4>nothing waiting for review</h4>
+
+                <p>
+                  There are no new topic suggestions at the moment.
+                </p>
+              </div>
+
+            </div>
+
+          {{/if}}
+
         </div>
 
-        <div class="grand-poobaa-action-card-copy">
-          <h3>tech support requests</h3>
-          <p>
-            Review problems and questions submitted by Twennie users.
-          </p>
-        </div>
+      </div>
 
-        <a
-          href="/grand-poobaa/tech-support"
-          class="grand-poobaa-action-link"
+
+      {{!-- =================================================
+           MEMBER CANCELLATIONS MODULE
+      ================================================== --}}
+      <div
+        class="grand-poobaa-action-module"
+        data-grand-poobaa-module
+      >
+
+        <button
+          type="button"
+          class="grand-poobaa-action-card grand-poobaa-dropdown-trigger"
+          id="member-cancellations-trigger"
+          data-dropdown-trigger="member-cancellations-panel"
+          aria-expanded="false"
+          aria-controls="member-cancellations-panel"
         >
-          review support requests
-          <ion-icon name="arrow-forward-outline"></ion-icon>
-        </a>
 
-      </article>
+          <div class="grand-poobaa-action-card-top">
 
+            <div class="grand-poobaa-action-icon">
+              <ion-icon name="person-remove-outline"></ion-icon>
+            </div>
 
-      <article class="grand-poobaa-action-card">
+            <span class="grand-poobaa-action-count">
+              {{#if cancellationCount}}
+                {{cancellationCount}}
+              {{else}}
+                0
+              {{/if}}
+            </span>
 
-        <div class="grand-poobaa-action-card-top">
-          <div class="grand-poobaa-action-icon">
-            <ion-icon name="business-outline"></ion-icon>
           </div>
 
-          <span class="grand-poobaa-action-count">
-            {{#if joinRequestCount}}
-              {{joinRequestCount}}
-            {{else}}
-              0
-            {{/if}}
+
+          <div class="grand-poobaa-action-card-copy">
+
+            <h3>member cancellations</h3>
+
+            <p>
+              Review recent and pending membership cancellations.
+            </p>
+
+          </div>
+
+
+          <span class="grand-poobaa-action-link">
+
+            <span>review cancellations</span>
+
+            <ion-icon
+              class="grand-poobaa-dropdown-arrow"
+              name="chevron-down-outline"
+            ></ion-icon>
+
           </span>
-        </div>
 
-        <div class="grand-poobaa-action-card-copy">
-          <h3>organization join requests</h3>
-          <p>
-            Review requests from leaders asking to join organizations.
-          </p>
-        </div>
+        </button>
 
-        <a
-          href="/grand-poobaa/organization-requests"
-          class="grand-poobaa-action-link"
+
+        <div
+          class="grand-poobaa-dropdown-panel grand-poobaa-placeholder-panel"
+          id="member-cancellations-panel"
+          data-dropdown-panel
+          aria-labelledby="member-cancellations-trigger"
+          hidden
         >
-          review join requests
-          <ion-icon name="arrow-forward-outline"></ion-icon>
-        </a>
 
-      </article>
+          <div class="grand-poobaa-dropdown-heading">
+
+            <div class="grand-poobaa-dropdown-heading-copy">
+
+              <p class="grand-poobaa-dropdown-kicker">
+                membership administration
+              </p>
+
+              <h3>member cancellations</h3>
+
+              <p>
+                The cancellation review tools will be added to this panel.
+              </p>
+
+            </div>
+
+
+            <button
+              type="button"
+              class="grand-poobaa-dropdown-close"
+              data-close-dropdown="member-cancellations-panel"
+              aria-label="Close member cancellations"
+            >
+              <ion-icon name="close-outline"></ion-icon>
+            </button>
+
+          </div>
+
+
+          {{!-- Member cancellation interface will be written next. --}}
+          <div class="grand-poobaa-panel-placeholder">
+
+            <ion-icon name="build-outline"></ion-icon>
+
+            <div>
+              <h4>panel ready for development</h4>
+
+              <p>
+                Member cancellation records and administrative actions will
+                appear here.
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      {{!-- =================================================
+           DEMO REQUESTS MODULE
+      ================================================== --}}
+      <div
+        class="grand-poobaa-action-module"
+        data-grand-poobaa-module
+      >
+
+        <button
+          type="button"
+          class="grand-poobaa-action-card grand-poobaa-dropdown-trigger"
+          id="demo-requests-trigger"
+          data-dropdown-trigger="demo-requests-panel"
+          aria-expanded="false"
+          aria-controls="demo-requests-panel"
+        >
+
+          <div class="grand-poobaa-action-card-top">
+
+            <div class="grand-poobaa-action-icon">
+              <ion-icon name="desktop-outline"></ion-icon>
+            </div>
+
+            <span class="grand-poobaa-action-count">
+              {{#if demoRequestCount}}
+                {{demoRequestCount}}
+              {{else}}
+                0
+              {{/if}}
+            </span>
+
+          </div>
+
+
+          <div class="grand-poobaa-action-card-copy">
+
+            <h3>demo requests</h3>
+
+            <p>
+              Review requests from organizations interested in Twennie.
+            </p>
+
+          </div>
+
+
+          <span class="grand-poobaa-action-link">
+
+            <span>review demo requests</span>
+
+            <ion-icon
+              class="grand-poobaa-dropdown-arrow"
+              name="chevron-down-outline"
+            ></ion-icon>
+
+          </span>
+
+        </button>
+
+
+        <div
+          class="grand-poobaa-dropdown-panel grand-poobaa-placeholder-panel"
+          id="demo-requests-panel"
+          data-dropdown-panel
+          aria-labelledby="demo-requests-trigger"
+          hidden
+        >
+
+          <div class="grand-poobaa-dropdown-heading">
+
+            <div class="grand-poobaa-dropdown-heading-copy">
+
+              <p class="grand-poobaa-dropdown-kicker">
+                sales administration
+              </p>
+
+              <h3>demo requests</h3>
+
+              <p>
+                The demo-request review tools will be added to this panel.
+              </p>
+
+            </div>
+
+
+            <button
+              type="button"
+              class="grand-poobaa-dropdown-close"
+              data-close-dropdown="demo-requests-panel"
+              aria-label="Close demo requests"
+            >
+              <ion-icon name="close-outline"></ion-icon>
+            </button>
+
+          </div>
+
+
+          {{!-- Demo request interface will be written later. --}}
+          <div class="grand-poobaa-panel-placeholder">
+
+            <ion-icon name="build-outline"></ion-icon>
+
+            <div>
+              <h4>panel ready for development</h4>
+
+              <p>
+                Demo-request details and response actions will appear here.
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      {{!-- =================================================
+           TECH SUPPORT MODULE
+      ================================================== --}}
+      <div
+        class="grand-poobaa-action-module"
+        data-grand-poobaa-module
+      >
+
+        <button
+          type="button"
+          class="grand-poobaa-action-card grand-poobaa-dropdown-trigger"
+          id="tech-support-trigger"
+          data-dropdown-trigger="tech-support-panel"
+          aria-expanded="false"
+          aria-controls="tech-support-panel"
+        >
+
+          <div class="grand-poobaa-action-card-top">
+
+            <div class="grand-poobaa-action-icon">
+              <ion-icon name="construct-outline"></ion-icon>
+            </div>
+
+            <span class="grand-poobaa-action-count">
+              {{#if techSupportCount}}
+                {{techSupportCount}}
+              {{else}}
+                0
+              {{/if}}
+            </span>
+
+          </div>
+
+
+          <div class="grand-poobaa-action-card-copy">
+
+            <h3>tech support requests</h3>
+
+            <p>
+              Review problems and questions submitted by Twennie users.
+            </p>
+
+          </div>
+
+
+          <span class="grand-poobaa-action-link">
+
+            <span>review support requests</span>
+
+            <ion-icon
+              class="grand-poobaa-dropdown-arrow"
+              name="chevron-down-outline"
+            ></ion-icon>
+
+          </span>
+
+        </button>
+
+
+        <div
+          class="grand-poobaa-dropdown-panel grand-poobaa-placeholder-panel"
+          id="tech-support-panel"
+          data-dropdown-panel
+          aria-labelledby="tech-support-trigger"
+          hidden
+        >
+
+          <div class="grand-poobaa-dropdown-heading">
+
+            <div class="grand-poobaa-dropdown-heading-copy">
+
+              <p class="grand-poobaa-dropdown-kicker">
+                user support
+              </p>
+
+              <h3>tech support requests</h3>
+
+              <p>
+                The technical-support review tools will be added to this panel.
+              </p>
+
+            </div>
+
+
+            <button
+              type="button"
+              class="grand-poobaa-dropdown-close"
+              data-close-dropdown="tech-support-panel"
+              aria-label="Close tech support requests"
+            >
+              <ion-icon name="close-outline"></ion-icon>
+            </button>
+
+          </div>
+
+
+          {{!-- Tech support interface will be written later. --}}
+          <div class="grand-poobaa-panel-placeholder">
+
+            <ion-icon name="build-outline"></ion-icon>
+
+            <div>
+              <h4>panel ready for development</h4>
+
+              <p>
+                Support-request details, status controls, and responses will
+                appear here.
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      {{!-- =================================================
+           ORGANIZATION JOIN REQUESTS MODULE
+      ================================================== --}}
+      <div
+        class="grand-poobaa-action-module"
+        data-grand-poobaa-module
+      >
+
+        <button
+          type="button"
+          class="grand-poobaa-action-card grand-poobaa-dropdown-trigger"
+          id="organization-requests-trigger"
+          data-dropdown-trigger="organization-requests-panel"
+          aria-expanded="false"
+          aria-controls="organization-requests-panel"
+        >
+
+          <div class="grand-poobaa-action-card-top">
+
+            <div class="grand-poobaa-action-icon">
+              <ion-icon name="business-outline"></ion-icon>
+            </div>
+
+            <span class="grand-poobaa-action-count">
+              {{#if joinRequestCount}}
+                {{joinRequestCount}}
+              {{else}}
+                0
+              {{/if}}
+            </span>
+
+          </div>
+
+
+          <div class="grand-poobaa-action-card-copy">
+
+            <h3>organization join requests</h3>
+
+            <p>
+              Review requests from leaders asking to join organizations.
+            </p>
+
+          </div>
+
+
+          <span class="grand-poobaa-action-link">
+
+            <span>review join requests</span>
+
+            <ion-icon
+              class="grand-poobaa-dropdown-arrow"
+              name="chevron-down-outline"
+            ></ion-icon>
+
+          </span>
+
+        </button>
+
+
+        <div
+          class="grand-poobaa-dropdown-panel grand-poobaa-placeholder-panel"
+          id="organization-requests-panel"
+          data-dropdown-panel
+          aria-labelledby="organization-requests-trigger"
+          hidden
+        >
+
+          <div class="grand-poobaa-dropdown-heading">
+
+            <div class="grand-poobaa-dropdown-heading-copy">
+
+              <p class="grand-poobaa-dropdown-kicker">
+                organization administration
+              </p>
+
+              <h3>organization join requests</h3>
+
+              <p>
+                The organization-request review tools will be added to this
+                panel.
+              </p>
+
+            </div>
+
+
+            <button
+              type="button"
+              class="grand-poobaa-dropdown-close"
+              data-close-dropdown="organization-requests-panel"
+              aria-label="Close organization join requests"
+            >
+              <ion-icon name="close-outline"></ion-icon>
+            </button>
+
+          </div>
+
+
+          {{!-- Organization request interface will be written later. --}}
+          <div class="grand-poobaa-panel-placeholder">
+
+            <ion-icon name="build-outline"></ion-icon>
+
+            <div>
+              <h4>panel ready for development</h4>
+
+              <p>
+                Join-request details, organization matches, and approval
+                actions will appear here.
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
 
     </div>
 
   </section>
 
 
-  <section class="grand-poobaa-section grand-poobaa-coming-section">
+  {{!-- =====================================================
+       FUTURE REPORTING AREA
+
+       This remains structural only. It gives us a location
+       for the reporting modules without filling the page
+       with unfinished report cards.
+  ====================================================== --}}
+  <section class="grand-poobaa-section grand-poobaa-reporting-section">
 
     <div class="grand-poobaa-section-heading">
+
       <div>
-        <p class="grand-poobaa-section-kicker">coming next</p>
-        <h2>platform reporting</h2>
+        <p class="grand-poobaa-section-kicker">
+          platform intelligence
+        </p>
+
+        <h2>reporting and administration</h2>
       </div>
 
       <p>
-        Usage, learning, content, organization, and revenue reporting will be
-        added here as the administrative dashboard develops.
+        Platform reporting and system-management tools will be developed here
+        after the action-centre modules are complete.
       </p>
+
     </div>
 
-    <div class="grand-poobaa-coming-grid">
 
-      <div class="grand-poobaa-coming-card">
-        <ion-icon name="trending-up-outline"></ion-icon>
-        <span>growth</span>
+    <div class="grand-poobaa-reporting-placeholder">
+
+      <div class="grand-poobaa-reporting-placeholder-icon">
+        <ion-icon name="analytics-outline"></ion-icon>
       </div>
 
-      <div class="grand-poobaa-coming-card">
-        <ion-icon name="pulse-outline"></ion-icon>
-        <span>engagement</span>
-      </div>
+      <div>
 
-      <div class="grand-poobaa-coming-card">
-        <ion-icon name="school-outline"></ion-icon>
-        <span>learning</span>
-      </div>
+        <h3>reporting framework ready</h3>
 
-      <div class="grand-poobaa-coming-card">
-        <ion-icon name="library-outline"></ion-icon>
-        <span>content health</span>
-      </div>
+        <p>
+          Growth, engagement, learning, content, organization, revenue, and
+          system reporting will be added as individual dashboard sections.
+        </p>
 
-      <div class="grand-poobaa-coming-card">
-        <ion-icon name="people-outline"></ion-icon>
-        <span>organization health</span>
-      </div>
-
-      <div class="grand-poobaa-coming-card">
-        <ion-icon name="card-outline"></ion-icon>
-        <span>revenue</span>
       </div>
 
     </div>
@@ -583,47 +933,108 @@
   </section>
 
 </div>
+
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    const trigger = document.getElementById('topic-suggestions-trigger');
-    const panel = document.getElementById('topic-suggestions-panel');
+    const modules = Array.from(
+      document.querySelectorAll('[data-grand-poobaa-module]')
+    );
 
-    if (!trigger || !panel) return;
+    const closeModule = function (module, returnFocus) {
+      if (!module) return;
 
-    const setPanelState = function (isOpen) {
-      trigger.setAttribute('aria-expanded', String(isOpen));
-      trigger.classList.toggle('is-open', isOpen);
-      panel.hidden = !isOpen;
+      const trigger = module.querySelector('[data-dropdown-trigger]');
+      const panel = module.querySelector('[data-dropdown-panel]');
 
-      if (isOpen) {
-        panel.classList.add('is-open');
+      if (!trigger || !panel) return;
 
-        window.requestAnimationFrame(function () {
-          panel.scrollIntoView({
-            behavior: 'smooth',
-            block: 'nearest'
-          });
-        });
-      } else {
-        panel.classList.remove('is-open');
+      trigger.setAttribute('aria-expanded', 'false');
+      trigger.classList.remove('is-open');
+      panel.classList.remove('is-open');
+      module.classList.remove('is-open');
+      panel.hidden = true;
+
+      if (returnFocus) {
+        trigger.focus();
       }
     };
 
-    trigger.addEventListener('click', function () {
-      const isOpen =
-        trigger.getAttribute('aria-expanded') === 'true';
 
-      setPanelState(!isOpen);
-    });
+    const closeAllModules = function (exceptModule) {
+      modules.forEach(function (module) {
+        if (module !== exceptModule) {
+          closeModule(module, false);
+        }
+      });
+    };
 
-    panel
-      .querySelectorAll('[data-close-dropdown]')
-      .forEach(function (button) {
-        button.addEventListener('click', function () {
-          setPanelState(false);
-          trigger.focus();
+
+    const openModule = function (module) {
+      if (!module) return;
+
+      const trigger = module.querySelector('[data-dropdown-trigger]');
+      const panel = module.querySelector('[data-dropdown-panel]');
+
+      if (!trigger || !panel) return;
+
+      closeAllModules(module);
+
+      trigger.setAttribute('aria-expanded', 'true');
+      trigger.classList.add('is-open');
+      panel.hidden = false;
+      panel.classList.add('is-open');
+      module.classList.add('is-open');
+
+      window.requestAnimationFrame(function () {
+        panel.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest'
         });
       });
+    };
+
+
+    modules.forEach(function (module) {
+      const trigger = module.querySelector('[data-dropdown-trigger]');
+      const panel = module.querySelector('[data-dropdown-panel]');
+      const closeButtons = module.querySelectorAll(
+        '[data-close-dropdown]'
+      );
+
+      if (!trigger || !panel) return;
+
+
+      trigger.addEventListener('click', function () {
+        const isOpen =
+          trigger.getAttribute('aria-expanded') === 'true';
+
+        if (isOpen) {
+          closeModule(module, false);
+        } else {
+          openModule(module);
+        }
+      });
+
+
+      closeButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+          closeModule(module, true);
+        });
+      });
+    });
+
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key !== 'Escape') return;
+
+      const openModuleElement = document.querySelector(
+        '[data-grand-poobaa-module].is-open'
+      );
+
+      if (openModuleElement) {
+        closeModule(openModuleElement, true);
+      }
+    });
   });
 </script>

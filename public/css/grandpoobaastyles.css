@@ -1,8 +1,14 @@
 /* =========================================================
    GRAND POOBAA ADMINISTRATION
+   Full-width administration dashboard
 ========================================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap");
+
+
+/* =========================================================
+   DESIGN TOKENS
+========================================================= */
 
 :root {
   --gp-navy: #262262;
@@ -13,16 +19,17 @@
 
   --gp-background: #f5f6fb;
   --gp-background-soft: #eef0fa;
+
   --gp-surface: #ffffff;
   --gp-surface-soft: #f8f8fd;
 
   --gp-text: #29294d;
   --gp-muted: #74758f;
   --gp-border: #e2e3ef;
+  --gp-border-strong: #d2d4e6;
 
-  --gp-sidebar: #262262;
-  --gp-sidebar-muted: #c8c8e6;
-  --gp-sidebar-hover: rgba(255, 255, 255, 0.1);
+  --gp-success: #2f8f66;
+  --gp-success-soft: rgba(47, 143, 102, 0.1);
 
   --gp-shadow-small:
     0 6px 18px rgba(38, 34, 98, 0.06);
@@ -32,11 +39,13 @@
 
   --gp-shadow-hover:
     0 18px 42px rgba(38, 34, 98, 0.14);
+
+  --gp-page-width: 1760px;
 }
 
 
 /* =========================================================
-   RESET AND BASE
+   BASE
 ========================================================= */
 
 * {
@@ -54,12 +63,17 @@ html {
   background:
     radial-gradient(
       circle at top right,
-      rgba(78, 80, 162, 0.08),
+      rgba(74, 74, 178, 0.08),
       transparent 28%
+    ),
+    radial-gradient(
+      circle at bottom left,
+      rgba(220, 23, 106, 0.035),
+      transparent 25%
     ),
     linear-gradient(
       180deg,
-      #f9f9fd 0%,
+      #fafafd 0%,
       var(--gp-background) 100%
     );
   color: var(--gp-text);
@@ -73,173 +87,50 @@ html {
   font-family: "Figtree", sans-serif;
 }
 
+
+/* =========================================================
+   FULL-WIDTH LAYOUT
+========================================================= */
+
 .grand-poobaa-shell {
-  display: flex;
+  display: block;
+  width: 100%;
   min-height: 100vh;
 }
 
+.grand-poobaa-sidebar {
+  display: none !important;
+}
+
 .grand-poobaa-main {
-  flex: 1;
+  width: 100%;
   min-width: 0;
 }
 
 .grand-poobaa-content {
-  padding: 3rem 3.5rem 5rem;
+  width: 100%;
+  padding: 3rem clamp(1.5rem, 4vw, 5rem) 6rem;
+}
+
+.grand-poobaa-page {
+  width: min(var(--gp-page-width), 100%);
+  margin: 0 auto;
 }
 
 
 /* =========================================================
-   SIDEBAR
-========================================================= */
-
-.grand-poobaa-sidebar {
-  position: sticky;
-  top: 0;
-  display: flex;
-  flex-direction: column;
-  width: 270px;
-  height: 100vh;
-  flex-shrink: 0;
-  padding: 1.75rem 1.15rem;
-  overflow-y: auto;
-  background:
-    radial-gradient(
-      circle at top left,
-      rgba(255, 255, 255, 0.09),
-      transparent 32%
-    ),
-    linear-gradient(
-      180deg,
-      #302b77 0%,
-      var(--gp-sidebar) 100%
-    );
-  color: #ffffff;
-  box-shadow: 8px 0 28px rgba(38, 34, 98, 0.12);
-  z-index: 20;
-}
-
-.grand-poobaa-sidebar-brand {
-  padding: 0.5rem 0.8rem 2.25rem;
-}
-
-.grand-poobaa-brand-link {
-  display: flex;
-  flex-direction: column;
-  color: #ffffff;
-  text-decoration: none;
-}
-
-.grand-poobaa-brand-name {
-  font-size: 2.1rem;
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: -0.04em;
-  text-transform: lowercase;
-}
-
-.grand-poobaa-brand-label {
-  margin-top: 0.55rem;
-  color: var(--gp-sidebar-muted);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.17em;
-  text-transform: uppercase;
-}
-
-.grand-poobaa-navigation {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
-.grand-poobaa-nav-heading {
-  margin: 1.5rem 0.8rem 0.55rem;
-  color: var(--gp-sidebar-muted);
-  font-size: 0.66rem;
-  font-weight: 800;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
-.grand-poobaa-nav-link {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  min-height: 46px;
-  padding: 0.75rem 0.9rem;
-  border-radius: 12px;
-  color: #f0f0fb;
-  text-decoration: none;
-  font-size: 0.9rem;
-  font-weight: 600;
-  transition:
-    background-color 180ms ease,
-    color 180ms ease,
-    transform 180ms ease;
-}
-
-.grand-poobaa-nav-link ion-icon {
-  flex-shrink: 0;
-  font-size: 1.15rem;
-}
-
-.grand-poobaa-nav-link:hover {
-  background: var(--gp-sidebar-hover);
-  color: #ffffff;
-  transform: translateX(3px);
-}
-
-.grand-poobaa-nav-link.is-active {
-  background: rgba(255, 255, 255, 0.15);
-  color: #ffffff;
-  box-shadow:
-    inset 4px 0 0 var(--gp-pink);
-  font-weight: 800;
-}
-
-.grand-poobaa-nav-link.is-disabled {
-  cursor: default;
-  opacity: 0.38;
-}
-
-.grand-poobaa-nav-link.is-disabled:hover {
-  background: transparent;
-  transform: none;
-}
-
-.grand-poobaa-sidebar-bottom {
-  margin-top: auto;
-  padding: 1.5rem 0.8rem 0;
-}
-
-.grand-poobaa-return-link {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  color: var(--gp-sidebar-muted);
-  text-decoration: none;
-  font-size: 0.83rem;
-  font-weight: 600;
-}
-
-.grand-poobaa-return-link:hover {
-  color: #ffffff;
-}
-
-
-/* =========================================================
-   HEADER
+   OPTIONAL TOP HEADER
 ========================================================= */
 
 .grand-poobaa-header {
   position: sticky;
   top: 0;
-  z-index: 15;
+  z-index: 30;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 78px;
-  padding: 0 3.5rem;
+  min-height: 76px;
+  padding: 0 clamp(1.5rem, 4vw, 5rem);
   border-bottom: 1px solid rgba(226, 227, 239, 0.9);
   background: rgba(255, 255, 255, 0.94);
   backdrop-filter: blur(14px);
@@ -248,12 +139,6 @@ html {
 
 .grand-poobaa-menu-button {
   display: none;
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--gp-navy);
-  cursor: pointer;
-  font-size: 1.7rem;
 }
 
 .grand-poobaa-header-title {
@@ -293,21 +178,11 @@ html {
   width: 42px;
   height: 42px;
   place-items: center;
-  border: 1px solid rgba(78, 80, 162, 0.1);
+  border: 1px solid rgba(74, 74, 178, 0.1);
   border-radius: 50%;
   background: var(--gp-background-soft);
   color: var(--gp-blue);
   font-size: 1.1rem;
-}
-
-
-/* =========================================================
-   PAGE WRAPPER
-========================================================= */
-
-.grand-poobaa-page {
-  width: min(1480px, 100%);
-  margin: 0 auto;
 }
 
 
@@ -319,28 +194,33 @@ html {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 2.5rem;
-  margin-bottom: 2.5rem;
-  padding: 2.25rem 2.5rem;
-  border: 1px solid rgba(226, 227, 239, 0.9);
-  border-radius: 26px;
+  gap: 3rem;
+  margin-bottom: 2rem;
+  padding: clamp(2rem, 4vw, 3.25rem);
+  border: 1px solid rgba(226, 227, 239, 0.95);
+  border-radius: 28px;
   background:
     radial-gradient(
-      circle at 90% 15%,
-      rgba(220, 23, 106, 0.08),
+      circle at 92% 12%,
+      rgba(220, 23, 106, 0.09),
       transparent 30%
     ),
     radial-gradient(
-      circle at 15% 85%,
-      rgba(78, 80, 162, 0.08),
-      transparent 34%
+      circle at 12% 88%,
+      rgba(74, 74, 178, 0.09),
+      transparent 35%
     ),
     #ffffff;
   box-shadow: var(--gp-shadow);
 }
 
+.grand-poobaa-page-heading-copy {
+  min-width: 0;
+}
+
 .grand-poobaa-eyebrow,
-.grand-poobaa-section-kicker {
+.grand-poobaa-section-kicker,
+.grand-poobaa-dropdown-kicker {
   margin: 0 0 0.55rem;
   color: var(--gp-pink);
   font-size: 0.69rem;
@@ -349,36 +229,34 @@ html {
   text-transform: uppercase;
 }
 
-.grand-poobaa-page-heading h1,
-.grand-poobaa-section-heading h2 {
+.grand-poobaa-page-heading h1 {
   margin: 0;
   color: var(--gp-navy);
-}
-
-.grand-poobaa-page-heading h1 {
-  font-size: clamp(2.2rem, 4vw, 3.7rem);
+  font-size: clamp(2.6rem, 5vw, 4.8rem);
   font-weight: 800;
-  line-height: 0.98;
-  letter-spacing: -0.045em;
+  line-height: 0.96;
+  letter-spacing: -0.05em;
   text-transform: lowercase;
 }
 
 .grand-poobaa-page-intro {
-  max-width: 680px;
-  margin: 1rem 0 0;
+  max-width: 720px;
+  margin: 1.15rem 0 0;
   color: var(--gp-muted);
-  font-size: 0.96rem;
-  line-height: 1.65;
+  font-size: 1rem;
+  line-height: 1.7;
 }
 
 .grand-poobaa-heading-date {
   display: flex;
-  min-width: 165px;
+  min-width: 190px;
+  flex: 0 0 auto;
   flex-direction: column;
   align-items: flex-end;
-  padding: 1rem 1.15rem;
-  border-radius: 16px;
-  background: rgba(78, 80, 162, 0.07);
+  padding: 1.1rem 1.25rem;
+  border: 1px solid rgba(74, 74, 178, 0.08);
+  border-radius: 17px;
+  background: rgba(74, 74, 178, 0.07);
 }
 
 .grand-poobaa-heading-date span {
@@ -390,31 +268,31 @@ html {
 }
 
 .grand-poobaa-heading-date strong {
-  margin-top: 0.3rem;
+  margin-top: 0.35rem;
   color: var(--gp-navy);
-  font-size: 0.92rem;
+  font-size: 0.95rem;
   font-weight: 800;
 }
 
 
 /* =========================================================
-   SUMMARY CARDS
+   SUMMARY METRICS
 ========================================================= */
 
 .grand-poobaa-summary-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1.25rem;
-  margin-bottom: 3.5rem;
+  gap: 1.2rem;
+  margin-bottom: 3rem;
 }
 
 .grand-poobaa-summary-card {
   position: relative;
   display: flex;
-  min-height: 140px;
+  min-height: 128px;
   flex-direction: column;
   justify-content: space-between;
-  padding: 1.5rem 1.6rem;
+  padding: 1.45rem 1.55rem;
   overflow: hidden;
   border: 1px solid var(--gp-border);
   border-radius: 20px;
@@ -422,25 +300,27 @@ html {
   box-shadow: var(--gp-shadow-small);
   transition:
     transform 180ms ease,
-    box-shadow 180ms ease;
+    box-shadow 180ms ease,
+    border-color 180ms ease;
 }
 
 .grand-poobaa-summary-card::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0 auto auto 0;
   width: 100%;
   height: 5px;
-  background: linear-gradient(
-    90deg,
-    var(--gp-blue),
-    var(--gp-pink)
-  );
+  background:
+    linear-gradient(
+      90deg,
+      var(--gp-blue),
+      var(--gp-pink)
+    );
 }
 
 .grand-poobaa-summary-card:hover {
   transform: translateY(-3px);
+  border-color: rgba(74, 74, 178, 0.18);
   box-shadow: var(--gp-shadow);
 }
 
@@ -454,7 +334,7 @@ html {
 
 .grand-poobaa-summary-number {
   color: var(--gp-navy);
-  font-size: 2.65rem;
+  font-size: clamp(2.3rem, 4vw, 3rem);
   font-weight: 800;
   line-height: 1;
 }
@@ -465,11 +345,11 @@ html {
 ========================================================= */
 
 .grand-poobaa-section {
-  margin-bottom: 3.5rem;
-  padding: 2.25rem;
-  border: 1px solid rgba(226, 227, 239, 0.8);
-  border-radius: 26px;
-  background: rgba(255, 255, 255, 0.72);
+  margin-bottom: 3rem;
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  border: 1px solid rgba(226, 227, 239, 0.9);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.76);
   box-shadow: var(--gp-shadow-small);
 }
 
@@ -477,25 +357,65 @@ html {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 2.5rem;
+  gap: 3rem;
   margin-bottom: 2rem;
-  padding-bottom: 1.4rem;
+  padding-bottom: 1.5rem;
   border-bottom: 1px solid var(--gp-border);
 }
 
 .grand-poobaa-section-heading h2 {
-  font-size: 1.7rem;
+  margin: 0;
+  color: var(--gp-navy);
+  font-size: clamp(1.55rem, 2.5vw, 1.9rem);
   font-weight: 800;
   line-height: 1.05;
   text-transform: lowercase;
 }
 
 .grand-poobaa-section-heading > p {
-  max-width: 590px;
+  max-width: 650px;
   margin: 0;
   color: var(--gp-muted);
-  font-size: 0.88rem;
-  line-height: 1.6;
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
+
+/* =========================================================
+   ACTION GRID
+========================================================= */
+
+.grand-poobaa-action-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: start;
+  gap: 1.35rem;
+}
+
+
+/* =========================================================
+   ACTION MODULES
+========================================================= */
+
+.grand-poobaa-action-module {
+  min-width: 0;
+}
+
+.grand-poobaa-action-module.is-open {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.35rem;
+}
+
+.grand-poobaa-action-module.is-open
+.grand-poobaa-action-card {
+  grid-column: 1;
+}
+
+.grand-poobaa-action-module.is-open
+.grand-poobaa-dropdown-panel {
+  grid-column: 1 / -1;
 }
 
 
@@ -503,18 +423,13 @@ html {
    ACTION CARDS
 ========================================================= */
 
-.grand-poobaa-action-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1.4rem;
-}
-
 .grand-poobaa-action-card {
   position: relative;
   display: flex;
-  min-height: 260px;
+  width: 100%;
+  min-height: 218px;
   flex-direction: column;
-  padding: 1.6rem;
+  padding: 1.5rem;
   overflow: hidden;
   border: 1px solid var(--gp-border);
   border-radius: 20px;
@@ -525,6 +440,8 @@ html {
       #fafaff 100%
     );
   box-shadow: var(--gp-shadow-small);
+  color: inherit;
+  text-align: left;
   transition:
     transform 180ms ease,
     box-shadow 180ms ease,
@@ -534,18 +451,18 @@ html {
 .grand-poobaa-action-card::after {
   content: "";
   position: absolute;
-  right: -35px;
-  bottom: -35px;
-  width: 120px;
-  height: 120px;
+  right: -42px;
+  bottom: -42px;
+  width: 130px;
+  height: 130px;
   border-radius: 50%;
-  background: rgba(78, 80, 162, 0.045);
+  background: rgba(74, 74, 178, 0.045);
   pointer-events: none;
 }
 
 .grand-poobaa-action-card:hover {
-  transform: translateY(-5px);
-  border-color: rgba(78, 80, 162, 0.22);
+  transform: translateY(-4px);
+  border-color: rgba(74, 74, 178, 0.24);
   box-shadow: var(--gp-shadow-hover);
 }
 
@@ -555,35 +472,41 @@ html {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
+  gap: 1rem;
 }
 
 .grand-poobaa-action-icon {
   display: grid;
-  width: 48px;
-  height: 48px;
+  width: 47px;
+  height: 47px;
+  flex: 0 0 47px;
   place-items: center;
   border-radius: 14px;
-  background: rgba(78, 80, 162, 0.1);
+  background: rgba(74, 74, 178, 0.1);
   color: var(--gp-blue);
   font-size: 1.35rem;
 }
 
-.grand-poobaa-action-card:nth-child(2) .grand-poobaa-action-icon {
+.grand-poobaa-action-module:nth-child(2)
+.grand-poobaa-action-icon {
   background: rgba(220, 23, 106, 0.09);
   color: var(--gp-pink);
 }
 
-.grand-poobaa-action-card:nth-child(3) .grand-poobaa-action-icon {
-  background: rgba(247, 148, 29, 0.11);
+.grand-poobaa-action-module:nth-child(3)
+.grand-poobaa-action-icon {
+  background: rgba(247, 148, 29, 0.12);
   color: #d87500;
 }
 
-.grand-poobaa-action-card:nth-child(4) .grand-poobaa-action-icon {
-  background: rgba(78, 80, 162, 0.1);
+.grand-poobaa-action-module:nth-child(4)
+.grand-poobaa-action-icon {
+  background: rgba(74, 74, 178, 0.1);
   color: var(--gp-blue);
 }
 
-.grand-poobaa-action-card:nth-child(5) .grand-poobaa-action-icon {
+.grand-poobaa-action-module:nth-child(5)
+.grand-poobaa-action-icon {
   background: rgba(38, 34, 98, 0.09);
   color: var(--gp-navy);
 }
@@ -596,7 +519,7 @@ html {
   height: 38px;
   padding: 0 0.7rem;
   place-items: center;
-  border: 1px solid rgba(78, 80, 162, 0.08);
+  border: 1px solid rgba(74, 74, 178, 0.08);
   border-radius: 999px;
   background: var(--gp-background-soft);
   color: var(--gp-navy);
@@ -607,23 +530,23 @@ html {
 .grand-poobaa-action-card-copy {
   position: relative;
   z-index: 2;
-  margin: 1.5rem 0;
+  margin: 1.3rem 0 1.15rem;
 }
 
 .grand-poobaa-action-card-copy h3 {
-  margin: 0 0 0.7rem;
+  margin: 0 0 0.65rem;
   color: var(--gp-navy);
   font-size: 1.08rem;
   font-weight: 800;
-  line-height: 1.2;
+  line-height: 1.22;
   text-transform: lowercase;
 }
 
 .grand-poobaa-action-card-copy p {
   margin: 0;
   color: var(--gp-muted);
-  font-size: 0.88rem;
-  line-height: 1.6;
+  font-size: 0.86rem;
+  line-height: 1.55;
 }
 
 .grand-poobaa-action-link {
@@ -636,11 +559,10 @@ html {
   margin-top: auto;
   padding: 0.65rem 1rem;
   border-radius: 999px;
-  background: rgba(78, 80, 162, 0.08);
+  background: rgba(74, 74, 178, 0.08);
   color: var(--gp-blue);
-  font-size: 0.78rem;
+  font-size: 0.77rem;
   font-weight: 800;
-  text-decoration: none;
   text-transform: lowercase;
   transition:
     background-color 180ms ease,
@@ -648,208 +570,36 @@ html {
     transform 180ms ease;
 }
 
-.grand-poobaa-action-link:hover {
+.grand-poobaa-action-card:hover
+.grand-poobaa-action-link {
   background: var(--gp-blue);
   color: #ffffff;
-  transform: translateX(2px);
 }
 
 
 /* =========================================================
-   COMING NEXT
-========================================================= */
-
-.grand-poobaa-coming-section {
-  background:
-    radial-gradient(
-      circle at top right,
-      rgba(220, 23, 106, 0.06),
-      transparent 30%
-    ),
-    rgba(255, 255, 255, 0.72);
-}
-
-.grand-poobaa-coming-grid {
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 1rem;
-}
-
-.grand-poobaa-coming-card {
-  display: flex;
-  min-height: 120px;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  padding: 1rem;
-  border: 1px dashed rgba(78, 80, 162, 0.24);
-  border-radius: 18px;
-  background: rgba(248, 248, 253, 0.75);
-  color: var(--gp-muted);
-  text-align: center;
-  transition:
-    background-color 180ms ease,
-    border-color 180ms ease,
-    color 180ms ease;
-}
-
-.grand-poobaa-coming-card:hover {
-  border-color: rgba(78, 80, 162, 0.42);
-  background: rgba(78, 80, 162, 0.06);
-  color: var(--gp-blue);
-}
-
-.grand-poobaa-coming-card ion-icon {
-  color: var(--gp-blue);
-  font-size: 1.5rem;
-}
-
-.grand-poobaa-coming-card span {
-  font-size: 0.76rem;
-  font-weight: 800;
-  text-transform: lowercase;
-}
-
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
-
-@media screen and (max-width: 1250px) {
-  .grand-poobaa-content {
-    padding: 2.5rem;
-  }
-
-  .grand-poobaa-header {
-    padding: 0 2.5rem;
-  }
-
-  .grand-poobaa-action-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .grand-poobaa-coming-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-@media screen and (max-width: 1050px) {
-  .grand-poobaa-summary-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .grand-poobaa-page-heading {
-    align-items: flex-start;
-  }
-}
-
-@media screen and (max-width: 800px) {
-  .grand-poobaa-sidebar {
-    display: none;
-  }
-
-  .grand-poobaa-menu-button {
-    display: block;
-  }
-
-  .grand-poobaa-header {
-    padding: 0 1.5rem;
-  }
-
-  .grand-poobaa-content {
-    padding: 2rem 1.5rem 4rem;
-  }
-
-  .grand-poobaa-page-heading,
-  .grand-poobaa-section-heading {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .grand-poobaa-page-heading {
-    padding: 1.75rem;
-  }
-
-  .grand-poobaa-heading-date {
-    align-items: flex-start;
-  }
-
-  .grand-poobaa-section {
-    padding: 1.75rem;
-  }
-
-  .grand-poobaa-section-heading > p {
-    max-width: none;
-  }
-}
-
-@media screen and (max-width: 620px) {
-  .grand-poobaa-header-title,
-  .grand-poobaa-user-copy {
-    display: none;
-  }
-
-  .grand-poobaa-content {
-    padding: 1.4rem 1rem 3rem;
-  }
-
-  .grand-poobaa-page-heading {
-    margin-bottom: 1.5rem;
-    padding: 1.5rem;
-    border-radius: 20px;
-  }
-
-  .grand-poobaa-page-heading h1 {
-    font-size: 2.35rem;
-  }
-
-  .grand-poobaa-summary-grid,
-  .grand-poobaa-action-grid,
-  .grand-poobaa-coming-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .grand-poobaa-section {
-    margin-bottom: 2rem;
-    padding: 1.35rem;
-    border-radius: 20px;
-  }
-
-  .grand-poobaa-summary-card {
-    min-height: 120px;
-  }
-
-  .grand-poobaa-action-card {
-    min-height: 235px;
-  }
-}
-
-
-
-
-/* =========================================================
-   GRAND POOBAA ACTION-CARD DROPDOWNS
+   ACTION-CARD TRIGGERS
 ========================================================= */
 
 .grand-poobaa-dropdown-trigger {
-  width: 100%;
-  color: inherit;
-  font: inherit;
-  text-align: left;
+  appearance: none;
   cursor: pointer;
 }
 
 .grand-poobaa-dropdown-trigger:focus-visible {
-  outline: 3px solid rgba(78, 80, 162, 0.28);
+  outline: 3px solid rgba(74, 74, 178, 0.28);
   outline-offset: 4px;
 }
 
 .grand-poobaa-dropdown-trigger.is-open {
-  border-color: rgba(78, 80, 162, 0.38);
+  border-color: rgba(74, 74, 178, 0.42);
   box-shadow:
     0 18px 42px rgba(38, 34, 98, 0.14),
     inset 0 -5px 0 var(--gp-blue);
+}
+
+.grand-poobaa-dropdown-trigger.is-open:hover {
+  transform: none;
 }
 
 .grand-poobaa-dropdown-arrow {
@@ -863,14 +613,15 @@ html {
 
 
 /* =========================================================
-   DROPDOWN PANEL
+   DROPDOWN PANELS
 ========================================================= */
 
 .grand-poobaa-dropdown-panel {
-  margin-top: 1.75rem;
+  width: 100%;
+  margin-top: 0;
   overflow: hidden;
-  border: 1px solid rgba(78, 80, 162, 0.18);
-  border-radius: 22px;
+  border: 1px solid rgba(74, 74, 178, 0.2);
+  border-radius: 23px;
   background: #ffffff;
   box-shadow: var(--gp-shadow);
 }
@@ -886,7 +637,7 @@ html {
 @keyframes grandPoobaaDropdownOpen {
   from {
     opacity: 0;
-    transform: translateY(-12px);
+    transform: translateY(-10px);
   }
 
   to {
@@ -915,29 +666,26 @@ html {
     );
 }
 
-.grand-poobaa-dropdown-kicker {
-  margin: 0 0 0.4rem;
-  color: var(--gp-pink);
-  font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
+.grand-poobaa-dropdown-heading-copy {
+  min-width: 0;
 }
 
 .grand-poobaa-dropdown-heading h3 {
   margin: 0;
   color: var(--gp-navy);
-  font-size: 1.45rem;
+  font-size: 1.5rem;
   font-weight: 800;
+  line-height: 1.15;
   text-transform: lowercase;
 }
 
-.grand-poobaa-dropdown-heading p:last-child {
-  max-width: 700px;
+.grand-poobaa-dropdown-heading
+.grand-poobaa-dropdown-heading-copy > p:last-child {
+  max-width: 760px;
   margin: 0.65rem 0 0;
   color: var(--gp-muted);
   font-size: 0.88rem;
-  line-height: 1.55;
+  line-height: 1.6;
 }
 
 .grand-poobaa-dropdown-close {
@@ -947,7 +695,7 @@ html {
   flex: 0 0 40px;
   place-items: center;
   padding: 0;
-  border: 1px solid rgba(78, 80, 162, 0.12);
+  border: 1px solid rgba(74, 74, 178, 0.13);
   border-radius: 50%;
   background: #ffffff;
   color: var(--gp-blue);
@@ -965,19 +713,73 @@ html {
   transform: rotate(5deg);
 }
 
+.grand-poobaa-dropdown-close:focus-visible {
+  outline: 3px solid rgba(74, 74, 178, 0.22);
+  outline-offset: 3px;
+}
+
 
 /* =========================================================
-   ADMIN TABLE
+   PLACEHOLDER PANELS
+========================================================= */
+
+.grand-poobaa-placeholder-panel {
+  background:
+    linear-gradient(
+      180deg,
+      #ffffff 0%,
+      #fbfbfe 100%
+    );
+}
+
+.grand-poobaa-panel-placeholder {
+  display: flex;
+  min-height: 170px;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  color: var(--gp-muted);
+  text-align: left;
+}
+
+.grand-poobaa-panel-placeholder > ion-icon {
+  flex: 0 0 auto;
+  color: var(--gp-blue);
+  font-size: 2rem;
+}
+
+.grand-poobaa-panel-placeholder h4 {
+  margin: 0 0 0.35rem;
+  color: var(--gp-navy);
+  font-size: 1rem;
+  font-weight: 800;
+  text-transform: lowercase;
+}
+
+.grand-poobaa-panel-placeholder p {
+  max-width: 600px;
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.6;
+}
+
+
+/* =========================================================
+   TOPIC SUGGESTIONS TABLE
 ========================================================= */
 
 .grand-poobaa-table-scroll {
   width: 100%;
   overflow-x: auto;
+  scrollbar-color:
+    rgba(74, 74, 178, 0.28)
+    transparent;
 }
 
 .grand-poobaa-table {
   width: 100%;
-  min-width: 1180px;
+  min-width: 1200px;
   border-collapse: collapse;
   table-layout: fixed;
 }
@@ -1004,7 +806,7 @@ html {
 }
 
 .grand-poobaa-table tbody tr:hover {
-  background: rgba(78, 80, 162, 0.025);
+  background: rgba(74, 74, 178, 0.027);
 }
 
 .grand-poobaa-table tbody tr:last-child td {
@@ -1085,13 +887,14 @@ html {
   display: inline-flex;
   padding: 0.3rem 0.65rem;
   border-radius: 999px;
-  background: rgba(78, 80, 162, 0.09);
+  background: rgba(74, 74, 178, 0.09);
   color: var(--gp-blue);
   font-size: 0.7rem;
   font-weight: 800;
 }
 
-.grand-poobaa-table-meta small {
+.grand-poobaa-table-meta small,
+.grand-poobaa-table-missing {
   color: var(--gp-muted);
   font-size: 0.72rem;
 }
@@ -1129,7 +932,7 @@ html {
 
 .grand-poobaa-date-field input[type="date"] {
   width: 100%;
-  min-height: 40px;
+  min-height: 41px;
   padding: 0.55rem 0.7rem;
   border: 1px solid var(--gp-border);
   border-radius: 10px;
@@ -1141,13 +944,14 @@ html {
 .grand-poobaa-date-field input[type="date"]:focus {
   border-color: var(--gp-blue);
   outline: none;
-  box-shadow: 0 0 0 3px rgba(78, 80, 162, 0.12);
+  box-shadow:
+    0 0 0 3px rgba(74, 74, 178, 0.12);
 }
 
 .grand-poobaa-approve-button {
   display: inline-flex;
   width: 100%;
-  min-height: 40px;
+  min-height: 41px;
   align-items: center;
   justify-content: center;
   gap: 0.45rem;
@@ -1169,7 +973,13 @@ html {
 .grand-poobaa-approve-button:hover {
   background: var(--gp-blue);
   transform: translateY(-1px);
-  box-shadow: 0 7px 18px rgba(78, 80, 162, 0.2);
+  box-shadow:
+    0 7px 18px rgba(74, 74, 178, 0.2);
+}
+
+.grand-poobaa-approve-button:focus-visible {
+  outline: 3px solid rgba(74, 74, 178, 0.24);
+  outline-offset: 3px;
 }
 
 
@@ -1179,21 +989,23 @@ html {
 
 .grand-poobaa-empty-state {
   display: flex;
+  min-height: 150px;
   align-items: center;
+  justify-content: center;
   gap: 1rem;
   padding: 2rem;
 }
 
 .grand-poobaa-empty-icon {
   display: grid;
-  width: 48px;
-  height: 48px;
-  flex: 0 0 48px;
+  width: 50px;
+  height: 50px;
+  flex: 0 0 50px;
   place-items: center;
   border-radius: 50%;
-  background: rgba(78, 80, 162, 0.09);
-  color: var(--gp-blue);
-  font-size: 1.45rem;
+  background: var(--gp-success-soft);
+  color: var(--gp-success);
+  font-size: 1.5rem;
 }
 
 .grand-poobaa-empty-state h4 {
@@ -1212,10 +1024,145 @@ html {
 
 
 /* =========================================================
-   DROPDOWN RESPONSIVE
+   REPORTING PLACEHOLDER
+========================================================= */
+
+.grand-poobaa-reporting-section {
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(220, 23, 106, 0.055),
+      transparent 31%
+    ),
+    rgba(255, 255, 255, 0.78);
+}
+
+.grand-poobaa-reporting-placeholder {
+  display: flex;
+  min-height: 175px;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 2rem;
+  border: 1px dashed rgba(74, 74, 178, 0.28);
+  border-radius: 20px;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(248, 248, 253, 0.9),
+      rgba(238, 240, 250, 0.7)
+    );
+}
+
+.grand-poobaa-reporting-placeholder-icon {
+  display: grid;
+  width: 60px;
+  height: 60px;
+  flex: 0 0 60px;
+  place-items: center;
+  border-radius: 18px;
+  background: rgba(74, 74, 178, 0.1);
+  color: var(--gp-blue);
+  font-size: 1.8rem;
+}
+
+.grand-poobaa-reporting-placeholder h3 {
+  margin: 0 0 0.45rem;
+  color: var(--gp-navy);
+  font-size: 1.15rem;
+  font-weight: 800;
+  text-transform: lowercase;
+}
+
+.grand-poobaa-reporting-placeholder p {
+  max-width: 760px;
+  margin: 0;
+  color: var(--gp-muted);
+  font-size: 0.88rem;
+  line-height: 1.65;
+}
+
+
+/* =========================================================
+   RESPONSIVE: LARGE LAPTOP
+========================================================= */
+
+@media screen and (max-width: 1450px) {
+  .grand-poobaa-action-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .grand-poobaa-action-module.is-open {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+
+/* =========================================================
+   RESPONSIVE: TABLET LANDSCAPE
+========================================================= */
+
+@media screen and (max-width: 1100px) {
+  .grand-poobaa-content {
+    padding:
+      2.5rem
+      clamp(1.25rem, 3vw, 2.5rem)
+      5rem;
+  }
+
+  .grand-poobaa-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .grand-poobaa-action-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .grand-poobaa-action-module.is-open {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .grand-poobaa-page-heading {
+    align-items: flex-start;
+  }
+}
+
+
+/* =========================================================
+   RESPONSIVE: TABLET PORTRAIT
 ========================================================= */
 
 @media screen and (max-width: 800px) {
+  .grand-poobaa-header {
+    padding: 0 1.5rem;
+  }
+
+  .grand-poobaa-content {
+    padding: 2rem 1.25rem 4rem;
+  }
+
+  .grand-poobaa-page-heading,
+  .grand-poobaa-section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .grand-poobaa-page-heading {
+    gap: 1.75rem;
+    padding: 2rem;
+  }
+
+  .grand-poobaa-heading-date {
+    align-items: flex-start;
+  }
+
+  .grand-poobaa-section-heading {
+    gap: 1.25rem;
+  }
+
+  .grand-poobaa-section-heading > p {
+    max-width: none;
+  }
+
   .grand-poobaa-dropdown-heading {
     padding: 1.4rem;
   }
@@ -1226,9 +1173,67 @@ html {
   }
 }
 
+
+/* =========================================================
+   RESPONSIVE: MOBILE
+========================================================= */
+
 @media screen and (max-width: 620px) {
+  .grand-poobaa-header-title,
+  .grand-poobaa-user-copy {
+    display: none;
+  }
+
+  .grand-poobaa-content {
+    padding: 1.25rem 0.85rem 3rem;
+  }
+
+  .grand-poobaa-page-heading {
+    margin-bottom: 1.4rem;
+    padding: 1.5rem;
+    border-radius: 21px;
+  }
+
+  .grand-poobaa-page-heading h1 {
+    font-size: 2.45rem;
+  }
+
+  .grand-poobaa-heading-date {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .grand-poobaa-summary-grid,
+  .grand-poobaa-action-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .grand-poobaa-action-module.is-open {
+    grid-template-columns: 1fr;
+  }
+
+  .grand-poobaa-action-module.is-open
+  .grand-poobaa-action-card,
+  .grand-poobaa-action-module.is-open
   .grand-poobaa-dropdown-panel {
-    margin-top: 1.25rem;
+    grid-column: 1;
+  }
+
+  .grand-poobaa-section {
+    margin-bottom: 2rem;
+    padding: 1.15rem;
+    border-radius: 21px;
+  }
+
+  .grand-poobaa-summary-card {
+    min-height: 115px;
+  }
+
+  .grand-poobaa-action-card {
+    min-height: 205px;
+  }
+
+  .grand-poobaa-dropdown-panel {
     border-radius: 18px;
   }
 
@@ -1241,11 +1246,19 @@ html {
     font-size: 1.25rem;
   }
 
-  .grand-poobaa-empty-state {
+  .grand-poobaa-panel-placeholder,
+  .grand-poobaa-empty-state,
+  .grand-poobaa-reporting-placeholder {
     align-items: flex-start;
+    flex-direction: column;
     padding: 1.4rem;
   }
 }
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
   .grand-poobaa-dropdown-panel.is-open {
@@ -1254,7 +1267,15 @@ html {
 
   .grand-poobaa-dropdown-arrow,
   .grand-poobaa-action-card,
-  .grand-poobaa-dropdown-close {
+  .grand-poobaa-summary-card,
+  .grand-poobaa-dropdown-close,
+  .grand-poobaa-approve-button {
     transition: none;
+  }
+
+  .grand-poobaa-action-card:hover,
+  .grand-poobaa-summary-card:hover,
+  .grand-poobaa-approve-button:hover {
+    transform: none;
   }
 }
