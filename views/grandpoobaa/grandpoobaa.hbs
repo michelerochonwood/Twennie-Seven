@@ -709,120 +709,433 @@
 </div>
 
 
-      {{!-- =================================================
-           DEMO REQUESTS MODULE
-      ================================================== --}}
-      <div
-        class="grand-poobaa-action-module"
-        data-grand-poobaa-module
+{{!-- =================================================
+     DEMO REQUESTS MODULE
+================================================== --}}
+<div
+  class="grand-poobaa-action-module"
+  data-grand-poobaa-module
+>
+
+  <button
+    type="button"
+    class="grand-poobaa-action-card grand-poobaa-dropdown-trigger"
+    id="demo-requests-trigger"
+    data-dropdown-trigger="demo-requests-panel"
+    aria-expanded="false"
+    aria-controls="demo-requests-panel"
+  >
+
+    <div class="grand-poobaa-action-card-top">
+
+      <div class="grand-poobaa-action-icon">
+        <ion-icon name="desktop-outline"></ion-icon>
+      </div>
+
+      <span class="grand-poobaa-action-count">
+        {{#if demoRequestCount}}
+          {{demoRequestCount}}
+        {{else}}
+          0
+        {{/if}}
+      </span>
+
+    </div>
+
+
+    <div class="grand-poobaa-action-card-copy">
+
+      <h3>demo requests</h3>
+
+      <p>
+        Review organizations and professionals interested in learning more
+        about Twennie.
+      </p>
+
+    </div>
+
+
+    <span class="grand-poobaa-action-link">
+
+      <span>review requests</span>
+
+      <ion-icon
+        class="grand-poobaa-dropdown-arrow"
+        name="chevron-down-outline"
+      ></ion-icon>
+
+    </span>
+
+  </button>
+
+
+  <div
+    class="grand-poobaa-dropdown-panel"
+    id="demo-requests-panel"
+    data-dropdown-panel
+    aria-labelledby="demo-requests-trigger"
+    hidden
+  >
+
+    <div class="grand-poobaa-dropdown-heading">
+
+      <div class="grand-poobaa-dropdown-heading-copy">
+
+        <p class="grand-poobaa-dropdown-kicker">
+          sales opportunities
+        </p>
+
+        <h3>demo requests</h3>
+
+        <p>
+          Review prospective clients, contact them, record when a demonstration
+          has been scheduled, and close completed requests.
+        </p>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="grand-poobaa-dropdown-close"
+        data-close-dropdown="demo-requests-panel"
+        aria-label="Close demo requests"
       >
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
 
-        <button
-          type="button"
-          class="grand-poobaa-action-card grand-poobaa-dropdown-trigger"
-          id="demo-requests-trigger"
-          data-dropdown-trigger="demo-requests-panel"
-          aria-expanded="false"
-          aria-controls="demo-requests-panel"
-        >
+    </div>
 
-          <div class="grand-poobaa-action-card-top">
 
-            <div class="grand-poobaa-action-icon">
-              <ion-icon name="desktop-outline"></ion-icon>
+    {{#if demoRequests.length}}
+
+      <div class="grand-poobaa-demo-grid">
+
+        {{#each demoRequests}}
+
+          <article class="grand-poobaa-demo-card">
+
+            <div class="grand-poobaa-demo-header">
+
+              <div>
+
+                <h4>
+                  {{#if this.name}}
+                    {{this.name}}
+                  {{else}}
+                    unnamed prospect
+                  {{/if}}
+                </h4>
+
+                {{#if this.organization}}
+                  <p class="grand-poobaa-demo-organization">
+                    {{this.organization}}
+                  </p>
+                {{/if}}
+
+              </div>
+
+
+              <div class="grand-poobaa-demo-header-meta">
+
+                {{#if this.isScheduled}}
+
+                  <span
+                    class="
+                      grand-poobaa-demo-status
+                      grand-poobaa-demo-status-scheduled
+                    "
+                  >
+                    <ion-icon name="calendar-outline"></ion-icon>
+                    scheduled
+                  </span>
+
+                {{else}}
+
+                  <span
+                    class="
+                      grand-poobaa-demo-status
+                      grand-poobaa-demo-status-new
+                    "
+                  >
+                    <ion-icon name="sparkles-outline"></ion-icon>
+                    new
+                  </span>
+
+                {{/if}}
+
+
+                {{#if this.createdAtDisplay}}
+
+                  <time
+                    class="grand-poobaa-demo-date"
+                    datetime="{{this.createdAtISO}}"
+                  >
+                    received {{this.createdAtDisplay}}
+                  </time>
+
+                {{else}}
+
+                  <span class="grand-poobaa-demo-date">
+                    date unavailable
+                  </span>
+
+                {{/if}}
+
+              </div>
+
             </div>
 
-            <span class="grand-poobaa-action-count">
-              {{#if demoRequestCount}}
-                {{demoRequestCount}}
+
+            <div class="grand-poobaa-demo-details">
+
+              <div>
+
+                <span class="grand-poobaa-demo-field-label">
+                  email
+                </span>
+
+                {{#if this.email}}
+
+                  <a href="mailto:{{this.email}}">
+                    {{this.email}}
+                  </a>
+
+                {{else}}
+
+                  <span class="grand-poobaa-table-missing">
+                    no email provided
+                  </span>
+
+                {{/if}}
+
+              </div>
+
+
+              <div>
+
+                <span class="grand-poobaa-demo-field-label">
+                  job title
+                </span>
+
+                <span>
+
+                  {{#if this.jobTitle}}
+                    {{this.jobTitle}}
+                  {{else}}
+                    not provided
+                  {{/if}}
+
+                </span>
+
+              </div>
+
+
+              <div>
+
+                <span class="grand-poobaa-demo-field-label">
+                  organization
+                </span>
+
+                <span>
+
+                  {{#if this.organization}}
+                    {{this.organization}}
+                  {{else}}
+                    not provided
+                  {{/if}}
+
+                </span>
+
+              </div>
+
+
+              <div>
+
+                <span class="grand-poobaa-demo-field-label">
+                  team size
+                </span>
+
+                <span>
+
+                  {{#if this.teamSize}}
+                    {{this.teamSize}}
+                  {{else}}
+                    not provided
+                  {{/if}}
+
+                </span>
+
+              </div>
+
+            </div>
+
+
+            {{#if this.isScheduled}}
+
+              <div class="grand-poobaa-demo-scheduled-note">
+
+                <ion-icon name="calendar-outline"></ion-icon>
+
+                <div>
+
+                  <strong>marked as scheduled</strong>
+
+                  {{#if this.scheduledAtDisplay}}
+
+                    <time datetime="{{this.scheduledAtISO}}">
+                      {{this.scheduledAtDisplay}}
+                    </time>
+
+                  {{else}}
+
+                    <span>
+                      Scheduling date unavailable
+                    </span>
+
+                  {{/if}}
+
+                </div>
+
+              </div>
+
+            {{/if}}
+
+
+            <div class="grand-poobaa-demo-message">
+
+              <span class="grand-poobaa-demo-field-label">
+                message
+              </span>
+
+              {{#if this.message}}
+
+                <p>
+                  {{this.message}}
+                </p>
+
               {{else}}
-                0
+
+                <p class="grand-poobaa-demo-message-empty">
+                  No additional message was submitted.
+                </p>
+
               {{/if}}
-            </span>
-
-          </div>
-
-
-          <div class="grand-poobaa-action-card-copy">
-
-            <h3>demo requests</h3>
-
-            <p>
-              Review requests from organizations interested in Twennie.
-            </p>
-
-          </div>
-
-
-          <span class="grand-poobaa-action-link">
-
-            <span>review demo requests</span>
-
-            <ion-icon
-              class="grand-poobaa-dropdown-arrow"
-              name="chevron-down-outline"
-            ></ion-icon>
-
-          </span>
-
-        </button>
-
-
-        <div
-          class="grand-poobaa-dropdown-panel grand-poobaa-placeholder-panel"
-          id="demo-requests-panel"
-          data-dropdown-panel
-          aria-labelledby="demo-requests-trigger"
-          hidden
-        >
-
-          <div class="grand-poobaa-dropdown-heading">
-
-            <div class="grand-poobaa-dropdown-heading-copy">
-
-              <p class="grand-poobaa-dropdown-kicker">
-                sales administration
-              </p>
-
-              <h3>demo requests</h3>
-
-              <p>
-                The demo-request review tools will be added to this panel.
-              </p>
 
             </div>
 
 
-            <button
-              type="button"
-              class="grand-poobaa-dropdown-close"
-              data-close-dropdown="demo-requests-panel"
-              aria-label="Close demo requests"
-            >
-              <ion-icon name="close-outline"></ion-icon>
-            </button>
+            <div class="grand-poobaa-demo-actions">
 
-          </div>
+              {{#if this.email}}
+
+                <a
+                  href="mailto:{{this.email}}?subject=Your%20Twennie%20demonstration%20request"
+                  class="
+                    grand-poobaa-demo-action-button
+                    grand-poobaa-demo-action-button-email
+                  "
+                >
+                  <ion-icon name="mail-outline"></ion-icon>
+                  email prospect
+                </a>
+
+              {{/if}}
 
 
-          {{!-- Demo request interface will be written later. --}}
-          <div class="grand-poobaa-panel-placeholder">
+              {{#unless this.isScheduled}}
 
-            <ion-icon name="build-outline"></ion-icon>
+                <form
+                  action="/grand-poobaa/demo-requests/{{this._id}}/schedule"
+                  method="POST"
+                  class="grand-poobaa-demo-action-form"
+                >
 
-            <div>
-              <h4>panel ready for development</h4>
+                  {{#if ../csrfToken}}
+                    <input
+                      type="hidden"
+                      name="_csrf"
+                      value="{{../csrfToken}}"
+                    >
+                  {{/if}}
 
-              <p>
-                Demo-request details and response actions will appear here.
-              </p>
+                  <button
+                    type="submit"
+                    class="
+                      grand-poobaa-demo-action-button
+                      grand-poobaa-demo-action-button-schedule
+                    "
+                  >
+                    <ion-icon name="calendar-outline"></ion-icon>
+                    mark scheduled
+                  </button>
+
+                </form>
+
+              {{/unless}}
+
+
+              <form
+                action="/grand-poobaa/demo-requests/{{this._id}}/complete"
+                method="POST"
+                class="grand-poobaa-demo-action-form"
+                onsubmit="return confirm('Mark this demo request as complete?');"
+              >
+
+                {{#if ../csrfToken}}
+                  <input
+                    type="hidden"
+                    name="_csrf"
+                    value="{{../csrfToken}}"
+                  >
+                {{/if}}
+
+                <button
+                  type="submit"
+                  class="
+                    grand-poobaa-demo-action-button
+                    grand-poobaa-demo-action-button-complete
+                  "
+                >
+                  <ion-icon name="checkmark-outline"></ion-icon>
+                  mark complete
+                </button>
+
+              </form>
+
             </div>
 
-          </div>
+          </article>
+
+        {{/each}}
+
+      </div>
+
+    {{else}}
+
+      <div class="grand-poobaa-empty-state">
+
+        <div class="grand-poobaa-empty-icon">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+        </div>
+
+        <div>
+
+          <h4>no active demo requests</h4>
+
+          <p>
+            There are currently no demo requests waiting for attention.
+          </p>
 
         </div>
 
       </div>
+
+    {{/if}}
+
+  </div>
+
+</div>
 
 
       {{!-- =================================================

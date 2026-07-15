@@ -1,5 +1,3 @@
-// models/DemoRequest.js
-// models/DemoRequest.js
 const mongoose = require('mongoose');
 
 const demoRequestSchema = new mongoose.Schema(
@@ -19,13 +17,11 @@ const demoRequestSchema = new mongoose.Schema(
 
     organization: {
       type: String,
-      required: false,
       trim: true
     },
 
     jobTitle: {
       type: String,
-      required: false,
       trim: true
     },
 
@@ -34,17 +30,34 @@ const demoRequestSchema = new mongoose.Schema(
       trim: true
     },
 
-
     message: {
       type: String,
       trim: true
     },
 
+    status: {
+      type: String,
+      enum: ['new', 'scheduled', 'completed'],
+      default: 'new',
+      index: true
+    },
 
+    scheduledAt: {
+      type: Date,
+      default: null
+    },
+
+    completedAt: {
+      type: Date,
+      default: null
+    }
   },
   {
     timestamps: true
   }
 );
 
-module.exports = mongoose.model('DemoRequest', demoRequestSchema);
+module.exports = mongoose.model(
+  'DemoRequest',
+  demoRequestSchema
+);

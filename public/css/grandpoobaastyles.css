@@ -1362,3 +1362,505 @@ html {
   color: var(--gp-muted);
   line-height: 1.55;
 }
+
+
+
+
+/* =========================================================
+   DEMO REQUESTS
+========================================================= */
+
+.grand-poobaa-demo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.35rem;
+  padding: 1.5rem;
+}
+
+.grand-poobaa-demo-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  padding: 1.5rem;
+  border: 1px solid var(--gp-border);
+  border-radius: 20px;
+  background:
+    linear-gradient(
+      145deg,
+      #ffffff 0%,
+      #fafaff 100%
+    );
+  box-shadow: var(--gp-shadow-small);
+}
+
+.grand-poobaa-demo-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--gp-border);
+}
+
+.grand-poobaa-demo-header h4 {
+  margin: 0;
+  color: var(--gp-navy);
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.grand-poobaa-demo-date {
+  flex: 0 0 auto;
+  color: var(--gp-muted);
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.grand-poobaa-demo-details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 1.25rem;
+}
+
+.grand-poobaa-demo-details > div,
+.grand-poobaa-demo-message {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.grand-poobaa-demo-details label,
+.grand-poobaa-demo-message label {
+  color: var(--gp-muted);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.grand-poobaa-demo-details span,
+.grand-poobaa-demo-details a {
+  color: var(--gp-text);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.grand-poobaa-demo-details a {
+  color: var(--gp-blue);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.grand-poobaa-demo-details a:hover {
+  text-decoration: underline;
+}
+
+.grand-poobaa-demo-message {
+  margin-top: 1.25rem;
+  padding: 1rem;
+  border: 1px solid rgba(74, 74, 178, 0.1);
+  border-radius: 14px;
+  background: var(--gp-surface-soft);
+}
+
+.grand-poobaa-demo-message p {
+  margin: 0;
+  color: var(--gp-muted);
+  font-size: 0.84rem;
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+.grand-poobaa-demo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-top: auto;
+  padding-top: 1.35rem;
+}
+
+.grand-poobaa-demo-action-button {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.65rem 1rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 800;
+  line-height: 1;
+  text-decoration: none;
+  text-transform: lowercase;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.grand-poobaa-demo-action-button:hover {
+  transform: translateY(-1px);
+}
+
+.grand-poobaa-demo-action-button:focus-visible {
+  outline: 3px solid rgba(74, 74, 178, 0.22);
+  outline-offset: 3px;
+}
+
+
+/* Email prospect */
+
+.grand-poobaa-demo-action-button-email {
+  background: var(--gp-navy);
+  color: #ffffff;
+}
+
+.grand-poobaa-demo-action-button-email:hover {
+  background: var(--gp-blue);
+  color: #ffffff;
+  box-shadow:
+    0 7px 18px rgba(74, 74, 178, 0.2);
+}
+
+
+/* Schedule demo */
+
+.grand-poobaa-demo-action-button-schedule {
+  border-color: rgba(74, 74, 178, 0.18);
+  background: rgba(74, 74, 178, 0.08);
+  color: var(--gp-blue);
+}
+
+.grand-poobaa-demo-action-button-schedule:hover {
+  border-color: var(--gp-blue);
+  background: var(--gp-blue);
+  color: #ffffff;
+}
+
+
+/* Mark complete */
+
+.grand-poobaa-demo-action-button-complete {
+  border-color: rgba(47, 143, 102, 0.2);
+  background: var(--gp-success-soft);
+  color: var(--gp-success);
+}
+
+.grand-poobaa-demo-action-button-complete:hover {
+  border-color: var(--gp-success);
+  background: var(--gp-success);
+  color: #ffffff;
+}
+
+
+/* Keep button forms from adding layout spacing */
+
+.grand-poobaa-demo-action-form {
+  margin: 0;
+}
+
+
+/* =========================================================
+   DEMO REQUEST RESPONSIVE
+========================================================= */
+
+@media screen and (max-width: 1100px) {
+  .grand-poobaa-demo-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media screen and (max-width: 620px) {
+  .grand-poobaa-demo-grid {
+    padding: 1rem;
+  }
+
+  .grand-poobaa-demo-card {
+    padding: 1.2rem;
+  }
+
+  .grand-poobaa-demo-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .grand-poobaa-demo-details {
+    grid-template-columns: 1fr;
+  }
+
+  .grand-poobaa-demo-actions {
+    flex-direction: column;
+  }
+
+  .grand-poobaa-demo-action-button,
+  .grand-poobaa-demo-action-form {
+    width: 100%;
+  }
+}
+
+
+/* =========================================================
+   DEMO REQUEST STATUS
+========================================================= */
+
+.grand-poobaa-demo-organization {
+  margin: 0.35rem 0 0;
+  color: var(--gp-muted);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.grand-poobaa-demo-header-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.grand-poobaa-demo-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  line-height: 1;
+  text-transform: lowercase;
+}
+
+.grand-poobaa-demo-status ion-icon {
+  font-size: 0.9rem;
+}
+
+
+/* =========================================================
+   NEW LEAD
+========================================================= */
+
+.grand-poobaa-demo-status-new {
+  background: rgba(247, 148, 29, 0.12);
+  color: #d87500;
+}
+
+
+/* =========================================================
+   SCHEDULED
+========================================================= */
+
+.grand-poobaa-demo-status-scheduled {
+  background: rgba(74, 74, 178, 0.10);
+  color: var(--gp-blue);
+}
+
+
+/* =========================================================
+   FIELD LABELS
+========================================================= */
+
+.grand-poobaa-demo-field-label {
+  color: var(--gp-muted);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+
+/* =========================================================
+   SCHEDULED NOTE
+========================================================= */
+
+.grand-poobaa-demo-scheduled-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  margin-top: 1.25rem;
+  padding: 1rem;
+  border: 1px solid rgba(74, 74, 178, 0.12);
+  border-radius: 14px;
+  background: rgba(74, 74, 178, 0.05);
+}
+
+.grand-poobaa-demo-scheduled-note ion-icon {
+  margin-top: 0.1rem;
+  color: var(--gp-blue);
+  font-size: 1.15rem;
+}
+
+.grand-poobaa-demo-scheduled-note strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: var(--gp-navy);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.grand-poobaa-demo-scheduled-note time,
+.grand-poobaa-demo-scheduled-note span {
+  color: var(--gp-muted);
+  font-size: 0.78rem;
+}
+
+
+/* =========================================================
+   MESSAGE AREA
+========================================================= */
+
+.grand-poobaa-demo-message {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: 1.25rem;
+  padding: 1rem;
+  border: 1px solid rgba(74, 74, 178, 0.10);
+  border-radius: 14px;
+  background: var(--gp-surface-soft);
+}
+
+.grand-poobaa-demo-message p {
+  margin: 0;
+  color: var(--gp-text);
+  font-size: 0.84rem;
+  line-height: 1.65;
+  white-space: pre-wrap;
+}
+
+.grand-poobaa-demo-message-empty {
+  color: var(--gp-muted) !important;
+  font-style: italic;
+}
+
+
+/* =========================================================
+   ACTION AREA
+========================================================= */
+
+.grand-poobaa-demo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: auto;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(226, 227, 239, 0.8);
+}
+
+.grand-poobaa-demo-action-form {
+  margin: 0;
+}
+
+.grand-poobaa-demo-action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 42px;
+  padding: 0.7rem 1.05rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 800;
+  line-height: 1;
+  text-decoration: none;
+  text-transform: lowercase;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.grand-poobaa-demo-action-button ion-icon {
+  font-size: 1rem;
+}
+
+.grand-poobaa-demo-action-button:hover {
+  transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   EMAIL
+========================================================= */
+
+.grand-poobaa-demo-action-button-email {
+  background: var(--gp-navy);
+  color: #ffffff;
+}
+
+.grand-poobaa-demo-action-button-email:hover {
+  background: var(--gp-blue);
+  color: #ffffff;
+  box-shadow: 0 7px 18px rgba(74, 74, 178, 0.22);
+}
+
+
+/* =========================================================
+   SCHEDULE
+========================================================= */
+
+.grand-poobaa-demo-action-button-schedule {
+  border-color: rgba(74, 74, 178, 0.18);
+  background: rgba(74, 74, 178, 0.08);
+  color: var(--gp-blue);
+}
+
+.grand-poobaa-demo-action-button-schedule:hover {
+  background: var(--gp-blue);
+  border-color: var(--gp-blue);
+  color: #ffffff;
+}
+
+
+/* =========================================================
+   COMPLETE
+========================================================= */
+
+.grand-poobaa-demo-action-button-complete {
+  border-color: rgba(47, 143, 102, 0.22);
+  background: rgba(47, 143, 102, 0.08);
+  color: var(--gp-success);
+}
+
+.grand-poobaa-demo-action-button-complete:hover {
+  background: var(--gp-success);
+  border-color: var(--gp-success);
+  color: #ffffff;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media screen and (max-width: 800px) {
+
+  .grand-poobaa-demo-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .grand-poobaa-demo-header-meta {
+    align-items: flex-start;
+  }
+
+  .grand-poobaa-demo-actions {
+    flex-direction: column;
+  }
+
+  .grand-poobaa-demo-action-form,
+  .grand-poobaa-demo-action-button {
+    width: 100%;
+  }
+
+}
