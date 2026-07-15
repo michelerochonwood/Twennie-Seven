@@ -1,0 +1,530 @@
+/* =========================================================
+   GRAND POOBAA SHELL
+========================================================= */
+
+:root {
+  --gp-background: #f3f5f8;
+  --gp-surface: #ffffff;
+  --gp-border: #dfe5ec;
+  --gp-text: #172033;
+  --gp-muted: #697386;
+  --gp-blue: #1c6fb8;
+  --gp-blue-dark: #15558d;
+  --gp-sidebar: #12233c;
+  --gp-sidebar-muted: #9cafc7;
+  --gp-sidebar-hover: rgba(255, 255, 255, 0.08);
+  --gp-shadow: 0 12px 30px rgba(29, 45, 72, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.grand-poobaa-body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--gp-background);
+  color: var(--gp-text);
+}
+
+.grand-poobaa-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.grand-poobaa-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.grand-poobaa-content {
+  padding: 2.5rem;
+}
+
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.grand-poobaa-sidebar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  width: 260px;
+  height: 100vh;
+  flex-shrink: 0;
+  padding: 1.5rem 1rem;
+  background: var(--gp-sidebar);
+  color: #ffffff;
+}
+
+.grand-poobaa-sidebar-brand {
+  padding: 0.5rem 0.75rem 2rem;
+}
+
+.grand-poobaa-brand-link {
+  display: flex;
+  flex-direction: column;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.grand-poobaa-brand-name {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.grand-poobaa-brand-label {
+  margin-top: 0.35rem;
+  color: var(--gp-sidebar-muted);
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.grand-poobaa-navigation {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.grand-poobaa-nav-heading {
+  margin: 1.4rem 0.75rem 0.5rem;
+  color: var(--gp-sidebar-muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.grand-poobaa-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  min-height: 44px;
+  padding: 0.7rem 0.8rem;
+  border-radius: 8px;
+  color: #e7edf5;
+  text-decoration: none;
+  font-size: 0.92rem;
+  transition:
+    background 160ms ease,
+    color 160ms ease;
+}
+
+.grand-poobaa-nav-link ion-icon {
+  flex-shrink: 0;
+  font-size: 1.15rem;
+}
+
+.grand-poobaa-nav-link:hover,
+.grand-poobaa-nav-link.is-active {
+  background: var(--gp-sidebar-hover);
+  color: #ffffff;
+}
+
+.grand-poobaa-nav-link.is-active {
+  font-weight: 700;
+}
+
+.grand-poobaa-nav-link.is-disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.grand-poobaa-sidebar-bottom {
+  margin-top: auto;
+  padding: 1rem 0.75rem 0;
+}
+
+.grand-poobaa-return-link {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: var(--gp-sidebar-muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+
+.grand-poobaa-return-link:hover {
+  color: #ffffff;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.grand-poobaa-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 74px;
+  padding: 0 2.5rem;
+  border-bottom: 1px solid var(--gp-border);
+  background: var(--gp-surface);
+}
+
+.grand-poobaa-menu-button {
+  display: none;
+  border: 0;
+  background: none;
+  color: var(--gp-text);
+  cursor: pointer;
+  font-size: 1.6rem;
+}
+
+.grand-poobaa-header-title {
+  color: var(--gp-muted);
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.grand-poobaa-header-user {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.grand-poobaa-user-copy {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+}
+
+.grand-poobaa-user-copy strong {
+  font-size: 0.88rem;
+}
+
+.grand-poobaa-user-copy span {
+  color: var(--gp-muted);
+  font-size: 0.72rem;
+}
+
+.grand-poobaa-user-icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--gp-background);
+  color: var(--gp-blue);
+}
+
+
+/* =========================================================
+   PAGE HEADING
+========================================================= */
+
+.grand-poobaa-page {
+  width: min(1500px, 100%);
+  margin: 0 auto;
+}
+
+.grand-poobaa-page-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.grand-poobaa-eyebrow,
+.grand-poobaa-section-kicker {
+  margin: 0 0 0.4rem;
+  color: var(--gp-blue);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.grand-poobaa-page-heading h1,
+.grand-poobaa-section-heading h2 {
+  margin: 0;
+  color: var(--gp-text);
+}
+
+.grand-poobaa-page-heading h1 {
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  line-height: 1;
+}
+
+.grand-poobaa-page-intro {
+  max-width: 650px;
+  margin: 0.8rem 0 0;
+  color: var(--gp-muted);
+  line-height: 1.6;
+}
+
+.grand-poobaa-heading-date {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.grand-poobaa-heading-date span {
+  color: var(--gp-muted);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+}
+
+.grand-poobaa-heading-date strong {
+  margin-top: 0.2rem;
+  font-size: 0.95rem;
+}
+
+
+/* =========================================================
+   SUMMARY CARDS
+========================================================= */
+
+.grand-poobaa-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+.grand-poobaa-summary-card {
+  display: flex;
+  min-height: 120px;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.3rem;
+  border: 1px solid var(--gp-border);
+  border-radius: 12px;
+  background: var(--gp-surface);
+  box-shadow: var(--gp-shadow);
+}
+
+.grand-poobaa-summary-label {
+  color: var(--gp-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.grand-poobaa-summary-number {
+  font-size: 2.3rem;
+  line-height: 1;
+}
+
+
+/* =========================================================
+   SECTIONS
+========================================================= */
+
+.grand-poobaa-section {
+  margin-bottom: 3.5rem;
+}
+
+.grand-poobaa-section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 1.4rem;
+}
+
+.grand-poobaa-section-heading h2 {
+  font-size: 1.55rem;
+}
+
+.grand-poobaa-section-heading > p {
+  max-width: 580px;
+  margin: 0;
+  color: var(--gp-muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+
+/* =========================================================
+   ACTION CARDS
+========================================================= */
+
+.grand-poobaa-action-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.2rem;
+}
+
+.grand-poobaa-action-card {
+  display: flex;
+  min-height: 245px;
+  flex-direction: column;
+  padding: 1.4rem;
+  border: 1px solid var(--gp-border);
+  border-radius: 14px;
+  background: var(--gp-surface);
+  box-shadow: var(--gp-shadow);
+}
+
+.grand-poobaa-action-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.grand-poobaa-action-icon {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border-radius: 10px;
+  background: rgba(28, 111, 184, 0.1);
+  color: var(--gp-blue);
+  font-size: 1.3rem;
+}
+
+.grand-poobaa-action-count {
+  display: grid;
+  min-width: 34px;
+  height: 34px;
+  padding: 0 0.6rem;
+  place-items: center;
+  border-radius: 20px;
+  background: var(--gp-background);
+  color: var(--gp-text);
+  font-weight: 800;
+}
+
+.grand-poobaa-action-card-copy {
+  margin: 1.3rem 0;
+}
+
+.grand-poobaa-action-card-copy h3 {
+  margin: 0 0 0.55rem;
+  font-size: 1.08rem;
+}
+
+.grand-poobaa-action-card-copy p {
+  margin: 0;
+  color: var(--gp-muted);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.grand-poobaa-action-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: auto;
+  color: var(--gp-blue);
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-decoration: none;
+  text-transform: lowercase;
+}
+
+.grand-poobaa-action-link:hover {
+  color: var(--gp-blue-dark);
+}
+
+
+/* =========================================================
+   COMING NEXT
+========================================================= */
+
+.grand-poobaa-coming-section {
+  padding-top: 0.5rem;
+}
+
+.grand-poobaa-coming-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.grand-poobaa-coming-card {
+  display: flex;
+  min-height: 105px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  border: 1px dashed var(--gp-border);
+  border-radius: 12px;
+  color: var(--gp-muted);
+  text-align: center;
+}
+
+.grand-poobaa-coming-card ion-icon {
+  font-size: 1.35rem;
+}
+
+.grand-poobaa-coming-card span {
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: lowercase;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1100px) {
+  .grand-poobaa-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .grand-poobaa-action-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .grand-poobaa-coming-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 800px) {
+  .grand-poobaa-sidebar {
+    display: none;
+  }
+
+  .grand-poobaa-menu-button {
+    display: block;
+  }
+
+  .grand-poobaa-header,
+  .grand-poobaa-content {
+    padding-right: 1.25rem;
+    padding-left: 1.25rem;
+  }
+
+  .grand-poobaa-page-heading,
+  .grand-poobaa-section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .grand-poobaa-heading-date {
+    align-items: flex-start;
+  }
+
+  .grand-poobaa-section-heading > p {
+    max-width: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .grand-poobaa-summary-grid,
+  .grand-poobaa-action-grid,
+  .grand-poobaa-coming-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .grand-poobaa-header-title,
+  .grand-poobaa-user-copy {
+    display: none;
+  }
+
+  .grand-poobaa-content {
+    padding-top: 1.5rem;
+  }
+}

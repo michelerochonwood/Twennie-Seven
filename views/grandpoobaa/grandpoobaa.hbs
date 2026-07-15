@@ -1,0 +1,293 @@
+<div class="grand-poobaa-page">
+
+  <section class="grand-poobaa-page-heading">
+    <div>
+      <p class="grand-poobaa-eyebrow">Twennie administration</p>
+      <h1>grand poobaa dashboard</h1>
+      <p class="grand-poobaa-page-intro">
+        Review items requiring attention and manage activity across Twennie.
+      </p>
+    </div>
+
+    <div class="grand-poobaa-heading-date">
+      <span>today</span>
+      <strong>{{currentDate}}</strong>
+    </div>
+  </section>
+
+
+  <section class="grand-poobaa-summary-grid">
+
+    <article class="grand-poobaa-summary-card">
+      <span class="grand-poobaa-summary-label">requires attention</span>
+      <strong class="grand-poobaa-summary-number">
+        {{#if totalActionItems}}{{totalActionItems}}{{else}}0{{/if}}
+      </strong>
+    </article>
+
+    <article class="grand-poobaa-summary-card">
+      <span class="grand-poobaa-summary-label">new today</span>
+      <strong class="grand-poobaa-summary-number">
+        {{#if newToday}}{{newToday}}{{else}}0{{/if}}
+      </strong>
+    </article>
+
+    <article class="grand-poobaa-summary-card">
+      <span class="grand-poobaa-summary-label">members</span>
+      <strong class="grand-poobaa-summary-number">
+        {{#if totalMembers}}{{totalMembers}}{{else}}0{{/if}}
+      </strong>
+    </article>
+
+    <article class="grand-poobaa-summary-card">
+      <span class="grand-poobaa-summary-label">organizations</span>
+      <strong class="grand-poobaa-summary-number">
+        {{#if totalOrganizations}}{{totalOrganizations}}{{else}}0{{/if}}
+      </strong>
+    </article>
+
+  </section>
+
+
+  <section class="grand-poobaa-section">
+
+    <div class="grand-poobaa-section-heading">
+      <div>
+        <p class="grand-poobaa-section-kicker">action centre</p>
+        <h2>items requiring attention</h2>
+      </div>
+
+      <p>
+        These are the administrative items that may require an immediate
+        response, review, or decision.
+      </p>
+    </div>
+
+
+    <div class="grand-poobaa-action-grid">
+
+      <article class="grand-poobaa-action-card">
+
+        <div class="grand-poobaa-action-card-top">
+          <div class="grand-poobaa-action-icon">
+            <ion-icon name="bulb-outline"></ion-icon>
+          </div>
+
+          <span class="grand-poobaa-action-count">
+            {{#if topicSuggestionCount}}
+              {{topicSuggestionCount}}
+            {{else}}
+              0
+            {{/if}}
+          </span>
+        </div>
+
+        <div class="grand-poobaa-action-card-copy">
+          <h3>new topic suggestions</h3>
+          <p>
+            Review learning topics suggested by Twennie members.
+          </p>
+        </div>
+
+        <a
+          href="/grand-poobaa/topic-suggestions"
+          class="grand-poobaa-action-link"
+        >
+          review suggestions
+          <ion-icon name="arrow-forward-outline"></ion-icon>
+        </a>
+
+      </article>
+
+
+      <article class="grand-poobaa-action-card">
+
+        <div class="grand-poobaa-action-card-top">
+          <div class="grand-poobaa-action-icon">
+            <ion-icon name="person-remove-outline"></ion-icon>
+          </div>
+
+          <span class="grand-poobaa-action-count">
+            {{#if cancellationCount}}
+              {{cancellationCount}}
+            {{else}}
+              0
+            {{/if}}
+          </span>
+        </div>
+
+        <div class="grand-poobaa-action-card-copy">
+          <h3>member cancellations</h3>
+          <p>
+            Review recent and pending membership cancellations.
+          </p>
+        </div>
+
+        <a
+          href="/grand-poobaa/member-cancellations"
+          class="grand-poobaa-action-link"
+        >
+          review cancellations
+          <ion-icon name="arrow-forward-outline"></ion-icon>
+        </a>
+
+      </article>
+
+
+      <article class="grand-poobaa-action-card">
+
+        <div class="grand-poobaa-action-card-top">
+          <div class="grand-poobaa-action-icon">
+            <ion-icon name="desktop-outline"></ion-icon>
+          </div>
+
+          <span class="grand-poobaa-action-count">
+            {{#if demoRequestCount}}
+              {{demoRequestCount}}
+            {{else}}
+              0
+            {{/if}}
+          </span>
+        </div>
+
+        <div class="grand-poobaa-action-card-copy">
+          <h3>demo requests</h3>
+          <p>
+            Review new requests from organizations interested in Twennie.
+          </p>
+        </div>
+
+        <a
+          href="/grand-poobaa/demo-requests"
+          class="grand-poobaa-action-link"
+        >
+          review demo requests
+          <ion-icon name="arrow-forward-outline"></ion-icon>
+        </a>
+
+      </article>
+
+
+      <article class="grand-poobaa-action-card">
+
+        <div class="grand-poobaa-action-card-top">
+          <div class="grand-poobaa-action-icon">
+            <ion-icon name="construct-outline"></ion-icon>
+          </div>
+
+          <span class="grand-poobaa-action-count">
+            {{#if techSupportCount}}
+              {{techSupportCount}}
+            {{else}}
+              0
+            {{/if}}
+          </span>
+        </div>
+
+        <div class="grand-poobaa-action-card-copy">
+          <h3>tech support requests</h3>
+          <p>
+            Review problems and questions submitted by Twennie users.
+          </p>
+        </div>
+
+        <a
+          href="/grand-poobaa/tech-support"
+          class="grand-poobaa-action-link"
+        >
+          review support requests
+          <ion-icon name="arrow-forward-outline"></ion-icon>
+        </a>
+
+      </article>
+
+
+      <article class="grand-poobaa-action-card">
+
+        <div class="grand-poobaa-action-card-top">
+          <div class="grand-poobaa-action-icon">
+            <ion-icon name="business-outline"></ion-icon>
+          </div>
+
+          <span class="grand-poobaa-action-count">
+            {{#if joinRequestCount}}
+              {{joinRequestCount}}
+            {{else}}
+              0
+            {{/if}}
+          </span>
+        </div>
+
+        <div class="grand-poobaa-action-card-copy">
+          <h3>organization join requests</h3>
+          <p>
+            Review requests from leaders asking to join organizations.
+          </p>
+        </div>
+
+        <a
+          href="/grand-poobaa/organization-requests"
+          class="grand-poobaa-action-link"
+        >
+          review join requests
+          <ion-icon name="arrow-forward-outline"></ion-icon>
+        </a>
+
+      </article>
+
+    </div>
+
+  </section>
+
+
+  <section class="grand-poobaa-section grand-poobaa-coming-section">
+
+    <div class="grand-poobaa-section-heading">
+      <div>
+        <p class="grand-poobaa-section-kicker">coming next</p>
+        <h2>platform reporting</h2>
+      </div>
+
+      <p>
+        Usage, learning, content, organization, and revenue reporting will be
+        added here as the administrative dashboard develops.
+      </p>
+    </div>
+
+    <div class="grand-poobaa-coming-grid">
+
+      <div class="grand-poobaa-coming-card">
+        <ion-icon name="trending-up-outline"></ion-icon>
+        <span>growth</span>
+      </div>
+
+      <div class="grand-poobaa-coming-card">
+        <ion-icon name="pulse-outline"></ion-icon>
+        <span>engagement</span>
+      </div>
+
+      <div class="grand-poobaa-coming-card">
+        <ion-icon name="school-outline"></ion-icon>
+        <span>learning</span>
+      </div>
+
+      <div class="grand-poobaa-coming-card">
+        <ion-icon name="library-outline"></ion-icon>
+        <span>content health</span>
+      </div>
+
+      <div class="grand-poobaa-coming-card">
+        <ion-icon name="people-outline"></ion-icon>
+        <span>organization health</span>
+      </div>
+
+      <div class="grand-poobaa-coming-card">
+        <ion-icon name="card-outline"></ion-icon>
+        <span>revenue</span>
+      </div>
+
+    </div>
+
+  </section>
+
+</div>
