@@ -66,8 +66,13 @@ const DemoRequest = require(
  * provides a fallback for older records.
  */
 function getUnitCreatedAt(unit) {
-  if (unit?.createdAt) {
-    const createdAt = new Date(unit.createdAt);
+  const storedDate =
+    unit?.createdAt ||
+    unit?.created_at ||
+    null;
+
+  if (storedDate) {
+    const createdAt = new Date(storedDate);
 
     if (!Number.isNaN(createdAt.getTime())) {
       return createdAt;
