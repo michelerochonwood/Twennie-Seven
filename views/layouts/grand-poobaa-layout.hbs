@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
 
@@ -13,19 +14,30 @@
     content="noindex, nofollow"
   >
 
-  <title>{{#if title}}{{title}} | Twennie Admin{{else}}Twennie Admin{{/if}}</title>
+  <title>
+    {{#if title}}
+      {{title}} | Twennie Admin
+    {{else}}
+      Twennie Admin
+    {{/if}}
+  </title>
 
-  {{!-- Global Twennie styles used for fonts, resets, and shared elements --}}
+
+  {{!-- Grand Poobaa administrative styles --}}
   <link
     rel="stylesheet"
     href="https://www.twennie.com/css/grandpoobaastyles.css?v={{timestamp}}"
   >
 
-  {{!-- Grand Poobaa administrative styles --}}
-  <link
-    rel="stylesheet"
-    href="https://www.twennie.com/css/grand-poobaa.css?v={{timestamp}}"
-  >
+
+  {{!-- Optional page-specific stylesheet --}}
+  {{#if pageStylesheet}}
+    <link
+      rel="stylesheet"
+      href="https://www.twennie.com/css/{{pageStylesheet}}?v={{timestamp}}"
+    >
+  {{/if}}
+
 
   {{!-- Ionicons --}}
   <script
@@ -37,44 +49,32 @@
     nomodule
     src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.js"
   ></script>
-
-  {{!-- Page-specific stylesheet, when needed --}}
-  {{#if pageStylesheet}}
-    <link
-      rel="stylesheet"
-      href="https://www.twennie.com/css/{{pageStylesheet}}?v={{timestamp}}"
-    >
-  {{/if}}
 </head>
+
 
 <body class="grand-poobaa-body">
 
-  <div class="grand-poobaa-shell">
+  <main
+    class="grand-poobaa-content"
+    id="main-content"
+  >
+    {{{body}}}
+  </main>
 
-    {{> grandpoobaapartials/admin_sidebar}}
-
-    <div class="grand-poobaa-main">
-
-      {{> grandpoobaapartials/admin_header}}
-
-      <main class="grand-poobaa-content" id="main-content">
-        {{{body}}}
-      </main>
-
-    </div>
-
-  </div>
 
   <script
     src="https://cdn.jsdelivr.net/npm/sweetalert2@11"
   ></script>
 
+
+  {{!-- Shared Grand Poobaa JavaScript --}}
   <script
     src="https://www.twennie.com/javascript/grand-poobaa.js?v={{timestamp}}"
     defer
   ></script>
 
-  {{!-- Optional JavaScript for an individual admin page --}}
+
+  {{!-- Optional page-specific JavaScript --}}
   {{#if pageScript}}
     <script
       src="https://www.twennie.com/javascript/{{pageScript}}?v={{timestamp}}"
@@ -83,4 +83,5 @@
   {{/if}}
 
 </body>
+
 </html>
