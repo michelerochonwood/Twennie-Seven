@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const CancelledMember = require('../models/member_models/cancelled_member');
+const CancelledMember = require('../models/member_models/cancelledmember');
 
 const TopicSuggestion = require('../models/topic/topic_suggestion');
 
