@@ -64,40 +64,332 @@
     </div>
 
 
-    <div class="grand-poobaa-action-grid">
+<div class="grand-poobaa-action-grid">
 
-      <article class="grand-poobaa-action-card">
+  {{!-- TOPIC SUGGESTIONS --}}
+  <button
+    type="button"
+    class="grand-poobaa-action-card grand-poobaa-dropdown-trigger"
+    id="topic-suggestions-trigger"
+    aria-expanded="false"
+    aria-controls="topic-suggestions-panel"
+  >
+    <div class="grand-poobaa-action-card-top">
+      <div class="grand-poobaa-action-icon">
+        <ion-icon name="bulb-outline"></ion-icon>
+      </div>
 
-        <div class="grand-poobaa-action-card-top">
-          <div class="grand-poobaa-action-icon">
-            <ion-icon name="bulb-outline"></ion-icon>
-          </div>
+      <span class="grand-poobaa-action-count">
+        {{#if topicSuggestionCount}}
+          {{topicSuggestionCount}}
+        {{else}}
+          0
+        {{/if}}
+      </span>
+    </div>
 
-          <span class="grand-poobaa-action-count">
-            {{#if topicSuggestionCount}}
-              {{topicSuggestionCount}}
-            {{else}}
-              0
-            {{/if}}
-          </span>
-        </div>
+    <div class="grand-poobaa-action-card-copy">
+      <h3>new topic suggestions</h3>
+      <p>
+        Review learning topics suggested by Twennie members.
+      </p>
+    </div>
 
-        <div class="grand-poobaa-action-card-copy">
-          <h3>new topic suggestions</h3>
-          <p>
-            Review learning topics suggested by Twennie members.
-          </p>
-        </div>
+    <span class="grand-poobaa-action-link">
+      review suggestions
 
-        <a
-          href="/grand-poobaa/topic-suggestions"
-          class="grand-poobaa-action-link"
-        >
-          review suggestions
-          <ion-icon name="arrow-forward-outline"></ion-icon>
-        </a>
+      <ion-icon
+        class="grand-poobaa-dropdown-arrow"
+        name="chevron-down-outline"
+      ></ion-icon>
+    </span>
+  </button>
 
-      </article>
+
+  {{!-- MEMBER CANCELLATIONS --}}
+  <article class="grand-poobaa-action-card">
+
+    <div class="grand-poobaa-action-card-top">
+      <div class="grand-poobaa-action-icon">
+        <ion-icon name="person-remove-outline"></ion-icon>
+      </div>
+
+      <span class="grand-poobaa-action-count">
+        {{#if cancellationCount}}
+          {{cancellationCount}}
+        {{else}}
+          0
+        {{/if}}
+      </span>
+    </div>
+
+    <div class="grand-poobaa-action-card-copy">
+      <h3>member cancellations</h3>
+      <p>
+        Review recent and pending membership cancellations.
+      </p>
+    </div>
+
+    <a
+      href="/grand-poobaa/member-cancellations"
+      class="grand-poobaa-action-link"
+    >
+      review cancellations
+      <ion-icon name="arrow-forward-outline"></ion-icon>
+    </a>
+
+  </article>
+
+
+  {{!-- DEMO REQUESTS --}}
+  <article class="grand-poobaa-action-card">
+
+    <div class="grand-poobaa-action-card-top">
+      <div class="grand-poobaa-action-icon">
+        <ion-icon name="desktop-outline"></ion-icon>
+      </div>
+
+      <span class="grand-poobaa-action-count">
+        {{#if demoRequestCount}}
+          {{demoRequestCount}}
+        {{else}}
+          0
+        {{/if}}
+      </span>
+    </div>
+
+    <div class="grand-poobaa-action-card-copy">
+      <h3>demo requests</h3>
+      <p>
+        Review new requests from organizations interested in Twennie.
+      </p>
+    </div>
+
+    <a
+      href="/grand-poobaa/demo-requests"
+      class="grand-poobaa-action-link"
+    >
+      review demo requests
+      <ion-icon name="arrow-forward-outline"></ion-icon>
+    </a>
+
+  </article>
+
+
+  {{!-- TECH SUPPORT --}}
+  <article class="grand-poobaa-action-card">
+
+    <div class="grand-poobaa-action-card-top">
+      <div class="grand-poobaa-action-icon">
+        <ion-icon name="construct-outline"></ion-icon>
+      </div>
+
+      <span class="grand-poobaa-action-count">
+        {{#if techSupportCount}}
+          {{techSupportCount}}
+        {{else}}
+          0
+        {{/if}}
+      </span>
+    </div>
+
+    <div class="grand-poobaa-action-card-copy">
+      <h3>tech support requests</h3>
+      <p>
+        Review problems and questions submitted by Twennie users.
+      </p>
+    </div>
+
+    <a
+      href="/grand-poobaa/tech-support"
+      class="grand-poobaa-action-link"
+    >
+      review support requests
+      <ion-icon name="arrow-forward-outline"></ion-icon>
+    </a>
+
+  </article>
+
+
+  {{!-- ORGANIZATION JOIN REQUESTS --}}
+  <article class="grand-poobaa-action-card">
+
+    <div class="grand-poobaa-action-card-top">
+      <div class="grand-poobaa-action-icon">
+        <ion-icon name="business-outline"></ion-icon>
+      </div>
+
+      <span class="grand-poobaa-action-count">
+        {{#if joinRequestCount}}
+          {{joinRequestCount}}
+        {{else}}
+          0
+        {{/if}}
+      </span>
+    </div>
+
+    <div class="grand-poobaa-action-card-copy">
+      <h3>organization join requests</h3>
+      <p>
+        Review requests from leaders asking to join organizations.
+      </p>
+    </div>
+
+    <a
+      href="/grand-poobaa/organization-requests"
+      class="grand-poobaa-action-link"
+    >
+      review join requests
+      <ion-icon name="arrow-forward-outline"></ion-icon>
+    </a>
+
+  </article>
+
+</div>
+
+
+{{!-- TOPIC SUGGESTIONS DROPDOWN --}}
+<div
+  class="grand-poobaa-dropdown-panel"
+  id="topic-suggestions-panel"
+  aria-labelledby="topic-suggestions-trigger"
+  hidden
+>
+  <div class="grand-poobaa-dropdown-heading">
+    <div>
+      <p class="grand-poobaa-dropdown-kicker">
+        content requests
+      </p>
+
+      <h3>new topic suggestions</h3>
+
+      <p>
+        Review suggestions submitted by members and approve topics for future
+        development.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="grand-poobaa-dropdown-close"
+      data-close-dropdown="topic-suggestions-panel"
+      aria-label="Close topic suggestions"
+    >
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+  </div>
+
+  {{#if topicSuggestions}}
+
+    <div class="grand-poobaa-table-scroll">
+      <table class="grand-poobaa-table">
+        <thead>
+          <tr>
+            <th scope="col">suggested topic</th>
+            <th scope="col">description</th>
+            <th scope="col">submitted by</th>
+            <th scope="col">member details</th>
+            <th scope="col">submitted</th>
+            <th scope="col">approval</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {{#each topicSuggestions}}
+            <tr>
+              <td class="grand-poobaa-table-topic">
+                <strong>{{this.topicTitle}}</strong>
+              </td>
+
+              <td class="grand-poobaa-table-description">
+                <p>{{this.description}}</p>
+              </td>
+
+              <td>
+                <div class="grand-poobaa-table-person">
+                  <strong>{{this.name}}</strong>
+
+                  <a href="mailto:{{this.email}}">
+                    {{this.email}}
+                  </a>
+                </div>
+              </td>
+
+              <td>
+                <div class="grand-poobaa-table-meta">
+                  <span>{{this.memberType}}</span>
+
+                  {{#if this.groupName}}
+                    <small>{{this.groupName}}</small>
+                  {{else}}
+                    <small>no group</small>
+                  {{/if}}
+                </div>
+              </td>
+
+              <td>
+                <time datetime="{{this.submittedAt}}">
+                  {{this.submittedAt}}
+                </time>
+              </td>
+
+              <td class="grand-poobaa-table-action">
+                <form
+                  action="/grand-poobaa/topic-suggestions/{{this._id}}/approve"
+                  method="POST"
+                  class="grand-poobaa-approval-form"
+                >
+                  {{#if ../csrfToken}}
+                    <input
+                      type="hidden"
+                      name="_csrf"
+                      value="{{../csrfToken}}"
+                    >
+                  {{/if}}
+
+                  <div class="grand-poobaa-date-field">
+                    <label for="expectedLibraryDate-{{this._id}}">
+                      expected library date
+                    </label>
+
+                    <input
+                      type="date"
+                      id="expectedLibraryDate-{{this._id}}"
+                      name="expectedLibraryDate"
+                      required
+                    >
+                  </div>
+
+                  <button
+                    type="submit"
+                    class="grand-poobaa-approve-button"
+                  >
+                    <ion-icon name="checkmark-outline"></ion-icon>
+                    approve topic
+                  </button>
+                </form>
+              </td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+
+  {{else}}
+
+    <div class="grand-poobaa-empty-state">
+      <div class="grand-poobaa-empty-icon">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+      </div>
+
+      <div>
+        <h4>nothing waiting for review</h4>
+        <p>There are no new topic suggestions at the moment.</p>
+      </div>
+    </div>
+
+  {{/if}}
+</div>
 
 
       <article class="grand-poobaa-action-card">
@@ -291,3 +583,47 @@
   </section>
 
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const trigger = document.getElementById('topic-suggestions-trigger');
+    const panel = document.getElementById('topic-suggestions-panel');
+
+    if (!trigger || !panel) return;
+
+    const setPanelState = function (isOpen) {
+      trigger.setAttribute('aria-expanded', String(isOpen));
+      trigger.classList.toggle('is-open', isOpen);
+      panel.hidden = !isOpen;
+
+      if (isOpen) {
+        panel.classList.add('is-open');
+
+        window.requestAnimationFrame(function () {
+          panel.scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest'
+          });
+        });
+      } else {
+        panel.classList.remove('is-open');
+      }
+    };
+
+    trigger.addEventListener('click', function () {
+      const isOpen =
+        trigger.getAttribute('aria-expanded') === 'true';
+
+      setPanelState(!isOpen);
+    });
+
+    panel
+      .querySelectorAll('[data-close-dropdown]')
+      .forEach(function (button) {
+        button.addEventListener('click', function () {
+          setPanelState(false);
+          trigger.focus();
+        });
+      });
+  });
+</script>

@@ -824,3 +824,437 @@ html {
     min-height: 235px;
   }
 }
+
+
+
+
+/* =========================================================
+   GRAND POOBAA ACTION-CARD DROPDOWNS
+========================================================= */
+
+.grand-poobaa-dropdown-trigger {
+  width: 100%;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.grand-poobaa-dropdown-trigger:focus-visible {
+  outline: 3px solid rgba(78, 80, 162, 0.28);
+  outline-offset: 4px;
+}
+
+.grand-poobaa-dropdown-trigger.is-open {
+  border-color: rgba(78, 80, 162, 0.38);
+  box-shadow:
+    0 18px 42px rgba(38, 34, 98, 0.14),
+    inset 0 -5px 0 var(--gp-blue);
+}
+
+.grand-poobaa-dropdown-arrow {
+  transition: transform 200ms ease;
+}
+
+.grand-poobaa-dropdown-trigger.is-open
+.grand-poobaa-dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+
+/* =========================================================
+   DROPDOWN PANEL
+========================================================= */
+
+.grand-poobaa-dropdown-panel {
+  margin-top: 1.75rem;
+  overflow: hidden;
+  border: 1px solid rgba(78, 80, 162, 0.18);
+  border-radius: 22px;
+  background: #ffffff;
+  box-shadow: var(--gp-shadow);
+}
+
+.grand-poobaa-dropdown-panel[hidden] {
+  display: none;
+}
+
+.grand-poobaa-dropdown-panel.is-open {
+  animation: grandPoobaaDropdownOpen 220ms ease both;
+}
+
+@keyframes grandPoobaaDropdownOpen {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.grand-poobaa-dropdown-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 1.75rem 2rem;
+  border-bottom: 1px solid var(--gp-border);
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(220, 23, 106, 0.08),
+      transparent 34%
+    ),
+    linear-gradient(
+      135deg,
+      #fbfbff,
+      #f5f6ff
+    );
+}
+
+.grand-poobaa-dropdown-kicker {
+  margin: 0 0 0.4rem;
+  color: var(--gp-pink);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.grand-poobaa-dropdown-heading h3 {
+  margin: 0;
+  color: var(--gp-navy);
+  font-size: 1.45rem;
+  font-weight: 800;
+  text-transform: lowercase;
+}
+
+.grand-poobaa-dropdown-heading p:last-child {
+  max-width: 700px;
+  margin: 0.65rem 0 0;
+  color: var(--gp-muted);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.grand-poobaa-dropdown-close {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgba(78, 80, 162, 0.12);
+  border-radius: 50%;
+  background: #ffffff;
+  color: var(--gp-blue);
+  cursor: pointer;
+  font-size: 1.25rem;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.grand-poobaa-dropdown-close:hover {
+  background: var(--gp-blue);
+  color: #ffffff;
+  transform: rotate(5deg);
+}
+
+
+/* =========================================================
+   ADMIN TABLE
+========================================================= */
+
+.grand-poobaa-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.grand-poobaa-table {
+  width: 100%;
+  min-width: 1180px;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.grand-poobaa-table th,
+.grand-poobaa-table td {
+  padding: 1.15rem 1rem;
+  border-bottom: 1px solid var(--gp-border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.grand-poobaa-table th {
+  background: var(--gp-surface-soft);
+  color: var(--gp-blue);
+  font-size: 0.67rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.grand-poobaa-table tbody tr {
+  transition: background-color 160ms ease;
+}
+
+.grand-poobaa-table tbody tr:hover {
+  background: rgba(78, 80, 162, 0.025);
+}
+
+.grand-poobaa-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.grand-poobaa-table th:nth-child(1) {
+  width: 15%;
+}
+
+.grand-poobaa-table th:nth-child(2) {
+  width: 25%;
+}
+
+.grand-poobaa-table th:nth-child(3) {
+  width: 16%;
+}
+
+.grand-poobaa-table th:nth-child(4) {
+  width: 12%;
+}
+
+.grand-poobaa-table th:nth-child(5) {
+  width: 11%;
+}
+
+.grand-poobaa-table th:nth-child(6) {
+  width: 21%;
+}
+
+.grand-poobaa-table td {
+  color: var(--gp-text);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.grand-poobaa-table-topic strong {
+  color: var(--gp-navy);
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+.grand-poobaa-table-description p {
+  margin: 0;
+  color: var(--gp-muted);
+}
+
+.grand-poobaa-table-person {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.grand-poobaa-table-person strong {
+  color: var(--gp-navy);
+  font-weight: 800;
+}
+
+.grand-poobaa-table-person a {
+  color: var(--gp-blue);
+  font-size: 0.76rem;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.grand-poobaa-table-person a:hover {
+  text-decoration: underline;
+}
+
+.grand-poobaa-table-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
+.grand-poobaa-table-meta span {
+  display: inline-flex;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(78, 80, 162, 0.09);
+  color: var(--gp-blue);
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.grand-poobaa-table-meta small {
+  color: var(--gp-muted);
+  font-size: 0.72rem;
+}
+
+.grand-poobaa-table time {
+  color: var(--gp-muted);
+  font-size: 0.78rem;
+}
+
+
+/* =========================================================
+   TOPIC APPROVAL FORM
+========================================================= */
+
+.grand-poobaa-approval-form {
+  display: flex;
+  min-width: 210px;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.grand-poobaa-date-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.grand-poobaa-date-field label {
+  color: var(--gp-muted);
+  font-size: 0.67rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+}
+
+.grand-poobaa-date-field input[type="date"] {
+  width: 100%;
+  min-height: 40px;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--gp-border);
+  border-radius: 10px;
+  background: #ffffff;
+  color: var(--gp-navy);
+  font-size: 0.78rem;
+}
+
+.grand-poobaa-date-field input[type="date"]:focus {
+  border-color: var(--gp-blue);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(78, 80, 162, 0.12);
+}
+
+.grand-poobaa-approve-button {
+  display: inline-flex;
+  width: 100%;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.65rem 0.9rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--gp-navy);
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: lowercase;
+  transition:
+    background-color 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.grand-poobaa-approve-button:hover {
+  background: var(--gp-blue);
+  transform: translateY(-1px);
+  box-shadow: 0 7px 18px rgba(78, 80, 162, 0.2);
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.grand-poobaa-empty-state {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+}
+
+.grand-poobaa-empty-icon {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(78, 80, 162, 0.09);
+  color: var(--gp-blue);
+  font-size: 1.45rem;
+}
+
+.grand-poobaa-empty-state h4 {
+  margin: 0 0 0.3rem;
+  color: var(--gp-navy);
+  font-size: 1rem;
+  font-weight: 800;
+  text-transform: lowercase;
+}
+
+.grand-poobaa-empty-state p {
+  margin: 0;
+  color: var(--gp-muted);
+  font-size: 0.84rem;
+}
+
+
+/* =========================================================
+   DROPDOWN RESPONSIVE
+========================================================= */
+
+@media screen and (max-width: 800px) {
+  .grand-poobaa-dropdown-heading {
+    padding: 1.4rem;
+  }
+
+  .grand-poobaa-table th,
+  .grand-poobaa-table td {
+    padding: 1rem 0.85rem;
+  }
+}
+
+@media screen and (max-width: 620px) {
+  .grand-poobaa-dropdown-panel {
+    margin-top: 1.25rem;
+    border-radius: 18px;
+  }
+
+  .grand-poobaa-dropdown-heading {
+    gap: 1rem;
+    padding: 1.2rem;
+  }
+
+  .grand-poobaa-dropdown-heading h3 {
+    font-size: 1.25rem;
+  }
+
+  .grand-poobaa-empty-state {
+    align-items: flex-start;
+    padding: 1.4rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grand-poobaa-dropdown-panel.is-open {
+    animation: none;
+  }
+
+  .grand-poobaa-dropdown-arrow,
+  .grand-poobaa-action-card,
+  .grand-poobaa-dropdown-close {
+    transition: none;
+  }
+}
