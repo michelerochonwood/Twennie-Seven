@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const CancelledMember = require('../models/member_models/cancelled_member');
 
 const TopicSuggestion = require('../models/topic/topic_suggestion');
 
@@ -7,96 +8,155 @@ const grandPoobaaController = {
    * GET /grand-poobaa
    * Render the Grand Poobaa dashboard.
    */
-  showDashboard: async (req, res) => {
-    try {
-      const startOfToday = new Date();
-      startOfToday.setHours(0, 0, 0, 0);
+/**
+ * GET /grand-poobaa
+ * Render the Grand Poobaa dashboard.
+ */
+showDashboard: async (req, res) => {
+  try {
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
 
-      const [
-        topicSuggestions,
-        topicSuggestionCount,
-        newTopicSuggestionsToday
-      ] = await Promise.all([
-        TopicSuggestion.find({
-          approved: false
-        })
-          .sort({ submittedAt: -1 })
-          .lean(),
+    const [
+      topicSuggestions,
+      topicSuggestionCount,
+      newTopicSuggestionsToday,
 
-        TopicSuggestion.countDocuments({
-          approved: false
-        }),
+      cancelledMembers,
+      cancellationCount,
+      newCancellationsToday
+    ] = await Promise.all([
+      TopicSuggestion.find({
+        approved: false
+      })
+        .sort({ submittedAt: -1 })
+        .lean(),
 
-        TopicSuggestion.countDocuments({
-          approved: false,
-          submittedAt: {
-            $gte: startOfToday
-          }
-        })
-      ]);
+      TopicSuggestion.countDocuments({
+        approved: false
+      }),
 
-      const formattedTopicSuggestions = topicSuggestions.map((suggestion) => ({
+      TopicSuggestion.countDocuments({
+        approved: false,
+        submittedAt: {
+          $gte: startOfToday
+        }
+      }),
+
+      CancelledMember.find({})
+        .sort({ cancelledAt: -1 })
+        .lean(),
+
+      CancelledMember.countDocuments({}),
+
+      CancelledMember.countDocuments({
+        cancelledAt: {
+          $gte: startOfToday
+        }
+      })
+    ]);
+
+
+    const formattedTopicSuggestions = topicSuggestions.map(
+      (suggestion) => ({
         ...suggestion,
 
         submittedAtDisplay: suggestion.submittedAt
-          ? new Date(suggestion.submittedAt).toLocaleDateString('en-CA', {
-              month: 'short',
-              day: 'numeric',
-              year: 'numeric'
-            })
+          ? new Date(suggestion.submittedAt).toLocaleDateString(
+              'en-CA',
+              {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+              }
+            )
           : '',
 
         submittedAtISO: suggestion.submittedAt
           ? new Date(suggestion.submittedAt).toISOString()
           : ''
-      }));
+      })
+    );
 
-      const currentDate = new Date().toLocaleDateString('en-CA', {
-        month: 'long',
-        day: 'numeric',
-        year: 'numeric'
-      });
 
-      const totalActionItems = topicSuggestionCount;
+    const formattedCancelledMembers = cancelledMembers.map(
+      (member) => ({
+        ...member,
 
-      return res.render('grandpoobaa/grandpoobaa', {
-        layout: 'grand-poobaa-layout',
-        title: 'Grand Poobaa Dashboard',
-        currentDate,
+        cancelledAtDisplay: member.cancelledAt
+          ? new Date(member.cancelledAt).toLocaleDateString(
+              'en-CA',
+              {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+              }
+            )
+          : '',
 
-        totalActionItems,
-        newToday: newTopicSuggestionsToday,
+        cancelledAtISO: member.cancelledAt
+          ? new Date(member.cancelledAt).toISOString()
+          : ''
+      })
+    );
 
-        // These will be connected as we build each card.
-        totalMembers: 0,
-        totalOrganizations: 0,
 
-        topicSuggestions: formattedTopicSuggestions,
-        topicSuggestionCount,
+    const currentDate = new Date().toLocaleDateString('en-CA', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric'
+    });
 
-        cancellationCount: 0,
-        demoRequestCount: 0,
-        techSupportCount: 0,
-        joinRequestCount: 0,
 
-        csrfToken:
-          typeof req.csrfToken === 'function'
-            ? req.csrfToken()
-            : null,
+    const totalActionItems =
+      topicSuggestionCount +
+      cancellationCount;
 
-        user: req.user || null,
-        timestamp: Date.now()
-      });
-    } catch (error) {
-      console.error('Grand Poobaa dashboard error:', error);
+    const newToday =
+      newTopicSuggestionsToday +
+      newCancellationsToday;
 
-      return res.status(500).render('error', {
-        title: 'Administrative Dashboard Error',
-        message: 'The Grand Poobaa dashboard could not be loaded.',
-        timestamp: Date.now()
-      });
-    }
-  },
+
+    return res.render('grandpoobaa/grandpoobaa', {
+      layout: 'grand-poobaa-layout',
+      title: 'Grand Poobaa Dashboard',
+      currentDate,
+
+      totalActionItems,
+      newToday,
+
+      // These will be connected as we build each card.
+      totalMembers: 0,
+      totalOrganizations: 0,
+
+      topicSuggestions: formattedTopicSuggestions,
+      topicSuggestionCount,
+
+      cancelledMembers: formattedCancelledMembers,
+      cancellationCount,
+
+      demoRequestCount: 0,
+      techSupportCount: 0,
+      joinRequestCount: 0,
+
+      csrfToken:
+        typeof req.csrfToken === 'function'
+          ? req.csrfToken()
+          : null,
+
+      user: req.user || null,
+      timestamp: Date.now()
+    });
+  } catch (error) {
+    console.error('Grand Poobaa dashboard error:', error);
+
+    return res.status(500).render('error', {
+      title: 'Administrative Dashboard Error',
+      message: 'The Grand Poobaa dashboard could not be loaded.',
+      timestamp: Date.now()
+    });
+  }
+},
 
 
   /**

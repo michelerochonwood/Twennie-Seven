@@ -412,121 +412,301 @@
       </div>
 
 
-      {{!-- =================================================
-           MEMBER CANCELLATIONS MODULE
-      ================================================== --}}
-      <div
-        class="grand-poobaa-action-module"
-        data-grand-poobaa-module
+{{!-- =================================================
+     MEMBER CANCELLATIONS MODULE
+================================================== --}}
+<div
+  class="grand-poobaa-action-module"
+  data-grand-poobaa-module
+>
+
+  <button
+    type="button"
+    class="grand-poobaa-action-card grand-poobaa-dropdown-trigger"
+    id="member-cancellations-trigger"
+    data-dropdown-trigger="member-cancellations-panel"
+    aria-expanded="false"
+    aria-controls="member-cancellations-panel"
+  >
+
+    <div class="grand-poobaa-action-card-top">
+
+      <div class="grand-poobaa-action-icon">
+        <ion-icon name="person-remove-outline"></ion-icon>
+      </div>
+
+      <span class="grand-poobaa-action-count">
+        {{#if cancellationCount}}
+          {{cancellationCount}}
+        {{else}}
+          0
+        {{/if}}
+      </span>
+
+    </div>
+
+
+    <div class="grand-poobaa-action-card-copy">
+
+      <h3>member cancellations</h3>
+
+      <p>
+        Review members whose Twennie accounts have been cancelled.
+      </p>
+
+    </div>
+
+
+    <span class="grand-poobaa-action-link">
+
+      <span>review cancellations</span>
+
+      <ion-icon
+        class="grand-poobaa-dropdown-arrow"
+        name="chevron-down-outline"
+      ></ion-icon>
+
+    </span>
+
+  </button>
+
+
+  <div
+    class="grand-poobaa-dropdown-panel"
+    id="member-cancellations-panel"
+    data-dropdown-panel
+    aria-labelledby="member-cancellations-trigger"
+    hidden
+  >
+
+    <div class="grand-poobaa-dropdown-heading">
+
+      <div class="grand-poobaa-dropdown-heading-copy">
+
+        <p class="grand-poobaa-dropdown-kicker">
+          membership administration
+        </p>
+
+        <h3>member cancellations</h3>
+
+        <p>
+          Review former member details, membership status, cancellation
+          dates, and any reasons recorded when the account was cancelled.
+        </p>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="grand-poobaa-dropdown-close"
+        data-close-dropdown="member-cancellations-panel"
+        aria-label="Close member cancellations"
       >
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
 
-        <button
-          type="button"
-          class="grand-poobaa-action-card grand-poobaa-dropdown-trigger"
-          id="member-cancellations-trigger"
-          data-dropdown-trigger="member-cancellations-panel"
-          aria-expanded="false"
-          aria-controls="member-cancellations-panel"
-        >
-
-          <div class="grand-poobaa-action-card-top">
-
-            <div class="grand-poobaa-action-icon">
-              <ion-icon name="person-remove-outline"></ion-icon>
-            </div>
-
-            <span class="grand-poobaa-action-count">
-              {{#if cancellationCount}}
-                {{cancellationCount}}
-              {{else}}
-                0
-              {{/if}}
-            </span>
-
-          </div>
+    </div>
 
 
-          <div class="grand-poobaa-action-card-copy">
+    {{#if cancelledMembers.length}}
 
-            <h3>member cancellations</h3>
+      <div class="grand-poobaa-table-scroll">
 
-            <p>
-              Review recent and pending membership cancellations.
-            </p>
+        <table class="grand-poobaa-table grand-poobaa-cancellations-table">
 
-          </div>
-
-
-          <span class="grand-poobaa-action-link">
-
-            <span>review cancellations</span>
-
-            <ion-icon
-              class="grand-poobaa-dropdown-arrow"
-              name="chevron-down-outline"
-            ></ion-icon>
-
-          </span>
-
-        </button>
+          <thead>
+            <tr>
+              <th scope="col">former member</th>
+              <th scope="col">contact</th>
+              <th scope="col">membership</th>
+              <th scope="col">account role</th>
+              <th scope="col">reason</th>
+              <th scope="col">cancelled</th>
+            </tr>
+          </thead>
 
 
-        <div
-          class="grand-poobaa-dropdown-panel grand-poobaa-placeholder-panel"
-          id="member-cancellations-panel"
-          data-dropdown-panel
-          aria-labelledby="member-cancellations-trigger"
-          hidden
-        >
+          <tbody>
 
-          <div class="grand-poobaa-dropdown-heading">
+            {{#each cancelledMembers}}
 
-            <div class="grand-poobaa-dropdown-heading-copy">
+              <tr>
 
-              <p class="grand-poobaa-dropdown-kicker">
-                membership administration
-              </p>
+                {{!-- FORMER MEMBER --}}
+                <td>
 
-              <h3>member cancellations</h3>
+                  <div class="grand-poobaa-table-person">
 
-              <p>
-                The cancellation review tools will be added to this panel.
-              </p>
+                    <strong>
+                      {{#if this.name}}
+                        {{this.name}}
+                      {{else}}
+                        unnamed member
+                      {{/if}}
+                    </strong>
 
-            </div>
+                    {{#if this.username}}
+                      <span class="grand-poobaa-table-secondary">
+                        @{{this.username}}
+                      </span>
+                    {{else}}
+                      <span class="grand-poobaa-table-missing">
+                        no username recorded
+                      </span>
+                    {{/if}}
 
+                  </div>
 
-            <button
-              type="button"
-              class="grand-poobaa-dropdown-close"
-              data-close-dropdown="member-cancellations-panel"
-              aria-label="Close member cancellations"
-            >
-              <ion-icon name="close-outline"></ion-icon>
-            </button>
-
-          </div>
+                </td>
 
 
-          {{!-- Member cancellation interface will be written next. --}}
-          <div class="grand-poobaa-panel-placeholder">
+                {{!-- CONTACT --}}
+                <td>
 
-            <ion-icon name="build-outline"></ion-icon>
+                  {{#if this.email}}
 
-            <div>
-              <h4>panel ready for development</h4>
+                    <a
+                      href="mailto:{{this.email}}"
+                      class="grand-poobaa-table-email"
+                    >
+                      {{this.email}}
+                    </a>
 
-              <p>
-                Member cancellation records and administrative actions will
-                appear here.
-              </p>
-            </div>
+                  {{else}}
 
-          </div>
+                    <span class="grand-poobaa-table-missing">
+                      no email recorded
+                    </span>
+
+                  {{/if}}
+
+                </td>
+
+
+                {{!-- MEMBERSHIP --}}
+                <td>
+
+                  <div class="grand-poobaa-table-meta">
+
+                    <span>
+                      {{#if this.membershipType}}
+                        {{this.membershipType}}
+                      {{else}}
+                        unknown membership
+                      {{/if}}
+                    </span>
+
+                    {{#if this.accessLevel}}
+                      <small>
+                        access: {{this.accessLevel}}
+                      </small>
+                    {{else}}
+                      <small>
+                        no access level recorded
+                      </small>
+                    {{/if}}
+
+                  </div>
+
+                </td>
+
+
+                {{!-- ACCOUNT ROLE --}}
+                <td>
+
+                  {{#if this.wasLeader}}
+
+                    <span class="grand-poobaa-status-badge grand-poobaa-status-badge-leader">
+                      <ion-icon name="people-outline"></ion-icon>
+                      former leader
+                    </span>
+
+                  {{else}}
+
+                    <span class="grand-poobaa-status-badge grand-poobaa-status-badge-member">
+                      <ion-icon name="person-outline"></ion-icon>
+                      member
+                    </span>
+
+                  {{/if}}
+
+                </td>
+
+
+                {{!-- REASON --}}
+                <td class="grand-poobaa-cancellation-reason">
+
+                  {{#if this.reason}}
+
+                    <p>
+                      {{this.reason}}
+                    </p>
+
+                  {{else}}
+
+                    <span class="grand-poobaa-table-missing">
+                      no reason provided
+                    </span>
+
+                  {{/if}}
+
+                </td>
+
+
+                {{!-- CANCELLATION DATE --}}
+                <td>
+{{#if this.cancelledAtDisplay}}
+
+  <time datetime="{{this.cancelledAtISO}}">
+    {{this.cancelledAtDisplay}}
+  </time>
+
+{{else}}
+
+                    <span class="grand-poobaa-table-missing">
+                      date unavailable
+                    </span>
+
+                  {{/if}}
+
+                </td>
+
+              </tr>
+
+            {{/each}}
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    {{else}}
+
+      <div class="grand-poobaa-empty-state">
+
+        <div class="grand-poobaa-empty-icon">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+        </div>
+
+        <div>
+
+          <h4>no cancelled memberships</h4>
+
+          <p>
+            There are no cancelled member accounts to review.
+          </p>
 
         </div>
 
       </div>
+
+    {{/if}}
+
+  </div>
+
+</div>
 
 
       {{!-- =================================================

@@ -1279,3 +1279,86 @@ html {
     transform: none;
   }
 }
+
+
+
+/* =========================================================
+   MEMBER CANCELLATIONS
+========================================================= */
+
+.grand-poobaa-cancellations-table {
+  min-width: 1120px;
+}
+
+.grand-poobaa-cancellations-table th:nth-child(1) {
+  width: 17%;
+}
+
+.grand-poobaa-cancellations-table th:nth-child(2) {
+  width: 19%;
+}
+
+.grand-poobaa-cancellations-table th:nth-child(3) {
+  width: 16%;
+}
+
+.grand-poobaa-cancellations-table th:nth-child(4) {
+  width: 14%;
+}
+
+.grand-poobaa-cancellations-table th:nth-child(5) {
+  width: 22%;
+}
+
+.grand-poobaa-cancellations-table th:nth-child(6) {
+  width: 12%;
+}
+
+.grand-poobaa-table-secondary {
+  color: var(--gp-muted);
+  font-size: 0.74rem;
+}
+
+.grand-poobaa-table-email {
+  color: var(--gp-blue);
+  font-size: 0.78rem;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.grand-poobaa-table-email:hover {
+  text-decoration: underline;
+}
+
+.grand-poobaa-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.38rem 0.68rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+  text-transform: lowercase;
+}
+
+.grand-poobaa-status-badge ion-icon {
+  font-size: 0.9rem;
+}
+
+.grand-poobaa-status-badge-leader {
+  background: rgba(220, 23, 106, 0.09);
+  color: var(--gp-pink);
+}
+
+.grand-poobaa-status-badge-member {
+  background: rgba(74, 74, 178, 0.09);
+  color: var(--gp-blue);
+}
+
+.grand-poobaa-cancellation-reason p {
+  margin: 0;
+  color: var(--gp-muted);
+  line-height: 1.55;
+}
