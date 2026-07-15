@@ -1,6 +1,3 @@
-const grandPoobaaRoutes = require('./routes/grandpoobaaRoutes');
-
-
 const grandPoobaaController = {
   showDashboard: async (req, res) => {
     try {
@@ -15,7 +12,6 @@ const grandPoobaaController = {
         title: 'Grand Poobaa Dashboard',
         currentDate,
 
-        // Placeholder values until the database queries are connected.
         totalActionItems: 0,
         newToday: 0,
         totalMembers: 0,
