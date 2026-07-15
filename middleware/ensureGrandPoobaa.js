@@ -1,6 +1,6 @@
 const ensureGrandPoobaa = (req, res, next) => {
   if (!req.isAuthenticated || !req.isAuthenticated()) {
-    return res.redirect('/login');
+    return res.redirect('/auth/login');
   }
 
   const adminEmail = process.env.GRAND_POOBAA_EMAIL;
@@ -15,7 +15,11 @@ const ensureGrandPoobaa = (req, res, next) => {
     );
   }
 
-  const userEmail = String(req.user?.email || '')
+  const userEmail = String(
+    req.user?.email ||
+    req.user?.username ||
+    ''
+  )
     .trim()
     .toLowerCase();
 
@@ -24,11 +28,15 @@ const ensureGrandPoobaa = (req, res, next) => {
     .toLowerCase();
 
   if (!userEmail || userEmail !== allowedEmail) {
-    console.warn(
-      `Unauthorized Grand Poobaa access attempt by user ${req.user?._id || 'unknown'}`
-    );
+    console.warn('Unauthorized Grand Poobaa access attempt:', {
+      userId: req.user?._id || 'unknown',
+      userEmail,
+      allowedEmail
+    });
 
-    return res.status(403).send('You do not have permission to access this page.');
+    return res
+      .status(403)
+      .send('You do not have permission to access this page.');
   }
 
   return next();
