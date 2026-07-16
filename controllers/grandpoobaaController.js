@@ -325,8 +325,8 @@ showDashboard: async (req, res) => {
       ...unitSources.map(({ model }) =>
         model
           .find({
-            approved: {
-              $ne: true
+            status: {
+              $ne: 'approved'
             }
           })
           .sort({
