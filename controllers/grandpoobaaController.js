@@ -43,9 +43,7 @@ const Mission = require(
   '../models/unit_models/mission'
 );
 
-const Upcoming = require(
-  '../models/unit_models/upcoming'
-);
+
 
 const CancelledMember = require(
   '../models/member_models/cancelledmember'
@@ -64,7 +62,27 @@ const DemoRequest = require(
  *
  * Most current units have createdAt. The ObjectId timestamp
  * provides a fallback for older records.
+ * 
+ * 
+ * 
  */
+
+/**
+ * Library unit models that may be approved through
+ * the Grand Poobaa dashboard.
+ */
+const LIBRARY_UNIT_MODELS = {
+  article: Article,
+  video: Video,
+  promptset: PromptSet,
+  interview: Interview,
+  exercise: Exercise,
+  template: Template,
+  nugget: Nugget,
+  mission: Mission
+};
+
+
 function getUnitCreatedAt(unit) {
   const storedDate =
     unit?.createdAt ||
@@ -163,10 +181,7 @@ showDashboard: async (req, res) => {
     const startOfToday = new Date(now);
     startOfToday.setHours(0, 0, 0, 0);
 
-    const recentUnitCutoff = new Date(now);
-    recentUnitCutoff.setDate(
-      recentUnitCutoff.getDate() - 30
-    );
+
 
 
     const activeDemoQuery = {
@@ -216,11 +231,8 @@ showDashboard: async (req, res) => {
       {
         model: Mission,
         unitType: 'mission'
-      },
-      {
-        model: Upcoming,
-        unitType: 'upcoming'
       }
+
     ];
 
 
@@ -312,11 +324,15 @@ showDashboard: async (req, res) => {
        */
       ...unitSources.map(({ model }) =>
         model
-          .find({})
+          .find({
+            approved: {
+              $ne: true
+            }
+          })
           .sort({
             _id: -1
           })
-          .limit(50)
+          .limit(100)
           .lean()
       )
     ]);
@@ -437,56 +453,44 @@ showDashboard: async (req, res) => {
      */
     const rawLibraryUnits = [];
 
-    unitCollections.forEach(
-      (collection, collectionIndex) => {
-        const source =
-          unitSources[collectionIndex];
+unitCollections.forEach(
+  (collection, collectionIndex) => {
+    const source =
+      unitSources[collectionIndex];
 
-        for (const unit of collection) {
-          const createdAt =
-            getUnitCreatedAt(unit);
+    for (const unit of collection) {
 
-          if (!createdAt) {
-            continue;
-          }
+      const createdAt =
+        getUnitCreatedAt(unit);
 
-          if (createdAt < recentUnitCutoff) {
-            continue;
-          }
-
-          rawLibraryUnits.push({
-            ...unit,
-
-            unitType:
-              source.unitType,
-
-            plannedType:
-              source.unitType === 'upcoming'
-                ? unit.unit_type || ''
-                : '',
-
-            title:
-              getUnitTitle(unit),
-
-            mainTopic:
-              getUnitMainTopic(unit),
-
-            status:
-              unit.status ||
-              (
-                source.unitType === 'upcoming'
-                  ? 'in production'
-                  : 'published'
-              ),
-
-            authorId:
-              getUnitAuthorId(unit),
-
-            createdAt
-          });
-        }
+      if (!createdAt) {
+        continue;
       }
-    );
+
+
+
+      rawLibraryUnits.push({
+        ...unit,
+
+        unitType:
+          source.unitType,
+
+        title:
+          getUnitTitle(unit),
+
+        mainTopic:
+          getUnitMainTopic(unit),
+
+        authorId:
+          getUnitAuthorId(unit),
+
+        createdAt
+      });
+
+    }
+  }
+);
+
 
 
     /**
@@ -652,17 +656,11 @@ showDashboard: async (req, res) => {
             unitType:
               unit.unitType,
 
-            plannedType:
-              unit.plannedType,
-
             title:
               unit.title,
 
             mainTopic:
               unit.mainTopic,
-
-            status:
-              unit.status,
 
             author:
               contributor?.name ||
@@ -902,6 +900,84 @@ approveTopicSuggestion: async (req, res) => {
 },
 
 
+/**
+ * POST /grand-poobaa/library-units/:unitId/approve
+ * Approve a newly submitted library unit.
+ */
+approveLibraryUnit: async (req, res) => {
+  try {
+    const { unitId } = req.params;
+
+    const unitType = String(
+      req.body.unitType || ''
+    )
+      .trim()
+      .toLowerCase();
+
+    if (
+      !mongoose.Types.ObjectId.isValid(
+        unitId
+      )
+    ) {
+      return res
+        .status(400)
+        .send('Invalid library unit ID.');
+    }
+
+    const UnitModel =
+      LIBRARY_UNIT_MODELS[unitType];
+
+    if (!UnitModel) {
+      return res
+        .status(400)
+        .send('Invalid library unit type.');
+    }
+
+    const approvedUnit =
+      await UnitModel.findOneAndUpdate(
+        {
+          _id: unitId,
+
+          approved: {
+            $ne: true
+          }
+        },
+
+        {
+          $set: {
+            approved: true,
+            approvedAt: new Date()
+          }
+        },
+
+        {
+          new: true,
+          runValidators: true
+        }
+      );
+
+    if (!approvedUnit) {
+      return res.status(404).send(
+        'The library unit was not found or has already been approved.'
+      );
+    }
+
+    console.log(
+      `✅ Library unit approved: ${unitType} ${unitId}`
+    );
+
+    return res.redirect('/grand-poobaa');
+  } catch (error) {
+    console.error(
+      'Approve library unit error:',
+      error
+    );
+
+    return res.status(500).send(
+      'The library unit could not be approved.'
+    );
+  }
+},
 /**
  * POST /grand-poobaa/demo-requests/:requestId/schedule
  * Mark a demo request as scheduled.

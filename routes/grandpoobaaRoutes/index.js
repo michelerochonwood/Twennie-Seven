@@ -71,4 +71,24 @@ router.post(
 );
 
 
+/**
+ * ==========================================================
+ * LIBRARY UNIT APPROVAL
+ * ==========================================================
+ */
+
+/**
+ * POST /grand-poobaa/library-units/:unitId/approve
+ * Approve a newly added library unit.
+ *
+ * The submitted form must also include the unitType so the
+ * controller can determine which unit model contains the unit.
+ */
+router.post(
+  '/library-units/:unitId/approve',
+  ensureGrandPoobaa,
+  grandPoobaaController.approveLibraryUnit
+);
+
+
 module.exports = router;

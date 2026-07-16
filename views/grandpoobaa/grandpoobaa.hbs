@@ -1520,8 +1520,8 @@
       <h3>new library units</h3>
 
       <p>
-        Review recently added units from leaders, group members, and
-        individual contributors.
+        Review and approve recently added units from leaders, group members,
+        and individual contributors.
       </p>
 
     </div>
@@ -1554,14 +1554,15 @@
       <div class="grand-poobaa-dropdown-heading-copy">
 
         <p class="grand-poobaa-dropdown-kicker">
-          content monitoring
+          content approval
         </p>
 
         <h3>new library units</h3>
 
         <p>
-          Review the newest units added to the Twennie library, including
-          their authors, unit types, primary topics, and current status.
+          Open each contribution to review its content, author, unit type,
+          topic, and publication details before approving it for the Twennie
+          library.
         </p>
 
       </div>
@@ -1586,7 +1587,7 @@
         <div>
 
           <p class="grand-poobaa-library-summary-label">
-            recently added
+            awaiting review
           </p>
 
           <strong>
@@ -1596,8 +1597,8 @@
         </div>
 
         <p>
-          These are the newest contributions currently available for review
-          across the Twennie library.
+          Review each new contribution before approving it. Approved units
+          will be removed from this list.
         </p>
 
       </div>
@@ -1621,7 +1622,8 @@
               <th scope="col">main topic</th>
               <th scope="col">status</th>
               <th scope="col">added</th>
-              <th scope="col">unit</th>
+              <th scope="col">view</th>
+              <th scope="col">approve</th>
             </tr>
           </thead>
 
@@ -1646,9 +1648,11 @@
                     </strong>
 
                     {{#if this.email}}
+
                       <a href="mailto:{{this.email}}">
                         {{this.email}}
                       </a>
+
                     {{/if}}
 
                   </div>
@@ -1704,9 +1708,11 @@
                       upcoming
 
                       {{#if this.plannedType}}
+
                         <small>
                           planned: {{this.plannedType}}
                         </small>
+
                       {{/if}}
 
                     {{else}}
@@ -1757,7 +1763,19 @@
                 {{!-- STATUS --}}
                 <td>
 
-                  {{#if (eq this.unitType "upcoming")}}
+                  {{#if this.isApproved}}
+
+                    <span
+                      class="
+                        grand-poobaa-library-status
+                        grand-poobaa-library-status-approved
+                      "
+                    >
+                      <ion-icon name="shield-checkmark-outline"></ion-icon>
+                      approved
+                    </span>
+
+                  {{else if (eq this.unitType "upcoming")}}
 
                     <span
                       class="
@@ -1779,16 +1797,11 @@
                     <span
                       class="
                         grand-poobaa-library-status
-                        grand-poobaa-library-status-published
+                        grand-poobaa-library-status-pending
                       "
                     >
-                      <ion-icon name="checkmark-circle-outline"></ion-icon>
-
-                      {{#if this.status}}
-                        {{this.status}}
-                      {{else}}
-                        published
-                      {{/if}}
+                      <ion-icon name="hourglass-outline"></ion-icon>
+                      awaiting approval
                     </span>
 
                   {{/if}}
@@ -1823,21 +1836,87 @@
 
                     <a
                       href="/unitviews/upcoming/view/{{this._id}}"
-                      class="grand-poobaa-library-view-button"
+                      class="
+                        grand-poobaa-library-button
+                        grand-poobaa-library-view-button
+                      "
+                      aria-label="View {{this.title}}"
                     >
                       <ion-icon name="eye-outline"></ion-icon>
-                      view upcoming
+                      <span>view</span>
                     </a>
 
                   {{else}}
 
                     <a
                       href="/unitviews/{{this.unitType}}s/view/{{this._id}}"
-                      class="grand-poobaa-library-view-button"
+                      class="
+                        grand-poobaa-library-button
+                        grand-poobaa-library-view-button
+                      "
+                      aria-label="View {{this.title}}"
                     >
                       <ion-icon name="eye-outline"></ion-icon>
-                      view unit
+                      <span>view</span>
                     </a>
+
+                  {{/if}}
+
+                </td>
+
+
+                {{!-- APPROVE UNIT --}}
+                <td class="grand-poobaa-library-action">
+
+                  {{#if this.isApproved}}
+
+                    <span
+                      class="
+                        grand-poobaa-library-button
+                        grand-poobaa-library-approved-button
+                      "
+                    >
+                      <ion-icon name="checkmark-circle-outline"></ion-icon>
+                      <span>approved</span>
+                    </span>
+
+                  {{else}}
+
+                    <form
+                      action="/grand-poobaa/library-units/{{this._id}}/approve"
+                      method="POST"
+                      class="grand-poobaa-library-approve-form"
+                    >
+
+                      {{#if ../csrfToken}}
+
+                        <input
+                          type="hidden"
+                          name="_csrf"
+                          value="{{../csrfToken}}"
+                        >
+
+                      {{/if}}
+
+                      <input
+                        type="hidden"
+                        name="unitType"
+                        value="{{this.unitType}}"
+                      >
+
+                      <button
+                        type="submit"
+                        class="
+                          grand-poobaa-library-button
+                          grand-poobaa-library-approve-button
+                        "
+                        aria-label="Approve {{this.title}}"
+                      >
+                        <ion-icon name="checkmark-outline"></ion-icon>
+                        <span>approve</span>
+                      </button>
+
+                    </form>
 
                   {{/if}}
 
@@ -1863,10 +1942,11 @@
 
         <div>
 
-          <h4>no new library units</h4>
+          <h4>no units awaiting approval</h4>
 
           <p>
-            There are no recently added units waiting for review.
+            There are currently no new library contributions waiting for
+            review.
           </p>
 
         </div>
