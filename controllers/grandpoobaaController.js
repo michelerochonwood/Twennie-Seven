@@ -904,6 +904,10 @@ approveTopicSuggestion: async (req, res) => {
  * POST /grand-poobaa/library-units/:unitId/approve
  * Approve a newly submitted library unit.
  */
+/**
+ * POST /grand-poobaa/library-units/:unitId/approve
+ * Approve a newly submitted library unit.
+ */
 approveLibraryUnit: async (req, res) => {
   try {
     const { unitId } = req.params;
@@ -938,15 +942,14 @@ approveLibraryUnit: async (req, res) => {
         {
           _id: unitId,
 
-          approved: {
-            $ne: true
+          status: {
+            $ne: 'approved'
           }
         },
 
         {
           $set: {
-            approved: true,
-            approvedAt: new Date()
+            status: 'approved'
           }
         },
 
