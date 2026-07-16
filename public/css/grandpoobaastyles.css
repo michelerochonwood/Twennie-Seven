@@ -1864,3 +1864,340 @@ html {
   }
 
 }
+
+
+
+
+/* =========================================================
+   LIBRARY UNIT APPROVAL
+========================================================= */
+
+/*
+ * Summary area above the unit table.
+ */
+.grand-poobaa-library-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--gp-border);
+  background: #ffffff;
+}
+
+.grand-poobaa-library-summary > div {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.grand-poobaa-library-summary-label {
+  margin: 0;
+  color: var(--gp-muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.grand-poobaa-library-summary strong {
+  display: grid;
+  min-width: 42px;
+  height: 42px;
+  padding: 0 0.7rem;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(74, 74, 178, 0.09);
+  color: var(--gp-navy);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.grand-poobaa-library-summary > p {
+  max-width: 760px;
+  margin: 0;
+  color: var(--gp-muted);
+  font-size: 0.84rem;
+  line-height: 1.6;
+}
+
+
+/* =========================================================
+   LIBRARY TABLE
+========================================================= */
+
+/*
+ * Unlike the general table, this table should fit inside
+ * the full-width administration panel on desktop.
+ */
+.grand-poobaa-library-table {
+  width: 100%;
+  min-width: 0;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+.grand-poobaa-library-table th,
+.grand-poobaa-library-table td {
+  padding: 1.15rem 1rem;
+  border-bottom: 1px solid var(--gp-border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.grand-poobaa-library-table th {
+  background: var(--gp-surface-soft);
+  color: var(--gp-blue);
+  font-size: 0.67rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.grand-poobaa-library-table td {
+  color: var(--gp-text);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.grand-poobaa-library-table tbody tr {
+  transition: background-color 160ms ease;
+}
+
+.grand-poobaa-library-table tbody tr:hover {
+  background: rgba(74, 74, 178, 0.027);
+}
+
+.grand-poobaa-library-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+
+/*
+ * Column widths.
+ *
+ * These total 100%, keeping both action columns visible.
+ */
+.grand-poobaa-library-table th:nth-child(1) {
+  width: 14%;
+}
+
+.grand-poobaa-library-table th:nth-child(2) {
+  width: 11%;
+}
+
+.grand-poobaa-library-table th:nth-child(3) {
+  width: 8%;
+}
+
+.grand-poobaa-library-table th:nth-child(4) {
+  width: 22%;
+}
+
+.grand-poobaa-library-table th:nth-child(5) {
+  width: 16%;
+}
+
+.grand-poobaa-library-table th:nth-child(6) {
+  width: 10%;
+}
+
+.grand-poobaa-library-table th:nth-child(7) {
+  width: 9.5%;
+}
+
+.grand-poobaa-library-table th:nth-child(8) {
+  width: 9.5%;
+}
+
+
+/* =========================================================
+   LIBRARY TABLE CONTENT
+========================================================= */
+
+.grand-poobaa-library-title strong {
+  display: block;
+  color: var(--gp-navy);
+  font-size: 0.84rem;
+  font-weight: 800;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.grand-poobaa-library-unit-type {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.32rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(74, 74, 178, 0.09);
+  color: var(--gp-blue);
+  font-size: 0.7rem;
+  font-weight: 800;
+  line-height: 1;
+  text-transform: lowercase;
+}
+
+.grand-poobaa-library-topic {
+  display: block;
+  color: var(--gp-text);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+
+/* =========================================================
+   LIBRARY ACTION COLUMNS
+========================================================= */
+
+.grand-poobaa-library-action {
+  vertical-align: middle !important;
+}
+
+.grand-poobaa-library-approve-form {
+  width: 100%;
+  margin: 0;
+}
+
+
+/*
+ * Shared button styling, consistent with the topic
+ * suggestion approval button.
+ */
+.grand-poobaa-library-button {
+  display: inline-flex;
+  width: 100%;
+  min-height: 41px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.62rem 0.7rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1;
+  text-align: center;
+  text-decoration: none;
+  text-transform: lowercase;
+  white-space: nowrap;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.grand-poobaa-library-button ion-icon {
+  flex: 0 0 auto;
+  font-size: 0.95rem;
+}
+
+.grand-poobaa-library-button:hover {
+  transform: translateY(-1px);
+}
+
+.grand-poobaa-library-button:focus-visible {
+  outline: 3px solid rgba(74, 74, 178, 0.24);
+  outline-offset: 3px;
+}
+
+
+/* View unit */
+
+.grand-poobaa-library-view-button {
+  border-color: rgba(74, 74, 178, 0.18);
+  background: rgba(74, 74, 178, 0.08);
+  color: var(--gp-blue);
+}
+
+.grand-poobaa-library-view-button:hover {
+  border-color: var(--gp-blue);
+  background: var(--gp-blue);
+  color: #ffffff;
+  box-shadow:
+    0 7px 18px rgba(74, 74, 178, 0.18);
+}
+
+
+/* Approve unit */
+
+.grand-poobaa-library-approve-button {
+  background: var(--gp-navy);
+  color: #ffffff;
+}
+
+.grand-poobaa-library-approve-button:hover {
+  background: var(--gp-blue);
+  color: #ffffff;
+  box-shadow:
+    0 7px 18px rgba(74, 74, 178, 0.22);
+}
+
+
+/* =========================================================
+   LIBRARY TABLE RESPONSIVE
+========================================================= */
+
+@media screen and (max-width: 1250px) {
+
+  /*
+   * Horizontal scrolling begins only on smaller screens.
+   * On normal desktop widths, the table remains fully visible.
+   */
+  .grand-poobaa-library-table {
+    min-width: 1180px;
+  }
+
+  .grand-poobaa-library-table th:nth-child(1) {
+    width: 155px;
+  }
+
+  .grand-poobaa-library-table th:nth-child(2) {
+    width: 125px;
+  }
+
+  .grand-poobaa-library-table th:nth-child(3) {
+    width: 95px;
+  }
+
+  .grand-poobaa-library-table th:nth-child(4) {
+    width: 245px;
+  }
+
+  .grand-poobaa-library-table th:nth-child(5) {
+    width: 175px;
+  }
+
+  .grand-poobaa-library-table th:nth-child(6) {
+    width: 110px;
+  }
+
+  .grand-poobaa-library-table th:nth-child(7),
+  .grand-poobaa-library-table th:nth-child(8) {
+    width: 135px;
+  }
+}
+
+
+@media screen and (max-width: 800px) {
+
+  .grand-poobaa-library-summary {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.8rem;
+    padding: 1.15rem;
+  }
+
+  .grand-poobaa-library-summary > p {
+    max-width: none;
+  }
+
+  .grand-poobaa-library-table th,
+  .grand-poobaa-library-table td {
+    padding: 1rem 0.85rem;
+  }
+}
