@@ -332,7 +332,7 @@ showDashboard: async (req, res) => {
           .sort({
             _id: -1
           })
-          .limit(100)
+          .limit(30)
           .lean()
       )
     ]);
