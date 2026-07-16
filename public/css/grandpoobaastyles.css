@@ -2512,3 +2512,321 @@ html {
     transform: none;
   }
 }
+
+
+
+/* =========================================================
+   GROWTH REPORT
+========================================================= */
+
+.grand-poobaa-growth-report {
+  margin-top: 2rem;
+  padding: clamp(1.4rem, 2.5vw, 2rem);
+  border: 1px solid var(--gp-border);
+  border-radius: 22px;
+  background:
+    linear-gradient(
+      145deg,
+      #ffffff 0%,
+      #fbfbff 100%
+    );
+  box-shadow: var(--gp-shadow-small);
+}
+
+
+/* =========================================================
+   GROWTH GROUPS
+========================================================= */
+
+.grand-poobaa-growth-group + .grand-poobaa-growth-group {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--gp-border);
+}
+
+.grand-poobaa-growth-group-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 1.25rem;
+}
+
+.grand-poobaa-growth-group-heading > div {
+  min-width: 0;
+}
+
+.grand-poobaa-growth-group-kicker {
+  margin: 0 0 0.4rem;
+  color: var(--gp-pink);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.grand-poobaa-growth-group-heading h4 {
+  margin: 0;
+  color: var(--gp-navy);
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-transform: lowercase;
+}
+
+.grand-poobaa-growth-group-heading > p {
+  max-width: 620px;
+  margin: 0;
+  color: var(--gp-muted);
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+
+/* =========================================================
+   GROWTH GRIDS
+========================================================= */
+
+.grand-poobaa-growth-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.15rem;
+}
+
+.grand-poobaa-growth-grid-operations {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+
+/* =========================================================
+   GROWTH CARDS
+========================================================= */
+
+.grand-poobaa-growth-card {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 220px;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.3rem;
+  overflow: hidden;
+  border: 1px solid var(--gp-border);
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow:
+    0 7px 20px rgba(38, 34, 98, 0.05);
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.grand-poobaa-growth-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 4px;
+  background:
+    linear-gradient(
+      90deg,
+      var(--gp-blue),
+      var(--gp-pink)
+    );
+}
+
+.grand-poobaa-growth-card::after {
+  content: "";
+  position: absolute;
+  right: -45px;
+  bottom: -52px;
+  width: 135px;
+  height: 135px;
+  border-radius: 50%;
+  background: rgba(74, 74, 178, 0.035);
+  pointer-events: none;
+}
+
+.grand-poobaa-growth-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(74, 74, 178, 0.2);
+  box-shadow:
+    0 14px 30px rgba(38, 34, 98, 0.1);
+}
+
+
+/* =========================================================
+   GROWTH CARD HEADER
+========================================================= */
+
+.grand-poobaa-growth-card-header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.grand-poobaa-growth-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  place-items: center;
+  border-radius: 13px;
+  background: rgba(74, 74, 178, 0.1);
+  color: var(--gp-blue);
+  font-size: 1.2rem;
+}
+
+.grand-poobaa-growth-period {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0.35rem 0.68rem;
+  border-radius: 999px;
+  background: var(--gp-background-soft);
+  color: var(--gp-muted);
+  font-size: 0.63rem;
+  font-weight: 800;
+  letter-spacing: 0.035em;
+  line-height: 1;
+  text-align: center;
+  text-transform: lowercase;
+}
+
+
+/* =========================================================
+   GROWTH CARD CONTENT
+========================================================= */
+
+.grand-poobaa-growth-card-copy {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  margin-top: 1.25rem;
+}
+
+.grand-poobaa-growth-label {
+  color: var(--gp-muted);
+  font-size: 0.67rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.grand-poobaa-growth-value {
+  margin-top: 0.45rem;
+  color: var(--gp-navy);
+  font-size: clamp(2.25rem, 3.6vw, 3rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.grand-poobaa-growth-card-copy p {
+  margin: 1rem 0 0;
+  color: var(--gp-muted);
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+
+/* =========================================================
+   GROWTH ICON ACCENTS
+========================================================= */
+
+.grand-poobaa-growth-card:nth-child(2)
+.grand-poobaa-growth-icon {
+  background: var(--gp-success-soft);
+  color: var(--gp-success);
+}
+
+.grand-poobaa-growth-card:nth-child(3)
+.grand-poobaa-growth-icon {
+  background: rgba(247, 148, 29, 0.12);
+  color: #d87500;
+}
+
+.grand-poobaa-growth-card:nth-child(4)
+.grand-poobaa-growth-icon {
+  background: rgba(220, 23, 106, 0.09);
+  color: var(--gp-pink);
+}
+
+.grand-poobaa-growth-card:nth-child(5)
+.grand-poobaa-growth-icon {
+  background: rgba(38, 34, 98, 0.09);
+  color: var(--gp-navy);
+}
+
+.grand-poobaa-growth-card:nth-child(6)
+.grand-poobaa-growth-icon {
+  background: rgba(74, 74, 178, 0.1);
+  color: var(--gp-blue);
+}
+
+
+/* =========================================================
+   GROWTH RESPONSIVE
+========================================================= */
+
+@media screen and (max-width: 1350px) {
+  .grand-poobaa-growth-grid,
+  .grand-poobaa-growth-grid-operations {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+
+@media screen and (max-width: 800px) {
+  .grand-poobaa-growth-group-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .grand-poobaa-growth-group-heading > p {
+    max-width: none;
+  }
+}
+
+
+@media screen and (max-width: 620px) {
+  .grand-poobaa-growth-report {
+    padding: 1rem;
+    border-radius: 18px;
+  }
+
+  .grand-poobaa-growth-grid,
+  .grand-poobaa-growth-grid-operations {
+    grid-template-columns: 1fr;
+  }
+
+  .grand-poobaa-growth-card {
+    min-height: 205px;
+    padding: 1.15rem;
+  }
+
+  .grand-poobaa-growth-value {
+    font-size: 2.6rem;
+  }
+}
+
+
+/* =========================================================
+   GROWTH REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .grand-poobaa-growth-card {
+    transition: none;
+  }
+
+  .grand-poobaa-growth-card:hover {
+    transform: none;
+  }
+}
