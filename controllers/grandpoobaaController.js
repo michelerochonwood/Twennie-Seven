@@ -43,6 +43,10 @@ const Mission = require(
   '../models/unit_models/mission'
 );
 
+const PromptSetCompletion = require(
+  '../models/prompt_models/promptsetcompletion'
+);
+
 
 
 const CancelledMember = require(
@@ -167,6 +171,88 @@ function getUnitMainTopic(unit) {
   );
 }
 
+/**
+ * Build the key metrics displayed in the executive
+ * snapshot reporting partial.
+ */
+async function getExecutiveSnapshot() {
+  const now = new Date();
+
+  const thirtyDaysAgo = new Date(now);
+  thirtyDaysAgo.setDate(
+    thirtyDaysAgo.getDate() - 30
+  );
+
+  /**
+   * Active demo requests exclude requests that have already
+   * been marked as completed.
+   */
+  const activeDemoQuery = {
+    status: {
+      $ne: 'completed'
+    }
+  };
+
+  const [
+    newLeaders30Days,
+    newGroupMembers30Days,
+    newIndividualMembers30Days,
+    promptSetsCompleted30Days,
+    demoRequestCount,
+    topicSuggestionCount
+  ] = await Promise.all([
+    Leader.countDocuments({
+      createdAt: {
+        $gte: thirtyDaysAgo
+      }
+    }),
+
+    GroupMember.countDocuments({
+      createdAt: {
+        $gte: thirtyDaysAgo
+      }
+    }),
+
+    Member.countDocuments({
+      createdAt: {
+        $gte: thirtyDaysAgo
+      }
+    }),
+
+    PromptSetCompletion.countDocuments({
+      completedAt: {
+        $gte: thirtyDaysAgo
+      }
+    }),
+
+    DemoRequest.countDocuments(
+      activeDemoQuery
+    ),
+
+    TopicSuggestion.countDocuments({
+      approved: false
+    })
+  ]);
+
+  const newMembers30Days =
+    newLeaders30Days +
+    newGroupMembers30Days +
+    newIndividualMembers30Days;
+
+  return {
+    /**
+     * These two metrics will be connected once we confirm
+     * the authoritative activity and unit-completion data.
+     */
+    activeMembers30Days: 0,
+    unitsCompleted30Days: 0,
+
+    promptSetsCompleted30Days,
+    demoRequestCount,
+    newMembers30Days,
+    topicSuggestionCount
+  };
+}
 
 const grandPoobaaController = {
 
@@ -190,7 +276,8 @@ showDashboard: async (req, res) => {
       }
     };
 
-
+const executiveSnapshot =
+  await getExecutiveSnapshot();
     /**
      * Each model is kept with its normalized unit type.
      *
@@ -757,6 +844,23 @@ unitCollections.forEach(
 
         totalActionItems,
         newToday,
+
+        currentDate,
+
+totalActionItems,
+newToday,
+
+activeMembers30Days:
+  executiveSnapshot.activeMembers30Days,
+
+unitsCompleted30Days:
+  executiveSnapshot.unitsCompleted30Days,
+
+promptSetsCompleted30Days:
+  executiveSnapshot.promptSetsCompleted30Days,
+
+newMembers30Days:
+  executiveSnapshot.newMembers30Days,
 
         // These will be connected later.
         totalMembers: 0,

@@ -1868,48 +1868,63 @@
 </section>
 
   {{!-- =====================================================
-       FUTURE REPORTING AREA
-
-       This remains structural only. It gives us a location
-       for the reporting modules without filling the page
-       with unfinished report cards.
+       REPORTING AND ADMINISTRATION
   ====================================================== --}}
-  <section class="grand-poobaa-section grand-poobaa-reporting-section">
+  <section
+    class="
+      grand-poobaa-section
+      grand-poobaa-reporting-section
+    "
+  >
 
     <div class="grand-poobaa-section-heading">
 
       <div>
+
         <p class="grand-poobaa-section-kicker">
           platform intelligence
         </p>
 
         <h2>reporting and administration</h2>
+
       </div>
 
+
       <p>
-        Platform reporting and system-management tools will be developed here
-        after the action-centre modules are complete.
+        Review growth, engagement, learning, content health,
+        organization activity, platform operations, and other
+        indicators across Twennie.
       </p>
 
     </div>
 
 
-    <div class="grand-poobaa-reporting-placeholder">
+    {{!-- =================================================
+         EXECUTIVE SNAPSHOT
+    ================================================== --}}
+    {{> grandpoobaa/executive_snapshot}}
 
-      <div class="grand-poobaa-reporting-placeholder-icon">
-        <ion-icon name="analytics-outline"></ion-icon>
-      </div>
 
-      <div>
+    {{!-- =================================================
+         REPORTING SECTIONS
+    ================================================== --}}
+    <div class="grand-poobaa-reporting-sections">
 
-        <h3>reporting framework ready</h3>
+      {{> grandpoobaa/growth}}
 
-        <p>
-          Growth, engagement, learning, content, organization, revenue, and
-          system reporting will be added as individual dashboard sections.
-        </p>
+      {{> grandpoobaa/engagement}}
 
-      </div>
+      {{> grandpoobaa/learning}}
+
+      {{> grandpoobaa/content_health}}
+
+      {{> grandpoobaa/suggestions_feedback}}
+
+      {{> grandpoobaa/organization_health}}
+
+      {{> grandpoobaa/platform_operations}}
+
+      {{> grandpoobaa/revenue}}
 
     </div>
 

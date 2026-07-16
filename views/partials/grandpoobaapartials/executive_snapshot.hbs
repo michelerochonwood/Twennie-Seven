@@ -1,0 +1,278 @@
+{{!-- =====================================================
+     EXECUTIVE SNAPSHOT
+====================================================== --}}
+<section
+  class="grand-poobaa-reporting-block grand-poobaa-executive-snapshot"
+  aria-labelledby="grand-poobaa-executive-snapshot-heading"
+>
+
+  <div class="grand-poobaa-reporting-block-heading">
+
+    <div>
+
+      <p class="grand-poobaa-reporting-eyebrow">
+        executive snapshot
+      </p>
+
+      <h3 id="grand-poobaa-executive-snapshot-heading">
+        key platform indicators
+      </h3>
+
+    </div>
+
+
+    <p>
+      A quick view of the numbers that best show whether Twennie is
+      growing, being used, and generating meaningful learning activity.
+    </p>
+
+  </div>
+
+
+  <div
+    class="grand-poobaa-executive-grid"
+    aria-label="Key platform metrics"
+  >
+
+    {{!-- ACTIVE MEMBERS --}}
+    <article class="grand-poobaa-executive-card">
+
+      <div class="grand-poobaa-executive-card-header">
+
+        <div class="grand-poobaa-executive-icon">
+          <ion-icon name="people-outline"></ion-icon>
+        </div>
+
+        <span class="grand-poobaa-executive-period">
+          last 30 days
+        </span>
+
+      </div>
+
+
+      <div class="grand-poobaa-executive-card-copy">
+
+        <span class="grand-poobaa-executive-label">
+          active members
+        </span>
+
+        <strong class="grand-poobaa-executive-value">
+          {{#if activeMembers30Days}}
+            {{activeMembers30Days}}
+          {{else}}
+            0
+          {{/if}}
+        </strong>
+
+        <p>
+          Members who have logged in or completed meaningful activity
+          during the last 30 days.
+        </p>
+
+      </div>
+
+    </article>
+
+
+    {{!-- UNITS COMPLETED --}}
+    <article class="grand-poobaa-executive-card">
+
+      <div class="grand-poobaa-executive-card-header">
+
+        <div class="grand-poobaa-executive-icon">
+          <ion-icon name="checkmark-done-outline"></ion-icon>
+        </div>
+
+        <span class="grand-poobaa-executive-period">
+          last 30 days
+        </span>
+
+      </div>
+
+
+      <div class="grand-poobaa-executive-card-copy">
+
+        <span class="grand-poobaa-executive-label">
+          units completed
+        </span>
+
+        <strong class="grand-poobaa-executive-value">
+          {{#if unitsCompleted30Days}}
+            {{unitsCompleted30Days}}
+          {{else}}
+            0
+          {{/if}}
+        </strong>
+
+        <p>
+          Completed learning units across articles, videos, exercises,
+          templates, interviews, missions, and nuggets.
+        </p>
+
+      </div>
+
+    </article>
+
+
+    {{!-- PROMPT SETS COMPLETED --}}
+    <article class="grand-poobaa-executive-card">
+
+      <div class="grand-poobaa-executive-card-header">
+
+        <div class="grand-poobaa-executive-icon">
+          <ion-icon name="chatbubbles-outline"></ion-icon>
+        </div>
+
+        <span class="grand-poobaa-executive-period">
+          last 30 days
+        </span>
+
+      </div>
+
+
+      <div class="grand-poobaa-executive-card-copy">
+
+        <span class="grand-poobaa-executive-label">
+          prompt sets completed
+        </span>
+
+        <strong class="grand-poobaa-executive-value">
+          {{#if promptSetsCompleted30Days}}
+            {{promptSetsCompleted30Days}}
+          {{else}}
+            0
+          {{/if}}
+        </strong>
+
+        <p>
+          Completed prompt sets, representing deeper and more sustained
+          learning engagement.
+        </p>
+
+      </div>
+
+    </article>
+
+
+    {{!-- DEMO REQUESTS --}}
+    <article class="grand-poobaa-executive-card">
+
+      <div class="grand-poobaa-executive-card-header">
+
+        <div class="grand-poobaa-executive-icon">
+          <ion-icon name="desktop-outline"></ion-icon>
+        </div>
+
+        <span class="grand-poobaa-executive-period">
+          active
+        </span>
+
+      </div>
+
+
+      <div class="grand-poobaa-executive-card-copy">
+
+        <span class="grand-poobaa-executive-label">
+          demo requests
+        </span>
+
+        <strong class="grand-poobaa-executive-value">
+          {{#if demoRequestCount}}
+            {{demoRequestCount}}
+          {{else}}
+            0
+          {{/if}}
+        </strong>
+
+        <p>
+          Prospective clients currently waiting for scheduling,
+          follow-up, or completion.
+        </p>
+
+      </div>
+
+    </article>
+
+
+    {{!-- NEW MEMBERS --}}
+    <article class="grand-poobaa-executive-card">
+
+      <div class="grand-poobaa-executive-card-header">
+
+        <div class="grand-poobaa-executive-icon">
+          <ion-icon name="person-add-outline"></ion-icon>
+        </div>
+
+        <span class="grand-poobaa-executive-period">
+          last 30 days
+        </span>
+
+      </div>
+
+
+      <div class="grand-poobaa-executive-card-copy">
+
+        <span class="grand-poobaa-executive-label">
+          new members
+        </span>
+
+        <strong class="grand-poobaa-executive-value">
+          {{#if newMembers30Days}}
+            {{newMembers30Days}}
+          {{else}}
+            0
+          {{/if}}
+        </strong>
+
+        <p>
+          New leaders, group members, and individual members added
+          during the last 30 days.
+        </p>
+
+      </div>
+
+    </article>
+
+
+    {{!-- TOPIC SUGGESTIONS --}}
+    <article class="grand-poobaa-executive-card">
+
+      <div class="grand-poobaa-executive-card-header">
+
+        <div class="grand-poobaa-executive-icon">
+          <ion-icon name="bulb-outline"></ion-icon>
+        </div>
+
+        <span class="grand-poobaa-executive-period">
+          awaiting review
+        </span>
+
+      </div>
+
+
+      <div class="grand-poobaa-executive-card-copy">
+
+        <span class="grand-poobaa-executive-label">
+          topic suggestions
+        </span>
+
+        <strong class="grand-poobaa-executive-value">
+          {{#if topicSuggestionCount}}
+            {{topicSuggestionCount}}
+          {{else}}
+            0
+          {{/if}}
+        </strong>
+
+        <p>
+          Member-submitted learning topics currently waiting for
+          administrative review.
+        </p>
+
+      </div>
+
+    </article>
+
+  </div>
+
+</section>
