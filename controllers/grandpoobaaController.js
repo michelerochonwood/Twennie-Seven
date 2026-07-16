@@ -862,6 +862,14 @@ promptSetsCompleted30Days:
 newMembers30Days:
   executiveSnapshot.newMembers30Days,
 
+  newMembersThisMonth: 0,
+totalGroups: 0,
+totalLeaders: 0,
+totalDemoRequests: 0,
+demoRequestConversionRate: 0,
+invitationsSent: 0,
+pendingJoinRequests: 0,
+
         // These will be connected later.
         totalMembers: 0,
         totalOrganizations: 0,

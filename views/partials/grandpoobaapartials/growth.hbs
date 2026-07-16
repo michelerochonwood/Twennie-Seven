@@ -1,0 +1,503 @@
+{{!-- =====================================================
+     GROWTH REPORTING
+====================================================== --}}
+<section
+  class="
+    grand-poobaa-reporting-block
+    grand-poobaa-growth-report
+  "
+  aria-labelledby="grand-poobaa-growth-heading"
+>
+
+  <div class="grand-poobaa-reporting-block-heading">
+
+    <div>
+
+      <p class="grand-poobaa-reporting-eyebrow">
+        growth
+      </p>
+
+      <h3 id="grand-poobaa-growth-heading">
+        platform growth
+      </h3>
+
+    </div>
+
+
+    <p>
+      These indicators show whether Twennie is attracting new members,
+      expanding into organizations, and developing a stronger sales pipeline.
+    </p>
+
+  </div>
+
+
+  {{!-- =================================================
+       MEMBERSHIP GROWTH
+  ================================================== --}}
+  <div class="grand-poobaa-growth-group">
+
+    <div class="grand-poobaa-growth-group-heading">
+
+      <div>
+
+        <p class="grand-poobaa-growth-group-kicker">
+          membership
+        </p>
+
+        <h4>member and account growth</h4>
+
+      </div>
+
+
+      <p>
+        A current view of Twennie's member base and the people responsible
+        for leading groups and organizations.
+      </p>
+
+    </div>
+
+
+    <div
+      class="grand-poobaa-growth-grid"
+      aria-label="Membership growth metrics"
+    >
+
+      {{!-- TOTAL MEMBERS --}}
+      <article class="grand-poobaa-growth-card">
+
+        <div class="grand-poobaa-growth-card-header">
+
+          <div class="grand-poobaa-growth-icon">
+            <ion-icon name="people-outline"></ion-icon>
+          </div>
+
+          <span class="grand-poobaa-growth-period">
+            current total
+          </span>
+
+        </div>
+
+
+        <div class="grand-poobaa-growth-card-copy">
+
+          <span class="grand-poobaa-growth-label">
+            total members
+          </span>
+
+          <strong class="grand-poobaa-growth-value">
+            {{#if totalMembers}}
+              {{totalMembers}}
+            {{else}}
+              0
+            {{/if}}
+          </strong>
+
+          <p>
+            All leaders, group members, and individual members currently
+            registered with Twennie.
+          </p>
+
+        </div>
+
+      </article>
+
+
+      {{!-- ACTIVE MEMBERS --}}
+      <article class="grand-poobaa-growth-card">
+
+        <div class="grand-poobaa-growth-card-header">
+
+          <div class="grand-poobaa-growth-icon">
+            <ion-icon name="pulse-outline"></ion-icon>
+          </div>
+
+          <span class="grand-poobaa-growth-period">
+            last 30 days
+          </span>
+
+        </div>
+
+
+        <div class="grand-poobaa-growth-card-copy">
+
+          <span class="grand-poobaa-growth-label">
+            active members
+          </span>
+
+          <strong class="grand-poobaa-growth-value">
+            {{#if activeMembers30Days}}
+              {{activeMembers30Days}}
+            {{else}}
+              0
+            {{/if}}
+          </strong>
+
+          <p>
+            Members who have logged in or completed meaningful activity
+            during the last 30 days.
+          </p>
+
+        </div>
+
+      </article>
+
+
+      {{!-- NEW MEMBERS --}}
+      <article class="grand-poobaa-growth-card">
+
+        <div class="grand-poobaa-growth-card-header">
+
+          <div class="grand-poobaa-growth-icon">
+            <ion-icon name="person-add-outline"></ion-icon>
+          </div>
+
+          <span class="grand-poobaa-growth-period">
+            this month
+          </span>
+
+        </div>
+
+
+        <div class="grand-poobaa-growth-card-copy">
+
+          <span class="grand-poobaa-growth-label">
+            new members
+          </span>
+
+          <strong class="grand-poobaa-growth-value">
+            {{#if newMembersThisMonth}}
+              {{newMembersThisMonth}}
+            {{else}}
+              0
+            {{/if}}
+          </strong>
+
+          <p>
+            New leaders, group members, and individual members added
+            during the current calendar month.
+          </p>
+
+        </div>
+
+      </article>
+
+
+      {{!-- TOTAL GROUPS --}}
+      <article class="grand-poobaa-growth-card">
+
+        <div class="grand-poobaa-growth-card-header">
+
+          <div class="grand-poobaa-growth-icon">
+            <ion-icon name="people-circle-outline"></ion-icon>
+          </div>
+
+          <span class="grand-poobaa-growth-period">
+            current total
+          </span>
+
+        </div>
+
+
+        <div class="grand-poobaa-growth-card-copy">
+
+          <span class="grand-poobaa-growth-label">
+            total groups
+          </span>
+
+          <strong class="grand-poobaa-growth-value">
+            {{#if totalGroups}}
+              {{totalGroups}}
+            {{else}}
+              0
+            {{/if}}
+          </strong>
+
+          <p>
+            Active and inactive learning groups created across the Twennie
+            platform.
+          </p>
+
+        </div>
+
+      </article>
+
+
+      {{!-- TOTAL LEADERS --}}
+      <article class="grand-poobaa-growth-card">
+
+        <div class="grand-poobaa-growth-card-header">
+
+          <div class="grand-poobaa-growth-icon">
+            <ion-icon name="ribbon-outline"></ion-icon>
+          </div>
+
+          <span class="grand-poobaa-growth-period">
+            current total
+          </span>
+
+        </div>
+
+
+        <div class="grand-poobaa-growth-card-copy">
+
+          <span class="grand-poobaa-growth-label">
+            total leaders
+          </span>
+
+          <strong class="grand-poobaa-growth-value">
+            {{#if totalLeaders}}
+              {{totalLeaders}}
+            {{else}}
+              0
+            {{/if}}
+          </strong>
+
+          <p>
+            Members with leader accounts who can manage groups and guide
+            learning activity.
+          </p>
+
+        </div>
+
+      </article>
+
+
+      {{!-- ORGANIZATIONS --}}
+      <article class="grand-poobaa-growth-card">
+
+        <div class="grand-poobaa-growth-card-header">
+
+          <div class="grand-poobaa-growth-icon">
+            <ion-icon name="business-outline"></ion-icon>
+          </div>
+
+          <span class="grand-poobaa-growth-period">
+            current total
+          </span>
+
+        </div>
+
+
+        <div class="grand-poobaa-growth-card-copy">
+
+          <span class="grand-poobaa-growth-label">
+            organizations
+          </span>
+
+          <strong class="grand-poobaa-growth-value">
+            {{#if totalOrganizations}}
+              {{totalOrganizations}}
+            {{else}}
+              0
+            {{/if}}
+          </strong>
+
+          <p>
+            Organizations with members, leaders, or administrators using
+            Twennie.
+          </p>
+
+        </div>
+
+      </article>
+
+    </div>
+
+  </div>
+
+
+  {{!-- =================================================
+       SALES AND INVITATIONS
+  ================================================== --}}
+  <div class="grand-poobaa-growth-group">
+
+    <div class="grand-poobaa-growth-group-heading">
+
+      <div>
+
+        <p class="grand-poobaa-growth-group-kicker">
+          pipeline
+        </p>
+
+        <h4>sales and invitations</h4>
+
+      </div>
+
+
+      <p>
+        These figures show whether interest in Twennie is moving toward
+        demonstrations, registrations, and organization participation.
+      </p>
+
+    </div>
+
+
+    <div
+      class="grand-poobaa-growth-grid grand-poobaa-growth-grid-operations"
+      aria-label="Sales and invitation growth metrics"
+    >
+
+      {{!-- DEMO REQUESTS --}}
+      <article class="grand-poobaa-growth-card">
+
+        <div class="grand-poobaa-growth-card-header">
+
+          <div class="grand-poobaa-growth-icon">
+            <ion-icon name="desktop-outline"></ion-icon>
+          </div>
+
+          <span class="grand-poobaa-growth-period">
+            all requests
+          </span>
+
+        </div>
+
+
+        <div class="grand-poobaa-growth-card-copy">
+
+          <span class="grand-poobaa-growth-label">
+            demo requests
+          </span>
+
+          <strong class="grand-poobaa-growth-value">
+            {{#if totalDemoRequests}}
+              {{totalDemoRequests}}
+            {{else}}
+              0
+            {{/if}}
+          </strong>
+
+          <p>
+            All demonstration requests received through Twennie, including
+            active and completed requests.
+          </p>
+
+        </div>
+
+      </article>
+
+
+      {{!-- DEMO CONVERSION --}}
+      <article class="grand-poobaa-growth-card">
+
+        <div class="grand-poobaa-growth-card-header">
+
+          <div class="grand-poobaa-growth-icon">
+            <ion-icon name="trending-up-outline"></ion-icon>
+          </div>
+
+          <span class="grand-poobaa-growth-period">
+            conversion rate
+          </span>
+
+        </div>
+
+
+        <div class="grand-poobaa-growth-card-copy">
+
+          <span class="grand-poobaa-growth-label">
+            demo request conversion
+          </span>
+
+          <strong class="grand-poobaa-growth-value">
+            {{#if demoRequestConversionRate}}
+              {{demoRequestConversionRate}}%
+            {{else}}
+              0%
+            {{/if}}
+          </strong>
+
+          <p>
+            The percentage of demonstration requests that became paid
+            memberships or organization accounts.
+          </p>
+
+        </div>
+
+      </article>
+
+
+      {{!-- INVITATIONS SENT --}}
+      <article class="grand-poobaa-growth-card">
+
+        <div class="grand-poobaa-growth-card-header">
+
+          <div class="grand-poobaa-growth-icon">
+            <ion-icon name="mail-outline"></ion-icon>
+          </div>
+
+          <span class="grand-poobaa-growth-period">
+            current total
+          </span>
+
+        </div>
+
+
+        <div class="grand-poobaa-growth-card-copy">
+
+          <span class="grand-poobaa-growth-label">
+            invitations sent
+          </span>
+
+          <strong class="grand-poobaa-growth-value">
+            {{#if invitationsSent}}
+              {{invitationsSent}}
+            {{else}}
+              0
+            {{/if}}
+          </strong>
+
+          <p>
+            Membership and group invitations sent by leaders and
+            organization administrators.
+          </p>
+
+        </div>
+
+      </article>
+
+
+      {{!-- PENDING JOIN REQUESTS --}}
+      <article class="grand-poobaa-growth-card">
+
+        <div class="grand-poobaa-growth-card-header">
+
+          <div class="grand-poobaa-growth-icon">
+            <ion-icon name="person-add-outline"></ion-icon>
+          </div>
+
+          <span class="grand-poobaa-growth-period">
+            awaiting action
+          </span>
+
+        </div>
+
+
+        <div class="grand-poobaa-growth-card-copy">
+
+          <span class="grand-poobaa-growth-label">
+            pending join requests
+          </span>
+
+          <strong class="grand-poobaa-growth-value">
+            {{#if pendingJoinRequests}}
+              {{pendingJoinRequests}}
+            {{else}}
+              0
+            {{/if}}
+          </strong>
+
+          <p>
+            Requests from members waiting to join a group or organization.
+          </p>
+
+        </div>
+
+      </article>
+
+    </div>
+
+  </div>
+
+</section>
