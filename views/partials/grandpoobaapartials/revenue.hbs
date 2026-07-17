@@ -1,0 +1,186 @@
+{{!-- =====================================================
+     REVENUE
+====================================================== --}}
+<section
+  class="grand-poobaa-reporting-block grand-poobaa-revenue"
+  aria-labelledby="grand-poobaa-revenue-heading"
+>
+
+  <div class="grand-poobaa-reporting-block-heading">
+
+    <div>
+
+      <p class="grand-poobaa-reporting-eyebrow">
+        revenue
+      </p>
+
+      <h3 id="grand-poobaa-revenue-heading">
+        subscription and business performance
+      </h3>
+
+    </div>
+
+    <p>
+      These metrics track recurring revenue, subscription growth,
+      renewals, and future business opportunities.
+    </p>
+
+  </div>
+
+
+  <div class="grand-poobaa-reporting-grid">
+
+    {{!-- =====================================================
+         RECURRING REVENUE
+    ====================================================== --}}
+
+    <article class="grand-poobaa-report-card">
+
+      <header>
+        <h4>recurring revenue</h4>
+        <p>Current subscription performance.</p>
+      </header>
+
+      <div class="grand-poobaa-report-card-body">
+
+        <div class="grand-poobaa-metric">
+          <span>Monthly Recurring Revenue</span>
+          <strong>${{revenue.monthlyRecurringRevenue}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Annual Recurring Revenue</span>
+          <strong>${{revenue.annualRecurringRevenue}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Average Revenue Per Member</span>
+          <strong>${{revenue.averageRevenuePerMember}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Average Revenue Per Organization</span>
+          <strong>${{revenue.averageRevenuePerOrganization}}</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+
+    {{!-- =====================================================
+         SUBSCRIPTIONS
+    ====================================================== --}}
+
+    <article class="grand-poobaa-report-card">
+
+      <header>
+        <h4>subscriptions</h4>
+        <p>Growth and retention.</p>
+      </header>
+
+      <div class="grand-poobaa-report-card-body">
+
+        <div class="grand-poobaa-metric">
+          <span>New Paid Members</span>
+          <strong>{{revenue.newPaidMembers}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Membership Cancellations</span>
+          <strong>{{revenue.membershipCancellations}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Net Membership Growth</span>
+          <strong>{{revenue.netMembershipGrowth}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Renewal Rate</span>
+          <strong>{{revenue.renewalRate}}%</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+
+    {{!-- =====================================================
+         BILLING
+    ====================================================== --}}
+
+    <article class="grand-poobaa-report-card">
+
+      <header>
+        <h4>billing</h4>
+        <p>Subscription administration.</p>
+      </header>
+
+      <div class="grand-poobaa-report-card-body">
+
+        <div class="grand-poobaa-metric">
+          <span>Failed Payments</span>
+          <strong>{{revenue.failedPayments}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Refunds Issued</span>
+          <strong>{{revenue.refundsIssued}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Upcoming Renewals (30 Days)</span>
+          <strong>{{revenue.upcomingRenewals}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Expired Trial Accounts</span>
+          <strong>{{revenue.expiredTrials}}</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+
+    {{!-- =====================================================
+         SALES PIPELINE
+    ====================================================== --}}
+
+    <article class="grand-poobaa-report-card">
+
+      <header>
+        <h4>sales pipeline</h4>
+        <p>Future business opportunities.</p>
+      </header>
+
+      <div class="grand-poobaa-report-card-body">
+
+        <div class="grand-poobaa-metric">
+          <span>Demo Requests</span>
+          <strong>{{revenue.demoRequests}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Pending Enterprise Proposals</span>
+          <strong>{{revenue.enterpriseProposals}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Estimated Pipeline Value</span>
+          <strong>${{revenue.pipelineValue}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Demo Conversion Rate</span>
+          <strong>{{revenue.demoConversionRate}}%</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+  </div>
+
+</section>
