@@ -1,0 +1,186 @@
+{{!-- =====================================================
+     SUGGESTIONS & FEEDBACK
+====================================================== --}}
+<section
+  class="grand-poobaa-reporting-block grand-poobaa-suggestions-feedback"
+  aria-labelledby="grand-poobaa-suggestions-feedback-heading"
+>
+
+  <div class="grand-poobaa-reporting-block-heading">
+
+    <div>
+
+      <p class="grand-poobaa-reporting-eyebrow">
+        suggestions and feedback
+      </p>
+
+      <h3 id="grand-poobaa-suggestions-feedback-heading">
+        requests, ideas, and member input
+      </h3>
+
+    </div>
+
+    <p>
+      These metrics show what members and organizations are asking for,
+      which requests require attention, and where the platform may need improvement.
+    </p>
+
+  </div>
+
+
+  <div class="grand-poobaa-reporting-grid">
+
+    {{!-- =====================================================
+         CONTENT SUGGESTIONS
+    ====================================================== --}}
+
+    <article class="grand-poobaa-report-card">
+
+      <header>
+        <h4>content suggestions</h4>
+        <p>What members want added to the library.</p>
+      </header>
+
+      <div class="grand-poobaa-report-card-body">
+
+        <div class="grand-poobaa-metric">
+          <span>Total Suggestions</span>
+          <strong>{{suggestionsFeedback.totalSuggestions}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>New Suggestions This Month</span>
+          <strong>{{suggestionsFeedback.newSuggestionsThisMonth}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Pending Suggestions</span>
+          <strong>{{suggestionsFeedback.pendingSuggestions}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Approved Suggestions</span>
+          <strong>{{suggestionsFeedback.approvedSuggestions}}</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+
+    {{!-- =====================================================
+         FEEDBACK ACTIVITY
+    ====================================================== --}}
+
+    <article class="grand-poobaa-report-card">
+
+      <header>
+        <h4>feedback activity</h4>
+        <p>How much direct input Twennie is receiving.</p>
+      </header>
+
+      <div class="grand-poobaa-report-card-body">
+
+        <div class="grand-poobaa-metric">
+          <span>Feedback Messages Received</span>
+          <strong>{{suggestionsFeedback.feedbackMessagesReceived}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Feedback This Month</span>
+          <strong>{{suggestionsFeedback.feedbackThisMonth}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Unreviewed Feedback</span>
+          <strong>{{suggestionsFeedback.unreviewedFeedback}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Organizations Providing Feedback</span>
+          <strong>{{suggestionsFeedback.organizationsProvidingFeedback}}</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+
+    {{!-- =====================================================
+         RESPONSE STATUS
+    ====================================================== --}}
+
+    <article class="grand-poobaa-report-card">
+
+      <header>
+        <h4>response status</h4>
+        <p>Whether incoming requests are being handled.</p>
+      </header>
+
+      <div class="grand-poobaa-report-card-body">
+
+        <div class="grand-poobaa-metric">
+          <span>Awaiting Response</span>
+          <strong>{{suggestionsFeedback.awaitingResponse}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Responded This Month</span>
+          <strong>{{suggestionsFeedback.respondedThisMonth}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Average Response Time</span>
+          <strong>{{suggestionsFeedback.averageResponseTime}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Closed Requests</span>
+          <strong>{{suggestionsFeedback.closedRequests}}</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+
+    {{!-- =====================================================
+         REQUEST THEMES
+    ====================================================== --}}
+
+    <article class="grand-poobaa-report-card">
+
+      <header>
+        <h4>request themes</h4>
+        <p>Where members are asking for more support.</p>
+      </header>
+
+      <div class="grand-poobaa-report-card-body">
+
+        <div class="grand-poobaa-metric">
+          <span>Most Requested Topic</span>
+          <strong>{{suggestionsFeedback.mostRequestedTopic}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Most Requested Format</span>
+          <strong>{{suggestionsFeedback.mostRequestedFormat}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Requests From Organizations</span>
+          <strong>{{suggestionsFeedback.organizationRequests}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Requests From Individuals</span>
+          <strong>{{suggestionsFeedback.individualRequests}}</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+  </div>
+
+</section>
