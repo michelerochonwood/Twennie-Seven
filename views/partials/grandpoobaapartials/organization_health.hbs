@@ -1,0 +1,186 @@
+{{!-- =====================================================
+     ORGANIZATION HEALTH
+====================================================== --}}
+<section
+  class="grand-poobaa-reporting-block grand-poobaa-organization-health"
+  aria-labelledby="grand-poobaa-organization-health-heading"
+>
+
+  <div class="grand-poobaa-reporting-block-heading">
+
+    <div>
+
+      <p class="grand-poobaa-reporting-eyebrow">
+        organization health
+      </p>
+
+      <h3 id="grand-poobaa-organization-health-heading">
+        customer success indicators
+      </h3>
+
+    </div>
+
+    <p>
+      These metrics help identify organizations that are thriving,
+      disengaging, or may benefit from additional support.
+    </p>
+
+  </div>
+
+
+  <div class="grand-poobaa-reporting-grid">
+
+    {{!-- =====================================================
+         ORGANIZATION ACTIVITY
+    ====================================================== --}}
+
+    <article class="grand-poobaa-report-card">
+
+      <header>
+        <h4>organization activity</h4>
+        <p>Overall customer engagement.</p>
+      </header>
+
+      <div class="grand-poobaa-report-card-body">
+
+        <div class="grand-poobaa-metric">
+          <span>Organizations With Activity (30 Days)</span>
+          <strong>{{organizationHealth.activeOrganizations}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Inactive Organizations</span>
+          <strong>{{organizationHealth.inactiveOrganizations}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Average Active Learners per Organization</span>
+          <strong>{{organizationHealth.averageActiveLearners}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Average Monthly Logins</span>
+          <strong>{{organizationHealth.averageMonthlyLogins}}</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+
+    {{!-- =====================================================
+         ADMINISTRATOR ENGAGEMENT
+    ====================================================== --}}
+
+    <article class="grand-poobaa-report-card">
+
+      <header>
+        <h4>administrator engagement</h4>
+        <p>Are leaders managing their teams?</p>
+      </header>
+
+      <div class="grand-poobaa-report-card-body">
+
+        <div class="grand-poobaa-metric">
+          <span>Leaders Logged In (30 Days)</span>
+          <strong>{{organizationHealth.activeLeaders}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Reports Viewed</span>
+          <strong>{{organizationHealth.reportViews}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Assignments Created</span>
+          <strong>{{organizationHealth.assignmentsCreated}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Topic Visibility Changes</span>
+          <strong>{{organizationHealth.topicVisibilityChanges}}</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+
+    {{!-- =====================================================
+         LEARNER PARTICIPATION
+    ====================================================== --}}
+
+    <article class="grand-poobaa-report-card">
+
+      <header>
+        <h4>learner participation</h4>
+        <p>How organization members are progressing.</p>
+      </header>
+
+      <div class="grand-poobaa-report-card-body">
+
+        <div class="grand-poobaa-metric">
+          <span>Members Completing Units</span>
+          <strong>{{organizationHealth.membersCompletingUnits}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Prompt Sets Completed</span>
+          <strong>{{organizationHealth.promptSetsCompleted}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Notes Added</span>
+          <strong>{{organizationHealth.notesAdded}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Average Completions per Learner</span>
+          <strong>{{organizationHealth.averageCompletions}}</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+
+    {{!-- =====================================================
+         CUSTOMER SUCCESS
+    ====================================================== --}}
+
+    <article class="grand-poobaa-report-card">
+
+      <header>
+        <h4>customer success</h4>
+        <p>Organizations that may require attention.</p>
+      </header>
+
+      <div class="grand-poobaa-report-card-body">
+
+        <div class="grand-poobaa-metric">
+          <span>Organizations At Risk</span>
+          <strong>{{organizationHealth.organizationsAtRisk}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Support Requests Open</span>
+          <strong>{{organizationHealth.openSupportRequests}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Average Support Response Time</span>
+          <strong>{{organizationHealth.averageSupportResponse}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Renewals Due (60 Days)</span>
+          <strong>{{organizationHealth.renewalsDue}}</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+  </div>
+
+</section>
