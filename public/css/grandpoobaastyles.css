@@ -3078,3 +3078,257 @@ html {
     justify-self: start;
   }
 }
+
+
+
+/* =========================================================
+   GRAND POOBAA — LEARNING REPORTING
+========================================================= */
+
+.grand-poobaa-learning {
+  margin-top: 2rem;
+}
+
+
+/* =========================================================
+   LEARNING GRID
+========================================================= */
+
+.grand-poobaa-learning .grand-poobaa-reporting-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+
+/* =========================================================
+   REPORT CARDS
+========================================================= */
+
+.grand-poobaa-learning .grand-poobaa-report-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid rgba(18, 45, 72, 0.12);
+  border-radius: 1.25rem;
+  box-shadow:
+    0 0.35rem 1rem rgba(18, 45, 72, 0.06),
+    0 0.05rem 0.15rem rgba(18, 45, 72, 0.08);
+}
+
+
+/* =========================================================
+   CARD HEADER
+========================================================= */
+
+.grand-poobaa-learning .grand-poobaa-report-card > header {
+  padding: 1.35rem 1.4rem 1.15rem;
+  border-bottom: 1px solid rgba(18,45,72,.10);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(227,240,249,.95),
+      rgba(247,250,252,.95)
+    );
+}
+
+.grand-poobaa-learning .grand-poobaa-report-card > header h4 {
+  margin: 0;
+  color: #15344f;
+  font-size: 1.05rem;
+  font-weight: 800;
+  text-transform: lowercase;
+  letter-spacing: .015em;
+}
+
+.grand-poobaa-learning .grand-poobaa-report-card > header p {
+  margin: .4rem 0 0;
+  color: #60778a;
+  font-size: .84rem;
+  line-height: 1.45;
+}
+
+
+/* =========================================================
+   BODY
+========================================================= */
+
+.grand-poobaa-learning .grand-poobaa-report-card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: .35rem 1.4rem .5rem;
+}
+
+
+/* =========================================================
+   METRICS
+========================================================= */
+
+.grand-poobaa-learning .grand-poobaa-metric {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto;
+  gap: 1rem;
+  align-items: center;
+  min-height: 4.15rem;
+  padding: .9rem 0;
+  border-bottom: 1px solid rgba(18,45,72,.08);
+}
+
+.grand-poobaa-learning .grand-poobaa-metric:last-child {
+  border-bottom: none;
+}
+
+.grand-poobaa-learning .grand-poobaa-metric span {
+  color: #4f6679;
+  font-size: .89rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.grand-poobaa-learning .grand-poobaa-metric strong {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3.25rem;
+  min-height: 2.2rem;
+  padding: .35rem .75rem;
+  border-radius: 999px;
+  background: #edf6fb;
+  border: 1px solid rgba(34,112,163,.13);
+  color: #123f63;
+  font-size: 1rem;
+  font-weight: 850;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+
+/* =========================================================
+   CARD COLOUR VARIATIONS
+========================================================= */
+
+/* Prompt Sets */
+
+.grand-poobaa-learning
+.grand-poobaa-report-card:nth-child(2)
+> header {
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(233,245,237,.95),
+      rgba(247,251,248,.95)
+    );
+}
+
+.grand-poobaa-learning
+.grand-poobaa-report-card:nth-child(2)
+.grand-poobaa-metric strong {
+
+  background: #eef8f4;
+  border-color: rgba(45,111,72,.12);
+  color: #2d6f48;
+}
+
+
+/* Learning Formats */
+
+.grand-poobaa-learning
+.grand-poobaa-report-card:nth-child(3)
+> header {
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(243,236,249,.95),
+      rgba(250,247,252,.95)
+    );
+}
+
+.grand-poobaa-learning
+.grand-poobaa-report-card:nth-child(3)
+.grand-poobaa-metric strong {
+
+  background: #f5f0fb;
+  border-color: rgba(102,71,141,.12);
+  color: #66478d;
+}
+
+
+/* Momentum */
+
+.grand-poobaa-learning
+.grand-poobaa-report-card:nth-child(4)
+> header {
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(252,244,231,.95),
+      rgba(255,251,246,.95)
+    );
+}
+
+.grand-poobaa-learning
+.grand-poobaa-report-card:nth-child(4)
+.grand-poobaa-metric strong {
+
+  background: #fff7ec;
+  border-color: rgba(179,118,39,.14);
+  color: #b37627;
+}
+
+
+/* =========================================================
+   HOVER
+========================================================= */
+
+@media (hover:hover) {
+
+  .grand-poobaa-learning .grand-poobaa-report-card {
+    transition:
+      transform .18s ease,
+      box-shadow .18s ease,
+      border-color .18s ease;
+  }
+
+  .grand-poobaa-learning .grand-poobaa-report-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(28,91,132,.18);
+    box-shadow:
+      0 .75rem 1.75rem rgba(18,45,72,.10),
+      0 .08rem .2rem rgba(18,45,72,.08);
+  }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width:900px){
+
+  .grand-poobaa-learning .grand-poobaa-reporting-grid{
+    grid-template-columns:1fr;
+  }
+
+}
+
+
+@media (max-width:480px){
+
+  .grand-poobaa-learning .grand-poobaa-metric{
+    grid-template-columns:1fr;
+    gap:.55rem;
+    align-items:flex-start;
+  }
+
+  .grand-poobaa-learning .grand-poobaa-metric strong{
+    justify-self:flex-start;
+  }
+
+}

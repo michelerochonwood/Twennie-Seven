@@ -1,0 +1,186 @@
+{{!-- =====================================================
+     LEARNING
+====================================================== --}}
+<section
+  class="grand-poobaa-reporting-block grand-poobaa-learning"
+  aria-labelledby="grand-poobaa-learning-heading"
+>
+
+  <div class="grand-poobaa-reporting-block-heading">
+
+    <div>
+
+      <p class="grand-poobaa-reporting-eyebrow">
+        learning
+      </p>
+
+      <h3 id="grand-poobaa-learning-heading">
+        learning activity and completion
+      </h3>
+
+    </div>
+
+    <p>
+      These metrics show how members are progressing through Twennie’s
+      learning formats and whether they are turning content into completed work.
+    </p>
+
+  </div>
+
+
+  <div class="grand-poobaa-reporting-grid">
+
+    {{!-- =====================================================
+         UNIT COMPLETION
+    ====================================================== --}}
+
+    <article class="grand-poobaa-report-card">
+
+      <header>
+        <h4>unit completion</h4>
+        <p>What members are finishing.</p>
+      </header>
+
+      <div class="grand-poobaa-report-card-body">
+
+        <div class="grand-poobaa-metric">
+          <span>Total Units Completed</span>
+          <strong>{{learning.totalUnitsCompleted}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Units Completed This Month</span>
+          <strong>{{learning.unitsCompletedThisMonth}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Units Completed (30 Days)</span>
+          <strong>{{learning.unitsCompleted30Days}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Average Units per Active Learner</span>
+          <strong>{{learning.averageUnitsPerActiveLearner}}</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+
+    {{!-- =====================================================
+         PROMPT SET PROGRESS
+    ====================================================== --}}
+
+    <article class="grand-poobaa-report-card">
+
+      <header>
+        <h4>prompt set progress</h4>
+        <p>Whether deeper learning is being completed.</p>
+      </header>
+
+      <div class="grand-poobaa-report-card-body">
+
+        <div class="grand-poobaa-metric">
+          <span>Prompt Sets Started</span>
+          <strong>{{learning.promptSetsStarted}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Prompt Sets Completed</span>
+          <strong>{{learning.promptSetsCompleted}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Prompt Sets Completed This Month</span>
+          <strong>{{learning.promptSetsCompletedThisMonth}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Prompt Set Completion Rate</span>
+          <strong>{{learning.promptSetCompletionRate}}%</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+
+    {{!-- =====================================================
+         LEARNING FORMAT ACTIVITY
+    ====================================================== --}}
+
+    <article class="grand-poobaa-report-card">
+
+      <header>
+        <h4>learning formats</h4>
+        <p>How members are using the library.</p>
+      </header>
+
+      <div class="grand-poobaa-report-card-body">
+
+        <div class="grand-poobaa-metric">
+          <span>Nuggets Completed</span>
+          <strong>{{learning.nuggetsCompleted}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Missions Completed</span>
+          <strong>{{learning.missionsCompleted}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Exercises Completed</span>
+          <strong>{{learning.exercisesCompleted}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Templates Downloaded</span>
+          <strong>{{learning.templatesDownloaded}}</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+
+    {{!-- =====================================================
+         LEARNING MOMENTUM
+    ====================================================== --}}
+
+    <article class="grand-poobaa-report-card">
+
+      <header>
+        <h4>learning momentum</h4>
+        <p>Whether participation is being sustained.</p>
+      </header>
+
+      <div class="grand-poobaa-report-card-body">
+
+        <div class="grand-poobaa-metric">
+          <span>Members Learning This Week</span>
+          <strong>{{learning.membersLearningThisWeek}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Members Learning This Month</span>
+          <strong>{{learning.membersLearningThisMonth}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Members With No Completions</span>
+          <strong>{{learning.membersWithNoCompletions}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Learning Completion Rate</span>
+          <strong>{{learning.learningCompletionRate}}%</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+  </div>
+
+</section>
