@@ -1,0 +1,186 @@
+{{!-- =====================================================
+     PLATFORM OPERATIONS
+====================================================== --}}
+<section
+  class="grand-poobaa-reporting-block grand-poobaa-platform-operations"
+  aria-labelledby="grand-poobaa-platform-operations-heading"
+>
+
+  <div class="grand-poobaa-reporting-block-heading">
+
+    <div>
+
+      <p class="grand-poobaa-reporting-eyebrow">
+        platform operations
+      </p>
+
+      <h3 id="grand-poobaa-platform-operations-heading">
+        system health and administration
+      </h3>
+
+    </div>
+
+    <p>
+      These metrics monitor the operational health of Twennie, helping
+      identify technical issues before they affect members.
+    </p>
+
+  </div>
+
+
+  <div class="grand-poobaa-reporting-grid">
+
+    {{!-- =====================================================
+         SYSTEM RELIABILITY
+    ====================================================== --}}
+
+    <article class="grand-poobaa-report-card">
+
+      <header>
+        <h4>system reliability</h4>
+        <p>Overall platform stability.</p>
+      </header>
+
+      <div class="grand-poobaa-report-card-body">
+
+        <div class="grand-poobaa-metric">
+          <span>Successful Logins Today</span>
+          <strong>{{platformOperations.successfulLogins}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Failed Logins Today</span>
+          <strong>{{platformOperations.failedLogins}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Application Errors (24 Hours)</span>
+          <strong>{{platformOperations.applicationErrors}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Average Page Response</span>
+          <strong>{{platformOperations.averageResponseTime}}</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+
+    {{!-- =====================================================
+         SECURITY
+    ====================================================== --}}
+
+    <article class="grand-poobaa-report-card">
+
+      <header>
+        <h4>security</h4>
+        <p>Monitoring access and protection.</p>
+      </header>
+
+      <div class="grand-poobaa-report-card-body">
+
+        <div class="grand-poobaa-metric">
+          <span>Locked Accounts</span>
+          <strong>{{platformOperations.lockedAccounts}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Password Reset Requests</span>
+          <strong>{{platformOperations.passwordResets}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Suspicious Login Attempts</span>
+          <strong>{{platformOperations.suspiciousLogins}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Active MFA Accounts</span>
+          <strong>{{platformOperations.mfaAccounts}}</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+
+    {{!-- =====================================================
+         STORAGE & CONTENT
+    ====================================================== --}}
+
+    <article class="grand-poobaa-report-card">
+
+      <header>
+        <h4>storage & content</h4>
+        <p>Media and document management.</p>
+      </header>
+
+      <div class="grand-poobaa-report-card-body">
+
+        <div class="grand-poobaa-metric">
+          <span>Videos Hosted</span>
+          <strong>{{platformOperations.videoCount}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>PDF Downloads This Month</span>
+          <strong>{{platformOperations.pdfDownloads}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Cloud Storage Used</span>
+          <strong>{{platformOperations.storageUsed}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Average File Size</span>
+          <strong>{{platformOperations.averageFileSize}}</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+
+    {{!-- =====================================================
+         ADMINISTRATION
+    ====================================================== --}}
+
+    <article class="grand-poobaa-report-card">
+
+      <header>
+        <h4>administration</h4>
+        <p>Administrative workload.</p>
+      </header>
+
+      <div class="grand-poobaa-report-card-body">
+
+        <div class="grand-poobaa-metric">
+          <span>Pending Demo Requests</span>
+          <strong>{{platformOperations.pendingDemoRequests}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Pending Support Requests</span>
+          <strong>{{platformOperations.pendingSupportRequests}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Content Awaiting Approval</span>
+          <strong>{{platformOperations.contentAwaitingApproval}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Pending Administrative Tasks</span>
+          <strong>{{platformOperations.pendingAdminTasks}}</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+  </div>
+
+</section>
