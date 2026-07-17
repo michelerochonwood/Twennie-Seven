@@ -3332,3 +3332,271 @@ html {
   }
 
 }
+
+
+/* =========================================================
+   GRAND POOBAA — CONTENT HEALTH
+========================================================= */
+
+.grand-poobaa-content-health {
+  margin-top: 2rem;
+}
+
+
+/* =========================================================
+   CONTENT HEALTH GRID
+========================================================= */
+
+.grand-poobaa-content-health .grand-poobaa-reporting-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+
+/* =========================================================
+   REPORT CARDS
+========================================================= */
+
+.grand-poobaa-content-health .grand-poobaa-report-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid rgba(18, 45, 72, 0.12);
+  border-radius: 1.25rem;
+  box-shadow:
+    0 0.35rem 1rem rgba(18, 45, 72, 0.06),
+    0 0.05rem 0.15rem rgba(18, 45, 72, 0.08);
+}
+
+
+/* =========================================================
+   CARD HEADERS
+========================================================= */
+
+.grand-poobaa-content-health .grand-poobaa-report-card > header {
+  padding: 1.35rem 1.4rem 1.15rem;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(230, 240, 248, 0.96),
+      rgba(247, 250, 252, 0.96)
+    );
+  border-bottom: 1px solid rgba(18, 45, 72, 0.1);
+}
+
+.grand-poobaa-content-health .grand-poobaa-report-card > header h4 {
+  margin: 0;
+  color: #15344f;
+  font-size: 1.05rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: 0.015em;
+  text-transform: lowercase;
+}
+
+.grand-poobaa-content-health .grand-poobaa-report-card > header p {
+  margin: 0.4rem 0 0;
+  color: #60778a;
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+
+/* =========================================================
+   CARD BODY
+========================================================= */
+
+.grand-poobaa-content-health .grand-poobaa-report-card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 0.35rem 1.4rem 0.5rem;
+}
+
+
+/* =========================================================
+   METRICS
+========================================================= */
+
+.grand-poobaa-content-health .grand-poobaa-metric {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: center;
+  min-height: 4.2rem;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid rgba(18, 45, 72, 0.08);
+}
+
+.grand-poobaa-content-health .grand-poobaa-metric:last-child {
+  border-bottom: 0;
+}
+
+.grand-poobaa-content-health .grand-poobaa-metric span {
+  min-width: 0;
+  color: #4f6679;
+  font-size: 0.89rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.grand-poobaa-content-health .grand-poobaa-metric strong {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3.25rem;
+  min-height: 2.2rem;
+  padding: 0.35rem 0.75rem;
+  color: #123f63;
+  background: #edf6fb;
+  border: 1px solid rgba(34, 112, 163, 0.13);
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: 850;
+  line-height: 1;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+
+/* =========================================================
+   CARD COLOUR VARIATIONS
+========================================================= */
+
+/* Format Coverage */
+
+.grand-poobaa-content-health
+  .grand-poobaa-report-card:nth-child(2)
+  > header {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(234, 244, 237, 0.96),
+      rgba(248, 251, 249, 0.96)
+    );
+}
+
+.grand-poobaa-content-health
+  .grand-poobaa-report-card:nth-child(2)
+  .grand-poobaa-metric strong {
+  color: #2f6b4a;
+  background: #eef8f2;
+  border-color: rgba(47, 107, 74, 0.13);
+}
+
+
+/* Content Performance */
+
+.grand-poobaa-content-health
+  .grand-poobaa-report-card:nth-child(3)
+  > header {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(242, 236, 249, 0.96),
+      rgba(250, 248, 252, 0.96)
+    );
+}
+
+.grand-poobaa-content-health
+  .grand-poobaa-report-card:nth-child(3)
+  .grand-poobaa-metric strong {
+  color: #68498f;
+  background: #f5f0fb;
+  border-color: rgba(104, 73, 143, 0.13);
+}
+
+
+/* Library Maintenance */
+
+.grand-poobaa-content-health
+  .grand-poobaa-report-card:nth-child(4)
+  > header {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(252, 241, 232, 0.96),
+      rgba(255, 250, 246, 0.96)
+    );
+}
+
+.grand-poobaa-content-health
+  .grand-poobaa-report-card:nth-child(4)
+  .grand-poobaa-metric strong {
+  color: #a45f24;
+  background: #fff4e9;
+  border-color: rgba(164, 95, 36, 0.14);
+}
+
+
+/* =========================================================
+   OPTIONAL WARNING EMPHASIS
+========================================================= */
+
+.grand-poobaa-content-health
+  .grand-poobaa-report-card:nth-child(4)
+  .grand-poobaa-metric strong:not(:empty) {
+  font-weight: 900;
+}
+
+
+/* =========================================================
+   HOVER
+========================================================= */
+
+@media (hover: hover) {
+
+  .grand-poobaa-content-health .grand-poobaa-report-card {
+    transition:
+      transform 180ms ease,
+      box-shadow 180ms ease,
+      border-color 180ms ease;
+  }
+
+  .grand-poobaa-content-health .grand-poobaa-report-card:hover {
+    transform: translateY(-0.2rem);
+    border-color: rgba(28, 91, 132, 0.19);
+    box-shadow:
+      0 0.75rem 1.75rem rgba(18, 45, 72, 0.1),
+      0 0.08rem 0.2rem rgba(18, 45, 72, 0.08);
+  }
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 900px) {
+
+  .grand-poobaa-content-health .grand-poobaa-reporting-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+@media (max-width: 480px) {
+
+  .grand-poobaa-content-health .grand-poobaa-report-card > header {
+    padding: 1.15rem 1.15rem 1rem;
+  }
+
+  .grand-poobaa-content-health .grand-poobaa-report-card-body {
+    padding-right: 1.15rem;
+    padding-left: 1.15rem;
+  }
+
+  .grand-poobaa-content-health .grand-poobaa-metric {
+    grid-template-columns: 1fr;
+    gap: 0.55rem;
+    align-items: start;
+  }
+
+  .grand-poobaa-content-health .grand-poobaa-metric strong {
+    justify-self: start;
+  }
+}

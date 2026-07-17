@@ -1,0 +1,186 @@
+{{!-- =====================================================
+     CONTENT HEALTH
+====================================================== --}}
+<section
+  class="grand-poobaa-reporting-block grand-poobaa-content-health"
+  aria-labelledby="grand-poobaa-content-health-heading"
+>
+
+  <div class="grand-poobaa-reporting-block-heading">
+
+    <div>
+
+      <p class="grand-poobaa-reporting-eyebrow">
+        content health
+      </p>
+
+      <h3 id="grand-poobaa-content-health-heading">
+        library strength and performance
+      </h3>
+
+    </div>
+
+    <p>
+      These metrics show whether the Twennie library is growing, staying
+      current, covering the right subjects, and attracting meaningful use.
+    </p>
+
+  </div>
+
+
+  <div class="grand-poobaa-reporting-grid">
+
+    {{!-- =====================================================
+         LIBRARY INVENTORY
+    ====================================================== --}}
+
+    <article class="grand-poobaa-report-card">
+
+      <header>
+        <h4>library inventory</h4>
+        <p>How much learning content is available.</p>
+      </header>
+
+      <div class="grand-poobaa-report-card-body">
+
+        <div class="grand-poobaa-metric">
+          <span>Total Published Units</span>
+          <strong>{{contentHealth.totalPublishedUnits}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Draft Units</span>
+          <strong>{{contentHealth.draftUnits}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Units Added This Month</span>
+          <strong>{{contentHealth.unitsAddedThisMonth}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Units Updated This Month</span>
+          <strong>{{contentHealth.unitsUpdatedThisMonth}}</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+
+    {{!-- =====================================================
+         FORMAT COVERAGE
+    ====================================================== --}}
+
+    <article class="grand-poobaa-report-card">
+
+      <header>
+        <h4>format coverage</h4>
+        <p>How the library is distributed by learning format.</p>
+      </header>
+
+      <div class="grand-poobaa-report-card-body">
+
+        <div class="grand-poobaa-metric">
+          <span>Articles and Videos</span>
+          <strong>{{contentHealth.articlesAndVideos}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Prompt Sets</span>
+          <strong>{{contentHealth.promptSets}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Exercises</span>
+          <strong>{{contentHealth.exercises}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Templates</span>
+          <strong>{{contentHealth.templates}}</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+
+    {{!-- =====================================================
+         CONTENT PERFORMANCE
+    ====================================================== --}}
+
+    <article class="grand-poobaa-report-card">
+
+      <header>
+        <h4>content performance</h4>
+        <p>Which resources are attracting learner attention.</p>
+      </header>
+
+      <div class="grand-poobaa-report-card-body">
+
+        <div class="grand-poobaa-metric">
+          <span>Units Viewed This Month</span>
+          <strong>{{contentHealth.unitsViewedThisMonth}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Unique Units Viewed</span>
+          <strong>{{contentHealth.uniqueUnitsViewed}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Units With No Views</span>
+          <strong>{{contentHealth.unitsWithNoViews}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Average Views per Published Unit</span>
+          <strong>{{contentHealth.averageViewsPerUnit}}</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+
+    {{!-- =====================================================
+         LIBRARY MAINTENANCE
+    ====================================================== --}}
+
+    <article class="grand-poobaa-report-card">
+
+      <header>
+        <h4>library maintenance</h4>
+        <p>Where content may require review or attention.</p>
+      </header>
+
+      <div class="grand-poobaa-report-card-body">
+
+        <div class="grand-poobaa-metric">
+          <span>Units Not Updated in 12+ Months</span>
+          <strong>{{contentHealth.staleUnits}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Units Missing a Topic</span>
+          <strong>{{contentHealth.unitsMissingTopic}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Units Missing a Series</span>
+          <strong>{{contentHealth.unitsMissingSeries}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Units Requiring Review</span>
+          <strong>{{contentHealth.unitsRequiringReview}}</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+  </div>
+
+</section>
