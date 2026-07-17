@@ -1,0 +1,150 @@
+{{!-- =====================================================
+     ENGAGEMENT
+====================================================== --}}
+<section
+  class="grand-poobaa-reporting-block grand-poobaa-engagement"
+  aria-labelledby="grand-poobaa-engagement-heading"
+>
+
+  <div class="grand-poobaa-reporting-block-heading">
+
+    <div>
+
+      <p class="grand-poobaa-reporting-eyebrow">
+        engagement
+      </p>
+
+      <h3 id="grand-poobaa-engagement-heading">
+        platform activity
+      </h3>
+
+    </div>
+
+    <p>
+      These metrics show whether members, leaders, and organizations are
+      actively using Twennie and building consistent learning habits.
+    </p>
+
+  </div>
+
+
+  <div class="grand-poobaa-reporting-grid">
+
+    {{!-- =====================================================
+         MEMBER ACTIVITY
+    ====================================================== --}}
+
+    <article class="grand-poobaa-report-card">
+
+      <header>
+        <h4>member activity</h4>
+        <p>Are people coming back?</p>
+      </header>
+
+      <div class="grand-poobaa-report-card-body">
+
+        <div class="grand-poobaa-metric">
+          <span>Users Logged In (7 Days)</span>
+          <strong>{{engagement.usersLoggedIn7Days}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Users Logged In (30 Days)</span>
+          <strong>{{engagement.usersLoggedIn30Days}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Average Sessions per User</span>
+          <strong>{{engagement.averageSessionsPerUser}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Average Time Since Last Login</span>
+          <strong>{{engagement.averageTimeSinceLastLogin}}</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+
+
+    {{!-- =====================================================
+         GROUP ACTIVITY
+    ====================================================== --}}
+
+    <article class="grand-poobaa-report-card">
+
+      <header>
+        <h4>group activity</h4>
+        <p>Are organizations participating?</p>
+      </header>
+
+      <div class="grand-poobaa-report-card-body">
+
+        <div class="grand-poobaa-metric">
+          <span>Active Groups</span>
+          <strong>{{engagement.activeGroups}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Inactive Groups (30+ Days)</span>
+          <strong>{{engagement.inactiveGroups}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Assignments Created</span>
+          <strong>{{engagement.assignmentsCreated}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Assignments Completed</span>
+          <strong>{{engagement.assignmentsCompleted}}</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+
+
+    {{!-- =====================================================
+         PLATFORM USAGE
+    ====================================================== --}}
+
+    <article class="grand-poobaa-report-card">
+
+      <header>
+        <h4>platform usage</h4>
+        <p>How learning is taking place.</p>
+      </header>
+
+      <div class="grand-poobaa-report-card-body">
+
+        <div class="grand-poobaa-metric">
+          <span>Notes Added</span>
+          <strong>{{engagement.notesAdded}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Report Center Views</span>
+          <strong>{{engagement.reportCenterViews}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Prompt Sets Started</span>
+          <strong>{{engagement.promptSetsStarted}}</strong>
+        </div>
+
+        <div class="grand-poobaa-metric">
+          <span>Prompt Set Completion Rate</span>
+          <strong>{{engagement.promptSetCompletionRate}}%</strong>
+        </div>
+
+      </div>
+
+    </article>
+
+  </div>
+
+</section>
