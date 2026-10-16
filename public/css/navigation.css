@@ -516,9 +516,19 @@ html, body {
 
 /* Give Ask Twennie some separation from Phil */
 
+
+/* Give Ask Twennie separation from Phil */
+
 .header-ai-ask {
   margin-right: 22px;
 }
+
+/* Move Ask Twennie's name closer to Borg Bluey */
+
+.header-ai-ask .header-ai-label {
+  left: 48%;
+}
+
 
 /* ==============================================
    MASCOT IMAGES — 150px
@@ -710,9 +720,13 @@ html, body {
     height: 165px;
   }
 
-  .header-ai-ask {
-    margin-right: 15px;
-  }
+.header-ai-ask {
+  margin-right: 15px;
+}
+
+.header-ai-ask .header-ai-label {
+  left: 48%;
+}
 
   .header-ai-label {
     left: 62%;
