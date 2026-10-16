@@ -1,169 +1,415 @@
+
 <header class="header">
 
-  <header>
-    <div id="navigation-wrapper">
+  <div id="navigation-wrapper">
 
-      <div class="primary-logo">
-        <a href="/">
-          <img src="https://www.twennie.com/images/headerlogo_2.png" alt="Home">
-        </a>
-      </div>
+    <!-- MAIN LOGO -->
+    <div class="primary-logo">
+      <a href="/">
+        <img
+          src="https://www.twennie.com/images/headerlogo_2.png"
+          alt="Twennie Home"
+        >
+      </a>
+    </div>
 
-      <nav id="toggle-menu">
-        <ion-icon name="close-outline" id="close-menu"></ion-icon>
+    <!-- MAIN NAVIGATION -->
+    <nav id="toggle-menu">
 
-        <!-- Desktop Links -->
-        <ul class="desktop-links">
-          {{#if user}}
-            <li style="display: flex; align-items: center; gap: 10px;">
-              <a href="{{dashboardLink}}">Hi, {{user.username}}</a>
+      <ion-icon
+        name="close-outline"
+        id="close-menu">
+      </ion-icon>
+
+      <!-- DESKTOP USER PROFILE -->
+      <ul class="desktop-links">
+
+        {{#if user}}
+          <li class="header-user-profile">
+
+            <a href="{{dashboardLink}}">
+              Hi, {{user.username}}
+            </a>
+
+            <a href="{{dashboardLink}}">
               <img
                 src="{{userProfileImage}}"
-                alt="Profile"
-                style="width: 90px; height: 90px; border-radius: 50%; object-fit: cover;"
+                alt="Your profile"
+                style="
+                  width:90px;
+                  height:90px;
+                  border-radius:50%;
+                  object-fit:cover;
+                "
               >
-            </li>
-          {{/if}}
-        </ul>
+            </a>
 
-        <!-- MOBILE MENU (FIXED ORDER) -->
-        <ul class="mobile-links">
+          </li>
+        {{/if}}
 
-          {{#if user}}
+      </ul>
 
-            <li><a href="{{dashboardLink}}">learning dashboard</a></li>
-            <li><a href="/latest">latest</a></li>
-            <li><a href="/topics">topics</a></li>
 
-            <li>
-              {{#if (or (eq user.membershipType "leader") (eq user.membershipType "group_member"))}}
-                <a href="/missioncontrol">mission control</a>
-              {{else}}
-                <a href="/missioncontrol_upgrade">mission control</a>
-              {{/if}}
-            </li>
+      <!-- MOBILE / NARROW NAVIGATION -->
+      <ul class="mobile-links">
 
-            <li>
-              {{#if (or (eq user.membershipType "leader") (eq user.membershipType "group_member"))}}
-                <a href="/unitviews/mine">the mine</a>
-              {{else}}
-                <a href="/themine_upgrade">the mine</a>
-              {{/if}}
-            </li>
+        {{#if user}}
 
-            <li><a href="/create_learning">create learning</a></li>
-            <li><a href="/auth/logout">logout</a></li>
+          <li>
+            <a href="{{dashboardLink}}">
+              learning dashboard
+            </a>
+          </li>
 
-          {{else}}
+          <li><a href="/latest">latest</a></li>
+          <li><a href="/topics">topics</a></li>
 
-            <li><a href="/auth/login">login</a></li>
-            <li><a href="/latest">latest</a></li>
-            <li><a href="/topics">topics</a></li>
-            <li><a href="/create_learning">create learning</a></li>
-            <li><a href="/avail_memberships">join</a></li>
+          <li>
+            {{#if (or (eq user.membershipType "leader") (eq user.membershipType "group_member"))}}
+              <a href="/missioncontrol">mission control</a>
+            {{else}}
+              <a href="/missioncontrol_upgrade">mission control</a>
+            {{/if}}
+          </li>
 
-          {{/if}}
+          <li>
+            {{#if (or (eq user.membershipType "leader") (eq user.membershipType "group_member"))}}
+              <a href="/unitviews/mine">the mine</a>
+            {{else}}
+              <a href="/themine_upgrade">the mine</a>
+            {{/if}}
+          </li>
 
-          <!-- Secondary / footer-style links -->
-          <li><a href="/about_twennie">about</a></li>
-          <li><a href="/about_twennie">contact</a></li>
-          <li><a href="/about_twennie">tech support</a></li>
-          <li><a href="/privacypolicy">privacy policy</a></li>
-          <li><a href="/custom_services">services</a></li>
-          <li><a href="/termsconditions">terms & conditions</a></li>
+          <li>
+            <a href="/create_learning">create learning</a>
+          </li>
 
-        </ul>
-      </nav>
+          <li>
+            <a href="/auth/logout">logout</a>
+          </li>
 
-      <ion-icon name="menu-outline" id="open-menu"></ion-icon>
+        {{else}}
+
+          <li><a href="/auth/login">login</a></li>
+          <li><a href="/latest">latest</a></li>
+          <li><a href="/topics">topics</a></li>
+          <li><a href="/create_learning">create learning</a></li>
+          <li><a href="/avail_memberships">join</a></li>
+
+        {{/if}}
+
+
+        <!-- AI ASSISTANTS — NARROW HEADER -->
+
+        <li class="mobile-ai-heading">
+          Twennie AI
+        </li>
+
+        <li>
+          <a href="/ask_twennie_ai">Ask Twennie</a>
+        </li>
+
+        <li>
+          <a href="/ask_twennie_ai">Phil</a>
+        </li>
+
+        <li>
+          <a href="/ask_twennie_ai">Zoe</a>
+        </li>
+
+        <li>
+          <a href="/ask_twennie_ai">Sasha</a>
+        </li>
+
+        <li>
+          <a href="/ask_twennie_ai">Dmitri</a>
+        </li>
+
+
+        <!-- SECONDARY NAVIGATION -->
+
+        <li><a href="/about_twennie">about</a></li>
+        <li><a href="/about_twennie">contact</a></li>
+        <li><a href="/about_twennie">tech support</a></li>
+        <li><a href="/privacypolicy">privacy policy</a></li>
+        <li><a href="/custom_services">services</a></li>
+        <li><a href="/termsconditions">terms &amp; conditions</a></li>
+
+      </ul>
+
+    </nav>
+
+    <ion-icon
+      name="menu-outline"
+      id="open-menu">
+    </ion-icon>
+
+
+    <!-- =========================================
+         DESKTOP AI ASSISTANT NAVIGATION
+         ========================================= -->
+
+    <div class="header-ai-team">
+
+      <!-- ASK TWENNIE -->
+      <a
+        href="/ask_twennie_ai"
+        class="header-ai-assistant header-ai-ask"
+        aria-label="Meet Ask Twennie"
+      >
+
+        <div class="header-ai-label">
+          <span class="header-ai-name">Ask Twennie</span>
+          <span class="header-ai-role">
+            Learning Assistant
+          </span>
+        </div>
+
+        <img
+          src="/images/borg bluey.png"
+          alt="Ask Twennie"
+          class="header-ai-image"
+        >
+
+      </a>
+
+
+      <!-- PHIL -->
+      <a
+        href="/ask_twennie_ai"
+        class="header-ai-assistant header-ai-phil"
+        aria-label="Meet Phil"
+      >
+
+        <div class="header-ai-label">
+          <span class="header-ai-name">Phil</span>
+          <span class="header-ai-role">
+            Project Experience Assistant
+          </span>
+        </div>
+
+        <img
+          src="/images/phil.png"
+          alt="Phil"
+          class="header-ai-image"
+        >
+
+      </a>
+
+
+      <!-- ZOE -->
+      <a
+        href="/ask_twennie_ai"
+        class="header-ai-assistant header-ai-zoe"
+        aria-label="Meet Zoe"
+      >
+
+        <div class="header-ai-label">
+          <span class="header-ai-name">Zoe</span>
+          <span class="header-ai-role">
+            Resume Assistant
+          </span>
+        </div>
+
+        <img
+          src="/images/zoe.png"
+          alt="Zoe"
+          class="header-ai-image"
+        >
+
+      </a>
+
+
+      <!-- SASHA -->
+      <a
+        href="/ask_twennie_ai"
+        class="header-ai-assistant header-ai-sasha"
+        aria-label="Meet Sasha"
+      >
+
+        <div class="header-ai-label">
+          <span class="header-ai-name">Sasha</span>
+          <span class="header-ai-role">
+            Proposal Assistant
+          </span>
+        </div>
+
+        <img
+          src="/images/sasha.png"
+          alt="Sasha"
+          class="header-ai-image"
+        >
+
+      </a>
+
+
+      <!-- DMITRI -->
+      <a
+        href="/ask_twennie_ai"
+        class="header-ai-assistant header-ai-dmitri"
+        aria-label="Meet Dmitri"
+      >
+
+        <div class="header-ai-label">
+          <span class="header-ai-name">Dmitri</span>
+          <span class="header-ai-role">
+            Market Research Assistant
+          </span>
+        </div>
+
+        <img
+          src="/images/dmitri.png"
+          alt="Dmitri"
+          class="header-ai-image"
+        >
+
+      </a>
+
     </div>
-  </header>
+
+  </div>
+
+
+  <!-- =========================================
+       BLUE WAVE DIVIDER
+       ========================================= -->
 
   <div class="wave-divider">
-    <svg viewBox="0 0 1440 50">
-      <path fill="#4e50a2" d="M0,32L80,26.7C160,21,320,11,480,11C640,11,800,21,960,24C1120,27,1280,21,1360,18.7L1440,16V0H0Z"></path>
+    <svg
+      viewBox="0 0 1440 50"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
+      <path
+        fill="#4e50a2"
+        d="M0,32L80,26.7C160,21,320,11,480,11C640,11,800,21,960,24C1120,27,1280,21,1360,18.7L1440,16V0H0Z">
+      </path>
     </svg>
   </div>
 
-  <!-- SIDEBAR NAV (FULL SIZE HEADER SQUARES) -->
+
+  <!-- =========================================
+       SIDEBAR NAVIGATION
+       ========================================= -->
 
   <div class="sidebar-nav">
 
     {{#if user}}
 
-      <!-- 1. DASHBOARD -->
-      <a href="{{dashboardLink}}" class="nav-square" style="width: 90px; height: 90px;">
-        <img src="https://www.twennie.com/icons/dashboardicon.svg" alt="Dashboard" style="width: 50px; margin-top: 15px;">
-        <span class="nav-text" style="font-size: 0.8rem;">learning dashboard</span>
+      <!-- DASHBOARD -->
+      <a
+        href="{{dashboardLink}}"
+        class="nav-square"
+        style="width:90px;height:90px;"
+      >
+        <img
+          src="https://www.twennie.com/icons/dashboardicon.svg"
+          alt="Dashboard"
+          style="width:50px;margin-top:15px;"
+        >
+        <span class="nav-text" style="font-size:0.8rem;">
+          learning dashboard
+        </span>
       </a>
 
-      <!-- 2. LATEST -->
+      <!-- LATEST -->
       <a href="/latest" class="nav-square">
-        <img src="https://www.twennie.com/icons/latesticon.svg">
+        <img
+          src="https://www.twennie.com/icons/latesticon.svg"
+          alt=""
+        >
         <span class="nav-text">latest</span>
       </a>
 
-      <!-- 3. TOPICS -->
+      <!-- TOPICS -->
       <a href="/topics" class="nav-square">
-        <img src="https://www.twennie.com/icons/topicsicon.svg">
+        <img
+          src="https://www.twennie.com/icons/topicsicon.svg"
+          alt=""
+        >
         <span class="nav-text">topics</span>
       </a>
 
-      <!-- 4. MISSION CONTROL -->
+      <!-- MISSION CONTROL -->
       {{#if (or (eq user.membershipType "leader") (eq user.membershipType "group_member"))}}
         <a href="/missioncontrol" class="nav-square">
       {{else}}
         <a href="/missioncontrol_upgrade" class="nav-square">
       {{/if}}
-        <img src="https://www.twennie.com/icons/missioncontrolicon.svg">
-        <span class="nav-text">mission control</span>
-      </a>
+          <img
+            src="https://www.twennie.com/icons/missioncontrolicon.svg"
+            alt=""
+          >
+          <span class="nav-text">mission control</span>
+        </a>
 
-      <!-- 5. THE MINE -->
+      <!-- THE MINE -->
       {{#if (or (eq user.membershipType "leader") (eq user.membershipType "group_member"))}}
         <a href="/unitviews/mine" class="nav-square">
       {{else}}
         <a href="/themine_upgrade" class="nav-square">
       {{/if}}
-        <img src="https://www.twennie.com/icons/mineicon.svg">
-        <span class="nav-text">the mine</span>
-      </a>
+          <img
+            src="https://www.twennie.com/icons/mineicon.svg"
+            alt=""
+          >
+          <span class="nav-text">the mine</span>
+        </a>
 
-      <!-- 6. CREATE -->
+      <!-- CREATE LEARNING -->
       <a href="/create_learning" class="nav-square">
-        <img src="/icons/customicon.svg">
+        <img src="/icons/customicon.svg" alt="">
         <span class="nav-text">create learning</span>
       </a>
 
-      <!-- 7. LOGOUT -->
+      <!-- LOGOUT -->
       <a href="/auth/logout" class="nav-square logout">
-        <img src="https://www.twennie.com/icons/logouticon.svg">
+        <img
+          src="https://www.twennie.com/icons/logouticon.svg"
+          alt=""
+        >
         <span class="nav-text">log out</span>
       </a>
 
     {{else}}
 
       <!-- LOGIN -->
-      <a href="/auth/login" class="nav-square" style="width: 90px; height: 90px;">
-        <img src="https://www.twennie.com/icons/loginicon.svg" style="width: 50px; margin-top: 15px;">
-        <span class="nav-text" style="font-size: 0.9rem;">login</span>
+      <a
+        href="/auth/login"
+        class="nav-square"
+        style="width:90px;height:90px;"
+      >
+        <img
+          src="https://www.twennie.com/icons/loginicon.svg"
+          alt=""
+          style="width:50px;margin-top:15px;"
+        >
+        <span class="nav-text" style="font-size:0.9rem;">
+          login
+        </span>
       </a>
 
       <!-- LATEST -->
       <a href="/latest" class="nav-square">
-        <img src="https://www.twennie.com/icons/latesticon.svg">
+        <img
+          src="https://www.twennie.com/icons/latesticon.svg"
+          alt=""
+        >
         <span class="nav-text">latest</span>
       </a>
 
       <!-- TOPICS -->
       <a href="/topics" class="nav-square">
-        <img src="https://www.twennie.com/icons/topicsicon.svg">
+        <img
+          src="https://www.twennie.com/icons/topicsicon.svg"
+          alt=""
+        >
         <span class="nav-text">topics</span>
       </a>
 
-      <!-- CREATE -->
+      <!-- CREATE LEARNING -->
       <a href="/create_learning" class="nav-square">
-        <img src="/icons/customicon.svg">
+        <img src="/icons/customicon.svg" alt="">
         <span class="nav-text">create learning</span>
       </a>
 
@@ -172,4 +418,3 @@
   </div>
 
 </header>
-
