@@ -609,10 +609,10 @@ html, body {
 
   padding: 12px 14px;
 
-  background: #ffffff;
+background: rgba(255, 255, 255, 0.65);
   color: #30327d;
 
-  border-radius: 12px;
+  border-radius: 22px;
 
   font-family: "Figtree", sans-serif;
   font-size: 0.82rem;
