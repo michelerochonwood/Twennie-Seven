@@ -453,7 +453,7 @@ html, body {
 
 /* ==============================================
    TWENNIE HEADER — AI ASSISTANTS
-   Mascots overlapping the blue wave
+   150px mascots overlapping the blue wave
    ============================================== */
 
 #navigation-wrapper {
@@ -461,8 +461,6 @@ html, body {
   overflow: visible;
   box-sizing: border-box;
 }
-
-/* Allow mascots to extend outside the header */
 
 .header {
   position: relative;
@@ -476,92 +474,87 @@ html, body {
 .header-ai-team {
   position: absolute;
 
-  /* Right-hand portion of the header */
-  right: 5%;
+  right: 4%;
+  bottom: -60px;
 
-  /* Position group relative to bottom of header */
-  bottom: -38px;
-
-  width: min(45%, 850px);
+  width: min(54%, 1050px);
 
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   align-items: end;
 
-  gap: 0.35rem;
+  gap: 0.75rem;
 
   z-index: 50;
+  overflow: visible;
 }
 
-/* Each assistant occupies one grid column */
+/* Individual clickable assistant */
 
 .header-ai-assistant {
   position: relative;
-
   display: block;
 
   width: 100%;
-  height: 125px;
+  height: 165px;
 
   min-width: 0;
+  overflow: visible;
 
-  color: white;
+  color: #ffffff;
   text-decoration: none;
 
-  transition: transform 0.25s ease;
-}
+  transform-origin: bottom center;
 
-.header-ai-assistant:hover {
-  transform: translateY(-6px);
+  transition: transform 0.25s ease;
 }
 
 /* ==============================================
    MASCOT IMAGES
    ============================================== */
 
-.header-ai-image {
+.header-ai-image,
+.header-ai-ask .header-ai-image,
+.header-ai-phil .header-ai-image,
+.header-ai-zoe .header-ai-image,
+.header-ai-sasha .header-ai-image,
+.header-ai-dmitri .header-ai-image {
+
   position: absolute;
 
-  /* Anchor each mascot at bottom of its column */
   bottom: 0;
   left: 0;
 
   display: block;
 
+  /* Allow actual 150px height */
   width: auto;
-  max-width: 95%;
+  max-width: none;
   height: 150px;
 
   object-fit: contain;
   object-position: bottom left;
 
   filter: drop-shadow(
-    0 4px 5px rgba(0,0,0,0.10)
+    0 4px 5px rgba(0,0,0,0.12)
   );
 
   transition: filter 0.25s ease;
 }
 
-.header-ai-assistant:hover .header-ai-image {
-  filter: drop-shadow(
-    0 8px 10px rgba(0,0,0,0.25)
-  );
-}
-
 /* ==============================================
-   LABELS — TO THE RIGHT OF EACH MASCOT
+   ASSISTANT LABELS
    ============================================== */
 
 .header-ai-label {
   position: absolute;
 
-  top: 2px;
-  left: 60%;
+  top: 4px;
+  left: 66%;
 
-  width: 115px;
+  width: 135px;
 
   z-index: 2;
-
   pointer-events: none;
 }
 
@@ -569,7 +562,7 @@ html, body {
   display: block;
 
   font-family: "Figtree", sans-serif;
-  font-size: clamp(0.7rem, 0.8vw, 0.95rem);
+  font-size: 0.95rem;
   font-weight: 800;
 
   line-height: 1.1;
@@ -582,44 +575,35 @@ html, body {
   display: block;
 
   font-family: "Figtree", sans-serif;
-  font-size: clamp(0.45rem, 0.5vw, 0.6rem);
+  font-size: 0.6rem;
   font-weight: 400;
 
-  line-height: 1.2;
-  color: rgba(255,255,255,0.85);
+  line-height: 1.25;
+  color: rgba(255,255,255,0.9);
 
-  margin-top: 3px;
+  margin-top: 4px;
 }
 
 /* ==============================================
-   INDIVIDUAL MASCOT SIZES
+   HOVER — ENLARGE CHARACTER AND TEXT
    ============================================== */
 
-.header-ai-ask .header-ai-image {
-  height: 112px;
+.header-ai-assistant:hover,
+.header-ai-assistant:focus-visible {
+  transform: scale(1.15);
+  z-index: 100;
 }
 
-.header-ai-phil .header-ai-image {
-  height: 108px;
-}
-
-.header-ai-zoe .header-ai-image {
-  height: 108px;
-}
-
-.header-ai-sasha .header-ai-image {
-  height: 108px;
-}
-
-.header-ai-dmitri .header-ai-image {
-  height: 112px;
+.header-ai-assistant:hover .header-ai-image,
+.header-ai-assistant:focus-visible .header-ai-image {
+  filter: drop-shadow(
+    0 8px 12px rgba(0,0,0,0.25)
+  );
 }
 
 /* ==============================================
-   WAVE AND STACKING
+   WAVE LAYERING
    ============================================== */
-
-/* The wave stays behind the mascots */
 
 .header .wave-divider {
   position: relative;
@@ -665,15 +649,17 @@ html, body {
                   and (max-width: 1500px) {
 
   .header-ai-team {
-    width: 52%;
-    right: 2%;
-    bottom: -34px;
-    gap: 0.2rem;
+    width: 62%;
+    right: 1.5%;
+    bottom: -55px;
+    gap: 0.3rem;
   }
 
   .header-ai-assistant {
-    height: 110px;
+    height: 165px;
   }
+
+  /* Keep mascots at 150px */
 
   .header-ai-image,
   .header-ai-ask .header-ai-image,
@@ -681,20 +667,21 @@ html, body {
   .header-ai-zoe .header-ai-image,
   .header-ai-sasha .header-ai-image,
   .header-ai-dmitri .header-ai-image {
-    height: 94px;
+    height: 150px;
+    max-width: none;
   }
 
   .header-ai-label {
-    left: 57%;
-    width: 100px;
+    left: 65%;
+    width: 115px;
   }
 
   .header-ai-name {
-    font-size: 0.72rem;
+    font-size: 0.85rem;
   }
 
   .header-ai-role {
-    font-size: 0.48rem;
+    font-size: 0.55rem;
   }
 
 }
@@ -713,7 +700,7 @@ html, body {
   .mobile-links .mobile-ai-heading {
     grid-column: 1 / -1;
 
-    color: white;
+    color: #ffffff;
     font-family: "Figtree", sans-serif;
     font-size: 1rem;
     font-weight: 800;
@@ -755,10 +742,6 @@ html, body {
   .header-ai-assistant,
   .header-ai-image {
     transition: none;
-  }
-
-  .header-ai-assistant:hover {
-    transform: none;
   }
 
 }
