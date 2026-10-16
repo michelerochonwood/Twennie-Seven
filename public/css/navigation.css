@@ -451,9 +451,10 @@ html, body {
   /* End of Navigation Styles */
 
 
+
 /* ==============================================
    TWENNIE HEADER — AI ASSISTANTS
-   150px mascots overlapping the blue wave
+   Mascots, names and hover descriptions
    ============================================== */
 
 #navigation-wrapper {
@@ -474,22 +475,26 @@ html, body {
 .header-ai-team {
   position: absolute;
 
-  right: 4%;
+  right: 3%;
   bottom: -60px;
 
-  width: min(54%, 1050px);
+  width: min(58%, 1100px);
 
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  align-items: end;
 
-  gap: 0.75rem;
+  /* Extra space for Ask Twennie */
+  grid-template-columns:
+    1.35fr
+    repeat(4, minmax(0, 1fr));
+
+  align-items: end;
+  gap: 0.6rem;
 
   z-index: 50;
   overflow: visible;
 }
 
-/* Individual clickable assistant */
+/* Each clickable assistant */
 
 .header-ai-assistant {
   position: relative;
@@ -497,8 +502,8 @@ html, body {
 
   width: 100%;
   height: 165px;
-
   min-width: 0;
+
   overflow: visible;
 
   color: #ffffff;
@@ -509,8 +514,14 @@ html, body {
   transition: transform 0.25s ease;
 }
 
+/* Give Ask Twennie some separation from Phil */
+
+.header-ai-ask {
+  margin-right: 22px;
+}
+
 /* ==============================================
-   MASCOT IMAGES
+   MASCOT IMAGES — 150px
    ============================================== */
 
 .header-ai-image,
@@ -519,7 +530,6 @@ html, body {
 .header-ai-zoe .header-ai-image,
 .header-ai-sasha .header-ai-image,
 .header-ai-dmitri .header-ai-image {
-
   position: absolute;
 
   bottom: 0;
@@ -527,7 +537,6 @@ html, body {
 
   display: block;
 
-  /* Allow actual 150px height */
   width: auto;
   max-width: none;
   height: 150px;
@@ -543,16 +552,16 @@ html, body {
 }
 
 /* ==============================================
-   ASSISTANT LABELS
+   ASSISTANT NAMES
    ============================================== */
 
 .header-ai-label {
   position: absolute;
 
-  top: 4px;
-  left: 66%;
+  top: 3px;
+  left: 64%;
 
-  width: 135px;
+  width: 155px;
 
   z-index: 2;
   pointer-events: none;
@@ -562,35 +571,77 @@ html, body {
   display: block;
 
   font-family: "Figtree", sans-serif;
-  font-size: 0.95rem;
+  font-size: 1.15rem;
   font-weight: 800;
 
-  line-height: 1.1;
+  line-height: 1.15;
   color: #ffffff;
 
   white-space: nowrap;
-}
 
-.header-ai-role {
-  display: block;
-
-  font-family: "Figtree", sans-serif;
-  font-size: 0.6rem;
-  font-weight: 400;
-
-  line-height: 1.25;
-  color: rgba(255,255,255,0.9);
-
-  margin-top: 4px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
 
 /* ==============================================
-   HOVER — ENLARGE CHARACTER AND TEXT
+   JOB DESCRIPTION — HIDDEN UNTIL HOVER
+   ============================================== */
+
+.header-ai-role {
+  position: absolute;
+
+  top: 32px;
+  left: 0;
+
+  display: block;
+
+  width: 170px;
+  box-sizing: border-box;
+
+  padding: 12px 14px;
+
+  background: #ffffff;
+  color: #30327d;
+
+  border-radius: 12px;
+
+  font-family: "Figtree", sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.4;
+
+  box-shadow:
+    0 10px 28px rgba(25,25,75,0.20);
+
+  /* Initially hidden */
+  opacity: 0;
+  visibility: hidden;
+
+  transform: translateY(-6px);
+
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    visibility 0.2s ease;
+
+  pointer-events: none;
+}
+
+/* Reveal the description */
+
+.header-ai-assistant:hover .header-ai-role,
+.header-ai-assistant:focus-visible .header-ai-role {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* ==============================================
+   HOVER — GROW CHARACTER AND NAME
    ============================================== */
 
 .header-ai-assistant:hover,
 .header-ai-assistant:focus-visible {
-  transform: scale(1.15);
+  transform: scale(1.10);
   z-index: 100;
 }
 
@@ -649,7 +700,7 @@ html, body {
                   and (max-width: 1500px) {
 
   .header-ai-team {
-    width: 62%;
+    width: 65%;
     right: 1.5%;
     bottom: -55px;
     gap: 0.3rem;
@@ -659,36 +710,28 @@ html, body {
     height: 165px;
   }
 
-  /* Keep mascots at 150px */
-
-  .header-ai-image,
-  .header-ai-ask .header-ai-image,
-  .header-ai-phil .header-ai-image,
-  .header-ai-zoe .header-ai-image,
-  .header-ai-sasha .header-ai-image,
-  .header-ai-dmitri .header-ai-image {
-    height: 150px;
-    max-width: none;
+  .header-ai-ask {
+    margin-right: 15px;
   }
 
   .header-ai-label {
-    left: 65%;
-    width: 115px;
+    left: 62%;
+    width: 125px;
   }
 
   .header-ai-name {
-    font-size: 0.85rem;
+    font-size: 0.95rem;
   }
 
   .header-ai-role {
-    font-size: 0.55rem;
+    width: 150px;
+    font-size: 0.75rem;
   }
 
 }
 
 /* ==============================================
    MOBILE / NARROW HEADER
-   Existing breakpoint: 1200px
    ============================================== */
 
 @media screen and (max-width: 1200px) {
@@ -740,8 +783,10 @@ html, body {
 @media (prefers-reduced-motion: reduce) {
 
   .header-ai-assistant,
-  .header-ai-image {
+  .header-ai-image,
+  .header-ai-role {
     transition: none;
   }
 
 }
+
