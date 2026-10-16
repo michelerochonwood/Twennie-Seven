@@ -451,87 +451,92 @@ html, body {
   /* End of Navigation Styles */
 
 
-
 /* ==============================================
-   TWENNIE HEADER — AI ASSISTANT NAVIGATION
-   Compatible with navigation.css
+   TWENNIE HEADER — AI ASSISTANTS
+   Mascots overlapping the blue wave
    ============================================== */
-
-/* Allow positioning inside the 160px header */
 
 #navigation-wrapper {
   position: relative;
+  overflow: visible;
   box-sizing: border-box;
 }
 
+/* Allow mascots to extend outside the header */
+
+.header {
+  position: relative;
+  overflow: visible;
+}
+
 /* ==============================================
-   DESKTOP ASSISTANT TEAM
+   DESKTOP ASSISTANT GROUP
    ============================================== */
 
 .header-ai-team {
   position: absolute;
 
-  /* Place assistants on the right side */
-  right: 2.5%;
+  /* Right-hand portion of the header */
+  right: 5%;
 
-  /* Mascots extend down across the blue wave */
-  bottom: -28px;
+  /* Position group relative to bottom of header */
+  bottom: -38px;
 
-  /* Leave room for logo and user profile */
-  width: min(53%, 960px);
+  width: min(45%, 850px);
 
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-
-  gap: 0.35rem;
   align-items: end;
 
-  z-index: 20;
+  gap: 0.35rem;
+
+  z-index: 50;
 }
 
-/* Individual assistant link */
+/* Each assistant occupies one grid column */
 
 .header-ai-assistant {
   position: relative;
 
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
+  display: block;
+
+  width: 100%;
+  height: 125px;
 
   min-width: 0;
-  height: 128px;
 
-  text-decoration: none;
   color: white;
+  text-decoration: none;
 
   transition: transform 0.25s ease;
 }
-
-/* Hover: assistant rises slightly */
 
 .header-ai-assistant:hover {
   transform: translateY(-6px);
 }
 
 /* ==============================================
-   ASSISTANT IMAGES
+   MASCOT IMAGES
    ============================================== */
 
 .header-ai-image {
+  position: absolute;
+
+  /* Anchor each mascot at bottom of its column */
+  bottom: 0;
+  left: 0;
+
   display: block;
 
   width: auto;
-  max-width: 100%;
+  max-width: 95%;
   height: 108px;
 
   object-fit: contain;
-  object-position: bottom center;
-
-  margin: 0 auto;
+  object-position: bottom left;
 
   filter: drop-shadow(
-    0 4px 5px rgba(0, 0, 0, 0.10)
+    0 4px 5px rgba(0,0,0,0.10)
   );
 
   transition: filter 0.25s ease;
@@ -539,22 +544,21 @@ html, body {
 
 .header-ai-assistant:hover .header-ai-image {
   filter: drop-shadow(
-    0 8px 10px rgba(0, 0, 0, 0.25)
+    0 8px 10px rgba(0,0,0,0.25)
   );
 }
 
 /* ==============================================
-   ASSISTANT LABELS
+   LABELS — TO THE RIGHT OF EACH MASCOT
    ============================================== */
 
 .header-ai-label {
   position: absolute;
 
-  top: 0;
-  left: 43%;
+  top: 2px;
+  left: 60%;
 
-  width: 100%;
-  max-width: 130px;
+  width: 115px;
 
   z-index: 2;
 
@@ -565,7 +569,7 @@ html, body {
   display: block;
 
   font-family: "Figtree", sans-serif;
-  font-size: clamp(0.72rem, 0.85vw, 1rem);
+  font-size: clamp(0.7rem, 0.8vw, 0.95rem);
   font-weight: 800;
 
   line-height: 1.1;
@@ -578,7 +582,7 @@ html, body {
   display: block;
 
   font-family: "Figtree", sans-serif;
-  font-size: clamp(0.48rem, 0.55vw, 0.65rem);
+  font-size: clamp(0.45rem, 0.5vw, 0.6rem);
   font-weight: 400;
 
   line-height: 1.2;
@@ -588,52 +592,41 @@ html, body {
 }
 
 /* ==============================================
-   INDIVIDUAL ASSISTANT ADJUSTMENTS
+   INDIVIDUAL MASCOT SIZES
    ============================================== */
-
-/* Ask Twennie */
 
 .header-ai-ask .header-ai-image {
   height: 112px;
 }
 
-/* Phil */
-
 .header-ai-phil .header-ai-image {
   height: 108px;
 }
-
-/* Zoe */
 
 .header-ai-zoe .header-ai-image {
   height: 108px;
 }
 
-/* Sasha */
-
 .header-ai-sasha .header-ai-image {
   height: 108px;
 }
-
-/* Dmitri */
 
 .header-ai-dmitri .header-ai-image {
   height: 112px;
 }
 
 /* ==============================================
-   WAVE LAYERING
+   WAVE AND STACKING
    ============================================== */
 
-/* Keep the assistant images in front of the wave */
+/* The wave stays behind the mascots */
 
 .header .wave-divider {
   position: relative;
   z-index: 1;
+  overflow: hidden;
   pointer-events: none;
 }
-
-/* Prevent the wave from covering the mascots */
 
 .header .wave-divider svg {
   display: block;
@@ -665,16 +658,17 @@ html, body {
 }
 
 /* ==============================================
-   MEDIUM DESKTOP — 1201px to 1500px
+   MEDIUM DESKTOP — 1201px TO 1500px
    ============================================== */
 
 @media screen and (min-width: 1201px)
                   and (max-width: 1500px) {
 
   .header-ai-team {
-    width: 57%;
-    right: 1.5%;
-    gap: 0.15rem;
+    width: 52%;
+    right: 2%;
+    bottom: -34px;
+    gap: 0.2rem;
   }
 
   .header-ai-assistant {
@@ -687,11 +681,12 @@ html, body {
   .header-ai-zoe .header-ai-image,
   .header-ai-sasha .header-ai-image,
   .header-ai-dmitri .header-ai-image {
-    height: 90px;
+    height: 94px;
   }
 
   .header-ai-label {
-    left: 38%;
+    left: 57%;
+    width: 100px;
   }
 
   .header-ai-name {
@@ -706,23 +701,19 @@ html, body {
 
 /* ==============================================
    MOBILE / NARROW HEADER
-   Existing navigation switches at 1200px
+   Existing breakpoint: 1200px
    ============================================== */
 
 @media screen and (max-width: 1200px) {
-
-  /* Hide mascot navigation completely */
 
   .header-ai-team {
     display: none;
   }
 
-  /* AI section heading inside mobile menu */
-
   .mobile-links .mobile-ai-heading {
     grid-column: 1 / -1;
 
-    color: #ffffff;
+    color: white;
     font-family: "Figtree", sans-serif;
     font-size: 1rem;
     font-weight: 800;
@@ -753,15 +744,11 @@ html, body {
    ACCESSIBILITY
    ============================================== */
 
-/* Keyboard navigation */
-
 .header-ai-assistant:focus-visible {
   outline: 2px solid #ffffff;
   outline-offset: 5px;
   border-radius: 8px;
 }
-
-/* Reduced motion */
 
 @media (prefers-reduced-motion: reduce) {
 
