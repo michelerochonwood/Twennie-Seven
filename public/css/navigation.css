@@ -804,3 +804,153 @@ background: rgba(255, 255, 255, 0.65);
 
 }
 
+
+/* ==========================================
+   TWENNIE AI ASSISTANTS — FOOTER
+   ========================================== */
+
+.footer-ai-section {
+  background: #ffffff;
+  width: 100%;
+  padding: 3rem 0 2.5rem;
+  box-sizing: border-box;
+}
+
+.footer-ai-inner {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 0 4rem;
+  box-sizing: border-box;
+}
+
+.footer-ai-heading {
+  font-family: "Figtree", sans-serif;
+  color: #262262;
+  font-size: 1.5rem;
+  font-weight: 800;
+  text-align: center;
+  margin: 0 0 2.5rem;
+}
+
+.footer-ai-team {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.footer-ai-assistant {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  text-decoration: none;
+  min-width: 0;
+  color: #262262;
+}
+
+.footer-ai-assistant img {
+  width: 100%;
+  max-width: 150px;
+  height: 145px;
+  object-fit: contain;
+  object-position: center bottom;
+  display: block;
+  transition: transform 0.25s ease;
+}
+
+.footer-ai-assistant:hover img {
+  transform: translateY(-5px) scale(1.06);
+}
+
+.footer-ai-name {
+  font-family: "Figtree", sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #262262;
+  margin-top: 0.75rem;
+}
+
+.footer-ai-role {
+  font-family: "Figtree", sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #666;
+  line-height: 1.4;
+  margin-top: 0.3rem;
+  max-width: 170px;
+}
+
+.footer-ai-assistant:hover .footer-ai-name {
+  color: #dc176a;
+}
+
+.footer-ai-assistant:focus-visible {
+  outline: 2px solid #dc176a;
+  outline-offset: 6px;
+  border-radius: 6px;
+}
+
+/* TABLETS */
+
+@media screen and (max-width: 900px) {
+  .footer-ai-inner {
+    padding: 0 2rem;
+  }
+
+  .footer-ai-team {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2rem;
+    justify-items: center;
+  }
+
+  .footer-ai-assistant {
+    width: 100%;
+    max-width: 200px;
+  }
+}
+
+/* PHONES */
+
+@media screen and (max-width: 550px) {
+  .footer-ai-section {
+    padding: 2.5rem 0;
+  }
+
+  .footer-ai-inner {
+    padding: 0 1.25rem;
+  }
+
+  .footer-ai-heading {
+    font-size: 1.3rem;
+    margin-bottom: 2rem;
+  }
+
+  .footer-ai-team {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem 1rem;
+  }
+
+  .footer-ai-assistant img {
+    height: 115px;
+    max-width: 125px;
+  }
+
+  .footer-ai-name {
+    font-size: 0.9rem;
+  }
+
+  .footer-ai-role {
+    font-size: 0.7rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer-ai-assistant img {
+    transition: none;
+  }
+
+  .footer-ai-assistant:hover img {
+    transform: none;
+  }
+}
