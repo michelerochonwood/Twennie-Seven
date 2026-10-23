@@ -954,3 +954,9 @@ background: rgba(255, 255, 255, 0.65);
     transform: none;
   }
 }
+
+
+
+.home-subfooter-inner {
+  padding-top: 30px;
+}
