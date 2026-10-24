@@ -810,7 +810,7 @@ background: rgba(255, 255, 255, 0.65);
    ========================================== */
 
 .footer-ai-section {
-  background: #7373c4;
+  background: #a1a1e2;
   width: 100%;
   padding: 3rem 0 2.5rem;
   box-sizing: border-box;
@@ -956,7 +956,3 @@ background: rgba(255, 255, 255, 0.65);
 }
 
 
-
-.home-subfooter-inner {
-  padding-top: 30px;
-}
